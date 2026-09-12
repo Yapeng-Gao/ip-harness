@@ -1892,3 +1892,115 @@ p {
   gap: 0.5rem;
   padding: 0.625rem 0.75rem 0.75rem;
 }
+
+/* —— ui-opt-next · weak secondary links (don't compete with primary CTA) —— */
+.ui-link-weak {
+  color: #3f3f46;
+  font-size: var(--font-size-caption);
+  font-weight: 450;
+  text-decoration: none;
+  text-underline-offset: 0.15em;
+  transition: color 0.12s ease;
+}
+.ui-link-weak:hover {
+  color: #0f172a;
+  text-decoration: underline;
+}
+.ui-link-weak:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+a.ui-link-weak,
+button.ui-link-weak {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.agent-picker-card__hint {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-caption);
+  line-height: 1.35;
+  color: #3f3f46;
+  font-weight: 450;
+}
+.agent-picker-card__hint[data-tone="warn"] {
+  color: #92400e;
+}
+.agent-picker-card__details-summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: var(--font-size-caption);
+  color: #3f3f46;
+  font-weight: 450;
+}
+.agent-picker-card__details-summary::-webkit-details-marker {
+  display: none;
+}
+.agent-picker-card__details-summary:hover {
+  color: #0f172a;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* Agent session rail ↔ mid Inbox type ladder (DS-SHELL · caption/footnote) */
+.agent-rail-row {
+  min-height: 2.75rem;
+  border-radius: var(--radius-sm);
+}
+.agent-rail-row__link {
+  display: block;
+  min-width: 0;
+  flex: 1;
+  padding: 0.5rem 0.625rem;
+}
+.agent-rail-title {
+  font-size: var(--font-size-footnote);
+  line-height: 1.35;
+  color: #0f172a;
+  font-weight: 500;
+}
+.agent-rail-title[data-active="true"] {
+  font-weight: 600;
+}
+.agent-rail-sub {
+  margin-top: 0.125rem;
+  font-size: var(--font-size-caption);
+  line-height: 1.4;
+  color: #3f3f46;
+}
+.agent-rail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 0.75rem;
+  text-align: center;
+}
+.agent-rail-empty .ui-empty-title {
+  font-size: var(--font-size-footnote);
+  margin: 0;
+}
+.agent-rail-empty .ui-empty-desc {
+  font-size: var(--font-size-caption);
+  color: #3f3f46;
+  margin: 0;
+}
+
+/* Compact table densify (wb maintain / crowded tables) */
+.ui-table.ui-table--compact th,
+.ui-table.ui-table--compact td {
+  padding: 0.5rem 0.625rem;
+}
+.ui-table.ui-table--compact td input:not([type="checkbox"]) {
+  font-size: var(--font-size-caption);
+  min-height: 1.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(60, 60, 67, 0.18);
+  background: #fff;
+}

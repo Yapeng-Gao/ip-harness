@@ -458,14 +458,17 @@ export function AgentSessionSidebar() {
 
         <div className="flex-1 overflow-y-auto pb-2">
           {filtered.length === 0 ? (
-            <div className="px-3 py-6 text-center">
-              <p className="text-xs text-slate-400">
+            <div className="agent-rail-empty">
+              <p className="ui-empty-title">
                 {sorted.length === 0 ? '暂无会话' : '无匹配结果'}
+              </p>
+              <p className="ui-empty-desc">
+                {sorted.length === 0 ? '新建一条会话开始办理。' : '试试清空筛选或换关键词。'}
               </p>
               <button
                 type="button"
                 onClick={newSession}
-                className="btn-press focus-ring mt-2 text-xs font-medium text-slate-700 hover:underline"
+                className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring"
               >
                 新建会话
               </button>
@@ -508,13 +511,13 @@ export function AgentSessionSidebar() {
                       </div>
                     ) : (
                       <div
-                        className={`list-row flex items-stretch ${
+                        className={`agent-rail-row list-row flex items-stretch ${
                           active ? 'list-row-active' : 'hover:bg-slate-50'
                         }`}
                       >
                         <AppLink
                           to={`/agent/sessions/${s.id}`}
-                          className="min-w-0 flex-1 px-2.5 py-1.5"
+                          className="agent-rail-row__link"
                         >
                           <div className="flex items-start gap-2">
                             <span
@@ -523,20 +526,17 @@ export function AgentSessionSidebar() {
                             />
                             <div className="min-w-0 flex-1">
                               <div
-                                className={`truncate text-[13px] leading-snug ${
-                                  active
-                                    ? 'font-semibold text-slate-900'
-                                    : 'font-medium text-slate-800'
-                                }`}
+                                className="agent-rail-title truncate"
+                                data-active={active ? 'true' : undefined}
                               >
                                 {s.title}
                                 {s.archived ? (
-                                  <span className="ml-1 text-[11px] font-normal text-slate-400">
+                                  <span className="agent-rail-sub ml-1 inline font-normal opacity-70">
                                     · 已归档
                                   </span>
                                 ) : null}
                               </div>
-                              <div className="mt-0.5 truncate text-[11px] text-slate-400">
+                              <div className="agent-rail-sub truncate">
                                 {ag?.name ?? '自动匹配'} · {RUN_STATUS_LABEL[s.status]}
                               </div>
                               {badges.length > 0 && (

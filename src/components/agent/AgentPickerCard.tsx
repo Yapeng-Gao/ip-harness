@@ -34,10 +34,44 @@ export type AgentPickerCardProps = {
 }
 
 /**
- * Shared agent picker card — used on Catalog (dense rows on Agent Home).
- * White surface, hairline border, hover lift; keeps business meta (HITL / tier / details).
- * Beta: honest copy + soft CTA (not one-click as Core closed loop).
+ * Shared agent picker card — Catalog / Home density.
+ * Six-section meta hierarchy in details; Core/Assist/Beta badge on face.
+ * Mirrored with apps/agent AgentPickerCard (ui-opt-next); start/HITL semantics unchanged.
  */
+
+/** P1-B · catalog meta: two-col dl + clamp + 「更多」 — visual only */
+function AgentMetaSections({
+  rows,
+}: {
+  rows: { label: string; value: string; title?: string }[]
+}) {
+  const primary = rows.slice(0, 3)
+  const rest = rows.slice(3)
+  return (
+    <div className="agent-meta-grid" role="list">
+      {primary.map((r) => (
+        <div key={r.label} className="agent-meta-row" role="listitem" title={r.title}>
+          <span className="agent-meta-label">{r.label}</span>
+          <span className="agent-meta-value agent-meta-value--clamp">{r.value}</span>
+        </div>
+      ))}
+      {rest.length > 0 && (
+        <details className="agent-meta-more">
+          <summary className="agent-meta-more-summary">更多 · {rest.length} 项</summary>
+          <div className="agent-meta-more-body" role="list">
+            {rest.map((r) => (
+              <div key={r.label} className="agent-meta-row" role="listitem" title={r.title}>
+                <span className="agent-meta-label">{r.label}</span>
+                <span className="agent-meta-value agent-meta-value--clamp">{r.value}</span>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
+  )
+}
+
 export function AgentPickerCard({
   agent: a,
   highlight,
@@ -64,21 +98,19 @@ export function AgentPickerCard({
   return (
     <article
       id={id}
-      className={`group flex h-full flex-col rounded-md border bg-white p-3.5 transition-shadow hover:shadow-sm ${
-        highlight
-          ? 'border-slate-400 ring-1 ring-slate-300'
-          : isBeta
-            ? 'border-amber-200/80 hover:border-amber-300'
-            : 'border-slate-200 hover:border-slate-300'
-      }`}
+      className="agent-picker-card surface-card group"
+      data-tier={a.tier}
+      data-highlight={highlight ? 'true' : undefined}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
-            <h3 className="text-sm font-semibold text-slate-900">{a.name}</h3>
+            <h3 className="text-balance text-sm font-semibold tracking-tight text-slate-900">
+              {a.name}
+            </h3>
             <AgentTierBadge tier={a.tier} />
             {a.status === 'maintenance' && (
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-1.5 py-px text-[10px] font-medium text-slate-500">
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-1.5 py-px text-[10px] font-medium text-slate-500">
                 维护
               </span>
             )}
@@ -91,15 +123,12 @@ export function AgentPickerCard({
         </div>
       </div>
 
-      <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-600">
-        {blurb}
-      </p>
+      <p className="agent-picker-card__blurb">{blurb}</p>
 
       {(isBeta || a.tier === 'assist') && (
         <p
-          className={`mt-1.5 text-[11px] leading-snug ${
-            isBeta ? 'text-amber-900/90' : 'text-sky-900/80'
-          }`}
+          className="agent-picker-card__tier-note"
+          data-tier={a.tier}
           role="note"
         >
           {isBeta ? BETA_HONEST_COPY : agentTierNote(a)}
@@ -115,8 +144,8 @@ export function AgentPickerCard({
           onClick={onStart}
           className={
             isBeta
-              ? 'btn-press focus-ring w-full rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-950 hover:bg-amber-100'
-              : 'btn-press focus-ring cta-work w-full rounded-md px-3 py-1.5 text-xs font-medium'
+              ? 'ui-btn ui-btn-sm btn-press focus-ring w-full border border-amber-300 bg-amber-50 text-amber-950 hover:bg-amber-100'
+              : 'ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full'
           }
           aria-label={
             caseHint
@@ -128,74 +157,57 @@ export function AgentPickerCard({
         </button>
         {caseHint ? (
           <span
-            className={`truncate text-center text-[10px] leading-tight ${
-              caseHint.mismatch ? 'text-amber-800' : 'text-slate-400'
-            }`}
+            className="agent-picker-card__hint truncate"
+            data-tone={caseHint.mismatch ? 'warn' : undefined}
             title={caseHint.title}
           >
             所选案 · {caseHint.stageShort}
             {caseHint.mismatch ? ' · 阶段与 Agent 可能错配' : ''}
           </span>
-        ) : showDetails ? (
-          <span className="text-center text-[10px] text-slate-400">
+        ) : showDetails && !resolvedStart.includes('稍后关联') ? (
+          <span className="agent-picker-card__hint" role="note">
             {isBeta ? '试用 · 稍后关联 · 非采购闭环' : '稍后关联'}
           </span>
         ) : null}
       </div>
 
       {showDetails && (
-        <details className="mt-2 border-t border-slate-100 pt-2">
-          <summary className="cursor-pointer text-[11px] text-slate-400 hover:text-slate-600">
+        <details className="mt-2.5 border-t border-slate-100/90 pt-2">
+          <summary className="agent-picker-card__details-summary">
             详情
             {a.tools.length > 0 ? ` · 工具 ${a.tools.length}` : ''}
             {a.hitlGates.length > 0 ? ` · 需确认 ${a.hitlGates.length}` : ''}
           </summary>
-          <div className="mt-1.5 space-y-1.5 border-l-2 border-slate-100 pl-2.5">
-            {a.whenToUse && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">何时用 · </span>
-                {a.whenToUse}
-              </p>
-            )}
-            {a.inputsHint && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">输入 · </span>
-                {a.inputsHint}
-              </p>
-            )}
-            {a.outputsHint && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">输出 · </span>
-                {a.outputsHint}
-              </p>
-            )}
-            {a.guardrails?.length > 0 && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">护栏 · </span>
-                {a.guardrails.join(' · ')}
-              </p>
-            )}
-            {a.hitlGates.length > 0 && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">需确认 · </span>
-                {a.hitlGates.map((g) => HITL_GATE_LABELS[g]).join(' · ')}
-              </p>
-            )}
-            {a.tools.length > 0 && (
-              <p className="text-xs text-slate-600" title={toolLabels.join(' · ')}>
-                <span className="text-[11px] font-medium text-slate-400">工具 · </span>
-                {toolPreview}
-              </p>
-            )}
-            <p className="text-xs text-slate-500">
-              <span className="text-[11px] font-medium text-slate-400">谁负责 · </span>
-              {a.raciHint}
-            </p>
-            <p className="text-xs text-slate-600">
-              <span className="text-[11px] font-medium text-slate-400">分层 · </span>
-              {agentTierNote(a)}
-            </p>
-          </div>
+          {/* P1-B · 两列定义列表 + 弱标签 + 超高「更多」— visual only */}
+          <AgentMetaSections
+            rows={[
+              a.whenToUse ? { label: '何时用', value: a.whenToUse } : null,
+              a.inputsHint ? { label: '输入', value: a.inputsHint } : null,
+              a.outputsHint ? { label: '输出', value: a.outputsHint } : null,
+              a.guardrails?.length
+                ? { label: '护栏', value: a.guardrails.join(' · ') }
+                : null,
+              a.tools.length
+                ? {
+                    label: '工具',
+                    value: toolPreview,
+                    title: toolLabels.join(' · '),
+                  }
+                : null,
+              {
+                label: '谁负责',
+                value: [
+                  a.raciHint,
+                  a.hitlGates.length > 0
+                    ? `需确认 ${a.hitlGates.map((g) => HITL_GATE_LABELS[g]).join(' / ')}`
+                    : null,
+                  agentTierNote(a),
+                ]
+                  .filter(Boolean)
+                  .join(' · '),
+              },
+            ].filter(Boolean) as { label: string; value: string; title?: string }[]}
+          />
         </details>
       )}
     </article>

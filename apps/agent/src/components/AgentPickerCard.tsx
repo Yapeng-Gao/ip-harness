@@ -157,16 +157,15 @@ export function AgentPickerCard({
         </button>
         {caseHint ? (
           <span
-            className={`truncate text-center text-[10px] leading-tight ${
-              caseHint.mismatch ? 'text-amber-800' : 'text-slate-400'
-            }`}
+            className="agent-picker-card__hint truncate"
+            data-tone={caseHint.mismatch ? 'warn' : undefined}
             title={caseHint.title}
           >
             所选案 · {caseHint.stageShort}
             {caseHint.mismatch ? ' · 阶段与 Agent 可能错配' : ''}
           </span>
-        ) : showDetails ? (
-          <span className="text-center text-[10px] text-slate-400">
+        ) : showDetails && !resolvedStart.includes('稍后关联') ? (
+          <span className="agent-picker-card__hint" role="note">
             {isBeta ? '试用 · 稍后关联 · 非采购闭环' : '稍后关联'}
           </span>
         ) : null}
@@ -174,7 +173,7 @@ export function AgentPickerCard({
 
       {showDetails && (
         <details className="mt-2.5 border-t border-slate-100/90 pt-2">
-          <summary className="cursor-pointer text-[11px] text-slate-400 hover:text-slate-600">
+          <summary className="agent-picker-card__details-summary">
             详情
             {a.tools.length > 0 ? ` · 工具 ${a.tools.length}` : ''}
             {a.hitlGates.length > 0 ? ` · 需确认 ${a.hitlGates.length}` : ''}

@@ -260,10 +260,11 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
             </WbSection>
 
             <WbSection title="年费日程表">
-              <table className="w-full text-left text-xs">
-                <thead className="text-slate-500">
+              <div className="overflow-x-auto rounded-[calc(var(--radius-lg)-0.5rem)] border border-[rgba(60,60,67,0.08)]">
+              <table className="ui-table ui-table--compact">
+                <thead>
                   <tr>
-                    <th className="py-2">年度</th>
+                    <th>年度</th>
                     <th>到期日</th>
                     <th>金额</th>
                     <th>状态</th>
@@ -271,12 +272,11 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
                 </thead>
                 <tbody>
                   {schedule.map((row, i) => (
-                    <tr key={row.id || `${row.year}-${i}`} className="border-t border-slate-200 text-slate-700">
-                      <td className="py-2">第{row.year}年</td>
+                    <tr key={row.id || `${row.year}-${i}`}>
+                      <td className="tabular whitespace-nowrap">第{row.year}年</td>
                       <td>
                         <input
                           type="date"
-                          className="rounded border border-slate-200 bg-white px-2 py-1"
                           value={row.due}
                           onChange={(e) => {
                             commitSchedule(
@@ -284,21 +284,23 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
                             )
                             setStep(1)
                           }}
+                          aria-label={`第${row.year}年到期日`}
                         />
                       </td>
                       <td>
                         <input
-                          className="w-24 rounded border border-slate-200 bg-white px-2 py-1"
+                          className="w-24"
                           value={row.amount}
                           onChange={(e) =>
                             commitSchedule(
                               schedule.map((r, idx) => (idx === i ? { ...r, amount: e.target.value } : r)),
                             )
                           }
+                          aria-label={`第${row.year}年金额`}
                         />
                       </td>
                       <td>
-                        <label className="flex items-center gap-1">
+                        <label className="flex items-center gap-1.5 text-[var(--font-size-caption)] text-slate-700">
                           <input
                             type="checkbox"
                             checked={row.paid}
@@ -316,6 +318,7 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
                   ))}
                 </tbody>
               </table>
+              </div>
               <div className="mb-3 flex flex-wrap gap-2">
                 <button
                   type="button"

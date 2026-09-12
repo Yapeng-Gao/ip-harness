@@ -120,7 +120,7 @@ export function AgentCatalogPage() {
         <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">Agent</h1>
         <p className="mt-1 text-sm text-slate-500">
           选 Agent 开会话 · 有最近案时默认带上 ·{' '}
-          <Link to="/agent/harness" className="hover:underline">
+          <Link to="/agent/harness" className="ui-link-weak">
             运行说明
           </Link>
         </p>
@@ -251,9 +251,7 @@ export function AgentCatalogPage() {
                         startLabel={
                           a.tier === 'beta'
                             ? '试用 · 非闭环'
-                            : chosen
-                              ? '启动'
-                              : '启动 · 稍后关联'
+                            : '启动'
                         }
                         onStart={() => startWith(a)}
                       />

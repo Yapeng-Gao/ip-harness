@@ -176,10 +176,7 @@ export function AgentHarnessOverview() {
       <div className="mb-6 max-w-4xl">
         <div className="mb-2 flex items-baseline justify-between">
           <h2 className="text-[13px] font-semibold text-slate-900">Agent</h2>
-          <Link
-            to="/agent/agents"
-            className="text-xs text-slate-500 hover:text-slate-800 hover:underline"
-          >
+          <Link to="/agent/agents" className="ui-link-weak">
             全部 Agent
           </Link>
         </div>
@@ -224,23 +221,20 @@ export function AgentHarnessOverview() {
                             : 'ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring'
                         }
                       >
-                        {a.tier === 'beta'
-                          ? '试用 · 非闭环'
-                          : chosen
-                            ? '启动'
-                            : '启动 · 稍后关联'}
+                        {a.tier === 'beta' ? '试用 · 非闭环' : '启动'}
                       </button>
                       {chosen ? (
                         <span
-                          className={`max-w-[140px] text-right text-[10px] leading-tight ${
-                            mismatch ? 'text-amber-800' : 'text-slate-400'
-                          }`}
+                          className="agent-picker-card__hint max-w-[140px] truncate text-right"
+                          data-tone={mismatch ? 'warn' : undefined}
                         >
                           {getStageMeta(chosen.stage).shortName}
                           {mismatch ? ' · 可能错配' : ''}
                         </span>
                       ) : (
-                        <span className="text-[10px] text-slate-400">稍后关联</span>
+                        <span className="agent-picker-card__hint text-right" role="note">
+                          稍后关联
+                        </span>
                       )}
                     </div>
                   )
@@ -255,10 +249,7 @@ export function AgentHarnessOverview() {
         <div className="mb-6 max-w-4xl">
           <div className="mb-2 flex items-baseline justify-between">
             <h2 className="text-[13px] font-semibold text-slate-900">最近会话</h2>
-            <Link
-              to="/agent/sessions"
-              className="text-xs text-slate-500 hover:text-slate-800 hover:underline"
-            >
+            <Link to="/agent/sessions" className="ui-link-weak">
               全部
             </Link>
           </div>
