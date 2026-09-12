@@ -77,10 +77,6 @@ export function CaseLibrary() {
     })
   }, [cases, q, stage, risk, status])
 
-  const chipCls = (on: boolean) =>
-    `btn-press focus-ring rounded-full px-3 py-1 text-xs ${
-      on ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-    }`
 
   const clearFilters = () => {
     setQ('')
@@ -94,7 +90,7 @@ export function CaseLibrary() {
     q !== '' || stage !== 'all' || risk !== 'all' || status !== 'all'
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <TenantBanner />
       <PageHeader
         sticky
@@ -118,7 +114,7 @@ export function CaseLibrary() {
           icon: <Bot className="h-4 w-4" aria-hidden />,
         }}
       >
-        <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="状态筛选">
+        <div className="segmented mt-4" role="group" aria-label="状态筛选">
           {(
             [
               ['all', '全部', statusCounts.all],
@@ -131,17 +127,17 @@ export function CaseLibrary() {
               key={id}
               type="button"
               onClick={() => setStatus(id)}
-              className={chipCls(status === id)}
+              className="segmented-item btn-press focus-ring"
               aria-pressed={status === id}
               aria-label={`筛选${label}，共 ${count} 件`}
             >
-              {label} <span className="ml-1 tabular-nums opacity-80">{count}</span>
+              {label} <span className="ml-1 tabular opacity-80">{count}</span>
             </button>
           ))}
         </div>
       </PageHeader>
 
-      <div className="mb-5 flex flex-wrap gap-3">
+      <div className="mb-4 flex flex-wrap items-center gap-2.5">
         <form
           className="relative min-w-[200px] flex-1"
           onSubmit={(e) => {
@@ -151,12 +147,12 @@ export function CaseLibrary() {
           role="search"
           aria-label="搜索案件"
         >
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" aria-hidden />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
           <input
             value={qDraft}
             onChange={(e) => setQDraft(e.target.value)}
-            placeholder="搜索标题、案号、团队…（回车应用）"
-            className="focus-ring w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 placeholder:text-slate-600 focus:border-slate-400"
+            placeholder="搜索标题、案号、团队…"
+            className="focus-ring hit-40 w-full rounded-[var(--radius-md)] border border-slate-200/90 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 shadow-[var(--shadow-rest)] placeholder:text-slate-400 focus:border-[var(--color-accent)]"
             aria-label="搜索标题、案号或团队"
             name="case-search"
             autoComplete="off"
@@ -165,7 +161,7 @@ export function CaseLibrary() {
         <select
           value={stage}
           onChange={(e) => setStage(e.target.value as StageId | 'all')}
-          className="focus-ring rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+          className="focus-ring hit-40 rounded-[var(--radius-md)] border border-slate-200/90 bg-white px-3 py-2 text-sm text-slate-700 shadow-[var(--shadow-rest)]"
           aria-label="按阶段筛选案件"
         >
           <option value="all">全部阶段</option>
@@ -178,7 +174,7 @@ export function CaseLibrary() {
         <select
           value={risk}
           onChange={(e) => setRisk(e.target.value as RiskLevel | 'all')}
-          className="focus-ring rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+          className="focus-ring hit-40 rounded-[var(--radius-md)] border border-slate-200/90 bg-white px-3 py-2 text-sm text-slate-700 shadow-[var(--shadow-rest)]"
           aria-label="按风险筛选案件"
         >
           <option value="all">全部风险</option>
@@ -186,12 +182,12 @@ export function CaseLibrary() {
           <option value="中">中风险</option>
           <option value="低">低风险</option>
         </select>
-        <span className="self-center text-xs tabular-nums text-slate-500" aria-live="polite">
+        <span className="self-center text-xs tabular text-slate-500" aria-live="polite">
           结果 {filtered.length}
         </span>
       </div>
 
-      <div className="flat-card overflow-hidden">
+      <div className="surface-card overflow-hidden">
         {filtered.length === 0 ? (
           <EmptyState
             title={cases.length === 0 ? '本租户暂无可见案件' : '无匹配案件'}
@@ -213,7 +209,7 @@ export function CaseLibrary() {
           />
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50/80 text-xs text-slate-500">
+            <thead className="border-b border-slate-200/80 bg-slate-50/70 text-xs text-slate-500">
               <tr>
                 <th className="px-4 py-3 font-medium" scope="col">案件</th>
                 <th className="px-4 py-3 font-medium" scope="col">类型</th>
@@ -238,7 +234,7 @@ export function CaseLibrary() {
                       navigate(`/cases/${c.id}`)
                     }
                   }}
-                  className="focus-row cursor-pointer border-b border-slate-200/60 transition-colors hover:bg-slate-50/80"
+                  className="focus-row cursor-pointer border-b border-slate-100 transition-colors hover:bg-[var(--color-accent-soft)]/40"
                   aria-label={`打开案件 ${c.title}`}
                 >
                   <td className="px-4 py-3">
@@ -253,8 +249,8 @@ export function CaseLibrary() {
                     <span
                       className={`rounded-full border px-2 py-0.5 text-xs font-medium ${
                         c.fulfillmentMode === 'self_serve'
-                          ? 'border-sky-200 bg-sky-50 text-sky-700'
-                          : 'border-violet-200 bg-violet-50 text-violet-700'
+                          ? 'border-sky-200 bg-sky-50 text-sky-800'
+                          : 'border-slate-200 bg-slate-50 text-slate-700'
                       }`}
                     >
                       {c.fulfillmentMode === 'self_serve' ? '企业自助' : '已委托'}

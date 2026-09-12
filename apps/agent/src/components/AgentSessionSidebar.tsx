@@ -198,12 +198,12 @@ export function AgentSessionSidebar() {
 
   return (
     <>
-      <aside className="flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex-col border-r border-slate-200 bg-white sm:w-52 lg:w-56">
+      <aside className="shell-aside flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex-col sm:w-52 lg:w-56">
         <div className="border-b border-slate-100 px-2.5 py-2">
           <button
             type="button"
             onClick={newSession}
-            className="btn-press focus-ring flex w-full items-center justify-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+            className="btn-press focus-ring hit-40 flex w-full items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
           >
             <Plus className="h-3.5 w-3.5" aria-hidden /> 新建会话
           </button>
@@ -255,7 +255,7 @@ export function AgentSessionSidebar() {
         </nav>
 
         <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+          <span className="nav-section !m-0 !px-0">
             会话
           </span>
           <div className="relative" ref={filterMenuRef}>
@@ -355,13 +355,13 @@ export function AgentSessionSidebar() {
               value={sessionSearch}
               onChange={(e) => setSessionSearch(e.target.value)}
               placeholder="搜索"
-              className="focus-ring w-full rounded border border-slate-200 bg-white py-1 pl-6 pr-2 text-xs text-slate-700 placeholder:text-slate-400"
+              className="focus-ring w-full rounded-[var(--radius-sm)] border border-slate-200/90 bg-white py-1.5 pl-6 pr-2 text-xs text-slate-700 placeholder:text-slate-400 shadow-[var(--shadow-rest)]"
             />
           </div>
         </div>
 
         <div
-          className="mx-2 mb-1 flex gap-3 border-b border-slate-100 px-1 pb-1.5"
+          className="segmented mx-2 mb-1.5 w-[calc(100%-1rem)]"
           role="group"
           aria-label="会话状态筛选"
         >
@@ -378,11 +378,8 @@ export function AgentSessionSidebar() {
                 setStatusFilter(key)
                 if (showArchivedSessions) setShowArchivedSessions(false)
               }}
-              className={`btn-press focus-ring text-xs tabular-nums ${
-                statusFilter === key
-                  ? 'font-semibold text-slate-900'
-                  : 'text-slate-400 hover:text-slate-700'
-              }`}
+              className="segmented-item btn-press focus-ring flex-1 tabular"
+              aria-pressed={statusFilter === key}
             >
               {label}
               <span className="ml-0.5 font-normal opacity-60">{count}</span>

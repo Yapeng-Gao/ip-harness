@@ -41,7 +41,7 @@ export function CasePicker({
   if (options.length === 0) {
     const stageHadCases = stagePool.length > 0
     return (
-      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2">
+      <div className="flex flex-wrap items-center gap-2 rounded-[var(--radius-md)] border border-dashed border-slate-200 bg-slate-50/80 px-3 py-2.5">
         <Briefcase className="h-4 w-4 text-slate-400" aria-hidden />
         <span className="text-sm text-slate-600">
           {emptyHint
@@ -88,7 +88,7 @@ export function CasePicker({
         id="case-picker-select"
         name="caseId"
         autoComplete="off"
-        className="focus-ring rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-800 focus:border-slate-400"
+        className="focus-ring hit-40 rounded-[var(--radius-md)] border border-slate-200/90 bg-white px-3 py-1.5 text-sm text-slate-800 shadow-[var(--shadow-rest)] focus:border-[var(--color-accent)]"
         value={selectedInStage ? selectedId : ''}
         onChange={(e) => onChange(e.target.value)}
       >

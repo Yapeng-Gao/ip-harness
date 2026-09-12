@@ -70,7 +70,7 @@ export function SessionWorkspaceHeader({
   showEquivalenceDemo,
 }: Props) {
   return (
-    <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-2.5">
+    <div className="shrink-0 border-b border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="min-w-0">
           {renamingTitle ? (
@@ -95,7 +95,7 @@ export function SessionWorkspaceHeader({
               aria-label="重命名会话"
             />
           ) : (
-            <h1 className="group flex items-center gap-1.5 truncate text-sm font-semibold text-slate-900">
+            <h1 className="group flex items-center gap-1.5 truncate text-[15px] font-semibold tracking-tight text-slate-900">
               <span className="truncate">{sess.title}</span>
               <button
                 type="button"
@@ -119,7 +119,7 @@ export function SessionWorkspaceHeader({
           {caseId ? (
             <a
               href={midHref(`/cases/${caseId}?from=agent`)}
-              className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-[var(--shadow-rest)] hover:bg-slate-50"
               aria-label="回中台案件"
             >
               <FolderOpen className="h-3.5 w-3.5" aria-hidden /> 回中台
@@ -127,7 +127,7 @@ export function SessionWorkspaceHeader({
           ) : (
             <a
               href={midHref('/cases')}
-              className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-[var(--shadow-rest)] hover:bg-slate-50"
               aria-label="回中台案件库"
             >
               <FolderOpen className="h-3.5 w-3.5" aria-hidden /> 回中台
@@ -142,7 +142,7 @@ export function SessionWorkspaceHeader({
                 aria-expanded={moreOpen}
                 aria-haspopup="menu"
                 onClick={() => setMoreOpen((v) => !v)}
-                className="btn-press focus-ring inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
+                className="btn-press focus-ring hit-40 inline-flex items-center justify-center gap-1 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-2 py-1.5 text-xs text-slate-600 shadow-[var(--shadow-rest)] hover:bg-slate-50"
               >
                 <MoreHorizontal className="h-4 w-4" aria-hidden />
                 <span className="sr-only">更多操作</span>
@@ -192,7 +192,7 @@ export function SessionWorkspaceHeader({
             <button
               type="button"
               onClick={onStop}
-              className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700"
+              className="btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-3 py-1.5 text-xs text-slate-700 shadow-[var(--shadow-rest)]"
             >
               <Square className="h-3 w-3" aria-hidden /> 停止
             </button>
@@ -201,7 +201,7 @@ export function SessionWorkspaceHeader({
       </div>
 
       {activeBanner === 'failed' && (
-        <div className="mt-2 flex flex-wrap items-center gap-2 border-l-4 border-l-rose-500 border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800">
+        <div className="mt-2.5 flex flex-wrap items-center gap-2 rounded-[var(--radius-md)] border border-rose-200/80 border-l-4 border-l-rose-500 bg-white px-3 py-2 text-xs text-slate-800 shadow-[var(--shadow-rest)]">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-rose-600" aria-hidden />
           <span className="min-w-0 flex-1">
             办理失败
@@ -220,7 +220,7 @@ export function SessionWorkspaceHeader({
       )}
 
       {activeBanner === 'no_case' && (
-        <div className="mt-2 flex flex-wrap items-center gap-2 border-l-4 border-l-amber-500 border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800">
+        <div className="mt-2.5 flex flex-wrap items-center gap-2 rounded-[var(--radius-md)] border border-amber-200/80 border-l-4 border-l-amber-500 bg-white px-3 py-2 text-xs text-slate-800 shadow-[var(--shadow-rest)]">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-600" aria-hidden />
           <span className="min-w-0 flex-1">尚未关联案件，确认后不会写回中台</span>
           <button

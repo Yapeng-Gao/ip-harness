@@ -300,7 +300,7 @@ ${
 
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <ToastBanner message={toast} error={toastErr} nextActions={toastNext} />
       <FlowHeader
         title="立项前调研"
@@ -358,10 +358,10 @@ ${
                       key={db}
                       type="button"
                       onClick={() => toggleDb(db)}
-                      className={`rounded-full px-3 py-1 text-xs ${
+                      className={`btn-press focus-ring rounded-full px-3 py-1.5 text-xs ${
                         databases.includes(db)
-                          ? 'bg-slate-100 text-slate-800 ring-1 ring-slate-200'
-                          : 'bg-slate-100 text-slate-500'
+                          ? 'bg-slate-900 text-white shadow-[var(--shadow-rest)]'
+                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200/80'
                       }`}
                     >
                       {db}

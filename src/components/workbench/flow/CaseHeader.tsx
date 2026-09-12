@@ -44,11 +44,11 @@ export function CaseHeaderBar({
     <div className="mb-6">
       <AppLink
         to={backTo}
-        className="btn-press mb-3 inline-flex items-center gap-1.5 rounded-lg text-sm text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus-ring"
+        className="btn-press mb-3 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] px-1.5 py-1 text-sm text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus-ring"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden /> {backLabel}
       </AppLink>
-      <div className="sticky-chrome rounded-xl border border-slate-200 bg-white p-3 sm:p-4">
+      <div className="sticky-chrome surface-card p-3 sm:p-4">
         {/* One-line summary (default) */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <h1 className="min-w-0 flex-1 truncate text-base font-semibold text-slate-900 sm:text-lg">

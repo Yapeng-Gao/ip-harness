@@ -75,7 +75,7 @@ export function AgentShell() {
         跳到主要内容
       </a>
 
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-3 backdrop-blur lg:px-4">
+      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-3 shadow-[var(--shadow-rest)] backdrop-blur lg:px-4">
         <div className="flex items-center gap-2">
           <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[10px] font-semibold">
             IP

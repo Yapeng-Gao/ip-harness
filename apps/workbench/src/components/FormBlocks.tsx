@@ -13,7 +13,7 @@ export function WbSection({
   action?: ReactNode
 }) {
   return (
-    <section className={`flat-card p-4 sm:p-5 ${className}`}>
+    <section className={`surface-card p-4 sm:p-5 ${className}`}>
       {(title || action) && (
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           {title ? (

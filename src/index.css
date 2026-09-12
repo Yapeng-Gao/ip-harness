@@ -341,8 +341,8 @@ p {
 
 /* Chat-native HITL strip — agent confirmation bubble, not a form panel */
 .confirm-hitl {
-  border-top: 1px solid #f1f5f9;
-  background: linear-gradient(180deg, #fffbeb88 0%, #ffffff 100%);
+  border-top: 1px solid rgba(60, 60, 67, 0.12);
+  background: linear-gradient(180deg, #fffbebcc 0%, #ffffff 55%);
 }
 /* Wave2 InboxDeepLink · Inbox ?focus=hitl 进入后高亮 ConfirmBar */
 .confirm-hitl-focus {

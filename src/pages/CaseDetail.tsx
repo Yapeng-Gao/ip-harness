@@ -298,7 +298,7 @@ export function CaseDetail() {
   }
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <TenantBanner />
       {fromAgent && (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-950">
@@ -396,7 +396,7 @@ export function CaseDetail() {
                     : '必做清单未齐'
                   : '清单齐套且交接已批准后晋级'
               }
-              className={`btn-press inline-flex items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-medium focus-ring ${
+              className={`btn-press hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border px-4 py-2 text-sm font-medium focus-ring ${
                 canPass
                   ? 'border-slate-300 bg-white text-slate-900 hover:bg-slate-50'
                   : 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400'
@@ -409,13 +409,13 @@ export function CaseDetail() {
               type="button"
               onClick={handleExportEvidencePack}
               title={EVIDENCE_PACK_DISCLAIMER}
-              className="btn-press inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50 focus-ring"
+              className="btn-press hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 shadow-[var(--shadow-rest)] hover:bg-slate-50 focus-ring"
               aria-label="导出本案审计证据包"
             >
               <Download className="h-4 w-4" aria-hidden />
               导出审计证据包
             </button>
-            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-slate-100 bg-slate-50 px-2.5 py-2 text-xs text-slate-600">
+            <label className="hit-40 inline-flex cursor-pointer items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-100 bg-slate-50 px-2.5 py-2 text-xs text-slate-600">
               <input
                 type="checkbox"
                 className="rounded border-slate-300"
@@ -425,7 +425,7 @@ export function CaseDetail() {
               含 JSON
             </label>
             <details className="relative">
-              <summary className="btn-press focus-ring list-none cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+              <summary className="btn-press focus-ring hit-40 list-none cursor-pointer rounded-[var(--radius-sm)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-[var(--shadow-rest)] hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
                 更多
               </summary>
               <div className="absolute right-0 z-30 mt-1 min-w-[10rem] overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-[var(--shadow-elevated)]">
@@ -526,7 +526,7 @@ export function CaseDetail() {
         )}
 
       {/* Detail tabs */}
-      <div className="mb-4 flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1" role="tablist" aria-label="案件详情">
+      <div className="segmented mb-5 w-full max-w-xl sm:w-auto" role="tablist" aria-label="案件详情">
         {(
           [
             ['overview', '概览'],
@@ -541,11 +541,7 @@ export function CaseDetail() {
             role="tab"
             aria-selected={detailTab === id}
             onClick={() => setDetailTab(id)}
-            className={`btn-press focus-ring flex-1 rounded-lg px-3 py-2 text-sm font-medium sm:flex-none ${
-              detailTab === id
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
+            className="segmented-item btn-press focus-ring flex-1 sm:flex-none"
           >
             {label}
           </button>
@@ -556,7 +552,7 @@ export function CaseDetail() {
       <>
       {/* Meta (期限/交接/模式) lives in CaseHeaderBar — avoid duplicate grid */}
 
-      <div className="mb-6 flat-card p-5">
+      <div className="surface-card mb-6 p-5">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-medium text-slate-800">阶段进度</h2>
           <span className="text-xs tabular-nums text-slate-500">
@@ -590,7 +586,7 @@ export function CaseDetail() {
         </div>
       </div>
 
-      <div className="mb-6 flat-card p-5">
+      <div className="surface-card mb-6 p-5">
         <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-medium text-slate-800">节点进度（工作台写回）</h2>
           <span className="text-xs text-slate-500">只读 · 阶段 → Flow 子步骤</span>
@@ -766,7 +762,7 @@ export function CaseDetail() {
         ))}
 
       <div className="mb-6 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        <div className="surface-card p-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-sm font-medium text-slate-800">委托关系</h2>
             <div className="flex flex-wrap items-center gap-2">
@@ -838,7 +834,7 @@ export function CaseDetail() {
           if (!rows.length) return null
           const unpaid = rows.filter((r) => !r.paid)
           return (
-            <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <div className="surface-card mb-6 p-5">
               <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-sm font-medium text-slate-800">年费日程台账（只读）</h2>
                 <AppLink
@@ -896,7 +892,7 @@ export function CaseDetail() {
 
       {detailTab === 'billing' && (
       <>
-      <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+      <div className="surface-card mb-6 p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-sm font-medium text-slate-800">
             <Receipt className="h-4 w-4 text-slate-700" aria-hidden />
@@ -1022,7 +1018,7 @@ export function CaseDetail() {
 
       {detailTab === 'overview' && (
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:col-span-1">
+        <div className="surface-card p-5 lg:col-span-1">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-medium text-slate-800">当前闸门清单</h2>
             <span className="text-xs tabular-nums text-slate-500">
@@ -1056,7 +1052,7 @@ export function CaseDetail() {
           </ul>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+        <div className="surface-card p-5">
           <h2 className="mb-1 text-sm font-medium text-slate-800">产物单源（只读合并 · 去重）</h2>
           <p className="mb-4 text-xs text-slate-500">
             按 title/summary/kind 去重展示 · 同一逻辑产物一条 · 标签标来源 · 存储仍分通道 · 非真网盘
@@ -1069,7 +1065,7 @@ export function CaseDetail() {
               >
                 <div className="flex flex-wrap items-center gap-2">
                   {row.sources.includes('Drive') && (
-                    <span className="rounded border border-violet-200 bg-violet-50 px-1.5 py-0.5 text-[10px] font-medium text-violet-800">
+                    <span className="rounded border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-[10px] font-medium text-sky-800">
                       Drive
                     </span>
                   )}
@@ -1178,7 +1174,7 @@ export function CaseDetail() {
           </ul>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        <div className="surface-card p-5">
           <h2 className="mb-4 text-balance text-sm font-medium text-slate-800">时间线</h2>
           <ul className="space-y-4">
             {visibleDocketEvents
