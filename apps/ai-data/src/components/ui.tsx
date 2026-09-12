@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 export function Card({
   children,
@@ -126,5 +126,27 @@ export function Toast({ message }: { message: string }) {
     >
       {message}
     </div>
+  )
+}
+
+type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: 'primary' | 'secondary' | 'danger'
+}
+
+export function Button({ variant = 'primary', className = '', disabled, ...rest }: BtnProps) {
+  const base =
+    'inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-50'
+  const variants: Record<NonNullable<BtnProps['variant']>, string> = {
+    primary: 'bg-slate-900 text-white hover:bg-slate-800',
+    secondary: 'border border-slate-200 bg-white text-slate-800 hover:bg-slate-50',
+    danger: 'border border-rose-200 bg-rose-50 text-rose-800 hover:bg-rose-100',
+  }
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      className={`${base} ${variants[variant]} ${className}`}
+      {...rest}
+    />
   )
 }

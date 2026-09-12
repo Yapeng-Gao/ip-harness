@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { Toast } from './components/ui'
 import { AiDataShell } from './layout/AiDataShell'
 import { OverviewPage } from './pages/OverviewPage'
 import { SourcesPage } from './pages/SourcesPage'
@@ -8,10 +9,12 @@ import { RecipesPage } from './pages/RecipesPage'
 import { QualityPage } from './pages/QualityPage'
 import { LineagePage } from './pages/LineagePage'
 import { ExportsPage } from './pages/ExportsPage'
+import { useAiDataStore } from './state/store'
 
-export default function App() {
+function AppRoutes() {
+  const { toast } = useAiDataStore()
   return (
-    <BrowserRouter>
+    <>
       <Routes>
         <Route element={<AiDataShell />}>
           <Route index element={<OverviewPage />} />
@@ -25,6 +28,15 @@ export default function App() {
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      {toast ? <Toast message={toast} /> : null}
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   )
 }
