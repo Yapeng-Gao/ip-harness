@@ -54,6 +54,10 @@
 | workbench Owner 现状 | [../../workbench/OWNER_STATUS.md](../../workbench/OWNER_STATUS.md) |
 | mid Owner 现状 | [../../mid/STATUS.md](../../mid/STATUS.md) |
 
+## 评审
+
+- [REVIEW.md](./REVIEW.md) — 架构评审结论：**通过**（黄：推仓后总验；非阻塞：handoff 括注可补 ARTIFACT_FOR_STAGE）。
+
 ## 纪律（写产品面时自检）
 
 - 每篇开篇保持「样机诚实 vs 落地目标」；勿假装已有真 MCP / 真 harness / 真通道。
