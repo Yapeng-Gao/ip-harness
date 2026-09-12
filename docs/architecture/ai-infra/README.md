@@ -19,6 +19,7 @@
 | [topology.md](./topology.md) | 与 ops / notify / agent-session / case-core 边界 |
 | [surfaces.md](./surfaces.md) | 产品壳草案 `apps/ai-infra` **:5179** |
 | [roadmap.md](./roadmap.md) | mock → MVP → 生产阶梯 |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 与 Agent / 网关
 
