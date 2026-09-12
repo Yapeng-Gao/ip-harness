@@ -56,7 +56,7 @@
 
 ## 评审
 
-- [REVIEW.md](./REVIEW.md) — 架构评审结论：**通过**（黄：推仓后总验；非阻塞：handoff 括注可补 ARTIFACT_FOR_STAGE）。
+- [REVIEW.md](./REVIEW.md) — 架构评审结论：**通过**（正文 `fd604db` · REVIEW Pass `fb2b1d3`；非阻塞：handoff 可补 `ARTIFACT_FOR_STAGE`）。
 
 ## 纪律（写产品面时自检）
 
