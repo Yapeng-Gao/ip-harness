@@ -25,10 +25,19 @@
 
 浅色主题 · 中文 UI · 纯前端 mock。
 
+## 仓库
+
+- GitHub：https://github.com/Yapeng-Gao/ip-harness
+- 分支：`dev`（开发）· `main`（生产候选）
+- 协作：[`CONTRIBUTING.md`](./CONTRIBUTING.md) · [`docs/TEAM_CHARTER.md`](./docs/TEAM_CHARTER.md)
+- 架构：[`docs/architecture/`](./docs/architecture/)
+
 ## 快速开始
 
 ```bash
-cd /workspace/ip-harness
+git clone git@github.com:Yapeng-Gao/ip-harness.git
+cd ip-harness
+git checkout dev
 npm install
 
 # 默认 = 作业中台（可演示主路径）

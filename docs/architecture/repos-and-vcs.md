@@ -188,3 +188,9 @@ ip-services-*         # 后端按域
 | **B. 政策硬拆壳** | 1 contracts + 5 app + services | 仅政策强制时 |
 
 分支：**一律 `dev` / `main`。**
+
+## 落地状态（2026-09-12）
+
+- 远程：`git@github.com:Yapeng-Gao/ip-harness.git`
+- 分支：`main` / `dev` 已推送
+- 规范：`CONTRIBUTING.md` · `.github/PULL_REQUEST_TEMPLATE.md` · `.github/workflows/ci.yml` · `.editorconfig`
