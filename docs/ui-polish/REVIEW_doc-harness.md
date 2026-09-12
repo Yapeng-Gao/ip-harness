@@ -8,7 +8,7 @@
 | **对照** | `DESIGN_SYSTEM.md` · `EVAL_RUBRIC.md` · DS-UX-HABIT |
 | **证据** | `docs/ui-polish/doc-harness/` |
 | **日期** | 2026-09-13 |
-| **总评** | **No-Go**（存在未关 P0） |
+| **总评** | **No-Go**（初评）→ 复评 **Go**（见文末 RECHECK · `f57d80a`） |
 | **综合** | ~3 / 5（壳可读，关键闸与状态诚实未过） |
 
 ---
@@ -91,3 +91,42 @@
 ---
 
 *证据目录 `docs/ui-polish/doc-harness/`；短评范围仅 doc-harness。*
+
+---
+
+## 短复评 · RECHECK（`f57d80a`）
+
+| 项 | 值 |
+|----|-----|
+| **复评 HEAD** | `f57d80a` |
+| **相对** | No-Go 基线 `3890b92` / 报告 `be3e065` |
+| **证据** | `docs/ui-polish/doc-harness-recheck/` |
+| **日期** | 2026-09-13 |
+| **本单总评** | **Go**（DH-P0 关闭；P1 扫过） |
+
+### 验收表
+
+| ID | 裁决 | 证据一句 |
+|----|------|----------|
+| **DH-P0-1** 锁章纸面同步 | **PASS** | 发明人交底→附图说明：树/标题/纸面均为附图（图1–3），非交底书 · `p0-1-figures-paper-sync.png` |
+| **DH-P0-2** dirty / 自动保存互斥 | **PASS** | 切章 autosave 后目标章非 dirty；`TopBar` `showSavedHint = hint && !dirty`，未复现绿提示与「保存草稿 · dirty」同屏 · `p0-2-dirty-autosave.png` |
+| **DH-P1-1** Agent 禁用理由 | **PASS** | 锁章 Agent 钮禁用 + 内联 SKU lockReason · `p1-agent-disabled-reason.png` |
+| **DH-P1-2** 空态假 CTA | **PASS** | 「去选中正文」已移除，仅文案引导 · `p1-empty-sku-cta.png` |
+| **DH-P1-3** 开通 CTA 诚实 | **PASS** | ghost/描边钮；点击 toast「样机无真 SKU 开通」 · `p1-empty-sku-cta.png` |
+
+### 残余（不挡本单 Go）
+
+| 级 | 项 |
+|----|-----|
+| P2 | 实机未稳定捕获顶栏文案「上一章已自动保存」（逻辑已互斥；正向提示可再抽检） |
+| P2 | 原评 Diff 挤 / 双 CaseSwitcher 等仍后备 |
+
+### 门禁
+
+| 门 | 裁决 |
+|----|------|
+| DH-P0-1/2 | **关闭** |
+| DH-P1-1/2/3 | **PASS** |
+| **复评总评** | **Go** |
+
+*只评不改。*
