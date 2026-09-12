@@ -1,6 +1,6 @@
 # UI 壳：三栏与交互
 
-> **样机诚实**：静态/本地 React 壳即可；无协同光标、无真 OT、无 Word 插件。  
+> **样机诚实**：静态/本地 React 壳即可；中栏为 **TipTap 纸面富文本**；无协同光标、无真 OT、无 Word/OnlyOffice。  
 > **落地目标**：三栏信息架构稳定，右栏 Confirm 可映射落地审批暂停钩。
 
 ## 1. 布局
@@ -24,10 +24,11 @@
 
 ## 3. 中栏 · 编辑器
 
-- MVP：章节标题 + `textarea` 或极简富文本（加粗/列表可选）。
+- MVP：章节标题 + **TipTap 纸面富文本**（工具栏：加粗/斜体/标题/列表等；画布有页感/纸面边距，非纯黑框 textarea）。
 - 显示当前 `revision` 序号与「相对上一版 diff 摘要」（只读条）。
-- **禁止**：真 Word、OnlyOffice、协同编辑（标未来）。
+- **仍非**真 Word / OnlyOffice / 桌面协同；DOCX 导出标未来。
 - 用户手改正文 → 本地 dirty；保存可写一条 `DocumentRevision`（actor: user），与 Agent 建议分轨。
+- 正文存储可用 HTML 或 TipTap JSON（样机任选一种并在实现 README 钉死）。
 
 ## 4. 右栏 · Agent + HITL
 

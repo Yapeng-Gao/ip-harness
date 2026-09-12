@@ -1,6 +1,6 @@
 # 为何另壳：doc-harness 总览
 
-> **样机诚实**：现有五壳原型**零改动**；本壳是并行对照样机，不是替换 workbench/agent。  
+> **样机诚实**：现有五壳原型**零改动**；本壳是并行对照样机，不是替换 workbench/agent。中栏 MVP 用 **TipTap 纸面富文本**（工具栏+页感），**不是** Word/OnlyOffice。  
 > **落地目标**：验证「文档为中心 + 右侧 harness」是否比「表单 Flow + 另开会话」更适合权利要求等长文档节点。
 
 ## 1. 动机
@@ -9,7 +9,7 @@ coding IDE（左树 / 中编辑 / 右助手）心智强。知产 **draft 权利�
 另开 `apps/doc-harness` 可：
 
 - **不打扰**已评审的五壳联调与 e2e 端口口径；
-- 单独试「章节树 + revision + HITL」；
+- 单独试「章节树 + TipTap 纸面编辑 + revision + HITL」；
 - 用 mock 闸演示 `wb.stage.draft` SKU，而不默认拆 workbench 为多 Vite app（与 [product-apps/workbench](../product-apps/workbench.md)「默认同壳」一致）。
 
 ## 2. 与 workbench 关系

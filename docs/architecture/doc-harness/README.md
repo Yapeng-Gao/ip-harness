@@ -1,6 +1,6 @@
 # 文档编辑器 + IP harness 并行样机（doc-harness）
 
-> **样机诚实**：本规格描述**另开一壳**的对照样机；**不改**现有 mid/workbench/agent/ops/iam 五壳业务代码。今日无真 LLM、无真 Word、无真 SSO/MCP/harness runtime。  
+> **样机诚实**：本规格描述**另开一壳**的对照样机；**不改**现有 mid/workbench/agent/ops/iam 五壳业务代码。今日无真 LLM、无真 SSO/MCP/harness runtime；编辑器为 **TipTap 纸面富文本**样机，**仍非** Word/OnlyOffice。  
 > **落地目标**：用「IDE + coding harness」隐喻，演示**案卷章节编辑 + 右侧 Agent 建议/HITL**；闸门形状对齐 `@ip/contracts` DomainCommand；落地时接 enterprise **C 混合**（DSH/Codex + 自有闸）。
 
 ## 与五壳对照
@@ -28,7 +28,7 @@
 1. 新壳 `apps/doc-harness`，Vite **5178**（仅 app 配置；不改 `packages/contracts` `APP_PORTS`）。
 2. 三栏：左文档树 · 中编辑器 · 右 Agent 会话 + HITL Confirm。
 3. 数据：`Document` / `DocumentRevision` 挂 `caseId` + `stageId` + `handoffKey`；MVP 钉 **draft 权利要求**（`stageId: drafting` · `handoffKey: draft_claims` · SKU `wb.stage.draft`）。
-4. 编辑器 MVP：结构化章节 + textarea/简易富文本；**不上**真 Word；DOCX 导出标未来。
+4. 编辑器 MVP：结构化章节 + **TipTap 纸面富文本**（工具栏+页感）；**仍非** Word/OnlyOffice；DOCX 导出标未来。
 5. Harness loop：mock 建议 diff → Confirm → 形状对齐 DomainCommand 的 mock dispatch 落 revision；禁假装真 LLM。
 6. 与 enterprise C 混合对齐：落地 DSH/Codex + 自有闸；本样机只示意闸。
 7. STAGE_MODULE_SKU：本壳可演示 `wb.stage.draft` 授权（mock）；不改 workbench。
