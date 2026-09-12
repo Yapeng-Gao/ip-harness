@@ -65,16 +65,18 @@ npm run typecheck             # contracts + mid
 ## 目录结构
 
 ```
-/workspace/ip-harness/
-  package.json              npm workspaces
-  packages/contracts/       @ip/contracts
-  packages/domain/          @ip/domain
-  packages/app-state/       @ip/app-state（React context + cross-port store）
-  packages/api/             @ip/api（薄 fetch 客户端）
-  apps/mid|workbench|agent|ops|iam|api-mock/
-  src/                      共享源码（渐进迁入）
-  tools/viteAppConfig.ts    多 app Vite 工厂
+ip-harness/
+  README.md · CONTRIBUTING.md
+  apps/{mid,workbench,agent,ops,iam,api-mock}/   # 多壳 · 端口见上表
+  packages/{contracts,domain,app-state,api,ui}/  # @ip/* 共享内核
+  src/                      共享业务源码（@shared；渐进迁入）
+  e2e/                      Playwright L0/L1
+  docs/                     架构 · 章程 · 纪律 · archive/
+  shots/                    演示截图（评测图见 docs/archive/shots）
+  tools/viteAppConfig.ts
 ```
+
+完整分层与归档规则：[`docs/architecture/codebase.md`](./docs/architecture/codebase.md) · 文档索引：[`docs/README.md`](./docs/README.md)。
 
 ## 产品与路由（逻辑面）
 
@@ -108,7 +110,7 @@ Login / Persona / 工作区；非真 SSO。详见 [`apps/iam/README.md`](./apps/
 ## 共享领域命令
 
 Form SaaS 与 知产 Agent **共用** `dispatchCommand`（类型与审计 schema 在 `@ip/contracts`）。  
-详见 [`COMMANDS.md`](./COMMANDS.md) · [`HARNESS.md`](./HARNESS.md)。
+详见 [`docs/COMMANDS.md`](./docs/COMMANDS.md) · [`docs/HARNESS.md`](./docs/HARNESS.md)。
 
 ## 技术栈
 

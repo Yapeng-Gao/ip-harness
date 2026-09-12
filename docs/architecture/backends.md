@@ -106,7 +106,7 @@
 | **对齐现仓** | `AgentSession` / HITL / `AGENT_CATALOG` / `clearedHitlGates` |
 | **现状样机** | 浏览器内存会话；试运行不写库；正式/HITL 调 `dispatchCommand(actor:'agent')` |
 | **目标设计** | 会话 + 闸状态服务；写办案仍调 command |
-| **不做什么** | **不**引入真 LLM（[HARNESS.md](../../HARNESS.md)「不做的事」） |
+| **不做什么** | **不**引入真 LLM（[HARNESS.md](../HARNESS.md)「不做的事」） |
 
 ### 2.10 notify（ops）
 
@@ -214,7 +214,7 @@
 - 不把 mid/workbench/agent **壳**升级成微服务。
 - 不把 api-mock 内存店对外说成生产 API。
 - 不引入真 LLM、真 SSO、真 ELK/Prometheus、真 SMTP/短信（见根 README / HARNESS / ops README）。
-- 不改 `apps/ops` 业务页来「预埋」假后端（[PACKAGES_SPLIT.md](../../PACKAGES_SPLIT.md) 硬规则）。
+- 不改 `apps/ops` 业务页来「预埋」假后端（[PACKAGES_SPLIT.md](../PACKAGES_SPLIT.md) 硬规则）。
 - 不双份 `CommandName` / handoff 键（domain 只 re-export contracts）。
 
 ---
@@ -225,4 +225,4 @@
 - [data-model.md](./data-model.md) — 类型与包归属  
 - [repos-and-vcs.md](./repos-and-vcs.md) — 附录：仓策略（单 monorepo → 企业多仓推荐 contracts/web/services + dev/main）（总控留档）  
 - [api-mock README](../../apps/api-mock/README.md) — 端点 / 开关权威  
-- [COMMANDS.md](../../COMMANDS.md) · [HARNESS.md](../../HARNESS.md)
+- [COMMANDS.md](../COMMANDS.md) · [HARNESS.md](../HARNESS.md)

@@ -34,7 +34,7 @@
 | Guardrail | `GuardrailEvalResult` / `GuardrailBlocker` / `mergeBlockers` | `evaluateGuardrails`（唯一执法入口） | 调用方：HITL ConfirmBar / Flow | — |
 | API 瘦 DTO | — | — | 消费端 | `@ip/api`：`CaseSummary` / `InboxItem` / `HealthResponse`（`packages/api/src/types.ts`） |
 
-根兼容：`@shared/*` → `./src/*`，见 [PACKAGES_SPLIT.md](../../PACKAGES_SPLIT.md)。  
+根兼容：`@shared/*` → `./src/*`，见 [PACKAGES_SPLIT.md](../PACKAGES_SPLIT.md)。  
 `@ip/api` / api-mock 未列入 PACKAGES_SPLIT 包一览（已知裂缝，见 [README · 已知文档裂缝](./README.md#已知文档裂缝只记不修代码)）。
 
 ---
@@ -168,7 +168,7 @@ stateDiagram-v2
 
 **结果**：`CommandResult { ok, message, caseId?, command? }`。
 
-**Agent 工具映射**：`TOOL_TO_COMMAND`（多数 tool 为 `null` = 不写库；如 `submit_for_review` → `submitResearch`）。详见 [COMMANDS.md](../../COMMANDS.md)。
+**Agent 工具映射**：`TOOL_TO_COMMAND`（多数 tool 为 `null` = 不写库；如 `submit_for_review` → `submitResearch`）。详见 [COMMANDS.md](../COMMANDS.md)。
 
 ### 目标设计
 
@@ -249,7 +249,7 @@ AuditEntry {
 - 常量：`CASE_CONTEXT_SCHEMA_VERSION = '2026.09.1'`。
 - 快照含：`schemaVersion` / 案头 / `artifacts[]` / `checklist` / `gates` / `personaVisibility` / `agentHints` / `sessionBind?` / `builtAt`。
 - Agent / 中台 / 工作台 **同读**；与 Command **同读不同写**。
-- 字段 / 语义变更必须 bump 版本。细则链 [HARNESS.md](../../HARNESS.md)、[COMMANDS.md](../../COMMANDS.md)。
+- 字段 / 语义变更必须 bump 版本。细则链 [HARNESS.md](../HARNESS.md)、[COMMANDS.md](../COMMANDS.md)。
 
 ### 目标设计
 
@@ -282,7 +282,7 @@ AuditEntry {
 | `pay_unlock` | 无案 / 无票 / 已归档 |
 | `full_check` | Full-check 剩余缺口 |
 
-Agent 目录 `AgentDef.guardrails[]` 仅为展示文案；可执行硬闸以本模块为准，勿在 UI 复制。详见 [HARNESS.md](../../HARNESS.md)「Skills guardrails」。
+Agent 目录 `AgentDef.guardrails[]` 仅为展示文案；可执行硬闸以本模块为准，勿在 UI 复制。详见 [HARNESS.md](../HARNESS.md)「Skills guardrails」。
 
 ---
 

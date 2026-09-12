@@ -2,7 +2,7 @@
 
 > **现状样机** vs **目标设计** 分节标明。  
 > 本篇对齐现仓真实端口、开关、merge / 双写语义；不假装已有网关 / 消息总线 / 共享库。  
-> 命令与 HITL 细则只链 [COMMANDS.md](../../COMMANDS.md) / [HARNESS.md](../../HARNESS.md)，不整篇复制。
+> 命令与 HITL 细则只链 [COMMANDS.md](../COMMANDS.md) / [HARNESS.md](../HARNESS.md)，不整篇复制。
 
 ## 1. 诚实边界
 
@@ -53,7 +53,7 @@
 
 - 根：`src/lib/deepLinks.ts`（`resolveAppHref` / `APP_DEV_URLS`）+ `AppLink`
 - agent：`apps/agent/src/lib/deepLinks.ts`（`midInboxHref` / `midHref` / `workbenchHref`）
-- 联调步骤只链 [OPTIMIZE_NOTES · 联调彩排](../../OPTIMIZE_NOTES.md#联调彩排--多壳深链2026-09-12)
+- 联调步骤只链 [OPTIMIZE_NOTES · 联调彩排](../OPTIMIZE_NOTES.md#联调彩排--多壳深链2026-09-12)
 
 ### 目标设计
 
@@ -151,7 +151,7 @@ dispatchCommand(cmd, meta)
 | **正式执行** / HITL 批准 | **是** — `actor: 'agent'` |
 | 中台表单 | **是** — `actor: 'user'` |
 
-闸门 → 命令对照只链 [COMMANDS.md · HITL 闸门](../../COMMANDS.md)（`gateToAction` / `sessionHitlAction`，`AgentContext`）。
+闸门 → 命令对照只链 [COMMANDS.md · HITL 闸门](../COMMANDS.md)（`gateToAction` / `sessionHitlAction`，`AgentContext`）。
 
 ### 目标设计
 
@@ -229,7 +229,7 @@ dispatchCommand(cmd, meta)
 - **不是**事件溯源库。字段 / 语义变更必须 bump 版本。
 - 与 Command **同读不同写**：写仍只经 `dispatchCommand`。
 
-细则链 [HARNESS.md · 案级上下文契约](../../HARNESS.md)、[COMMANDS.md · 案级上下文](../../COMMANDS.md)。
+细则链 [HARNESS.md · 案级上下文契约](../HARNESS.md)、[COMMANDS.md · 案级上下文](../COMMANDS.md)。
 
 ### 目标设计
 
@@ -322,7 +322,7 @@ sequenceDiagram
   User->>Mid: 案详审计对照 user vs agent
 ```
 
-对照权威：[COMMANDS.md](../../COMMANDS.md)（表单 vs Agent、HITL 闸门表、试运行 vs 正式）、[HARNESS.md](../../HARNESS.md)（guardrails / CaseContext / Audit）。
+对照权威：[COMMANDS.md](../COMMANDS.md)（表单 vs Agent、HITL 闸门表、试运行 vs 正式）、[HARNESS.md](../HARNESS.md)（guardrails / CaseContext / Audit）。
 
 ---
 
@@ -340,8 +340,8 @@ sequenceDiagram
 
 ## 11. 相关链接（不复制）
 
-- [COMMANDS.md](../../COMMANDS.md) — 命令列表、HITL→命令、试运行纪律  
-- [HARNESS.md](../../HARNESS.md) — CaseContext / Audit / guardrails  
+- [COMMANDS.md](../COMMANDS.md) — 命令列表、HITL→命令、试运行纪律  
+- [HARNESS.md](../HARNESS.md) — CaseContext / Audit / guardrails  
 - [api-mock README](../../apps/api-mock/README.md) — 端点与局限  
 - [backends.md](./backends.md) — 未来服务边界  
 - [data-model.md](./data-model.md) — 类型与包归属  

@@ -53,4 +53,6 @@ npm run test:e2e
 ## 设计留档
 
 架构与数据流：[`docs/architecture/`](./docs/architecture/)  
+代码架构地图：[`docs/architecture/codebase.md`](./docs/architecture/codebase.md)  
+文档索引 / 归档：[`docs/README.md`](./docs/README.md)  
 仓库策略：[`docs/architecture/repos-and-vcs.md`](./docs/architecture/repos-and-vcs.md)
