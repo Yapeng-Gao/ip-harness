@@ -8,6 +8,10 @@
 
 **同仓 `services/` 以 `case-core` 承接冻 URL 唯一写（Postgres）+ Redis 最小异步（docket/notify outbox）+ OIDC 空态 + `agent-session` 接 DSH/Codex spike；壳端口与 `DomainCommand` 不变；禁 Agent 直写库；一期可单体模块，非 Day-1 网格。**
 
+## 评审
+
+- [REVIEW.md](./REVIEW.md) — 架构评审结论：**通过**（对象 SHA `678b54e`；非阻塞：ADR-008 开工前冻框架；Step2 钉切换日）。
+
 ## 阅读顺序
 
 1. 本页（范围与索引）
