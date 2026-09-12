@@ -161,6 +161,7 @@ export default function App() {
               ? proposal
               : null
           }
+          currentBody={selected.body}
           commandLog={commandLog}
           onDryRun={() => makeProposal('dry-run')}
           onFormal={() => makeProposal('formal')}

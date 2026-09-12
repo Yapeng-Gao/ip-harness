@@ -31,7 +31,7 @@ export interface DocumentChapter {
   key: ChapterKey
   title: string
   sort: number
-  /** 当前正文（由 head revision 投影；手改可 dirty） */
+  /** 当前正文 HTML（TipTap getHTML；由 head revision 投影；手改可 dirty） */
   body: string
 }
 

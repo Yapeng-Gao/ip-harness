@@ -1,9 +1,11 @@
 import { FlaskConical, Sparkles } from 'lucide-react'
+import { stripHtml } from '../htmlText'
 import type { CommandLogEntry, DocProposal } from '../types'
 import { ConfirmBar } from './ConfirmBar'
 
 type Props = {
   proposal: DocProposal | null
+  currentBody: string
   commandLog: CommandLogEntry[]
   onDryRun: () => void
   onFormal: () => void
@@ -14,6 +16,7 @@ type Props = {
 
 export function AgentPanel({
   proposal,
+  currentBody,
   commandLog,
   onDryRun,
   onFormal,
@@ -79,9 +82,32 @@ export function AgentPanel({
                 {showBody.mode === 'formal' ? 'formal · pending' : 'dry-run · 不落库'}
               </span>
             </div>
-            <pre className="max-h-48 overflow-auto whitespace-pre-wrap rounded-lg border border-slate-100 bg-white p-2 font-mono text-[11px] leading-relaxed text-slate-700">
-              {showBody.proposedBody}
-            </pre>
+            <p className="mb-2 text-[10px] leading-relaxed text-slate-500">{showBody.summary}</p>
+            <div className="max-h-48 overflow-auto rounded-lg border border-slate-100 bg-white p-2.5">
+              <div
+                className="doc-proposal-preview"
+                dangerouslySetInnerHTML={{ __html: showBody.proposedBody }}
+              />
+            </div>
+            <details className="mt-2">
+              <summary className="cursor-pointer text-[10px] text-slate-400 hover:text-slate-600">
+                纯文本对照（去标签）
+              </summary>
+              <div className="mt-1.5 grid gap-1.5">
+                <div className="rounded-md border border-slate-100 bg-white px-2 py-1.5">
+                  <div className="mb-0.5 text-[10px] font-medium text-slate-400">当前章</div>
+                  <pre className="max-h-24 overflow-auto whitespace-pre-wrap font-sans text-[10px] leading-relaxed text-slate-600">
+                    {stripHtml(currentBody) || '（空）'}
+                  </pre>
+                </div>
+                <div className="rounded-md border border-slate-100 bg-white px-2 py-1.5">
+                  <div className="mb-0.5 text-[10px] font-medium text-slate-400">建议稿</div>
+                  <pre className="max-h-24 overflow-auto whitespace-pre-wrap font-sans text-[10px] leading-relaxed text-slate-600">
+                    {stripHtml(showBody.proposedBody) || '（空）'}
+                  </pre>
+                </div>
+              </div>
+            </details>
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-slate-200 px-3 py-6 text-center text-[11px] text-slate-400">

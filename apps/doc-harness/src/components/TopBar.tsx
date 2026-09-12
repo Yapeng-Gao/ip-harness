@@ -10,7 +10,7 @@ export function TopBar({ demoCase, document }: Props) {
     <header className="sticky top-0 z-20 flex h-12 shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-4 backdrop-blur">
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <span className="truncate text-sm font-semibold text-slate-900">
-          文档 Harness 样机 · 与五壳并行 · :5178
+          文档 Harness · TipTap 富文本样机 · 非 Word · :5178
         </span>
         <span className="hidden rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] text-amber-800 sm:inline">
           无真 LLM / 无真 SSO

@@ -60,19 +60,20 @@ export function mockDispatch(args: {
   return { revision, log }
 }
 
-/** 基于当前正文的简单 mock 改写（标明 mock，无真 LLM） */
+/** 基于当前正文 HTML 的简单 mock 改写（包一层标注段，保留原结构；无真 LLM） */
 export function mockRewriteChapter(title: string, body: string): {
   proposedBody: string
   summary: string
 } {
   const stamp = new Date().toLocaleString('zh-CN', { hour12: false })
   const proposedBody =
-    `【mock 建议稿 · ${stamp}】\n` +
-    `（本章：${title} · 非真 LLM，仅样机改写示意）\n\n` +
-    body.trim() +
-    '\n\n——\n（mock）已润色结构提示：请人工核对术语一致性与从属关系。'
+    `<p><strong>【mock 建议稿 · ${stamp}】</strong></p>` +
+    `<p>（本章：${title} · 非真 LLM，仅样机改写示意）</p>` +
+    body +
+    `<p>——</p>` +
+    `<p>（mock）已润色结构提示：请人工核对术语一致性与从属关系。</p>`
   return {
     proposedBody,
-    summary: `对「${title}」生成 mock 建议稿（前缀标注 + 润色提示尾注）`,
+    summary: `对「${title}」生成 mock 建议稿（HTML 标注段 + 润色提示尾注）`,
   }
 }

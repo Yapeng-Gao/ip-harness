@@ -1,0 +1,112 @@
+/* TipTap paper editor — app-local, not shared shell CSS */
+
+.doc-paper-workspace {
+  background: #e8e8e4;
+}
+
+.doc-paper {
+  font-family: "Noto Serif SC", "Source Han Serif SC", Georgia, "Songti SC",
+    "SimSun", "Times New Roman", serif;
+  color: #1c1917;
+}
+
+.doc-paper .tiptap,
+.doc-paper .ProseMirror {
+  outline: none;
+  min-height: 60vh;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.doc-paper .ProseMirror p {
+  margin: 0.75em 0;
+}
+
+.doc-paper .ProseMirror h2 {
+  font-size: 1.375rem;
+  font-weight: 650;
+  line-height: 1.35;
+  margin: 1.35em 0 0.45em;
+  letter-spacing: -0.01em;
+}
+
+.doc-paper .ProseMirror h3 {
+  font-size: 1.125rem;
+  font-weight: 650;
+  line-height: 1.4;
+  margin: 1.1em 0 0.35em;
+}
+
+.doc-paper .ProseMirror h2:first-child,
+.doc-paper .ProseMirror h3:first-child,
+.doc-paper .ProseMirror p:first-child {
+  margin-top: 0;
+}
+
+.doc-paper .ProseMirror ul,
+.doc-paper .ProseMirror ol {
+  margin: 0.75em 0;
+  padding-left: 1.6em;
+}
+
+.doc-paper .ProseMirror li {
+  margin: 0.3em 0;
+}
+
+.doc-paper .ProseMirror li p {
+  margin: 0.2em 0;
+}
+
+.doc-paper .ProseMirror strong {
+  font-weight: 700;
+}
+
+.doc-paper .ProseMirror em {
+  font-style: italic;
+}
+
+.doc-paper .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: #a8a29e;
+  pointer-events: none;
+}
+
+.doc-proposal-preview {
+  font-family: "Noto Serif SC", Georgia, "Songti SC", serif;
+  font-size: 12px;
+  line-height: 1.65;
+  color: #334155;
+  overflow-wrap: anywhere;
+}
+
+.doc-proposal-preview h2 {
+  font-size: 13px;
+  font-weight: 650;
+  margin: 0.65em 0 0.3em;
+}
+
+.doc-proposal-preview h3 {
+  font-size: 12px;
+  font-weight: 650;
+  margin: 0.55em 0 0.25em;
+}
+
+.doc-proposal-preview p {
+  margin: 0.4em 0;
+}
+
+.doc-proposal-preview ul,
+.doc-proposal-preview ol {
+  margin: 0.4em 0;
+  padding-left: 1.3em;
+}
+
+.doc-proposal-preview li {
+  margin: 0.15em 0;
+}
+
+.doc-proposal-preview strong {
+  font-weight: 700;
+}
