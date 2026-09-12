@@ -15,6 +15,11 @@
 
 阅读顺序：本页 → [backends](./backends.md) → [stack](./stack.md) → [roadmap](./roadmap.md) → [reminders-notify](./reminders-notify.md)。
 
+## 评审
+
+- [REVIEW.md](./REVIEW.md) — 架构评审结论：**通过**（对照 SHA `eda0bef`；非阻塞：MVP 冻 Fastify/Hono）。
+
+
 ## 回链上级 architecture
 
 - 架构索引：[../README.md](../README.md)

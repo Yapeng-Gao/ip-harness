@@ -18,7 +18,7 @@
 | 多壳数据流 | [data-flow.md](./data-flow.md) | 各壳如何读/写、cookie / bridge / `@ip/api` 的优先级；含 flowchart + sequence |
 | 数据模型 | [data-model.md](./data-model.md) | Case / Handoff / Command / Persona / Audit / CaseContext 与包归属 |
 | 未来后端边界 | [backends.md](./backends.md) | 服务候选、同步/异步、事件名对齐 `DOMAIN_EVENTS`、迁移建议 |
-| 原型后落地（landing） | [landing/README.md](./landing/README.md) | 落地切分与数据归属、默认栈、三阶段路线、提醒/通知边界 |
+| 原型后落地（landing） | [landing/README.md](./landing/README.md) | 落地切分与数据归属、默认栈、三阶段路线、提醒/通知；评审 [landing/REVIEW.md](./landing/REVIEW.md) **通过** |
 
 阅读顺序建议：本页 → [codebase](./codebase.md) → [data-flow](./data-flow.md) → [data-model](./data-model.md) → [backends](./backends.md) → [landing](./landing/README.md)（落地）→（仓库策略附录）[repos-and-vcs](./repos-and-vcs.md)。
 
