@@ -16,6 +16,7 @@
     "dev:iam": "npm run dev -w @ip/iam",
     "dev:doc-harness": "npm run dev -w @ip/doc-harness",
     "dev:ai-infra": "npm run dev -w @ip/ai-infra",
+    "dev:ai-data": "npm run dev -w @ip/ai-data",
     "dev:legacy": "vite --config vite.config.ts",
     "build": "npm run build -w @ip/mid",
     "build:all": "npm run build -w @ip/contracts --if-present; npm run build -w @ip/mid -w @ip/workbench -w @ip/agent -w @ip/ops -w @ip/iam --if-present",
