@@ -32,6 +32,9 @@
 | 样机数据模型 / 流 / 后端候选 | [../data-model.md](../data-model.md) · [../data-flow.md](../data-flow.md) · [../backends.md](../backends.md) |
 | 命令 / Harness 纪律 | [../../COMMANDS.md](../../COMMANDS.md) · [../../HARNESS.md](../../HARNESS.md) |
 | 架构总索引 | [../README.md](../README.md) |
+| 产品面规格（壳设计） | [../product-apps/README.md](../product-apps/README.md) |
+
+下游产品面（开壳 UI / 路由规格，不替代本目录进程与冻 URL）：[../product-apps/README.md](../product-apps/README.md)。
 
 ## 本目录八篇
 

@@ -20,6 +20,7 @@
 | [architecture/landing/README.md](./architecture/landing/README.md) | 原型后落地：切分 / 栈 / 路线图 / 提醒 |
 | [architecture/enterprise/README.md](./architecture/enterprise/README.md) | 企业级后端 + Agent 平台（C 混合 / DSH 和或 Codex + 自有闸；见 [agent-runtime-options](./architecture/enterprise/agent-runtime-options.md)） |
 | [architecture/dev-spec/README.md](./architecture/dev-spec/README.md) | **开发前规格包**（照文档开 PR：拓扑 / 落地表 / 冻 URL / 构建 / ADR） |
+| [architecture/product-apps/README.md](./architecture/product-apps/README.md) | **产品面规格**（五壳对照 · workbench 节点是否拆 app · Agent/工具/插件 · 横切） |
 | [architecture/ops-observability.md](./architecture/ops-observability.md) | 运维可观测（样机） |
 | [architecture/repos-and-vcs.md](./architecture/repos-and-vcs.md) | 单仓→多仓策略 |
 

@@ -1,0 +1,68 @@
+# 产品面规格（product-apps）
+
+> **样机诚实**：今日是多 Vite 壳（`APP_PORTS`）+ 共享 `@ip/*` + `api-mock:5180` 内存店；无真 SSO、真 MCP、真 Agent harness、真可观测。  
+> **落地目标**：本目录按**产品壳**写开发可照着设计的规格——路由面、读写边界、与 landing 七面 / case-core / Agent 分层对齐。  
+> **不是**架构评审文（评审见 landing / enterprise / dev-spec 的 REVIEW）；**不是**已交付实现说明。
+
+## 本目录九篇
+
+| 篇 | 路径 | 回答什么 |
+|----|------|----------|
+| 索引（本页） | [README.md](./README.md) | 与五壳对照、阅读序、回链 |
+| 作业中台 | [mid.md](./mid.md) | mid:5173 职责、路由面、读/写、与 case-core |
+| SaaS 工作台 | [workbench.md](./workbench.md) | stages/flows；**每节点是否可独立应用** |
+| 运维壳 | [ops.md](./ops.md) | 六路由→ops-platform；禁真通道除非开闸 |
+| 身份壳 | [iam.md](./iam.md) | 租户/Persona/OIDC；cookie→真会话 |
+| Agent 产品面 | [agent-surface.md](./agent-surface.md) | 5175 Catalog/会话/Confirm；与 ① runtime 分层 |
+| 工具与 MCP | [agent-tools-mcp.md](./agent-tools-mcp.md) | tools[] vs MCP；副作用→DomainCommand |
+| Agent 插件 | [agent-plugins.md](./agent-plugins.md) | AgentDef 插件；版本化 catalog；对齐 stage |
+| 横切 | [cross-cutting.md](./cross-cutting.md) | 深链、contracts、禁壳直写库、Persona、e2e |
+
+## 与五壳 + api 对照表
+
+权威端口：`packages/contracts/src/ports.ts`（`APP_PORTS` / `APP_DEV_URLS`）。
+
+| 壳 / 面 | 端口 | 仓路径 | 产品面规格 | 落地服务面（landing） |
+|---------|------|--------|------------|----------------------|
+| mid | 5173 | `apps/mid` | [mid.md](./mid.md) | 消费者 → **case-core** 读/写 |
+| workbench | 5174 | `apps/workbench` | [workbench.md](./workbench.md) | Flow UI → case-core；进度可并 workbench-command |
+| agent | 5175 | `apps/agent` | [agent-surface.md](./agent-surface.md) 等 | UI → **agent-session**；写仍经 case-core |
+| ops | 5176 | `apps/ops` | [ops.md](./ops.md) | → **ops-platform**（不持案） |
+| iam | 5177 | `apps/iam` | [iam.md](./iam.md) | → **iam**（OIDC / Persona 声明） |
+| api | 5180 | `apps/api-mock`（今日） | 见 [cross-cutting.md](./cross-cutting.md) | MVP 同口换 **case-core** / 网关 |
+
+壳 **不是**微服务；勿把 mid/workbench 升级成服务进程。
+
+## 阅读顺序
+
+1. 本页（对照表与边界）
+2. [mid.md](./mid.md) → [workbench.md](./workbench.md)（办理主路径）
+3. [agent-surface.md](./agent-surface.md) → [agent-tools-mcp.md](./agent-tools-mcp.md) → [agent-plugins.md](./agent-plugins.md)
+4. [ops.md](./ops.md) → [iam.md](./iam.md)
+5. [cross-cutting.md](./cross-cutting.md)（深链 / 契约 / e2e）
+
+上游（先读、不掏空）：
+
+| 上游 | 路径 |
+|------|------|
+| 落地七面 / 栈 / 路线 | [../landing/README.md](../landing/README.md) |
+| 企业级 + Agent（C 混合 · DSH/Codex + 自有闸） | [../enterprise/README.md](../enterprise/README.md) |
+| 开发前规格（开 PR） | [../dev-spec/README.md](../dev-spec/README.md) |
+| 样机数据流 / 模型 | [../data-flow.md](../data-flow.md) · [../data-model.md](../data-model.md) |
+| Harness / 命令纪律 | [../../HARNESS.md](../../HARNESS.md) · [../../COMMANDS.md](../../COMMANDS.md) |
+| 运维可观测样机 | [../ops-observability.md](../ops-observability.md) |
+| workbench Owner 现状 | [../../workbench/OWNER_STATUS.md](../../workbench/OWNER_STATUS.md) |
+| mid Owner 现状 | [../../mid/STATUS.md](../../mid/STATUS.md) |
+
+## 纪律（写产品面时自检）
+
+- 每篇开篇保持「样机诚实 vs 落地目标」；勿假装已有真 MCP / 真 harness / 真通道。
+- 写库唯一入口：`DomainCommand` → `dispatchCommand` / 落地 `POST /v1/commands/dispatch`。
+- Agent **禁止**直连 PG；工具副作用必须可映射到 DomainCommand 或只读。
+- 企业 Agent 默认：**C 混合** = ① DSH 和/或 Codex app-server + 自有 Persona/HITL/Command；LangGraph 仅可选子图。
+- 本目录**只写文档**；不交架构评审、不改业务代码。
+
+## 回链
+
+- 架构总索引：[../README.md](../README.md)
+- 文档总索引：[../../README.md](../../README.md)
