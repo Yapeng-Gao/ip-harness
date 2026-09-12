@@ -23,16 +23,18 @@ npm run dev:doc-harness
 npm run typecheck -w @ip/doc-harness
 ```
 
-## 三案（CaseSwitcher · 仅顶栏）
+## 四案（CaseSwitcher · 仅顶栏）
 
-| 短名 | caseId | stageId | handoff / SKU（示意 string） | 章节 |
-|------|--------|---------|------------------------------|------|
+| 短名 | caseId | stageId | handoff / SKU（示意 string） | 章节 / 闸 |
+|------|--------|---------|------------------------------|-----------|
 | **撰写稿** | `c-draft-sensing` | `drafting` | `draft_claims` / `wb.stage.draft` | 发明摘要（≥3 段）· 权利要求（独立+≥3 从属）· 实施例（≥2 节） |
 | **OA 答复** | `c-oa-response` | `prosecution` | `oa_response` / `wb.stage.prosecution` | 审查意见要点 · 答复策略 · 修改后权利要求 |
-| **发明人交底** | `c-inventor-disclosure` | `inventor` | `inventor_disclosure` / `wb.stage.inventor` | 技术交底书 · 已有方案 · 附图说明（**locked** SKU 闸 mock） |
+| **发明人交底** | `c-inventor-disclosure` | `inventor` | `inventor_disclosure` / `wb.stage.inventor` | 技术交底书 · 已有方案 · 附图说明（**章级** `locked`） |
+| **SKU 闸** | `c-sku-locked` | `drafting` | `draft_claims` / `wb.stage.draft` | 摘要 + 权利要求 · **整案** `authorized:false`（文案「SKU 未开通 · 整案只读 mock」） |
 
 - 种子入口：`buildCaseBundle(caseId)` / `CASES[]`；App 按 caseId 加载整包 runtime（document + chapters + revisions + annotations）。
-- 每案自有 Document、若干预置批注、≥1 条历史 revision（非空壳）。
+- 每案自有 Document、若干预置批注（SKU 闸案可无批注）、≥1 条历史 revision（非空壳）。
+- **案级闸 vs 章级闸**：`c-sku-locked` 整案只读；发明人案仅附图章 locked——对照演示。
 - 切换案/章：清或换 proposal、批注焦点、选中章；**未保存策略见下**。
 
 `Document.stageId` / `handoffKey` / `skuLabel` 在**本 app types** 放宽为 string 联合（含 `prosecution` / `inventor` 等），**未改** `@ip/contracts`。
@@ -41,14 +43,14 @@ npm run typecheck -w @ip/doc-harness
 
 | 能力 | 现状 |
 |------|------|
-| 多案切换 | **仅顶栏** compact `CaseSwitcher` · 左树保留案名标题 · ≥3 案 |
+| 多案切换 | **仅顶栏** compact `CaseSwitcher` · 左树保留案名标题 · ≥4 案 |
 | TipTap 纸面 | 工具栏 · 页感 · annotation Mark |
 | 批注 | 侧栏内联新建（**无** `window.prompt`）· Mark↔列表联动 · **已解决默认折叠** · 左树章旁未解决徽标 · orphan 提示 |
 | Agent mock | 按 chapter key 模板改写 · 试运行/正式 · Confirm **置顶** · Diff **默认折叠** · 单列「当前 → 建议」 |
 | 提案历史 | runtime `proposalHistory` · 采纳/拒绝/preview 结束归档 · 只读看 proposedBody |
 | Revision 时间线 | 左树底面板 · 按当前章列 seq/actor/commandType/时间/note · 只读预览 · Confirm 后「恢复此版」写新 revision |
 | 批注保真 | 采纳时按 quote 重挂 open 批注；失败 → orphan |
-| SKU/章闸 | 附图说明 `locked` → 只读 + **加深** slate banner；`authorized:false` 类型已预留 |
+| SKU/章闸 | 发明人案附图 `locked`（章级）· **SKU 闸案** `authorized:false`（整案只读 + unauthorizedReason） |
 | 未保存离开 | **自动 saveDraft** + 顶栏「已自动保存 · {章名}」（与 dirty 互斥） |
 | Cmd/Ctrl+S | 保存草稿 |
 | 命令日志 | 带 `caseId`，右栏按案过滤 |
@@ -60,7 +62,7 @@ npm run typecheck -w @ip/doc-harness
 | LLM | **无**真模型；`mockRewriteChapter(key, title, body)` 按章模板改写（非时间戳包装） |
 | SSO / OIDC | **无**真身份 |
 | Harness runtime | **无** DSH / Codex / MCP |
-| DomainCommand | mock dispatch **形状对齐**（`submitClaims` / `saveDraft`）；**不**写入 union，**不**经 case-core |
+| DomainCommand | mock dispatch **形状对齐**（按章 `submitClaims` / 具名 `save*` / `saveDraft`）；**不**写入 union，**不**经 case-core |
 | Word / 协同 | **非** Word 修订/协同；正文 HTML + TipTap Mark |
 | 数据 | 内存 state（按案 runtime Map）；刷新即失 |
 | SKU 闸 | **mock** 只读横幅；申请开通按钮无真开通 |
@@ -102,9 +104,29 @@ npm run typecheck -w @ip/doc-harness
 
 1. **试运行**：mock 建议预览 + 逐段对照，**不**落库、**不**进 Confirm 写入；结束/替换时进 `proposalHistory`  
 2. **正式建议**：`DocProposal` → ConfirmBar（置顶）· Diff 默认折叠  
-3. **确认**：mock dispatch `submitClaims` → 批注按 quote 重挂 → 新 revision（actor=agent）→ 归档 accepted  
+3. **确认**：按章 `commandTypeForChapter` → mock dispatch（claims 类=`submitClaims`，其余具名 `save*`）→ 批注按 quote 重挂 → 新 revision（actor=agent · `internalHint: doc.apply_revision`）→ 归档 accepted  
 4. **拒绝**：丢弃建议；无 command、无 revision → 归档 rejected  
-5. **保存草稿** / 自动保存 / 恢复 revision：`saveDraft` revision（actor=user）
+5. **保存草稿** / 自动保存 / 恢复 revision：`saveDraft` revision（actor=user · 手改兜底）
+
+## commandType 按章映射
+
+实现：`src/mockDispatch.ts` → `commandTypeForChapter(key)`（本 app 联合 · **不入** contracts）。
+
+| ChapterKey | MockCommandType |
+|------------|-----------------|
+| `claims` · `amended_claims` | `submitClaims` |
+| `abstract` | `saveAbstract` |
+| `embodiment` | `saveEmbodiment` |
+| `oa_points` | `saveOaPoints` |
+| `response_strategy` | `saveResponseStrategy` |
+| `disclosure` | `saveDisclosure` |
+| `prior_art` | `savePriorArt` |
+| `figures` | `saveFigures` |
+| （未知 / 手改兜底） | `saveDraft` |
+
+- 正式采纳：`onConfirm` 用上表 type；日志 `detail` 含章 key/title（禁止写死「claims chapter revision」）。
+- 用户手改保存 / 自动保存 / 恢复：统一 `saveDraft`。
+- ConfirmBar / AgentPanel 展示将落入的 `commandType`，不写死仅 submitClaims。
 
 ## 改动边界
 

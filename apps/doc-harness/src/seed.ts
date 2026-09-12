@@ -7,7 +7,7 @@ import type {
   DocumentRevision,
 } from './types'
 
-/** 顶栏 / 左树 CaseSwitcher 用 · ≥3 案 */
+/** 顶栏 / 左树 CaseSwitcher 用 · ≥4 案（含整案 authorized:false） */
 export const CASES: DemoCase[] = [
   {
     id: 'c-draft-sensing',
@@ -29,6 +29,13 @@ export const CASES: DemoCase[] = [
     shortLabel: '发明人交底',
     stageId: 'inventor',
     blurb: '技术交底 · 交底书 / 已有方案 / 附图（章级闸示意）',
+  },
+  {
+    id: 'c-sku-locked',
+    title: 'SKU 未开通 · 整案只读',
+    shortLabel: 'SKU 闸',
+    stageId: 'drafting',
+    blurb: 'authorized:false 整案闸 · 对照发明人案附图 locked（章级闸）',
   },
 ]
 
@@ -508,7 +515,7 @@ function buildInventorBundle(): CaseBundle {
     chapterIds: chapters.map((c) => c.id),
     headRevisionId: 'rev-inv-di-1',
     skuLabel: 'wb.stage.inventor',
-    /** 整案仍可浏览；附图章 locked 演示章级闸。另：可用 authorized:false 演示整案闸 */
+    /** 整案可编；附图章 locked 演示章级闸。整案闸见 c-sku-locked */
     authorized: true,
   }
 
@@ -522,10 +529,92 @@ function buildInventorBundle(): CaseBundle {
   }
 }
 
+/* ───────── Case 4 · SKU 未开通（整案闸） ───────── */
+
+const SKU_DOC_ID = 'doc-sku-locked-1'
+const SKU_AT = '2026-09-13T02:00:00.000Z'
+
+const skuAbstract =
+  '<h2>发明摘要（只读示意）</h2>' +
+  '<p>本演示案整案 <code>authorized: false</code>，编辑器 / Agent / 写路径均只读。</p>' +
+  '<p>对照：发明人交底案仅「附图说明」章 <code>locked</code>——章级闸 vs 本案整案闸。</p>'
+
+const skuClaims =
+  '<h2>权利要求（只读示意）</h2>' +
+  '<p>1. 一种智能传感装置……（种子占位 · 不可编辑）</p>' +
+  '<p>2. 从属权利要求占位。</p>'
+
+function buildSkuLockedBundle(): CaseBundle {
+  const chapters: DocumentChapter[] = [
+    {
+      id: 'ch-sku-abstract',
+      documentId: SKU_DOC_ID,
+      key: 'abstract',
+      title: '发明摘要',
+      sort: 1,
+      body: skuAbstract,
+    },
+    {
+      id: 'ch-sku-claims',
+      documentId: SKU_DOC_ID,
+      key: 'claims',
+      title: '权利要求',
+      sort: 2,
+      body: skuClaims,
+    },
+  ]
+
+  const revisions: DocumentRevision[] = [
+    {
+      id: 'rev-sku-abs-1',
+      documentId: SKU_DOC_ID,
+      chapterId: 'ch-sku-abstract',
+      seq: 1,
+      body: skuAbstract,
+      actor: 'user',
+      createdAt: SKU_AT,
+      note: '种子 · 整案只读摘要',
+    },
+    {
+      id: 'rev-sku-cl-1',
+      documentId: SKU_DOC_ID,
+      chapterId: 'ch-sku-claims',
+      seq: 1,
+      body: skuClaims,
+      actor: 'user',
+      createdAt: SKU_AT,
+      note: '种子 · 整案只读权利要求',
+    },
+  ]
+
+  const document: Document = {
+    id: SKU_DOC_ID,
+    caseId: 'c-sku-locked',
+    stageId: 'drafting',
+    handoffKey: 'draft_claims',
+    title: 'SKU 未开通示意稿',
+    chapterIds: chapters.map((c) => c.id),
+    headRevisionId: 'rev-sku-abs-1',
+    skuLabel: 'wb.stage.draft',
+    authorized: false,
+    unauthorizedReason: 'SKU 未开通 · 整案只读 mock',
+  }
+
+  return {
+    caseMeta: CASES[3],
+    document,
+    chapters,
+    revisions,
+    annotations: [],
+    defaultChapterId: 'ch-sku-abstract',
+  }
+}
+
 const BUILDERS: Record<string, () => CaseBundle> = {
   'c-draft-sensing': buildDraftingBundle,
   'c-oa-response': buildProsecutionBundle,
   'c-inventor-disclosure': buildInventorBundle,
+  'c-sku-locked': buildSkuLockedBundle,
 }
 
 export function buildCaseBundle(caseId: string): CaseBundle {

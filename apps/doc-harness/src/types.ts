@@ -29,8 +29,22 @@ export type DocSkuLabel =
 
 export type RevisionActor = 'user' | 'agent'
 
-/** 对外 mock commandType：submitClaims / saveDraft；doc.apply_revision 仅作日志旁注 */
-export type MockCommandType = 'submitClaims' | 'saveDraft'
+/**
+ * 对外 mock commandType（本 app 联合 · 不入 contracts DomainCommand union）
+ * - claims / amended_claims → submitClaims
+ * - 其余章 → 具名 save*；手改保存兜底 saveDraft
+ * - doc.apply_revision 仅作正式采纳路径日志旁注（internalHint）
+ */
+export type MockCommandType =
+  | 'submitClaims'
+  | 'saveDraft'
+  | 'saveAbstract'
+  | 'saveEmbodiment'
+  | 'saveOaPoints'
+  | 'saveResponseStrategy'
+  | 'saveDisclosure'
+  | 'savePriorArt'
+  | 'saveFigures'
 
 export interface DemoCase {
   id: string

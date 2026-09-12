@@ -7,7 +7,12 @@ import { DocTree } from './components/DocTree'
 import { RightRail, type RightRailTab } from './components/RightRail'
 import { TopBar } from './components/TopBar'
 import { reattachOpenAnnotationsByQuote } from './lib/annotationFidelity'
-import { mockDispatch, mockRewriteChapter, nextId } from './mockDispatch'
+import {
+  commandTypeForChapter,
+  mockDispatch,
+  mockRewriteChapter,
+  nextId,
+} from './mockDispatch'
 import { buildCaseBundle, CASES, DEFAULT_CASE_ID } from './seed'
 import type {
   Annotation,
@@ -173,6 +178,8 @@ export default function App() {
         parentRevisionId: head?.id,
         actor: 'user',
         note: '离开章/案 · 自动保存草稿',
+        chapterKey: ch.key,
+        chapterTitle: ch.title,
       })
       patchRuntime(forCaseId, {
         revisions: [...state.revisions, revision],
@@ -232,6 +239,8 @@ export default function App() {
         parentRevisionId: head?.id,
         actor: 'user',
         note: opts?.silent ? '快捷键保存草稿' : '用户保存草稿',
+        chapterKey: ch.key,
+        chapterTitle: ch.title,
       })
       patchRuntime(id, {
         revisions: [...state.revisions, revision],
@@ -364,8 +373,9 @@ export default function App() {
 
     const head = headRevisionForChapter(proposal.chapterId, state.revisions)
     const nextSeq = (head?.seq ?? 0) + 1
+    const cmdType = commandTypeForChapter(chapter.key)
     const { revision, log } = mockDispatch({
-      type: 'submitClaims',
+      type: cmdType,
       caseId: state.document.caseId,
       documentId: state.document.id,
       chapterId: proposal.chapterId,
@@ -374,6 +384,8 @@ export default function App() {
       parentRevisionId: proposal.baseRevisionId,
       actor: 'agent',
       note: 'Agent 建议经 HITL 确认写入（含批注按 quote 重挂）',
+      chapterKey: chapter.key,
+      chapterTitle: chapter.title,
     })
     const accepted = { ...proposal, status: 'accepted' as const, proposedBody: bodyWithMarks }
     patchRuntime(id, {
@@ -432,6 +444,8 @@ export default function App() {
       parentRevisionId: head?.id,
       actor: 'user',
       note: `恢复自 seq ${rev.seq}`,
+      chapterKey: ch.key,
+      chapterTitle: ch.title,
     })
     patchRuntime(id, {
       revisions: [...state.revisions, revision],
@@ -581,7 +595,8 @@ export default function App() {
     : previewRevision
       ? '正在预览历史 revision · 返回编辑后再操作 Agent'
       : !rt.document.authorized
-        ? `本章未授权 SKU · 只读`
+        ? rt.document.unauthorizedReason ??
+          `整案未授权 SKU「${rt.document.skuLabel}」· 只读`
         : selected.locked
           ? selected.lockReason ?? '本章已锁定 · 只读'
           : null
@@ -668,6 +683,7 @@ export default function App() {
               currentBody={selected.body}
               commandLog={commandLog}
               caseId={rt.document.caseId}
+              confirmCommandType={commandTypeForChapter(selected.key)}
               onDryRun={() => makeProposal('dry-run')}
               onFormal={() => makeProposal('formal')}
               onConfirm={onConfirm}

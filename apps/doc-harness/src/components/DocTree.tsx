@@ -64,7 +64,7 @@ export function DocTree({
       <nav className="flex-1 overflow-y-auto p-2 text-sm">
         {!document.authorized ? (
           <div className="mx-1 mb-2 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-[10px] leading-relaxed text-slate-600">
-            整案未授权（SKU 闸 mock）
+            {document.unauthorizedReason ?? '整案未授权（SKU 闸 mock）'}
           </div>
         ) : null}
         <ul className="space-y-0.5">

@@ -9,9 +9,39 @@ export function nextId(prefix: string): string {
 }
 
 /**
+ * 按章映射 mock commandType（形状对齐 DomainCommand · 不入 contracts union）
+ * 映射见 apps/doc-harness/README.md「commandType 按章映射」
+ */
+export function commandTypeForChapter(key: ChapterKey): MockCommandType {
+  switch (key) {
+    case 'claims':
+    case 'amended_claims':
+      return 'submitClaims'
+    case 'abstract':
+      return 'saveAbstract'
+    case 'embodiment':
+      return 'saveEmbodiment'
+    case 'oa_points':
+      return 'saveOaPoints'
+    case 'response_strategy':
+      return 'saveResponseStrategy'
+    case 'disclosure':
+      return 'saveDisclosure'
+    case 'prior_art':
+      return 'savePriorArt'
+    case 'figures':
+      return 'saveFigures'
+    default:
+      return 'saveDraft'
+  }
+}
+
+
+/**
  * mock dispatch 形状对齐 harness-loop：
- * { command: { type: 'submitClaims'|'saveDraft', caseId, note? }, meta: {...} }
+ * { command: { type: MockCommandType, caseId, note? }, meta: {...} }
  * 不写入 DomainCommand union；不调用 packages 执法。
+ * detail 跟章走（含 key/title）；正式采纳（actor=agent）旁注 internalHint。
  */
 export function mockDispatch(args: {
   type: MockCommandType
@@ -23,6 +53,9 @@ export function mockDispatch(args: {
   parentRevisionId?: string
   actor: 'user' | 'agent'
   note?: string
+  /** 章 key · 写入 detail，禁止写死 claims */
+  chapterKey?: ChapterKey | string
+  chapterTitle?: string
 }): { revision: DocumentRevision; log: CommandLogEntry } {
   const revisionId = nextId('rev')
   const at = new Date().toISOString()
@@ -38,6 +71,8 @@ export function mockDispatch(args: {
     createdAt: at,
     note: args.note,
   }
+  const keyPart = args.chapterKey ?? args.chapterId
+  const titlePart = args.chapterTitle ? `「${args.chapterTitle}」` : ''
   const log: CommandLogEntry = {
     id: nextId('cmd'),
     command: {
@@ -48,11 +83,9 @@ export function mockDispatch(args: {
     meta: {
       actor: args.actor,
       agentId: args.actor === 'agent' ? 'doc-harness-mock' : undefined,
-      detail:
-        args.type === 'submitClaims'
-          ? `claims chapter revision seq=${args.seq}`
-          : `saveDraft chapter=${args.chapterId} seq=${args.seq}`,
-      internalHint: args.type === 'submitClaims' ? 'doc.apply_revision' : undefined,
+      detail: `${args.type} · chapter=${keyPart}${titlePart} · seq=${args.seq}`,
+      // 正式采纳路径（任意正式写入）旁注；手改 saveDraft 不带
+      internalHint: args.actor === 'agent' ? 'doc.apply_revision' : undefined,
     },
     at,
     revisionId,

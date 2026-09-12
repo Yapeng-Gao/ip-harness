@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronRight, FlaskConical, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { paragraphDiff, stripHtml } from '../htmlText'
-import type { CommandLogEntry, DocProposal } from '../types'
+import type { CommandLogEntry, DocProposal, MockCommandType } from '../types'
 import { ConfirmBar } from './ConfirmBar'
 
 type Props = {
@@ -10,6 +10,8 @@ type Props = {
   currentBody: string
   commandLog: CommandLogEntry[]
   caseId: string
+  /** 当前章正式采纳将落入的 commandType */
+  confirmCommandType: MockCommandType
   onDryRun: () => void
   onFormal: () => void
   onConfirm: () => void
@@ -38,6 +40,7 @@ export function AgentPanel({
   currentBody,
   commandLog,
   caseId,
+  confirmCommandType,
   onDryRun,
   onFormal,
   onConfirm,
@@ -111,6 +114,7 @@ export function AgentPanel({
         {/* Confirm 置顶可见 */}
         <ConfirmBar
           pending={formalPending}
+          commandType={confirmCommandType}
           onConfirm={onConfirm}
           onReject={onReject}
         />
@@ -293,7 +297,7 @@ export function AgentPanel({
           </div>
           {caseLog.length === 0 ? (
             <p className="text-[10px] text-slate-400">
-              确认写入 → submitClaims；保存草稿 → saveDraft · 按案隔离
+              确认写入 → 按章映射 commandType；手改保存 → saveDraft · 按案隔离
             </p>
           ) : (
             <ul className="max-h-36 space-y-1.5 overflow-y-auto">
