@@ -4,37 +4,41 @@
 |----|-----|
 | 评审角色 | 架构评审 |
 | 对象 | `docs/architecture/enterprise/` 五篇（README · backend-enterprise · agent-platform · agent-topology · decision-matrix） |
-| 工作区 | 评审时目录为 **未提交**（`git status`：`?? docs/architecture/enterprise/`）；HEAD `8e49934` 尚不含本目录。总控总验请以推仓后 SHA 为准。 |
+| 对象 SHA | **`2376eb6`**（正文）· 本 REVIEW 复验对齐 HEAD **`93db5af`**（含初版 REVIEW 推仓） |
 | 日期 | 2026-09-12 |
-| **结论** | **通过** |
+| **结论** | **通过**（推仓后复验维持） |
 
 ## 尺子对照
 
 | 尺子 | 结果 | 说明 |
 |------|------|------|
-| 留档 `docs/architecture/` | 过 | 五篇在 `enterprise/`；父 `architecture/README` 已索引 |
-| 索引完整 | 过 | enterprise README 列全四主文；回链 landing REVIEW / HARNESS / COMMANDS |
-| 样机诚实 vs 落地目标 | 过 | 各篇开篇双口径；明确 Agent 今=UI+mock，非真 harness/模型 |
-| 与 landing 七面 / 默认栈 | 过 | 不另起服务名/命令/事件；栈仍 TS+PG+Redis+OIDC+S3+OTel；一期 `services/` |
-| 与 contracts 可演进 | 过 | 冻 dispatch / DomainCommand / DOMAIN_EVENTS / APP_PORTS；闸 id 与现仓一致 |
-| 不假装微服务 / 已交付 | 过 | 禁止 Day-1 网格；合规「技术条件≠证书」；真 LLM 非 case-core MVP 必做 |
-| A/B/C + 真实开源名 | 过 | LangGraph / MAF / CrewAI / Dify / LlamaIndex 分许可与自托管；「需再核」处不编造 |
-| 推荐默认可落地 | 过 | **C 混合 + LangGraph 库**；否决官方 Server/Dify/Foundry 作默认 |
-| 拓扑：Agent 不直接改库 | 过 | 硬规则 + 序列图 + 否决题 N1–N7 |
+| 留档 / 父索引 | 过 | 五篇已入库；父 `architecture/README` 已链 |
+| 样机诚实 vs 落地 | 过 | Agent 今=UI+mock；非真 harness/模型/网格 |
+| 与 landing 七面 / 默认栈 | 过 | 不另起服务名/命令/事件；TS+PG+Redis+OIDC+S3+OTel |
+| contracts 可演进 | 过 | 冻 dispatch / DomainCommand / DOMAIN_EVENTS / APP_PORTS |
+| 不假装已交付 | 过 | 一期 `services/`；真 LLM 晚于 case-core MVP |
+| A/B/C 真实开源名 | 过 | LangGraph / MAF / CrewAI / Dify 分许可；「需再核」不编造 |
+| **C + LangGraph 库（非官方 Server）** | **过 · 站得住** | 见下节专项 |
+| 拓扑：Agent 不直改库 | 过 | 硬规则 + 否决题 N1–N7 |
 
-## 抽查要点（与仓）
+## 专项：C + LangGraph 库是否站得住
 
-- HITL 闸：`go_nogo` / `approve_strategy` / `authorize_file` / `pay_unlock` / `confirm_quote` 在 `packages/contracts/src/keys.ts`；`request_changes` 为 handoff action（文中「+」可接受）。
-- `TOOL_TO_COMMAND`、`AGENT_CATALOG`、`AGENT_SCRIPTS`、`AgentContext`、`apps/agent/README` 路径存在。
-- `AUDIT_SCHEMA_VERSION` = `2026.09.1` 与文一致。
-- landing 七面命名与 `landing/backends.md` 一致；提醒/审计裂缝处理与 landing roadmap 同向。
+| 检查 | 结果 |
+|------|------|
+| 推荐句是否锁「库」而非 Cloud/Server | 是（README 一句话；agent-platform §3.3；decision-matrix 推荐行） |
+| 官方 Agent Server 是否剔除默认 | 是（许可 key / beacon；A1 私有化 ●○○；N4 否决） |
+| 与现仓 HITL/Command 同构理由 | 成立：interrupt↔ConfirmBar；写只经 dispatch；UI `5175` 保留 |
+| 相对 A（当平台）/ B（全自建） | 成立：避免双会话面；避免从零造编排 |
+| 已知风险是否诚实 | 是：JS vs Python 须 spike；勿混 LangSmith Deployments；langhost 不升格默认 |
+| 是否把 Server 偷渡进装机清单 | 否 |
 
-## 非阻塞建议
+**专项裁决：站得住。** 改锁须书面（法务→B；MS 栈→C′），不得在实现 PR 默默换成 Server/Dify。
 
-1. **先推仓**再总验，REVIEW/总控回报带真实 SHA。
-2. LangGraph.js vs Python 已要求 spike 再承诺——保持；勿在未 spike 前写进装机清单。
-3. `request_changes` 若不想与 HitlGateId 混淆，可在 agent-platform §0 脚注标明「handoff action，非 gate id」（可选）。
+## 非阻塞（维持）
+
+1. LangGraph.js vs Python：spike 后再进装机清单。
+2. 可选：脚注 `request_changes` 为 handoff action、非 HitlGateId。
 
 ## 裁决
 
-**通过。** 可总控总验（推仓后）。不要求为建议项重开全稿。
+**通过。** 可总控总验。
