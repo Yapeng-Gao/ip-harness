@@ -17,10 +17,10 @@ import {
   ToastBanner,
   nextActionsForStage,
   inputCls,
-  textareaCls,
+  textareaCls, draftAreaCls,
 } from '../../components/FlowChrome'
 import { VersionPanel } from '../../components/VersionPanel'
-import { WbSection, WbField } from '../../components/FormBlocks'
+import { WbSection, WbField, WbChip } from '../../components/FormBlocks'
 import { HANDOFF_ARTIFACT_LABELS } from '@ip/contracts'
 import { AppLink } from '@shared/components/AppLink'
 
@@ -205,7 +205,7 @@ ${countries.join(' / ') || '（未选）'}
   }
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <ToastBanner message={toast} error={toastErr} nextActions={toastNext} />
       <FlowHeader
         title="布局洞察"
@@ -216,7 +216,7 @@ ${countries.join(' / ') || '（未选）'}
         }
         caseData={c}
       />
-      <div className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">
+      <div className="wb-tip wb-tip-neutral mb-3 text-xs">
         本台办理 <span className="font-medium">{HANDOFF_ARTIFACT_LABELS.layout_insight}</span>
         （独立键，不占调研报告）。复杂推演可走{' '}
         <AppLink
@@ -246,11 +246,11 @@ ${countries.join(' / ') || '（未选）'}
         </p>
 
         {/* 补挂向导：空态 / 手动 / 批准后同步 */}
-        <div className="rounded-lg border border-dashed border-violet-200 bg-violet-50/60 px-3 py-2">
+        <div className="wb-tip wb-tip-info mb-1 !border-violet-200 !bg-violet-50/70">
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
-              className="rounded-md bg-violet-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-violet-800"
+              className="ui-btn ui-btn-primary ui-btn-sm focus-ring !bg-violet-900 hover:!bg-violet-800"
               onClick={() => setAttachOpen((o) => !o)}
             >
               {attachOpen ? '收起补挂' : '从已有案件补挂 layout_insight'}
@@ -296,7 +296,7 @@ ${countries.join(' / ') || '（未选）'}
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       type="button"
-                      className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+                      className="ui-btn ui-btn-primary ui-btn-sm focus-ring"
                       onClick={() => runAttach(attachTargetId)}
                     >
                       确认补挂（drafting）
@@ -316,7 +316,7 @@ ${countries.join(' / ') || '（未选）'}
         rightTitle="布局洞察草稿"
         right={
           <textarea
-            className={`${textareaCls} min-h-[400px] font-mono text-xs leading-relaxed`}
+            className={draftAreaCls}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
@@ -338,10 +338,10 @@ ${countries.join(' / ') || '（未选）'}
                 {MATRIX_SEED.map((r) => (
                   <li
                     key={`${r.tech}-${r.scene}`}
-                    className={`rounded-md border px-2 py-1.5 ${
+                    className={`list-row border px-2.5 py-2 ${
                       r.blank
                         ? 'border-amber-200 bg-amber-50 text-amber-950'
-                        : 'border-slate-200 bg-white'
+                        : 'border-slate-200/80 bg-white'
                     }`}
                   >
                     <span className="font-medium">
@@ -381,18 +381,7 @@ ${countries.join(' / ') || '（未选）'}
             <WbSection title="② 国别建议">
               <div className="flex flex-wrap gap-2">
                 {COUNTRY_OPTS.map((co) => (
-                  <button
-                    key={co}
-                    type="button"
-                    onClick={() => toggleCountry(co)}
-                    className={`rounded-lg px-3 py-1.5 text-xs ${
-                      countries.includes(co)
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-slate-100 text-slate-600'
-                    }`}
-                  >
-                    {co}
-                  </button>
+                  <WbChip key={co} active={countries.includes(co)} onClick={() => toggleCountry(co)}>{co}</WbChip>
                 ))}
               </div>
               <p className="mt-2 text-[11px] text-slate-500">

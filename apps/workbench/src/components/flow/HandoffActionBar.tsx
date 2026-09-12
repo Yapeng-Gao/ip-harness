@@ -527,7 +527,7 @@ export function HandoffActionBar({
         </div>
       )}
       {inlineError && (
-        <p className="rounded-[var(--radius-md)] bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-rose-100" role="alert">
+        <p className="wb-tip wb-tip-error" role="alert">
           {inlineError}
         </p>
       )}

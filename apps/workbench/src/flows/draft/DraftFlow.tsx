@@ -14,10 +14,10 @@ import {
 import { draftSeed, draftDefaultsFromCase } from '@shared/data/workbenchSeeds'
 import {
   CasePicker, Field, FlowHeader, HandoffActionBar, SplitDraft, Stepper,
-  ToastBanner, nextActionsForStage, btnGhost, btnPrimary, inputCls, panelCls, textareaCls,
+  ToastBanner, nextActionsForStage, btnGhost, btnPrimary, inputCls, textareaCls, draftAreaCls,
 } from '../../components/FlowChrome'
 import { VersionPanel } from '../../components/VersionPanel'
-import { WbSection, WbField, WbError } from '../../components/FormBlocks'
+import { WbSection, WbField, WbError, WbTip, WbCheckRow, WbChip, WbInset } from '../../components/FormBlocks'
 import {
   evaluateFullCheck,
   FULL_CHECK_LITE_ITEMS,
@@ -225,7 +225,7 @@ ${claims.map((cl, i) => {
 
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <ToastBanner message={toast} error={toastErr} nextActions={toastNext} />
       <FlowHeader title="撰写申请" subtitle={role === 'enterprise' ? '确认交底、国别策略与费用' : '交底、权利要求布局与申请文件'} caseData={c} />
       <div className="mb-4"><CasePicker stage="drafting" selectedId={caseId} onChange={(id) => { setCaseId(id); navigate(id ? `/workbench/draft/${id}` : '/workbench/draft', { replace: true }) }} /></div>
@@ -233,19 +233,17 @@ ${claims.map((cl, i) => {
       <SplitDraft
         rightTitle={panel === 'claims' ? '权利要求草稿' : '申请清单'}
         right={<>
-          <div className="mb-3 flex gap-2">
-            <button type="button" className={`rounded px-2 py-1 text-xs ${panel === 'claims' ? 'bg-slate-100 text-slate-800' : 'bg-slate-100 text-slate-500'}`} onClick={() => setPanel('claims')}>权利要求</button>
-            <button type="button" className={`rounded px-2 py-1 text-xs ${panel === 'checklist' ? 'bg-slate-100 text-slate-800' : 'bg-slate-100 text-slate-500'}`} onClick={() => setPanel('checklist')}>申请清单</button>
+          <div className="segmented mb-3 w-full" role="tablist" aria-label="草稿面板">
+            <button type="button" role="tab" className="segmented-item btn-press focus-ring flex-1" aria-selected={panel === 'claims'} onClick={() => setPanel('claims')}>权利要求</button>
+            <button type="button" role="tab" className="segmented-item btn-press focus-ring flex-1" aria-selected={panel === 'checklist'} onClick={() => setPanel('checklist')}>申请清单</button>
           </div>
-          <textarea className={`${textareaCls} min-h-[420px] font-mono text-xs leading-relaxed`} value={draft} onChange={(e) => setDraft(e.target.value)} />
+          <textarea className={draftAreaCls} value={draft} onChange={(e) => setDraft(e.target.value)} />
         </>}
         left={<>
           <WbSection title="交底书结构化编辑">
               <div
-                className={`mb-3 rounded-lg border px-3 py-2 text-xs ${
-                  disclosureApproved
-                    ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
-                    : 'border-rose-200 bg-rose-50 text-rose-900'
+                className={`wb-tip mb-1 text-xs ${
+                  disclosureApproved ? 'wb-tip-success' : 'wb-tip-error'
                 }`}
               >
                 <div className="flex flex-wrap items-center gap-2 font-medium">
@@ -287,14 +285,15 @@ ${claims.map((cl, i) => {
               <WbField label="发明内容" required><textarea className={textareaCls} value={invention} onChange={(e) => setInvention(e.target.value)} /></WbField>
               <WbField label="实施例"><textarea className={textareaCls} value={embodiment} onChange={(e) => setEmbodiment(e.target.value)} /></WbField>
           </WbSection>
-          <div className={panelCls}>
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-slate-800">权利要求树</h3>
+          <WbSection
+            title="权利要求树"
+            action={
               <div className="flex gap-2">
-                <button type="button" className={btnGhost + ' !px-2 !py-1 text-xs'} onClick={() => { setClaims((p) => [...p, { id: `cl-${Date.now()}`, type: '独立', text: '一种…，其特征在于，…' }]); setStep(1) }}><Plus className="h-3 w-3" aria-hidden /> 独立</button>
-                <button type="button" className={btnGhost + ' !px-2 !py-1 text-xs'} onClick={() => { setClaims((p) => [...p, { id: `cl-${Date.now()}`, type: '从属', text: '根据上述权利要求所述的…', dependsOn: '1' }]); setStep(1) }}><Plus className="h-3 w-3" aria-hidden /> 从属</button>
+                <button type="button" className="ui-btn ui-btn-secondary ui-btn-sm focus-ring" onClick={() => { setClaims((p) => [...p, { id: `cl-${Date.now()}`, type: '独立', text: '一种…，其特征在于，…' }]); setStep(1) }}><Plus className="h-3 w-3" aria-hidden /> 独立</button>
+                <button type="button" className="ui-btn ui-btn-secondary ui-btn-sm focus-ring" onClick={() => { setClaims((p) => [...p, { id: `cl-${Date.now()}`, type: '从属', text: '根据上述权利要求所述的…', dependsOn: '1' }]); setStep(1) }}><Plus className="h-3 w-3" aria-hidden /> 从属</button>
               </div>
-            </div>
+            }
+          >
             {claimErrorList.length > 0 && (
               <WbError>
                 权利要求实时校验 · {claimErrorList.length} 项问题
@@ -304,13 +303,11 @@ ${claims.map((cl, i) => {
               </WbError>
             )}
             {claimsValid && claims.length > 0 && (
-              <p className="mb-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs text-emerald-700 ring-1 ring-emerald-100">
-                权利要求校验通过：独立/从属结构有效
-              </p>
+              <WbTip tone="success">权利要求校验通过：独立/从属结构有效</WbTip>
             )}
             <ul className="space-y-3">
               {claims.map((cl, idx) => (
-                <li key={cl.id} className={`rounded-xl border p-3 ${claimErrors[cl.id] ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200'}`}>
+                <li key={cl.id} className={`wb-inset p-3 ${claimErrors[cl.id] ? '!border-rose-200 !bg-rose-50/40' : '!bg-white'}`}>
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-slate-500">#{idx + 1}</span>
@@ -322,7 +319,7 @@ ${claims.map((cl, i) => {
                             name={`dependsOn-${cl.id}`}
                             autoComplete="off"
                             spellCheck={false}
-                            className="w-16 rounded border border-slate-200 px-1.5 py-0.5 text-xs focus:border-slate-400 focus:ring-1 focus:ring-slate-200"
+                            className="ui-input ui-input-sm focus-ring w-16"
                             value={cl.dependsOn ?? ''}
                             onChange={(e) => setClaims((prev) => prev.map((x) => x.id === cl.id ? { ...x, dependsOn: e.target.value } : x))}
                             aria-label={`权利要求 ${idx + 1} 引用号`}
@@ -353,55 +350,56 @@ ${claims.map((cl, i) => {
                 </li>
               ))}
             </ul>
-          </div>
-          <div className={panelCls}>
-            <h3 className="mb-4 text-sm font-medium text-slate-800">申请策略向导</h3>
+          </WbSection>
+          <WbSection title="申请策略向导">
             <Field label="国别选择">
               <div className="mt-1 flex flex-wrap gap-2">
                 {COUNTRIES.map((co) => (
-                  <button key={co.code} type="button"
+                  <WbChip
+                    key={co.code}
+                    active={countries.includes(co.code)}
                     onClick={() => { setCountries((prev) => prev.includes(co.code) ? prev.filter((x) => x !== co.code) : [...prev, co.code]); setStep(2) }}
-                    className={`btn-press rounded-xl px-3 py-1.5 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 ${countries.includes(co.code) ? 'bg-slate-100 text-slate-800 ring-1 ring-slate-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}>
+                  >
                     {co.name} · ≈¥{co.fee.toLocaleString()}
-                  </button>
+                  </WbChip>
                 ))}
               </div>
             </Field>
-            <label className="mt-4 flex items-center gap-2 text-sm text-slate-700">
-              <input type="checkbox" checked={pct} onChange={(e) => setPct(e.target.checked)} className="accent-slate-700" />
+            <WbCheckRow checked={pct} onChange={(e) => setPct((e.target as HTMLInputElement).checked)}>
               同时走 PCT 途径
-            </label>
-            <div className="mt-3"><Field label="优先权说明"><input className={inputCls} value={priority} onChange={(e) => setPriority(e.target.value)} /></Field></div>
-            <div className="mt-4 rounded-lg border border-slate-200 text-xs">
-              <div className="flex justify-between border-b border-slate-100 px-3 py-2 text-slate-500">
+            </WbCheckRow>
+            <Field label="优先权说明"><input className={inputCls} value={priority} onChange={(e) => setPriority(e.target.value)} /></Field>
+            <WbInset className="text-xs text-slate-600">
+              <div className="flex justify-between border-b border-slate-200/70 pb-2 tabular">
                 <span>官费估算（mock）</span>
                 <span>¥{feeTotal.base.toLocaleString()}{pct ? ` + PCT ¥${feeTotal.pctFee.toLocaleString()}` : ''}</span>
               </div>
               {feeTotal.agency > 0 && (
-                <div className="flex justify-between border-b border-slate-100 px-3 py-2 text-slate-500">
+                <div className="flex justify-between border-b border-slate-200/70 py-2 tabular">
                   <span>代理撰写费（示意）</span>
                   <span>¥{feeTotal.agency.toLocaleString()}</span>
                 </div>
               )}
-              <div className="flex justify-between px-3 py-2 text-slate-500">
+              <div className="flex justify-between pt-2 tabular">
                 <span>合计约</span>
                 <span className="font-medium text-slate-800">¥{feeTotal.total.toLocaleString()}</span>
               </div>
-            </div>
-          </div>
-          <div className={panelCls}>
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <h3 className="text-sm font-medium text-balance text-slate-800">递交检查清单</h3>
-              <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium tabular-nums ${
+            </WbInset>
+          </WbSection>
+          <WbSection
+            title="递交检查清单"
+            action={
+              <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium tabular ${
                 Object.values(filingCheck).every(Boolean)
                   ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
                   : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'
               }`}>
                 {Object.values(filingCheck).filter(Boolean).length}/5
               </span>
-            </div>
-            <p className="mb-3 text-xs text-slate-500">提交 / 授权递交前须勾选齐套；未完成将禁用主操作</p>
-            <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
+            }
+          >
+            <p className="text-xs text-slate-500">提交 / 授权递交前须勾选齐套；未完成将禁用主操作</p>
+            <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
               <div
                 className="motion-progress h-full rounded-full bg-slate-700"
                 style={{ width: `${(Object.values(filingCheck).filter(Boolean).length / 5) * 100}%` }}
@@ -410,44 +408,37 @@ ${claims.map((cl, i) => {
             <ul className="space-y-2">
               {DRAFT_FILING_CHECK_ITEMS.map(({ id: k, label }) => (
                 <li key={k}>
-                  <label className="card-hover flex cursor-pointer items-start gap-2 rounded-xl border border-slate-200 px-3 py-2 hover:border-slate-200 hover:bg-slate-50">
-                    <input
-                      type="checkbox"
-                      name={`filing-${k}`}
-                      className="mt-0.5 accent-slate-700"
-                      checked={filingCheck[k]}
-                      onChange={() => toggleDraftFilingCheck(caseId, k)}
-                    />
-                    <span className="text-sm text-slate-700">{label}</span>
-                  </label>
+                  <WbCheckRow
+                    name={`filing-${k}`}
+                    checked={filingCheck[k]}
+                    onChange={() => toggleDraftFilingCheck(caseId, k)}
+                  >
+                    {label}
+                  </WbCheckRow>
                 </li>
               ))}
             </ul>
-          </div>
-          <div className={panelCls}>
-            <h3 className="mb-2 text-sm font-medium text-slate-800">Full-check（授权/递交前）</h3>
-            <p className="mb-2 text-xs text-slate-500">对齐 Agent ConfirmBar · evaluateFullCheck</p>
+          </WbSection>
+          <WbSection title="Full-check（授权/递交前）">
+            <p className="text-xs text-slate-500">对齐 Agent ConfirmBar · evaluateFullCheck</p>
             <ul className="space-y-2">
               {FULL_CHECK_LITE_ITEMS.map(({ id, label }) => (
                 <li key={id}>
-                  <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
-                    <input
-                      type="checkbox"
-                      className="mt-0.5 accent-slate-700"
-                      checked={!!fullLite[id]}
-                      onChange={() => toggleFullCheckLite(caseId, id)}
-                    />
-                    <span>{label}</span>
-                  </label>
+                  <WbCheckRow
+                    checked={!!fullLite[id]}
+                    onChange={() => toggleFullCheckLite(caseId, id)}
+                  >
+                    {label}
+                  </WbCheckRow>
                 </li>
               ))}
             </ul>
             {!fullCheckResult.ok && (
-              <p className="mt-2 text-xs text-rose-700">缺口：{fullCheckResult.missing.join('；')}</p>
+              <WbTip tone="error" role="alert">缺口：{fullCheckResult.missing.join('；')}</WbTip>
             )}
-          </div>
+          </WbSection>
           <VersionPanel caseId={caseId} handoffKey="draft_claims" />
-          <div className={panelCls}>
+          <WbSection title="交接确认">
             <HandoffActionBar
               caseId={caseId}
               handoffKey="draft_claims"
@@ -551,7 +542,7 @@ ${claims.map((cl, i) => {
                 </button>
               }
             />
-          </div>
+          </WbSection>
         </>}
       />
     </div>

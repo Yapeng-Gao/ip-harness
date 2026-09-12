@@ -21,5 +21,6 @@ export {
   btnGhost,
   btnSuccess,
   panelCls,
+  draftAreaCls,
   workbenchPathForStage,
 } from './flow'

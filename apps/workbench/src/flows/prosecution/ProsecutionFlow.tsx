@@ -8,11 +8,11 @@ import { useAgents } from '@shared/context/AgentContext'
 import { prosecutionSeed } from '@shared/data/workbenchSeeds'
 import {
   CasePicker, Field, FlowHeader, HandoffActionBar, SplitDraft, Stepper,
-  ToastBanner, DeadlineChip, nextActionsForStage, inputCls, panelCls, textareaCls,
+  ToastBanner, DeadlineChip, nextActionsForStage, inputCls, textareaCls, draftAreaCls,
 } from '../../components/FlowChrome'
 import { ClaimDiffView } from '../../components/ClaimDiffView'
 import { VersionPanel } from '../../components/VersionPanel'
-import { WbSection, WbField } from '../../components/FormBlocks'
+import { WbSection, WbField, WbTip, WbCheckRow, WbChip, WbEmpty, WbInset } from '../../components/FormBlocks'
 import { daysUntil, urgencyBannerClass, urgencyLabel, urgencyLevel } from '@shared/utils/deadline'
 import {
   evaluateFullCheck,
@@ -155,7 +155,7 @@ ${claimAmended}
 
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <ToastBanner message={toast} error={toastErr} nextActions={toastNext} />
       <FlowHeader title="审查答复" subtitle={role === 'enterprise' ? '审核代理稿 / 确认策略 / 授权递交' : '撰写答复 / 修改权利要求 / 提交审核'} caseData={c} />
 
@@ -192,7 +192,7 @@ ${claimAmended}
       <Stepper steps={STEPS} current={stepperCurrent} />
       <SplitDraft
         rightTitle="答复书草稿"
-        right={<textarea className={`${textareaCls} min-h-[480px] font-mono text-xs leading-relaxed`} name="prosecutionDraft" autoComplete="off" spellCheck={false} value={draft} onChange={(e) => setDraft(e.target.value)} />}
+        right={<textarea className={`${draftAreaCls} min-h-[480px]`} name="prosecutionDraft" autoComplete="off" spellCheck={false} value={draft} onChange={(e) => setDraft(e.target.value)} />}
         left={<>
           <WbSection title="OA 登记与期限">
             <div className="grid gap-3 sm:grid-cols-3">
@@ -204,16 +204,16 @@ ${claimAmended}
                 </select>
               </WbField>
             </div>
-            <div className="mt-3 flex items-start gap-2 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            <WbTip tone="warn" className="flex items-start gap-2">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />{feeReminder}
-            </div>
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
+            </WbTip>
+            <WbInset>
               <h4 className="mb-2 text-xs font-medium text-slate-800">多轮 OA 时间线（示意）</h4>
               <ul className="space-y-2">
                 {oaEvents
                   .sort((a, b) => a.triggerDate.localeCompare(b.triggerDate))
                   .map((e) => (
-                    <li key={e.id} className="flex flex-wrap items-center gap-2 rounded-xl bg-white px-2.5 py-2 text-xs ring-1 ring-slate-100">
+                    <li key={e.id} className="list-row flex flex-wrap items-center gap-2 bg-white px-2.5 py-2 text-xs ring-1 ring-slate-100/80">
                       <span className={`rounded-full px-1.5 py-0.5 text-xs ${e.status === 'done' ? 'bg-emerald-50 text-emerald-700' : e.status === 'due_soon' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600'}`}>
                         {e.status}
                       </span>
@@ -228,22 +228,22 @@ ${claimAmended}
                     </li>
                   ))}
                 {oaEvents.length === 0 && (
-                  <li className="text-xs text-slate-500">暂无 OA 期限事件；递交归档后将自动追加</li>
+                  <li>
+                    <WbEmpty title="暂无 OA 期限事件" description="递交归档后将自动追加" className="!py-6" />
+                  </li>
                 )}
               </ul>
-              <AppLink to={`/docket?case=${caseId}`} className="btn-press mt-2 inline-block rounded-lg text-xs text-slate-700 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400">
+              <AppLink to={`/docket?case=${caseId}`} className="ui-btn ui-btn-ghost ui-btn-sm focus-ring mt-2">
                 查看全部官方期限
               </AppLink>
-            </div>
+            </WbInset>
           </WbSection>
-          <div className={panelCls}>
-            <h3 className="mb-3 text-sm font-medium text-balance text-slate-800">逐条争点</h3>
-            <div className="mb-3 flex flex-wrap gap-2">
+          <WbSection title="逐条争点">
+            <div className="flex flex-wrap gap-2">
               {issues.map((iss, idx) => (
-                <button key={iss.id} type="button" onClick={() => { setActiveIssue(iss.id); setStep(1) }}
-                  className={`btn-press rounded-xl px-3 py-1.5 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 ${activeIssue === iss.id ? 'bg-slate-100 text-slate-800 ring-1 ring-slate-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'}`}>
+                <WbChip key={iss.id} active={activeIssue === iss.id} onClick={() => { setActiveIssue(iss.id); setStep(1) }}>
                   争点{idx + 1} · {iss.type}
-                </button>
+                </WbChip>
               ))}
             </div>
             {issues.filter((i) => i.id === activeIssue).map((iss) => (
@@ -256,17 +256,15 @@ ${claimAmended}
                 <Field label="答复策略" required>
                   <div className="flex flex-wrap gap-2">
                     {STRATEGIES.map((s) => (
-                      <button key={s} type="button" onClick={() => updateIssue(iss.id, { strategy: s })}
-                        className={`btn-press rounded-full px-3 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 ${iss.strategy === s ? 'bg-slate-100 text-slate-800 ring-1 ring-slate-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>{s}</button>
+                      <WbChip key={s} active={iss.strategy === s} onClick={() => updateIssue(iss.id, { strategy: s })}>{s}</WbChip>
                     ))}
                   </div>
                 </Field>
                 <Field label="答复要点" required><textarea name="response" autoComplete="off" className={textareaCls} value={iss.response} onChange={(e) => updateIssue(iss.id, { response: e.target.value })} /></Field>
               </div>
             ))}
-          </div>
-          <div className={panelCls}>
-            <h3 className="mb-3 text-sm font-medium text-balance text-slate-800">权利要求修改对比</h3>
+          </WbSection>
+          <WbSection title="权利要求修改对比">
             <div className="grid gap-3 lg:grid-cols-2">
               <Field label="原文"><textarea name="claimOriginal" autoComplete="off" spellCheck={false} className={textareaCls + ' min-h-[140px] font-mono text-xs'} value={claimOriginal} onChange={(e) => { setClaimOriginal(e.target.value); setStep(2) }} /></Field>
               <Field label="修改后"><textarea name="claimAmended" autoComplete="off" spellCheck={false} className={textareaCls + ' min-h-[140px] font-mono text-xs'} value={claimAmended} onChange={(e) => setClaimAmended(e.target.value)} /></Field>
@@ -274,74 +272,67 @@ ${claimAmended}
             <div className="mt-3">
               <ClaimDiffView original={claimOriginal} amended={claimAmended} />
             </div>
-          </div>
-          <div className={panelCls}>
-            <h3 className="mb-2 text-sm font-medium text-slate-800">答复书 · 陈述确认</h3>
-            <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
-              <input
-                type="checkbox"
-                className="mt-0.5 accent-slate-700"
-                checked={oaStatementConfirmed}
-                onChange={(e) => {
-                  const confirmed = e.target.checked
-                  setOaStatementConfirmed(caseId, confirmed)
-                  // 工作台 → Agent session 镜像（OA 办理会话）
-                  visibleSessions
-                    .filter(
-                      (s) =>
-                        s.caseId === caseId &&
-                        s.agentId === 'agent-oa' &&
-                        !!s.oaStatementConfirmed !== confirmed,
-                    )
-                    .forEach((s) =>
-                      patchSession(s.id, { oaStatementConfirmed: confirmed }),
-                    )
-                  // 与 Agent ConfirmBar oa_confirm 摘要口径对齐
-                  if (confirmed) {
-                    const active = issues.find((i) => i.id === activeIssue)
-                    appendCaseDriveItem(caseId, {
-                      kind: 'oa_confirm',
-                      title: '已确认陈述',
-                      summary: active?.type
-                        ? `争点 ${active.type}`
-                        : 'OA 陈述确认',
-                      source: 'prosecution-oa-confirm',
-                    })
-                  }
-                }}
-              />
-              <span>
+          </WbSection>
+          <WbSection title="答复书 · 陈述确认">
+            <WbCheckRow
+              checked={oaStatementConfirmed}
+              onChange={(e) => {
+                const confirmed = (e.target as HTMLInputElement).checked
+                setOaStatementConfirmed(caseId, confirmed)
+                // 工作台 → Agent session 镜像（OA 办理会话）
+                visibleSessions
+                  .filter(
+                    (s) =>
+                      s.caseId === caseId &&
+                      s.agentId === 'agent-oa' &&
+                      !!s.oaStatementConfirmed !== confirmed,
+                  )
+                  .forEach((s) =>
+                    patchSession(s.id, { oaStatementConfirmed: confirmed }),
+                  )
+                // 与 Agent ConfirmBar oa_confirm 摘要口径对齐
+                if (confirmed) {
+                  const active = issues.find((i) => i.id === activeIssue)
+                  appendCaseDriveItem(caseId, {
+                    kind: 'oa_confirm',
+                    title: '已确认陈述',
+                    summary: active?.type
+                      ? `争点 ${active.type}`
+                      : 'OA 陈述确认',
+                    source: 'prosecution-oa-confirm',
+                  })
+                }
+              }}
+            >
+              <span className="block">
                 陈述已确认
                 <span className="mt-0.5 block text-xs text-slate-500">
                   对齐 Agent oaStatementConfirmed · 授权/递交前必勾
                 </span>
               </span>
-            </label>
+            </WbCheckRow>
             {!oaStatementConfirmed && (
-              <p className="mt-2 text-xs text-rose-700">未确认陈述前不可授权/递交</p>
+              <WbTip tone="error" role="alert">未确认陈述前不可授权/递交</WbTip>
             )}
-            <h3 className="mb-2 mt-4 text-sm font-medium text-slate-800">Full-check（授权/递交前）</h3>
+            <h4 className="text-xs font-medium text-slate-700">Full-check（授权/递交前）</h4>
             <ul className="space-y-2">
               {FULL_CHECK_LITE_ITEMS.map(({ id, label }) => (
                 <li key={id}>
-                  <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
-                    <input
-                      type="checkbox"
-                      className="mt-0.5 accent-slate-700"
-                      checked={!!fullLite[id]}
-                      onChange={() => toggleFullCheckLite(caseId, id)}
-                    />
-                    <span>{label}</span>
-                  </label>
+                  <WbCheckRow
+                    checked={!!fullLite[id]}
+                    onChange={() => toggleFullCheckLite(caseId, id)}
+                  >
+                    {label}
+                  </WbCheckRow>
                 </li>
               ))}
             </ul>
             {!fullCheckResult.ok && (
-              <p className="mt-2 text-xs text-rose-700">缺口：{fullCheckResult.missing.join('；')}</p>
+              <WbTip tone="error" role="alert">缺口：{fullCheckResult.missing.join('；')}</WbTip>
             )}
-          </div>
+          </WbSection>
           <VersionPanel caseId={caseId} handoffKey="prosecution_response" />
-          <div className={panelCls}>
+          <WbSection title="交接确认">
             <HandoffActionBar
               caseId={caseId}
               handoffKey="prosecution_response"
@@ -464,7 +455,7 @@ ${claimAmended}
                   showToast(msg, err, next)
               }}
             />
-          </div>
+          </WbSection>
         </>}
       />
     </div>

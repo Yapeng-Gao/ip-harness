@@ -14,10 +14,10 @@ import type { MilestoneStatus } from '@ip/domain/types'
 import { monetizeSeed } from '@shared/data/workbenchSeeds'
 import {
   CasePicker, FlowHeader, HandoffActionBar, SplitDraft, Stepper,
-  ToastBanner, nextActionsForStage, btnGhost, inputCls, textareaCls,
+  ToastBanner, nextActionsForStage, btnGhost, inputCls, draftAreaCls,
 } from '../../components/FlowChrome'
 import { VersionPanel } from '../../components/VersionPanel'
-import { WbSection, WbField } from '../../components/FormBlocks'
+import { WbSection, WbField, WbChip } from '../../components/FormBlocks'
 
 const PATHS = ['自行实施', '许可', '转让', '作价入股', '维权诉讼'] as const
 const STEPS = stepsForFlow('monetize')
@@ -136,7 +136,7 @@ ${isLitigation
 
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <ToastBanner message={toast} error={toastErr} nextActions={toastNext} />
       <FlowHeader title="运用转化" subtitle="转化路径向导、Term Sheet、里程碑与企业审批" caseData={c} />
       <div className="mb-4">
@@ -145,13 +145,12 @@ ${isLitigation
       <Stepper steps={STEPS} current={stepperCurrent} />
       <SplitDraft
         rightTitle="转化摘要（自动生成）"
-        right={<textarea className={`${textareaCls} min-h-[400px] font-mono text-xs`} value={draft} onChange={(e) => setDraft(e.target.value)} />}
+        right={<textarea className={draftAreaCls} value={draft} onChange={(e) => setDraft(e.target.value)} />}
         left={<>
           <WbSection title="① 转化路径向导">
             <div className="flex flex-wrap gap-2">
               {PATHS.map((p) => (
-                <button key={p} type="button" onClick={() => { setPath(p); setStep(0) }}
-                  className={`rounded-lg px-3 py-2 text-xs ${path === p ? 'bg-slate-100 text-slate-800 ring-1 ring-slate-200' : 'bg-slate-100 text-slate-500'}`}>{p}</button>
+                <WbChip key={p} active={path === p} onClick={() => { setPath(p); setStep(0) }}>{p}</WbChip>
               ))}
             </div>
             {path === '维权诉讼' && (

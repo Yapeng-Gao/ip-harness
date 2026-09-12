@@ -1,16 +1,15 @@
 import { useState, type ReactNode } from 'react'
-import { AppLink } from '../../AppLink'
-import type { HandoffArtifactKey } from '../../../types'
-import { useApp } from '../../../context/AppContext'
-import { HandoffChip } from '../../HandoffChip'
+import type { HandoffArtifactKey, HandoffAction } from '@ip/domain/types'
+import { useApp } from '@shared/context/AppContext'
+import { HandoffChip } from '@shared/components/HandoffChip'
 import {
   canPerformHandoff,
   actionLabel,
   REQUIRED_BEFORE_SUBMIT,
-  type HandoffAction,
-} from '../../../data/handoff'
-import { commandForHandoffAction, type DomainCommand } from '../../../domain/commands'
-import { FulfillmentModeBadge } from '../../FulfillmentModeBadge'
+  commandForHandoffAction,
+  type DomainCommand,
+} from '@ip/domain'
+import { FulfillmentModeBadge } from '@shared/components/FulfillmentModeBadge'
 import {
   inputCls,
   textareaCls,
@@ -18,7 +17,8 @@ import {
   btnGhost,
   btnSuccess,
 } from './styles'
-import { BILLING_HOLD_COPY } from '../../../utils/billingHoldBanner'
+import { BILLING_HOLD_COPY } from '@shared/utils/billingHoldBanner'
+import { AppLink } from '@shared/components/AppLink'
 
 export function HandoffActionBar({
   caseId,
@@ -527,7 +527,7 @@ export function HandoffActionBar({
         </div>
       )}
       {inlineError && (
-        <p className="rounded-[var(--radius-md)] bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-rose-100" role="alert">
+        <p className="wb-tip wb-tip-error" role="alert">
           {inlineError}
         </p>
       )}

@@ -26,12 +26,12 @@ import {
   nextActionsForStage,
   btnSuccess,
   inputCls,
-  panelCls,
   textareaCls,
+  draftAreaCls,
 } from '../../components/FlowChrome'
 import { VersionPanel } from '../../components/VersionPanel'
 import { personaCanGo, personaCanVote, PERSONA_LABELS } from '@shared/data/persona'
-import { WbSection, WbField } from '../../components/FormBlocks'
+import { WbSection, WbField, WbTip, WbInset } from '../../components/FormBlocks'
 
 const STEPS = stepsForFlow('intake')
 const REVIEWERS = [
@@ -273,7 +273,7 @@ ${voteLines}
 
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <ToastBanner message={toast} error={toastErr} nextActions={toastNext} />
       <FlowHeader
         title="立项决策"
@@ -288,18 +288,18 @@ ${voteLines}
       <SplitDraft
         rightTitle="立项决策纪要"
         right={
-          <textarea className={`${textareaCls} min-h-[420px] font-mono text-xs leading-relaxed`} value={draft} onChange={(e) => setDraft(e.target.value)} />
+          <textarea className={draftAreaCls} value={draft} onChange={(e) => setDraft(e.target.value)} />
         }
         left={
           <>
             <WbSection title="发明披露表">
                 <div
-                  className={`mb-3 rounded-lg border px-3 py-2 text-xs ${
+                  className={`wb-tip mb-1 text-xs ${
                     !disclosureStatus
-                      ? 'border-amber-200 bg-amber-50 text-amber-950'
+                      ? 'wb-tip-warn'
                       : disclosureApproved
-                        ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
-                        : 'border-amber-200 bg-amber-50 text-amber-950'
+                        ? 'wb-tip-success'
+                        : 'wb-tip-warn'
                   }`}
                 >
                   <div className="font-medium">
@@ -350,21 +350,17 @@ ${voteLines}
                 </WbField>
             </WbSection>
 
-            <div className={panelCls}>
-              <h3 className="mb-4 text-sm font-medium text-slate-800">技术评分 + 商业价值</h3>
+            <WbSection title="技术评分 + 商业价值">
               <Field label={`技术评分：${techScore}`}>
                 <input type="range" min={1} max={5} step={1} value={techScore} onChange={(e) => { setTechScore(Number(e.target.value)); setStep(1) }} className="w-full accent-slate-700" />
               </Field>
-              <div className="mt-3">
-                <Field label={`商业价值：${bizScore}`}>
-                  <input type="range" min={1} max={5} step={1} value={bizScore} onChange={(e) => setBizScore(Number(e.target.value))} className="w-full accent-slate-700" />
-                </Field>
-              </div>
-            </div>
+              <Field label={`商业价值：${bizScore}`}>
+                <input type="range" min={1} max={5} step={1} value={bizScore} onChange={(e) => setBizScore(Number(e.target.value))} className="w-full accent-slate-700" />
+              </Field>
+            </WbSection>
 
-            <div className={panelCls}>
-              <h3 className="mb-1 text-sm font-medium text-slate-800">报价单</h3>
-              <p className="mb-4 text-xs text-slate-500">
+            <WbSection title="报价单">
+              <p className="text-xs text-slate-500">
                 报价以工作台「立项/报价」交接为准（下方交接条提交 / 批准为唯一确认路径）；费用中台台账仅记录开票与付款，二者勿混用。
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -375,12 +371,12 @@ ${voteLines}
                   <input className={inputCls} value={quote} onChange={(e) => setQuote(e.target.value)} placeholder="如 ¥28,000（CN 发明撰写）" />
                 </Field>
               </div>
-              <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
+              <WbInset className="text-xs text-slate-700">
                 <div className="mb-2 font-medium text-slate-800">费用明细（mock）</div>
                 <ul className="space-y-1">
-                  <li className="flex justify-between"><span>代理服务费</span><span>{quote || '—'}</span></li>
-                  <li className="flex justify-between"><span>官费估算（发明申请）</span><span>≈ ¥3,450</span></li>
-                  <li className="flex justify-between border-t border-slate-200 pt-1 font-medium text-slate-800">
+                  <li className="flex justify-between tabular"><span>代理服务费</span><span>{quote || '—'}</span></li>
+                  <li className="flex justify-between tabular"><span>官费估算（发明申请）</span><span>≈ ¥3,450</span></li>
+                  <li className="flex justify-between border-t border-slate-200/80 pt-1 font-medium tabular text-slate-800">
                     <span>企业可见合计口径</span>
                     <span>{quote || '待报价'} + 官费</span>
                   </li>
@@ -392,12 +388,11 @@ ${voteLines}
                     <span>委托阶段：{c.engagement.phase}</span>
                   </div>
                 )}
-              </div>
-            </div>
+              </WbInset>
+            </WbSection>
 
-            <div className={panelCls}>
-              <h3 className="mb-4 text-sm font-medium text-slate-800">评审委员投票</h3>
-              <p className="mb-3 text-xs text-slate-500">
+            <WbSection title="评审委员投票">
+              <p className="text-xs text-slate-500">
                 当前 Persona={PERSONA_LABELS[persona]}
                 {persona === 'committee'
                   ? ' · 投票写入可审计'
@@ -408,8 +403,8 @@ ${voteLines}
               </p>
               <div className="space-y-4">
                 {REVIEWERS.map((r) => (
-                  <div key={r.id} className="rounded-lg border border-slate-200 p-3">
-                    <div className="mb-2 text-sm text-slate-700">{r.name}</div>
+                  <div key={r.id} className="wb-inset !bg-white p-3">
+                    <div className="mb-2 text-sm font-medium text-slate-700">{r.name}</div>
                     <div className="mb-2 flex flex-wrap gap-2">
                       {(['同意', '有条件同意', '驳回'] as Vote[]).map((v) => (
                         <button key={v} type="button"
@@ -432,11 +427,14 @@ ${voteLines}
                             if (res.ok) showToast(res.message, false)
                             else showToast(res.message, true)
                           }}
-                          className={`rounded-full px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-40 ${
+                          className={`btn-press focus-ring wb-chip disabled:cursor-not-allowed disabled:opacity-40 ${
                             votes[r.id]?.vote === v
-                              ? v === '驳回' ? 'bg-rose-50 text-rose-700' : v === '同意' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
-                              : 'bg-slate-100 text-slate-500'
-                          }`}>{v}</button>
+                              ? v === '驳回' ? '!bg-rose-50 !text-rose-700' : v === '同意' ? '!bg-emerald-50 !text-emerald-700' : '!bg-amber-50 !text-amber-700'
+                              : ''
+                          }`}
+                          aria-pressed={votes[r.id]?.vote === v}
+                          data-active={votes[r.id]?.vote === v ? 'true' : 'false'}
+                        >{v}</button>
                       ))}
                     </div>
                     <input className={inputCls} placeholder="意见" value={votes[r.id]?.comment ?? ''}
@@ -444,23 +442,22 @@ ${voteLines}
                   </div>
                 ))}
               </div>
-            </div>
+            </WbSection>
 
-            <div className={panelCls}>
-              <h3 className="mb-4 text-sm font-medium text-slate-800">Go / No-Go 决策</h3>
-              <div className="mb-3 flex gap-2">
+            <WbSection title="Go / No-Go 决策">
+              <div className="flex gap-2">
                 <button type="button"
                   disabled={!personaCanGo(persona)}
                   title={!personaCanGo(persona) ? '须企业 IP Persona' : undefined}
                   onClick={() => { setDecision('Go'); setStep(3) }}
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 ${decision === 'Go' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                  className={`btn-press focus-ring flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-md)] text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 ${decision === 'Go' ? 'bg-emerald-600 text-white shadow-[var(--shadow-rest)]' : 'bg-slate-100 text-slate-500'}`}>
                   <ThumbsUp className="h-4 w-4" /> Go
                 </button>
                 <button type="button"
                   disabled={!personaCanGo(persona)}
                   title={!personaCanGo(persona) ? '须企业 IP Persona' : undefined}
                   onClick={() => { setDecision('No-Go'); setStep(3) }}
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 ${decision === 'No-Go' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                  className={`btn-press focus-ring flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-md)] text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 ${decision === 'No-Go' ? 'bg-rose-600 text-white shadow-[var(--shadow-rest)]' : 'bg-slate-100 text-slate-500'}`}>
                   <ThumbsDown className="h-4 w-4" /> No-Go
                 </button>
               </div>
@@ -468,10 +465,10 @@ ${voteLines}
                 <textarea className={textareaCls} value={reason} onChange={(e) => setReason(e.target.value)}
                   placeholder="例如：技术评分达标，预算已批复，同意立项撰写…" />
               </Field>
-            </div>
+            </WbSection>
 
             <VersionPanel caseId={caseId} handoffKey="intake_quote" />
-            <div className={panelCls}>
+            <WbSection title="交接确认">
               <HandoffActionBar
                 caseId={caseId}
                 handoffKey="intake_quote"
@@ -529,16 +526,16 @@ ${voteLines}
               />
               {role === 'enterprise' && (
                 <>
-                  <p className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                  <WbTip tone="neutral" className="mt-1">
                     Go 闸门条件：须企业 IP Persona；交底包须已批准；自助须有预算；委托须报价确认 / intake_quote 已批准。
                     {committeeVoteHardBlockGo
                       ? '「投票硬挡 Go」已开：立项 Go / 确认报价前必须有效投票。'
                       : '委员投票为报价提交 REQUIRED（默认可软提示）。'}
-                  </p>
+                  </WbTip>
                   {!personaCanGo(persona) ? (
-                    <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900" role="status">
+                    <WbTip tone="warn" role="status" className="mt-1">
                       当前 Persona={PERSONA_LABELS[persona]}：不可 Go/No-Go（须切企业 IP）
-                    </p>
+                    </WbTip>
                   ) : (
                     <button
                       type="button"
@@ -567,13 +564,13 @@ ${voteLines}
                   {decision === 'Go' &&
                     committeeVoteHardBlockGo &&
                     !hasAuditedCommitteeVote(caseId) && (
-                      <p className="mt-2 text-xs font-medium text-rose-700" role="alert">
+                      <WbTip tone="error" role="alert" className="mt-1 font-medium">
                         {COMMITTEE_VOTE_HARD_GATE_MSG}
-                      </p>
+                      </WbTip>
                     )}
                 </>
               )}
-            </div>
+            </WbSection>
           </>
         }
       />

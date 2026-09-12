@@ -12,7 +12,7 @@ import { getAgent } from '@shared/data/agents'
 import { watchSeed } from '@shared/data/workbenchSeeds'
 import {
   CasePicker, FlowHeader, HandoffActionBar, SplitDraft, Stepper,
-  ToastBanner, nextActionsForStage, btnGhost, btnPrimary, inputCls, textareaCls,
+  ToastBanner, nextActionsForStage, btnGhost, btnPrimary, inputCls, textareaCls, draftAreaCls,
 } from '../../components/FlowChrome'
 import { VersionPanel } from '../../components/VersionPanel'
 import { WbSection, WbField } from '../../components/FormBlocks'
@@ -182,7 +182,7 @@ ${alerts.map((a) => `- [${a.status}] (${a.level}) ${a.title}
 
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <ToastBanner message={toast} error={toastErr} nextActions={toastNext} />
       <FlowHeader title="案件监控（业务办理）" subtitle="监控办理 · 规则配置、告警收件箱与确认/升级/关闭 · 官方期限请走 Docket" caseData={c} />
       <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -194,7 +194,7 @@ ${alerts.map((a) => `- [${a.status}] (${a.level}) ${a.title}
       <Stepper steps={STEPS} current={stepperCurrent} />
       <SplitDraft
         rightTitle="监控工作记录"
-        right={<textarea className={`${textareaCls} min-h-[400px] font-mono text-xs`} value={draft} onChange={(e) => setDraft(e.target.value)} />}
+        right={<textarea className={draftAreaCls} value={draft} onChange={(e) => setDraft(e.target.value)} />}
         left={<>
           <WbSection title="规则配置">
             <div className="mb-3 space-y-3">
@@ -203,7 +203,7 @@ ${alerts.map((a) => `- [${a.status}] (${a.level}) ${a.title}
             </div>
             <ul className="space-y-2">
               {rules.map((r) => (
-                <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 px-3 py-2">
+                <li key={r.id} className="list-row flex flex-wrap items-center justify-between gap-2 border border-slate-200/80 bg-white px-3 py-2">
                   <div>
                     <div className="text-sm text-slate-800">{r.name}</div>
                     <input className="mt-1 w-full rounded border border-slate-200 px-2 py-1 text-[11px]" value={r.threshold}
@@ -228,13 +228,15 @@ ${alerts.map((a) => `- [${a.status}] (${a.level}) ${a.title}
             <div className="mb-3 flex flex-wrap gap-2">
               {alerts.map((a) => (
                 <button key={a.id} type="button" onClick={() => { setActiveAlert(a.id); setMoreOpen(false); setStep(1) }}
-                  className={`rounded-lg px-3 py-1.5 text-xs ${activeAlert === a.id ? 'bg-slate-100 text-slate-800 ring-1 ring-slate-200' : 'bg-slate-100 text-slate-500'}`}>
+                  className={`btn-press wb-chip text-xs ${activeAlert === a.id ? '' : ''}`}
+                  aria-pressed={activeAlert === a.id}
+                  data-active={activeAlert === a.id ? 'true' : 'false'}>
                   <Bell className="mr-1 inline h-3 w-3" />{a.status} · {a.level}
                 </button>
               ))}
             </div>
             {alerts.filter((a) => a.id === activeAlert).map((a) => (
-              <div key={a.id} className="space-y-3 rounded-lg border border-slate-200 p-3">
+              <div key={a.id} className="wb-inset space-y-3 !bg-white p-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-medium text-slate-800">{a.title}</span>
                   <span className={`rounded px-1.5 py-0.5 text-[10px] ${a.level === '高' ? 'bg-rose-50 text-rose-700' : 'bg-amber-50 text-amber-700'}`}>{a.level}</span>
@@ -250,7 +252,7 @@ ${alerts.map((a) => `- [${a.status}] (${a.level}) ${a.title}
                     disabled={role === 'agency'}
                     placeholder={role === 'enterprise' ? '填写是否升级维权、忽略或继续观察…' : '等待企业填写'} />
                 </WbField>
-                <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-2.5">
+                <div className="wb-inset p-2.5">
                   <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
                     <span className="text-[11px] font-medium text-slate-700">简要素对照（claim_chart 草稿）</span>
                     <button

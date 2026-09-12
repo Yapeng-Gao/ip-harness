@@ -3,7 +3,7 @@ import { useApp } from '@shared/context/AppContext'
 import type { HandoffArtifactKey } from '@ip/domain/types'
 import { HANDOFF_LABELS } from '@ip/contracts'
 
-const panelCls = 'flat-card p-5'
+const panelCls = 'surface-card p-4 sm:p-5'
 
 export function VersionPanel({
   caseId,
@@ -40,15 +40,16 @@ export function VersionPanel({
       </div>
 
       {versions.length === 0 ? (
-        <p className="text-xs text-slate-500">
-          暂无版本记录。提交 / 批准 / 退回修改时会自动生成。
-        </p>
+        <div className="ui-empty !py-6">
+          <p className="ui-empty-title text-sm">暂无版本记录</p>
+          <p className="ui-empty-desc">提交 / 批准 / 退回修改时会自动生成。</p>
+        </div>
       ) : (
         <ul className="mb-3 max-h-48 space-y-2 overflow-y-auto">
           {[...versions].reverse().map((v) => (
             <li
               key={v.id}
-              className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs"
+              className="wb-inset px-3 py-2 text-xs"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-medium text-slate-800">{v.version}</span>
@@ -73,7 +74,7 @@ export function VersionPanel({
       )}
 
       {showAgencyNotes && (
-        <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        <div className="wb-tip wb-tip-warn mb-3 text-xs">
           <div className="mb-1 font-medium">企业退回批注</div>
           {versions.filter((v) => v.annotation).length === 0 ? (
             <p>请按企业意见修改后重新提交。</p>

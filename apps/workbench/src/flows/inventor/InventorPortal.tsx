@@ -22,6 +22,7 @@ import type { DisclosureStatus } from '@ip/domain/types'
 import { PageHeader } from '@shared/components/PageHeader'
 import { HandoffChip } from '@shared/components/HandoffChip'
 import { HandoffActionBar } from '../../components/flow/HandoffActionBar'
+import { inputCls, textareaCls } from '../../components/flow/styles'
 import { HANDOFF_ARTIFACT_LABELS } from '@ip/contracts'
 import { navigateApp } from '../../lib/deepLinks'
 
@@ -233,7 +234,7 @@ export function InventorPortal() {
   }
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <PageHeader
         title="研发交底"
         context="两层勿混：①发明人提报状态机 · ②交底包 disclosure_pack 办理交接"
@@ -540,7 +541,7 @@ export function InventorPortal() {
               <input
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                className={inputCls}
                 placeholder="简明描述发明主题"
                 aria-label="发明名称"
               />
@@ -551,7 +552,7 @@ export function InventorPortal() {
                 <input
                   value={form.techTheme}
                   onChange={(e) => setForm((f) => ({ ...f, techTheme: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  className={inputCls}
                   placeholder="可与发明名称相同；对齐立项 intake"
                   aria-label="技术主题"
                 />
@@ -566,7 +567,7 @@ export function InventorPortal() {
                       patentType: e.target.value as '发明' | '实用新型' | '外观',
                     }))
                   }
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  className={inputCls}
                   aria-label="专利类型"
                 >
                   <option value="发明">发明（默认）</option>
@@ -581,7 +582,7 @@ export function InventorPortal() {
                 <input
                   value={form.inventor}
                   onChange={(e) => setForm((f) => ({ ...f, inventor: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  className={inputCls}
                   placeholder="姓名"
                   aria-label="发明人"
                 />
@@ -591,7 +592,7 @@ export function InventorPortal() {
                 <select
                   value={form.dept}
                   onChange={(e) => setForm((f) => ({ ...f, dept: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  className={inputCls}
                   aria-label="部门"
                 >
                   {depts.map((d) => (
@@ -607,7 +608,7 @@ export function InventorPortal() {
               <input
                 value={form.contact}
                 onChange={(e) => setForm((f) => ({ ...f, contact: e.target.value }))}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                className={inputCls}
                 placeholder="待填写"
                 aria-label="联系人"
               />
@@ -619,7 +620,7 @@ export function InventorPortal() {
                 value={form.tech}
                 onChange={(e) => setForm((f) => ({ ...f, tech: e.target.value }))}
                 rows={4}
-                className="w-full resize-y rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                className={textareaCls}
                 placeholder="问题、方案要点、与现有技术差异（示意）"
                 aria-label="技术方案"
               />
@@ -631,7 +632,7 @@ export function InventorPortal() {
                   type="date"
                   value={form.riskDate}
                   onChange={(e) => setForm((f) => ({ ...f, riskDate: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  className={inputCls}
                   aria-label="公开风险日"
                 />
               </label>
@@ -645,7 +646,7 @@ export function InventorPortal() {
                       target: e.target.value as 'pre_research' | 'decision',
                     }))
                   }
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  className={inputCls}
                   aria-label="提交去向"
                 >
                   <option value="pre_research">立项前调研</option>
@@ -653,13 +654,13 @@ export function InventorPortal() {
                 </select>
               </label>
             </div>
-            <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center">
+            <div className="ui-empty !py-6">
               <Paperclip className="mx-auto h-5 w-5 text-slate-400" />
               <div className="mt-2 text-xs text-slate-500">附件上传占位（示意）</div>
             </div>
             <button
               type="submit"
-              className="btn-press cta-work focus-ring inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium sm:w-auto"
+              className="ui-btn ui-btn-primary focus-ring cta-work w-full sm:w-auto"
               aria-label="提交交底"
             >
               <Send className="h-4 w-4" />
@@ -668,13 +669,13 @@ export function InventorPortal() {
           </div>
         </form>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 lg:col-span-2">
+        <div className="surface-card p-4 sm:p-5 lg:col-span-2">
           <h2 className="mb-4 text-sm font-medium text-slate-800">我的交底 · 状态时间线</h2>
           <ul className="space-y-3">
             {disclosures.map((d) => (
               <li
                 key={d.id}
-                className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-3"
+                className="wb-inset px-3 py-3"
               >
                 <button
                   type="button"
@@ -724,7 +725,7 @@ export function InventorPortal() {
                             type="button"
                             onClick={() => onDeptApprove(d.id)}
                             disabled={actingAs !== 'dept'}
-                            className="btn-press inline-flex items-center gap-1 rounded-lg bg-slate-900 px-2.5 py-1.5 text-[11px] font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
+                            className="ui-btn ui-btn-primary ui-btn-sm focus-ring disabled:cursor-not-allowed disabled:opacity-50"
                             aria-label={`部门审核人通过 ${d.title}`}
                           >
                             <CheckCircle2 className="h-3 w-3" /> 部门审核人 · 通过 → IP受理
@@ -733,7 +734,7 @@ export function InventorPortal() {
                             type="button"
                             onClick={() => onDeptReject(d.id)}
                             disabled={actingAs !== 'dept'}
-                            className="btn-press inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-[11px] font-medium text-rose-700 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
+                            className="ui-btn ui-btn-sm focus-ring border border-rose-200 bg-rose-50 text-rose-700 disabled:opacity-50"
                             aria-label={`部门审核人退回 ${d.title}`}
                           >
                             <XCircle className="h-3 w-3" /> 部门审核人 · 退回
@@ -753,7 +754,7 @@ export function InventorPortal() {
                             type="button"
                             onClick={() => onIpAccept(d.id)}
                             disabled={actingAs !== 'ip'}
-                            className="btn-press inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-[11px] font-medium text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
+                            className="ui-btn ui-btn-success ui-btn-sm focus-ring disabled:cursor-not-allowed disabled:opacity-50"
                             aria-label={`IP受理人立案 ${d.title}`}
                           >
                             <CheckCircle2 className="h-3 w-3" /> IP受理人 · 受理立案
@@ -762,7 +763,7 @@ export function InventorPortal() {
                             type="button"
                             onClick={() => onIpReject(d.id)}
                             disabled={actingAs !== 'ip'}
-                            className="btn-press inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-[11px] font-medium text-rose-700 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
+                            className="ui-btn ui-btn-sm focus-ring border border-rose-200 bg-rose-50 text-rose-700 disabled:opacity-50"
                             aria-label={`IP受理人退回 ${d.title}`}
                           >
                             <XCircle className="h-3 w-3" /> IP受理人 · 退回

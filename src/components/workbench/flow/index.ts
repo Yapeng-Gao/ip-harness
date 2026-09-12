@@ -14,5 +14,6 @@ export {
   btnGhost,
   btnSuccess,
   panelCls,
+  draftAreaCls,
 } from './styles'
 export { workbenchPathForStage } from '../../../data/workbenchMap'

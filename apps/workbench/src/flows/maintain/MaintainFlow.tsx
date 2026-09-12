@@ -21,8 +21,7 @@ import {
   DeadlineChip,
   nextActionsForStage,
   btnGhost,
-  inputCls,
-  textareaCls,
+  inputCls, draftAreaCls,
 } from '../../components/FlowChrome'
 import { VersionPanel } from '../../components/VersionPanel'
 import { WbSection, WbField } from '../../components/FormBlocks'
@@ -199,7 +198,7 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
 
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <ToastBanner message={toast} error={toastErr} nextActions={toastNext} />
       <FlowHeader
         title="授权维持"
@@ -222,7 +221,7 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
         rightTitle="维持案卷摘要"
         right={
           <textarea
-            className={`${textareaCls} min-h-[360px] font-mono text-xs`}
+            className={draftAreaCls}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
@@ -356,7 +355,7 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
                   确认缴纳（须走发票）
                 </button>
               </div>
-              <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2 text-[11px] leading-snug text-amber-950">
+              <div className="wb-tip wb-tip-warn mb-1 text-[11px] leading-snug">
                 <div className="font-medium text-amber-900">维持价值分层</div>
                 <p className="mt-1 text-amber-800/90">选择分层并写入 Drive / 委托备注（非法律意见 · 不自动放弃权利）</p>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -414,7 +413,7 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
                   </p>
                 )}
               </div>
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
+              <div className="wb-inset text-xs text-slate-700">
                 <div className="mb-2 font-medium text-slate-800">官费估算（mock）</div>
                 <div className="flex flex-wrap gap-4">
                   <span>下次第 {feeEstimate.year ?? '—'} 年官费 ≈ ¥{feeEstimate.official}</span>
@@ -467,7 +466,7 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
             >
               <div className="space-y-3">
                 {changes.map((ch) => (
-                  <div key={ch.id} className="grid gap-2 rounded-lg border border-slate-200 p-3 sm:grid-cols-3">
+                  <div key={ch.id} className="wb-inset grid gap-2 !bg-white p-3 sm:grid-cols-3">
                     <input
                       className={inputCls}
                       placeholder="变更类型"
@@ -519,7 +518,7 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
               </p>
               {payableInvoices.length === 0 ? (
                 <div
-                  className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-xs text-slate-600"
+                  className="ui-empty !py-6 text-xs text-slate-600"
                   role="status"
                 >
                   本案暂无待付发票。
@@ -536,7 +535,7 @@ ${role === 'enterprise' ? '企业：确认年费预算与变更审批。' : '代
                   {payableInvoices.map((inv) => (
                     <li
                       key={inv.id}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs"
+                      className="list-row flex flex-wrap items-center justify-between gap-2 border border-slate-200/80 bg-white px-3 py-2 text-xs"
                     >
                       <span className="min-w-0">
                         <span className="font-medium text-slate-800">{inv.title}</span>

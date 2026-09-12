@@ -15,11 +15,10 @@ import {
   ToastBanner, nextActionsForStage,
   btnSuccess,
   inputCls,
-  panelCls,
-  textareaCls,
+  draftAreaCls,
 } from '../../components/FlowChrome'
 import { VersionPanel } from '../../components/VersionPanel'
-import { WbSection, WbField } from '../../components/FormBlocks'
+import { WbSection, WbField, WbTip, WbCheckRow, WbNodeCard, WbChip, WbEmpty } from '../../components/FormBlocks'
 import { WorkbenchInsightDataBanner } from '../../components/WorkbenchInsightDataBanner'
 import {
   evaluateGuardrails,
@@ -323,7 +322,7 @@ ${
         rightTitle="调研结论摘要"
         right={
           <textarea
-            className={`${textareaCls} min-h-[420px] font-mono text-xs leading-relaxed`}
+            className={draftAreaCls}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
@@ -354,138 +353,121 @@ ${
                 <span className="mb-2 block text-xs font-medium text-slate-600">数据库</span>
                 <div className="flex flex-wrap gap-2">
                   {DB_OPTIONS.map((db) => (
-                    <button
-                      key={db}
-                      type="button"
-                      onClick={() => toggleDb(db)}
-                      className={`btn-press focus-ring rounded-full px-3 py-1.5 text-xs ${
-                        databases.includes(db)
-                          ? 'bg-slate-900 text-white shadow-[var(--shadow-rest)]'
-                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200/80'
-                      }`}
-                    >
+                    <WbChip key={db} active={databases.includes(db)} onClick={() => toggleDb(db)}>
                       {db}
-                    </button>
+                    </WbChip>
                   ))}
                 </div>
               </div>
             </WbSection>
 
-            <div className={panelCls}>
-              <h3 className="mb-3 text-sm font-medium text-slate-800">
-                检索结果 · 勾选影响新颖性评分
-              </h3>
-              <ul className="space-y-2">
-                {results.map((r) => (
-                  <li key={r.id}>
-                    <button
-                      type="button"
-                      onClick={() => toggleResult(r.id)}
-                      className={`btn-press card-hover w-full rounded-xl border px-3 py-2.5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 ${
-                        selectedResults.includes(r.id)
-                          ? 'border-slate-300 bg-slate-100 shadow-sm'
-                          : 'border-slate-200 bg-white hover:border-slate-200'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="truncate text-sm text-slate-800">{r.title}</div>
-                          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500">
-                            <span className="font-mono text-slate-700">{r.pubNo}</span>
-                            {(r as { url?: string }).url ? (
-                              <a
-                                href={(r as { url?: string }).url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-sky-700 underline"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                打开公开页
-                              </a>
-                            ) : (
-                              <span className="text-rose-600">无链接不可提交</span>
-                            )}
-                            <span>{(r as { assignee?: string }).assignee ?? '—'}</span>
-                            <span>{r.date}</span>
-                            <span className="rounded bg-slate-100 px-1 py-0.5 text-xs">
-                              {(r as { ipc?: string }).ipc ?? 'H01M10/0562'}
+            <WbSection title="检索结果 · 勾选影响新颖性评分">
+              {results.length === 0 ? (
+                <WbEmpty title="暂无检索命中" description="调整关键词或数据库后重试（示意）" />
+              ) : (
+                <ul className="space-y-2">
+                  {results.map((r) => (
+                    <li key={r.id}>
+                      <WbNodeCard
+                        selected={selectedResults.includes(r.id)}
+                        onClick={() => toggleResult(r.id)}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="truncate text-sm font-medium text-slate-800">{r.title}</div>
+                            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500">
+                              <span className="font-mono tabular text-slate-700">{r.pubNo}</span>
+                              {(r as { url?: string }).url ? (
+                                <a
+                                  href={(r as { url?: string }).url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[var(--color-accent-muted)] underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  打开公开页
+                                </a>
+                              ) : (
+                                <span className="text-rose-600">无链接不可提交</span>
+                              )}
+                              <span>{(r as { assignee?: string }).assignee ?? '—'}</span>
+                              <span className="tabular">{r.date}</span>
+                              <span className="rounded-[var(--radius-sm)] bg-slate-100 px-1.5 py-0.5 text-xs">
+                                {(r as { ipc?: string }).ipc ?? 'H01M10/0562'}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex shrink-0 flex-col items-end gap-1">
+                            <span
+                              className={`rounded-[var(--radius-sm)] px-1.5 py-0.5 text-xs ${
+                                r.relevance === '高相关'
+                                  ? 'bg-rose-50 text-rose-700'
+                                  : r.relevance === '中相关'
+                                    ? 'bg-amber-50 text-amber-700'
+                                    : 'bg-slate-100 text-slate-500'
+                              }`}
+                            >
+                              {r.relevance}
+                            </span>
+                            <span className="rounded-full border border-slate-200/80 bg-white px-1.5 py-0.5 text-[10px] text-slate-600">
+                              {(r as { apiSource?: string }).apiSource ?? '商业API·IncoPat示意'}
                             </span>
                           </div>
                         </div>
-                        <div className="flex shrink-0 flex-col items-end gap-1">
-                          <span
-                            className={`rounded px-1.5 py-0.5 text-xs ${
-                              r.relevance === '高相关'
-                                ? 'bg-rose-50 text-rose-700'
-                                : r.relevance === '中相关'
-                                  ? 'bg-amber-50 text-amber-700'
-                                  : 'bg-slate-100 text-slate-500'
-                            }`}
-                          >
-                            {r.relevance}
-                          </span>
-                          <span className="rounded-full border border-slate-200 bg-slate-100 px-1.5 py-0.5 text-xs text-slate-800">
-                            {(r as { apiSource?: string }).apiSource ?? '商业API·IncoPat示意'}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="mt-1 line-clamp-2 text-xs text-slate-500">{r.abstract}</p>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              {noveltyNotes && (
-                <p className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600 ring-1 ring-slate-100">
-                  {noveltyNotes}
-                </p>
+                        <p className="mt-1.5 line-clamp-2 text-xs text-slate-500">{r.abstract}</p>
+                      </WbNodeCard>
+                    </li>
+                  ))}
+                </ul>
               )}
-            </div>
+              {noveltyNotes && (
+                <WbTip tone="neutral">{noveltyNotes}</WbTip>
+              )}
+            </WbSection>
 
-            <div className={panelCls}>
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                <h3 className="text-sm font-medium text-balance text-slate-800">命中→结论 绑定面板</h3>
+            <WbSection
+              title="命中→结论 绑定面板"
+              action={
                 <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs text-slate-600">
                   {selectedResults.length >= 1 && conclusion ? '已绑定命中' : '提交前须绑定命中'}
                 </span>
-              </div>
-              <p className="mb-3 text-xs text-slate-500">
+              }
+            >
+              <p className="text-xs text-slate-500">
                 勾选/取消命中后立即重写结论要点并调整新颖性/创造性滑杆（示意绑定，非真实法律引擎）
               </p>
               {conclusionBullets.length === 0 ? (
-                <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-rose-100" role="alert">
+                <WbTip tone="error" role="alert">
                   尚未绑定 — 请勾选 ≥1 篇命中；空命中将阻断提交
-                </p>
+                </WbTip>
               ) : (
                 <ul className="space-y-1.5">
                   {conclusionBullets.map((b, i) => (
-                    <li key={i} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">
+                    <li key={i} className="wb-inset px-3 py-2 text-xs text-slate-700">
                       {b}
                     </li>
                   ))}
                 </ul>
               )}
               {(hitInlineError || (submitAttempted && selectedResults.length === 0)) && (
-                <p className="mt-3 rounded-xl bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 ring-1 ring-rose-200" role="alert">
+                <WbTip tone="error" role="alert" className="font-medium">
                   {hitInlineError ?? '请至少勾选 1 篇检索命中后再提交'}
-                </p>
+                </WbTip>
               )}
               {selectedResults.length > 0 && !hitsVerifiable && (
-                <p className="mt-3 rounded-xl bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 ring-1 ring-rose-200" role="alert">
+                <WbTip tone="error" role="alert" className="font-medium">
                   命中须含可核验 pubNo + 可点 url · 无链接不可提交
                   {unverifiableHits.length
                     ? `（${unverifiableHits.map((r) => r.pubNo || r.id).join('、')}）`
                     : ''}
-                </p>
+                </WbTip>
               )}
               {ftoNotes && (
-                <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-900 ring-1 ring-amber-100">
-                  FTO 笔记：{ftoNotes}
-                </p>
+                <WbTip tone="warn">FTO 笔记：{ftoNotes}</WbTip>
               )}
-            </div>
+            </WbSection>
 
-            <div className={panelCls}>
-              <h3 className="mb-4 text-sm font-medium text-slate-800">新颖性 / 可专利性评分</h3>
+            <WbSection title="新颖性 / 可专利性评分">
               <Field label={`新颖性：${novelty}`}>
                 <input
                   type="range" min={0} max={100} value={novelty}
@@ -494,75 +476,70 @@ ${
                   aria-valuetext={`新颖性 ${novelty}`}
                 />
               </Field>
-              <div className="mt-3">
-                <Field label={`创造性：${inventiveness}`}>
-                  <input
-                    type="range" min={0} max={100} value={inventiveness}
-                    onChange={(e) => setInventiveness(Number(e.target.value))}
-                    className={`w-full accent-slate-700 ${sliderPulse ? 'slider-pulse' : ''}`}
-                    aria-valuetext={`创造性 ${inventiveness}`}
-                  />
-                </Field>
-              </div>
-              <div className="mt-3">
-                <Field label="结论" required>
-                  <select className={inputCls} value={conclusion} onChange={(e) => setConclusion(e.target.value)}>
-                    <option>可申请</option>
-                    <option>有条件可申请</option>
-                    <option>暂不建议申请</option>
-                    <option>需补充实验数据</option>
-                  </select>
-                </Field>
-              </div>
-            </div>
+              <Field label={`创造性：${inventiveness}`}>
+                <input
+                  type="range" min={0} max={100} value={inventiveness}
+                  onChange={(e) => setInventiveness(Number(e.target.value))}
+                  className={`w-full accent-slate-700 ${sliderPulse ? 'slider-pulse' : ''}`}
+                  aria-valuetext={`创造性 ${inventiveness}`}
+                />
+              </Field>
+              <Field label="结论" required>
+                <select className={inputCls} value={conclusion} onChange={(e) => setConclusion(e.target.value)}>
+                  <option>可申请</option>
+                  <option>有条件可申请</option>
+                  <option>暂不建议申请</option>
+                  <option>需补充实验数据</option>
+                </select>
+              </Field>
+            </WbSection>
 
-            <div className={panelCls}>
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-sm font-medium text-slate-800">FTO 初评</h3>
-                <div className="flex gap-1">
+            <WbSection
+              title="FTO 初评"
+              action={
+                <div className="segmented" role="group" aria-label="FTO 风险档">
                   {(['低', '中', '高'] as const).map((r) => (
                     <button
                       key={r}
                       type="button"
                       onClick={() => { setFtoRisk(r); setStep(3) }}
-                      className={`rounded px-2 py-0.5 text-xs ${
+                      className={`segmented-item btn-press focus-ring ${
                         ftoRisk === r
                           ? r === '高'
-                            ? 'bg-rose-50 text-rose-700'
+                            ? 'text-rose-700'
                             : r === '中'
-                              ? 'bg-amber-50 text-amber-700'
-                              : 'bg-emerald-50 text-emerald-700'
-                          : 'bg-slate-100 text-slate-500'
+                              ? 'text-amber-700'
+                              : 'text-emerald-700'
+                          : ''
                       }`}
+                      aria-pressed={ftoRisk === r}
                     >
                       风险{r}
                     </button>
                   ))}
                 </div>
-              </div>
+              }
+            >
               <ul className="space-y-2">
                 {FTO_ITEMS.map((item) => (
                   <li key={item.key}>
-                    <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-slate-200 px-3 py-2 hover:bg-slate-50">
-                      <input
-                        type="checkbox"
-                        checked={!!ftoChecks[item.key]}
-                        onChange={() =>
-                          setFtoChecks((prev) => ({ ...prev, [item.key]: !prev[item.key] }))
-                        }
-                        className="mt-0.5 accent-slate-700"
-                      />
-                      <span className="text-sm text-slate-700">{item.label}</span>
-                    </label>
+                    <WbCheckRow
+                      checked={!!ftoChecks[item.key]}
+                      onChange={() =>
+                        setFtoChecks((prev) => ({ ...prev, [item.key]: !prev[item.key] }))
+                      }
+                    >
+                      {item.label}
+                    </WbCheckRow>
                   </li>
                 ))}
               </ul>
-              <div className="mt-4">
+              <div>
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                   <h4 className="text-xs font-medium text-slate-700">简要素对照表（claim_chart 草稿）</h4>
                   <button
                     type="button"
-                    className="rounded-md border border-slate-300 bg-white px-2 py-1 text-[11px] font-medium text-slate-800"
+                    className="ui-btn ui-btn-secondary ui-btn-sm focus-ring"
                     onClick={() => {
                       const summary = claimChartRows
                         .map((r) => `${r.ourFeature} ↔ ${r.prior} · 重叠${r.overlap}`)
@@ -581,25 +558,25 @@ ${
                     写入 Drive
                   </button>
                 </div>
-                <div className="overflow-x-auto rounded-lg border border-slate-200">
-                  <table className="min-w-full text-left text-[11px] text-slate-700">
-                    <thead className="bg-slate-50 text-slate-500">
+                <div className="overflow-x-auto rounded-[var(--radius-md)] border border-slate-200/80">
+                  <table className="ui-table text-[11px]">
+                    <thead>
                       <tr>
-                        <th className="px-2 py-1.5 font-medium">我方案要素</th>
-                        <th className="px-2 py-1.5 font-medium">对比文献</th>
-                        <th className="px-2 py-1.5 font-medium">重叠</th>
-                        <th className="px-2 py-1.5 font-medium">备注</th>
+                        <th>我方案要素</th>
+                        <th>对比文献</th>
+                        <th>重叠</th>
+                        <th>备注</th>
                       </tr>
                     </thead>
                     <tbody>
                       {claimChartRows.map((r) => (
-                        <tr key={r.id} className="border-t border-slate-100">
-                          <td className="px-2 py-1.5">{r.ourFeature}</td>
-                          <td className="px-2 py-1.5">{r.prior}</td>
-                          <td className="px-2 py-1.5">{r.overlap}</td>
-                          <td className="px-2 py-1.5">
+                        <tr key={r.id}>
+                          <td>{r.ourFeature}</td>
+                          <td>{r.prior}</td>
+                          <td className="tabular">{r.overlap}</td>
+                          <td>
                             <input
-                              className="w-full rounded border border-slate-200 px-1 py-0.5"
+                              className="ui-input ui-input-sm focus-ring"
                               value={r.note}
                               onChange={(e) =>
                                 setClaimChartRows((prev) =>
@@ -616,10 +593,10 @@ ${
                   </table>
                 </div>
               </div>
-            </div>
+            </WbSection>
 
             <VersionPanel caseId={caseId} handoffKey="research_report" />
-            <div className={panelCls}>
+            <WbSection title="交接确认">
               <HandoffActionBar
                 caseId={caseId}
                 handoffKey="research_report"
@@ -717,11 +694,11 @@ ${
                 }}
               />
               {role === 'enterprise' && ['approved', 'authorized_to_file', 'filed'].includes(handoff) && (
-                <button type="button" className={`${btnSuccess} mt-3`} onClick={toIntake}>
+                <button type="button" className={`${btnSuccess} mt-1`} onClick={toIntake}>
                   <ArrowRight className="h-4 w-4" /> 转入立项闸门
                 </button>
               )}
-            </div>
+            </WbSection>
           </>
         }
       />
