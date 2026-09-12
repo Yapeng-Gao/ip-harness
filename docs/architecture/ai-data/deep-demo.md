@@ -72,3 +72,11 @@ stateDiagram-v2
 - [ ] 不改邻居业务代码  
 
 相关：[surfaces.md](./surfaces.md) · [topology.md](./topology.md) · [../ai-infra/deep-demo.md](../ai-infra/deep-demo.md)
+
+---
+
+## 脚注 · 跨壳与 localStorage（冻结）
+
+> **不同 Vite 端口 = 不同 origin**，浏览器 **`localStorage` 不共享**（5179 读不到 5181 写入的键，反之亦然）。  
+> **跨壳演示以共享种子 ID 契约为准**（双方内置同一组 `id` / `name` / `version`，如 `claims-sft@v1.4`）。  
+> 键 `ip.harness.aiData.publishedDatasets` 的写入**仅利于同端口多 tab / 刷新**持久；**不是**跨口同步通道。禁止产品文案声称已跨 5179↔5181 自动共享。
