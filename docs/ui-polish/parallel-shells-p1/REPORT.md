@@ -2,7 +2,7 @@
 
 | 项 | 值 |
 |----|-----|
-| **分支** | `dev` @ `45ef602` |
+| **分支** | `dev` @ `458bca9` |
 | **权威** | `REVIEW_parallel_shells.md` · DESIGN_SYSTEM DS-DISABLED-01 / HABIT-03/05 / DS-COMP |
 | **范围** | **仅** `apps/ai-infra` · `apps/ai-data`（未改 mid/wb/agent/ops/iam · doc-harness · Persona/HITL/STEPS） |
 | **证据** | `docs/ui-polish/parallel-shells-p1/` ≡ `.ui-evidence/parallel-shells-p1/` |
@@ -82,7 +82,7 @@ npm run typecheck -w @ip/ai-infra -w @ip/ai-data
 ## 5. Git
 
 见 commit message：`ui(parallel): AI/AD P1 loadtest reason, empty CTA, focus-ring`  
-**push SHA**: `45ef602382db183046f8d4e49b3f23f54461d37f`
+**push SHA**: `458bca977b86e121e9ef7d199b56329829a443e5`
 
 ---
 
