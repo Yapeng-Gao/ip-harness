@@ -707,22 +707,187 @@ p {
   color: #0f172a;
 }
 
-/* Dashboard inbox panel — denser aligned rows */
-.dash-next {
+/* Dashboard top ladder: light head → strong next-action → KPI */
+.dash-board-top {
+  overflow: hidden;
+  border: 1px solid rgba(60, 60, 67, 0.12);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-rest);
+}
+.dash-board-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  padding: 0.875rem 1.125rem 0.8125rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.55) 100%);
+}
+.dash-board-copy {
+  min-width: 0;
+  flex: 1 1 16rem;
+}
+.dash-board-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+}
+.dash-board-title {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: #0f172a;
+  text-wrap: balance;
+}
+.dash-board-org {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid;
+  background: #fff;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.dash-board-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.75rem;
+  margin: 0.375rem 0 0;
+  font-size: var(--font-size-caption);
+  line-height: 1.45;
+  color: rgba(60, 60, 67, 0.58);
+  text-wrap: pretty;
+}
+.dash-board-status-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem 0.625rem;
+  padding-left: 0.625rem;
+  border-left: 1px solid rgba(60, 60, 67, 0.14);
+}
+.dash-board-quiet-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: var(--radius-sm);
+  color: rgba(60, 60, 67, 0.72);
+  transition: color 0.12s ease;
+}
+.dash-board-quiet-link:hover {
+  color: #0f172a;
+}
+.dash-board-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex: 0 1 auto;
+}
+
+/* Priority action bar — one unit, not a second mini-dashboard */
+.dash-next {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 0.75rem 1rem;
-  padding: 0.875rem 1.125rem;
+  padding: 0.8125rem 1.125rem 0.875rem;
+  border-top: 1px solid rgba(60, 60, 67, 0.1);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #f59e0b 14%, transparent) 0, transparent 4.5rem),
+    linear-gradient(180deg, #fffbeb 0%, #ffffff 72%);
+  box-shadow: inset 3px 0 0 #f59e0b;
+}
+@media (min-width: 900px) {
+  .dash-next {
+    grid-template-columns: minmax(0, 1.55fr) minmax(9rem, 0.55fr) auto;
+    align-items: center;
+  }
+}
+.dash-next-main {
+  min-width: 0;
 }
 .dash-next-kicker {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(146, 64, 14, 0.72);
+}
+.dash-next-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.625rem;
+  margin-top: 0.3125rem;
+}
+.dash-next-title {
+  margin: 0;
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: #0f172a;
+  text-wrap: pretty;
+}
+.dash-next-sub {
+  margin: 0.125rem 0 0;
   font-size: var(--font-size-caption);
+  line-height: 1.4;
+  color: rgba(60, 60, 67, 0.58);
+}
+.dash-next-meta {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.125rem 0;
+}
+.dash-next-fact {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  max-width: 100%;
+  min-width: 0;
+}
+.dash-next-fact-k {
+  font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(60, 60, 67, 0.45);
+  color: rgba(146, 64, 14, 0.62);
+  white-space: nowrap;
 }
+.dash-next-fact-v {
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  line-height: 1.25;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 12rem;
+}
+.dash-next-cta {
+  justify-self: end;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* Dashboard inbox panel — denser aligned rows */
 .dash-inbox {
   overflow: hidden;
 }

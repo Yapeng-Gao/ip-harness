@@ -13,7 +13,7 @@ import { useAgents } from '../context/AgentContext'
 import { RUN_STATUS_LABEL } from '../data/agents'
 import { workbenchPathForStage } from '../data/workbenchMap'
 import { TenantBanner } from '../components/TenantBanner'
-import { PageHeader, EmptyState } from '../components/PageHeader'
+import { EmptyState } from '../components/PageHeader'
 import { getLastCaseId, getLastAgentSessionId } from '../utils/lastVisited'
 import {
   buildOpsInbox,
@@ -168,88 +168,135 @@ export function Dashboard() {
   return (
     <div className="px-5 py-5 lg:px-8 lg:py-6">
       <TenantBanner />
-      <PageHeader
-        sticky
-        title="资产与任务看板"
-        context={
-          <>
-            {workspace.chipLabel} · {workspace.homeEmphasis} ·{' '}
-            <span className="tabular">{cases.length}</span> 件在管 · 期限{' '}
-            <span className="tabular">{docketEvents.length}</span> 条
-          </>
-        }
-        primary={{
-          label: lastCase
-            ? `办理 · ${lastCase.title.slice(0, 12)}`
-            : '进入业务工作台',
-          to: lastCase
-            ? workbenchPathForStage(lastCase.stage, lastCase.id)
-            : '/workbench',
-          icon: <ArrowRight className="h-4 w-4" aria-hidden />,
-          ariaLabel: lastCase ? `办理 ${lastCase.title}` : '进入业务工作台',
-        }}
-        secondary={secondaryActions}
-      >
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <div
-            className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium ${workspace.brandColor} border-current/20 bg-white`}
-          >
-            {workspace.orgName}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
-            {lastSession && (
-              <AppLink
-                to="/agent"
-                className="inline-flex items-center gap-1 hover:text-slate-900 focus-ring rounded"
-              >
-                <Bot className="h-3.5 w-3.5" aria-hidden /> 知产 Agent
-              </AppLink>
-            )}
-            <AppLink to="/docket" className="hover:text-slate-900 focus-ring rounded">
-              官方期限
-            </AppLink>
-            {role === 'enterprise' ? (
-              <AppLink to="/agencies" className="hover:text-slate-900 focus-ring rounded">
-                派单代理
-              </AppLink>
-            ) : (
-              <AppLink
-                to="/workbench/prosecution"
-                className="hover:text-slate-900 focus-ring rounded"
-              >
-                我方承办 · 答复
-              </AppLink>
-            )}
-          </div>
-        </div>
-      </PageHeader>
 
-      {nextItem && (
-        <div className="surface-card dash-next mb-6">
-          <div className="min-w-0 flex-1">
-            <div className="dash-next-kicker">下一步 · 优先办理</div>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
+      <section className="dash-board-top mb-6" aria-label="资产与任务看板">
+        <div className="dash-board-head">
+          <div className="dash-board-copy min-w-0">
+            <div className="dash-board-title-row">
+              <h1 className="dash-board-title">资产与任务看板</h1>
               <span
-                className={`dash-inbox-tag ${SOURCE_PILL[nextItem.sourceLabel] ?? 'border-slate-200 bg-slate-50 text-slate-600'}`}
+                className={`dash-board-org ${workspace.brandColor} border-current/20`}
               >
-                {nextItem.sourceLabel}
+                {workspace.orgName}
               </span>
-              <p className="dash-inbox-title truncate">{nextItem.title}</p>
             </div>
-            {nextItem.subtitle && (
-              <p className="dash-inbox-sub mt-0.5 truncate">{nextItem.subtitle}</p>
-            )}
+            <p className="dash-board-status">
+              <span>
+                {workspace.chipLabel} · {workspace.homeEmphasis} ·{' '}
+                <span className="tabular">{cases.length}</span> 件在管 · 期限{' '}
+                <span className="tabular">{docketEvents.length}</span> 条
+              </span>
+              <span className="dash-board-status-links" aria-label="快捷入口">
+                {lastSession && (
+                  <AppLink
+                    to="/agent"
+                    className="dash-board-quiet-link focus-ring"
+                  >
+                    <Bot className="h-3.5 w-3.5" aria-hidden />
+                    知产 Agent
+                  </AppLink>
+                )}
+                <AppLink to="/docket" className="dash-board-quiet-link focus-ring">
+                  官方期限
+                </AppLink>
+                {role === 'enterprise' ? (
+                  <AppLink
+                    to="/agencies"
+                    className="dash-board-quiet-link focus-ring"
+                  >
+                    派单代理
+                  </AppLink>
+                ) : (
+                  <AppLink
+                    to="/workbench/prosecution"
+                    className="dash-board-quiet-link focus-ring"
+                  >
+                    我方承办 · 答复
+                  </AppLink>
+                )}
+              </span>
+            </p>
           </div>
-          <AppLink
-            to={nextItem.href}
-            className="ui-btn ui-btn-primary btn-press cta-work focus-ring shrink-0"
-            aria-label={`${nextItem.source === 'agent' ? '确认' : '办理'} ${nextItem.title}`}
-          >
-            {nextItem.source === 'agent' ? '去确认' : '去办理'}
-            <ArrowRight className="h-4 w-4" aria-hidden />
-          </AppLink>
+          <div className="dash-board-ctas">
+            {secondaryActions.map((a) => (
+              <AppLink
+                key={a.label + (a.to ?? '')}
+                to={a.to!}
+                className="ui-btn ui-btn-secondary btn-press focus-ring"
+                aria-label={a.ariaLabel ?? a.label}
+              >
+                {'icon' in a ? a.icon : null}
+                {a.label}
+              </AppLink>
+            ))}
+            <AppLink
+              to={
+                lastCase
+                  ? workbenchPathForStage(lastCase.stage, lastCase.id)
+                  : '/workbench'
+              }
+              className="ui-btn ui-btn-primary btn-press cta-work focus-ring"
+              aria-label={lastCase ? `办理 ${lastCase.title}` : '进入业务工作台'}
+            >
+              <ArrowRight className="h-4 w-4" aria-hidden />
+              {lastCase
+                ? `办理 · ${lastCase.title.slice(0, 12)}`
+                : '进入业务工作台'}
+            </AppLink>
+          </div>
         </div>
-      )}
+
+        {nextItem && (
+          <div
+            className="dash-next"
+            role="region"
+            aria-label="下一步 · 优先办理"
+          >
+            <div className="dash-next-main min-w-0">
+              <div className="dash-next-kicker">下一步 · 优先办理</div>
+              <div className="dash-next-body">
+                <span
+                  className={`dash-inbox-tag ${SOURCE_PILL[nextItem.sourceLabel] ?? 'border-slate-200 bg-slate-50 text-slate-600'}`}
+                >
+                  {nextItem.sourceLabel}
+                </span>
+                <div className="min-w-0">
+                  <p className="dash-next-title truncate">{nextItem.title}</p>
+                  {nextItem.subtitle && (
+                    <p className="dash-next-sub truncate">{nextItem.subtitle}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="dash-next-meta" aria-label="优先事项要点">
+              {nextItem.due ? (
+                <span className="dash-next-fact">
+                  <span className="dash-next-fact-k">期限</span>
+                  <span className="dash-next-fact-v tabular">{nextItem.due}</span>
+                </span>
+              ) : null}
+              <span className="dash-next-fact">
+                <span className="dash-next-fact-k">谁该动</span>
+                <span className="dash-next-fact-v">{nextItem.whoShouldAct}</span>
+              </span>
+              {nextItem.gateLabel ? (
+                <span className="dash-next-fact">
+                  <span className="dash-next-fact-k">闸</span>
+                  <span className="dash-next-fact-v">{nextItem.gateLabel}</span>
+                </span>
+              ) : null}
+            </div>
+            <AppLink
+              to={nextItem.href}
+              className="ui-btn ui-btn-primary btn-press cta-work focus-ring dash-next-cta"
+              aria-label={`${nextItem.source === 'agent' ? '确认' : '办理'} ${nextItem.title}`}
+            >
+              {nextItem.source === 'agent' ? '去确认' : '去办理'}
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </AppLink>
+          </div>
+        )}
+      </section>
 
       <div className="kpi-strip kpi-stagger mb-8">
         <a
