@@ -78,7 +78,7 @@ export function MonitorPage() {
             </p>
             <p className="mt-1 text-2xl font-semibold tabular-nums">{inboxTotal}</p>
           </div>
-          <ExtLink href={MID_LINKS.inbox}>中台 Inbox /</ExtLink>
+          <a className="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-800 hover:bg-slate-50" href={`${MID_LINKS.inbox}#ops-inbox`}>中台 Inbox</a>
         </div>
         <dl className="mt-3 grid gap-2 sm:grid-cols-4">
           {INBOX_KEYS.map((k) => (
@@ -99,7 +99,7 @@ export function MonitorPage() {
       <Card className="mb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm font-medium text-slate-900">逾期 Docket（escalationLevel 示意）</p>
-          <ExtLink href={MID_LINKS.docket}>中台 /docket</ExtLink>
+          <a className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-950 hover:bg-amber-100/80" href={MID_LINKS.docket}>期限 Docket</a>
         </div>
         <ul className="mt-3 divide-y divide-slate-100">
           {OVERDUE_DOCKETS.map((d) => (
@@ -125,7 +125,7 @@ export function MonitorPage() {
         <Card>
           <div className="flex items-center justify-between">
             <p className="text-xs text-slate-500">停权案（billing hold）</p>
-            <ExtLink href={MID_LINKS.billing}>/billing</ExtLink>
+            <a className="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-800 hover:bg-slate-50" href={MID_LINKS.billing}>费用中心</a>
           </div>
           <p className="mt-1 text-2xl font-semibold tabular-nums">{BILLING_HOLDS.length}</p>
           <ul className="mt-2 space-y-2">

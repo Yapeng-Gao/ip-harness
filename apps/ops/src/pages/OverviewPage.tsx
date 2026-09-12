@@ -10,7 +10,7 @@ import {
   Server,
   Settings2,
 } from 'lucide-react'
-import { Card, ExtLink, PageHeader, StatusPill } from '../components/ui'
+import { Card, PageHeader, StatusPill } from '../components/ui'
 import { OVERVIEW } from '../data/mockOverview'
 import { SERVICE_HEALTH, SLA_DATA_SOURCE } from '../data/mockMonitor'
 import { MID_LINKS } from '../lib/links'
@@ -115,28 +115,29 @@ export function OverviewPage() {
         })}
       </div>
 
-      <h2 className="mt-8 mb-3 text-sm font-semibold text-slate-800">深链作业中台</h2>
+      <h2 className="mt-8 mb-3 text-sm font-semibold text-slate-800">业务期限提醒 · 深链中台</h2>
       <Card>
-        <p className="text-xs text-slate-500">
-          办案面在 mid（5173）。本面只链，不改 Inbox / Docket / Billing。
+        <p className="text-xs leading-relaxed text-slate-500">
+          运行时告警（本面）≠ 业务期限提醒。以下标签按钮进入中台办理面；不改 Inbox / Docket /
+          Billing 业务逻辑，也不暗示本面已覆盖 Docket「记录提醒」。
         </p>
         <ul className="mt-3 flex flex-wrap gap-3 text-sm">
           <li>
             <a
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 hover:bg-slate-50"
-              href={MID_LINKS.inbox}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 font-medium text-amber-950 hover:bg-amber-100/80"
+              href={MID_LINKS.docket}
             >
-              <Inbox className="h-3.5 w-3.5" aria-hidden />
-              Inbox
+              <Activity className="h-3.5 w-3.5" aria-hidden />
+              期限 Docket
             </a>
           </li>
           <li>
             <a
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 hover:bg-slate-50"
-              href={MID_LINKS.docket}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 font-medium text-amber-950 hover:bg-amber-100/80"
+              href={`${MID_LINKS.inbox}#ops-inbox`}
             >
-              <Activity className="h-3.5 w-3.5" aria-hidden />
-              Docket
+              <Inbox className="h-3.5 w-3.5" aria-hidden />
+              中台 Inbox
             </a>
           </li>
           <li>
@@ -145,17 +146,10 @@ export function OverviewPage() {
               href={MID_LINKS.billing}
             >
               <CreditCard className="h-3.5 w-3.5" aria-hidden />
-              Billing
+              费用中心
             </a>
           </li>
         </ul>
-        <p className="mt-3 text-xs text-slate-500">
-          路径：<ExtLink href={MID_LINKS.inbox}>{MID_LINKS.inbox}</ExtLink>
-          {' · '}
-          <ExtLink href={MID_LINKS.docket}>/docket</ExtLink>
-          {' · '}
-          <ExtLink href={MID_LINKS.billing}>/billing</ExtLink>
-        </p>
       </Card>
     </div>
   )

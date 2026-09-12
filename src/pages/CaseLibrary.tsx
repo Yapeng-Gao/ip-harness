@@ -239,7 +239,7 @@ export function CaseLibrary() {
                   aria-label={`打开案件 ${c.title}`}
                 >
                   <td>
-                    <div className="font-medium text-slate-800">{c.title}</div>
+                    <div className="truncate font-medium text-slate-800" title={c.title}>{c.title}</div>
                     <div className="font-mono text-xs text-slate-500">{c.caseNo}</div>
                   </td>
                   <td className="text-slate-400">{c.type}</td>

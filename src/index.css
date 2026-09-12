@@ -924,6 +924,21 @@ p {
   color: rgba(60, 60, 67, 0.45);
   background: rgba(120, 120, 128, 0.04);
 }
+.dash-inbox-group-label-urgent {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: #9a3412;
+  background: #fff7ed;
+  border-bottom: 1px solid #fed7aa;
+}
+.dash-inbox-group[data-group='deadline'] {
+  order: 0;
+}
+.dash-inbox-group[data-weight='high'] .dash-inbox-title {
+  font-weight: 600;
+}
 .dash-inbox-cols {
   display: none;
   grid-template-columns: 5.5rem minmax(0, 1fr) 11rem 4.75rem;
@@ -1124,6 +1139,36 @@ p {
 }
 .agent-confirm-reason[data-tone="block"] {
   color: #9f1239;
+}
+.agent-confirm-blockers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+}
+.agent-confirm-more {
+  border: 0;
+  background: transparent;
+  padding: 0.125rem 0;
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  color: #0369a1;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.agent-confirm-more-list {
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.agent-confirm-more-list .agent-confirm-reason {
+  display: block;
+  font-weight: 500;
+  color: #9a3412;
 }
 .ui-btn.agent-confirm-cta:disabled {
   opacity: 1;

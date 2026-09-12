@@ -62,8 +62,11 @@ export function IamHome() {
         </div>
 
         <dl className="mt-6 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
-          <div className="surface-card p-4">
+          <div className="surface-card p-4 ring-1 ring-amber-100">
             <dt className="text-xs text-slate-500">
+              <span className="mr-1 rounded bg-amber-50 px-1 py-0.5 text-[10px] font-semibold text-amber-900">
+                Dev
+              </span>
               当前工作区 · 样机 cookie{' '}
               <code className="rounded bg-slate-100 px-1 font-mono text-xs">
                 {CROSS_PORT_WORKSPACE_COOKIE}
@@ -72,8 +75,11 @@ export function IamHome() {
             </dt>
             <dd className="mt-1 font-medium">{workspace?.name ?? '未选择'}</dd>
           </div>
-          <div className="surface-card p-4">
+          <div className="surface-card p-4 ring-1 ring-amber-100">
             <dt className="text-xs text-slate-500">
+              <span className="mr-1 rounded bg-amber-50 px-1 py-0.5 text-[10px] font-semibold text-amber-900">
+                Dev
+              </span>
               Persona · 样机 cookie{' '}
               <code className="rounded bg-slate-100 px-1 font-mono text-xs">
                 {CROSS_PORT_PERSONA_COOKIE}
@@ -82,8 +88,11 @@ export function IamHome() {
             </dt>
             <dd className="mt-1 font-medium">{PERSONA_LABELS[persona]}</dd>
           </div>
-          <div className="surface-card p-4 sm:col-span-2">
+          <div className="surface-card p-4 ring-1 ring-amber-100 sm:col-span-2">
             <dt className="text-xs text-slate-500">
+              <span className="mr-1 rounded bg-amber-50 px-1 py-0.5 text-[10px] font-semibold text-amber-900">
+                Dev
+              </span>
               产品面记忆（localStorage · 同口隔离 ·{' '}
               <code className="rounded bg-slate-100 px-1 font-mono text-xs">
                 {ACTIVE_PRODUCT_LS_KEY}
@@ -95,12 +104,20 @@ export function IamHome() {
         </dl>
 
         <section
-          aria-label="存储约定"
-          className="mt-6 rounded-xl border border-dashed border-slate-300 bg-white/80 p-4 text-xs text-slate-600"
+          aria-label="Dev tools · 存储约定"
+          className="mt-6 rounded-xl border border-dashed border-amber-200/80 bg-amber-50/30 p-4 text-xs text-slate-600"
         >
-          <h2 className="text-sm font-semibold text-slate-800">
-            存储约定（只读 · 样机 cookie ≠ 真 SSO）
-          </h2>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className="rounded-md border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950">
+              Dev tools
+            </span>
+            <h2 className="text-sm font-semibold text-slate-800">
+              存储约定（只读 · 样机 cookie ≠ 真 SSO）
+            </h2>
+          </div>
+          <p className="mb-2 text-[11px] leading-relaxed text-amber-950/80">
+            以下为演示调试信息，不是产品登录完成态。
+          </p>
           <p className="mt-1.5 leading-relaxed text-slate-500">
             常量来自 <code className="rounded bg-slate-100 px-1">@ip/contracts</code>
             。Persona/工作区经 <strong>样机 cookie</strong>（

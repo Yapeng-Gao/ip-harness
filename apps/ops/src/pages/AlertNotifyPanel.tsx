@@ -15,6 +15,7 @@ import {
   saveChannelConfig,
   toastForChannel,
 } from '../data/mockAlerts'
+import { MID_LINKS } from '../lib/links'
 import {
   type NotifyTriggerChoice,
   NOTIFY_TRIGGER_OPTIONS,
@@ -122,7 +123,7 @@ export function AlertNotifyPanel() {
       })
     }
     setLogs(next)
-    showToast('样机不发真邮件/短信')
+    showToast('试发结果 · mock · 样机不发真邮件/短信')
   }
 
   const empty = !anyChannelConfigured(cfg)
@@ -181,6 +182,29 @@ export function AlertNotifyPanel() {
         {savedFlash ? (
           <p className="mt-2 text-xs text-emerald-700">已写入 sessionStorage · 刷新本标签页仍在，关标签即清。</p>
         ) : null}
+      </Card>
+
+
+      <Card className="mb-3 border-amber-200/80 bg-amber-50/40">
+        <p className="text-sm font-medium text-amber-950">业务期限提醒入口</p>
+        <p className="mt-1 text-xs leading-relaxed text-amber-950/85">
+          本页通知渠道为<strong>运行时告警样机</strong>，与中台 Docket / Inbox
+          业务期限提醒<strong>未打通</strong>、不覆盖「记录提醒」。请用下方标签按钮进入办理面。
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <a
+            href={MID_LINKS.docket}
+            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 shadow-rest hover:bg-slate-50"
+          >
+            期限 Docket
+          </a>
+          <a
+            href={`${MID_LINKS.inbox}#ops-inbox`}
+            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 shadow-rest hover:bg-slate-50"
+          >
+            中台 Inbox
+          </a>
+        </div>
       </Card>
 
       {empty ? (

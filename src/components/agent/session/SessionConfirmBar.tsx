@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Check,
   RotateCcw,
-  AlertTriangle,
   Circle,
   CircleCheck,
   ChevronDown,
@@ -77,6 +76,8 @@ type Props = {
   focusHitl?: boolean
   /** 深链指定闸（gate=）时轻量强调对应 chip */
   focusGate?: HitlGateId | null
+  /** R-P1-3 · 主因回传 composer（仅展示） */
+  onPrimaryBlockerChange?: (reason: string | null) => void
 }
 
 export function SessionConfirmBar({
@@ -98,6 +99,7 @@ export function SessionConfirmBar({
   sessionId,
   focusHitl = false,
   focusGate = null,
+  onPrimaryBlockerChange,
 }: Props) {
   const firstActionable = gates.find((g) => !gateDisabledReason(g))
   const pendingGate = gates.find((g) => !clearedGates.includes(g))
@@ -348,6 +350,90 @@ export function SessionConfirmBar({
 
   const rejectLabel = isWatch && role === 'agency' ? '提意见' : '退回'
 
+  const [reasonsOpen, setReasonsOpen] = useState(false)
+
+  const confirmBlockers = useMemo(() => {
+    const reasons: string[] = []
+    const push = (s: string | null | undefined) => {
+      const t = s?.trim()
+      if (!t || reasons.includes(t)) return
+      reasons.push(t)
+    }
+
+    const orderedGates = [
+      ...(legalNextGate ? [legalNextGate] : []),
+      ...gates.filter((g) => g !== legalNextGate),
+    ]
+    for (const g of orderedGates) {
+      if (clearedGates.includes(g)) continue
+      if (isIntake && g !== legalNextGate) continue
+      if ((isResearch || isLayout) && g !== legalNextGate) continue
+      const reason = gateDisabledReason(g)
+      const oaMetaBlock = g === 'approve_strategy' && isOa && oaMetaMissing
+      const fullBlock = g === 'authorize_file' && fullResult && !fullResult.ok
+      const disableReason =
+        reason ??
+        (oaMetaBlock
+          ? '请先选争点类型并填策略要点'
+          : fullBlock
+            ? `Full-check 未过：${fullResult!.missing[0] ?? '缺项'}`
+            : null)
+      push(disableReason)
+    }
+
+    if (showFile && !firstActionable) {
+      if (fullResult && !fullResult.ok) {
+        push(`Full-check 未过：${fullResult.missing[0] ?? '缺项'}`)
+      } else if (isClaims && !filingComplete) {
+        push(`递交清单未齐套（${filingCount}/5）`)
+      } else if (block.blocked && role === 'agency') {
+        push(block.reason ?? '暂不能递交')
+      }
+    }
+
+    if (needsOaData) push('还差争点类型 / 陈述确认 · 点补充项')
+    if (needsFilingData) push(`还差递交清单 ${filingCount}/5 · 点补充项`)
+    if (needsDisclosureData) push('还差交底包 · 点补充项')
+    if (needsFullCheck) push('Full-check 还差 · 点补充项')
+    if (annuityNoInvoice) push('无待付发票 · 请先去费用中心')
+    if (block.blocked && role === 'agency') {
+      push(block.reason ? `无法递交：${block.reason}` : '无法递交')
+    }
+
+    return reasons
+  }, [
+    legalNextGate,
+    gates,
+    clearedGates,
+    isIntake,
+    isResearch,
+    isLayout,
+    gateDisabledReason,
+    isOa,
+    oaMetaMissing,
+    fullResult,
+    showFile,
+    firstActionable,
+    isClaims,
+    filingComplete,
+    filingCount,
+    block.blocked,
+    block.reason,
+    role,
+    needsOaData,
+    needsFilingData,
+    needsDisclosureData,
+    needsFullCheck,
+    annuityNoInvoice,
+  ])
+
+  const primaryBlocker = confirmBlockers[0] ?? null
+  const moreBlockers = confirmBlockers.slice(1)
+
+  useEffect(() => {
+    onPrimaryBlockerChange?.(primaryBlocker)
+  }, [primaryBlocker, onPrimaryBlockerChange])
+
   return (
     <div
       id="session-confirm-bar"
@@ -453,9 +539,10 @@ export function SessionConfirmBar({
               if (isIntake && g !== legalNextGate) return null
               // research / layout: 批准策略 only (single gate already)
               if ((isResearch || isLayout) && g !== legalNextGate) return null
-              const reasonId = disableReason
-                ? `agent-confirm-reason-${g}`
-                : undefined
+              const reasonId =
+                disabled && primaryBlocker
+                  ? 'agent-confirm-reason-primary'
+                  : undefined
               return (
                 <span key={g} className="agent-confirm-cta-wrap">
                   <button
@@ -480,16 +567,6 @@ export function SessionConfirmBar({
                     )}
                     {HITL_GATE_LABELS[g]}
                   </button>
-                  {disabled && disableReason ? (
-                    <span
-                      id={reasonId}
-                      className="agent-confirm-reason"
-                      data-tone="block"
-                      role="status"
-                    >
-                      {disableReason}
-                    </span>
-                  ) : null}
                 </span>
               )
             })
@@ -519,7 +596,7 @@ export function SessionConfirmBar({
                   (fullResult && !fullResult.ok) ||
                   (isClaims && !filingComplete) ||
                   (block.blocked && role === 'agency')
-                    ? 'agent-confirm-reason-file'
+                    ? 'agent-confirm-reason-primary'
                     : undefined
                 }
                 className="ui-btn ui-btn-sm ui-btn-success btn-press focus-ring agent-confirm-cta"
@@ -527,22 +604,6 @@ export function SessionConfirmBar({
                 <Check className="h-3 w-3" aria-hidden />
                 确认递交归档
               </button>
-              {(fullResult && !fullResult.ok) ||
-              (isClaims && !filingComplete) ||
-              (block.blocked && role === 'agency') ? (
-                <span
-                  id="agent-confirm-reason-file"
-                  className="agent-confirm-reason"
-                  data-tone="block"
-                  role="status"
-                >
-                  {fullResult && !fullResult.ok
-                    ? `Full-check 未过：${fullResult.missing[0] ?? '缺项'}`
-                    : isClaims && !filingComplete
-                      ? `递交清单未齐套（${filingCount}/5）`
-                      : (block.reason ?? '暂不能递交')}
-                </span>
-              ) : null}
             </span>
           )}
 
@@ -623,45 +684,45 @@ export function SessionConfirmBar({
         </p>
       )}
 
-      {needsOaData && (
-        <p className="agent-confirm-reason mt-1.5" role="status">
-          还差争点类型 / 陈述确认 · 点补充项
-        </p>
-      )}
-      {needsFilingData && (
-        <p className="agent-confirm-reason mt-1.5" role="status">
-          还差递交清单 {filingCount}/5 · 点补充项
-        </p>
-      )}
-      {needsDisclosureData && (
-        <p className="agent-confirm-reason mt-1.5" role="status">
-          还差交底包 · 点补充项
-        </p>
-      )}
-      {needsFullCheck && (
-        <p className="agent-confirm-reason mt-1.5" role="status">
-          Full-check 还差 · 点补充项
-        </p>
-      )}
-      {annuityNoInvoice && (
-        <p className="agent-confirm-reason mt-1.5" role="status">
-          无待付发票 · 请先去费用中心
-          {caseId ? (
-            <>
-              {' · '}
-              <AppLink to="/billing/cases" className="underline hover:text-slate-600">
-                费用中心
-              </AppLink>
-            </>
+      {primaryBlocker ? (
+        <div className="agent-confirm-blockers mt-1.5" role="status">
+          <p
+            id="agent-confirm-reason-primary"
+            className="agent-confirm-reason"
+            data-tone="block"
+          >
+            {primaryBlocker}
+          </p>
+          {moreBlockers.length > 0 ? (
+            <div className="mt-1">
+              <button
+                type="button"
+                className="agent-confirm-more btn-press focus-ring"
+                aria-expanded={reasonsOpen}
+                onClick={() => setReasonsOpen((v) => !v)}
+              >
+                {reasonsOpen ? '收起' : `还有 ${moreBlockers.length} 条`}
+              </button>
+              {reasonsOpen ? (
+                <ul className="agent-confirm-more-list">
+                  {moreBlockers.map((r) => (
+                    <li key={r} className="agent-confirm-reason" data-tone="block">
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
           ) : null}
-        </p>
-      )}
-      {block.blocked && role === 'agency' && (
-        <p className="mt-1 flex items-center gap-1 text-[11px] text-rose-700" role="status">
-          <AlertTriangle className="h-3 w-3" aria-hidden />
-          无法递交：{block.reason}
-        </p>
-      )}
+          {annuityNoInvoice && caseId ? (
+            <p className="mt-1 text-[11px] text-slate-500">
+              <AppLink to="/billing/cases" className="underline hover:text-slate-700">
+                打开费用中心
+              </AppLink>
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       {fileErr && !needsDataSheet && (
         <p className="mt-1 text-[11px] text-rose-700">{fileErr}</p>

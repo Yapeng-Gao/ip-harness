@@ -125,16 +125,39 @@ const INBOX_GROUPS: {
   label: string
   sources: OpsInboxSource[]
 }[] = [
+  { id: 'deadline', label: '期限与监控', sources: ['docket', 'sla'] },
   { id: 'workbench', label: '工作台', sources: ['workbench'] },
   { id: 'agent', label: 'Agent', sources: ['agent'] },
-  { id: 'deadline', label: '期限与监控', sources: ['docket', 'sla'] },
 ]
+
+const GROUP_TIE: Record<string, number> = {
+  deadline: 0,
+  workbench: 1,
+  agent: 2,
+}
+
+/** Remind P2 · 组序按组内最小紧迫 band，避免 Agent 段视觉压过期限 */
+function groupMinBand(items: OpsInboxItem[]): string {
+  let min = '9'
+  for (const it of items) {
+    const b = (it.sortKey ?? '9')[0] ?? '9'
+    if (b < min) min = b
+  }
+  return min
+}
 
 function groupInbox(items: OpsInboxItem[]) {
   return INBOX_GROUPS.map((g) => ({
     ...g,
     items: items.filter((it) => g.sources.includes(it.source)),
-  })).filter((g) => g.items.length > 0)
+  }))
+    .filter((g) => g.items.length > 0)
+    .sort((a, b) => {
+      const ba = groupMinBand(a.items)
+      const bb = groupMinBand(b.items)
+      if (ba !== bb) return ba.localeCompare(bb)
+      return (GROUP_TIE[a.id] ?? 9) - (GROUP_TIE[b.id] ?? 9)
+    })
 }
 
 export function Dashboard() {
@@ -347,7 +370,7 @@ export function Dashboard() {
                   {nextItem.sourceLabel}
                 </span>
                 <div className="min-w-0">
-                  <p className="dash-next-title truncate">{nextItem.title}</p>
+                  <p className="dash-next-title truncate" title={nextItem.title}>{nextItem.title}</p>
                   {nextScan?.residual && (
                     <p className="dash-next-sub">{nextScan.residual}</p>
                   )}
@@ -493,9 +516,24 @@ export function Dashboard() {
               <span>SLA · 风险 · 谁该动</span>
               <span className="text-right">动作</span>
             </div>
-            {inboxGroups.map((group) => (
-              <div key={group.id} className="dash-inbox-group">
-                <div className="dash-inbox-group-label">
+            {inboxGroups.map((group) => {
+              const band = groupMinBand(group.items)
+              const weight =
+                group.id === 'deadline' || band <= '1' ? 'high' : 'normal'
+              return (
+              <div
+                key={group.id}
+                className="dash-inbox-group"
+                data-group={group.id}
+                data-weight={weight}
+              >
+                <div
+                  className={`dash-inbox-group-label${
+                    group.id === 'deadline' || weight === 'high'
+                      ? ' dash-inbox-group-label-urgent'
+                      : ''
+                  }`}
+                >
                   {group.label}
                   <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-medium tabular text-slate-500 ring-1 ring-slate-200/80">
                     {group.items.length}
@@ -520,7 +558,7 @@ export function Dashboard() {
                           </span>
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="dash-inbox-title truncate">
+                              <span className="dash-inbox-title truncate" title={item.title}>
                                 {item.title}
                               </span>
                               {item.source === 'agent' && item.gateLabel && (
@@ -553,7 +591,7 @@ export function Dashboard() {
                   })}
                 </ul>
               </div>
-            ))}
+            )})}
           </>
         )}
 
@@ -615,7 +653,7 @@ export function Dashboard() {
                 className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-md)] border border-amber-100 bg-white px-3 py-2.5"
               >
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-medium text-slate-800">
+                  <div className="truncate text-sm font-medium text-slate-800" title={d.title}>
                     {d.title}
                   </div>
                   <div className="text-xs text-slate-500">

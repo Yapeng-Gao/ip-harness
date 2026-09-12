@@ -16,6 +16,9 @@ const LABELS: Record<Surface, string> = {
  */
 export function AppSurfaceLinks({ current }: { current: Surface }) {
   const surfaces: Surface[] = ['mid', 'workbench', 'agent', 'ops', 'iam']
+  // P2-3 · 默认隐藏；干系人构建可 VITE_SHOW_PHASE0=true 软显
+  const viteEnv = (import.meta as unknown as { env?: Record<string, string> }).env
+  const showPhaseBadge = viteEnv?.VITE_SHOW_PHASE0 === 'true'
   return (
     <nav
       aria-label="应用面切换"
@@ -41,7 +44,14 @@ export function AppSurfaceLinks({ current }: { current: Surface }) {
           )
         })}
       </div>
-      <span className="ml-auto hidden text-slate-400 sm:inline">Phase 0 · monorepo</span>
+      {showPhaseBadge ? (
+        <span
+          className="ml-auto hidden text-[10px] font-medium tracking-wide text-slate-400 sm:inline"
+          title="开发标识 · 设 VITE_SHOW_PHASE0=true 显示"
+        >
+          dev · 多应用
+        </span>
+      ) : null}
     </nav>
   )
 }

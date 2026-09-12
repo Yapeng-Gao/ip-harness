@@ -17,6 +17,8 @@ type Props = {
   onConfirmAgentSwitch: () => void
   onCancelAgentSwitch: () => void
   hitlActive?: boolean
+  /** R-P1-3 · 仅复述 Confirm 主因 */
+  hitlDisableReason?: string | null
 }
 
 export function SessionComposer({
@@ -34,6 +36,7 @@ export function SessionComposer({
   onConfirmAgentSwitch,
   onCancelAgentSwitch,
   hitlActive = false,
+  hitlDisableReason = null,
 }: Props) {
   return (
     <div className="shrink-0 border-t border-slate-200/90 bg-white px-4 py-3.5 shadow-[0_-4px_16px_rgba(15,23,42,0.04)] lg:px-5 lg:py-4">
@@ -100,7 +103,7 @@ export function SessionComposer({
               <button
                 type="button"
                 disabled
-                title="请先完成上方确认步骤"
+                title={hitlDisableReason ?? '请先完成上方确认步骤'}
                 aria-label="确认完成后再办理"
                 aria-describedby="agent-confirm-reason-composer"
                 className="ui-btn ui-btn-sm ui-btn-primary agent-confirm-cta"
@@ -112,7 +115,7 @@ export function SessionComposer({
                 className="agent-confirm-reason"
                 role="status"
               >
-                请先完成上方确认步骤
+                {hitlDisableReason ?? '请先完成上方确认步骤'}
               </span>
             </span>
           ) : (

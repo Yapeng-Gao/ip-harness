@@ -154,8 +154,8 @@ export function anyChannelConfigured(cfg: AlertChannelConfig): boolean {
 }
 
 export function toastForChannel(kind: AlertChannelKind): string {
-  if (kind === 'webhook') return '样机不发真 Webhook'
-  return '样机不发真邮件/短信'
+  if (kind === 'webhook') return '试发结果 · mock · 样机不发真 Webhook'
+  return '试发结果 · mock · 样机不发真邮件/短信'
 }
 
 export function noteForChannel(kind: AlertChannelKind): string {

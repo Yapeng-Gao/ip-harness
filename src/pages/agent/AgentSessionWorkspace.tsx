@@ -271,6 +271,7 @@ export function AgentSessionWorkspace() {
   const gates = sortGatesForRole(agent?.hitlGates ?? [], isEnterpriseEarly)
   const clearedGates = sess.clearedHitlGates ?? []
   const hitlActive = sess.status === 'needs_human' || !!sess.hitlPending
+  const [primaryBlocker, setPrimaryBlocker] = useState<string | null>(null)
   const isEnterprise = isEnterpriseEarly
 
   const showToast = (message: string, linkCase: boolean) => {
@@ -560,6 +561,7 @@ export function AgentSessionWorkspace() {
             onHitl={doHitl}
             focusHitl={focusHitl}
             focusGate={focusGate}
+            onPrimaryBlockerChange={setPrimaryBlocker}
             runMode={sessionRunMode(sess.id)}
             invoicePayable={
               !!(c?.engagement?.invoices ?? []).some(
@@ -623,6 +625,7 @@ export function AgentSessionWorkspace() {
           onConfirmAgentSwitch={confirmPendingAgentSwitch}
           onCancelAgentSwitch={() => setPendingAgentSwitch(null)}
           hitlActive={hitlActive}
+          hitlDisableReason={primaryBlocker}
         />
       </section>
 
