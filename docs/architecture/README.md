@@ -19,7 +19,7 @@
 | 数据模型 | [data-model.md](./data-model.md) | Case / Handoff / Command / Persona / Audit / CaseContext 与包归属 |
 | 未来后端边界 | [backends.md](./backends.md) | 服务候选、同步/异步、事件名对齐 `DOMAIN_EVENTS`、迁移建议 |
 | 原型后落地（landing） | [landing/README.md](./landing/README.md) | 落地切分与数据归属、默认栈、三阶段路线、提醒/通知；评审 [landing/REVIEW.md](./landing/REVIEW.md) **通过** |
-| 企业级后端 + Agent 平台 | [enterprise/README.md](./enterprise/README.md) | 七面之上拓扑/多租户/HA/安全/审计/私有化；Agent 选型（**C 混合 + LangGraph 库**）；评审 [enterprise/REVIEW.md](./enterprise/REVIEW.md) **通过** |
+| 企业级后端 + Agent 平台 | [enterprise/README.md](./enterprise/README.md) | 七面之上拓扑/多租户/HA/安全/审计/私有化；Agent 选型（**C 混合 + DSH 和/或 Codex app-server + 自有闸**；LangGraph 降档；见 [enterprise/agent-runtime-options.md](./enterprise/agent-runtime-options.md)）；相对旧 [enterprise/REVIEW.md](./enterprise/REVIEW.md)（曾锁 C+LangGraph）为**修订，需再交评** |
 
 阅读顺序建议：本页 → [codebase](./codebase.md) → [data-flow](./data-flow.md) → [data-model](./data-model.md) → [backends](./backends.md) → [landing](./landing/README.md)（落地）→ [enterprise](./enterprise/README.md)（企业级 + Agent）→（仓库策略附录）[repos-and-vcs](./repos-and-vcs.md)。
 
@@ -38,7 +38,7 @@
 | 优化笔记 / 口径 | [../OPTIMIZE_NOTES.md](../OPTIMIZE_NOTES.md) | 见「[对外口径（冻结）](../OPTIMIZE_NOTES.md#对外口径冻结)」与「[联调彩排 · 多壳深链](../OPTIMIZE_NOTES.md#联调彩排--多壳深链2026-09-12)」 |
 | 仓库与分支 | [./repos-and-vcs.md](./repos-and-vcs.md) | 总控留档：单 monorepo→企业多仓（推荐 contracts/web/services 三仓 + dev/main）；硬政策才 5 壳分仓 |
 | 原型后落地 | [./landing/README.md](./landing/README.md) | 后端落地切分 / 默认栈 / 路线图 / 提醒通知；引用不掏空 backends |
-| 企业级 + Agent | [./enterprise/README.md](./enterprise/README.md) | 部署/租户/HA/合规/审计/私有化；A/B/C 选型；拓扑与决策表 |
+| 企业级 + Agent | [./enterprise/README.md](./enterprise/README.md) | 部署/租户/HA/合规/审计/私有化；C + DSH/Codex；[agent-runtime-options](./enterprise/agent-runtime-options.md)；拓扑与决策表 |
 
 相关文档（同样只链；`HARNESS` / `COMMANDS` / `PACKAGES_SPLIT` **在 `docs/`，不在根**）：[../../README.md](../../README.md) · [../HARNESS.md](../HARNESS.md) · [../COMMANDS.md](../COMMANDS.md) · [../PACKAGES_SPLIT.md](../PACKAGES_SPLIT.md) · [协作章程 TEAM_CHARTER](../TEAM_CHARTER.md) · [文档索引](../README.md)。
 

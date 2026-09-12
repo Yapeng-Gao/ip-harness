@@ -11,7 +11,7 @@
 |----|----------|----------|--------|
 | Agent UI | `apps/agent` `:5175` | 会话渲染、ConfirmBar、Catalog、深链 | 执法；DB |
 | `agent-session` | landing 七面；MVP 可同进程 | `AgentSession`、`clearedHitlGates`、试运行/正式分界、Catalog 配置 | `PatentCase` 写；模型 API key 明文 |
-| 开源 runtime | 进程内库或 sidecar（默认 LangGraph **库**） | 图、checkpoint、工具循环、流式 | Case 写连接；SMTP；Persona 真相 |
+| 开源 runtime | 进程内库或 sidecar（默认 **DSH 和/或 Codex app-server**；LangGraph 可选 ② 子图） | 图、checkpoint、工具循环、流式 | Case 写连接；SMTP；Persona 真相 |
 | 工具适配器 | 自有代码，挂在 runtime | 只读检索、草稿、外部只读 API | `UPDATE` 案表；未登记 HTTP |
 | 模型网关 | 新薄模块（可挂 `ops-platform` 配 + `agent-session` 调） | 路由、配额、脱敏、供应商适配 | 办案命令 |
 | 记忆 | 分层，见 §4 | 会话轨迹 / 可选检索切片 | 另一份 Case 真相 |
@@ -31,7 +31,7 @@ sequenceDiagram
   actor User as 用户 Persona
   participant UI as agent:5175
   participant Sess as agent-session
-  participant RT as LangGraph 库
+  participant RT as DSH/Codex runtime
   participant GW as 模型网关
   participant Tool as 工具适配器
   participant Core as case-core
@@ -179,7 +179,7 @@ sequenceDiagram
 |----|--------|-------------------------|------|
 | UI | `5175` mock harness | 同 UI，1 个 Core 接 runtime | Core 图化 |
 | 会话 | 内存 | PG | HA、保留策略 |
-| 编排 | `AGENT_SCRIPTS` | LangGraph 库 1 图 | Catalog 多图 |
+| 编排 | `AGENT_SCRIPTS` | DSH/Codex 1 环（可选 LangGraph 子图） | Catalog 多 Agent |
 | 模型 | 无 | 一网关一模型，可关 | 路由/配额 |
 | 工具 | 展示卡片 | 适配器 + command | 沙箱白名单 |
 | 记忆 | 无分层 | CaseContext + 会话 | 可选检索 |
