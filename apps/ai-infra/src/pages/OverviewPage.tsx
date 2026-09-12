@@ -9,25 +9,36 @@ import {
   SquareTerminal,
 } from 'lucide-react'
 import { Card, PageHeader, StatusPill } from '../components/ui'
-import { HONESTY, OVERVIEW } from '../data/mockOverview'
+import { useAiInfra } from '../state/AiInfraStore'
 
 const SHORTCUTS = [
-  { to: '/gpus', label: 'GPU 资源', desc: '节点与配额表（示意）', icon: Cpu },
-  { to: '/jobs', label: '作业', desc: '训练 / 批推假进度', icon: SquareTerminal },
-  { to: '/endpoints', label: '在线推理', desc: '已发布端点卡片', icon: Server },
-  { to: '/models', label: '模型注册', desc: '版本 / 晋级 / 回滚', icon: Layers },
-  { to: '/pipelines', label: '训推门禁', desc: '训练→评测→发布模板', icon: GitBranch },
-  { to: '/loadtest', label: '压测', desc: '场景与报告 mock', icon: Activity },
-  { to: '/alerts', label: '训推告警', desc: '规则示意 · 出站 notify', icon: Bell },
+  { to: '/gpus', label: 'GPU 资源', desc: '占用随作业 · drain 可点', icon: Cpu },
+  { to: '/jobs', label: '作业', desc: '创建 / 取消 / 重试 / 日志', icon: SquareTerminal },
+  { to: '/endpoints', label: '在线推理', desc: '部署 · 金丝雀 · 回滚', icon: Server },
+  { to: '/models', label: '模型注册', desc: '版本晋级 Confirm', icon: Layers },
+  { to: '/pipelines', label: '训推门禁', desc: '评测门禁 Pass/Fail', icon: GitBranch },
+  { to: '/loadtest', label: '压测', desc: '参数驱动假报告', icon: Activity },
+  { to: '/alerts', label: '训推告警', desc: '失败/高占用自动追加', icon: Bell },
+] as const
+
+const HONESTY = [
+  '无真 GPU / 无真 K8s / 无真权重仓 — 状态机在浏览器内存。',
+  '跨端口（5179↔5181）靠共享种子契约，不靠 localStorage 互通。',
+  '禁止持有或写入 PatentCase / DomainCommand。',
+  'ops:5176 仅深链，不改运维六路由、不改 APP_PORTS。',
 ] as const
 
 export function OverviewPage() {
+  const { state, gpuUtil, openAlertCount, runningJobCount } = useAiInfra()
+  const queued = state.jobs.filter((j) => j.status === 'queued').length
+  const utilPct = gpuUtil.total ? Math.round((gpuUtil.used / gpuUtil.total) * 100) : 0
+
   return (
     <div>
       <PageHeader
         eyebrow="总览"
         title="训推基建总览"
-        desc="GPU 池与队列深度为内存 mock。本面不管办案 SLA，也不申请真集群。"
+        desc="数字来自内存状态机。刷新即失。本面不管办案 SLA，也不申请真集群。"
       />
 
       <Card className="mb-4 border-amber-200 bg-amber-50/80">
@@ -41,41 +52,36 @@ export function OverviewPage() {
 
       <div className="mb-2 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <p className="text-xs text-slate-500">GPU 池（示意）</p>
+          <p className="text-xs text-slate-500">GPU 占用</p>
           <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
-            {OVERVIEW.gpuPool.training}/{OVERVIEW.gpuPool.total}
+            {gpuUtil.used}/{gpuUtil.total}
           </p>
           <div className="mt-2">
-            <StatusPill tone="degraded">训练占用 · 假数字</StatusPill>
+            <StatusPill tone={utilPct >= 80 ? 'warn' : 'ok'}>{utilPct}% · 派生</StatusPill>
           </div>
+        </Card>
+        <Card>
+          <p className="text-xs text-slate-500">运行中作业</p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
+            {runningJobCount}
+          </p>
+          <p className="mt-2 text-xs text-slate-500">排队 {queued}</p>
+        </Card>
+        <Card>
+          <p className="text-xs text-slate-500">端点</p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
+            {state.endpoints.length}
+          </p>
           <p className="mt-2 text-xs text-slate-500">
-            空闲 {OVERVIEW.gpuPool.idle} · 排队槽 {OVERVIEW.gpuPool.queuedSlots} · 非 live
+            金丝雀 {state.endpoints.filter((e) => e.status === 'canary').length}
           </p>
         </Card>
         <Card>
-          <p className="text-xs text-slate-500">队列深度</p>
+          <p className="text-xs text-slate-500">未确认告警</p>
           <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
-            {OVERVIEW.queue.train + OVERVIEW.queue.batch}
+            {openAlertCount}
           </p>
-          <p className="mt-2 text-xs text-slate-500">
-            训练 {OVERVIEW.queue.train} · 批推 {OVERVIEW.queue.batch} · 预热 {OVERVIEW.queue.inferWarm}
-          </p>
-        </Card>
-        <Card>
-          <p className="text-xs text-slate-500">已发布端点</p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
-            {OVERVIEW.endpoints.published}
-          </p>
-          <p className="mt-2 text-xs text-slate-500">
-            金丝雀 {OVERVIEW.endpoints.canary} · 网关可读形状，无真进程
-          </p>
-        </Card>
-        <Card>
-          <p className="text-xs text-slate-500">训推告警</p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
-            {OVERVIEW.alerts.warn}
-          </p>
-          <p className="mt-2 text-xs text-slate-500">{OVERVIEW.alerts.note}</p>
+          <p className="mt-2 text-xs text-slate-500">出站仍标 notify</p>
         </Card>
       </div>
 

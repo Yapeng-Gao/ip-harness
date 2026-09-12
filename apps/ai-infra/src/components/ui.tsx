@@ -128,3 +128,57 @@ export function Toast({ message }: { message: string }) {
     </div>
   )
 }
+
+export function ConfirmDialog({
+  open,
+  title,
+  body,
+  confirmLabel = '确认',
+  cancelLabel = '取消',
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean
+  title: string
+  body: string
+  confirmLabel?: string
+  cancelLabel?: string
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  if (!open) return null
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-dialog-title"
+    >
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-elevated">
+        <h2 id="confirm-dialog-title" className="text-sm font-semibold text-slate-900">
+          {title}
+        </h2>
+        <p className="mt-2 text-xs leading-relaxed text-slate-600">{body}</p>
+        <p className="mt-2 text-[11px] text-slate-400">
+          此确认为样机门禁，不是办案 HITL / DomainCommand。
+        </p>
+        <div className="mt-4 flex justify-end gap-2">
+          <button
+            type="button"
+            className="btn-press rounded-md border border-slate-200 px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
+            onClick={onCancel}
+          >
+            {cancelLabel}
+          </button>
+          <button
+            type="button"
+            className="btn-press rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+            onClick={onConfirm}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

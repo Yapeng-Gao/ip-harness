@@ -1,84 +1,150 @@
 import { useState } from 'react'
-import { Card, EmptyState, PageHeader, StatusPill, Toast } from '../components/ui'
-import { MODEL_EMPTY, MODEL_FAMILIES } from '../data/mockModels'
+import { Card, ConfirmDialog, EmptyState, PageHeader, StatusPill } from '../components/ui'
+import { useAiInfra } from '../state/AiInfraStore'
+import { MODEL_STAGE_LABEL, MODEL_STAGE_TONE, STAGE_ORDER } from '../state/types'
 
 export function ModelsPage() {
-  const [toast, setToast] = useState<string | null>(null)
-
-  function mockAction(kind: 'promote' | 'rollback', version: string) {
-    setToast(
-      kind === 'promote'
-        ? `晋级 ${version} · 样机不写真权重仓`
-        : `回滚 ${version} · 样机不切真流量`,
-    )
-    window.setTimeout(() => setToast(null), 2400)
-  }
+  const { state, registerModel, addRevision, promoteRevision } = useAiInfra()
+  const [newName, setNewName] = useState('')
+  const [revDraft, setRevDraft] = useState<Record<string, string>>({})
+  const [confirm, setConfirm] = useState<{
+    modelId: string
+    revisionId: string
+    label: string
+    from: string
+    to: string
+  } | null>(null)
 
   return (
     <div>
       <PageHeader
         eyebrow="模型注册"
-        title="版本 / 晋级 / 回滚"
-        desc="注册表为内存行。晋级与回滚只弹诚实 Toast，不改网关、不改办案 handoff。"
+        title="版本 / 晋级"
+        desc="注册与加 revision 立即进内存。晋级需 Confirm 门禁（registered→staging→canary→prod）。非办案 HITL。"
       />
 
-      {MODEL_FAMILIES.map((fam) => (
+      <Card className="mb-4">
+        <p className="text-sm font-medium text-slate-900">注册模型</p>
+        <form
+          className="mt-2 flex flex-wrap gap-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            registerModel(newName)
+            setNewName('')
+          }}
+        >
+          <input
+            className="min-w-[12rem] flex-1 rounded-md border border-slate-200 px-2 py-1.5 text-sm"
+            placeholder="模型名"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="btn-press rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white"
+          >
+            注册
+          </button>
+        </form>
+      </Card>
+
+      {state.models.map((fam) => (
         <Card key={fam.id} className="mb-4">
-          <div className="mb-3 flex items-baseline justify-between gap-2">
+          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
             <p className="text-sm font-medium text-slate-900">{fam.name}</p>
-            <p className="text-xs text-slate-500">Owner {fam.owner}</p>
+            <form
+              className="flex gap-2"
+              onSubmit={(e) => {
+                e.preventDefault()
+                addRevision(fam.id, revDraft[fam.id] ?? '')
+                setRevDraft((d) => ({ ...d, [fam.id]: '' }))
+              }}
+            >
+              <input
+                className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs"
+                placeholder="新版本号"
+                value={revDraft[fam.id] ?? ''}
+                onChange={(e) => setRevDraft((d) => ({ ...d, [fam.id]: e.target.value }))}
+              />
+              <button
+                type="submit"
+                className="btn-press rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50"
+              >
+                加 revision
+              </button>
+            </form>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[40rem] text-left text-sm">
+            <table className="w-full min-w-[36rem] text-left text-sm">
               <thead className="border-b border-slate-200 text-xs text-slate-500">
                 <tr>
                   <th className="py-2 pr-3 font-medium">版本</th>
                   <th className="py-2 pr-3 font-medium">阶段</th>
-                  <th className="py-2 pr-3 font-medium">指标</th>
-                  <th className="py-2 pr-3 font-medium">日期</th>
                   <th className="py-2 font-medium">动作</th>
                 </tr>
               </thead>
               <tbody>
-                {fam.versions.map((v) => (
-                  <tr key={v.id} className="border-b border-slate-100 last:border-0">
-                    <td className="py-2 pr-3">
-                      <p className="font-mono text-xs text-slate-800">{v.version}</p>
-                      <p className="text-xs text-slate-500">{v.note}</p>
-                    </td>
-                    <td className="py-2 pr-3">
-                      <StatusPill tone={v.tone}>{v.stage}</StatusPill>
-                    </td>
-                    <td className="py-2 pr-3 text-xs text-slate-600">{v.metrics}</td>
-                    <td className="py-2 pr-3 tabular-nums text-xs text-slate-600">{v.created}</td>
-                    <td className="py-2">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          className="btn-press rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
-                          onClick={() => mockAction('promote', v.version)}
-                        >
-                          晋级
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-press rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
-                          onClick={() => mockAction('rollback', v.version)}
-                        >
-                          回滚
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {fam.revisions.map((v) => {
+                  const idx = STAGE_ORDER.indexOf(v.stage)
+                  const canPromote = idx >= 0 && idx < STAGE_ORDER.length - 1
+                  const next = canPromote ? STAGE_ORDER[idx + 1]! : null
+                  return (
+                    <tr key={v.id} className="border-b border-slate-100 last:border-0">
+                      <td className="py-2 pr-3 font-mono text-xs text-slate-800">{v.version}</td>
+                      <td className="py-2 pr-3">
+                        <StatusPill tone={MODEL_STAGE_TONE[v.stage]}>
+                          {MODEL_STAGE_LABEL[v.stage]}
+                        </StatusPill>
+                      </td>
+                      <td className="py-2">
+                        {canPromote && next ? (
+                          <button
+                            type="button"
+                            className="btn-press rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50"
+                            onClick={() =>
+                              setConfirm({
+                                modelId: fam.id,
+                                revisionId: v.id,
+                                label: `${fam.name} ${v.version}`,
+                                from: MODEL_STAGE_LABEL[v.stage],
+                                to: MODEL_STAGE_LABEL[next],
+                              })
+                            }
+                          >
+                            晋级 → {MODEL_STAGE_LABEL[next]}
+                          </button>
+                        ) : (
+                          <span className="text-xs text-slate-400">已是最高阶段</span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
         </Card>
       ))}
 
-      <EmptyState title={MODEL_EMPTY.title} body={MODEL_EMPTY.body} />
-      {toast ? <Toast message={toast} /> : null}
+      {state.models.length === 0 ? (
+        <EmptyState title="无模型" body="先注册一个模型族。" />
+      ) : null}
+
+      <ConfirmDialog
+        open={!!confirm}
+        title="确认晋级"
+        body={
+          confirm
+            ? `将 ${confirm.label} 从「${confirm.from}」晋级到「${confirm.to}」。样机不写真权重仓、不切真流量。`
+            : ''
+        }
+        confirmLabel="确认晋级"
+        onCancel={() => setConfirm(null)}
+        onConfirm={() => {
+          if (confirm) promoteRevision(confirm.modelId, confirm.revisionId)
+          setConfirm(null)
+        }}
+      />
     </div>
   )
 }

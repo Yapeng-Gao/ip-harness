@@ -1,60 +1,70 @@
-import { Card, EmptyState, PageHeader, StatusDot, StatusPill } from '../components/ui'
-import { GPU_HONESTY, GPU_NODES, QUOTAS } from '../data/mockGpus'
+import { Card, EmptyState, PageHeader, ProgressBar, StatusDot, StatusPill } from '../components/ui'
+import { useAiInfra } from '../state/AiInfraStore'
 
 export function GpusPage() {
+  const { state, usedSlots, gpuUtil, toggleDrain } = useAiInfra()
+
   return (
     <div>
       <PageHeader
         eyebrow="GPU 资源"
         title="节点与配额"
-        desc="池 / 分区 / 配额为 IA 表。无 device plugin，无真 MIG。"
+        desc="占用由 running 作业派生。Drain 后该节点不再接受新调度；已在跑的作业不打断。无真 device plugin。"
       />
 
-      <EmptyState title={GPU_HONESTY.title} body={GPU_HONESTY.body} />
+      <EmptyState
+        title="无真实 GPU 集群"
+        body="节点与配额为内存表。Drain 仅影响样机调度：新作业只落到非 drain 节点，否则继续排队。"
+      />
 
-      <h2 className="mt-8 mb-3 text-sm font-semibold text-slate-800">节点（示意）</h2>
+      <Card className="mt-4">
+        <p className="text-xs text-slate-500">整池占用（派生）</p>
+        <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">
+          {gpuUtil.used}/{gpuUtil.total}
+        </p>
+        <div className="mt-2">
+          <ProgressBar
+            value={gpuUtil.total ? Math.round((gpuUtil.used / gpuUtil.total) * 100) : 0}
+            label="利用率"
+          />
+        </div>
+      </Card>
+
+      <h2 className="mt-8 mb-3 text-sm font-semibold text-slate-800">节点</h2>
       <div className="grid gap-3 sm:grid-cols-2">
-        {GPU_NODES.map((n) => (
-          <Card key={n.id}>
-            <div className="flex items-center justify-between gap-2">
-              <p className="font-medium text-slate-900">{n.name}</p>
-              <StatusDot tone={n.tone} label={`${n.used}/${n.cards} 卡`} />
-            </div>
-            <p className="mt-1 text-xs text-slate-500">
-              {n.sku} · 池 {n.pool}
-            </p>
-            <p className="mt-2 text-xs text-slate-600">{n.quota}</p>
-            <p className="mt-2 text-xs text-slate-500">{n.note}</p>
-          </Card>
-        ))}
-      </div>
-
-      <h2 className="mt-8 mb-3 text-sm font-semibold text-slate-800">配额表</h2>
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-rest">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-xs text-slate-500">
-            <tr>
-              <th className="px-3 py-2 font-medium">团队</th>
-              <th className="px-3 py-2 font-medium">池</th>
-              <th className="px-3 py-2 font-medium">预留</th>
-              <th className="px-3 py-2 font-medium">已用</th>
-              <th className="px-3 py-2 font-medium">状态</th>
-            </tr>
-          </thead>
-          <tbody>
-            {QUOTAS.map((q) => (
-              <tr key={q.id} className="border-b border-slate-100 last:border-0">
-                <td className="px-3 py-2 font-medium">{q.team}</td>
-                <td className="px-3 py-2 font-mono text-xs text-slate-600">{q.pool}</td>
-                <td className="px-3 py-2 tabular-nums">{q.reserved}</td>
-                <td className="px-3 py-2 tabular-nums">{q.used}</td>
-                <td className="px-3 py-2">
-                  <StatusPill tone={q.tone}>{q.tone === 'empty' ? '未占用' : '示意'}</StatusPill>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {state.gpuNodes.map((n) => {
+          const used = usedSlots(n.id)
+          const tone = n.drained ? 'empty' : used >= n.totalSlots ? 'degraded' : used > 0 ? 'warn' : 'ok'
+          return (
+            <Card key={n.id}>
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-medium text-slate-900">{n.name}</p>
+                <StatusDot tone={tone} label={`${used}/${n.totalSlots} slot`} />
+              </div>
+              <p className="mt-1 text-xs text-slate-500">
+                {n.sku} · 池 {n.pool}
+              </p>
+              <div className="mt-2">
+                <ProgressBar value={n.totalSlots ? Math.round((used / n.totalSlots) * 100) : 0} />
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <StatusPill tone={n.drained ? 'warn' : 'ok'}>
+                  {n.drained ? 'drain · 不可新调度' : '可调度'}
+                </StatusPill>
+                <button
+                  type="button"
+                  className="btn-press rounded-md border border-slate-200 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                  onClick={() => toggleDrain(n.id)}
+                >
+                  {n.drained ? '取消 drain' : '开启 drain'}
+                </button>
+              </div>
+              <p className="mt-2 text-xs text-slate-500">
+                drain 后新作业不会调度到此节点；若全部 drain，作业保持排队。
+              </p>
+            </Card>
+          )
+        })}
       </div>
     </div>
   )
