@@ -143,3 +143,10 @@
 ---
 
 *证据：`docs/ui-polish/parallel-shells/*.png`*
+
+---
+
+## 短复评附注 · P1 RECHECK（`458bca9`）
+
+见 [`REVIEW_parallel_shells_P1_RECHECK.md`](./REVIEW_parallel_shells_P1_RECHECK.md)。  
+**结论**：AI-P1-1/2/3 · AD-P1-1/2 全 **PASS** → 三壳合计升 **Go**。
