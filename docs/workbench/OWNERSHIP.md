@@ -29,3 +29,8 @@ Updated: 2026-09-12
 - Physical move of every flow body into `stages/<id>/` (optional later; stages may stay as boundary)
 
 See also: [OWNER_STATUS.md](./OWNER_STATUS.md), [apps/workbench/README.md](../../apps/workbench/README.md).
+
+## 相关
+
+- [STAGE_MODULE_SKU.md](./STAGE_MODULE_SKU.md) — 可卖单节点（Module + SKU）
+- [OWNER_STATUS.md](./OWNER_STATUS.md)
