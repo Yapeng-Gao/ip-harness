@@ -147,23 +147,30 @@ export default function App() {
         savedBodies: { ...state.savedBodies, [ch.id]: ch.body },
       })
       setCommandLog((prev) => [...prev, log])
-      showAutoSaved('已自动保存')
+      showAutoSaved('上一章已自动保存')
       return true
     },
     [headRevisionForChapter, patchRuntime, showAutoSaved],
   )
 
   const onChangeBody = useCallback(
-    (body: string) => {
+    (chapterId: string, body: string) => {
       const id = caseIdRef.current
-      const chapterId = runtimesRef.current[id]?.selectedChapterId
-      if (!chapterId) return
+      const selectedId = runtimesRef.current[id]?.selectedChapterId
+      // 只写入当前选中章，避免切章后旧编辑器 update 污染新章 body
+      if (!selectedId || chapterId !== selectedId) return
       patchRuntime(id, (prev) => ({
         ...prev,
         chapters: prev.chapters.map((c) =>
           c.id === chapterId ? { ...c, body } : c,
         ),
       }))
+      // dirty 时清掉绿色「已自动保存」，避免与 dirty CTA 同屏矛盾
+      setAutoSavedHint(null)
+      if (autoSavedTimer.current) {
+        clearTimeout(autoSavedTimer.current)
+        autoSavedTimer.current = null
+      }
     },
     [patchRuntime],
   )
@@ -372,7 +379,7 @@ export default function App() {
         .setTextSelection({ from: draft.from, to: draft.to })
         .setAnnotation(annId)
         .run()
-      onChangeBody(ed.getHTML())
+      onChangeBody(chapterId, ed.getHTML())
     }
   }, [annotationDraft, draftBody, onChangeBody, patchRuntime])
 
@@ -436,7 +443,8 @@ export default function App() {
       const ed = editorRef.current
       if (ed && !ed.isDestroyed) {
         ed.commands.unsetAnnotation(annId)
-        onChangeBody(ed.getHTML())
+        const chapterId = runtimesRef.current[id]?.selectedChapterId
+        if (chapterId) onChangeBody(chapterId, ed.getHTML())
       }
     },
     [onChangeBody, patchRuntime],
@@ -457,6 +465,13 @@ export default function App() {
     rt.proposal?.status === 'pending' && rt.proposal.mode === 'formal'
   const agentDisabled =
     formalBlocked || !rt.document.authorized || Boolean(selected.locked)
+  const agentDisabledReason = formalBlocked
+    ? '正式建议待确认'
+    : !rt.document.authorized
+      ? `本章未授权 SKU · 只读`
+      : selected.locked
+        ? selected.lockReason ?? '本章已锁定 · 只读'
+        : null
 
   return (
     <div className="app-shell-bg flex h-full min-h-screen flex-col">
@@ -464,6 +479,7 @@ export default function App() {
         cases={CASES}
         activeCase={activeCase}
         document={rt.document}
+        dirty={dirty}
         autoSavedHint={autoSavedHint}
         onSwitchCase={switchCase}
       />
@@ -479,7 +495,7 @@ export default function App() {
           onSwitchCase={switchCase}
         />
         <ChapterEditor
-          key={caseId}
+          key={`${caseId}-${selected.id}`}
           chapter={selected}
           document={rt.document}
           revisions={rt.revisions}
@@ -533,6 +549,7 @@ export default function App() {
               onConfirm={onConfirm}
               onReject={onReject}
               actionsDisabled={Boolean(agentDisabled)}
+              disabledReason={agentDisabledReason}
             />
           }
         />

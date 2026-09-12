@@ -1,7 +1,7 @@
 import { EditorContent, useEditor, type Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   AnnotationMark,
   findAnnotationRange,
@@ -17,7 +17,7 @@ type Props = {
   activeAnnotationId: string | null
   focusAnnotationId: string | null
   focusNonce: number
-  onChangeBody: (body: string) => void
+  onChangeBody: (chapterId: string, body: string) => void
   onSaveDraft: () => void
   onStartAnnotationDraft: (draft: AnnotationDraft) => void
   onAnnotationMarkClick: (annotationId: string) => void
@@ -62,6 +62,10 @@ export function ChapterEditor({
   onEditorReadyRef.current = onEditorReady
   const onStartDraftRef = useRef(onStartAnnotationDraft)
   onStartDraftRef.current = onStartAnnotationDraft
+  // key 含 chapter.id → remount；闭包锁定创建时 chapterId，防旧 update 写新章
+  const boundChapterId = chapter.id
+  const [skuToast, setSkuToast] = useState<string | null>(null)
+  const skuToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const editor = useEditor({
     extensions: [
@@ -93,7 +97,7 @@ export function ChapterEditor({
       },
     },
     onUpdate: ({ editor: next }) => {
-      onChangeBodyRef.current(next.getHTML())
+      onChangeBodyRef.current(boundChapterId, next.getHTML())
     },
   })
 
@@ -107,20 +111,24 @@ export function ChapterEditor({
     editor.setEditable(!readOnly)
   }, [editor, readOnly])
 
-  // 仅在章切换或外部写入（非本编辑器 onUpdate）时 setContent，减少闪烁
+  // 章 id 变化时无条件 setContent；外部写入（Agent 确认等）再同步
   const lastChapterIdRef = useRef(chapter.id)
   const lastExternalBodyRef = useRef(chapter.body)
   useEffect(() => {
     if (!editor || editor.isDestroyed) return
     const chapterChanged = lastChapterIdRef.current !== chapter.id
-    const current = editor.getHTML()
-    if (chapterChanged || current !== chapter.body) {
-      if (chapterChanged || lastExternalBodyRef.current !== chapter.body) {
+    if (chapterChanged) {
+      // 切章：不要被 HTML 归一化比较跳过
+      editor.commands.setContent(chapter.body, { emitUpdate: false })
+      lastExternalBodyRef.current = chapter.body
+      lastChapterIdRef.current = chapter.id
+    } else if (lastExternalBodyRef.current !== chapter.body) {
+      // 本编辑器 onUpdate 已写入时 HTML 已一致，只同步 ref，避免光标跳动
+      if (editor.getHTML() !== chapter.body) {
         editor.commands.setContent(chapter.body, { emitUpdate: false })
-        lastExternalBodyRef.current = chapter.body
       }
+      lastExternalBodyRef.current = chapter.body
     }
-    lastChapterIdRef.current = chapter.id
     editor.view.dom.setAttribute('aria-label', `${chapter.title} 正文`)
   }, [editor, chapter.id, chapter.body, chapter.title])
 
@@ -208,14 +216,21 @@ export function ChapterEditor({
             <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">{gateReason}</p>
             <button
               type="button"
-              className="btn-press focus-ring mt-2 rounded-md bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white hover:bg-slate-800"
+              className="btn-press focus-ring mt-2 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-50"
               onClick={() => {
-                /* slate CTA · mock：无真开通 */
+                setSkuToast('样机无真 SKU 开通')
+                if (skuToastTimer.current) clearTimeout(skuToastTimer.current)
+                skuToastTimer.current = setTimeout(() => setSkuToast(null), 2800)
               }}
               title="样机无真 SKU 开通"
             >
               申请开通（示意）
             </button>
+            {skuToast ? (
+              <p className="mt-1.5 text-[10px] text-slate-500" role="status">
+                {skuToast}
+              </p>
+            ) : null}
           </div>
         ) : null}
         <EditorToolbar

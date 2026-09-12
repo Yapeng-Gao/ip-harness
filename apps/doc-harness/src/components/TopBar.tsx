@@ -5,6 +5,7 @@ type Props = {
   cases: DemoCase[]
   activeCase: DemoCase
   document: Document
+  dirty?: boolean
   autoSavedHint: string | null
   onSwitchCase: (caseId: string) => void
 }
@@ -19,9 +20,12 @@ export function TopBar({
   cases,
   activeCase,
   document,
+  dirty = false,
   autoSavedHint,
   onSwitchCase,
 }: Props) {
+  // dirty 时不显示绿色已保存提示，避免与「保存草稿 · dirty」矛盾
+  const showSavedHint = Boolean(autoSavedHint) && !dirty
   return (
     <header className="sticky top-0 z-20 flex min-h-12 shrink-0 flex-col gap-1.5 border-b border-slate-200/80 bg-white/95 px-4 py-2 backdrop-blur sm:flex-row sm:items-center sm:gap-3 sm:py-0">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -40,7 +44,7 @@ export function TopBar({
           <span className="rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px] text-slate-700">
             {document.handoffKey}
           </span>
-          {autoSavedHint ? (
+          {showSavedHint ? (
             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] text-emerald-800">
               {autoSavedHint}
             </span>

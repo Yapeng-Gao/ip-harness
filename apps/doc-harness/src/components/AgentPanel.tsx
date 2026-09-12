@@ -13,6 +13,7 @@ type Props = {
   onConfirm: () => void
   onReject: () => void
   actionsDisabled: boolean
+  disabledReason?: string | null
 }
 
 export function AgentPanel({
@@ -25,6 +26,7 @@ export function AgentPanel({
   onConfirm,
   onReject,
   actionsDisabled,
+  disabledReason = null,
 }: Props) {
   const formalPending =
     proposal?.status === 'pending' && proposal.mode === 'formal' ? proposal : null
@@ -70,6 +72,14 @@ export function AgentPanel({
             正式建议
           </button>
         </div>
+        {actionsDisabled && disabledReason ? (
+          <p
+            className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-[11px] leading-relaxed text-slate-600"
+            role="status"
+          >
+            {disabledReason}
+          </p>
+        ) : null}
         <p className="text-[10px] leading-relaxed text-slate-400">
           「请 Agent 改写当前章」= 正式建议。试运行仅预览；确认写入时按 quote 重挂未解决批注。
         </p>

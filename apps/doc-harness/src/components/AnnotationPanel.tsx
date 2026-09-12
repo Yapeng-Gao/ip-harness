@@ -88,18 +88,8 @@ export function AnnotationPanel({
         <div className="ui-empty rounded-xl border border-dashed border-slate-200 bg-[var(--color-surface-50,#f5f5f7)] px-3 py-8 text-center">
           <div className="text-[12px] font-medium text-slate-700">本章尚无批注</div>
           <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-            在纸面选中文字，点工具栏「加批注」，于本栏填写并提交。
+            请先在纸面选中文字，再点工具栏「加批注」，于本栏填写并提交。
           </p>
-          <button
-            type="button"
-            className="btn-press focus-ring mt-3 rounded-md bg-slate-900 px-2.5 py-1.5 text-[11px] font-medium text-white hover:bg-slate-800"
-            onClick={() => {
-              /* 引导 · 无自动选区 */
-            }}
-            title="请先在纸面选中文字"
-          >
-            去选中正文
-          </button>
         </div>
       ) : null}
 
