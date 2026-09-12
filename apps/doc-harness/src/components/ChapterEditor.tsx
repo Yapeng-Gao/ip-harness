@@ -6,11 +6,12 @@ import {
   AnnotationMark,
   findAnnotationRange,
 } from '../extensions/AnnotationMark'
-import type { DocumentChapter, DocumentRevision } from '../types'
+import type { AnnotationDraft, Document, DocumentChapter, DocumentRevision } from '../types'
 import { EditorToolbar } from './EditorToolbar'
 
 type Props = {
   chapter: DocumentChapter
+  document: Document
   revisions: DocumentRevision[]
   dirty: boolean
   activeAnnotationId: string | null
@@ -18,13 +19,14 @@ type Props = {
   focusNonce: number
   onChangeBody: (body: string) => void
   onSaveDraft: () => void
-  onAddAnnotation: (payload: { quote: string; body: string }) => string | null
+  onStartAnnotationDraft: (draft: AnnotationDraft) => void
   onAnnotationMarkClick: (annotationId: string) => void
   onEditorReady: (editor: Editor | null) => void
 }
 
 export function ChapterEditor({
   chapter,
+  document,
   revisions,
   dirty,
   activeAnnotationId,
@@ -32,7 +34,7 @@ export function ChapterEditor({
   focusNonce,
   onChangeBody,
   onSaveDraft,
-  onAddAnnotation,
+  onStartAnnotationDraft,
   onAnnotationMarkClick,
   onEditorReady,
 }: Props) {
@@ -43,14 +45,23 @@ export function ChapterEditor({
   const latest = chapterRevs[0]
   const revCount = chapterRevs.length
 
+  const readOnly =
+    !document.authorized || Boolean(chapter.locked)
+  const gateReason = !document.authorized
+    ? document.unauthorizedReason ??
+      `未授权 SKU「${document.skuLabel}」（mock 闸）· 编辑器只读`
+    : chapter.locked
+      ? chapter.lockReason ?? '本章已锁定（mock）· 只读'
+      : null
+
   const onChangeBodyRef = useRef(onChangeBody)
   onChangeBodyRef.current = onChangeBody
   const onAnnotationMarkClickRef = useRef(onAnnotationMarkClick)
   onAnnotationMarkClickRef.current = onAnnotationMarkClick
   const onEditorReadyRef = useRef(onEditorReady)
   onEditorReadyRef.current = onEditorReady
-  const onAddAnnotationRef = useRef(onAddAnnotation)
-  onAddAnnotationRef.current = onAddAnnotation
+  const onStartDraftRef = useRef(onStartAnnotationDraft)
+  onStartDraftRef.current = onStartAnnotationDraft
 
   const editor = useEditor({
     extensions: [
@@ -61,6 +72,7 @@ export function ChapterEditor({
       AnnotationMark,
     ],
     content: chapter.body,
+    editable: !readOnly,
     immediatelyRender: true,
     shouldRerenderOnTransaction: false,
     editorProps: {
@@ -92,10 +104,23 @@ export function ChapterEditor({
 
   useEffect(() => {
     if (!editor || editor.isDestroyed) return
+    editor.setEditable(!readOnly)
+  }, [editor, readOnly])
+
+  // 仅在章切换或外部写入（非本编辑器 onUpdate）时 setContent，减少闪烁
+  const lastChapterIdRef = useRef(chapter.id)
+  const lastExternalBodyRef = useRef(chapter.body)
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return
+    const chapterChanged = lastChapterIdRef.current !== chapter.id
     const current = editor.getHTML()
-    if (current !== chapter.body) {
-      editor.commands.setContent(chapter.body, { emitUpdate: false })
+    if (chapterChanged || current !== chapter.body) {
+      if (chapterChanged || lastExternalBodyRef.current !== chapter.body) {
+        editor.commands.setContent(chapter.body, { emitUpdate: false })
+        lastExternalBodyRef.current = chapter.body
+      }
     }
+    lastChapterIdRef.current = chapter.id
     editor.view.dom.setAttribute('aria-label', `${chapter.title} 正文`)
   }, [editor, chapter.id, chapter.body, chapter.title])
 
@@ -128,18 +153,13 @@ export function ChapterEditor({
   }, [editor, focusAnnotationId, focusNonce, chapter.id])
 
   const handleAddAnnotation = () => {
-    if (!editor || editor.isDestroyed) return
+    if (!editor || editor.isDestroyed || readOnly) return
     const { from, to, empty } = editor.state.selection
     if (empty || to <= from) return
     const quote = editor.state.doc.textBetween(from, to, ' ').trim()
     if (!quote) return
-    const body = window.prompt('批注内容', '')
-    if (body === null) return
-    const trimmed = body.trim()
-    if (!trimmed) return
-    const id = onAddAnnotationRef.current({ quote, body: trimmed })
-    if (!id) return
-    editor.chain().focus().setTextSelection({ from, to }).setAnnotation(id).run()
+    // 切到批注 Tab + 侧栏内联输入（无 window.prompt）
+    onStartDraftRef.current({ quote, from, to })
   }
 
   return (
@@ -149,7 +169,7 @@ export function ChapterEditor({
           <div className="min-w-0">
             <h1 className="text-sm font-semibold text-slate-900">{chapter.title}</h1>
             <p className="mt-0.5 text-[11px] text-slate-500">
-              TipTap 纸面文档 · 批注样机 · 手改后「保存草稿」→ mock{' '}
+              TipTap 纸面 · 批注样机 · Cmd/Ctrl+S 保存草稿 → mock{' '}
               <code className="font-mono">saveDraft</code>
             </p>
           </div>
@@ -174,19 +194,43 @@ export function ChapterEditor({
             </div>
             <button
               type="button"
-              disabled={!dirty}
+              disabled={!dirty || readOnly}
               onClick={onSaveDraft}
-              className="btn-press focus-ring rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="btn-press focus-ring rounded-lg bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
             >
               保存草稿{dirty ? ' · dirty' : ''}
             </button>
           </div>
         </div>
-        <EditorToolbar editor={editor} onAddAnnotation={handleAddAnnotation} />
+        {gateReason ? (
+          <div className="mx-4 mb-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+            <div className="text-[12px] font-medium text-slate-800">未授权 / 只读</div>
+            <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">{gateReason}</p>
+            <button
+              type="button"
+              className="btn-press focus-ring mt-2 rounded-md bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white hover:bg-slate-800"
+              onClick={() => {
+                /* slate CTA · mock：无真开通 */
+              }}
+              title="样机无真 SKU 开通"
+            >
+              申请开通（示意）
+            </button>
+          </div>
+        ) : null}
+        <EditorToolbar
+          editor={editor}
+          readOnly={readOnly}
+          onAddAnnotation={readOnly ? undefined : handleAddAnnotation}
+        />
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto my-8 w-full max-w-[816px] px-4 pb-12">
-          <article className="doc-paper min-h-[1056px] bg-white px-[72px] py-[80px] shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_28px_rgba(0,0,0,0.08)] ring-1 ring-black/5">
+          <article
+            className={`doc-paper min-h-[1056px] bg-white px-[72px] py-[80px] shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_28px_rgba(0,0,0,0.08)] ring-1 ring-black/5 ${
+              readOnly ? 'opacity-95' : ''
+            }`}
+          >
             <EditorContent editor={editor} />
           </article>
         </div>

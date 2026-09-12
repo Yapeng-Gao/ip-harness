@@ -1,10 +1,22 @@
-import { CheckCircle2, MessageSquarePlus, RotateCcw, Trash2 } from 'lucide-react'
+import {
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  MessageSquarePlus,
+  RotateCcw,
+  Trash2,
+} from 'lucide-react'
 import { useState } from 'react'
-import type { Annotation } from '../types'
+import type { Annotation, AnnotationDraft } from '../types'
 
 type Props = {
   annotations: Annotation[]
   activeAnnotationId: string | null
+  draft: AnnotationDraft | null
+  draftBody: string
+  onDraftBodyChange: (v: string) => void
+  onSubmitDraft: () => void
+  onCancelDraft: () => void
   onSelect: (id: string) => void
   onReply: (id: string, body: string) => void
   onToggleResolved: (id: string) => void
@@ -14,24 +26,101 @@ type Props = {
 export function AnnotationPanel({
   annotations,
   activeAnnotationId,
+  draft,
+  draftBody,
+  onDraftBodyChange,
+  onSubmitDraft,
+  onCancelDraft,
   onSelect,
   onReply,
   onToggleResolved,
   onDelete,
 }: Props) {
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({})
+  const [hideResolved, setHideResolved] = useState(false)
+  const [resolvedCollapsed, setResolvedCollapsed] = useState(true)
   const open = annotations.filter((a) => !a.resolved)
   const resolved = annotations.filter((a) => a.resolved)
+  const showResolved = !hideResolved && resolved.length > 0
 
   return (
     <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
       <p className="text-[10px] leading-relaxed text-slate-400">
-        TipTap Mark 批注样机 · 选中正文后工具栏「加批注」· 非 Word 修订/协同
+        TipTap Mark 批注样机 · 选中正文后工具栏「加批注」→ 本栏提交 · 非 Word 修订/协同
       </p>
 
-      {annotations.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-200 px-3 py-8 text-center text-[11px] text-slate-400">
-          本章尚无批注。选中纸面文字后点「加批注」。
+      {draft ? (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 shadow-[var(--shadow-rest)]">
+          <div className="text-[11px] font-medium text-slate-800">新建批注</div>
+          <blockquote className="mt-1.5 border-l-2 border-slate-300 pl-2 text-[11px] italic leading-relaxed text-slate-600">
+            「{draft.quote}」
+          </blockquote>
+          <textarea
+            value={draftBody}
+            onChange={(e) => onDraftBodyChange(e.target.value)}
+            placeholder="输入批注内容…"
+            rows={3}
+            className="ui-input mt-2 w-full resize-y rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[12px] text-slate-800 placeholder:text-slate-400"
+            aria-label="批注内容"
+            autoFocus
+          />
+          <div className="mt-2 flex gap-2">
+            <button
+              type="button"
+              disabled={!draftBody.trim()}
+              onClick={onSubmitDraft}
+              className="btn-press focus-ring flex-1 rounded-md bg-slate-900 px-2.5 py-1.5 text-[11px] font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              提交批注
+            </button>
+            <button
+              type="button"
+              onClick={onCancelDraft}
+              className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {annotations.length === 0 && !draft ? (
+        <div className="ui-empty rounded-xl border border-dashed border-slate-200 bg-[var(--color-surface-50,#f5f5f7)] px-3 py-8 text-center">
+          <div className="text-[12px] font-medium text-slate-700">本章尚无批注</div>
+          <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+            在纸面选中文字，点工具栏「加批注」，于本栏填写并提交。
+          </p>
+          <button
+            type="button"
+            className="btn-press focus-ring mt-3 rounded-md bg-slate-900 px-2.5 py-1.5 text-[11px] font-medium text-white hover:bg-slate-800"
+            onClick={() => {
+              /* 引导 · 无自动选区 */
+            }}
+            title="请先在纸面选中文字"
+          >
+            去选中正文
+          </button>
+        </div>
+      ) : null}
+
+      {annotations.length > 0 && open.length === 0 && !draft ? (
+        <div className="rounded-xl border border-dashed border-slate-200 bg-[var(--color-surface-50,#f5f5f7)] px-3 py-5 text-center">
+          <div className="text-[12px] font-medium text-slate-700">全部已解决</div>
+          <p className="mt-1 text-[11px] text-slate-500">
+            可取消解决以重新打开，或继续在正文加批注。
+          </p>
+        </div>
+      ) : null}
+
+      {resolved.length > 0 ? (
+        <div className="flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => setHideResolved((v) => !v)}
+            className="btn-press focus-ring rounded-md px-2 py-1 text-[10px] text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+          >
+            {hideResolved ? '显示已解决' : '隐藏已解决'} · {resolved.length}
+          </button>
         </div>
       ) : null}
 
@@ -65,33 +154,44 @@ export function AnnotationPanel({
         </section>
       ) : null}
 
-      {resolved.length > 0 ? (
+      {showResolved ? (
         <section>
-          <div className="mb-1.5 text-[11px] font-medium text-slate-400">
+          <button
+            type="button"
+            onClick={() => setResolvedCollapsed((v) => !v)}
+            className="btn-press focus-ring mb-1.5 flex w-full items-center gap-1 text-[11px] font-medium text-slate-400 hover:text-slate-600"
+          >
+            {resolvedCollapsed ? (
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+            )}
             已解决 · {resolved.length}
-          </div>
-          <ul className="space-y-2 opacity-75">
-            {resolved.map((a) => (
-              <AnnotationCard
-                key={a.id}
-                annotation={a}
-                active={a.id === activeAnnotationId}
-                replyDraft={replyDrafts[a.id] ?? ''}
-                onReplyDraftChange={(v) =>
-                  setReplyDrafts((prev) => ({ ...prev, [a.id]: v }))
-                }
-                onSelect={() => onSelect(a.id)}
-                onReply={() => {
-                  const body = (replyDrafts[a.id] ?? '').trim()
-                  if (!body) return
-                  onReply(a.id, body)
-                  setReplyDrafts((prev) => ({ ...prev, [a.id]: '' }))
-                }}
-                onToggleResolved={() => onToggleResolved(a.id)}
-                onDelete={() => onDelete(a.id)}
-              />
-            ))}
-          </ul>
+          </button>
+          {!resolvedCollapsed ? (
+            <ul className="space-y-2 opacity-75">
+              {resolved.map((a) => (
+                <AnnotationCard
+                  key={a.id}
+                  annotation={a}
+                  active={a.id === activeAnnotationId}
+                  replyDraft={replyDrafts[a.id] ?? ''}
+                  onReplyDraftChange={(v) =>
+                    setReplyDrafts((prev) => ({ ...prev, [a.id]: v }))
+                  }
+                  onSelect={() => onSelect(a.id)}
+                  onReply={() => {
+                    const body = (replyDrafts[a.id] ?? '').trim()
+                    if (!body) return
+                    onReply(a.id, body)
+                    setReplyDrafts((prev) => ({ ...prev, [a.id]: '' }))
+                  }}
+                  onToggleResolved={() => onToggleResolved(a.id)}
+                  onDelete={() => onDelete(a.id)}
+                />
+              ))}
+            </ul>
+          ) : null}
         </section>
       ) : null}
     </div>
@@ -121,7 +221,7 @@ function AnnotationCard({
     <li
       className={`rounded-xl border p-2.5 transition-colors ${
         active
-          ? 'border-amber-300 bg-amber-50/80 shadow-sm'
+          ? 'border-slate-400 bg-[var(--color-accent-soft,#e8f2ff)] shadow-sm ring-1 ring-[var(--color-accent,#007aff)]/30'
           : 'border-slate-200 bg-white hover:border-slate-300'
       }`}
     >
@@ -136,7 +236,12 @@ function AnnotationCard({
             })}
           </time>
         </div>
-        <blockquote className="mt-1.5 border-l-2 border-amber-300 pl-2 text-[11px] italic leading-relaxed text-slate-600">
+        {annotation.orphan ? (
+          <div className="mt-1 rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] text-amber-800">
+            Mark 缺失（orphan）· 列表保留，纸面未找到摘录
+          </div>
+        ) : null}
+        <blockquote className="mt-1.5 border-l-2 border-slate-300 pl-2 text-[11px] italic leading-relaxed text-slate-600">
           「{annotation.quote}」
         </blockquote>
         <p className="mt-1.5 text-[12px] leading-relaxed text-slate-800">

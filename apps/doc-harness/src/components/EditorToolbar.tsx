@@ -12,10 +12,11 @@ import type { ReactNode } from 'react'
 
 type Props = {
   editor: Editor | null
+  readOnly?: boolean
   onAddAnnotation?: () => void
 }
 
-export function EditorToolbar({ editor, onAddAnnotation }: Props) {
+export function EditorToolbar({ editor, readOnly, onAddAnnotation }: Props) {
   const active = useEditorState({
     editor,
     selector: ({ editor: ed }) => {
@@ -49,6 +50,8 @@ export function EditorToolbar({ editor, onAddAnnotation }: Props) {
 
   if (!editor || !active) return null
 
+  const fmtDisabled = Boolean(readOnly)
+
   return (
     <div
       className="flex flex-wrap items-center gap-0.5 border-t border-slate-100 px-3 py-1.5"
@@ -58,6 +61,7 @@ export function EditorToolbar({ editor, onAddAnnotation }: Props) {
       <ToolBtn
         label="加粗"
         pressed={active.bold}
+        disabled={fmtDisabled}
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
         <Bold className="h-3.5 w-3.5" aria-hidden />
@@ -65,6 +69,7 @@ export function EditorToolbar({ editor, onAddAnnotation }: Props) {
       <ToolBtn
         label="斜体"
         pressed={active.italic}
+        disabled={fmtDisabled}
         onClick={() => editor.chain().focus().toggleItalic().run()}
       >
         <Italic className="h-3.5 w-3.5" aria-hidden />
@@ -73,6 +78,7 @@ export function EditorToolbar({ editor, onAddAnnotation }: Props) {
       <ToolBtn
         label="标题 H2"
         pressed={active.h2}
+        disabled={fmtDisabled}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
       >
         <span className="px-0.5 text-[11px] font-semibold tracking-tight">H2</span>
@@ -80,6 +86,7 @@ export function EditorToolbar({ editor, onAddAnnotation }: Props) {
       <ToolBtn
         label="标题 H3"
         pressed={active.h3}
+        disabled={fmtDisabled}
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
       >
         <span className="px-0.5 text-[11px] font-semibold tracking-tight">H3</span>
@@ -88,6 +95,7 @@ export function EditorToolbar({ editor, onAddAnnotation }: Props) {
       <ToolBtn
         label="无序列表"
         pressed={active.bullet}
+        disabled={fmtDisabled}
         onClick={() => editor.chain().focus().toggleBulletList().run()}
       >
         <List className="h-3.5 w-3.5" aria-hidden />
@@ -95,6 +103,7 @@ export function EditorToolbar({ editor, onAddAnnotation }: Props) {
       <ToolBtn
         label="有序列表"
         pressed={active.ordered}
+        disabled={fmtDisabled}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
       >
         <ListOrdered className="h-3.5 w-3.5" aria-hidden />
@@ -102,14 +111,14 @@ export function EditorToolbar({ editor, onAddAnnotation }: Props) {
       <Sep />
       <ToolBtn
         label="撤销"
-        disabled={!active.canUndo}
+        disabled={fmtDisabled || !active.canUndo}
         onClick={() => editor.chain().focus().undo().run()}
       >
         <Undo2 className="h-3.5 w-3.5" aria-hidden />
       </ToolBtn>
       <ToolBtn
         label="重做"
-        disabled={!active.canRedo}
+        disabled={fmtDisabled || !active.canRedo}
         onClick={() => editor.chain().focus().redo().run()}
       >
         <Redo2 className="h-3.5 w-3.5" aria-hidden />
@@ -118,8 +127,12 @@ export function EditorToolbar({ editor, onAddAnnotation }: Props) {
         <>
           <Sep />
           <ToolBtn
-            label="加批注"
-            disabled={!active.hasSelection}
+            label={
+              active.hasSelection
+                ? '加批注'
+                : '加批注（请先选中正文）'
+            }
+            disabled={fmtDisabled || !active.hasSelection}
             onClick={onAddAnnotation}
           >
             <span className="inline-flex items-center gap-1 px-0.5 text-[11px] font-medium">

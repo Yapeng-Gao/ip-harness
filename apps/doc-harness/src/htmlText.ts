@@ -16,3 +16,16 @@ export function stripHtml(html: string): string {
     .replace(/\n{3,}/g, '\n\n')
     .trim()
 }
+
+/** 逐段对照：返回 { before, after } 段落列表（去标签后按空行/换行切） */
+export function paragraphDiff(
+  beforeHtml: string,
+  afterHtml: string,
+): { before: string[]; after: string[] } {
+  const split = (html: string) =>
+    stripHtml(html)
+      .split(/\n+/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+  return { before: split(beforeHtml), after: split(afterHtml) }
+}
