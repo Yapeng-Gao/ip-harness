@@ -12,7 +12,6 @@ import { useApp } from '../context/AppContext'
 import { useAgents } from '../context/AgentContext'
 import { RUN_STATUS_LABEL } from '../data/agents'
 import { workbenchPathForStage } from '../data/workbenchMap'
-import { TenantBanner } from '../components/TenantBanner'
 import { EmptyState } from '../components/PageHeader'
 import { getLastCaseId, getLastAgentSessionId } from '../utils/lastVisited'
 import {
@@ -26,7 +25,7 @@ import { DashboardSecondary } from './DashboardSecondary'
 import { BillingHoldBanner } from '../components/BillingHoldBanner'
 import { AppLink } from '../components/AppLink'
 
-type ScanChipKind = 'sla' | 'risk' | 'who' | 'gate'
+type ScanChipKind = 'sla' | 'deadline' | 'risk' | 'who' | 'gate'
 type ScanChip = { kind: ScanChipKind; k: string; v: string }
 
 /** Presentation-only: split SLA / risk / who into chips. Does not change inbox data. */
@@ -38,6 +37,8 @@ function scanChipsFromInbox(item: OpsInboxItem): { chips: ScanChip[]; residual?:
 
   let sla: string | undefined
   let slaOver = false
+  let slaSoon = false
+  let slaOverdueLabel = false
   let risk: string | undefined
   const residual: string[] = []
 
@@ -51,7 +52,13 @@ function scanChipsFromInbox(item: OpsInboxItem): { chips: ScanChip[]; residual?:
       sla = slaDate[1]
       continue
     }
-    if (bit === '已逾期' || bit === '逾期' || bit === '即将到期') {
+    if (bit === '已逾期' || bit === '逾期') {
+      slaOverdueLabel = true
+      sla = sla ? `${bit} · ${sla}` : bit
+      continue
+    }
+    if (bit === '即将到期') {
+      slaSoon = true
       sla = sla ? `${bit} · ${sla}` : bit
       continue
     }
@@ -72,8 +79,12 @@ function scanChipsFromInbox(item: OpsInboxItem): { chips: ScanChip[]; residual?:
   else if (slaOver && sla) sla = `已超 · ${sla}`
   else if (slaOver) sla = '已超'
 
+  // 危急色：已逾期/超 SLA → risk；即将到期 → deadline；其余 SLA 保底 deadline（勿一律 amber sla）
+  const slaKind: ScanChipKind =
+    slaOver || slaOverdueLabel ? 'risk' : slaSoon || !!sla ? 'deadline' : 'sla'
+
   const chips: ScanChip[] = []
-  if (sla) chips.push({ kind: 'sla', k: 'SLA', v: sla })
+  if (sla) chips.push({ kind: slaKind, k: 'SLA', v: sla })
   if (risk) chips.push({ kind: 'risk', k: '风险', v: risk })
   chips.push({ kind: 'who', k: '谁该动', v: item.whoShouldAct })
   if (item.gateLabel) chips.push({ kind: 'gate', k: '闸', v: item.gateLabel })
@@ -244,8 +255,6 @@ export function Dashboard() {
 
   return (
     <div className="px-5 py-5 lg:px-8 lg:py-6">
-      <TenantBanner />
-
       <section className="dash-board-top mb-6" aria-label="资产与任务看板">
         <div className="dash-board-head">
           <div className="dash-board-copy min-w-0">

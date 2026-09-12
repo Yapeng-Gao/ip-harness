@@ -45,7 +45,7 @@ const HUB: HubItem[] = [
   {
     to: '/settings#notify',
     title: '通知渠道',
-    desc: '邮件 / 企微 / 站内信',
+    desc: '未实现 · 不接真推送；Docket「记录提醒」仅写本地演示日志',
     icon: Bell,
     unimplemented: true,
   },

@@ -526,22 +526,20 @@ export function HandoffActionBar({
           </div>
         </div>
       )}
-      {inlineError && (
+      {/* P1 · 交接 tip 去重：有 inlineError 时只保留按钮旁一条，不再叠底栏复述 */}
+      {inlineError ? (
         <p className="wb-tip wb-tip-error" role="alert">
           {inlineError}
         </p>
-      )}
-      {(saveDisabled || submitDisabled || entApproveDisabled) && (
+      ) : (saveDisabled || submitDisabled || entApproveDisabled) ? (
         <p className="text-xs text-slate-500">
           {agencyInvoiceBlocked
             ? invoiceBlock.reason
-            : blockPrimary
-            ? inlineError ?? '请先完成校验与清单后再递交'
             : showExecutor
               ? tip('submit') ?? tip('save_draft')
               : tip('approve') ?? tip('request_changes')}
         </p>
-      )}
+      ) : null}
     </div>
   )
 }

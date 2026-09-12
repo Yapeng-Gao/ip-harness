@@ -13,7 +13,7 @@ import {
 } from '../../components/workbench/FlowChrome'
 import { ClaimDiffView } from '../../components/workbench/ClaimDiffView'
 import { VersionPanel } from '../../components/workbench/VersionPanel'
-import { WbSection, WbField } from '../../components/workbench/FormBlocks'
+import { WbSection, WbField, WbStickyTip } from '../../components/workbench/FormBlocks'
 import { daysUntil, urgencyBannerClass, urgencyLabel, urgencyLevel } from '../../utils/deadline'
 import {
   evaluateFullCheck,
@@ -190,6 +190,18 @@ ${claimAmended}
         <CasePicker stage="prosecution" selectedId={caseId} onChange={(id) => { setCaseId(id); navigate(id ? `/workbench/prosecution/${id}` : '/workbench/prosecution', { replace: true }) }} />
       </div>
       <Stepper steps={STEPS} current={stepperCurrent} />
+
+      {/* P1 · 唯一 sticky tip：陈述/Full-check 主因（HABIT-04） */}
+      {!oaStatementConfirmed ? (
+        <WbStickyTip tone="error" className="mb-4">
+          未确认陈述前不可授权/递交 · 请先勾选「陈述已确认」
+        </WbStickyTip>
+      ) : !fullCheckResult.ok ? (
+        <WbStickyTip tone="error" className="mb-4">
+          Full-check 缺口：{fullCheckResult.missing.join('；')}
+        </WbStickyTip>
+      ) : null}
+
       <SplitDraft
         rightTitle="答复书草稿"
         right={<textarea className={`${textareaCls} min-h-[480px] font-mono text-xs leading-relaxed`} name="prosecutionDraft" autoComplete="off" spellCheck={false} value={draft} onChange={(e) => setDraft(e.target.value)} />}
@@ -318,7 +330,7 @@ ${claimAmended}
               </span>
             </label>
             {!oaStatementConfirmed && (
-              <p className="mt-2 text-xs text-rose-700">未确认陈述前不可授权/递交</p>
+              <p className="mt-2 text-xs text-slate-500" role="note">陈述未确认 · 详见上方提示</p>
             )}
             <h3 className="mb-2 mt-4 text-sm font-medium text-slate-800">Full-check（授权/递交前）</h3>
             <ul className="space-y-2">
@@ -337,7 +349,7 @@ ${claimAmended}
               ))}
             </ul>
             {!fullCheckResult.ok && (
-              <p className="mt-2 text-xs text-rose-700">缺口：{fullCheckResult.missing.join('；')}</p>
+              <p className="mt-2 text-xs text-slate-500" role="note">Full-check 有缺口 · 详见上方提示</p>
             )}
           </div>
           <VersionPanel caseId={caseId} handoffKey="prosecution_response" />

@@ -12,7 +12,7 @@ import {
 } from '../../components/FlowChrome'
 import { ClaimDiffView } from '../../components/ClaimDiffView'
 import { VersionPanel } from '../../components/VersionPanel'
-import { WbSection, WbField, WbTip, WbCheckRow, WbChip, WbEmpty, WbInset } from '../../components/FormBlocks'
+import { WbSection, WbField, WbTip, WbStickyTip, WbCheckRow, WbChip, WbEmpty, WbInset } from '../../components/FormBlocks'
 import { daysUntil, urgencyBannerClass, urgencyLabel, urgencyLevel } from '@shared/utils/deadline'
 import {
   evaluateFullCheck,
@@ -190,6 +190,18 @@ ${claimAmended}
         <CasePicker stage="prosecution" selectedId={caseId} onChange={(id) => { setCaseId(id); navigate(id ? `/workbench/prosecution/${id}` : '/workbench/prosecution', { replace: true }) }} />
       </div>
       <Stepper steps={STEPS} current={stepperCurrent} />
+
+      {/* P1 · 唯一 sticky tip：陈述/Full-check 主因（HABIT-04） */}
+      {!oaStatementConfirmed ? (
+        <WbStickyTip tone="error" className="mb-4">
+          未确认陈述前不可授权/递交 · 请先勾选「陈述已确认」
+        </WbStickyTip>
+      ) : !fullCheckResult.ok ? (
+        <WbStickyTip tone="error" className="mb-4">
+          Full-check 缺口：{fullCheckResult.missing.join('；')}
+        </WbStickyTip>
+      ) : null}
+
       <SplitDraft
         rightTitle="答复书草稿"
         right={<textarea className={`${draftAreaCls} min-h-[480px]`} name="prosecutionDraft" autoComplete="off" spellCheck={false} value={draft} onChange={(e) => setDraft(e.target.value)} />}
@@ -312,7 +324,7 @@ ${claimAmended}
               </span>
             </WbCheckRow>
             {!oaStatementConfirmed && (
-              <WbTip tone="error" role="alert">未确认陈述前不可授权/递交</WbTip>
+              <p className="text-xs text-slate-500" role="note">陈述未确认 · 详见上方提示</p>
             )}
             <h4 className="text-xs font-medium text-slate-700">Full-check（授权/递交前）</h4>
             <ul className="space-y-2">
@@ -328,7 +340,7 @@ ${claimAmended}
               ))}
             </ul>
             {!fullCheckResult.ok && (
-              <WbTip tone="error" role="alert">缺口：{fullCheckResult.missing.join('；')}</WbTip>
+              <p className="text-xs text-slate-500" role="note">Full-check 有缺口 · 详见上方提示</p>
             )}
           </WbSection>
           <VersionPanel caseId={caseId} handoffKey="prosecution_response" />

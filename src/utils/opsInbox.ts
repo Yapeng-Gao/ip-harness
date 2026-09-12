@@ -80,6 +80,26 @@ export interface OpsInboxCounts {
   sla: number
 }
 
+
+/**
+ * Inbox 紧迫序（仅 sortKey · 不改闸门/enforcement）
+ * 0 = overdue / 超 SLA / at_risk（压过普通 Agent 待办）
+ * 1 = due_soon / reminded（待升级）/ escalated
+ * 2 = 普通 Agent 确认 / 工作台待办
+ */
+export function inboxUrgencyBand(opts: {
+  overdue?: boolean
+  overSla?: boolean
+  atRisk?: boolean
+  dueSoon?: boolean
+  reminded?: boolean
+  escalated?: boolean
+}): string {
+  if (opts.overdue || opts.overSla || opts.atRisk) return '0'
+  if (opts.dueSoon || opts.reminded || opts.escalated) return '1'
+  return '2'
+}
+
 export interface BuildOpsInboxInput {
   role: UserRole
   /** Wave1 Persona；缺省按 role 全量 */
@@ -288,7 +308,11 @@ export function buildOpsInbox(input: BuildOpsInboxInput): OpsInboxItem[] {
         href: appHref(`/docket?case=${e.caseId}`),
         caseId: e.caseId,
         due: e.dueDate,
-        sortKey: `2-${e.dueDate}-${e.id}`,
+        sortKey: `${inboxUrgencyBand({
+          overdue: e.status === 'overdue',
+          atRisk: !!(e.atRisk || effectiveEscalationLevel(e) === 'at_risk'),
+          dueSoon: e.status === 'due_soon',
+        })}-${e.status === 'overdue' ? '0' : '1'}-${e.dueDate}-${e.id}`,
       })
     }
     return items.sort((a, b) => a.sortKey.localeCompare(b.sortKey))
@@ -353,7 +377,7 @@ export function buildOpsInbox(input: BuildOpsInboxInput): OpsInboxItem[] {
       href: appHref(t.actionPath),
       caseId: t.caseId,
       due: t.due,
-      sortKey: `1-${t.due ?? '9999'}-${t.id}`,
+      sortKey: `2-${t.due ?? '9999'}-${t.id}`,
     })
   }
 
@@ -396,7 +420,7 @@ export function buildOpsInbox(input: BuildOpsInboxInput): OpsInboxItem[] {
       gate,
       gateLabel,
       due: s.updatedAt,
-      sortKey: `0-${s.updatedAt ?? '9999'}-${s.id}`,
+      sortKey: `2-${s.updatedAt ?? '9999'}-${s.id}`,
     })
   }
 
@@ -405,8 +429,25 @@ export function buildOpsInbox(input: BuildOpsInboxInput): OpsInboxItem[] {
     if (e.status !== 'due_soon' && e.status !== 'overdue') continue
     if (!cases.some((c) => c.id === e.caseId)) continue
     const level = effectiveEscalationLevel(e)
-    const sortBoost =
-      level === 'at_risk' ? '0' : level === 'escalated_enterprise' ? '1' : '2'
+    const overdue = e.status === 'overdue'
+    const atRisk = !!(e.atRisk || level === 'at_risk')
+    const band = inboxUrgencyBand({
+      overdue,
+      atRisk,
+      dueSoon: e.status === 'due_soon',
+      reminded: level === 'reminded',
+      escalated: level === 'escalated_enterprise',
+    })
+    // 同 band 内：逾期 > 即将到期；风险/升级态次之（reminded 不因「已提醒」沉到未逾期之后）
+    const statusOrd = overdue ? '0' : '1'
+    const escOrd =
+      atRisk
+        ? '0'
+        : level === 'escalated_enterprise'
+          ? '1'
+          : level === 'reminded'
+            ? '2'
+            : '3'
     items.push({
       id: `dk-${e.id}`,
       source: 'docket',
@@ -417,7 +458,7 @@ export function buildOpsInbox(input: BuildOpsInboxInput): OpsInboxItem[] {
       href: appHref(`/docket?case=${e.caseId}`),
       caseId: e.caseId,
       due: e.dueDate,
-      sortKey: `${sortBoost}-${e.dueDate}-${e.id}`,
+      sortKey: `${band}-${statusOrd}-${escOrd}-${e.dueDate}-${e.id}`,
     })
   }
 
@@ -425,12 +466,14 @@ export function buildOpsInbox(input: BuildOpsInboxInput): OpsInboxItem[] {
   for (const { caseId, alert } of watchAlerts) {
     if (!cases.some((c) => c.id === caseId)) continue
     if (!watchVisibleToActor(alert, role, persona, today)) continue
-    const over =
-      alert.slaDue && alert.slaDue < today
-        ? '0'
-        : isWatchHighRisk(alert)
-          ? '1'
-          : '2'
+    const overSla = !!(alert.slaDue && alert.slaDue < today)
+    const atRisk = isWatchHighRisk(alert)
+    const band = inboxUrgencyBand({
+      overSla,
+      atRisk,
+      dueSoon: !overSla && !!alert.slaDue,
+    })
+    const overOrd = overSla ? '0' : atRisk ? '1' : '2'
     items.push({
       id: `wa-${caseId}-${alert.id}`,
       source: 'sla',
@@ -441,7 +484,7 @@ export function buildOpsInbox(input: BuildOpsInboxInput): OpsInboxItem[] {
       href: watchDeepLink(caseId, alert.id),
       caseId,
       due: alert.slaDue ?? alert.openedAt,
-      sortKey: `0-${over}-${alert.slaDue ?? '9999'}-${alert.id}`,
+      sortKey: `${band}-${overOrd}-${alert.slaDue ?? '9999'}-${alert.id}`,
     })
   }
 
@@ -451,6 +494,10 @@ export function buildOpsInbox(input: BuildOpsInboxInput): OpsInboxItem[] {
       if (!cases.some((c) => c.id === caseId)) continue
       const urg = maintainNeedsInbox(row, caseId, docketEvents, today)
       if (!urg) continue
+      const band = inboxUrgencyBand({
+        overdue: urg === 'overdue',
+        dueSoon: urg === 'due_soon',
+      })
       const boost = urg === 'overdue' ? '0' : '1'
       items.push({
         id: `mn-${caseId}-${row.id}`,
@@ -462,7 +509,7 @@ export function buildOpsInbox(input: BuildOpsInboxInput): OpsInboxItem[] {
         href: maintainDeepLink(caseId),
         caseId,
         due: row.due,
-        sortKey: `1-${boost}-${row.due}-${row.id}`,
+        sortKey: `${band}-${boost}-${row.due}-${row.id}`,
       })
     }
   }

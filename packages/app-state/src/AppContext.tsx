@@ -1029,7 +1029,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       })
       const msg =
         action === 'remind'
-          ? '已提醒（示意·无真通知）'
+          ? '已记录提醒 · 无真推送（演示通道）'
           : action === 'escalate_enterprise'
             ? '已升级到企业 IP · Inbox/待办可见'
             : '已标记风险 · Inbox 可见'

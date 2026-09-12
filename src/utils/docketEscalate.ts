@@ -93,10 +93,10 @@ export function applyEscalateAction(
         escalationLevel: 'reminded',
         escalationAt: at,
         escalationActor: actor,
-        note: [e.note, `已提醒 · ${isoDay}`].filter(Boolean).join(' · '),
+        note: [e.note, `已记录提醒 · ${isoDay} · 无真推送`].filter(Boolean).join(' · '),
       },
       timelineTitle: '期限提醒',
-      timelineDesc: `${e.title} · 已发送提醒（示意·无真通知）`,
+      timelineDesc: `${e.title} · 已记录提醒 · 无真推送（演示通道）`,
       auditDetail: `DocketEscalate · remind · ${e.id} · ${e.title}`,
     }
   }

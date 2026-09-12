@@ -632,6 +632,11 @@ p {
   background: #fff1f2;
   color: #9f1239;
 }
+.ui-toast-info {
+  border-color: color-mix(in srgb, var(--color-status-info) 35%, transparent);
+  background: var(--color-status-info-bg);
+  color: #0c4a6e;
+}
 
 /* KPI hierarchy — spaced 3-card band, readable meta */
 .kpi-strip {
@@ -1042,6 +1047,13 @@ p {
   border-color: #fed7aa;
 }
 .dash-scan-chip[data-kind="sla"] .dash-scan-chip-k {
+  color: #9a3412;
+}
+.dash-scan-chip[data-kind="deadline"] {
+  background: var(--color-status-deadline-bg);
+  border-color: var(--color-status-deadline-border);
+}
+.dash-scan-chip[data-kind="deadline"] .dash-scan-chip-k {
   color: #9a3412;
 }
 .dash-scan-chip[data-kind="risk"] {

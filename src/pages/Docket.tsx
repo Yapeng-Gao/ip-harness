@@ -14,6 +14,8 @@ import {
   ArrowUpRight,
   Flag,
   CheckCircle2,
+  MoreHorizontal,
+  Info,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import {
@@ -49,7 +51,8 @@ export function Docket() {
   const caseFilter = searchParams.get('case') ?? ''
   const focusRisk = searchParams.get('focus') === 'risk'
   const [view, setView] = useState<'list' | 'calendar'>('list')
-  const [toast, setToast] = useState<string | null>(null)
+  const [toast, setToast] = useState<{ msg: string; tone: 'info' | 'success' | 'error' } | null>(null)
+  const [moreOpenId, setMoreOpenId] = useState<string | null>(null)
   const [genOpen, setGenOpen] = useState(false)
   const [genCaseId, setGenCaseId] = useState(cases[0]?.id ?? 'c1')
   const [genRule, setGenRule] = useState<DocketRuleId>('oa1_response')
@@ -104,14 +107,14 @@ export function Docket() {
     return [...map.entries()]
   }, [sorted])
 
-  const showToast = (msg: string) => {
-    setToast(msg)
-    setTimeout(() => setToast(null), 2500)
+  const showToast = (msg: string, tone: 'info' | 'success' | 'error' = 'info') => {
+    setToast({ msg, tone })
+    setTimeout(() => setToast(null), 2800)
   }
 
   const handleGenerate = () => {
     if (docketWriteBlocked) {
-      showToast('当前 Persona 不可生成官方期限')
+      showToast('当前 Persona 只读 · 不可生成官方期限', 'error')
       return
     }
     const c = getCase(genCaseId)
@@ -131,23 +134,42 @@ export function Docket() {
     })
     addDocketEvent(ev)
     setGenOpen(false)
-    showToast(`已生成期限：${ev.title} · 到期 ${ev.dueDate}`)
+    showToast(`已生成期限：${ev.title} · 到期 ${ev.dueDate}`, 'success')
   }
 
   const ACTION_LABEL: Record<DocketEscalateAction, string> = {
-    remind: '提醒',
+    remind: '记录提醒',
     escalate_enterprise: '升级到企业 IP',
     mark_at_risk: '标记风险',
     complete: '办结',
   }
 
+  const ACTION_HINT: Partial<Record<DocketEscalateAction, string>> = {
+    remind: '演示通道 · 无真推送',
+  }
+
+  const personaReadOnlyReason =
+    persona === 'inventor'
+      ? '当前 Persona=发明人 · 只读 · 不可提醒/升级/办结'
+      : persona === 'committee'
+        ? '当前 Persona=委员 · 只读 · 不可提醒/升级/办结'
+        : null
+
   const handleEscalate = (eventId: string, action: DocketEscalateAction) => {
     if (docketWriteBlocked) {
-      showToast('当前 Persona 不可升级/办结官方期限')
+      showToast(personaReadOnlyReason ?? '当前 Persona 只读 · 不可操作期限', 'error')
       return
     }
     const r = escalateDocketEvent(eventId, action)
-    showToast(r.ok ? r.message : `失败：${r.message}`)
+    const tone: 'info' | 'success' | 'error' = !r.ok
+      ? 'error'
+      : action === 'remind'
+        ? 'info'
+        : action === 'complete'
+          ? 'success'
+          : 'info'
+    showToast(r.ok ? r.message : `失败：${r.message}`, tone)
+    setMoreOpenId(null)
   }
 
   const clearCaseFilter = () => {
@@ -168,8 +190,25 @@ export function Docket() {
     <div className="p-6 lg:p-8">
       <div role="status" aria-live="polite" aria-atomic="true" className="pointer-events-none fixed right-6 top-6 z-50">
         {toast && (
-          <div className="pointer-events-auto rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-800 shadow-lg">
-            {toast}
+          <div
+            className={`toast-enter ui-toast pointer-events-auto ${
+              toast.tone === 'error'
+                ? 'ui-toast-error'
+                : toast.tone === 'success'
+                  ? 'ui-toast-success'
+                  : 'ui-toast-info'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              {toast.tone === 'error' ? (
+                <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
+              ) : toast.tone === 'success' ? (
+                <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />
+              ) : (
+                <Info className="h-4 w-4 shrink-0" aria-hidden />
+              )}
+              <span>{toast.msg}</span>
+            </div>
           </div>
         )}
       </div>
@@ -181,7 +220,7 @@ export function Docket() {
           label: '由事件生成期限',
           onClick: () => {
             if (docketWriteBlocked) {
-              showToast('当前 Persona 不可生成官方期限')
+              showToast(personaReadOnlyReason ?? '当前 Persona 只读 · 不可生成官方期限', 'error')
               return
             }
             setGenOpen(true)
@@ -211,6 +250,19 @@ export function Docket() {
           </div>
         </div>
       </PageHeader>
+
+
+      {docketWriteBlocked && personaReadOnlyReason && (
+        <div
+          className="mb-4 flex flex-wrap items-start gap-2 rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-2.5"
+          role="status"
+        >
+          <p className="agent-confirm-reason" data-tone="block">
+            {personaReadOnlyReason}
+          </p>
+          <span className="text-xs text-amber-900/80">与页眉「不接真通知」一致 · 只读浏览期限</span>
+        </div>
+      )}
 
       {/* Fix3：维持日程与 Docket 分表对齐提示（只读 · 非双写） */}
       {caseFilter ? (
@@ -407,10 +459,10 @@ export function Docket() {
                         <span
                           className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${
                             esc === 'at_risk' || e.atRisk
-                              ? 'border-rose-200 bg-rose-50 text-rose-800'
+                              ? 'border-[var(--color-status-risk-border)] bg-[var(--color-status-risk-bg)] text-[var(--color-status-risk)]'
                               : esc === 'escalated_enterprise'
                                 ? 'border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-accent-soft text-accent-muted'
-                                : 'border-amber-200 bg-amber-50 text-amber-900'
+                                : 'border-[var(--color-status-pending-border)] bg-[var(--color-status-pending-bg)] text-[var(--color-status-pending)]'
                           }`}
                         >
                           {(esc === 'at_risk' || e.atRisk) && (
@@ -421,53 +473,140 @@ export function Docket() {
                         </span>
                       )
                     })()}
-                    {ladderNextActions(e).map((action) => {
-                      const isPrimary =
-                        action === 'escalate_enterprise' ||
-                        action === 'mark_at_risk'
-                      const Icon =
-                        action === 'remind'
-                          ? Bell
-                          : action === 'escalate_enterprise'
-                            ? ArrowUpRight
-                            : action === 'mark_at_risk'
-                              ? Flag
-                              : CheckCircle2
+                    {(() => {
+                      const ladder = ladderNextActions(e)
+                      const stepAction = ladder.find((a) => a !== 'complete')
+                      const hasComplete = ladder.includes('complete')
+                      const isUrgent = rowState === 'critical' || rowState === 'warn'
+                      const moreOpen = moreOpenId === e.id
+
+                      const renderStepBtn = (action: DocketEscalateAction) => {
+                        const Icon =
+                          action === 'remind'
+                            ? Bell
+                            : action === 'escalate_enterprise'
+                              ? ArrowUpRight
+                              : action === 'mark_at_risk'
+                                ? Flag
+                                : CheckCircle2
+                        const hint = ACTION_HINT[action]
+                        return (
+                          <button
+                            key={action}
+                            type="button"
+                            disabled={docketWriteBlocked}
+                            aria-describedby={
+                              docketWriteBlocked
+                                ? `docket-ro-${e.id}`
+                                : hint
+                                  ? `docket-hint-${e.id}-${action}`
+                                  : undefined
+                            }
+                            onClick={() => handleEscalate(e.id, action)}
+                            className={`btn-press ui-btn ui-btn-secondary ui-btn-sm inline-flex items-center gap-1 focus-ring disabled:cursor-not-allowed ${
+                              docketWriteBlocked ? 'agent-confirm-cta' : ''
+                            }`}
+                            aria-label={
+                              hint
+                                ? `${ACTION_LABEL[action]} · ${hint} · ${e.title}`
+                                : `${ACTION_LABEL[action]} · ${e.title}`
+                            }
+                          >
+                            <Icon className="h-3 w-3" aria-hidden />
+                            {ACTION_LABEL[action]}
+                            {hint && (
+                              <span
+                                id={`docket-hint-${e.id}-${action}`}
+                                className="hidden font-normal text-slate-500 sm:inline"
+                              >
+                                · {hint}
+                              </span>
+                            )}
+                          </button>
+                        )
+                      }
+
                       return (
-                        <button
-                          key={action}
-                          type="button"
-                          disabled={docketWriteBlocked}
-                          title={docketWriteBlocked ? '当前 Persona 只读浏览期限' : undefined}
-                          onClick={() => handleEscalate(e.id, action)}
-                          className={`btn-press inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 disabled:cursor-not-allowed disabled:opacity-50 ${
-                            action === 'complete'
-                              ? 'border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
-                              : isPrimary
-                                ? 'border border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-accent-soft text-slate-900 hover:bg-[color-mix(in_srgb,var(--color-accent-soft)_80%,#fff)]'
-                                : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-100'
-                          }`}
-                          aria-label={`${ACTION_LABEL[action]} · ${e.title}`}
-                        >
-                          <Icon className="h-3 w-3" aria-hidden />
-                          {ACTION_LABEL[action]}
-                        </button>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {c && (
+                            <AppLink
+                              to={workbenchPathForStage(c.stage, c.id)}
+                              className="ui-btn ui-btn-primary ui-btn-sm btn-press cta-work focus-ring"
+                              aria-label={`下一步 · 办理 ${e.title}`}
+                            >
+                              下一步
+                            </AppLink>
+                          )}
+                          {/* 紧急行：仅阶梯当前步；办结/案件进「更多」 */}
+                          {isUrgent ? (
+                            <>
+                              {stepAction && renderStepBtn(stepAction)}
+                              <div className="relative">
+                                <button
+                                  type="button"
+                                  className="btn-press ui-btn ui-btn-ghost ui-btn-sm focus-ring inline-flex items-center gap-1"
+                                  aria-expanded={moreOpen}
+                                  aria-haspopup="menu"
+                                  onClick={() =>
+                                    setMoreOpenId(moreOpen ? null : e.id)
+                                  }
+                                >
+                                  <MoreHorizontal className="h-3.5 w-3.5" aria-hidden />
+                                  更多
+                                </button>
+                                {moreOpen && (
+                                  <div
+                                    role="menu"
+                                    className="absolute right-0 z-20 mt-1 min-w-[9rem] rounded-xl border border-slate-200 bg-white p-1 shadow-[var(--shadow-elevated)]"
+                                  >
+                                    {hasComplete && (
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        disabled={docketWriteBlocked}
+                                        className="btn-press flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium text-emerald-800 hover:bg-emerald-50 focus-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                        onClick={() => handleEscalate(e.id, 'complete')}
+                                      >
+                                        <CheckCircle2 className="h-3 w-3" aria-hidden />
+                                        办结
+                                      </button>
+                                    )}
+                                    <AppLink
+                                      role="menuitem"
+                                      to={`/cases/${e.caseId}`}
+                                      className="btn-press flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-left text-xs text-slate-700 hover:bg-slate-50 focus-ring"
+                                      onClick={() => setMoreOpenId(null)}
+                                    >
+                                      案件
+                                    </AppLink>
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              {stepAction && renderStepBtn(stepAction)}
+                              {hasComplete && renderStepBtn('complete')}
+                              <AppLink
+                                to={`/cases/${e.caseId}`}
+                                className="btn-press ui-btn ui-btn-ghost ui-btn-sm focus-ring"
+                              >
+                                案件
+                              </AppLink>
+                            </>
+                          )}
+                          {docketWriteBlocked && personaReadOnlyReason && (
+                            <span
+                              id={`docket-ro-${e.id}`}
+                              className="agent-confirm-reason"
+                              role="status"
+                            >
+                              {personaReadOnlyReason}
+                            </span>
+                          )}
+                        </div>
                       )
-                    })}
-                    {c && (
-                      <AppLink
-                        to={workbenchPathForStage(c.stage, c.id)}
-                        className="btn-press rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 hover:border-slate-200 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
-                      >
-                        办理
-                      </AppLink>
-                    )}
-                    <AppLink
-                      to={`/cases/${e.caseId}`}
-                      className="btn-press rounded-lg px-1.5 py-1 text-xs text-slate-700 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
-                    >
-                      案件
-                    </AppLink>
+                    })()}
                   </li>
                 )
               })}
