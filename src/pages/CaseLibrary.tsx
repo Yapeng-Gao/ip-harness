@@ -4,6 +4,7 @@ import { Search, Briefcase, Bot } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { STAGES, getStageMeta } from '../data/stages'
 import { RiskBadge } from '../components/RiskBadge'
+import { FulfillmentModeBadge } from '../components/FulfillmentModeBadge'
 import { StageBadge } from '../components/StageBadge'
 import { ProgressBar } from '../components/ProgressBar'
 import type { StageId, RiskLevel } from '../types'
@@ -152,7 +153,7 @@ export function CaseLibrary() {
             value={qDraft}
             onChange={(e) => setQDraft(e.target.value)}
             placeholder="搜索标题、案号、团队…"
-            className="focus-ring hit-40 w-full rounded-[var(--radius-md)] border border-slate-200/90 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 shadow-[var(--shadow-rest)] placeholder:text-slate-400 focus:border-[var(--color-accent)]"
+            className="ui-input focus-ring pl-9 shadow-[var(--shadow-rest)]"
             aria-label="搜索标题、案号或团队"
             name="case-search"
             autoComplete="off"
@@ -161,7 +162,7 @@ export function CaseLibrary() {
         <select
           value={stage}
           onChange={(e) => setStage(e.target.value as StageId | 'all')}
-          className="focus-ring hit-40 rounded-[var(--radius-md)] border border-slate-200/90 bg-white px-3 py-2 text-sm text-slate-700 shadow-[var(--shadow-rest)]"
+          className="ui-input focus-ring w-auto shadow-[var(--shadow-rest)]"
           aria-label="按阶段筛选案件"
         >
           <option value="all">全部阶段</option>
@@ -174,7 +175,7 @@ export function CaseLibrary() {
         <select
           value={risk}
           onChange={(e) => setRisk(e.target.value as RiskLevel | 'all')}
-          className="focus-ring hit-40 rounded-[var(--radius-md)] border border-slate-200/90 bg-white px-3 py-2 text-sm text-slate-700 shadow-[var(--shadow-rest)]"
+          className="ui-input focus-ring w-auto shadow-[var(--shadow-rest)]"
           aria-label="按风险筛选案件"
         >
           <option value="all">全部风险</option>
@@ -208,17 +209,17 @@ export function CaseLibrary() {
             }
           />
         ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200/80 bg-slate-50/70 text-xs text-slate-500">
+          <table className="ui-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 font-medium" scope="col">案件</th>
-                <th className="px-4 py-3 font-medium" scope="col">类型</th>
-                <th className="px-4 py-3 font-medium" scope="col">阶段</th>
-                <th className="px-4 py-3 font-medium" scope="col">办理模式</th>
-                <th className="px-4 py-3 font-medium" scope="col">风险</th>
-                <th className="px-4 py-3 font-medium" scope="col">进度</th>
-                <th className="px-4 py-3 font-medium" scope="col">期限</th>
-                <th className="px-4 py-3 font-medium" scope="col">团队</th>
+                <th scope="col">案件</th>
+                <th scope="col">类型</th>
+                <th scope="col">阶段</th>
+                <th scope="col">办理模式</th>
+                <th scope="col">风险</th>
+                <th scope="col">进度</th>
+                <th scope="col">期限</th>
+                <th scope="col">团队</th>
               </tr>
             </thead>
             <tbody>
@@ -237,34 +238,26 @@ export function CaseLibrary() {
                   className="focus-row cursor-pointer border-b border-slate-100 transition-colors hover:bg-[var(--color-accent-soft)]/40"
                   aria-label={`打开案件 ${c.title}`}
                 >
-                  <td className="px-4 py-3">
+                  <td>
                     <div className="font-medium text-slate-800">{c.title}</div>
                     <div className="font-mono text-xs text-slate-500">{c.caseNo}</div>
                   </td>
-                  <td className="px-4 py-3 text-slate-400">{c.type}</td>
-                  <td className="px-4 py-3">
+                  <td className="text-slate-400">{c.type}</td>
+                  <td>
                     <StageBadge stage={c.stage} />
                   </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-xs font-medium ${
-                        c.fulfillmentMode === 'self_serve'
-                          ? 'border-sky-200 bg-sky-50 text-sky-800'
-                          : 'border-slate-200 bg-slate-50 text-slate-700'
-                      }`}
-                    >
-                      {c.fulfillmentMode === 'self_serve' ? '企业自助' : '已委托'}
-                    </span>
+                  <td>
+                    <FulfillmentModeBadge mode={c.fulfillmentMode} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td>
                     <RiskBadge risk={c.risk} />
                   </td>
-                  <td className="w-32 px-4 py-3">
+                  <td className="w-32">
                     <div className="mb-1 text-xs tabular-nums text-slate-500">{c.progress}%</div>
                     <ProgressBar value={c.progress} color={getStageMeta(c.stage).color} />
                   </td>
-                  <td className="px-4 py-3 tabular-nums text-slate-400">{c.nextDeadline}</td>
-                  <td className="px-4 py-3 text-slate-400">{c.ownerTeam}</td>
+                  <td className="tabular-nums text-slate-400">{c.nextDeadline}</td>
+                  <td className="text-slate-400">{c.ownerTeam}</td>
                 </tr>
               ))}
             </tbody>

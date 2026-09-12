@@ -73,10 +73,8 @@ export function ToastBanner({
     >
       {message ? (
         <div
-          className={`toast-enter pointer-events-auto flex max-w-sm flex-col gap-2 rounded-xl border px-4 py-2.5 text-sm elevated ${
-            error
-              ? 'border-rose-200 bg-rose-50 text-rose-800'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-800'
+          className={`toast-enter ui-toast ${
+            error ? 'ui-toast-error' : 'ui-toast-success'
           }`}
         >
           <div className="flex items-center gap-2">

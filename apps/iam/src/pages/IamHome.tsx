@@ -33,12 +33,12 @@ export function IamHome() {
   const { activeProduct } = useProduct()
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="app-shell-bg min-h-screen">
       <AppSurfaceLinks current="iam" />
 
       <div
         role="status"
-        className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-950"
+        className="shell-banner-demo px-4 py-2 text-center"
       >
         <span className="inline-flex items-center gap-1.5">
           <ShieldAlert className="h-3.5 w-3.5 shrink-0" aria-hidden />
@@ -47,22 +47,22 @@ export function IamHome() {
       </div>
 
       <main className="mx-auto max-w-3xl px-6 py-10">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p className="shell-page-kicker">
           apps/iam · IAM 薄壳
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">登录 / 工作区 / Persona</h1>
+        <h1 className="shell-page-title mt-2">登录 / 工作区 / Persona</h1>
         <p className="mt-2 text-sm text-slate-600">
           复用共享 Login、WorkspaceMenu、PersonaSwitcher；正式身份体系（SSO / OIDC）尚未接入。P2
           真 IAM（企业 IdP、令牌、会话）仅占位，未排期实现。
         </p>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="surface-card mt-6 flex flex-wrap items-center gap-3 p-4">
           <WorkspaceMenu />
           <PersonaSwitcher variant="topbar" />
         </div>
 
         <dl className="mt-6 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
-          <div className="rounded-lg border border-slate-200 bg-white p-4">
+          <div className="surface-card p-4">
             <dt className="text-xs text-slate-500">
               当前工作区 · 样机 cookie{' '}
               <code className="rounded bg-slate-100 px-1 font-mono text-xs">
@@ -72,7 +72,7 @@ export function IamHome() {
             </dt>
             <dd className="mt-1 font-medium">{workspace?.name ?? '未选择'}</dd>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-white p-4">
+          <div className="surface-card p-4">
             <dt className="text-xs text-slate-500">
               Persona · 样机 cookie{' '}
               <code className="rounded bg-slate-100 px-1 font-mono text-xs">
@@ -82,7 +82,7 @@ export function IamHome() {
             </dt>
             <dd className="mt-1 font-medium">{PERSONA_LABELS[persona]}</dd>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-white p-4 sm:col-span-2">
+          <div className="surface-card p-4 sm:col-span-2">
             <dt className="text-xs text-slate-500">
               产品面记忆（localStorage · 同口隔离 ·{' '}
               <code className="rounded bg-slate-100 px-1 font-mono text-xs">
@@ -203,31 +203,31 @@ export function IamHome() {
 
         <div className="mt-8 flex flex-wrap gap-3 text-sm">
           <a
-            className="rounded-lg bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-800"
+            className="ui-btn ui-btn-primary btn-press"
             href={iamHref('/login')}
           >
             打开登录页
           </a>
           <a
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50"
+            className="ui-btn ui-btn-secondary btn-press"
             href={midHref('/')}
           >
             进入作业中台
           </a>
           <a
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50"
+            className="ui-btn ui-btn-secondary btn-press"
             href={workbenchHref('/workbench')}
           >
             进入办理台
           </a>
           <a
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50"
+            className="ui-btn ui-btn-secondary btn-press"
             href={agentHref('/agent')}
           >
             进入知产 Agent
           </a>
           <a
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50"
+            className="ui-btn ui-btn-secondary btn-press"
             href={opsHref('/')}
           >
             进入运维面

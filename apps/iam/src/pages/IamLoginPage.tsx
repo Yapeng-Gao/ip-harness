@@ -22,8 +22,8 @@ export function IamLoginPage() {
   const returnUrl = useMemo(() => resolveReturnUrl(searchParams), [searchParams])
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="sticky top-0 z-20 border-b border-amber-300/80 bg-amber-50 shadow-sm">
+    <div className="app-shell-bg min-h-screen">
+      <header className="shell-banner-demo sticky top-0 z-20">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-2.5">
           <p className="inline-flex items-center gap-2 text-sm font-semibold text-amber-950">
             <ShieldAlert className="h-4 w-4 shrink-0" aria-hidden />
@@ -62,7 +62,7 @@ export function IamLoginPage() {
           ) : null}
 
           {/* 压掉共享 Login 外层全屏居中，便于嵌入薄壳布局 */}
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm [&>div]:min-h-0 [&>div]:items-stretch [&>div]:justify-start [&>div]:bg-transparent [&>div]:p-5 [&>div>main]:max-w-none">
+          <div className="surface-card overflow-hidden [&>div]:min-h-0 [&>div]:items-stretch [&>div]:justify-start [&>div]:bg-transparent [&>div]:p-5 [&>div>main]:max-w-none">
             <Login />
           </div>
           <p className="px-1 text-xs text-slate-500">
@@ -75,7 +75,7 @@ export function IamLoginPage() {
 
           <section
             aria-label="绝对深链回跳"
-            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="surface-card p-4"
           >
             <h2 className="text-sm font-semibold text-slate-800">绝对深链回跳（APP_DEV_URLS）</h2>
             <p className="mt-1 text-xs text-slate-500">
@@ -89,7 +89,7 @@ export function IamLoginPage() {
                 <li>
                   <a
                     href={returnUrl}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 font-medium text-white hover:bg-slate-800"
+                    className="ui-btn ui-btn-sm ui-btn-primary btn-press"
                   >
                     <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                     来源 return
@@ -99,7 +99,7 @@ export function IamLoginPage() {
               <li>
                 <a
                   href={midHref('/')}
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 hover:bg-slate-50"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press"
                 >
                   mid
                 </a>
@@ -107,7 +107,7 @@ export function IamLoginPage() {
               <li>
                 <a
                   href={workbenchHref('/workbench')}
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 hover:bg-slate-50"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press"
                 >
                   workbench
                 </a>
@@ -115,7 +115,7 @@ export function IamLoginPage() {
               <li>
                 <a
                   href={agentHref('/agent')}
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 hover:bg-slate-50"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press"
                 >
                   agent
                 </a>
@@ -123,7 +123,7 @@ export function IamLoginPage() {
               <li>
                 <a
                   href={opsHref('/')}
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 hover:bg-slate-50"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press"
                 >
                   ops
                 </a>

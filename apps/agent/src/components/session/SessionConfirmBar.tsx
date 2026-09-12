@@ -352,13 +352,13 @@ export function SessionConfirmBar({
       data-confirm-bar
       data-focus-hitl={focusHitl ? '1' : undefined}
       data-focus-gate={focusGate ?? undefined}
-      className={`confirm-hitl shrink-0 border-l-4 border-l-amber-500 px-4 py-3 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]${
+      className={`confirm-hitl shrink-0 border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 sm:py-4${
         focusHitl ? ' confirm-hitl-focus' : ''
       }`}
     >
       {/* Chat-native HITL bubble row */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-        <p className="min-w-0 flex-1 text-sm leading-snug text-slate-800">
+      <div className="confirm-hitl-inner">
+        <p className="min-w-0 flex-1 text-[13px] leading-relaxed text-slate-800 sm:text-sm">
           <span className="text-amber-800/90">需要你确认：</span>
           <span className="font-semibold text-slate-900">{confirmLabel}</span>
           {agent && (
@@ -399,16 +399,14 @@ export function SessionConfirmBar({
           )}
         </p>
 
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="confirm-hitl-actions">
           {watchStrategyPending ? (
             <>
               <button
                 type="button"
                 onClick={() => fireWatch('confirm')}
-                className={`btn-press focus-ring min-h-8 rounded-[var(--radius-sm)] px-2.5 py-1.5 text-xs font-medium ${
-                  role !== 'enterprise'
-                    ? 'bg-emerald-700 text-white'
-                    : 'text-slate-700 hover:bg-slate-100'
+                className={`ui-btn ui-btn-sm btn-press focus-ring ${
+                  role !== 'enterprise' ? 'ui-btn-success' : 'ui-btn-ghost'
                 }`}
               >
                 确认告警
@@ -417,7 +415,7 @@ export function SessionConfirmBar({
                 <button
                   type="button"
                   onClick={() => fireWatch('escalate')}
-                  className="btn-press focus-ring min-h-8 rounded-[var(--radius-sm)] bg-emerald-700 px-2.5 py-1.5 text-xs font-medium text-white"
+                  className="ui-btn ui-btn-sm ui-btn-success btn-press focus-ring"
                 >
                   升级维权
                 </button>
@@ -425,7 +423,7 @@ export function SessionConfirmBar({
               <button
                 type="button"
                 onClick={() => fireWatch('close')}
-                className="btn-press focus-ring min-h-8 rounded-[var(--radius-sm)] px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100"
+                className="ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring"
               >
                 关闭
               </button>
@@ -459,12 +457,12 @@ export function SessionConfirmBar({
                   onClick={() => onGate(g, { stepwise })}
                   disabled={disabled}
                   title={disableReason ?? HITL_GATE_LABELS[g]}
-                  className={`btn-press focus-ring inline-flex min-h-8 items-center gap-1 rounded-[var(--radius-sm)] px-3 py-1.5 text-xs font-medium disabled:opacity-50 ${
+                  className={`ui-btn ui-btn-sm btn-press focus-ring disabled:opacity-50 ${
                     isPrimary
                       ? isAuth
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-emerald-700 text-white'
-                      : 'text-slate-600 hover:bg-slate-100'
+                        ? 'ui-btn-primary'
+                        : 'ui-btn-success'
+                      : 'ui-btn-ghost'
                   }`}
                 >
                   {isPrimary && <Check className="h-3 w-3" aria-hidden />}
@@ -493,7 +491,7 @@ export function SessionConfirmBar({
                       : undefined
               }
               aria-label="递交归档"
-              className="btn-press focus-ring inline-flex min-h-8 items-center gap-1 rounded-[var(--radius-sm)] bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+              className="ui-btn ui-btn-sm ui-btn-success btn-press focus-ring disabled:opacity-50"
             >
               <Check className="h-3 w-3" aria-hidden />
               确认递交归档
@@ -503,7 +501,7 @@ export function SessionConfirmBar({
           <button
             type="button"
             onClick={() => onHitl('request_changes', { stepwise })}
-            className="btn-press focus-ring inline-flex min-h-8 items-center gap-1 rounded-[var(--radius-sm)] px-2.5 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+            className="ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring"
           >
             <RotateCcw className="h-3 w-3" aria-hidden />
             {rejectLabel}
@@ -569,7 +567,7 @@ export function SessionConfirmBar({
 
       {/* One-line chain preview */}
       {chainPreview.length > 0 && (
-        <p className="mt-1 truncate text-[11px] leading-snug text-amber-900/70" role="status">
+        <p className="mt-2 truncate text-[11px] leading-snug text-amber-900/70" role="status">
           {stepwise
             ? `下一步写入：${chainPreview[0]}${chainPreview.length > 1 ? ` · 其后 ${chainPreview.slice(1).join(' → ')}` : ''}`
             : `将连续写入：${chainPreview.join(' → ')}`}
@@ -633,7 +631,7 @@ export function SessionConfirmBar({
       {/* Collapsed data sheet — checklists / OA / receipt / prefs */}
       {needsDataSheet && (
         <details
-          className="confirm-hitl-sheet mt-1.5 rounded-md border border-slate-200/80 bg-white/80"
+          className="confirm-hitl-sheet mt-2.5 rounded-[var(--radius-md)] border border-slate-200/90 bg-white/90 shadow-[var(--shadow-rest)]"
           open={autoOpenSheet || undefined}
         >
           <summary className="flex cursor-pointer list-none items-center gap-1.5 px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">

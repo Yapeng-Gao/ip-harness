@@ -315,10 +315,8 @@ export function CaseDetail() {
       <div role="status" aria-live="polite" aria-atomic="true" className="pointer-events-none fixed right-6 top-6 z-50">
         {toast && (
           <div
-            className={`toast-enter pointer-events-auto flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm elevated ${
-              toastError
-                ? 'border-rose-200 bg-rose-50 text-rose-700'
-                : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+            className={`toast-enter ui-toast ${
+              toastError ? 'ui-toast-error' : 'ui-toast-success'
             }`}
           >
             {toastError ? <AlertCircle className="h-4 w-4" aria-hidden /> : <Check className="h-4 w-4" aria-hidden />}
@@ -379,7 +377,7 @@ export function CaseDetail() {
           <>
             <AppLink
               to={workbenchPathForStage(c.stage, c.id)}
-              className="btn-press cta-work inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium focus-ring"
+              className="ui-btn ui-btn-primary btn-press cta-work focus-ring"
               aria-label="在工作台办理本案"
             >
               <Briefcase className="h-4 w-4" aria-hidden />

@@ -7,7 +7,7 @@ export function OidcEmptyState() {
   return (
     <section
       aria-label="OIDC 接入空态"
-      className="rounded-xl border border-dashed border-amber-300/80 bg-amber-50/60 p-4"
+      className="ui-empty items-start border-dashed border-amber-300/80 bg-amber-50/60 p-4 text-left shadow-none"
     >
       <div className="flex items-start gap-3">
         <div

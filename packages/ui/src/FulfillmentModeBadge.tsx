@@ -11,9 +11,7 @@ export function FulfillmentModeBadge({
   const inner = (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
-        isSelf
-          ? 'border-sky-200 bg-sky-50 text-sky-800'
-          : 'border-violet-200 bg-violet-50 text-violet-800'
+        isSelf ? 'badge-fulfillment-self' : 'badge-fulfillment-delegated'
       }`}
     >
       <span className="text-slate-500">办理模式：</span>

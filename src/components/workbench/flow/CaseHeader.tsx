@@ -48,7 +48,7 @@ export function CaseHeaderBar({
       >
         <ArrowLeft className="h-4 w-4" aria-hidden /> {backLabel}
       </AppLink>
-      <div className="sticky-chrome surface-card p-3 sm:p-4">
+      <div className="sticky-chrome surface-card p-3.5 sm:p-5">
         {/* One-line summary (default) */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <h1 className="min-w-0 flex-1 truncate text-base font-semibold text-slate-900 sm:text-lg">
@@ -93,7 +93,7 @@ export function CaseHeaderBar({
           >
             {expanded ? '收起' : '详情'}
           </button>
-          {mainCta && <div className="flex flex-wrap gap-2">{mainCta}</div>}
+          {mainCta && <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">{mainCta}</div>}
           {agentAssist && (
             <AppLink
               to={`/agent?case=${caseData.id}`}

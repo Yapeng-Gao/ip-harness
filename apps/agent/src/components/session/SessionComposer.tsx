@@ -36,7 +36,7 @@ export function SessionComposer({
   hitlActive = false,
 }: Props) {
   return (
-    <div className="shrink-0 border-t border-slate-200 bg-white p-3 lg:p-4">
+    <div className="shrink-0 border-t border-slate-200/90 bg-white px-4 py-3.5 shadow-[0_-4px_16px_rgba(15,23,42,0.04)] lg:px-5 lg:py-4">
       {pendingAgentSwitch && (
         <div className="mx-auto mb-2 flex max-w-3xl flex-wrap items-center gap-2 border-l-4 border-l-amber-500 bg-amber-50/60 px-3 py-2 text-xs text-slate-800">
           <span className="min-w-0 flex-1">换人后要重新确认，继续？</span>
@@ -56,7 +56,7 @@ export function SessionComposer({
           </button>
         </div>
       )}
-      <div className="mx-auto max-w-3xl border border-slate-200 bg-white focus-within:border-slate-400">
+      <div className="mx-auto max-w-3xl overflow-hidden rounded-[var(--radius-lg)] border border-slate-200 bg-white shadow-[var(--shadow-rest)] focus-within:border-slate-400">
         <textarea
           ref={composerRef}
           value={goal}
@@ -67,11 +67,11 @@ export function SessionComposer({
           className="w-full resize-none bg-transparent px-3.5 pt-3 text-sm text-slate-800 outline-none placeholder:text-slate-400"
           disabled={hitlActive}
         />
-        <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-2.5 py-2">
+        <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-3 py-2.5">
           <select
             value={agentPick}
             onChange={(e) => onAgentPickRequest(e.target.value)}
-            className="focus-ring rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700"
+            className="ui-input ui-input-sm focus-ring w-auto"
             aria-label="选择 Agent"
           >
             <option value="auto">自动匹配</option>
@@ -85,7 +85,7 @@ export function SessionComposer({
             ref={caseSelectRef}
             value={casePick}
             onChange={(e) => onCasePick(e.target.value)}
-            className="focus-ring max-w-[180px] truncate rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700"
+            className="ui-input ui-input-sm focus-ring max-w-[180px] truncate w-auto"
             aria-label="关联案件"
           >
             <option value="">案件 · 未关联</option>
@@ -108,7 +108,7 @@ export function SessionComposer({
             <button
               type="button"
               onClick={onSubmit}
-              className="btn-press focus-ring cta-work ml-auto inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium"
+              className="ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring cta-work ml-auto"
             >
               <Send className="h-3.5 w-3.5" /> 启动
             </button>

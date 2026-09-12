@@ -177,20 +177,18 @@ export function Dashboard() {
         </div>
       </header>
 
-      <div className="mb-6 grid gap-px overflow-hidden rounded-[var(--radius-lg)] border border-slate-200/90 bg-slate-200/80 shadow-[var(--shadow-rest)] sm:grid-cols-3">
+      <div className="kpi-strip kpi-stagger mb-8">
         <a
           href="#ops-inbox"
-          className="list-row bg-white px-4 py-3 focus-ring hover:bg-slate-50"
+          className="kpi-tile focus-ring"
           aria-label="待我办理 Inbox"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">待我办理</span>
-            <Inbox className="h-4 w-4 text-slate-600" aria-hidden />
+          <div className="flex items-center justify-between gap-2">
+            <span className="kpi-tile-label">待我办理</span>
+            <Inbox className="h-4 w-4 text-slate-500" aria-hidden />
           </div>
-          <div className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">
-            {inboxCounts.total}
-          </div>
-          <div className="mt-0.5 text-xs text-slate-500">
+          <div className="kpi-tile-value">{inboxCounts.total}</div>
+          <div className="kpi-tile-meta">
             工作台 {inboxCounts.workbench} · Agent {inboxCounts.agent} · 期限{' '}
             {inboxCounts.docket}
             {inboxCounts.sla > 0 ? ` · 监控·维持 ${inboxCounts.sla}` : ''}
@@ -198,34 +196,30 @@ export function Dashboard() {
         </a>
         <AppLink
           to="/docket"
-          className="list-row bg-white px-4 py-3 focus-ring hover:bg-slate-50"
+          className="kpi-tile focus-ring"
           aria-label="期限压力"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">期限压力</span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="kpi-tile-label">期限压力</span>
             <Clock className="h-4 w-4 text-amber-600" aria-hidden />
           </div>
-          <div className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">
-            {inboxCounts.docket + inboxCounts.sla}
-          </div>
-          <div className="mt-0.5 text-xs text-slate-500">
+          <div className="kpi-tile-value">{inboxCounts.docket + inboxCounts.sla}</div>
+          <div className="kpi-tile-meta">
             期限 {inboxCounts.docket} · 监控·维持 {inboxCounts.sla}（分口径）· 待付款{' '}
             {pendingPayInvoiceCount}
           </div>
         </AppLink>
         <AppLink
           to="/billing/cases"
-          className="list-row bg-white px-4 py-3 focus-ring hover:bg-slate-50"
+          className="kpi-tile focus-ring"
           aria-label="待付款发票"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">待付款发票</span>
-            <CreditCard className="h-4 w-4 text-slate-600" aria-hidden />
+          <div className="flex items-center justify-between gap-2">
+            <span className="kpi-tile-label">待付款发票</span>
+            <CreditCard className="h-4 w-4 text-slate-500" aria-hidden />
           </div>
-          <div className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">
-            {pendingPayInvoiceCount}
-          </div>
-          <div className="mt-0.5 text-xs text-slate-500">已开票 / 逾期 · 在管 {cases.length}</div>
+          <div className="kpi-tile-value">{pendingPayInvoiceCount}</div>
+          <div className="kpi-tile-meta">已开票 / 逾期 · 在管 {cases.length}</div>
         </AppLink>
       </div>
 
@@ -248,9 +242,9 @@ export function Dashboard() {
         </div>
 
         {inbox.length === 0 ? (
-          <div className="rounded-[var(--radius-lg)] border border-dashed border-slate-200 bg-white px-6 py-8 text-center shadow-[var(--shadow-rest)]">
-            <p className="text-sm text-slate-600">暂无待我办理事项</p>
-            <p className="mt-1 text-xs text-slate-400">
+          <div className="ui-empty">
+            <p className="ui-empty-title">暂无待我办理事项</p>
+            <p className="ui-empty-desc">
               工作台 {inboxCounts.workbench} · Agent {inboxCounts.agent} · 期限{' '}
               {inboxCounts.docket}
               {inboxCounts.sla > 0 ? ` · 监控·维持 ${inboxCounts.sla}` : ''}
@@ -336,9 +330,9 @@ export function Dashboard() {
       </section>
 
       {cases.length === 0 && (
-        <div className="mb-6 rounded-lg border border-dashed border-slate-200 bg-white px-6 py-10 text-center">
-          <p className="text-sm text-slate-600">本租户暂无可见案件</p>
-          <p className="mt-1 text-xs text-slate-400">
+        <div className="ui-empty mb-6">
+          <p className="ui-empty-title">本租户暂无可见案件</p>
+          <p className="ui-empty-desc">
             {workspace.kind === 'agency'
               ? '等待企业派单后，承办案件将出现在此。'
               : '可通过研发交底或洞察生成调研案。'}

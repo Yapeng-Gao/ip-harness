@@ -41,8 +41,8 @@ export function PageHeader({
 
   const renderAction = (a: PageHeaderAction, filled: boolean) => {
     const cls = filled
-      ? 'btn-press cta-work focus-ring inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium'
-      : 'btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-4 py-2 text-sm text-slate-700 shadow-[var(--shadow-rest)] hover:bg-slate-50'
+      ? 'ui-btn ui-btn-primary btn-press cta-work focus-ring'
+      : 'ui-btn ui-btn-secondary btn-press focus-ring'
     const label = (
       <>
         {a.icon}
@@ -111,8 +111,8 @@ export function EmptyState({
     filled: boolean,
   ) => {
     const cls = filled
-      ? 'btn-press cta-work focus-ring inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium'
-      : 'btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-4 py-2 text-sm text-slate-700 shadow-[var(--shadow-rest)] hover:bg-slate-50'
+      ? 'ui-btn ui-btn-primary btn-press cta-work focus-ring'
+      : 'ui-btn ui-btn-secondary btn-press focus-ring'
     if (a.to) {
       return (
         <AppLink to={a.to} className={cls} aria-label={a.ariaLabel ?? a.label}>
@@ -130,9 +130,9 @@ export function EmptyState({
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 px-4 py-12 text-center">
-      <p className="text-balance text-sm font-medium text-slate-700">{title}</p>
-      {description && <p className="max-w-sm text-pretty text-xs text-slate-500">{description}</p>}
+    <div className="ui-empty border-0 shadow-none">
+      <p className="ui-empty-title">{title}</p>
+      {description && <p className="ui-empty-desc">{description}</p>}
       <div className="mt-1 flex flex-wrap justify-center gap-2">
         {primary && btn(primary, true)}
         {secondary && btn(secondary, false)}

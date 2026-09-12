@@ -68,3 +68,7 @@ export function WbError({ children }: { children: ReactNode }) {
     </p>
   )
 }
+
+/** Shared control class — prefer on workbench <input>/<select>/<textarea>. */
+export const WB_INPUT_CLASS = 'ui-input focus-ring'
+export const WB_INPUT_SM_CLASS = 'ui-input ui-input-sm focus-ring'

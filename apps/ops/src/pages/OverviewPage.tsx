@@ -56,7 +56,7 @@ export function OverviewPage() {
         </ul>
       </Card>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-2 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <p className="text-xs text-slate-500">服务健康</p>
           <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
