@@ -18,7 +18,7 @@
 | [architecture/data-model.md](./architecture/data-model.md) | 数据模型与包归属 |
 | [architecture/backends.md](./architecture/backends.md) | 未来后端边界 |
 | [architecture/landing/README.md](./architecture/landing/README.md) | 原型后落地：切分 / 栈 / 路线图 / 提醒 |
-| [architecture/enterprise/README.md](./architecture/enterprise/README.md) | 企业级后端 + Agent 平台（C 混合 / LangGraph 库） |
+| [architecture/enterprise/README.md](./architecture/enterprise/README.md) | 企业级后端 + Agent 平台（C 混合 / DSH 和或 Codex + 自有闸；见 [agent-runtime-options](./architecture/enterprise/agent-runtime-options.md)） |
 | [architecture/ops-observability.md](./architecture/ops-observability.md) | 运维可观测（样机） |
 | [architecture/repos-and-vcs.md](./architecture/repos-and-vcs.md) | 单仓→多仓策略 |
 
