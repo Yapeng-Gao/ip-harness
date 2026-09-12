@@ -3,7 +3,7 @@
 > **样机诚实**：今日仍是多 Vite 壳 + `api-mock:5180` 内存店；Agent 面（`agent:5175`）是 **UI + mock tools + HITL 面板**，**不是**真 harness / 真模型调用。无真微服务网格、真库、真 SSO、真 SMTP、真调度器。  
 > **落地目标**：在已通过的 [landing](../landing/README.md) 七面之上，给出可私有化的企业级后端拓扑，以及 Agent 平台选型（**推荐默认 = C 混合**：成熟 harness（**DSH 和/或 Codex app-server**）做 ① runtime；自有 Persona / HITL / DomainCommand；LangGraph 降为可选 ② 子图——**任何 runtime 都不保证业务 Agent 质量**）。  
 > 本目录是**设计方案**，不是已交付实现。禁止对外把本文写成「已有企业网格 / 已有真 Agent 运行时」。  
-> **修订说明**：相对旧 [REVIEW.md](./REVIEW.md)（曾通过 **C + LangGraph 库**），本文与姊妹篇已改为 **DSH/Codex 优先** —— **需再交架构评审**（本目录不代评）。
+> **修订说明**：相对旧默认「C + LangGraph 库」已废止 ①；现推荐 **DSH/Codex 优先**。再评结论见 [REVIEW.md](./REVIEW.md)：**通过**（推仓后总验带 SHA）。
 
 ## 本目录
 
