@@ -1,4 +1,10 @@
-import type { DemoCase, Document, DocumentChapter, DocumentRevision } from './types'
+import type {
+  Annotation,
+  DemoCase,
+  Document,
+  DocumentChapter,
+  DocumentRevision,
+} from './types'
 
 export const DEMO_CASE: DemoCase = {
   id: 'c-doc-1',
@@ -29,7 +35,7 @@ const CHAPTER_DEFS: Omit<DocumentChapter, 'body'>[] = [
   },
 ]
 
-/** 三章种子为 TipTap HTML（h2/h3/p/ol） */
+/** 三章种子为 TipTap HTML（h2/h3/p/ol）；权利要求预置 1 条批注 Mark */
 const SEED_BODIES: Record<string, string> = {
   'ch-abstract':
     '<h2>发明摘要</h2>' +
@@ -39,7 +45,7 @@ const SEED_BODIES: Record<string, string> = {
     '<p>一种智能传感装置，其特征在于，包括：</p>' +
     '<ol>' +
     '<li><p>传感模块，用于采集现场物理量；</p></li>' +
-    '<li><p>处理单元，与所述传感模块耦接，用于对采集信号进行滤波与特征提取；</p></li>' +
+    '<li><p>处理单元，与所述传感模块耦接，用于对采集信号进行<mark data-annotation-id="ann-seed-1" class="annotation-mark">滤波与特征提取</mark>；</p></li>' +
     '<li><p>通信接口，与所述处理单元耦接，用于将处理结果上报至上位系统。</p></li>' +
     '</ol>' +
     '<h3>从属权利要求</h3>' +
@@ -51,6 +57,20 @@ const SEED_BODIES: Record<string, string> = {
 }
 
 const SEED_AT = '2026-09-12T10:00:00.000Z'
+
+/** 权利要求章预置批注（与 body 内 Mark annotationId 对齐） */
+export const SEED_ANNOTATIONS: Annotation[] = [
+  {
+    id: 'ann-seed-1',
+    chapterId: 'ch-claims',
+    quote: '滤波与特征提取',
+    body: '建议写明滤波算法类型（如卡尔曼 / 滑动平均），便于审查意见答复。',
+    author: '演示用户',
+    createdAt: '2026-09-12T10:05:00.000Z',
+    resolved: false,
+    replies: [],
+  },
+]
 
 export function buildSeed(): {
   document: Document

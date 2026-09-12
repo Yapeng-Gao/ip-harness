@@ -81,3 +81,22 @@ export interface CommandLogEntry {
   revisionId?: string
   chapterId?: string
 }
+
+/** TipTap 批注样机 · 内存态 · 非 Word 修订/协同 */
+export interface AnnotationReply {
+  id: string
+  body: string
+  author: string
+  createdAt: string
+}
+
+export interface Annotation {
+  id: string
+  chapterId: string
+  quote: string
+  body: string
+  author: string
+  createdAt: string
+  resolved: boolean
+  replies: AnnotationReply[]
+}

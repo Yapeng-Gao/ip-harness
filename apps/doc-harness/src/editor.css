@@ -110,3 +110,27 @@
 .doc-proposal-preview strong {
   font-weight: 700;
 }
+
+/* TipTap annotation marks · Word-like highlight (样机) */
+.doc-paper .ProseMirror mark.annotation-mark,
+.doc-paper .ProseMirror .annotation-mark {
+  background-color: #fef08a;
+  border-bottom: 2px solid #eab308;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  cursor: pointer;
+  padding: 0 1px;
+}
+
+.doc-paper .ProseMirror mark.annotation-mark:hover,
+.doc-paper .ProseMirror .annotation-mark:hover {
+  background-color: #fde047;
+}
+
+.doc-paper .ProseMirror mark.annotation-mark.is-active-annotation,
+.doc-paper .ProseMirror .annotation-mark.is-active-annotation {
+  background-color: #facc15;
+  border-bottom-color: #ca8a04;
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.35);
+}

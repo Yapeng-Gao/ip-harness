@@ -1,12 +1,21 @@
 import { useEditorState, type Editor } from '@tiptap/react'
-import { Bold, Italic, List, ListOrdered, Redo2, Undo2 } from 'lucide-react'
+import {
+  Bold,
+  Italic,
+  List,
+  ListOrdered,
+  MessageSquarePlus,
+  Redo2,
+  Undo2,
+} from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type Props = {
   editor: Editor | null
+  onAddAnnotation?: () => void
 }
 
-export function EditorToolbar({ editor }: Props) {
+export function EditorToolbar({ editor, onAddAnnotation }: Props) {
   const active = useEditorState({
     editor,
     selector: ({ editor: ed }) => {
@@ -20,8 +29,10 @@ export function EditorToolbar({ editor }: Props) {
           ordered: false,
           canUndo: false,
           canRedo: false,
+          hasSelection: false,
         }
       }
+      const { from, to, empty } = ed.state.selection
       return {
         bold: ed.isActive('bold'),
         italic: ed.isActive('italic'),
@@ -31,6 +42,7 @@ export function EditorToolbar({ editor }: Props) {
         ordered: ed.isActive('orderedList'),
         canUndo: ed.can().undo(),
         canRedo: ed.can().redo(),
+        hasSelection: !empty && to > from,
       }
     },
   })
@@ -102,6 +114,21 @@ export function EditorToolbar({ editor }: Props) {
       >
         <Redo2 className="h-3.5 w-3.5" aria-hidden />
       </ToolBtn>
+      {onAddAnnotation ? (
+        <>
+          <Sep />
+          <ToolBtn
+            label="加批注"
+            disabled={!active.hasSelection}
+            onClick={onAddAnnotation}
+          >
+            <span className="inline-flex items-center gap-1 px-0.5 text-[11px] font-medium">
+              <MessageSquarePlus className="h-3.5 w-3.5" aria-hidden />
+              加批注
+            </span>
+          </ToolBtn>
+        </>
+      ) : null}
     </div>
   )
 }
