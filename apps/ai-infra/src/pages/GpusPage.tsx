@@ -9,12 +9,12 @@ export function GpusPage() {
       <PageHeader
         eyebrow="GPU 资源"
         title="节点与配额"
-        desc="占用由 running 作业派生。Drain 后该节点不再接受新调度；已在跑的作业不打断。无真 device plugin。"
+        desc="占用由 running 作业派生。调度按 queue↔pool 匹配（algo-train / batch / infer）；drain 后该节点不再接受新调度。无真 device plugin。"
       />
 
       <EmptyState
         title="无真实 GPU 集群"
-        body="节点与配额为内存表。Drain 仅影响样机调度：新作业只落到非 drain 节点，否则继续排队。"
+        body="节点与配额为内存表。新作业只落到非 drain 且 pool=queue 的节点（gpu-c 为 batch 池）；否则继续排队。"
       />
 
       <Card className="mt-4">

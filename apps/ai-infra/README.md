@@ -41,6 +41,22 @@ npm run typecheck -w @ip/ai-infra
 
 UI 在种子模式下标明 **「种子 · 非跨壳」**。
 
+### 作业钉死 id + version
+
+Job **同时存储** `datasetId` 与 `datasetVersion`（不再只存数据集 id）。  
+Jobs 下拉 `value` / `key` 为复合键 `` `${id}@${version}` ``，创建时解析后写入作业。  
+同口 LS 若同一 `id` 多 version，可选中并钉死具体一行。
+
+### 队列 ↔ GPU pool
+
+| 作业 queue | GPU pool | 种子节点 |
+|------------|----------|----------|
+| `algo-train` | `algo-train` | `gpu-a` |
+| `batch` | `batch` | `gpu-c`（本轮补种） |
+| `infer` | `infer` | `gpu-b` |
+
+调度器只把作业落到 **非 drain 且 `node.pool === queue`（经 1:1 映射）** 的节点；无容量则保持排队。
+
 ### 诚实：跨端口靠种子契约，不靠 localStorage
 
 Vite **不同端口 = 不同 origin**（5179 ≠ 5181），浏览器 **`localStorage` 不互通**。  
@@ -49,11 +65,11 @@ Vite **不同端口 = 不同 origin**（5179 ≠ 5181），浏览器 **`localSto
 
 ## 状态机闭环（怎么演示）
 
-1. **Jobs** `/jobs`：选数据集 / 队列 / 优先级 → 创建；约 1s 后调度到非 drain 节点；进度条与假日志推进；勾选「强制失败演示」或名称含 `fail` → 失败并自动告警；取消 / 重试可点。点行进详情。
-2. **GPU** `/gpus`：占用随 running 作业增减；**drain** 后新作业不再落到该节点（文案已说明）。
+1. **Jobs** `/jobs`：选数据集 **id@version**（作业钉死 `datasetId` + `datasetVersion`，下拉复合键）/ 队列 / 优先级 → 创建；约 1s 后调度到 **同 pool** 非 drain 节点；无匹配容量则保持排队并提示「等待 pool=…」；进度条与假日志推进；勾选「强制失败演示」或名称含 `fail` → 失败并自动告警；取消 / 重试可点。点行进详情。
+2. **GPU** `/gpus`：占用随 running 作业增减；**drain** 后新作业不再落到该节点。queue↔pool：`algo-train` / `batch` / `infer`（种子含 `gpu-c` pool=`batch`）。
 3. **Models** `/models`：注册 / 加 revision；**晋级 Confirm**（registered→staging→canary→prod）。非办案 HITL。
 4. **Endpoints** `/endpoints`：从 revision 部署；滑杆调金丝雀 %；一键回滚（canary→0）。
-5. **Pipelines** `/pipelines`：启动「训练→评测门禁→发布」；训练自动过；门禁需 **Pass/Fail**；Fail 停；Pass 后才可 **发布**；Fail 后可重跑评测。
+5. **Pipelines** `/pipelines`：启动「训练→评测门禁→发布」；训练自动过；门禁需 **Pass/Fail**；Fail 停；Pass 后 **发布** 会晋级所选 revision 一级并挂到端点（内存副作用，文案标「样机 / 非真流量」）；Fail 后可重跑评测。
 6. **Loadtest** `/loadtest`：选端点 + 并发/时长 → 报告 TTFT / tokens/s / errorRate（随参数变）。
 7. **Alerts** `/alerts`：失败作业与 GPU≥80% 自动追加；确认 / 静默。出站仍 notify。
 8. **Overview** `/`：运行中作业、GPU 占用、端点数、未确认告警均绑 live store。

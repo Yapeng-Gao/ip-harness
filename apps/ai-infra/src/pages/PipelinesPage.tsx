@@ -1,21 +1,52 @@
+import { useMemo, useState } from 'react'
 import { Card, PageHeader, StatusPill } from '../components/ui'
-import { useAiInfra } from '../state/AiInfraStore'
+import { previewPipelinePublish, useAiInfra } from '../state/AiInfraStore'
 import { PIPE_STEP_LABEL, PIPE_STEP_TONE } from '../state/types'
 
 export function PipelinesPage() {
-  const { state, startPipeline, pipelineGate, pipelinePublish, pipelineRerunEval } = useAiInfra()
+  const { state, startPipeline, pipelineGate, pipelinePublish, pipelineRerunEval } =
+    useAiInfra()
+
+  const revisions = useMemo(
+    () =>
+      state.models.flatMap((m) =>
+        m.revisions.map((r) => ({
+          id: r.id,
+          label: `${m.name} · ${r.version}（${r.stage}）`,
+          stage: r.stage,
+        })),
+      ),
+    [state.models],
+  )
+  const defaultRevisionId =
+    revisions.find((r) => r.stage !== 'prod')?.id ?? revisions[0]?.id ?? ''
+  const defaultEndpointId = state.endpoints[0]?.id ?? ''
+
+  const [targets, setTargets] = useState<Record<string, { revisionId: string; endpointId: string }>>(
+    {},
+  )
+
+  function targetOf(runId: string) {
+    return (
+      targets[runId] ?? {
+        revisionId: defaultRevisionId,
+        endpointId: defaultEndpointId,
+      }
+    )
+  }
 
   return (
     <div>
       <PageHeader
         eyebrow="训推门禁"
         title="训练 → 评测门禁 → 发布"
-        desc="启动后训练步自动推进；评测门禁需显式 Pass/Fail。Fail 阻断；Pass 后才可点发布。非办案 HITL。"
+        desc="启动后训练步自动推进；评测门禁需显式 Pass/Fail。Fail 阻断；Pass 后发布会晋级所选 revision 一级并挂到端点（内存副作用，非真流量）。"
       />
 
       <Card className="mb-4 border-amber-200 bg-amber-50/80">
         <p className="text-xs leading-relaxed text-amber-950/90">
-          模板示意算法与平台协作门禁。样机不替代算法责任，不落真实 Release。
+          模板示意算法与平台协作门禁。发布只改内存 stage / endpoint.modelRevisionId，不落真实
+          Release、不切真流量。
         </p>
         <button
           type="button"
@@ -38,6 +69,10 @@ export function PipelinesPage() {
           const canPublish = evalStep?.status === 'succeeded' && !run.finished
           const atGate = run.blockedAtGate && evalStep?.status === 'blocked'
           const evalFailed = evalStep?.status === 'failed'
+          const t = targetOf(run.id)
+          const preview = canPublish
+            ? previewPipelinePublish(state, t.revisionId || undefined, t.endpointId || undefined)
+            : null
           return (
             <Card key={run.id}>
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -64,6 +99,60 @@ export function PipelinesPage() {
                   </li>
                 ))}
               </ol>
+              {canPublish ? (
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  <label className="block text-xs text-slate-600">
+                    发布目标 revision
+                    <select
+                      className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm"
+                      value={t.revisionId}
+                      onChange={(e) =>
+                        setTargets((prev) => ({
+                          ...prev,
+                          [run.id]: { ...t, revisionId: e.target.value },
+                        }))
+                      }
+                    >
+                      {revisions.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block text-xs text-slate-600">
+                    挂到端点
+                    <select
+                      className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm"
+                      value={t.endpointId}
+                      onChange={(e) =>
+                        setTargets((prev) => ({
+                          ...prev,
+                          [run.id]: { ...t, endpointId: e.target.value },
+                        }))
+                      }
+                    >
+                      {state.endpoints.length === 0 ? (
+                        <option value="">（将新建样机端点）</option>
+                      ) : (
+                        state.endpoints.map((ep) => (
+                          <option key={ep.id} value={ep.id}>
+                            {ep.name}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </label>
+                </div>
+              ) : null}
+              {preview ? (
+                <p className="mt-2 text-xs leading-relaxed text-slate-600">{preview}</p>
+              ) : null}
+              {run.publishEffect ? (
+                <p className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs leading-relaxed text-emerald-900">
+                  {run.publishEffect.note}
+                </p>
+              ) : null}
               <div className="mt-3 flex flex-wrap gap-2">
                 {atGate ? (
                   <>
@@ -87,7 +176,12 @@ export function PipelinesPage() {
                   <button
                     type="button"
                     className="btn-press rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white"
-                    onClick={() => pipelinePublish(run.id)}
+                    onClick={() =>
+                      pipelinePublish(run.id, {
+                        revisionId: t.revisionId || undefined,
+                        endpointId: t.endpointId || undefined,
+                      })
+                    }
                   >
                     发布
                   </button>

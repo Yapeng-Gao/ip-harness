@@ -17,10 +17,11 @@ import type {
   JobKind,
   LoadTestReport,
   ModelStage,
+  PipelinePublishEffect,
   PipelineRun,
   PublishedDataset,
 } from './types'
-import { STAGE_ORDER } from './types'
+import { jobDatasetPin, poolForQueue, STAGE_ORDER } from './types'
 
 function uid(prefix: string): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}-${Date.now().toString(36)}`
@@ -49,13 +50,82 @@ function totalSlots(state: AiInfraState): number {
 function findSchedulableNode(
   state: AiInfraState,
   need: number,
+  queue: string,
 ): string | null {
+  const pool = poolForQueue(queue)
   for (const node of state.gpuNodes) {
     if (node.drained) continue
+    if (node.pool !== pool) continue
     const used = usedSlotsOnNode(state, node.id)
     if (node.totalSlots - used >= need) return node.id
   }
   return null
+}
+
+/** 排队作业若本 pool 无容量，UI 提示「等待 pool=…」 */
+export function poolWaitHint(state: AiInfraState, job: Job): string | null {
+  if (job.status !== 'queued') return null
+  if (findSchedulableNode(state, job.gpuSlots, job.queue)) return null
+  return `等待 pool=${poolForQueue(job.queue)} 可调度节点`
+}
+
+function pickPublishRevision(
+  state: AiInfraState,
+  revisionId?: string,
+): { modelId: string; modelName: string; revisionId: string; version: string; stage: ModelStage } | null {
+  if (revisionId) {
+    for (const m of state.models) {
+      const r = m.revisions.find((x) => x.id === revisionId)
+      if (r) {
+        return {
+          modelId: m.id,
+          modelName: m.name,
+          revisionId: r.id,
+          version: r.version,
+          stage: r.stage,
+        }
+      }
+    }
+  }
+  for (const m of state.models) {
+    const r = m.revisions.find((x) => x.stage !== 'prod')
+    if (r) {
+      return {
+        modelId: m.id,
+        modelName: m.name,
+        revisionId: r.id,
+        version: r.version,
+        stage: r.stage,
+      }
+    }
+  }
+  const m = state.models[0]
+  const r = m?.revisions[0]
+  if (!m || !r) return null
+  return {
+    modelId: m.id,
+    modelName: m.name,
+    revisionId: r.id,
+    version: r.version,
+    stage: r.stage,
+  }
+}
+
+export function previewPipelinePublish(
+  state: AiInfraState,
+  revisionId?: string,
+  endpointId?: string,
+): string {
+  const picked = pickPublishRevision(state, revisionId)
+  if (!picked) return '样机：无可用 revision，发布将只标记跑次完成（非真流量）。'
+  const idx = STAGE_ORDER.indexOf(picked.stage)
+  const next = idx >= 0 && idx < STAGE_ORDER.length - 1 ? STAGE_ORDER[idx + 1] : null
+  const promote = next
+    ? `晋级 ${picked.modelName} · ${picked.version}（${picked.stage}→${next}）`
+    : `${picked.modelName} · ${picked.version} 已在 ${picked.stage}（不再晋级）`
+  const ep = state.endpoints.find((e) => e.id === (endpointId || state.endpoints[0]?.id))
+  const attach = ep ? `挂到 endpoint ${ep.name}` : '新建样机端点并挂上该 revision'
+  return `样机：发布将${promote}，并${attach}（非真流量）。`
 }
 
 function pushAlert(
@@ -122,7 +192,8 @@ function computeLoadReport(concurrency: number, durationSec: number): LoadTestRe
 export type CreateJobInput = {
   kind: JobKind
   name: string
-  datasetVersionId: string
+  datasetId: string
+  datasetVersion: string
   queue: string
   priority: number
   forceFail: boolean
@@ -143,7 +214,7 @@ type Action =
   | { type: 'ROLLBACK_ENDPOINT'; endpointId: string }
   | { type: 'START_PIPELINE' }
   | { type: 'PIPELINE_GATE'; runId: string; pass: boolean }
-  | { type: 'PIPELINE_PUBLISH'; runId: string }
+  | { type: 'PIPELINE_PUBLISH'; runId: string; revisionId?: string; endpointId?: string }
   | { type: 'PIPELINE_RERUN_EVAL'; runId: string }
   | {
       type: 'START_LOADTEST'
@@ -167,8 +238,9 @@ function tickJobs(state: AiInfraState, now: number): AiInfraState {
   for (const { j, i } of queued) {
     // short delay before schedule (~1.2s)
     if (now - j.queuedSince < 1200) continue
-    const nodeId = findSchedulableNode(next, j.gpuSlots)
+    const nodeId = findSchedulableNode(next, j.gpuSlots, j.queue)
     if (!nodeId) continue
+    const pool = poolForQueue(j.queue)
     const started: Job = appendLog(
       {
         ...j,
@@ -177,7 +249,7 @@ function tickJobs(state: AiInfraState, now: number): AiInfraState {
         startedAt: now,
         progress: Math.max(j.progress, 1),
       },
-      `调度到 ${nodeId}（${j.gpuSlots} slot）`,
+      `调度到 ${nodeId}（pool=${pool} · ${j.gpuSlots} slot）`,
     )
     jobs[i] = started
     next = { ...next, jobs: [...jobs] }
@@ -281,17 +353,24 @@ function reducer(state: AiInfraState, action: Action): AiInfraState {
     case 'CREATE_JOB': {
       const { input } = action
       const now = Date.now()
+      const pin = jobDatasetPin({
+        datasetId: input.datasetId,
+        datasetVersion: input.datasetVersion,
+      })
       const job: Job = {
         id: uid('job'),
         kind: input.kind,
         name: input.name.trim() || `${input.kind}-${Date.now().toString(36)}`,
-        datasetVersionId: input.datasetVersionId,
+        datasetId: input.datasetId,
+        datasetVersion: input.datasetVersion,
         queue: input.queue,
         priority: input.priority,
         status: 'queued',
         progress: 0,
         createdAt: iso(now),
-        logs: [`[create] 已入队 · 数据集 ${input.datasetVersionId}`],
+        logs: [
+          `[create] 已入队 · 数据集 ${pin} · queue=${input.queue}→pool=${poolForQueue(input.queue)}`,
+        ],
         gpuSlots: input.gpuSlots ?? (input.kind === 'train' ? 2 : 1),
         forceFail: input.forceFail || /fail/i.test(input.name),
         assignedNodeId: null,
@@ -461,16 +540,87 @@ function reducer(state: AiInfraState, action: Action): AiInfraState {
       return { ...state, pipelineRuns }
     }
     case 'PIPELINE_PUBLISH': {
-      const pipelineRuns = state.pipelineRuns.map((run) => {
-        if (run.id !== action.runId || run.finished) return run
-        const evalOk = run.steps.find((s) => s.key === 'eval')?.status === 'succeeded'
-        if (!evalOk) return run
-        const steps = run.steps.map((s) =>
+      const run = state.pipelineRuns.find((r) => r.id === action.runId)
+      if (!run || run.finished) return state
+      const evalOk = run.steps.find((s) => s.key === 'eval')?.status === 'succeeded'
+      if (!evalOk) return state
+
+      const picked = pickPublishRevision(state, action.revisionId)
+      let models = state.models
+      let fromStage: ModelStage | null = null
+      let toStage: ModelStage | null = null
+      if (picked) {
+        fromStage = picked.stage
+        const idx = STAGE_ORDER.indexOf(picked.stage)
+        if (idx >= 0 && idx < STAGE_ORDER.length - 1) {
+          toStage = STAGE_ORDER[idx + 1] as ModelStage
+          models = state.models.map((m) => {
+            if (m.id !== picked.modelId) return m
+            return {
+              ...m,
+              revisions: m.revisions.map((r) =>
+                r.id === picked.revisionId ? { ...r, stage: toStage! } : r,
+              ),
+            }
+          })
+        }
+      }
+
+      let endpoints = state.endpoints
+      let endpointId = ''
+      let endpointName = ''
+      if (picked) {
+        const targetId = action.endpointId || state.endpoints[0]?.id
+        if (targetId) {
+          endpoints = state.endpoints.map((e) =>
+            e.id === targetId ? { ...e, modelRevisionId: picked.revisionId } : e,
+          )
+          const ep = endpoints.find((e) => e.id === targetId)
+          endpointId = targetId
+          endpointName = ep?.name ?? targetId
+        } else {
+          const ep: Endpoint = {
+            id: uid('ep'),
+            name: `pipe-pub-${run.id.slice(-4)}`,
+            modelRevisionId: picked.revisionId,
+            canaryRevisionId: null,
+            trafficCanaryPct: 0,
+            status: 'published',
+          }
+          endpoints = [ep, ...state.endpoints]
+          endpointId = ep.id
+          endpointName = ep.name
+        }
+      }
+
+      const revLabel = picked ? `${picked.modelName} · ${picked.version}` : ''
+      const promoteBit = picked
+        ? toStage
+          ? `已晋级 revision ${revLabel} ${fromStage}→${toStage}`
+          : `revision ${revLabel} 已在 ${fromStage}（未再晋级）`
+        : '无可用 revision'
+      const attachBit = endpointName ? `已挂到 endpoint ${endpointName}` : ''
+      const note = `样机：${promoteBit}${attachBit ? ` / ${attachBit}` : ''}（非真流量）`
+      const publishEffect: PipelinePublishEffect | undefined = picked
+        ? {
+            revisionId: picked.revisionId,
+            revisionLabel: revLabel,
+            fromStage,
+            toStage,
+            endpointId,
+            endpointName,
+            note,
+          }
+        : { revisionId: '', revisionLabel: '', fromStage: null, toStage: null, endpointId: '', endpointName: '', note }
+
+      const pipelineRuns = state.pipelineRuns.map((r) => {
+        if (r.id !== action.runId) return r
+        const steps = r.steps.map((s) =>
           s.key === 'publish' ? { ...s, status: 'succeeded' as const } : s,
         )
-        return { ...run, steps, finished: true, blockedAtGate: false }
+        return { ...r, steps, finished: true, blockedAtGate: false, publishEffect }
       })
-      return { ...state, pipelineRuns }
+      return { ...state, models, endpoints, pipelineRuns }
     }
     case 'PIPELINE_RERUN_EVAL': {
       const pipelineRuns = state.pipelineRuns.map((run) => {
@@ -545,7 +695,7 @@ export type AiInfraApi = {
   rollbackEndpoint: (endpointId: string) => void
   startPipeline: () => void
   pipelineGate: (runId: string, pass: boolean) => void
-  pipelinePublish: (runId: string) => void
+  pipelinePublish: (runId: string, opts?: { revisionId?: string; endpointId?: string }) => void
   pipelineRerunEval: (runId: string) => void
   startLoadTest: (endpointId: string, concurrency: number, durationSec: number) => void
   ackAlert: (id: string) => void
@@ -612,7 +762,8 @@ export function AiInfraProvider({ children }: { children: ReactNode }) {
       rollbackEndpoint: (endpointId) => dispatch({ type: 'ROLLBACK_ENDPOINT', endpointId }),
       startPipeline: () => dispatch({ type: 'START_PIPELINE' }),
       pipelineGate: (runId, pass) => dispatch({ type: 'PIPELINE_GATE', runId, pass }),
-      pipelinePublish: (runId) => dispatch({ type: 'PIPELINE_PUBLISH', runId }),
+      pipelinePublish: (runId, opts) =>
+        dispatch({ type: 'PIPELINE_PUBLISH', runId, revisionId: opts?.revisionId, endpointId: opts?.endpointId }),
       pipelineRerunEval: (runId) => dispatch({ type: 'PIPELINE_RERUN_EVAL', runId }),
       startLoadTest: (endpointId, concurrency, durationSec) =>
         dispatch({ type: 'START_LOADTEST', endpointId, concurrency, durationSec }),

@@ -7,7 +7,10 @@ export type Job = {
   id: string
   kind: JobKind
   name: string
-  datasetVersionId: string
+  /** 作业钉死的数据集 id（展示+契约，非仅下拉文案） */
+  datasetId: string
+  /** 作业钉死的数据集 version */
+  datasetVersion: string
   queue: string
   priority: number
   status: JobStatus
@@ -67,6 +70,17 @@ export type PipelineStep = {
   status: PipeStepStatus
 }
 
+export type PipelinePublishEffect = {
+  revisionId: string
+  revisionLabel: string
+  fromStage: ModelStage | null
+  toStage: ModelStage | null
+  endpointId: string
+  endpointName: string
+  /** 屏上诚实旁注，含「样机 / 非真流量」 */
+  note: string
+}
+
 export type PipelineRun = {
   id: string
   template: string
@@ -74,6 +88,8 @@ export type PipelineRun = {
   blockedAtGate: boolean
   createdAt: string
   finished: boolean
+  /** 发布后的内存副作用摘要（晋级 + 挂端点） */
+  publishEffect?: PipelinePublishEffect
 }
 
 export type LoadTestStatus = 'queued' | 'running' | 'succeeded'
@@ -179,3 +195,33 @@ export const PIPE_STEP_LABEL: Record<PipeStepStatus, string> = {
 }
 
 export const DATASETS_LS_KEY = 'ip.harness.aiData.publishedDatasets'
+
+/** 下拉 / 存储复合键：同一 dataset id 可有多 version */
+export function datasetCompositeKey(id: string, version: string): string {
+  return `${id}@${version}`
+}
+
+export function parseDatasetCompositeKey(
+  key: string,
+): { datasetId: string; datasetVersion: string } | null {
+  const i = key.lastIndexOf('@')
+  if (i <= 0 || i === key.length - 1) return null
+  return { datasetId: key.slice(0, i), datasetVersion: key.slice(i + 1) }
+}
+
+export function jobDatasetPin(job: Pick<Job, 'datasetId' | 'datasetVersion'>): string {
+  return datasetCompositeKey(job.datasetId, job.datasetVersion)
+}
+
+/** 作业 queue → GPU pool。当前 1:1，batch 有独立节点 gpu-c。 */
+export const QUEUE_TO_POOL: Record<string, string> = {
+  'algo-train': 'algo-train',
+  batch: 'batch',
+  infer: 'infer',
+}
+
+export const JOB_QUEUES = ['algo-train', 'batch', 'infer'] as const
+
+export function poolForQueue(queue: string): string {
+  return QUEUE_TO_POOL[queue] ?? queue
+}
