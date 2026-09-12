@@ -71,34 +71,28 @@ export function Pipeline() {
       >
         <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="阶段筛选">
           <Filter className="h-3.5 w-3.5 text-slate-500" aria-hidden />
-          <button
-            type="button"
-            onClick={() => setFilter('all')}
-            className={`btn-press focus-ring rounded-full px-3 py-1 text-xs transition-colors ${
-              activeFilter === 'all'
-                ? 'bg-slate-900 text-white'
-                : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'
-            }`}
-            aria-pressed={activeFilter === 'all'}
-          >
-            全部 <span className="ml-1 tabular-nums opacity-80">{stageCounts.all}</span>
-          </button>
-          {STAGES.map((s) => (
+          <div className="segmented flex-wrap">
             <button
-              key={s.id}
               type="button"
-              onClick={() => setFilter(s.id)}
-              className={`btn-press focus-ring rounded-full px-3 py-1 text-xs transition-colors ${
-                activeFilter === s.id
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800'
-              }`}
-              aria-pressed={activeFilter === s.id}
+              onClick={() => setFilter('all')}
+              className="segmented-item btn-press focus-ring"
+              aria-pressed={activeFilter === 'all'}
             >
-              {s.shortName}{' '}
-              <span className="ml-0.5 tabular-nums opacity-80">{stageCounts[s.id] ?? 0}</span>
+              全部 <span className="ml-1 tabular opacity-80">{stageCounts.all}</span>
             </button>
-          ))}
+            {STAGES.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setFilter(s.id)}
+                className="segmented-item btn-press focus-ring"
+                aria-pressed={activeFilter === s.id}
+              >
+                {s.shortName}{' '}
+                <span className="ml-0.5 tabular opacity-80">{stageCounts[s.id] ?? 0}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </PageHeader>
 
@@ -124,23 +118,23 @@ export function Pipeline() {
           {columns.map((stage) => {
             const stageCases = filtered.filter((c) => c.stage === stage.id)
             return (
-              <div
-                key={stage.id}
-                className="flex w-64 shrink-0 flex-col flat-card"
-              >
-                <div className="flex items-center gap-2 border-b border-slate-200 px-3 py-3">
+              <div key={stage.id} className="mid-pipeline-col">
+                <div className="mid-pipeline-col-head">
                   <span
-                    className="h-2 w-2 rounded-full"
+                    className="h-2 w-2 shrink-0 rounded-full"
                     style={{ background: stage.color }}
+                    aria-hidden
                   />
-                  <span className="text-sm font-medium text-slate-800">{stage.name}</span>
-                  <span className="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs tabular-nums text-slate-500">
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">
+                    {stage.name}
+                  </span>
+                  <span className="rounded-full bg-white px-2 py-0.5 text-xs tabular text-slate-500 ring-1 ring-slate-200/80">
                     {stageCases.length}
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-2">
                   {stageCases.length === 0 && (
-                    <div className="nest-card border-dashed bg-slate-50/80 py-8 text-center text-xs text-slate-500">
+                    <div className="rounded-[calc(var(--radius-lg)-0.5rem)] border border-dashed border-slate-200 bg-slate-50/80 py-8 text-center text-xs text-slate-500">
                       本列暂无可见案件
                     </div>
                   )}
@@ -151,47 +145,52 @@ export function Pipeline() {
                     return (
                       <div
                         key={c.id}
-                        className="nest-card bg-slate-50/70 p-3"
+                        className="mid-pipeline-card"
+                        data-action={needsAction ? 'true' : 'false'}
                       >
                         <AppLink
                           to={needsAction ? wb : `/cases/${c.id}`}
-                          className="card-hover btn-press block focus-ring rounded-lg"
+                          className="btn-press block focus-ring rounded-[var(--radius-sm)]"
                           aria-label={
                             needsAction
                               ? `去办理 ${c.title}`
                               : `打开案件 ${c.title}`
                           }
                         >
-                          <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
-                            <span className="text-sm leading-snug text-slate-800">{c.title}</span>
+                          <div className="mb-1 flex flex-wrap items-center gap-1.5">
+                            <span className="text-sm font-medium leading-snug text-slate-900 text-pretty">
+                              {c.title}
+                            </span>
                             {needsAction && (
-                              <span className="rounded-full bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-800 ring-1 ring-amber-200">
+                              <span className="rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 ring-1 ring-amber-200">
                                 待办理
                               </span>
                             )}
                             {workspace.kind === 'agency' && (
-                              <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">
+                              <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-200">
                                 我方承办
                               </span>
                             )}
                           </div>
-                          <div className="mb-2 font-mono text-xs text-slate-500">{c.caseNo}</div>
+                          <div className="mb-2 font-mono text-[11px] tabular text-slate-500">
+                            {c.caseNo}
+                          </div>
                           <div className="mb-2 flex items-center justify-between gap-2">
-                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500">
+                            <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[11px] text-slate-500">
                               {c.type}
                             </span>
                             <RiskBadge risk={c.risk} />
                           </div>
                           <ProgressBar value={c.progress} color={stage.color} />
-                          <div className="mt-2 flex justify-between text-xs text-slate-500">
-                            <span>{c.ownerTeam}</span>
-                            <span className="tabular-nums">{c.nextDeadline}</span>
+                          <div className="mt-2 flex justify-between gap-2 text-[11px] text-slate-500">
+                            <span className="truncate">{c.ownerTeam}</span>
+                            <span className="shrink-0 tabular">{c.nextDeadline}</span>
                           </div>
                         </AppLink>
                         {needsAction && (
                           <AppLink
                             to={wb}
-                            className="btn-press cta-work mt-2 flex w-full items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium focus-ring"
+                            className="btn-press cta-work mt-2 flex w-full items-center justify-center gap-1 rounded-[var(--radius-sm)] px-2 py-1.5 text-xs font-medium focus-ring"
                           >
                             <Briefcase className="h-3 w-3" aria-hidden />
                             一键进入办理
@@ -209,10 +208,10 @@ export function Pipeline() {
                     )
                   })}
                 </div>
-                <div className="border-t border-slate-200 text-xs">
+                <div className="border-t border-slate-200/90 text-xs">
                   <AppLink
                     to={workbenchPathForStage(stage.id)}
-                    className="flex items-center justify-center gap-1 px-2 py-2 text-center font-medium text-slate-700 hover:bg-slate-50"
+                    className="btn-press flex items-center justify-center gap-1 px-2 py-2.5 text-center font-medium text-slate-700 hover:bg-slate-50 focus-ring"
                   >
                     <Briefcase className="h-3 w-3" aria-hidden />
                     进入办理流程

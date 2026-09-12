@@ -191,14 +191,12 @@ export function Docket() {
         secondary={{ label: '打开工作台待办', to: '/workbench' }}
       >
         <div className="mt-3 flex flex-wrap gap-2">
-          <div className="flex rounded-xl bg-slate-100 p-1" role="group" aria-label="视图切换">
+          <div className="segmented" role="group" aria-label="视图切换">
             <button
               type="button"
               onClick={() => setView('list')}
               aria-pressed={view === 'list'}
-              className={`btn-press inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 ${
-                view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-              }`}
+              className="segmented-item btn-press focus-ring inline-flex items-center gap-1"
             >
               <List className="h-3.5 w-3.5" aria-hidden /> 列表视图
             </button>
@@ -206,9 +204,7 @@ export function Docket() {
               type="button"
               onClick={() => setView('calendar')}
               aria-pressed={view === 'calendar'}
-              className={`btn-press inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 ${
-                view === 'calendar' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-              }`}
+              className="segmented-item btn-press focus-ring inline-flex items-center gap-1"
             >
               <CalendarDays className="h-3.5 w-3.5" aria-hidden /> 日历视图
             </button>
@@ -223,7 +219,7 @@ export function Docket() {
           if (!rows.length) return null
           return (
             <div
-              className="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600"
+              className="wb-inset mb-4 text-xs text-slate-600"
               role="note"
             >
               <span className="font-medium text-slate-800">本案另有维持年费日程 {rows.length} 笔</span>
@@ -282,7 +278,7 @@ export function Docket() {
         </div>
       )}
 
-      <section className="mb-6 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_16px_rgba(15,23,42,0.04)]">
+      <section className="surface-card mb-6 overflow-hidden">
         <div className="flex items-center gap-2 border-b border-slate-100 px-4 py-3">
           <BookOpen className="h-4 w-4 text-slate-700" aria-hidden />
           <h2 className="text-balance text-sm font-medium text-slate-800">规则表（示意）</h2>
@@ -319,7 +315,7 @@ export function Docket() {
       {view === 'list' ? (
         <section
           ref={caseSectionRef}
-          className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_16px_rgba(15,23,42,0.04)]"
+          className="surface-card overflow-hidden"
         >
           <div className="border-b border-slate-100 px-4 py-3 text-sm font-medium text-slate-800">
             即将到期 · {sorted.length} 条
@@ -357,15 +353,22 @@ export function Docket() {
                 const c = getCase(e.caseId)
                 const days = daysUntil(e.dueDate)
                 const level = urgencyLevel(days)
+                const rowState =
+                  e.status === 'done'
+                    ? 'done'
+                    : e.status === 'overdue' || level === 'critical'
+                      ? 'critical'
+                      : level === 'warn'
+                        ? 'warn'
+                        : e.fromHandoffWriteback
+                          ? 'writeback'
+                          : 'default'
                 return (
                   <li
                     key={e.id}
                     id={`docket-event-${e.id}`}
-                    className={`card-hover flex flex-wrap items-center gap-3 px-4 py-3 ${
-                      e.fromHandoffWriteback
-                        ? 'bg-slate-50 ring-1 ring-inset ring-slate-200'
-                        : 'hover:bg-slate-50/80'
-                    }`}
+                    className="mid-docket-row"
+                    data-state={rowState}
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
@@ -476,7 +479,7 @@ export function Docket() {
           {byMonth.map(([month, events]) => (
             <div
               key={month}
-              className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_16px_rgba(15,23,42,0.04)]"
+              className="surface-card overflow-hidden"
             >
               <div className="border-b border-slate-100 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-800">
                 {month}
@@ -485,18 +488,21 @@ export function Docket() {
                 {events.map((e) => {
                   const days = daysUntil(e.dueDate)
                   const level = urgencyLevel(days)
+                  const calState =
+                    e.status === 'done'
+                      ? 'done'
+                      : e.status === 'overdue' || level === 'critical'
+                        ? 'critical'
+                        : level === 'warn'
+                          ? 'warn'
+                          : e.fromHandoffWriteback
+                            ? 'writeback'
+                            : 'default'
                   return (
                     <div
                       key={e.id}
-                      className={`card-hover rounded-xl border p-3 ${
-                        e.fromHandoffWriteback
-                          ? 'border-slate-200 bg-slate-50'
-                          : level === 'critical'
-                            ? 'border-rose-200 bg-rose-50/50'
-                            : level === 'warn'
-                              ? 'border-amber-200 bg-amber-50/40'
-                              : 'border-slate-100 bg-slate-50/50'
-                      }`}
+                      className="mid-docket-cal"
+                      data-state={calState}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="text-xs font-medium text-slate-500">{e.dueDate}</div>

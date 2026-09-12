@@ -14,6 +14,7 @@ import {
   Plus,
   Bot,
   Download,
+  ChevronRight,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { useAgents } from '../context/AgentContext'
@@ -130,6 +131,8 @@ export function CaseDetail() {
   const [toastError, setToastError] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [exportIncludeJson, setExportIncludeJson] = useState(false)
+  /** UI-only: which flow node stages are expanded in overview */
+  const [expandedNodeKeys, setExpandedNodeKeys] = useState<Record<string, boolean> | null>(null)
 
   useEffect(() => {
     if (!pickerOpen) return
@@ -551,27 +554,31 @@ export function CaseDetail() {
       {/* Meta (期限/交接/模式) lives in CaseHeaderBar — avoid duplicate grid */}
 
       <div className="surface-card mb-6 p-5">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-medium text-slate-800">阶段进度</h2>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h2 className="text-balance text-sm font-medium text-slate-800">阶段进度</h2>
           <span className="text-xs tabular-nums text-slate-500">
             当前：{stageMeta.name} · {c.progress}%
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           {STAGES.map((s, i) => {
             const done = i < stageIdx
             const current = i === stageIdx
             return (
               <div key={s.id} className="flex flex-1 flex-col items-center gap-1.5">
                 <div
-                  className={`h-2 w-full rounded-full ${done || current ? '' : 'bg-slate-100'}`}
+                  className={`h-2 w-full rounded-full ${done || current ? '' : 'bg-slate-100'} ${
+                    current ? 'ring-2 ring-[var(--color-accent)]/30 ring-offset-1' : ''
+                  }`}
                   style={{
                     background: done || current ? s.color : undefined,
-                    opacity: current ? 1 : done ? 0.5 : 1,
+                    opacity: current ? 1 : done ? 0.55 : 1,
                   }}
                 />
                 <span
-                  className={`text-xs ${current ? 'font-medium text-slate-800' : 'text-slate-600'}`}
+                  className={`text-[11px] ${
+                    current ? 'font-semibold text-slate-900' : done ? 'text-slate-500' : 'text-slate-400'
+                  }`}
                 >
                   {s.shortName}
                 </span>
@@ -587,103 +594,139 @@ export function CaseDetail() {
       <div className="surface-card mb-6 p-5">
         <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-medium text-slate-800">节点进度（工作台写回）</h2>
-          <span className="text-xs text-slate-500">只读 · 阶段 → Flow 子步骤</span>
+          <span className="text-xs text-slate-500">只读 · 可展开 · 当前步高亮</span>
         </div>
-        <p className="mb-4 text-xs text-slate-500">
-          进度来自各办理台 STEPS 写回；非 stages.runners 静态目录。点步骤不编辑。
+        <p className="mb-4 text-xs text-slate-500 text-pretty">
+          进度来自各办理台 STEPS 写回；非 stages.runners 静态目录。点步骤不编辑。默认展开当前阶段。
         </p>
-        <div className="space-y-4">
+        <div className="space-y-2">
           {STAGES.map((s) => {
             const flowKey = FLOW_KEY_BY_STAGE[s.id]
             const flow = flowKey ? FLOW_CATALOG.find((f) => f.key === flowKey) : undefined
             const prog = flowKey ? caseFlowProgress[flowKey] : undefined
             const stepIndex = prog?.stepIndex ?? -1
             const isCurrentStage = s.id === c.stage
+            const nodeKey = flowKey ?? s.id
+            const isOpen =
+              expandedNodeKeys != null
+                ? (expandedNodeKeys[nodeKey] ?? isCurrentStage)
+                : isCurrentStage
+            const toggleOpen = () =>
+              setExpandedNodeKeys((prev) => {
+                const base =
+                  prev ??
+                  Object.fromEntries(
+                    STAGES.map((st) => {
+                      const fk = FLOW_KEY_BY_STAGE[st.id]
+                      return [fk ?? st.id, st.id === c.stage]
+                    }).concat([['layout', false]]),
+                  )
+                return { ...base, [nodeKey]: !isOpen }
+              })
             return (
               <div
                 key={s.id}
-                className={`rounded-xl border px-3 py-3 ${
-                  isCurrentStage ? 'border-slate-300 bg-slate-50/80' : 'border-slate-200 bg-white'
-                }`}
+                className="mid-node-stage"
+                data-current={isCurrentStage ? 'true' : 'false'}
+                data-open={isOpen ? 'true' : 'false'}
               >
-                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="inline-block h-2 w-2 rounded-full"
-                      style={{ background: s.color }}
-                      aria-hidden
-                    />
-                    <span className="text-sm font-medium text-slate-800">{s.name}</span>
-                    {isCurrentStage && (
-                      <span className="rounded-full bg-slate-900 px-1.5 py-0.5 text-[10px] font-medium text-white">
-                        当前阶段
-                      </span>
-                    )}
-                  </div>
+                <button
+                  type="button"
+                  className="mid-node-stage-toggle focus-ring btn-press"
+                  aria-expanded={isOpen}
+                  onClick={toggleOpen}
+                >
+                  <ChevronRight className="mid-node-chevron h-3.5 w-3.5" aria-hidden />
+                  <span
+                    className="inline-block h-2 w-2 shrink-0 rounded-full"
+                    style={{ background: s.color }}
+                    aria-hidden
+                  />
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">
+                    {s.name}
+                  </span>
+                  {isCurrentStage && (
+                    <span className="rounded-full bg-slate-900 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                      当前阶段
+                    </span>
+                  )}
                   {flow && (
-                    <AppLink
-                      to={`${flow.path}/${c.id}`}
-                      className="text-xs text-slate-600 hover:underline"
-                    >
-                      打开办理台 →
-                    </AppLink>
+                    <span className="tabular text-[11px] text-slate-400">
+                      {stepIndex >= 0 ? `s${stepIndex + 1}/${flow.steps.length}` : `0/${flow.steps.length}`}
+                    </span>
+                  )}
+                </button>
+                <div className="mid-node-stage-body">
+                  {!flow ? (
+                    <p className="px-1 text-xs text-slate-500">无对应 Flow</p>
+                  ) : (
+                    <>
+                      <div className="mb-2 flex justify-end px-1">
+                        <AppLink
+                          to={`${flow.path}/${c.id}`}
+                          className="text-xs font-medium text-slate-600 hover:text-slate-900 hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          打开办理台 →
+                        </AppLink>
+                      </div>
+                      <ul className="space-y-0.5" aria-label={`${flow.label} 子步骤`}>
+                        {flow.steps.map((label, i) => {
+                          const done = stepIndex >= 0 && i < stepIndex
+                          const active = stepIndex >= 0 && i === stepIndex
+                          return (
+                            <li
+                              key={`${flow.key}-${i}`}
+                              className="mid-node-step text-xs"
+                              data-active={active ? 'true' : 'false'}
+                              data-done={done ? 'true' : 'false'}
+                              data-pending={!done && !active ? 'true' : 'false'}
+                            >
+                              {done ? (
+                                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
+                              ) : active ? (
+                                <Circle className="h-3.5 w-3.5 shrink-0 fill-[var(--color-accent)] text-[var(--color-accent)]" aria-hidden />
+                              ) : (
+                                <Circle className="h-3.5 w-3.5 shrink-0 text-slate-300" aria-hidden />
+                              )}
+                              <span className="min-w-0 flex-1">
+                                <span className="tabular mr-1 text-slate-400">{i + 1}.</span>
+                                {label}
+                                {active ? (
+                                  <span className="ml-1 text-[10px] font-medium text-[var(--color-accent-muted)]">
+                                    当前
+                                  </span>
+                                ) : done ? (
+                                  <span className="ml-1 text-[10px] text-emerald-700/80">已覆盖</span>
+                                ) : null}
+                              </span>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                      <div className="mt-2 px-1 text-[11px] tabular-nums text-slate-400">
+                        {prog
+                          ? `水位 s${prog.stepIndex} · 更新 ${formatFlowProgressAt(prog.updatedAt)}`
+                          : '尚未写回（进入办理台步进后可见）'}
+                      </div>
+                      {s.runners.length > 0 && (
+                        <details className="mt-2 px-1">
+                          <summary className="cursor-pointer text-[11px] text-slate-400 hover:text-slate-600">
+                            静态 runners 目录（非 Live · {s.runners.length}）
+                          </summary>
+                          <ul className="mt-1 space-y-0.5 border-l border-slate-200 pl-3 text-[11px] text-slate-400">
+                            {s.runners.map((r) => (
+                              <li key={r.id}>
+                                {r.name}
+                                <span className="text-slate-300"> · {r.steps.length} 概念步</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      )}
+                    </>
                   )}
                 </div>
-                {!flow ? (
-                  <p className="text-xs text-slate-500">无对应 Flow</p>
-                ) : (
-                  <>
-                    <ul className="space-y-1.5" aria-label={`${flow.label} 子步骤`}>
-                      {flow.steps.map((label, i) => {
-                        const done = stepIndex >= 0 && i < stepIndex
-                        const active = stepIndex >= 0 && i === stepIndex
-                        return (
-                          <li key={`${flow.key}-${i}`} className="flex items-center gap-2 text-xs">
-                            {done ? (
-                              <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
-                            ) : active ? (
-                              <Circle className="h-3.5 w-3.5 shrink-0 fill-slate-900 text-slate-900" aria-hidden />
-                            ) : (
-                              <Circle className="h-3.5 w-3.5 shrink-0 text-slate-300" aria-hidden />
-                            )}
-                            <span
-                              className={
-                                done
-                                  ? 'text-emerald-800'
-                                  : active
-                                    ? 'font-medium text-slate-900'
-                                    : 'text-slate-500'
-                              }
-                            >
-                              {i + 1}. {label}
-                              {active ? '（当前）' : done ? '（已覆盖）' : ''}
-                            </span>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                    <div className="mt-2 text-[11px] tabular-nums text-slate-400">
-                      {prog
-                        ? `水位 s${prog.stepIndex} · 更新 ${formatFlowProgressAt(prog.updatedAt)}`
-                        : '尚未写回（进入办理台步进后可见）'}
-                    </div>
-                    {s.runners.length > 0 && (
-                      <details className="mt-2">
-                        <summary className="cursor-pointer text-[11px] text-slate-400 hover:text-slate-600">
-                          静态 runners 目录（非 Live · {s.runners.length}）
-                        </summary>
-                        <ul className="mt-1 space-y-0.5 border-l border-slate-200 pl-3 text-[11px] text-slate-400">
-                          {s.runners.map((r) => (
-                            <li key={r.id}>
-                              {r.name}
-                              <span className="text-slate-300"> · {r.steps.length} 概念步</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </details>
-                    )}
-                  </>
-                )}
               </div>
             )
           })}
@@ -692,41 +735,87 @@ export function CaseDetail() {
             const flow = FLOW_CATALOG.find((f) => f.key === 'layout')!
             const prog = caseFlowProgress.layout
             const stepIndex = prog?.stepIndex ?? -1
+            const isOpen =
+              expandedNodeKeys != null
+                ? (expandedNodeKeys.layout ?? false)
+                : false
+            const toggleOpen = () =>
+              setExpandedNodeKeys((prev) => {
+                const base =
+                  prev ??
+                  Object.fromEntries(
+                    STAGES.map((st) => {
+                      const fk = FLOW_KEY_BY_STAGE[st.id]
+                      return [fk ?? st.id, st.id === c.stage]
+                    }).concat([['layout', false]]),
+                  )
+                return { ...base, layout: !isOpen }
+              })
             return (
-              <div className="rounded-xl border border-dashed border-slate-200 bg-white px-3 py-3">
-                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm font-medium text-slate-700">{flow.label}</span>
-                  <AppLink
-                    to={`${flow.path}/${c.id}`}
-                    className="text-xs text-slate-600 hover:underline"
-                  >
-                    打开 →
-                  </AppLink>
-                </div>
-                <ul className="space-y-1.5">
-                  {flow.steps.map((label, i) => {
-                    const done = stepIndex >= 0 && i < stepIndex
-                    const active = stepIndex >= 0 && i === stepIndex
-                    return (
-                      <li key={`layout-${i}`} className="flex items-center gap-2 text-xs">
-                        {done ? (
-                          <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
-                        ) : active ? (
-                          <Circle className="h-3.5 w-3.5 shrink-0 fill-slate-900 text-slate-900" aria-hidden />
-                        ) : (
-                          <Circle className="h-3.5 w-3.5 shrink-0 text-slate-300" aria-hidden />
-                        )}
-                        <span className={done ? 'text-emerald-800' : active ? 'font-medium text-slate-900' : 'text-slate-500'}>
-                          {i + 1}. {label}
-                        </span>
-                      </li>
-                    )
-                  })}
-                </ul>
-                <div className="mt-2 text-[11px] tabular-nums text-slate-400">
-                  {prog
-                    ? `水位 s${prog.stepIndex} · 更新 ${formatFlowProgressAt(prog.updatedAt)}`
-                    : '尚未写回'}
+              <div
+                className="mid-node-stage border-dashed"
+                data-current="false"
+                data-open={isOpen ? 'true' : 'false'}
+              >
+                <button
+                  type="button"
+                  className="mid-node-stage-toggle focus-ring btn-press"
+                  aria-expanded={isOpen}
+                  onClick={toggleOpen}
+                >
+                  <ChevronRight className="mid-node-chevron h-3.5 w-3.5" aria-hidden />
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700">
+                    {flow.label}
+                  </span>
+                  <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                    辅台
+                  </span>
+                  <span className="tabular text-[11px] text-slate-400">
+                    {stepIndex >= 0 ? `s${stepIndex + 1}/${flow.steps.length}` : `0/${flow.steps.length}`}
+                  </span>
+                </button>
+                <div className="mid-node-stage-body">
+                  <div className="mb-2 flex justify-end px-1">
+                    <AppLink
+                      to={`${flow.path}/${c.id}`}
+                      className="text-xs font-medium text-slate-600 hover:text-slate-900 hover:underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      打开 →
+                    </AppLink>
+                  </div>
+                  <ul className="space-y-0.5" aria-label={`${flow.label} 子步骤`}>
+                    {flow.steps.map((label, i) => {
+                      const done = stepIndex >= 0 && i < stepIndex
+                      const active = stepIndex >= 0 && i === stepIndex
+                      return (
+                        <li
+                          key={`layout-${i}`}
+                          className="mid-node-step text-xs"
+                          data-active={active ? 'true' : 'false'}
+                          data-done={done ? 'true' : 'false'}
+                          data-pending={!done && !active ? 'true' : 'false'}
+                        >
+                          {done ? (
+                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
+                          ) : active ? (
+                            <Circle className="h-3.5 w-3.5 shrink-0 fill-[var(--color-accent)] text-[var(--color-accent)]" aria-hidden />
+                          ) : (
+                            <Circle className="h-3.5 w-3.5 shrink-0 text-slate-300" aria-hidden />
+                          )}
+                          <span className="min-w-0 flex-1">
+                            <span className="tabular mr-1 text-slate-400">{i + 1}.</span>
+                            {label}
+                          </span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                  <div className="mt-2 px-1 text-[11px] tabular-nums text-slate-400">
+                    {prog
+                      ? `水位 s${prog.stepIndex} · 更新 ${formatFlowProgressAt(prog.updatedAt)}`
+                      : '尚未写回'}
+                  </div>
                 </div>
               </div>
             )
@@ -1023,22 +1112,23 @@ export function CaseDetail() {
               {requiredDone}/{requiredTotal} 必做
             </span>
           </div>
-          <ul className="space-y-2">
+          <ul className="space-y-1.5">
             {c.checklist.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   onClick={() => toggleChecklist(c.id, item.id)}
-                  className="focus-row flex w-full items-start gap-2.5 rounded-xl border border-transparent px-2 py-2 text-left transition-colors hover:border-slate-200 hover:bg-slate-50"
+                  className="wb-check-row focus-ring btn-press w-full text-left"
+                  data-checked={item.done ? 'true' : 'false'}
                 >
                   {item.done ? (
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
                   ) : (
-                    <Circle className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" />
+                    <Circle className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden />
                   )}
                   <span
-                    className={`text-sm ${
-                      item.done ? 'text-slate-500 line-through' : 'text-slate-700'
+                    className={`text-sm leading-snug ${
+                      item.done ? 'text-slate-500 line-through' : 'text-slate-800'
                     }`}
                   >
                     {item.label}
