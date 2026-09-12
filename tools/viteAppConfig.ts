@@ -22,6 +22,7 @@ export function defineAppConfig(opts: { port: number; appRoot: string }) {
         '@ip/app-state/crossPortStore': path.join(repoRoot, 'packages/app-state/src/crossPortStore.ts'),
         '@ip/app-state': path.join(repoRoot, 'packages/app-state/src/index.ts'),
         '@ip/ui': path.join(repoRoot, 'packages/ui/src/index.ts'),
+        '@ip/api': path.join(repoRoot, 'packages/api/src/index.ts'),
       },
     },
     define: {

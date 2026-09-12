@@ -19,6 +19,7 @@ export default defineConfig({
       '@ip/app-state/crossPortStore': path.join(root, 'packages/app-state/src/crossPortStore.ts'),
       '@ip/app-state': path.join(root, 'packages/app-state/src/index.ts'),
       '@ip/ui': path.join(root, 'packages/ui/src/index.ts'),
+      '@ip/api': path.join(root, 'packages/api/src/index.ts'),
       '@shared': path.join(root, 'src'),
     },
   },

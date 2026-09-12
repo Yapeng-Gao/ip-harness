@@ -12,7 +12,9 @@
     "./StageBadge": "./src/StageBadge.tsx",
     "./HandoffChip": "./src/HandoffChip.tsx",
     "./FulfillmentModeBadge": "./src/FulfillmentModeBadge.tsx",
-    "./handoffChipClass": "./src/handoffChipClass.ts"
+    "./handoffChipClass": "./src/handoffChipClass.ts",
+    "./AppSurfaceLinks": "./src/AppSurfaceLinks.tsx",
+    "./InsightSisterNav": "./src/InsightSisterNav.tsx"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit"
@@ -21,7 +23,9 @@
     "@ip/domain": "*",
     "lucide-react": "^1.44.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "@ip/contracts": "*",
+    "react-router-dom": "^7.18.3"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

@@ -1,8 +1,30 @@
 /**
- * Wave2 InboxDeepLink helpers（agent 面）。
- * 多 app 下相对路径会停在错误端口：本面用 path，跨 mid/workbench/iam 用绝对 URL。
+ * Agent deep-link surface — re-export @shared，仅保留本面专用 helper。
+ * 跨口绝对链与 mid/workbench/iam 同源：`resolveAppHref` / `midHref` / …
+ * 本面会话 path 继续用 `agentSessionPath`（react-router）。
  */
-import { APP_DEV_URLS, type HitlGateId } from '@ip/contracts'
+import { type HitlGateId } from '@ip/contracts'
+import {
+  midHref,
+  iamHref,
+  appHref,
+  isAbsoluteHttpUrl,
+} from '@shared/lib/deepLinks'
+
+export {
+  isMultiApp,
+  isAbsoluteHttpUrl,
+  surfaceForPath,
+  currentAppId,
+  midHref,
+  workbenchHref,
+  agentHref,
+  iamHref,
+  resolveAppHref,
+  appHref,
+  navigateApp,
+  type ResolvedAppHref,
+} from '@shared/lib/deepLinks'
 
 export type AgentSessionDeepLinkOpts = {
   focus?: 'hitl'
@@ -23,40 +45,6 @@ export function agentSessionPath(
   return q
     ? `/agent/sessions/${sessionId}?${q}`
     : `/agent/sessions/${sessionId}`
-}
-
-/**
- * Join APP_DEV_URLS base with path/query/hash.
- * Already-absolute http(s) URLs are returned unchanged.
- */
-function absDevUrl(base: string, path: string): string {
-  if (/^https?:\/\//i.test(path)) return path
-  const normalized = path.startsWith('/') ? path : `/${path}`
-  return `${base}${normalized}`
-}
-
-/**
- * 跨面绝对 URL → mid:5173（案件库 / 案详 / 费用 / Inbox 等）。
- * 必须用 `<a href>` 或 window.location，不要用 react-router Link。
- */
-export function midHref(path = '/'): string {
-  return absDevUrl(APP_DEV_URLS.mid, path)
-}
-
-/**
- * 跨面绝对 URL → workbench:5174（作业台 / inventor 门户等）。
- * 必须用 `<a href>` 或 window.location，不要用 react-router Link。
- */
-export function workbenchHref(path = '/workbench'): string {
-  return absDevUrl(APP_DEV_URLS.workbench, path)
-}
-
-/**
- * 跨面绝对 URL → iam:5177（登录 / 工作区重选）。
- * 必须用 `<a href>` 或 window.location，不要用 react-router Link。
- */
-export function iamHref(path = '/'): string {
-  return absDevUrl(APP_DEV_URLS.iam, path)
 }
 
 export function iamLoginHref(): string {
@@ -102,30 +90,11 @@ export function midInboxHref(opts?: MidInboxHrefOpts): string {
   return midHref(path)
 }
 
-export function isAbsoluteHttpUrl(url: string): boolean {
-  return /^https?:\/\//i.test(url)
-}
-
 /**
- * Resolve a path: agent 本面保持相对；已知跨口前缀 → APP_DEV_URLS 绝对链。
+ * Resolve a path: agent 本面保持相对；跨口走共享 `appHref`（multi-app → APP_DEV_URLS）。
  */
 export function resolveActionHref(path: string): string {
   if (isAbsoluteHttpUrl(path)) return path
   if (path.startsWith('/agent')) return path
-  if (path.startsWith('/workbench') || path.startsWith('/inventor')) {
-    return workbenchHref(path)
-  }
-  if (path.startsWith('/login')) return iamHref(path)
-  if (
-    path.startsWith('/cases') ||
-    path.startsWith('/docket') ||
-    path.startsWith('/billing') ||
-    path.startsWith('/pipeline') ||
-    path.startsWith('/insight') ||
-    path === '/' ||
-    path.startsWith('/?')
-  ) {
-    return midHref(path)
-  }
-  return path
+  return appHref(path)
 }

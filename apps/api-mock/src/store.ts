@@ -1,5 +1,6 @@
 import {
   AUDIT_SCHEMA_VERSION,
+  COMMAND_LABELS,
   type AuditEntry,
   type CommandName,
   type CommandMeta,
@@ -10,32 +11,14 @@ import { SEED_CASES, type MockCase } from './data/cases.js'
 import { SEED_INBOX, type MockInboxItem } from './data/inbox.js'
 
 /**
- * CommandName 白名单（样机）。
- * 含 `docketEscalate` / `docketComplete`：二者在 `CommandName` 有名，
- * 但尚未收入 `DomainCommand` 联合（壳内走 AppContext 专用函数 + pushAudit）。
- * 与 docs/architecture/backends.md「api-mock 局限」一致；收齐联合前勿假装类型已统一。
+ * 命令白名单：派生自 `@ip/contracts` `COMMAND_LABELS`（= CommandName 全集）。
+ * 不在本文件维护第二份命令名列表。
+ * 样机口径：仍不跑 guardrails；docketEscalate / docketComplete 已收入 DomainCommand 联合，轻量更新 handoffNote。
+ * 对照 docs/architecture/backends.md「api-mock 局限」。
  */
-const KNOWN_COMMANDS = new Set<string>([
-  'submitResearch',
-  'approveHandoff',
-  'requestChanges',
-  'advanceStage',
-  'submitClaims',
-  'analyzeAndSubmitOA',
-  'authorizeFile',
-  'fileResponse',
-  'confirmQuote',
-  'assignAgency',
-  'issueInvoice',
-  'payInvoice',
-  'createCaseFromInsight',
-  'saveDraft',
-  'submitHandoff',
-  'startReview',
-  'docketEscalate',
-  'docketComplete',
-])
+const KNOWN_COMMANDS = new Set<string>(Object.keys(COMMAND_LABELS))
 
+/** DomainCommand 已对齐 CommandName；HTTP 入参仍可宽松 type 字符串。 */
 export type DispatchInput =
   | DomainCommand
   | { type: string; caseId?: string; note?: string; [key: string]: unknown }
@@ -154,6 +137,14 @@ function applyLightMutation(cmd: DomainCommand): string | undefined {
     case 'startReview':
       c.handoffNote = cmd.note ?? `${cmd.type}（mock）`
       break
+    case 'docketEscalate':
+      c.handoffNote =
+        cmd.note ?? `docketEscalate · ${cmd.action} · ${cmd.eventId}（mock）`
+      break
+    case 'docketComplete':
+      c.handoffNote =
+        cmd.note ?? `docketComplete · ${cmd.eventId}（mock）`
+      break
   }
   return caseId
 }
@@ -173,21 +164,7 @@ export function dispatchCommand(
 
   const caseId = caseIdOf(command)
 
-  if (type === 'docketEscalate' || type === 'docketComplete') {
-    if (!caseId) {
-      return { ok: false, message: '缺少 caseId', command: type as CommandName }
-    }
-    const c = cases.find((x) => x.id === caseId)
-    if (!c) {
-      return {
-        ok: false,
-        message: `案件不存在: ${caseId}`,
-        caseId,
-        command: type as CommandName,
-      }
-    }
-    c.handoffNote = `${type}（mock）`
-  } else if (type === 'createCaseFromInsight') {
+  if (type === 'createCaseFromInsight') {
     // ok without prior caseId
   } else {
     if (!caseId) {
@@ -203,10 +180,46 @@ export function dispatchCommand(
     }
   }
 
-  let resolvedCaseId = caseId
-  if (type !== 'docketEscalate' && type !== 'docketComplete') {
-    resolvedCaseId = applyLightMutation(command as DomainCommand) ?? caseId
+  // DomainCommand 已收 docket*：收紧必填字段（样机仍不做真 Docket 执法）
+  if (type === 'docketEscalate') {
+    const eventId = 'eventId' in command ? command.eventId : undefined
+    const action = 'action' in command ? command.action : undefined
+    const okAction =
+      action === 'remind' ||
+      action === 'escalate_enterprise' ||
+      action === 'mark_at_risk'
+    if (typeof eventId !== 'string' || !eventId) {
+      return {
+        ok: false,
+        message: 'docketEscalate 缺少 eventId',
+        caseId,
+        command: 'docketEscalate',
+      }
+    }
+    if (!okAction) {
+      return {
+        ok: false,
+        message: 'docketEscalate action 无效（remind|escalate_enterprise|mark_at_risk）',
+        caseId,
+        command: 'docketEscalate',
+      }
+    }
   }
+  if (type === 'docketComplete') {
+    const eventId = 'eventId' in command ? command.eventId : undefined
+    if (typeof eventId !== 'string' || !eventId) {
+      return {
+        ok: false,
+        message: 'docketComplete 缺少 eventId',
+        caseId,
+        command: 'docketComplete',
+      }
+    }
+  }
+
+  // DispatchInput 可含宽松 type 字符串；已知 CommandName 则按 DomainCommand 轻突变
+  const resolvedCaseId =
+    applyLightMutation(command as DomainCommand) ?? caseId
 
   const actor = meta?.actor ?? 'user'
   auditSeq += 1

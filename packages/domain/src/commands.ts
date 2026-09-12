@@ -1,6 +1,6 @@
 /**
  * Re-exports @ip/contracts command surface (no second CommandName table).
- * See contracts: CommandName ⊇ DomainCommand["type"] (docket* gap documented there).
+ * CommandName 与 DomainCommand['type'] 已对齐（含 docket*）。
  * Handlers live in AppContext.dispatchCommand.
  */
 export {

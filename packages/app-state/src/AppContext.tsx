@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import { INITIAL_CASES } from '@shared/data/cases'
-import { getStageIndex, getStageMeta, STAGE_ORDER } from '@shared/data/stages'
+import { getStageIndex, getStageMeta, STAGE_ORDER } from '@ip/domain'
 import {
   ARTIFACT_FOR_STAGE,
   COMMITTEE_VOTE_HARD_BLOCK_STORAGE_KEY,
@@ -2745,6 +2745,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
             command: 'createCaseFromInsight',
           })
         }
+        case 'docketEscalate': {
+          const r = escalateDocketEvent(cmd.eventId, cmd.action)
+          return withFlowBump({
+            ...r,
+            caseId: cmd.caseId,
+            command: 'docketEscalate',
+          })
+        }
+        case 'docketComplete': {
+          const r = escalateDocketEvent(cmd.eventId, 'complete')
+          return withFlowBump({
+            ...r,
+            caseId: cmd.caseId,
+            command: 'docketComplete',
+          })
+        }
         default: {
           const _exhaustive: never = cmd
           return { ok: false, message: `未知命令：${(_exhaustive as DomainCommand).type}` }
@@ -2764,6 +2780,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       persona,
       role,
       setFlowNodeProgress,
+      escalateDocketEvent,
     ],
   )
 

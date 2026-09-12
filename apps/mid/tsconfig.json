@@ -51,6 +51,12 @@
       ],
       "@ip/ui/*": [
         "../../packages/ui/src/*"
+      ],
+      "@ip/api": [
+        "../../packages/api/src/index.ts"
+      ],
+      "@ip/api/*": [
+        "../../packages/api/src/*"
       ]
     }
   },
@@ -60,6 +66,7 @@
     "../../packages/contracts/src",
     "../../packages/domain/src",
     "../../packages/app-state/src",
-    "../../packages/ui/src"
+    "../../packages/ui/src",
+    "../../packages/api/src"
   ]
 }

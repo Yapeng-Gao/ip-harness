@@ -1,8 +1,6 @@
 /**
  * CommandName — full set of auditable command string literals (labels + audit).
- * Relationship: CommandName ⊇ DomainCommand["type"] (see commands.ts).
- * docketEscalate / docketComplete are on CommandName today but not yet in the
- * DomainCommand discriminated union (AppContext dedicated path + api-mock whitelist).
+ * CommandName 与 DomainCommand['type'] 已对齐（见 commands.ts；含 docketEscalate / docketComplete）。
  */
 export type CommandName =
   | 'submitResearch'

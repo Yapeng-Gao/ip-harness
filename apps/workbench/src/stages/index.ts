@@ -1,5 +1,13 @@
 /**
- * 阶段模块边界聚合。业务实现仍在 flows/；本目录只做可独立依赖的 re-export + 清单。
+ * OWNED-BY: apps/workbench (@ip/workbench · :5174)
+ *
+ * Canonical public module boundary for the multi-app workbench.
+ * - Implementation: apps/workbench/src/flows/*
+ * - Public API: this file (STAGE_MODULES + re-exports). App.tsx imports ONLY from ./stages.
+ * - Root src/pages/workbench is legacy (npm run dev:legacy) — NOT owned here; do not re-export it.
+ * - InventorPortal: app flows/inventor; root has separate src/pages/InventorPortal.tsx.
+ *
+ * 业务实现仍在 flows/；本目录只做可独立依赖的 re-export + 清单。
  * 可执行领域逻辑来自 @ip/domain；handoff keys/labels 唯一源 @ip/contracts（禁止在 stage 内再定义）。
  */
 import { ARTIFACT_FOR_STAGE } from '@ip/contracts'

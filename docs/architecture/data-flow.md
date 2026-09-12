@@ -206,7 +206,7 @@ dispatchCommand(cmd, meta)
 |--------|------|
 | `AppContext.pushAudit` | 强制补 `schemaVersion: AUDIT_SCHEMA_VERSION`（`2026.09.1`）；写入壳内 `auditLog` |
 | `dispatchCommandLocal` 成功路径 | 多数命令成功后 `pushAudit`（`actor` 来自 `CommandMeta`） |
-| Docket 专用路径 | `docketEscalate` / `docketComplete` 经 AppContext 专用函数 + `pushAudit`（未进 `DomainCommand` 联合） |
+| Docket 路径 | `docketEscalate` / `docketComplete` 已进 `DomainCommand`；`dispatchCommandLocal` 委托 `escalateDocketEvent` + `pushAudit`（亦可直接调专用函数） |
 | api-mock `store.dispatch` | 另写 mock 进程内 `auditLog`（`aud-mock-N`）；**与壳不同步**、无 GET |
 | UI 回放 | CaseDetail「审计」Tab → `AuditReplayPanel`（`src/components/AuditReplayPanel.tsx`）；证据包「审计命令序」 |
 

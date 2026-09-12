@@ -77,7 +77,7 @@
 | | |
 |--|--|
 | **对齐现仓** | `DocketEvent` / `docketEscalate` / `docketComplete` |
-| **现状样机** | AppContext 专用函数 + `pushAudit`；命令未进 `DomainCommand`；mock 白名单认 docket* |
+| **现状样机** | `DomainCommand` 已含 docket*；`dispatchCommandLocal` 委托 `escalateDocketEvent` + `pushAudit`；mock 轻量更新 handoffNote |
 | **目标设计** | 期限查询 + 升级命令；发 `ip.docket.escalated` |
 | **不做什么** | 不接真官方官网爬取 |
 
@@ -189,7 +189,7 @@
 | 自有 `auditLog` 不同步 | mock 进程内追加；无 GET 暴露；与壳 `AppContext.auditLog` 无关 |
 | `MockCase` ≠ `PatentCase` | 字段对齐 `CaseSummary`；读路径按 id merge，仅 API 有的 id 跳过 |
 | 写双镜像 | POST 成功后仍 `dispatchCommandLocal`（UI 与 mock 非同进程） |
-| 命令白名单 | `KNOWN_COMMANDS` 含 `docketEscalate` / `docketComplete`（`DomainCommand` 联合未收） |
+| 命令白名单 | `KNOWN_COMMANDS` 由 `COMMAND_LABELS` 推导（含 docket*；与 `DomainCommand` 已对齐） |
 | `createCaseFromInsight` | 生成 `c-mock-*`；读路径跳过 → 壳看不到新案 |
 
 ---
@@ -198,7 +198,7 @@
 
 **原则：先冻结 URL / 命令名，再换实现。**
 
-1. **冻结合同**：保留 `POST /v1/commands/dispatch`、`GET /v1/cases`、`GET /v1/cases/:id`、`GET /v1/inbox`、`GET /health`；`DomainCommand.type` / `CommandName` 字符串不改（收齐 docket* 时只扩联合，不改已有名）。
+1. **冻结合同**：保留 `POST /v1/commands/dispatch`、`GET /v1/cases`、`GET /v1/cases/:id`、`GET /v1/inbox`、`GET /health`；`DomainCommand.type` / `CommandName` 字符串不改（docket* 已收进联合，未改既有名）。
 2. 把 `evaluateGuardrails` + `canPerformHandoff` 做成 command 服务纯模块（已是 `@ip/domain`，可原样搬）。
 3. 命令 HTTP 成为**唯一**写；删除成功后再 local 镜像。
 4. case-read 用完整 DTO 替换「`CaseSummary` 按 id 叠加」。

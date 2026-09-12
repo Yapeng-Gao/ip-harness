@@ -69,16 +69,14 @@ curl -s -X POST localhost:5180/v1/commands/dispatch \
 
 ## CommandName 白名单说明（样机局限）
 
-`POST /v1/commands/dispatch` 使用 `store.ts` 的 `KNOWN_COMMANDS`（字符串白名单），**不是**完整跑壳内 `canPerformHandoff` / guardrails。
+`POST /v1/commands/dispatch` 的 `KNOWN_COMMANDS` **派生自** `@ip/contracts` `COMMAND_LABELS`（CommandName 全集），**不在 api-mock 维护第二份命令名**。仍**不**跑壳内 `canPerformHandoff` / guardrails。
 
 | 点 | 诚实口径 |
 |----|----------|
-| 与 `CommandName` | 白名单覆盖 `commandNames.ts` 现有名（含 `docketEscalate` / `docketComplete`） |
-| 与 `DomainCommand` | 联合类型**尚未**收 docket*；mock 对这两支只做轻审计/校验 `caseId`，不假装已进联合 |
+| 与 `CommandName` | `Object.keys(COMMAND_LABELS)` — 与 contracts 单源 |
+| 与 `DomainCommand` | docket* 已收入联合；mock 校验 `eventId`（escalate 另需 `action`），轻量更新 `handoffNote` + 审计；白名单仍由 `COMMAND_LABELS` 推导 |
 | 执法 | 仍在浏览器 `dispatchCommandLocal`；mock 只轻改 `handoffNote` 等瘦字段 |
 | 权威对照 | [docs/architecture/backends.md](../../docs/architecture/backends.md) § api-mock 局限 |
-
-共享包若收齐 `DomainCommand` ⊇ `CommandName`，本白名单应改为派生自同一源，避免第三份列表漂移。
 
 ## getCase 手测（`GET /v1/cases/:id`）
 

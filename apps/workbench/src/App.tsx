@@ -4,6 +4,7 @@ import { AgentProvider } from '@shared/context/AgentContext'
 import { ProductProvider } from '@shared/context/ProductContext'
 import { Layout } from '@shared/components/Layout'
 import { AppSurfaceLinks } from '@shared/components/AppSurfaceLinks'
+import { AppLink } from '@shared/components/AppLink'
 import {
   WorkbenchHome,
   ResearchFlow,
@@ -16,7 +17,6 @@ import {
   LayoutFlow,
   InventorPortal,
 } from './stages'
-import { APP_DEV_URLS } from '@ip/contracts'
 
 export default function App() {
   return (
@@ -52,7 +52,9 @@ export default function App() {
                   element={
                     <div className="p-8 text-sm text-slate-600">
                       办理台未匹配路由 ·{' '}
-                      <a className="underline" href={APP_DEV_URLS.mid}>回作业中台</a>
+                      <AppLink className="underline" to="/">
+                        回作业中台
+                      </AppLink>
                     </div>
                   }
                 />

@@ -1,10 +1,8 @@
-export { WorkbenchHome } from './home/WorkbenchHome'
-export { ResearchFlow } from './research/ResearchFlow'
-export { IntakeFlow } from './intake/IntakeFlow'
-export { DraftFlow } from './draft/DraftFlow'
-export { ProsecutionFlow } from './prosecution/ProsecutionFlow'
-export { MaintainFlow } from './maintain/MaintainFlow'
-export { MonetizeFlow } from './monetize/MonetizeFlow'
-export { WatchFlow } from './watch/WatchFlow'
-export { LayoutFlow } from './layout/LayoutFlow'
-export { InventorPortal } from './inventor/InventorPortal'
+/**
+ * INTERNAL — do not import from here.
+ * Public module boundary is `stages/` (STAGE_MODULES + re-exports).
+ * App.tsx and consumers must import from `./stages`.
+ * Implementation lives in flows/<id>/*; stages/<id> re-exports those files.
+ * (Avoid re-exporting from stages here — that would cycle: stages → flows.)
+ */
+export {}

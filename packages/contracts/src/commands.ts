@@ -4,9 +4,8 @@
  *
  * DomainCommand = payload union for the main dispatchCommand path.
  * CommandName (commandNames.ts) is the full string set used by audit / labels.
- * Today CommandName is a strict superset: docketEscalate / docketComplete are
- * named for audit but not yet members of this union (dedicated AppContext path).
- * Do not invent a second name table elsewhere — extend this union when closing the gap.
+ * CommandName 与 DomainCommand['type'] 已对齐（含 docketEscalate / docketComplete）。
+ * Do not invent a second name table elsewhere.
  */
 import type { HandoffAction, HandoffArtifactKey, StageId } from './keys.js'
 import type { CommandName } from './commandNames.js'
@@ -122,6 +121,19 @@ export type DomainCommand =
       type: 'startReview'
       caseId: string
       handoffKey: HandoffArtifactKey
+      note?: string
+    }
+  | {
+      type: 'docketEscalate'
+      caseId: string
+      eventId: string
+      action: 'remind' | 'escalate_enterprise' | 'mark_at_risk'
+      note?: string
+    }
+  | {
+      type: 'docketComplete'
+      caseId: string
+      eventId: string
       note?: string
     }
 

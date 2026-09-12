@@ -10,12 +10,12 @@
 
 - 无数据库。seed 在 `src/data/cases.ts` 等；api-mock 另有瘦 `MockCase`（`apps/api-mock/src/data/cases.ts`），**不是**同一份 `PatentCase`。
 - 契约层（`@ip/contracts`）不放 React、不放 handler。可执行规则在 `@ip/domain`。状态在 `@ip/app-state`。展示件在 `@ip/ui`。
-- `CommandName` 含 `docketEscalate` / `docketComplete`；`DomainCommand` 联合**尚未**收这两支（api-mock `KNOWN_COMMANDS` 白名单单独认）。
+- `CommandName` 与 `DomainCommand['type']` **已对齐**（含 `docketEscalate` / `docketComplete`）；api-mock `KNOWN_COMMANDS` 由 `COMMAND_LABELS` 推导，不另起第三份名单。
 
 ### 目标设计
 
 - 一案一聚合根；mock DTO 与领域对象用显式 mapper，禁止再「瘦字段叠加」。
-- `DomainCommand` 与 `CommandName` 对齐，去掉第三份白名单。
+- 命令 handler 迁出浏览器；审计单一写日志。
 
 ---
 
@@ -162,9 +162,9 @@ stateDiagram-v2
 
 ### 现状样机 · `DomainCommand` 联合成员
 
-`submitResearch` · `approveHandoff` · `requestChanges` · `advanceStage` · `submitClaims` · `analyzeAndSubmitOA` · `authorizeFile` · `fileResponse` · `confirmQuote` · `assignAgency` · `issueInvoice` · `payInvoice` · `createCaseFromInsight` · `saveDraft` · `submitHandoff` · `startReview`。
+`submitResearch` · `approveHandoff` · `requestChanges` · `advanceStage` · `submitClaims` · `analyzeAndSubmitOA` · `authorizeFile` · `fileResponse` · `confirmQuote` · `assignAgency` · `issueInvoice` · `payInvoice` · `createCaseFromInsight` · `saveDraft` · `submitHandoff` · `startReview` · `docketEscalate` · `docketComplete`。
 
-**裂缝**：`CommandName` 另多 `docketEscalate` | `docketComplete`（docket 写路径走 AppContext 专用函数 + `pushAudit`，未进联合）。api-mock 白名单单独认。
+**已对齐**：`CommandName` 与 `DomainCommand['type']` 一致。docket* 经 `dispatchCommandLocal` → `escalateDocketEvent`（仍可直接调专用函数）。api-mock 白名单由 `COMMAND_LABELS` 推导。
 
 **结果**：`CommandResult { ok, message, caseId?, command? }`。
 
@@ -172,7 +172,7 @@ stateDiagram-v2
 
 ### 目标设计
 
-- 命令即 API 合同；handler 迁出浏览器。docket* 收进 `DomainCommand` 或另立 Docket 命令集。
+- 命令即 API 合同；handler 迁出浏览器。
 
 ---
 
@@ -303,7 +303,7 @@ Agent 目录 `AgentDef.guardrails[]` 仅为展示文案；可执行硬闸以本�
 
 | 对象 | 用途 | 备注 |
 |------|------|------|
-| `DocketEvent` / `DocketEscalationLevel` | 期限 | `fileResponse` 可业务回写；docket* 命令未进 `DomainCommand` |
+| `DocketEvent` / `DocketEscalationLevel` | 期限 | `fileResponse` 可业务回写；docket* 已进 `DomainCommand` |
 | `CaseInvoice` / `Engagement` / `PaymentStatus` | 费用 | `issueInvoice` / `payInvoice` |
 | `AgentDef` / `AgentSession` / `AgentRun` | 插件目录 + 会话 | 无真 LLM；`clearedHitlGates` 内存 |
 | `WorkbenchTodo` | 待办 | seed / handoff / docket 驱动 |
@@ -318,7 +318,7 @@ Agent 目录 `AgentDef.guardrails[]` 仅为展示文案；可执行硬闸以本�
 
 | 裂缝 | 说明 |
 |------|------|
-| `CommandName` ⊃ `DomainCommand` | docketEscalate / docketComplete 未进联合 |
+| ~~`CommandName` ⊃ `DomainCommand`~~（已消） | docketEscalate / docketComplete 已进联合 |
 | MockCase ≠ PatentCase | 瘦字段；读路径跳过仅 API 有的 id |
 | `createCaseFromInsight` → `c-mock-*` | mock 新建案进不了壳内 `PatentCase[]` |
 | 双份 auditLog | 壳 vs api-mock 不同步 |
