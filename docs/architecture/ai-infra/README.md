@@ -20,6 +20,7 @@
 | [topology.md](./topology.md) | 与 ops / notify / agent-session / case-core 边界 |
 | [surfaces.md](./surfaces.md) | 产品壳草案 `apps/ai-infra` **:5179** |
 | [roadmap.md](./roadmap.md) | mock → MVP → 生产阶梯 |
+| [deep-demo.md](./deep-demo.md) | 样机深业务：作业/发布/端点/压测/告警状态机；读 `ip.harness.aiData.publishedDatasets` |
 | [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 
