@@ -8,7 +8,8 @@
 | 平面 | 管什么 | 不管什么 |
 |------|--------|----------|
 | **ops-platform** | 日志 / SLA / 配置 / 密钥引用 / 告警渠道配置 / OTel | 训推作业、GPU 池、模型权重发布流水线 |
-| **ai-infra** | GPU 与调度、环境/镜像、训练与批推/在线推理、压测与诊断、模型发布与迭代标准 | `PatentCase` / DomainCommand 办案写；用户 SMTP 出站（属 notify） |
+| **ai-infra** | GPU 与调度、环境/镜像、训练与批推/在线推理、压测与诊断、模型发布与迭代标准 | `PatentCase` / DomainCommand 办案写；用户 SMTP 出站（属 notify）；**数据集生产/血缘**（属 **ai-data**） |
+| **ai-data** | 大模型数据 Pipeline（采集→发布、质量血缘） | GPU 调度、模型权重发布；见 [../ai-data/](../ai-data/README.md) |
 
 ## 本目录
 
@@ -21,6 +22,11 @@
 | [roadmap.md](./roadmap.md) | mock → MVP → 生产阶梯 |
 | [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
+
+## 数据面在 ai-data
+
+**数据集生产、版本、血缘与质量门禁不在本平面**——见 [../ai-data/README.md](../ai-data/README.md)。ai-infra 训练/评测只**消费**已发布的 `dataset version`。
+
 ## 与 Agent / 网关
 
 - **ai-infra**：训推基建、配额池、模型版本发布。  
@@ -29,4 +35,4 @@
 
 ## 上游
 
-- [landing/backends](../landing/backends.md) · [ops-observability](../ops-observability.md) · [product-apps/ops](../product-apps/ops.md) · [enterprise](../enterprise/README.md)
+- [landing/backends](../landing/backends.md) · [ai-data](../ai-data/README.md) · [ops-observability](../ops-observability.md) · [product-apps/ops](../product-apps/ops.md) · [enterprise](../enterprise/README.md)

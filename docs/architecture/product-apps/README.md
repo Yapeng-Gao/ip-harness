@@ -3,7 +3,6 @@
 > **样机诚实**：今日是多 Vite 壳（`APP_PORTS`）+ 共享 `@ip/*` + `api-mock:5180` 内存店；无真 SSO、真 MCP、真 Agent harness、真可观测。  
 > **落地目标**：本目录按**产品壳**写开发可照着设计的规格——路由面、读写边界、与 landing 七面 / case-core / Agent 分层对齐。  
 > **不是**架构评审文（评审见 landing / enterprise / dev-spec 的 REVIEW）；**不是**已交付实现说明。
-
 ## 本目录九篇
 
 | 篇 | 路径 | 回答什么 |
@@ -32,6 +31,17 @@
 | api | 5180 | `apps/api-mock`（今日） | 见 [cross-cutting.md](./cross-cutting.md) | MVP 同口换 **case-core** / 网关 |
 
 壳 **不是**微服务；勿把 mid/workbench 升级成服务进程。
+
+## 并行样机壳（非五壳规格正文）
+
+| 壳 | 端口 | 规格 |
+|----|------|------|
+| doc-harness | 5178 | [../doc-harness/](../doc-harness/README.md) |
+| ai-infra | 5179 | [../ai-infra/](../ai-infra/README.md) |
+| ai-data | **5181** | [../ai-data/](../ai-data/README.md) |
+
+以上**不**改 `APP_PORTS`；不扩写为本目录九篇正文。
+
 
 ## 阅读顺序
 

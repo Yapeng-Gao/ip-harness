@@ -10,10 +10,13 @@ flowchart LR
   subgraph shells["产品壳"]
     ops["ops:5176"]
     aiui["ai-infra:5179"]
+    dataui["ai-data:5181"]
     agent["agent:5175"]
   end
   ops --> opsApi["ops-platform"]
   aiui --> aiApi["ai-infra"]
+  dataui --> dataApi["ai-data"]
+  dataApi -->|"DatasetVersion"| aiApi
   agent --> asess["agent-session"]
   asess --> gw["模型网关"]
   gw -->|"已发布 endpoint + 配额"| aiApi
@@ -33,6 +36,7 @@ flowchart LR
 | **notify** | ai-infra 可产生「训练失败/发布门禁」类事件 → outbox | ai-infra 自己发 SMTP |
 | **agent-session** | 只消费网关；会话/HITL 仍在 agent-session | session 里塞 GPU job id 当办案真相 |
 | **case-core** | **无**写路径；无 PatentCase | dispatch / handoff / audit 进 ai-infra |
+| **ai-data** | **数据面在 ai-data**：发布 dataset version；本平面训练/评测只读消费 | 在 ai-infra 自建无版本语料真相 |
 | **模型网关** | 面向办案的唯一模型入口；背后绑 ai-infra Release | Agent 直调集群 scheduler |
 
 ## 3. 同步 / 异步

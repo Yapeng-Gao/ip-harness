@@ -29,6 +29,7 @@ flowchart LR
   ntf["通知/提醒"]
   dok["docket 引擎"]
   aiInfra["ai-infra 训推"]
+  aiData["ai-data 数据"]
   mid --> gw
   wb --> gw
   ag --> gw
@@ -43,6 +44,7 @@ flowchart LR
   gw --> ntf
   gw --> dok
   gw --> aiInfra
+  gw --> aiData
   cmd --> ho
   cmd --> aud
   cmd -.->|DOMAIN_EVENTS| case
@@ -65,8 +67,9 @@ flowchart LR
 | `notify` | 通知 / 提醒出站 | MVP 最小通道；不持有 `PatentCase` |
 | `docket` | 期限 Docket 引擎 | MVP 调度器 + 升级命令；可先挂 `case-core` |
 | `ai-infra` | 训推基建：GPU/调度/训练/批推/在线推理/发布 | **与 ops-platform 分家**；样机无真 GPU；见 [../ai-infra/](../ai-infra/README.md) |
+| `ai-data` | 大模型数据 Pipeline：采集清洗发布/质量血缘 | **≠ ops / ≠ ai-infra / ≠ case-core**；样机无 Spark/湖仓/PII；见 [../ai-data/](../ai-data/README.md) |
 
-对齐现仓概念：`DomainCommand` / `COMMAND_LABELS`、`DOMAIN_EVENTS`、`APP_PORTS`（`packages/contracts`）。服务面在原七面之上 **增 `ai-infra`**（训推；≠ ops）。
+对齐现仓概念：`DomainCommand` / `COMMAND_LABELS`、`DOMAIN_EVENTS`、`APP_PORTS`（`packages/contracts`）。服务面在原七面之上 **增 `ai-infra`（训推）与 `ai-data`（数据 Pipeline）**；均 ≠ ops、禁 PatentCase。
 
 ---
 
@@ -141,6 +144,18 @@ handoff / audit 一期**建议并入** `case-core` 模块，边界用包或目�
 | **样机诚实** | 无集群；产品面建议并行壳 `apps/ai-infra:5179`（不改 APP_PORTS） |
 | **落地目标** | 与 ops-platform 分平面；agent-session 只走网关消费已发布端点；详见 [../ai-infra/README.md](../ai-infra/README.md) |
 
+
+### 3.5c `ai-data` — 大模型数据 Pipeline（≠ ops / ≠ ai-infra / ≠ case-core）
+
+| | |
+|--|--|
+| **职责** | 采集/解析/标准化/清洗/去重/过滤；预训练·SFT·偏好·评测数据生产；配比采样；质量/敏感/污染/异常；版本·元数据·血缘·处理记录；分布式处理与训练加载布局；评测→数据改进闭环 |
+| **数据归属** | Source / Dataset / DatasetVersion / Manifest / ProcessRecord / Lineage；**禁止** `PatentCase`；办案语料仅脱敏导出产物 |
+| **同步/异步** | Pipeline **异步**；发布 version 门禁同步+物化异步；ai-infra **只读消费**已发布 version |
+| **对齐现仓** | 今日无湖仓/Spark/PII；无导出实现 |
+| **样机诚实** | 无真 Spark / 湖仓 / PII；产品面建议并行壳 `apps/ai-data:5181`（不改 APP_PORTS） |
+| **落地目标** | 与 ai-infra 发布契约；详见 [../ai-data/README.md](../ai-data/README.md) |
+
 ### 3.6 `notify` — 通知 / 提醒
 
 | | |
@@ -179,6 +194,7 @@ handoff / audit 一期**建议并入** `case-core` 模块，边界用包或目�
 | （工作台编排） | `workbench-command` | 落地显式边界，非新命令体系 |
 | （ops 配置观测） | `ops-platform` | 与 notify 分离：配置/密钥 ≠ 出站 |
 | （训推基建） | `ai-infra` | **≠ ops-platform**；无 PatentCase；网关供 agent-session |
+| （大模型数据） | `ai-data` | **≠ ops / ≠ ai-infra / ≠ case-core**；dataset version → ai-infra |
 
 ## 5. 相关链接
 

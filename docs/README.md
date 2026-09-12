@@ -22,6 +22,7 @@
 | [architecture/dev-spec/README.md](./architecture/dev-spec/README.md) | **开发前规格包**（照文档开 PR：拓扑 / 落地表 / 冻 URL / 构建 / ADR） |
 | [architecture/product-apps/README.md](./architecture/product-apps/README.md) | **产品面规格**（五壳对照 · workbench 节点是否拆 app · Agent/工具/插件 · 横切） |
 | [architecture/ai-infra/README.md](./architecture/ai-infra/README.md) | **AI Infra**（≠ ops：训推基建 · 建议壳 :5179） |
+| [architecture/ai-data/README.md](./architecture/ai-data/README.md) | **AI Data**（≠ ops/ai-infra：数据 Pipeline · 建议壳 :5181） |
 | [architecture/ops-observability.md](./architecture/ops-observability.md) | 运维可观测（样机） |
 | [architecture/repos-and-vcs.md](./architecture/repos-and-vcs.md) | 单仓→多仓策略 |
 
