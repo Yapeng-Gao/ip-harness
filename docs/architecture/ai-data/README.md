@@ -21,6 +21,7 @@
 | [topology.md](./topology.md) | 与 ai-infra / case-core / ops 边界 |
 | [surfaces.md](./surfaces.md) | 产品壳草案 `apps/ai-data` **:5181** |
 | [roadmap.md](./roadmap.md) | mock → MVP → 生产 |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 关键契约（冻结心智）
 
