@@ -11,7 +11,6 @@ import {
   confirmNonCoreTier,
   defaultSessionGoal,
 } from '@shared/data/agents'
-import { EmptyState } from '@shared/components/PageHeader'
 import { AgentPickerCard } from '../components/AgentPickerCard'
 import { AgentTierBadge } from '../components/AgentTierBadge'
 import type { AgentTier, StageId } from '@shared/types'
@@ -136,7 +135,7 @@ export function AgentCatalogPage() {
               setPickerTouched(true)
               setCaseId(e.target.value)
             }}
-            className="focus-ring max-w-[220px] truncate rounded border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            className="ui-input ui-input-sm focus-ring max-w-[220px] truncate"
             aria-label="覆盖关联案件，空则按 Agent 阶段优选"
           >
             <option value="">自动（按 Agent 阶段）</option>
@@ -152,10 +151,10 @@ export function AgentCatalogPage() {
               : '未覆盖 · 启动按该 Agent 阶段优选最近案'}
           </span>
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <div className="relative min-w-[180px] flex-1 max-w-md">
+        <div className="mt-2.5 flex flex-wrap items-center gap-2">
+          <div className="relative min-w-[180px] max-w-md flex-1">
             <Search
-              className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
               aria-hidden
             />
             <input
@@ -164,26 +163,41 @@ export function AgentCatalogPage() {
               onChange={(e) => setQ(e.target.value)}
               placeholder="搜索名称 / 擅长 / 分层"
               aria-label="搜索 Agent"
-              className="focus-ring w-full rounded border border-slate-200 bg-white py-1.5 pl-7 pr-2 text-xs text-slate-700 placeholder:text-slate-400"
+              className="ui-input ui-input-sm focus-ring w-full pl-8"
             />
           </div>
-          <select
-            value={tierFilter}
-            onChange={(e) => setTierFilter(e.target.value as AgentTier | 'all')}
-            className="focus-ring rounded border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+          <div
+            className="segmented"
+            role="tablist"
             aria-label="按平台分层筛选"
           >
-            <option value="all">全部分层</option>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tierFilter === 'all'}
+              className="segmented-item"
+              onClick={() => setTierFilter('all')}
+            >
+              全部
+            </button>
             {AGENT_TIER_ORDER.map((t) => (
-              <option key={t} value={t}>
-                {AGENT_TIER_LABEL[t]} · {AGENT_TIER_SHORT[t]}
-              </option>
+              <button
+                key={t}
+                type="button"
+                role="tab"
+                aria-selected={tierFilter === t}
+                className="segmented-item"
+                onClick={() => setTierFilter(t)}
+                title={AGENT_TIER_SHORT[t]}
+              >
+                {AGENT_TIER_LABEL[t]}
+              </button>
             ))}
-          </select>
+          </div>
           <select
             value={stageFilter}
             onChange={(e) => setStageFilter(e.target.value as StageId | 'all')}
-            className="focus-ring rounded border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            className="ui-input ui-input-sm focus-ring max-w-[160px]"
             aria-label="按阶段筛选"
           >
             <option value="all">全部阶段</option>
@@ -197,36 +211,46 @@ export function AgentCatalogPage() {
       </header>
 
       {filtered.length === 0 ? (
-        <EmptyState
-          title="没有匹配的 Agent"
-          description={
-            q.trim() || stageFilter !== 'all' || tierFilter !== 'all'
+        <div className="ui-empty max-w-xl">
+          <p className="ui-empty-title">没有匹配的 Agent</p>
+          <p className="ui-empty-desc">
+            {q.trim() || stageFilter !== 'all' || tierFilter !== 'all'
               ? '试试清空搜索或换一层 / 阶段。'
-              : '当前目录为空。'
-          }
-          primary={{
-            label: '清除筛选',
-            onClick: () => {
-              setQ('')
-              setStageFilter('all')
-              setTierFilter('all')
-            },
-          }}
-          secondary={{ label: '回开始', to: '/agent' }}
-        />
+              : '当前目录为空。'}
+          </p>
+          <div className="mt-1 flex flex-wrap justify-center gap-2">
+            <button
+              type="button"
+              className="ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
+              onClick={() => {
+                setQ('')
+                setStageFilter('all')
+                setTierFilter('all')
+              }}
+            >
+              清除筛选
+            </button>
+            <Link
+              to="/agent"
+              className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring"
+            >
+              回开始
+            </Link>
+          </div>
+        </div>
       ) : (
         <div className="max-w-6xl space-y-6">
           {grouped.map(({ tier, agents: list }) => (
             <section key={tier} aria-labelledby={`tier-${tier}`}>
-              <div className="mb-2 flex flex-wrap items-center gap-2">
+              <div className="mb-2.5 flex flex-wrap items-center gap-2">
                 <h2
                   id={`tier-${tier}`}
-                  className="flex items-center gap-2 text-[13px] font-semibold text-slate-900"
+                  className="flex items-center gap-2 text-[13px] font-semibold tracking-tight text-slate-900"
                 >
                   <AgentTierBadge tier={tier} />
                   <span>{AGENT_TIER_SHORT[tier]}</span>
                 </h2>
-                <span className="text-[11px] text-slate-400">{list.length} 个</span>
+                <span className="tabular text-[11px] text-slate-400">{list.length} 个</span>
               </div>
               <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {list.map((a) => {

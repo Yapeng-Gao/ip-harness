@@ -22,6 +22,7 @@ import {
 } from '@shared/domain/caseContextContract'
 import { AGENT_CATALOG } from '@shared/data/agents'
 import { CaseContextContractPanel } from '@shared/components/CaseContextContractPanel'
+import { AgentTierBadge } from '../AgentTierBadge'
 import type { HitlGateId, PersonaId } from '@shared/types'
 
 const ACTOR_LABEL: Record<string, string> = {
@@ -82,23 +83,26 @@ export function SessionContextPanel({
   const driveHidden = caseDriveItems.length - driveVisible.length
 
   return (
-    <aside className="hidden w-72 shrink-0 flex-col border-l border-slate-200 bg-white lg:flex xl:w-80">
-      <div className="border-b border-slate-100 px-3 py-2 text-xs font-semibold text-slate-400">
-        上下文
-      </div>
+    <aside className="agent-aside hidden w-72 shrink-0 flex-col lg:flex xl:w-80">
+      <div className="agent-aside-head">上下文</div>
       <div className="flex-1 overflow-y-auto">
         {agent && (
-          <section className="border-b border-slate-100 px-3 py-3">
-            <div className="mb-1 text-[11px] font-medium text-slate-400">当前 Agent</div>
-            <div className="text-xs font-medium text-slate-900">{agent.name}</div>
-            <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
+          <section className="agent-aside-section">
+            <div className="agent-aside-kicker">当前 Agent</div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <div className="text-xs font-semibold tracking-tight text-slate-900">
+                {agent.name}
+              </div>
+              <AgentTierBadge tier={agent.tier} />
+            </div>
+            <p className="mt-0.5 text-pretty text-xs leading-relaxed text-slate-600">
               {agent.specialty || agent.description}
             </p>
           </section>
         )}
 
-        <section className="border-b border-slate-100 px-3 py-3">
-          <div className="mb-1.5 flex items-center gap-1 text-[11px] font-medium text-slate-400">
+        <section className="agent-aside-section">
+          <div className="agent-aside-kicker">
             <FolderOpen className="h-3 w-3" aria-hidden /> 案件
           </div>
           {caseData ? (
@@ -126,9 +130,7 @@ export function SessionContextPanel({
               )}
             </div>
           ) : (
-            <p className="border border-dashed border-slate-200 px-2.5 py-3 text-center text-xs text-slate-400">
-              未关联案件
-            </p>
+            <p className="agent-aside-empty">未关联案件</p>
           )}
         </section>
 
@@ -185,12 +187,12 @@ export function SessionContextPanel({
           </details>
         )}
 
-        <section className="border-b border-slate-100 px-3 py-3">
-          <div className="mb-1.5 flex items-center gap-1 text-[11px] font-medium text-slate-400">
+        <section className="agent-aside-section">
+          <div className="agent-aside-kicker">
             <CalendarDays className="h-3 w-3" aria-hidden /> 期限
           </div>
           {caseDockets.length === 0 ? (
-            <p className="text-xs text-slate-400">无关联期限</p>
+            <p className="agent-aside-empty">无关联期限</p>
           ) : (
             <ul className="divide-y divide-slate-100 border-y border-slate-100">
               {caseDockets.map((d) => (
@@ -205,33 +207,32 @@ export function SessionContextPanel({
           )}
         </section>
 
-        <section className="border-b border-slate-100 px-3 py-3">
-          <div className="mb-1.5 flex items-center gap-1 text-[11px] font-medium text-slate-400">
+        <section className="agent-aside-section">
+          <div className="agent-aside-kicker">
             <FileText className="h-3 w-3" aria-hidden /> 产物
           </div>
           {artifacts.length === 0 ? (
-            <p className="text-xs text-slate-400">办理后出现草稿</p>
+            <p className="agent-aside-empty">办理后出现草稿</p>
           ) : (
-            <>
-              <div className="mb-2 flex flex-wrap gap-x-3 gap-y-1">
+            <div className="space-y-2">
+              <div className="agent-artifact-tabs" role="tablist" aria-label="会话产物">
                 {artifacts.map((a) => (
                   <button
                     key={a.id}
                     type="button"
+                    role="tab"
+                    aria-selected={activeArt?.id === a.id}
+                    data-active={activeArt?.id === a.id ? 'true' : 'false'}
                     onClick={() => onSelectArtifact(a.id)}
-                    className={`btn-press focus-ring border-b-2 px-0.5 py-0.5 text-xs ${
-                      activeArt?.id === a.id
-                        ? 'border-slate-900 font-medium text-slate-900'
-                        : 'border-transparent text-slate-500 hover:text-slate-800'
-                    }`}
+                    className="agent-artifact-tab btn-press focus-ring"
                   >
                     {a.title}
                   </button>
                 ))}
               </div>
               {activeArt && (
-                <details className="rounded border border-slate-100">
-                  <summary className="cursor-pointer px-2 py-1.5 text-[11px] text-slate-400 hover:text-slate-600">
+                <details className="agent-artifact-panel" open>
+                  <summary className="cursor-pointer px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-700">
                     {activeArt.editable ? '编辑产物' : '查看产物'}
                     {' · '}
                     {activeArt.title}
@@ -242,12 +243,12 @@ export function SessionContextPanel({
                       onUpdateArtifact(activeArt.id, e.target.value)
                     }
                     rows={10}
-                    className="focus-ring w-full resize-none border-t border-slate-100 bg-white p-2.5 font-mono text-xs leading-relaxed text-slate-800 outline-none focus:border-slate-400"
+                    className="agent-artifact-editor focus-ring"
                     readOnly={!activeArt.editable}
                   />
                 </details>
               )}
-            </>
+            </div>
           )}
         </section>
 

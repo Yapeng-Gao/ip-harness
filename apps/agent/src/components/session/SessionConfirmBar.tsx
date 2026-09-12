@@ -355,6 +355,7 @@ export function SessionConfirmBar({
       className={`confirm-hitl shrink-0 border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 sm:py-4${
         focusHitl ? ' confirm-hitl-focus' : ''
       }`}
+      data-agent={agent?.id}
     >
       {/* Chat-native HITL bubble row */}
       <div className="confirm-hitl-inner">
@@ -631,7 +632,7 @@ export function SessionConfirmBar({
       {/* Collapsed data sheet — checklists / OA / receipt / prefs */}
       {needsDataSheet && (
         <details
-          className="confirm-hitl-sheet mt-2.5 rounded-[var(--radius-md)] border border-slate-200/90 bg-white/90 shadow-[var(--shadow-rest)]"
+          className="confirm-hitl-sheet agent-confirm-sheet"
           open={autoOpenSheet || undefined}
         >
           <summary className="flex cursor-pointer list-none items-center gap-1.5 px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
@@ -642,7 +643,7 @@ export function SessionConfirmBar({
             </span>
           </summary>
 
-          <div className="space-y-2 border-t border-slate-100 px-2.5 py-2">
+          <div className="agent-confirm-sheet-body">
             {agent?.guardrails && agent.guardrails.length > 0 && (
               <p
                 className="truncate text-[11px] text-slate-400"

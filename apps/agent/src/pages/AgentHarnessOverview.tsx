@@ -3,7 +3,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { FolderOpen, MessageSquare, Plus } from 'lucide-react'
 import {
   AGENT_CATALOG,
-  AGENT_TIER_LABEL,
   BETA_HONEST_COPY,
   HITL_GATE_LABELS,
   RUN_STATUS_LABEL,
@@ -131,7 +130,7 @@ export function AgentHarnessOverview() {
             setPickerTouched(true)
             setCaseId(e.target.value)
           }}
-          className="focus-ring max-w-[240px] truncate rounded border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+          className="ui-input ui-input-sm focus-ring max-w-[240px] truncate"
           aria-label="覆盖关联案件，空则按 Agent 阶段优选"
         >
           <option value="">自动（按 Agent 阶段）</option>
@@ -185,29 +184,29 @@ export function AgentHarnessOverview() {
           </Link>
         </div>
 
-        <ul className="divide-y divide-slate-100 border-y border-slate-200">
+        <ul className="agent-harness-list">
           {AGENT_CATALOG.map((a) => {
             const stage = getStageMeta(a.stage)
             return (
-              <li
-                key={a.id}
-                className="flex flex-wrap items-center justify-between gap-2 py-2"
-              >
+              <li key={a.id} className="agent-harness-row" data-tier={a.tier}>
                 <button
                   type="button"
                   onClick={() => startWith(a.id)}
-                  className="btn-press focus-ring min-w-0 flex-1 text-left hover:bg-slate-50/80"
+                  className="btn-press focus-ring min-w-0 flex-1 rounded-md text-left"
                 >
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <div className="truncate text-sm font-medium text-slate-900">{a.name}</div>
+                    <div className="truncate text-sm font-semibold tracking-tight text-slate-900">
+                      {a.name}
+                    </div>
                     <AgentTierBadge tier={a.tier} />
                   </div>
-                  <div className="truncate text-[11px] text-slate-400">
-                    {stage.shortName} · {AGENT_TIER_LABEL[a.tier]} · {STATUS_LABEL[a.status] ?? a.status}
+                  <div className="mt-0.5 truncate text-[11px] leading-snug text-slate-500">
+                    {stage.shortName} · {STATUS_LABEL[a.status] ?? a.status}
                     {a.hitlGates.length > 0
                       ? ` · ${a.hitlGates.map((g) => HITL_GATE_LABELS[g]).join(' / ')}`
                       : ''}
                     {a.tier === 'beta' ? ` · ${BETA_HONEST_COPY}` : ''}
+                    {a.tier === 'assist' && a.tierNote ? ` · ${a.tierNote}` : ''}
                   </div>
                 </button>
                 {(() => {
@@ -221,8 +220,8 @@ export function AgentHarnessOverview() {
                         onClick={() => startWith(a.id)}
                         className={
                           a.tier === 'beta'
-                            ? 'btn-press focus-ring rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-950'
-                            : 'btn-press focus-ring cta-work rounded-md px-2.5 py-1 text-xs font-medium'
+                            ? 'ui-btn ui-btn-sm btn-press focus-ring border border-amber-300 bg-amber-50 text-amber-950'
+                            : 'ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring'
                         }
                       >
                         {a.tier === 'beta'
@@ -263,20 +262,24 @@ export function AgentHarnessOverview() {
               全部
             </Link>
           </div>
-          <ul className="divide-y divide-slate-100 border-y border-slate-200">
+          <ul className="agent-harness-list">
             {recent.map((s) => (
               <li key={s.id}>
                 <Link
                   to={agentSessionPath(s.id)}
-                  className="flex items-center justify-between gap-3 px-1 py-2 hover:bg-slate-50/80"
+                  className="agent-harness-row block no-underline"
                 >
-                  <div className="min-w-0">
-                    <div className="truncate text-sm text-slate-800">{s.title}</div>
-                    <div className="truncate text-xs text-slate-400">{s.goal}</div>
+                  <div className="flex w-full items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-medium text-slate-800">
+                        {s.title}
+                      </div>
+                      <div className="truncate text-xs text-slate-400">{s.goal}</div>
+                    </div>
+                    <span className="shrink-0 text-[11px] text-slate-400">
+                      {RUN_STATUS_LABEL[s.status]}
+                    </span>
                   </div>
-                  <span className="shrink-0 text-[11px] text-slate-400">
-                    {RUN_STATUS_LABEL[s.status]}
-                  </span>
                 </Link>
               </li>
             ))}

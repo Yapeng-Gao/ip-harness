@@ -209,20 +209,22 @@ function StepBubble({
     )
   }
 
-  // artifact — soft card, still quieter than flat-card wall
+  // artifact — Deep W6 surface card (visual only)
   return (
-    <div className="max-w-[42rem] rounded-lg border border-slate-200/80 bg-white px-3 py-2 shadow-sm shadow-slate-900/[0.03]">
+    <div className="agent-timeline-artifact">
       <div className="mb-0.5 flex items-baseline gap-2">
-        <span className="text-[10px] font-medium text-slate-500">
+        <span className="text-[10px] font-medium uppercase tracking-wide text-slate-500">
           {KIND_LABEL[step.kind]}
         </span>
-        <span className="text-[10px] text-slate-300">{step.at}</span>
+        <span className="tabular text-[10px] text-slate-300">{step.at}</span>
         {writeTag && (
           <span className="ml-auto text-[10px] text-slate-300">{writeTag}</span>
         )}
       </div>
-      <div className="text-sm font-medium text-slate-900">{step.title}</div>
-      <p className="mt-0.5 whitespace-pre-wrap text-xs leading-relaxed text-slate-600">
+      <div className="text-balance text-sm font-semibold tracking-tight text-slate-900">
+        {step.title}
+      </div>
+      <p className="mt-0.5 whitespace-pre-wrap text-pretty text-xs leading-relaxed text-slate-600">
         {step.content}
       </p>
       {isArtifact && null}

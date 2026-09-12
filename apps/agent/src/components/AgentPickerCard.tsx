@@ -34,9 +34,9 @@ export type AgentPickerCardProps = {
 }
 
 /**
- * Shared agent picker card — used on Catalog (dense rows on Agent Home).
- * White surface, hairline border, hover lift; keeps business meta (HITL / tier / details).
- * Beta: honest copy + soft CTA (not one-click as Core closed loop).
+ * Shared agent picker card — Catalog / Home density.
+ * Six-section meta hierarchy in details; Core/Assist/Beta badge on face.
+ * Visual-only polish (Deep W6); start/HITL semantics unchanged.
  */
 export function AgentPickerCard({
   agent: a,
@@ -64,21 +64,19 @@ export function AgentPickerCard({
   return (
     <article
       id={id}
-      className={`group flex h-full flex-col rounded-md border bg-white p-3.5 transition-shadow hover:shadow-sm ${
-        highlight
-          ? 'border-slate-400 ring-1 ring-slate-300'
-          : isBeta
-            ? 'border-amber-200/80 hover:border-amber-300'
-            : 'border-slate-200 hover:border-slate-300'
-      }`}
+      className="agent-picker-card surface-card group"
+      data-tier={a.tier}
+      data-highlight={highlight ? 'true' : undefined}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
-            <h3 className="text-sm font-semibold text-slate-900">{a.name}</h3>
+            <h3 className="text-balance text-sm font-semibold tracking-tight text-slate-900">
+              {a.name}
+            </h3>
             <AgentTierBadge tier={a.tier} />
             {a.status === 'maintenance' && (
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-1.5 py-px text-[10px] font-medium text-slate-500">
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-1.5 py-px text-[10px] font-medium text-slate-500">
                 维护
               </span>
             )}
@@ -91,15 +89,12 @@ export function AgentPickerCard({
         </div>
       </div>
 
-      <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-600">
-        {blurb}
-      </p>
+      <p className="agent-picker-card__blurb">{blurb}</p>
 
       {(isBeta || a.tier === 'assist') && (
         <p
-          className={`mt-1.5 text-[11px] leading-snug ${
-            isBeta ? 'text-amber-900/90' : 'text-sky-900/80'
-          }`}
+          className="agent-picker-card__tier-note"
+          data-tier={a.tier}
           role="note"
         >
           {isBeta ? BETA_HONEST_COPY : agentTierNote(a)}
@@ -115,8 +110,8 @@ export function AgentPickerCard({
           onClick={onStart}
           className={
             isBeta
-              ? 'btn-press focus-ring w-full rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-950 hover:bg-amber-100'
-              : 'btn-press focus-ring cta-work w-full rounded-md px-3 py-1.5 text-xs font-medium'
+              ? 'ui-btn ui-btn-sm btn-press focus-ring w-full border border-amber-300 bg-amber-50 text-amber-950 hover:bg-amber-100'
+              : 'ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full'
           }
           aria-label={
             caseHint
@@ -144,57 +139,54 @@ export function AgentPickerCard({
       </div>
 
       {showDetails && (
-        <details className="mt-2 border-t border-slate-100 pt-2">
+        <details className="mt-2.5 border-t border-slate-100/90 pt-2">
           <summary className="cursor-pointer text-[11px] text-slate-400 hover:text-slate-600">
             详情
             {a.tools.length > 0 ? ` · 工具 ${a.tools.length}` : ''}
             {a.hitlGates.length > 0 ? ` · 需确认 ${a.hitlGates.length}` : ''}
           </summary>
-          <div className="mt-1.5 space-y-1.5 border-l-2 border-slate-100 pl-2.5">
+          {/* Six-section information hierarchy — visual only */}
+          <div className="agent-meta-grid" role="list">
             {a.whenToUse && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">何时用 · </span>
-                {a.whenToUse}
-              </p>
+              <div className="agent-meta-row" role="listitem">
+                <span className="agent-meta-label">何时用</span>
+                <span className="agent-meta-value">{a.whenToUse}</span>
+              </div>
             )}
             {a.inputsHint && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">输入 · </span>
-                {a.inputsHint}
-              </p>
+              <div className="agent-meta-row" role="listitem">
+                <span className="agent-meta-label">输入</span>
+                <span className="agent-meta-value">{a.inputsHint}</span>
+              </div>
             )}
             {a.outputsHint && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">输出 · </span>
-                {a.outputsHint}
-              </p>
+              <div className="agent-meta-row" role="listitem">
+                <span className="agent-meta-label">输出</span>
+                <span className="agent-meta-value">{a.outputsHint}</span>
+              </div>
             )}
             {a.guardrails?.length > 0 && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">护栏 · </span>
-                {a.guardrails.join(' · ')}
-              </p>
-            )}
-            {a.hitlGates.length > 0 && (
-              <p className="text-xs text-slate-600">
-                <span className="text-[11px] font-medium text-slate-400">需确认 · </span>
-                {a.hitlGates.map((g) => HITL_GATE_LABELS[g]).join(' · ')}
-              </p>
+              <div className="agent-meta-row" role="listitem">
+                <span className="agent-meta-label">护栏</span>
+                <span className="agent-meta-value">{a.guardrails.join(' · ')}</span>
+              </div>
             )}
             {a.tools.length > 0 && (
-              <p className="text-xs text-slate-600" title={toolLabels.join(' · ')}>
-                <span className="text-[11px] font-medium text-slate-400">工具 · </span>
-                {toolPreview}
-              </p>
+              <div className="agent-meta-row" role="listitem" title={toolLabels.join(' · ')}>
+                <span className="agent-meta-label">工具</span>
+                <span className="agent-meta-value">{toolPreview}</span>
+              </div>
             )}
-            <p className="text-xs text-slate-500">
-              <span className="text-[11px] font-medium text-slate-400">谁负责 · </span>
-              {a.raciHint}
-            </p>
-            <p className="text-xs text-slate-600">
-              <span className="text-[11px] font-medium text-slate-400">分层 · </span>
-              {agentTierNote(a)}
-            </p>
+            <div className="agent-meta-row" role="listitem">
+              <span className="agent-meta-label">谁负责</span>
+              <span className="agent-meta-value">
+                {a.raciHint}
+                {a.hitlGates.length > 0
+                  ? ` · 需确认 ${a.hitlGates.map((g) => HITL_GATE_LABELS[g]).join(' / ')}`
+                  : ''}
+                {` · ${agentTierNote(a)}`}
+              </span>
+            </div>
           </div>
         </details>
       )}
