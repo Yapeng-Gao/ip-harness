@@ -66,7 +66,7 @@ export function WorkbenchHome() {
 
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-6 lg:p-8 xl:px-10">
       <TenantBanner />
       <PageHeader
         title="业务工作台"
@@ -85,7 +85,7 @@ export function WorkbenchHome() {
         }}
         secondary={{ label: '切换工作区', to: '/login' }}
       >
-        <div className={`mt-2 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${workspace.brandColor} border-current/20 bg-white`}>
+        <div className={`mt-2 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${workspace.brandColor} border-current/20 bg-white`}>
           {workspace.kind === 'enterprise' ? <Building2 className="h-3 w-3" /> : <Scale className="h-3 w-3" />}
           {workspace.chipLabel}
         </div>
@@ -93,7 +93,7 @@ export function WorkbenchHome() {
 
       <WorkbenchBillingHoldBanner className="mb-4" />
 
-      <div className="mb-4 inline-flex rounded-lg bg-slate-100 p-1" role="tablist" aria-label="工作台页签">
+      <div className="segmented mb-5" role="tablist" aria-label="工作台页签">
         {(
           [
             ['queue', '待办队列'],
@@ -106,8 +106,8 @@ export function WorkbenchHome() {
             role="tab"
             aria-selected={tab === id}
             onClick={() => setTab(id)}
-            className={`btn-press rounded-md px-3 py-1.5 text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 ${
-              tab === id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+            className={`segmented-item btn-press focus-ring ${
+              tab === id ? 'font-medium' : ''
             }`}
             aria-label={label}
           >
@@ -126,7 +126,7 @@ export function WorkbenchHome() {
         </h2>
         <div className="space-y-2">
           {queue.length === 0 && (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-slate-200 bg-white px-6 py-12 text-center shadow-[var(--shadow-rest)]">
               <Inbox className="mb-2 h-8 w-8 text-slate-300" />
               <p className="text-sm text-slate-600">当前工作区暂无待办</p>
               <p className="mt-1 text-xs text-slate-400">
@@ -149,7 +149,7 @@ export function WorkbenchHome() {
               <AppLink
                 key={t.id}
                 to={t.actionPath}
-                className={`card-hover flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 ${rowBorder}`}
+                className={`card-hover flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-lg)] border px-4 py-3 shadow-[var(--shadow-rest)] ${rowBorder}`}
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -234,7 +234,7 @@ export function WorkbenchHome() {
               <Link
                 key={stage}
                 to={path}
-                className="card-hover btn-press flat-card p-4 focus-ring"
+                className="card-hover btn-press flat-card p-4 focus-ring shadow-[var(--shadow-rest)]"
               >
                 <div className="mb-2 flex items-center gap-2">
                   <div
@@ -258,7 +258,7 @@ export function WorkbenchHome() {
           {/* layout 非 STAGE_ORDER：薄入口，挂调研案的 layout_insight */}
           <Link
             to="/workbench/layout"
-            className="card-hover btn-press flat-card p-4 focus-ring"
+            className="card-hover btn-press flat-card p-4 focus-ring shadow-[var(--shadow-rest)]"
           >
             <div className="mb-2 flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50">

@@ -70,14 +70,14 @@ export function AgentShell() {
   const inSession = loc.pathname.startsWith('/agent/sessions/')
 
   return (
-    <div className="flex h-full min-h-screen flex-col bg-white">
+    <div className="app-shell-bg flex h-full min-h-screen flex-col">
       <a href="#agent-main" className="skip-link">
         跳到主要内容
       </a>
 
-      <header className="flex h-11 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-3 lg:px-4">
+      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-3 backdrop-blur lg:px-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-900 text-[10px] font-semibold text-white">
+          <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[10px] font-semibold">
             IP
           </div>
           <div className="text-sm font-semibold tracking-tight text-slate-900">知产 Agent</div>
@@ -106,7 +106,7 @@ export function AgentShell() {
             <button
               type="button"
               onClick={() => setRightOpen((v) => !v)}
-              className="btn-press focus-ring hidden rounded-md border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50 lg:inline-flex"
+              className="btn-press focus-ring hit-40 hidden items-center justify-center rounded-[var(--radius-sm)] border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50 lg:inline-flex"
               aria-label={rightOpen ? '折叠上下文' : '展开上下文'}
             >
               {rightOpen ? (

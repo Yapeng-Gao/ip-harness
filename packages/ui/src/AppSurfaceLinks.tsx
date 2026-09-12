@@ -19,28 +19,29 @@ export function AppSurfaceLinks({ current }: { current: Surface }) {
   return (
     <nav
       aria-label="应用面切换"
-      className="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600"
+      className="flex flex-wrap items-center gap-2 border-b border-slate-200/80 bg-surface-50 px-3 py-2 text-[11px] text-slate-600"
     >
-      <span className="mr-2 font-medium text-slate-800">IP Apps</span>
-      {surfaces.map((s) => {
-        const active = s === current
-        return (
-          <a
-            key={s}
-            href={APP_DEV_URLS[s]}
-            className={
-              active
-                ? 'rounded-md bg-slate-900 px-2 py-0.5 font-medium text-white'
-                : 'rounded-md px-2 py-0.5 hover:bg-slate-200'
-            }
-            aria-current={active ? 'page' : undefined}
-            title={`port ${APP_PORTS[s]}`}
-          >
-            {LABELS[s]}
-          </a>
-        )
-      })}
-      <span className="ml-auto text-slate-400">Phase 0 · monorepo</span>
+      <span className="mr-1 font-semibold tracking-tight text-slate-800">IP Apps</span>
+      <div className="segmented" role="list">
+        {surfaces.map((s) => {
+          const active = s === current
+          return (
+            <a
+              key={s}
+              href={APP_DEV_URLS[s]}
+              role="listitem"
+              className={`segmented-item btn-press focus-ring inline-flex items-center ${
+                active ? 'font-medium' : ''
+              }`}
+              aria-current={active ? 'page' : undefined}
+              title={`port ${APP_PORTS[s]}`}
+            >
+              {LABELS[s]}
+            </a>
+          )
+        })}
+      </div>
+      <span className="ml-auto hidden text-slate-400 sm:inline">Phase 0 · monorepo</span>
     </nav>
   )
 }

@@ -4,7 +4,7 @@ import { MidSidebar } from './MidSidebar'
 
 export function MidLayout() {
   return (
-    <div className="flex h-full min-h-screen bg-slate-50">
+    <div className="app-shell-bg flex h-full min-h-screen">
       <a href="#main" className="skip-link">
         跳到主要内容
       </a>
@@ -12,7 +12,7 @@ export function MidLayout() {
       <main
         id="main"
         tabIndex={-1}
-        className="flex min-h-0 flex-1 flex-col overflow-auto bg-slate-50 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-400"
+        className="app-shell-bg flex min-h-0 flex-1 flex-col overflow-auto outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-accent)]"
       >
         <PersonaRouteGate>
           <Outlet />

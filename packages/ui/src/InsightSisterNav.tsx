@@ -29,8 +29,8 @@ export function InsightSisterNav() {
               to={l.to}
               className={
                 active
-                  ? 'font-medium text-slate-900'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'focus-ring rounded-sm font-medium text-slate-900'
+                  : 'focus-ring rounded-sm text-slate-500 hover:text-slate-800'
               }
               aria-current={active ? 'page' : undefined}
             >

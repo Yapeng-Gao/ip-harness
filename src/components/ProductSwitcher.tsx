@@ -59,8 +59,8 @@ export function ProductSwitcher({
 
   const wrap =
     size === 'lg'
-      ? 'gap-1 rounded-xl p-1'
-      : 'gap-1 rounded-lg p-1'
+      ? 'gap-1 rounded-[var(--radius-lg)] p-1'
+      : 'gap-1 rounded-[var(--radius-md)] p-1'
 
   const btn = (p: ActiveProduct, label: string) => {
     const selected = active === p
@@ -72,11 +72,11 @@ export function ProductSwitcher({
         aria-pressed={selected}
         disabled={blocked}
         title={blocked ? '当前 Persona 不可进入知产 Agent' : undefined}
-        className={`btn-press focus-ring rounded-lg text-center font-medium ${pad} ${
+        className={`btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-medium hit-40 ${pad} ${
           blocked
             ? 'cursor-not-allowed text-slate-300'
             : selected
-              ? 'bg-white text-slate-900 shadow-sm'
+              ? 'bg-white text-slate-900 shadow-[var(--shadow-rest)]'
               : 'text-slate-500 hover:bg-white/70 hover:text-slate-800'
         }`}
       >
@@ -91,7 +91,7 @@ export function ProductSwitcher({
 
   return (
     <div
-      className={`${display} grid-cols-2 bg-slate-100 ${wrap} ${className.replace(/\binline-grid\b/g, '')}`}
+      className={`${display} grid-cols-2 bg-[rgba(120,120,128,0.12)] ${wrap} ${className.replace(/\binline-grid\b/g, '')}`}
       role="group"
       aria-label="产品切换"
     >

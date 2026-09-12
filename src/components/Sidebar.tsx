@@ -39,10 +39,10 @@ type NavItem = {
 function linkClass(isActive: boolean, emphasize?: boolean) {
   return `sidebar-link list-row flex items-center gap-2.5 px-3 py-2 text-sm transition-[background-color,color,box-shadow] duration-150 ease-out ${
     isActive
-      ? 'list-row-active text-slate-900 font-medium'
+      ? 'list-row-active font-medium'
       : emphasize
-        ? 'text-slate-800 hover:bg-slate-50 font-medium'
-        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+        ? 'text-slate-800 hover:bg-slate-50/80 font-medium'
+        : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900'
   }`
 }
 
@@ -144,9 +144,9 @@ export function Sidebar() {
   const showWorkbenchStages = workbenchOpen || workbenchStageActive
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-slate-200 bg-white">
-      <div className="flex items-center gap-2.5 border-b border-slate-200 px-5 py-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-slate-900 text-xs font-bold text-white">
+    <aside className="shell-aside flex w-60 shrink-0 flex-col">
+      <div className="flex items-center gap-2.5 border-b border-slate-200/80 px-5 py-4">
+        <div className="shell-brand-mark flex h-8 w-8 items-center justify-center text-xs font-bold">
           中
         </div>
         <div className="min-w-0">
@@ -157,26 +157,26 @@ export function Sidebar() {
         </div>
       </div>
 
-      <div className="border-b border-slate-200 p-3">
+      <div className="border-b border-slate-200/80 p-3">
         <ProductSwitcher current="saas" />
       </div>
 
-      <div className="border-b border-slate-200 p-3">
+      <div className="border-b border-slate-200/80 p-3">
         <WorkspaceMenu variant="sidebar" />
       </div>
 
-      <div className="border-b border-slate-200 p-3">
+      <div className="border-b border-slate-200/80 p-3">
         <PersonaSwitcher variant="sidebar" />
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3" aria-label="作业中台导航">
         {inventorMode ? (
           <>
-            <div className="mb-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2.5">
-              <div className="text-xs font-medium text-violet-900">
+            <div className="mb-2 rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--color-accent)_22%,transparent)] bg-[var(--color-accent-soft)] px-3 py-2.5">
+              <div className="text-xs font-medium text-slate-900">
                 {persona === 'inventor' ? '发明人 Persona' : '交底入口'}
               </div>
-              <div className="mt-0.5 text-xs text-violet-700">
+              <div className="mt-0.5 text-xs text-slate-600">
                 {persona === 'inventor'
                   ? '深链门户为主 · 工作台敏感动作已禁用'
                   : '精简导航 · 仅交底与返回'}
@@ -197,7 +197,7 @@ export function Sidebar() {
           </>
         ) : (
           <>
-        <div className="mb-1 px-2 text-xs uppercase tracking-wider text-slate-400">中台</div>
+        <div className="nav-section mt-0">中台</div>
         {(persona === 'committee'
           ? midNav.filter((item) => item.to !== '/billing/cases')
           : midNav
@@ -216,7 +216,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={toggleInsight}
-          className="btn-press mt-4 mb-1 flex w-full items-center justify-between px-2 text-xs uppercase tracking-wider text-slate-400 hover:text-slate-600"
+          className="btn-press focus-ring nav-section mt-4 mb-1 flex w-full items-center justify-between hover:text-slate-600"
           aria-expanded={insightOpen || insightActive}
         >
           <span>洞察</span>
@@ -237,9 +237,7 @@ export function Sidebar() {
             </AppNavLink>
           ))}
 
-        <div className="mb-1 mt-4 px-2 text-xs uppercase tracking-wider text-slate-400">
-          业务工作台
-        </div>
+        <div className="nav-section">业务工作台</div>
         <AppNavLink
           to="/workbench"
           end
@@ -295,7 +293,7 @@ export function Sidebar() {
           </button>
         )}
 
-        <div className="mb-1 mt-4 px-2 text-xs uppercase tracking-wider text-slate-400">更多</div>
+        <div className="nav-section">更多</div>
         {otherNav.map((item) => (
           <AppNavLink
             key={item.to}
@@ -310,7 +308,7 @@ export function Sidebar() {
         )}
       </nav>
 
-      <div className="border-t border-slate-200 px-4 py-3">
+      <div className="border-t border-slate-200/80 px-4 py-3">
         <div className="text-xs text-slate-500">作业中台 · 闸门与期限</div>
       </div>
     </aside>

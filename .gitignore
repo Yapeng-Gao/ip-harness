@@ -32,3 +32,6 @@ blob-report/
 .env
 .env.*
 !.env.example
+
+# local UI polish scratch (canonical under docs/ui-polish)
+.ui-evidence/

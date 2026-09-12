@@ -164,10 +164,10 @@ export function AgentHome() {
       <div className="w-full max-w-2xl px-6 py-10">
         {/* IP brand line — not a page header block */}
         <div className="text-center">
-          <p className="text-[11px] font-medium tracking-wide text-slate-500">
+          <h1 className="text-balance text-[22px] font-semibold tracking-tight text-slate-900">
             知产 Agent
-          </p>
-          <p className="mt-1 text-sm text-slate-700">
+          </h1>
+          <p className="mt-1.5 text-pretty text-sm text-slate-600">
             专利检索 · OA · 交底 · 年费 · 写回中台
           </p>
           <p className="mt-1 text-[11px] text-slate-400">
@@ -176,7 +176,7 @@ export function AgentHome() {
         </div>
 
         {/* Composer — Agent primary act */}
-        <div className="mt-5 rounded-xl border border-slate-200 bg-white focus-within:border-slate-400">
+        <div className="mt-6 rounded-[var(--radius-xl)] border border-slate-200/90 bg-white shadow-[var(--shadow-rest)] focus-within:border-[var(--color-accent)] focus-within:shadow-[var(--shadow-elevated)]">
           <textarea
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
@@ -267,7 +267,7 @@ export function AgentHome() {
                 key={pill.agentId}
                 type="button"
                 onClick={() => onPill(pill)}
-                className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                className="btn-press focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 shadow-[var(--shadow-rest)] hover:border-slate-300 hover:bg-slate-50"
               >
                 {a ? <AgentTierBadge tier={a.tier} /> : null}
                 {pill.label}
@@ -279,7 +279,7 @@ export function AgentHome() {
         {/* Recommended agent cards with tier badges */}
         <div className="mt-6">
           <div className="mb-2 flex items-baseline justify-between">
-            <h2 className="text-[12px] font-semibold text-slate-700">推荐</h2>
+            <h2 className="text-balance text-[13px] font-semibold text-slate-800">推荐</h2>
             <Link
               to="/agent/agents"
               className="text-[11px] text-slate-400 hover:text-slate-700 hover:underline"
@@ -298,7 +298,7 @@ export function AgentHome() {
                       defaultSessionGoal(a, { hasCase: !!caseId }),
                     )
                   }
-                  className="btn-press focus-ring flex w-full flex-col items-start rounded-md border border-slate-200 bg-white px-3 py-2 text-left hover:border-slate-300 hover:bg-slate-50"
+                  className="btn-press focus-ring flex w-full flex-col items-start rounded-[var(--radius-md)] border border-slate-200/90 bg-white px-3 py-2.5 text-left shadow-[var(--shadow-rest)] hover:border-slate-300 hover:bg-slate-50"
                 >
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-xs font-medium text-slate-900">{a.name}</span>

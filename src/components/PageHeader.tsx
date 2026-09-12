@@ -41,8 +41,8 @@ export function PageHeader({
 
   const renderAction = (a: PageHeaderAction, filled: boolean) => {
     const cls = filled
-      ? 'btn-press cta-work focus-ring inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium'
-      : 'btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50'
+      ? 'btn-press cta-work focus-ring inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium'
+      : 'btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-4 py-2 text-sm text-slate-700 shadow-[var(--shadow-rest)] hover:bg-slate-50'
     const label = (
       <>
         {a.icon}
@@ -71,13 +71,15 @@ export function PageHeader({
 
   return (
     <header
-      className={`mb-6 ${sticky ? 'sticky-chrome -mx-2 rounded-2xl px-2 py-3' : ''}`}
+      className={`mb-6 ${sticky ? 'sticky-chrome -mx-2 rounded-[var(--radius-xl)] px-2 py-3' : ''}`}
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-balance text-[22px] font-semibold tracking-tight text-slate-900">{title}</h1>
+          <h1 className="text-balance text-[22px] font-semibold tracking-tight text-slate-900">
+            {title}
+          </h1>
           {context != null && context !== '' && (
-            <p className="mt-1 text-sm text-slate-500">{context}</p>
+            <p className="mt-1 text-pretty text-sm text-slate-500">{context}</p>
           )}
         </div>
         {(primary || secs.length > 0) && (
@@ -109,8 +111,8 @@ export function EmptyState({
     filled: boolean,
   ) => {
     const cls = filled
-      ? 'btn-press cta-work focus-ring inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium'
-      : 'btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50'
+      ? 'btn-press cta-work focus-ring inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium'
+      : 'btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-4 py-2 text-sm text-slate-700 shadow-[var(--shadow-rest)] hover:bg-slate-50'
     if (a.to) {
       return (
         <AppLink to={a.to} className={cls} aria-label={a.ariaLabel ?? a.label}>
@@ -129,8 +131,8 @@ export function EmptyState({
 
   return (
     <div className="flex flex-col items-center gap-3 px-4 py-12 text-center">
-      <p className="text-sm font-medium text-slate-700">{title}</p>
-      {description && <p className="max-w-sm text-xs text-slate-500">{description}</p>}
+      <p className="text-balance text-sm font-medium text-slate-700">{title}</p>
+      {description && <p className="max-w-sm text-pretty text-xs text-slate-500">{description}</p>}
       <div className="mt-1 flex flex-wrap justify-center gap-2">
         {primary && btn(primary, true)}
         {secondary && btn(secondary, false)}

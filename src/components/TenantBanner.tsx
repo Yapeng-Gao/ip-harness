@@ -5,7 +5,7 @@ export function TenantBanner() {
   const { workspace, visibleCases } = useApp()
   return (
     <div
-      className={`mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-slate-200/80 bg-white/90 px-3 py-2 text-[11px] shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_rgba(15,23,42,0.04)] backdrop-blur`}
+      className={`mb-4 flex flex-wrap items-center gap-2 rounded-[var(--radius-lg)] border border-slate-200/80 bg-white/90 px-3 py-2 text-[11px] shadow-[var(--shadow-rest)] backdrop-blur`}
       role="status"
     >
       <Shield className={`h-3.5 w-3.5 ${workspace.brandColor}`} aria-hidden />

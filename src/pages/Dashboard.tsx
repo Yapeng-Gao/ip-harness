@@ -21,8 +21,8 @@ import { BillingHoldBanner } from '../components/BillingHoldBanner'
 import { AppLink } from '../components/AppLink'
 
 const SOURCE_PILL: Record<string, string> = {
-  工作台: 'border-indigo-200 bg-indigo-50 text-indigo-800',
-  Agent: 'border-violet-200 bg-violet-50 text-violet-800',
+  工作台: 'border-slate-200 bg-slate-50 text-slate-800',
+  Agent: 'border-sky-200 bg-sky-50 text-sky-900',
   期限: 'border-amber-200 bg-amber-50 text-amber-900',
   '监控·维持': 'border-rose-200 bg-rose-50 text-rose-900',
 }
@@ -124,11 +124,11 @@ export function Dashboard() {
   }, [inboxFocusId, inbox.length])
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-6 lg:p-8 xl:px-10">
       <TenantBanner />
       <header className="sticky-chrome mb-6 -mx-2 flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-2 py-3">
         <div>
-          <h1 className="text-balance text-2xl font-semibold text-slate-900">资产与任务看板</h1>
+          <h1 className="text-balance text-[22px] font-semibold tracking-tight text-slate-900">资产与任务看板</h1>
           <p className="mt-1 text-sm text-slate-500">
             {workspace.chipLabel} · {workspace.homeEmphasis} · {cases.length} 件在管 · 期限{' '}
             {docketEvents.length} 条
@@ -177,7 +177,7 @@ export function Dashboard() {
         </div>
       </header>
 
-      <div className="mb-6 grid gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-3">
+      <div className="mb-6 grid gap-px overflow-hidden rounded-[var(--radius-lg)] border border-slate-200/90 bg-slate-200/80 shadow-[var(--shadow-rest)] sm:grid-cols-3">
         <a
           href="#ops-inbox"
           className="list-row bg-white px-4 py-3 focus-ring hover:bg-slate-50"
@@ -248,7 +248,7 @@ export function Dashboard() {
         </div>
 
         {inbox.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-slate-200 bg-white px-6 py-8 text-center">
+          <div className="rounded-[var(--radius-lg)] border border-dashed border-slate-200 bg-white px-6 py-8 text-center shadow-[var(--shadow-rest)]">
             <p className="text-sm text-slate-600">暂无待我办理事项</p>
             <p className="mt-1 text-xs text-slate-400">
               工作台 {inboxCounts.workbench} · Agent {inboxCounts.agent} · 期限{' '}
@@ -267,7 +267,7 @@ export function Dashboard() {
               <li key={item.id} id={`ops-inbox-row-${item.id}`}>
                 <AppLink
                   to={item.href}
-                  className={`card-hover flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-white px-4 py-3 focus-ring ${
+                  className={`card-hover flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-lg)] border bg-white px-4 py-3 shadow-[var(--shadow-rest)] focus-ring ${
                     focused
                       ? 'border-amber-400 ring-2 ring-amber-300/70'
                       : 'border-slate-200'
@@ -284,7 +284,7 @@ export function Dashboard() {
                         {item.title}
                       </span>
                       {item.source === 'agent' && item.gateLabel && (
-                        <span className="rounded-full border border-violet-200 bg-violet-50 px-1.5 py-0.5 text-xs font-medium text-violet-900">
+                        <span className="rounded-full border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-xs font-medium text-sky-900">
                           闸 · {item.gateLabel}
                         </span>
                       )}
