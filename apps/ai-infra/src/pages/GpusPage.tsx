@@ -1,4 +1,4 @@
-import { Card, EmptyState, PageHeader, ProgressBar, StatusDot, StatusPill } from '../components/ui'
+import { Button, Card, EmptyState, PageHeader, ProgressBar, StatusDot, StatusPill } from '../components/ui'
 import { useAiInfra } from '../state/AiInfraStore'
 
 export function GpusPage() {
@@ -51,13 +51,9 @@ export function GpusPage() {
                 <StatusPill tone={n.drained ? 'warn' : 'ok'}>
                   {n.drained ? 'drain · 不可新调度' : '可调度'}
                 </StatusPill>
-                <button
-                  type="button"
-                  className="btn-press rounded-md border border-slate-200 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50"
-                  onClick={() => toggleDrain(n.id)}
-                >
+                <Button variant="secondary" onClick={() => toggleDrain(n.id)}>
                   {n.drained ? '取消 drain' : '开启 drain'}
-                </button>
+                </Button>
               </div>
               <p className="mt-2 text-xs text-slate-500">
                 drain 后新作业不会调度到此节点；若全部 drain，作业保持排队。

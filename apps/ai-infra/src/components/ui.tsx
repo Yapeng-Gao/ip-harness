@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 export function Card({
   children,
@@ -77,11 +77,20 @@ export function StatusPill({ tone, children }: { tone: StatusTone; children: Rea
   )
 }
 
-export function EmptyState({ title, body }: { title: string; body: string }) {
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string
+  body: string
+  action?: ReactNode
+}) {
   return (
     <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
       <p className="text-sm font-medium text-slate-700">{title}</p>
       <p className="mt-1 text-xs leading-relaxed text-slate-500">{body}</p>
+      {action ? <div className="mt-4 flex flex-wrap items-center justify-center gap-2">{action}</div> : null}
     </div>
   )
 }
@@ -129,6 +138,34 @@ export function Toast({ message }: { message: string }) {
   )
 }
 
+type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: 'primary' | 'secondary' | 'success' | 'danger'
+}
+
+const BTN_VARIANT: Record<NonNullable<BtnProps['variant']>, string> = {
+  primary: 'ui-btn-primary',
+  secondary: 'ui-btn-secondary',
+  success: 'ui-btn-success',
+  danger: 'border border-rose-200 bg-rose-50 text-rose-800 hover:bg-rose-100',
+}
+
+export function Button({
+  variant = 'primary',
+  className = '',
+  type = 'button',
+  disabled,
+  ...rest
+}: BtnProps) {
+  return (
+    <button
+      type={type}
+      disabled={disabled}
+      className={`ui-btn ui-btn-sm btn-press focus-ring ${BTN_VARIANT[variant]} ${className}`}
+      {...rest}
+    />
+  )
+}
+
 export function ConfirmDialog({
   open,
   title,
@@ -163,20 +200,12 @@ export function ConfirmDialog({
           此确认为样机门禁，不是办案 HITL / DomainCommand。
         </p>
         <div className="mt-4 flex justify-end gap-2">
-          <button
-            type="button"
-            className="btn-press rounded-md border border-slate-200 px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
-            onClick={onCancel}
-          >
+          <Button variant="secondary" onClick={onCancel}>
             {cancelLabel}
-          </button>
-          <button
-            type="button"
-            className="btn-press rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
-            onClick={onConfirm}
-          >
+          </Button>
+          <Button variant="primary" onClick={onConfirm}>
             {confirmLabel}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

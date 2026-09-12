@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Card, PageHeader, ProgressBar, StatusPill } from '../components/ui'
+import { Button, Card, PageHeader, ProgressBar, StatusPill } from '../components/ui'
 import { poolWaitHint, useAiInfra } from '../state/AiInfraStore'
 import {
   datasetCompositeKey,
@@ -165,12 +165,7 @@ export function JobsPage() {
             强制失败演示
           </label>
           <div className="sm:col-span-2">
-            <button
-              type="submit"
-              className="btn-press rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
-            >
-              创建并入队
-            </button>
+            <Button type="submit">创建并入队</Button>
           </div>
         </form>
       </Card>
@@ -225,25 +220,20 @@ export function JobsPage() {
                   <td className="px-3 py-2">
                     <div className="flex flex-wrap gap-1">
                       {(j.status === 'queued' || j.status === 'running') && (
-                        <button
-                          type="button"
-                          className="btn-press rounded-md border border-slate-200 px-2 py-0.5 text-xs hover:bg-slate-50"
-                          onClick={() => cancelJob(j.id)}
-                        >
+                        <Button variant="secondary" onClick={() => cancelJob(j.id)}>
                           取消
-                        </button>
+                        </Button>
                       )}
                       {j.status === 'failed' && (
-                        <button
-                          type="button"
-                          className="btn-press rounded-md border border-slate-200 px-2 py-0.5 text-xs hover:bg-slate-50"
+                        <Button
+                          variant="secondary"
                           onClick={() => {
                             retryJob(j.id)
                             nav('/jobs')
                           }}
                         >
                           重试
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </td>

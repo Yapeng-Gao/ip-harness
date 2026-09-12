@@ -77,11 +77,20 @@ export function StatusPill({ tone, children }: { tone: StatusTone; children: Rea
   )
 }
 
-export function EmptyState({ title, body }: { title: string; body: string }) {
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string
+  body: string
+  action?: ReactNode
+}) {
   return (
     <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
       <p className="text-sm font-medium text-slate-700">{title}</p>
       <p className="mt-1 text-xs leading-relaxed text-slate-500">{body}</p>
+      {action ? <div className="mt-4 flex flex-wrap items-center justify-center gap-2">{action}</div> : null}
     </div>
   )
 }
@@ -130,22 +139,28 @@ export function Toast({ message }: { message: string }) {
 }
 
 type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'secondary' | 'danger'
+  variant?: 'primary' | 'secondary' | 'danger' | 'success'
 }
 
-export function Button({ variant = 'primary', className = '', disabled, ...rest }: BtnProps) {
-  const base =
-    'inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-50'
-  const variants: Record<NonNullable<BtnProps['variant']>, string> = {
-    primary: 'bg-slate-900 text-white hover:bg-slate-800',
-    secondary: 'border border-slate-200 bg-white text-slate-800 hover:bg-slate-50',
-    danger: 'border border-rose-200 bg-rose-50 text-rose-800 hover:bg-rose-100',
-  }
+const BTN_VARIANT: Record<NonNullable<BtnProps['variant']>, string> = {
+  primary: 'ui-btn-primary',
+  secondary: 'ui-btn-secondary',
+  success: 'ui-btn-success',
+  danger: 'border border-rose-200 bg-rose-50 text-rose-800 hover:bg-rose-100',
+}
+
+export function Button({
+  variant = 'primary',
+  className = '',
+  type = 'button',
+  disabled,
+  ...rest
+}: BtnProps) {
   return (
     <button
-      type="button"
+      type={type}
       disabled={disabled}
-      className={`${base} ${variants[variant]} ${className}`}
+      className={`ui-btn ui-btn-sm btn-press focus-ring ${BTN_VARIANT[variant]} ${className}`}
       {...rest}
     />
   )

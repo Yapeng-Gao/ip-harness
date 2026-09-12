@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Card, ConfirmDialog, EmptyState, PageHeader, StatusPill } from '../components/ui'
+import { Button, Card, ConfirmDialog, EmptyState, PageHeader, StatusPill } from '../components/ui'
 import { useAiInfra } from '../state/AiInfraStore'
 import { MODEL_STAGE_LABEL, MODEL_STAGE_TONE, STAGE_ORDER } from '../state/types'
 
@@ -34,17 +34,13 @@ export function ModelsPage() {
           }}
         >
           <input
-            className="min-w-[12rem] flex-1 rounded-md border border-slate-200 px-2 py-1.5 text-sm"
+            id="ai-register-model"
+            className="min-w-[12rem] flex-1 rounded-md border border-slate-200 px-2 py-1.5 text-sm focus-ring"
             placeholder="模型名"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
-          <button
-            type="submit"
-            className="btn-press rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white"
-          >
-            注册
-          </button>
+          <Button type="submit">注册</Button>
         </form>
       </Card>
 
@@ -61,17 +57,14 @@ export function ModelsPage() {
               }}
             >
               <input
-                className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs"
+                className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs focus-ring"
                 placeholder="新版本号"
                 value={revDraft[fam.id] ?? ''}
                 onChange={(e) => setRevDraft((d) => ({ ...d, [fam.id]: e.target.value }))}
               />
-              <button
-                type="submit"
-                className="btn-press rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50"
-              >
+              <Button type="submit" variant="secondary">
                 加 revision
-              </button>
+              </Button>
             </form>
           </div>
           <div className="overflow-x-auto">
@@ -98,9 +91,8 @@ export function ModelsPage() {
                       </td>
                       <td className="py-2">
                         {canPromote && next ? (
-                          <button
-                            type="button"
-                            className="btn-press rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50"
+                          <Button
+                            variant="secondary"
                             onClick={() =>
                               setConfirm({
                                 modelId: fam.id,
@@ -112,7 +104,7 @@ export function ModelsPage() {
                             }
                           >
                             晋级 → {MODEL_STAGE_LABEL[next]}
-                          </button>
+                          </Button>
                         ) : (
                           <span className="text-xs text-slate-400">已是最高阶段</span>
                         )}
@@ -127,7 +119,18 @@ export function ModelsPage() {
       ))}
 
       {state.models.length === 0 ? (
-        <EmptyState title="无模型" body="先注册一个模型族。" />
+        <EmptyState
+          title="无模型"
+          body="先注册一个模型族。"
+          action={
+            <Button
+              variant="secondary"
+              onClick={() => document.getElementById('ai-register-model')?.focus()}
+            >
+              去注册模型
+            </Button>
+          }
+        />
       ) : null}
 
       <ConfirmDialog

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Card, PageHeader, StatusPill } from '../components/ui'
+import { Button, Card, PageHeader, StatusPill } from '../components/ui'
 import { previewPipelinePublish, useAiInfra } from '../state/AiInfraStore'
 import { PIPE_STEP_LABEL, PIPE_STEP_TONE } from '../state/types'
 
@@ -48,13 +48,9 @@ export function PipelinesPage() {
           模板示意算法与平台协作门禁。发布只改内存 stage / endpoint.modelRevisionId，不落真实
           Release、不切真流量。
         </p>
-        <button
-          type="button"
-          className="btn-press mt-3 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white"
-          onClick={() => startPipeline()}
-        >
+        <Button className="mt-3" onClick={() => startPipeline()}>
           启动新跑次
-        </button>
+        </Button>
       </Card>
 
       {state.pipelineRuns.length === 0 ? (
@@ -156,26 +152,20 @@ export function PipelinesPage() {
               <div className="mt-3 flex flex-wrap gap-2">
                 {atGate ? (
                   <>
-                    <button
-                      type="button"
-                      className="btn-press rounded-md bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white"
-                      onClick={() => pipelineGate(run.id, true)}
-                    >
+                    <Button variant="success" onClick={() => pipelineGate(run.id, true)}>
                       评测 Pass
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-press rounded-md bg-rose-700 px-3 py-1.5 text-xs font-medium text-white"
+                    </Button>
+                    <Button
+                      variant="danger"
+                      className="!bg-rose-700 !text-white hover:!bg-rose-600"
                       onClick={() => pipelineGate(run.id, false)}
                     >
                       评测 Fail
-                    </button>
+                    </Button>
                   </>
                 ) : null}
                 {canPublish ? (
-                  <button
-                    type="button"
-                    className="btn-press rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white"
+                  <Button
                     onClick={() =>
                       pipelinePublish(run.id, {
                         revisionId: t.revisionId || undefined,
@@ -184,16 +174,12 @@ export function PipelinesPage() {
                     }
                   >
                     发布
-                  </button>
+                  </Button>
                 ) : null}
                 {evalFailed ? (
-                  <button
-                    type="button"
-                    className="btn-press rounded-md border border-slate-200 px-3 py-1.5 text-xs hover:bg-slate-50"
-                    onClick={() => pipelineRerunEval(run.id)}
-                  >
+                  <Button variant="secondary" onClick={() => pipelineRerunEval(run.id)}>
                     重跑评测
-                  </button>
+                  </Button>
                 ) : null}
               </div>
             </Card>

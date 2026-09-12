@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Card, EmptyState, PageHeader, StatusPill } from '../components/ui'
+import { Link } from 'react-router-dom'
+import { Button, Card, EmptyState, PageHeader, StatusPill } from '../components/ui'
 import { useAiInfra } from '../state/AiInfraStore'
 
 export function EndpointsPage() {
@@ -35,13 +36,14 @@ export function EndpointsPage() {
           }}
         >
           <input
-            className="rounded-md border border-slate-200 px-2 py-1.5 text-sm"
+            id="ai-deploy-endpoint"
+            className="rounded-md border border-slate-200 px-2 py-1.5 text-sm focus-ring"
             placeholder="端点名"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <select
-            className="rounded-md border border-slate-200 px-2 py-1.5 text-sm"
+            className="rounded-md border border-slate-200 px-2 py-1.5 text-sm focus-ring"
             value={revId || revisions[0]?.id || ''}
             onChange={(e) => setRevId(e.target.value)}
           >
@@ -51,12 +53,7 @@ export function EndpointsPage() {
               </option>
             ))}
           </select>
-          <button
-            type="submit"
-            className="btn-press rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white"
-          >
-            部署
-          </button>
+          <Button type="submit">部署</Button>
         </form>
       </Card>
 
@@ -91,13 +88,9 @@ export function EndpointsPage() {
               />
             </label>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                type="button"
-                className="btn-press rounded-md border border-slate-200 px-2.5 py-1 text-xs hover:bg-slate-50"
-                onClick={() => rollbackEndpoint(ep.id)}
-              >
+              <Button variant="secondary" onClick={() => rollbackEndpoint(ep.id)}>
                 一键回滚（canary→0）
-              </button>
+              </Button>
             </div>
             <p className="mt-2 text-xs text-slate-500">切流为 UI 态 · 不改生产真流量</p>
           </Card>
@@ -106,7 +99,26 @@ export function EndpointsPage() {
 
       {state.endpoints.length === 0 ? (
         <div className="mt-6">
-          <EmptyState title="无端点" body="从上方选择 revision 部署。" />
+          <EmptyState
+            title="无端点"
+            body="从上方选择 revision 部署；若尚无模型请先去注册。"
+            action={
+              <>
+                <Button
+                  variant="secondary"
+                  onClick={() => document.getElementById('ai-deploy-endpoint')?.focus()}
+                >
+                  去部署端点
+                </Button>
+                <Link
+                  to="/models"
+                  className="ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring"
+                >
+                  去注册模型
+                </Link>
+              </>
+            }
+          />
         </div>
       ) : null}
     </div>

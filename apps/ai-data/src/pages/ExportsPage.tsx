@@ -70,7 +70,15 @@ export function ExportsPage() {
       </div>
 
       {orders.length === 0 ? (
-        <EmptyState title="无导出单" body="点「申请导出单」创建 requested 状态。" />
+        <EmptyState
+          title="无导出单"
+          body="点「申请导出单」创建 requested 状态。"
+          action={
+            <Button variant="secondary" onClick={() => requestExport()}>
+              去申请导出单
+            </Button>
+          }
+        />
       ) : (
         <EmptyState
           title="无案正文"

@@ -1,4 +1,4 @@
-import { Card, PageHeader, StatusPill } from '../components/ui'
+import { Button, Card, PageHeader, StatusPill } from '../components/ui'
 import { useAiInfra } from '../state/AiInfraStore'
 
 const OPS_ALERTS_URL = 'http://localhost:5176/config#alerts'
@@ -27,9 +27,10 @@ export function AlertsPage() {
           <strong>只深链、不改 ops</strong>：{' '}
           <a
             href={OPS_ALERTS_URL}
-            className="underline decoration-amber-400 underline-offset-2"
+            className="focus-ring rounded underline decoration-amber-400 underline-offset-2"
+            title={OPS_ALERTS_URL}
           >
-            运维面 ops → http://localhost:5176/config#alerts
+            运维面 · 告警通道
           </a>
         </p>
       </Card>
@@ -74,20 +75,12 @@ export function AlertsPage() {
                   <div className="flex flex-wrap gap-1">
                     {a.status === 'open' ? (
                       <>
-                        <button
-                          type="button"
-                          className="btn-press rounded-md border border-slate-200 px-2 py-0.5 text-xs hover:bg-slate-50"
-                          onClick={() => ackAlert(a.id)}
-                        >
+                        <Button variant="secondary" onClick={() => ackAlert(a.id)}>
                           确认
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-press rounded-md border border-slate-200 px-2 py-0.5 text-xs hover:bg-slate-50"
-                          onClick={() => silenceAlert(a.id)}
-                        >
+                        </Button>
+                        <Button variant="secondary" onClick={() => silenceAlert(a.id)}>
                           静默
-                        </button>
+                        </Button>
                       </>
                     ) : (
                       <span className="text-xs text-slate-400">—</span>

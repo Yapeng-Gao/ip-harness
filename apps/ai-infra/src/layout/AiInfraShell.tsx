@@ -25,8 +25,8 @@ const NAV = [
 
 function linkClass(active: boolean): string {
   return active
-    ? 'sidebar-link list-row-active flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium'
-    : 'sidebar-link flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+    ? 'sidebar-link list-row-active focus-ring flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium'
+    : 'sidebar-link focus-ring flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900'
 }
 
 export function AiInfraShell() {
@@ -37,9 +37,10 @@ export function AiInfraShell() {
         <span className="inline-flex flex-wrap items-center gap-2">
           <a
             href={OPS_URL}
-            className="font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600"
+            className="focus-ring rounded font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600"
+            title={OPS_URL}
           >
-            运维面 ops → http://localhost:5176
+            运维面
           </a>
           <span className="text-slate-400">只深链、不改 ops</span>
         </span>

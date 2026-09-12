@@ -12,7 +12,7 @@ export function SourcesPage() {
         desc="点「拉取」创建 IngestJob（queued→running→done/fail），写入 raw 计数。样机不接真爬虫。"
       />
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-2">
+      <div id="ai-data-sources" className="mb-4 grid gap-3 sm:grid-cols-2">
         {sources.map((s) => {
           const busy = ingestJobs.some(
             (j) => j.sourceId === s.id && (j.status === 'queued' || j.status === 'running'),
@@ -43,7 +43,20 @@ export function SourcesPage() {
 
       <h2 className="mb-3 text-sm font-semibold text-slate-800">IngestJob</h2>
       {ingestJobs.length === 0 ? (
-        <EmptyState title="尚无 IngestJob" body="在上方源卡片点「拉取」创建任务并推进状态。" />
+        <EmptyState
+          title="尚无 IngestJob"
+          body="在上方源卡片点「拉取」创建任务并推进状态。"
+          action={
+            <Button
+              variant="secondary"
+              onClick={() =>
+                document.getElementById('ai-data-sources')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            >
+              去数据源拉取
+            </Button>
+          }
+        />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-rest">
           <table className="w-full min-w-[36rem] text-left text-sm">
