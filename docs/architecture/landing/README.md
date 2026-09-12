@@ -30,6 +30,10 @@
 - 运维可观测样机：[../ops-observability.md](../ops-observability.md)
 - api-mock 权威：[../../../apps/api-mock/README.md](../../../apps/api-mock/README.md)
 
+## 后续（企业级 + Agent）
+
+落地七面与默认栈以本目录为准。企业级拓扑 / 多租户 / HA / 安全审计 / 私有化，以及 Agent 平台 A/B/C 选型（推荐 **C 混合 + LangGraph 库**）见 [../enterprise/README.md](../enterprise/README.md)。enterprise **不**改写本目录服务名与冻结 URL。
+
 ## 冻结口径（一句话）
 
 先冻 `POST /v1/commands/dispatch` 与 `DomainCommand` / `DOMAIN_EVENTS` 字符串，再换实现；一期 `services/` 进同一 monorepo（对齐 [repos-and-vcs](../repos-and-vcs.md)），推荐 TypeScript + Postgres + Redis + OIDC + 对象存储 + OpenTelemetry。
