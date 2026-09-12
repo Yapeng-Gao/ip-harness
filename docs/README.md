@@ -17,6 +17,7 @@
 | [architecture/data-flow.md](./architecture/data-flow.md) | 多壳读写数据流 |
 | [architecture/data-model.md](./architecture/data-model.md) | 数据模型与包归属 |
 | [architecture/backends.md](./architecture/backends.md) | 未来后端边界 |
+| [architecture/landing/README.md](./architecture/landing/README.md) | 原型后落地：切分 / 栈 / 路线图 / 提醒 |
 | [architecture/ops-observability.md](./architecture/ops-observability.md) | 运维可观测（样机） |
 | [architecture/repos-and-vcs.md](./architecture/repos-and-vcs.md) | 单仓→多仓策略 |
 
