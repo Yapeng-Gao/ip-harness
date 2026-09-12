@@ -28,6 +28,7 @@
 | e2e 评审 | e2e用例评审 | 用例/计划评审 |
 | 架构设计 | 架构设计助手 | `docs/architecture/` |
 | 架构评审 | 架构评审 | 架构文档评审 |
+| UI / UX 质感 | UI质感助手 | 视觉与交互打磨：共享组件/`@ip/ui` + mid/workbench/agent 页面质感；不改业务闸门/contracts；禁改 ops 业务逻辑 |
 
 ## Owner 工作法（硬）
 
