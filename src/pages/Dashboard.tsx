@@ -13,8 +13,14 @@ import { useAgents } from '../context/AgentContext'
 import { RUN_STATUS_LABEL } from '../data/agents'
 import { workbenchPathForStage } from '../data/workbenchMap'
 import { TenantBanner } from '../components/TenantBanner'
+import { PageHeader, EmptyState } from '../components/PageHeader'
 import { getLastCaseId, getLastAgentSessionId } from '../utils/lastVisited'
-import { buildOpsInbox, countOpsInbox } from '../utils/opsInbox'
+import {
+  buildOpsInbox,
+  countOpsInbox,
+  type OpsInboxItem,
+  type OpsInboxSource,
+} from '../utils/opsInbox'
 import { flattenMaintainSchedules } from '../utils/slaInbox'
 import { DashboardSecondary } from './DashboardSecondary'
 import { BillingHoldBanner } from '../components/BillingHoldBanner'
@@ -27,6 +33,22 @@ const SOURCE_PILL: Record<string, string> = {
   '监控·维持': 'border-rose-200 bg-rose-50 text-rose-900',
 }
 
+const INBOX_GROUPS: {
+  id: string
+  label: string
+  sources: OpsInboxSource[]
+}[] = [
+  { id: 'workbench', label: '工作台', sources: ['workbench'] },
+  { id: 'agent', label: 'Agent', sources: ['agent'] },
+  { id: 'deadline', label: '期限与监控', sources: ['docket', 'sla'] },
+]
+
+function groupInbox(items: OpsInboxItem[]) {
+  return INBOX_GROUPS.map((g) => ({
+    ...g,
+    items: items.filter((it) => g.sources.includes(it.source)),
+  })).filter((g) => g.items.length > 0)
+}
 
 export function Dashboard() {
   const [searchParams] = useSearchParams()
@@ -109,6 +131,8 @@ export function Dashboard() {
     ],
   )
   const inboxCounts = useMemo(() => countOpsInbox(inbox), [inbox])
+  const inboxGroups = useMemo(() => groupInbox(inbox), [inbox])
+  const nextItem = inbox[0]
 
   useEffect(() => {
     if (!inboxFocusId) return
@@ -123,44 +147,64 @@ export function Dashboard() {
     return () => window.clearTimeout(tid)
   }, [inboxFocusId, inbox.length])
 
+  const secondaryActions = [
+    ...(lastSession
+      ? [
+          {
+            label: '继续会话',
+            to: `/agent/sessions/${lastSession.id}`,
+            ariaLabel: `继续会话 ${lastSession.title}`,
+          },
+        ]
+      : [
+          {
+            label: '知产 Agent',
+            to: '/agent',
+            icon: <Bot className="h-3.5 w-3.5" aria-hidden />,
+          },
+        ]),
+  ]
+
   return (
-    <div className="p-6 lg:p-8 xl:px-10">
+    <div className="px-5 py-5 lg:px-8 lg:py-6">
       <TenantBanner />
-      <header className="sticky-chrome mb-6 -mx-2 flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-2 py-3">
-        <div>
-          <h1 className="text-balance text-[22px] font-semibold tracking-tight text-slate-900">资产与任务看板</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {workspace.chipLabel} · {workspace.homeEmphasis} · {cases.length} 件在管 · 期限{' '}
-            {docketEvents.length} 条
-          </p>
+      <PageHeader
+        sticky
+        title="资产与任务看板"
+        context={
+          <>
+            {workspace.chipLabel} · {workspace.homeEmphasis} ·{' '}
+            <span className="tabular">{cases.length}</span> 件在管 · 期限{' '}
+            <span className="tabular">{docketEvents.length}</span> 条
+          </>
+        }
+        primary={{
+          label: lastCase
+            ? `办理 · ${lastCase.title.slice(0, 12)}`
+            : '进入业务工作台',
+          to: lastCase
+            ? workbenchPathForStage(lastCase.stage, lastCase.id)
+            : '/workbench',
+          icon: <ArrowRight className="h-4 w-4" aria-hidden />,
+          ariaLabel: lastCase ? `办理 ${lastCase.title}` : '进入业务工作台',
+        }}
+        secondary={secondaryActions}
+      >
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
           <div
-            className={`mt-2 inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium ${workspace.brandColor} border-current/20 bg-white`}
+            className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium ${workspace.brandColor} border-current/20 bg-white`}
           >
             {workspace.orgName}
           </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <AppLink
-            to={lastCase ? workbenchPathForStage(lastCase.stage, lastCase.id) : '/workbench'}
-            className="btn-press cta-work focus-ring inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium"
-            aria-label={lastCase ? `办理 ${lastCase.title}` : '进入业务工作台'}
-          >
-            {lastCase ? `办理 · ${lastCase.title.slice(0, 12)}` : '进入业务工作台'}
-            <ArrowRight className="h-4 w-4" aria-hidden />
-          </AppLink>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
             {lastSession && (
               <AppLink
-                to={`/agent/sessions/${lastSession.id}`}
-                className="hover:text-slate-900 focus-ring rounded"
-                aria-label={`继续会话 ${lastSession.title}`}
+                to="/agent"
+                className="inline-flex items-center gap-1 hover:text-slate-900 focus-ring rounded"
               >
-                继续会话
+                <Bot className="h-3.5 w-3.5" aria-hidden /> 知产 Agent
               </AppLink>
             )}
-            <AppLink to="/agent" className="hover:text-slate-900 focus-ring rounded inline-flex items-center gap-1">
-              <Bot className="h-3.5 w-3.5" aria-hidden /> 知产 Agent
-            </AppLink>
             <AppLink to="/docket" className="hover:text-slate-900 focus-ring rounded">
               官方期限
             </AppLink>
@@ -169,13 +213,43 @@ export function Dashboard() {
                 派单代理
               </AppLink>
             ) : (
-              <AppLink to="/workbench/prosecution" className="hover:text-slate-900 focus-ring rounded">
+              <AppLink
+                to="/workbench/prosecution"
+                className="hover:text-slate-900 focus-ring rounded"
+              >
                 我方承办 · 答复
               </AppLink>
             )}
           </div>
         </div>
-      </header>
+      </PageHeader>
+
+      {nextItem && (
+        <div className="surface-card dash-next mb-6">
+          <div className="min-w-0 flex-1">
+            <div className="dash-next-kicker">下一步 · 优先办理</div>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <span
+                className={`dash-inbox-tag ${SOURCE_PILL[nextItem.sourceLabel] ?? 'border-slate-200 bg-slate-50 text-slate-600'}`}
+              >
+                {nextItem.sourceLabel}
+              </span>
+              <p className="dash-inbox-title truncate">{nextItem.title}</p>
+            </div>
+            {nextItem.subtitle && (
+              <p className="dash-inbox-sub mt-0.5 truncate">{nextItem.subtitle}</p>
+            )}
+          </div>
+          <AppLink
+            to={nextItem.href}
+            className="ui-btn ui-btn-primary btn-press cta-work focus-ring shrink-0"
+            aria-label={`${nextItem.source === 'agent' ? '确认' : '办理'} ${nextItem.title}`}
+          >
+            {nextItem.source === 'agent' ? '去确认' : '去办理'}
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </AppLink>
+        </div>
+      )}
 
       <div className="kpi-strip kpi-stagger mb-8">
         <a
@@ -188,10 +262,21 @@ export function Dashboard() {
             <Inbox className="h-4 w-4 text-slate-500" aria-hidden />
           </div>
           <div className="kpi-tile-value">{inboxCounts.total}</div>
-          <div className="kpi-tile-meta">
-            工作台 {inboxCounts.workbench} · Agent {inboxCounts.agent} · 期限{' '}
-            {inboxCounts.docket}
-            {inboxCounts.sla > 0 ? ` · 监控·维持 ${inboxCounts.sla}` : ''}
+          <div className="kpi-tile-chips">
+            <span className="kpi-chip">
+              工作台 <b>{inboxCounts.workbench}</b>
+            </span>
+            <span className="kpi-chip">
+              Agent <b>{inboxCounts.agent}</b>
+            </span>
+            <span className="kpi-chip">
+              期限 <b>{inboxCounts.docket}</b>
+            </span>
+            {inboxCounts.sla > 0 && (
+              <span className="kpi-chip">
+                监控·维持 <b>{inboxCounts.sla}</b>
+              </span>
+            )}
           </div>
         </a>
         <AppLink
@@ -203,10 +288,19 @@ export function Dashboard() {
             <span className="kpi-tile-label">期限压力</span>
             <Clock className="h-4 w-4 text-amber-600" aria-hidden />
           </div>
-          <div className="kpi-tile-value">{inboxCounts.docket + inboxCounts.sla}</div>
-          <div className="kpi-tile-meta">
-            期限 {inboxCounts.docket} · 监控·维持 {inboxCounts.sla}（分口径）· 待付款{' '}
-            {pendingPayInvoiceCount}
+          <div className="kpi-tile-value">
+            {inboxCounts.docket + inboxCounts.sla}
+          </div>
+          <div className="kpi-tile-chips">
+            <span className="kpi-chip">
+              期限 <b>{inboxCounts.docket}</b>
+            </span>
+            <span className="kpi-chip">
+              监控·维持 <b>{inboxCounts.sla}</b>
+            </span>
+            <span className="kpi-chip">
+              待付款 <b>{pendingPayInvoiceCount}</b>
+            </span>
           </div>
         </AppLink>
         <AppLink
@@ -219,22 +313,31 @@ export function Dashboard() {
             <CreditCard className="h-4 w-4 text-slate-500" aria-hidden />
           </div>
           <div className="kpi-tile-value">{pendingPayInvoiceCount}</div>
-          <div className="kpi-tile-meta">已开票 / 逾期 · 在管 {cases.length}</div>
+          <div className="kpi-tile-chips">
+            <span className="kpi-chip">已开票 / 逾期</span>
+            <span className="kpi-chip">
+              在管 <b>{cases.length}</b>
+            </span>
+          </div>
         </AppLink>
       </div>
 
       <BillingHoldBanner className="mb-4" />
 
-      <section id="ops-inbox" ref={inboxSectionRef} className="mb-6 scroll-mt-20">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="flex items-center gap-2 text-sm font-medium text-slate-800">
+      <section
+        id="ops-inbox"
+        ref={inboxSectionRef}
+        className="surface-card dash-inbox mb-6 scroll-mt-20"
+      >
+        <div className="dash-inbox-head">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
             <Inbox className="h-4 w-4 text-slate-600" aria-hidden />
             待我办理
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal text-slate-600">
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium tabular text-slate-600">
               {inboxCounts.total}
             </span>
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             {role === 'enterprise'
               ? '企业审核 / 确认闸 / 期限 / 监控·维持 SLA'
               : '代理办理队列 · 监控·维持可处置 · 企业专属闸已隐藏'}
@@ -242,71 +345,102 @@ export function Dashboard() {
         </div>
 
         {inbox.length === 0 ? (
-          <div className="ui-empty">
-            <p className="ui-empty-title">暂无待我办理事项</p>
-            <p className="ui-empty-desc">
-              工作台 {inboxCounts.workbench} · Agent {inboxCounts.agent} · 期限{' '}
-              {inboxCounts.docket}
-              {inboxCounts.sla > 0 ? ` · 监控·维持 ${inboxCounts.sla}` : ''}
-              {workspace.kind === 'agency'
-                ? ' · 等待企业派单或继续起草中案件'
-                : ' · 可从工作台或知产 Agent 发起'}
-            </p>
+          <div className="p-4">
+            <EmptyState
+              title="暂无待我办理事项"
+              description={
+                workspace.kind === 'agency'
+                  ? `工作台 ${inboxCounts.workbench} · Agent ${inboxCounts.agent} · 期限 ${inboxCounts.docket}${inboxCounts.sla > 0 ? ` · 监控·维持 ${inboxCounts.sla}` : ''} · 等待企业派单或继续起草中案件`
+                  : `工作台 ${inboxCounts.workbench} · Agent ${inboxCounts.agent} · 期限 ${inboxCounts.docket}${inboxCounts.sla > 0 ? ` · 监控·维持 ${inboxCounts.sla}` : ''} · 可从工作台或知产 Agent 发起`
+              }
+              primary={{
+                label: '进入业务工作台',
+                to: '/workbench',
+                icon: <ArrowRight className="h-4 w-4" aria-hidden />,
+              }}
+              secondary={{
+                label: '知产 Agent',
+                to: '/agent',
+                icon: <Bot className="h-3.5 w-3.5" aria-hidden />,
+              }}
+            />
           </div>
         ) : (
-          <ul className="space-y-2">
-            {inbox.map((item) => {
-              const focused = inboxFocusId === item.id
-              return (
-              <li key={item.id} id={`ops-inbox-row-${item.id}`}>
-                <AppLink
-                  to={item.href}
-                  className={`card-hover flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-lg)] border bg-white px-4 py-3 shadow-[var(--shadow-rest)] focus-ring ${
-                    focused
-                      ? 'border-amber-400 ring-2 ring-amber-300/70'
-                      : 'border-slate-200'
-                  }`}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className={`rounded-full border px-1.5 py-0.5 text-xs font-medium ${SOURCE_PILL[item.sourceLabel] ?? 'border-slate-200 bg-slate-50 text-slate-600'}`}
-                      >
-                        {item.sourceLabel}
-                      </span>
-                      <span className="truncate text-sm font-medium text-slate-900">
-                        {item.title}
-                      </span>
-                      {item.source === 'agent' && item.gateLabel && (
-                        <span className="rounded-full border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-xs font-medium text-sky-900">
-                          闸 · {item.gateLabel}
-                        </span>
-                      )}
-                      <span className="rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-xs text-slate-600">
-                        谁该动 · {item.whoShouldAct}
-                      </span>
-                    </div>
-                    {item.subtitle && (
-                      <p className="mt-1 truncate text-xs text-slate-500">{item.subtitle}</p>
-                    )}
-                    {item.sameCaseHint && (
-                      <p className="mt-0.5 truncate text-[11px] text-slate-400">{item.sameCaseHint}</p>
-                    )}
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2 text-xs text-slate-600">
-                    {item.due && (
-                      <span className="tabular-nums text-slate-500">{item.due}</span>
-                    )}
-                    <span className="inline-flex items-center gap-1 font-medium text-slate-700">
-                      {item.source === 'agent' ? '确认' : '办理'}{' '}
-                      <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-                    </span>
-                  </div>
-                </AppLink>
-              </li>
-              )
-            })}
-          </ul>
+          <>
+            <div className="dash-inbox-cols" aria-hidden>
+              <span>来源</span>
+              <span>事项</span>
+              <span>期限 / 谁该动</span>
+              <span className="text-right">动作</span>
+            </div>
+            {inboxGroups.map((group) => (
+              <div key={group.id} className="dash-inbox-group">
+                <div className="dash-inbox-group-label">
+                  {group.label}
+                  <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-medium tabular text-slate-500 ring-1 ring-slate-200/80">
+                    {group.items.length}
+                  </span>
+                </div>
+                <ul>
+                  {group.items.map((item) => {
+                    const focused = inboxFocusId === item.id
+                    return (
+                      <li key={item.id} id={`ops-inbox-row-${item.id}`}>
+                        <AppLink
+                          to={item.href}
+                          data-focused={focused ? 'true' : undefined}
+                          className="dash-inbox-row list-row focus-ring"
+                          aria-label={`${item.sourceLabel} · ${item.title}`}
+                        >
+                          <span
+                            className={`dash-inbox-tag ${SOURCE_PILL[item.sourceLabel] ?? 'border-slate-200 bg-slate-50 text-slate-600'}`}
+                          >
+                            {item.sourceLabel}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span className="dash-inbox-title truncate">
+                                {item.title}
+                              </span>
+                              {item.source === 'agent' && item.gateLabel && (
+                                <span className="dash-inbox-tag border-sky-200 bg-sky-50 text-sky-900">
+                                  闸 · {item.gateLabel}
+                                </span>
+                              )}
+                            </div>
+                            {item.subtitle && (
+                              <p className="dash-inbox-sub truncate">
+                                {item.subtitle}
+                              </p>
+                            )}
+                            {item.sameCaseHint && (
+                              <p className="mt-0.5 truncate text-[11px] text-slate-400">
+                                {item.sameCaseHint}
+                              </p>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            {item.due ? (
+                              <div className="dash-inbox-due">{item.due}</div>
+                            ) : (
+                              <div className="dash-inbox-due text-slate-300">—</div>
+                            )}
+                            <div className="mt-0.5 truncate text-[11px] text-slate-500">
+                              谁该动 · {item.whoShouldAct}
+                            </div>
+                          </div>
+                          <span className="dash-inbox-action">
+                            {item.source === 'agent' ? '确认' : '办理'}
+                            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                          </span>
+                        </AppLink>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            ))}
+          </>
         )}
 
         {/* 诚实空态分类：有总量但某源为 0 时提示 */}
@@ -315,7 +449,7 @@ export function Dashboard() {
             inboxCounts.agent === 0 ||
             inboxCounts.docket === 0 ||
             inboxCounts.sla === 0) && (
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="border-t border-slate-100 px-4 py-2.5 text-xs text-slate-400">
               分类空态：
               {inboxCounts.workbench === 0 ? ' 工作台无待办 ·' : ''}
               {inboxCounts.agent === 0
@@ -330,24 +464,33 @@ export function Dashboard() {
       </section>
 
       {cases.length === 0 && (
-        <div className="ui-empty mb-6">
-          <p className="ui-empty-title">本租户暂无可见案件</p>
-          <p className="ui-empty-desc">
-            {workspace.kind === 'agency'
-              ? '等待企业派单后，承办案件将出现在此。'
-              : '可通过研发交底或洞察生成调研案。'}
-          </p>
+        <div className="mb-6">
+          <EmptyState
+            title="本租户暂无可见案件"
+            description={
+              workspace.kind === 'agency'
+                ? '等待企业派单后，承办案件将出现在此。'
+                : '可通过研发交底或洞察生成调研案。'
+            }
+            primary={{
+              label: '进入业务工作台',
+              to: '/workbench',
+            }}
+          />
         </div>
       )}
 
       {workspace.kind === 'enterprise' && pendingDisclosures.length > 0 && (
-        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/40 p-5">
+        <div className="surface-card mb-6 border-amber-200 bg-amber-50/40 p-5">
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 className="flex items-center gap-2 text-sm font-medium text-amber-950">
               <FileCheck className="h-4 w-4 text-amber-700" aria-hidden />
               待审交底
             </h2>
-            <AppLink to="/inventor" className="text-xs text-slate-700 hover:text-slate-900">
+            <AppLink
+              to="/inventor"
+              className="text-xs text-slate-700 hover:text-slate-900 focus-ring rounded"
+            >
               打开交底门户 →
             </AppLink>
           </div>
@@ -355,10 +498,12 @@ export function Dashboard() {
             {pendingDisclosures.slice(0, 4).map((d) => (
               <li
                 key={d.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-100 bg-white px-3 py-2.5"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-md)] border border-amber-100 bg-white px-3 py-2.5"
               >
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-medium text-slate-800">{d.title}</div>
+                  <div className="truncate text-sm font-medium text-slate-800">
+                    {d.title}
+                  </div>
                   <div className="text-xs text-slate-500">
                     {d.inventor} · {d.dept} · {d.status}
                   </div>
@@ -367,8 +512,10 @@ export function Dashboard() {
                   {d.status === '部门审核' && (
                     <button
                       type="button"
-                      onClick={() => advanceDisclosure(d.id, 'IP受理', '仪表盘 · 部门通过')}
-                      className="btn-press cta-work focus-ring rounded-md px-2.5 py-1 text-xs font-medium"
+                      onClick={() =>
+                        advanceDisclosure(d.id, 'IP受理', '仪表盘 · 部门通过')
+                      }
+                      className="ui-btn ui-btn-primary ui-btn-sm btn-press cta-work focus-ring"
                       aria-label={`部门通过 ${d.title}`}
                     >
                       部门通过
@@ -380,7 +527,7 @@ export function Dashboard() {
                       onClick={() => {
                         advanceDisclosure(d.id, '已立案', '仪表盘 · IP 立案')
                       }}
-                      className="btn-press focus-ring rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-emerald-500"
+                      className="ui-btn ui-btn-success ui-btn-sm btn-press focus-ring"
                       aria-label={`IP 立案 ${d.title}`}
                     >
                       IP 立案
@@ -393,13 +540,13 @@ export function Dashboard() {
         </div>
       )}
 
-      <details className="mb-6 rounded-lg border border-slate-200 bg-white">
-        <summary className="focus-ring cursor-pointer list-none rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+      <details className="surface-card mb-6">
+        <summary className="focus-ring cursor-pointer list-none rounded-[var(--radius-lg)] px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50/80 [&::-webkit-details-marker]:hidden">
           <span className="inline-flex items-center gap-2">
             <Bot className="h-4 w-4 text-slate-600" aria-hidden />
             活跃 Agent 会话
             {activeAgentRuns.length > 0 && (
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal text-slate-600">
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal tabular text-slate-600">
                 {activeAgentRuns.length}
               </span>
             )}
@@ -409,7 +556,10 @@ export function Dashboard() {
         <div className="border-t border-slate-100 p-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-slate-800">运行中 / 待确认</h2>
-            <AppLink to="/agent/sessions" className="text-xs text-slate-700 hover:underline">
+            <AppLink
+              to="/agent/sessions"
+              className="text-xs text-slate-700 hover:underline focus-ring rounded"
+            >
               全部会话
             </AppLink>
           </div>
@@ -428,7 +578,7 @@ export function Dashboard() {
                           ? `/agent/sessions/${r.id}?focus=hitl`
                           : `/agent/sessions/${r.id}`
                       }
-                      className="flex items-center justify-between gap-3 rounded-lg py-2.5 -mx-1 px-1 hover:bg-slate-50/80"
+                      className="list-row flex items-center justify-between gap-3 -mx-1 rounded-[var(--radius-sm)] px-1 py-2.5 hover:bg-slate-50/80"
                     >
                       <div className="min-w-0">
                         <div className="truncate text-sm text-slate-800">
@@ -450,8 +600,16 @@ export function Dashboard() {
             </ul>
           )}
           <div className="mt-3 flex flex-wrap gap-3 text-xs text-slate-500">
-            <span>洞察驱动立案 {insightDrivenCount}</span>
-            <AppLink to="/agent/agents" className="text-slate-700 hover:underline">
+            <span>
+              洞察驱动立案{' '}
+              <span className="tabular font-medium text-slate-700">
+                {insightDrivenCount}
+              </span>
+            </span>
+            <AppLink
+              to="/agent/agents"
+              className="text-slate-700 hover:underline focus-ring rounded"
+            >
               发起办理任务
             </AppLink>
           </div>

@@ -30,7 +30,7 @@ export function DashboardSecondary({
   const maxCount = Math.max(...byStage.map((s) => s.count), 1)
 
   return (
-    <details className="mb-6 rounded-lg border border-slate-200 bg-white">
+    <details className="surface-card mb-6">
       <summary className="focus-ring cursor-pointer list-none rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
         阶段漏斗 · 洞察 · 最近动态{' '}
         <span className="ml-2 text-xs font-normal text-slate-400">展开</span>
