@@ -28,6 +28,7 @@ flowchart LR
   obs["运维可观测·配置·密钥"]
   ntf["通知/提醒"]
   dok["docket 引擎"]
+  aiInfra["ai-infra 训推"]
   mid --> gw
   wb --> gw
   ag --> gw
@@ -41,6 +42,7 @@ flowchart LR
   gw --> obs
   gw --> ntf
   gw --> dok
+  gw --> aiInfra
   cmd --> ho
   cmd --> aud
   cmd -.->|DOMAIN_EVENTS| case
@@ -62,8 +64,9 @@ flowchart LR
 | `ops-platform` | 可观测 · 配置 · 密钥 | 配置/密钥先做；真可观测跟 OTel |
 | `notify` | 通知 / 提醒出站 | MVP 最小通道；不持有 `PatentCase` |
 | `docket` | 期限 Docket 引擎 | MVP 调度器 + 升级命令；可先挂 `case-core` |
+| `ai-infra` | 训推基建：GPU/调度/训练/批推/在线推理/发布 | **与 ops-platform 分家**；样机无真 GPU；见 [../ai-infra/](../ai-infra/README.md) |
 
-对齐现仓概念：`DomainCommand` / `COMMAND_LABELS`、`DOMAIN_EVENTS`、`APP_PORTS`（`packages/contracts`）。
+对齐现仓概念：`DomainCommand` / `COMMAND_LABELS`、`DOMAIN_EVENTS`、`APP_PORTS`（`packages/contracts`）。服务面在原七面之上 **增 `ai-infra`**（训推；≠ ops）。
 
 ---
 
@@ -126,6 +129,18 @@ handoff / audit 一期**建议并入** `case-core` 模块，边界用包或目�
 | **样机诚实** | mock 数字/表格；试发 sessionStorage；**不接**真 ELK / Prometheus / Sentry / SMTP |
 | **落地目标** | OpenTelemetry + 可私有化后端；密钥走保险库；仍**不**让 ops 持有 `PatentCase` |
 
+
+### 3.5b `ai-infra` — 训推基建（≠ ops-platform）
+
+| | |
+|--|--|
+| **职责** | GPU 资源与任务调度、训练/批量推理/在线推理环境与容器、性能与压测、模型发布与训-评-部署迭代标准 |
+| **数据归属** | 集群/队列/作业/模型注册/端点发布元数据；**禁止** `PatentCase` / handoff / 办案 audit |
+| **同步/异步** | 训练/批推 **异步** Job；在线推理经**模型网关**同步调用；发布门禁同步+切流异步 |
+| **对齐现仓** | 今日仅 ops 内模型/infra **mock**；无真 GPU/K8s |
+| **样机诚实** | 无集群；产品面建议并行壳 `apps/ai-infra:5179`（不改 APP_PORTS） |
+| **落地目标** | 与 ops-platform 分平面；agent-session 只走网关消费已发布端点；详见 [../ai-infra/README.md](../ai-infra/README.md) |
+
 ### 3.6 `notify` — 通知 / 提醒
 
 | | |
@@ -163,6 +178,7 @@ handoff / audit 一期**建议并入** `case-core` 模块，边界用包或目�
 | notify | `notify` | |
 | （工作台编排） | `workbench-command` | 落地显式边界，非新命令体系 |
 | （ops 配置观测） | `ops-platform` | 与 notify 分离：配置/密钥 ≠ 出站 |
+| （训推基建） | `ai-infra` | **≠ ops-platform**；无 PatentCase；网关供 agent-session |
 
 ## 5. 相关链接
 
