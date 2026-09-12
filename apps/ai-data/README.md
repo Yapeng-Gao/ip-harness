@@ -29,7 +29,7 @@ npm run typecheck -w @ip/ai-data
 | 1 | Sources → Ingest | `/sources` 点「拉取」→ IngestJob `queued→running→done/fail`，raw 计数增加 |
 | 2 | Pipelines | `/pipelines` 点 Run；步序 采集→清洗→去重→质量门→发布；质量门 fail 则 publish=`blocked` |
 | 3 | Quality | `/quality` 点「跑打分」；mock findings 标「非真引擎」；fail 卡片打红；可勾「下次强制 fail」 |
-| 4 | Datasets | `/datasets`「发布新 version」仅在质量 pass 时可用（否则 disabled）；version 不可变 + 假 checksum；可 Pin |
+| 4 | Datasets | `/datasets` 草稿备注可改（`updateDraftNote`）；种子 version 标「种子历史发布」且初始质量 pass；「发布新 version」仅质量 pass 可用；version 不可变 + 假 checksum；可 Pin |
 | 5 | Recipes | `/recipes` 调配比 / 总量 →「保存配比」；采样预览显示条数拆分 |
 | 6 | Lineage | 发布或导出候选后 `/lineage` 自动出现 source→version 边 |
 | 7 | Exports | `/exports` 申请→审批→完成→「生成候选数据集」进入 datasets（无案正文） |

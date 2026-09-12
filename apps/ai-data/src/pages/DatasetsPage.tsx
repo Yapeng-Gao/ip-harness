@@ -1,5 +1,13 @@
 import { Button, Card, PageHeader, StatusPill } from '../components/ui'
-import { pinVersion, tryPublishDataset, useAiDataStore } from '../state/store'
+import type { DatasetVersion } from '../state/types'
+import { pinVersion, tryPublishDataset, updateDraftNote, useAiDataStore } from '../state/store'
+
+const SEED_PUBLISHED_AT = '2026-09-12T10:00:00.000Z'
+
+/** Seed historical immutable versions (note or fixed publishedAt). */
+function isSeedHistoricalVersion(v: DatasetVersion): boolean {
+  return v.note.includes('种子发布') || v.publishedAt === SEED_PUBLISHED_AT
+}
 
 export function DatasetsPage() {
   const { datasets, qualityReports } = useAiDataStore()
@@ -9,7 +17,7 @@ export function DatasetsPage() {
       <PageHeader
         eyebrow="数据集"
         title="不可变 version"
-        desc="发布产生新 version（vN + 假 checksum）。已发布内容不可改，只能出新 version。可 pin。质量门未 pass 时发布 disabled。"
+        desc="草稿备注可改；已发布 version 内容不可改（immutable），只能 bump 新 tag。发布产生新 version（vN + 假 checksum）。可 pin。质量门未 pass 时发布 disabled。"
       />
 
       <div className="space-y-4">
@@ -29,9 +37,24 @@ export function DatasetsPage() {
                 <p className="text-xs text-slate-500">{ds.note}</p>
               </div>
 
-              <p className="mt-2 text-xs text-slate-600">
-                草稿备注（可改）：{ds.draftNote}
-              </p>
+              <div className="mt-3 rounded-md border border-slate-200 bg-white p-3">
+                <label
+                  htmlFor={`draft-note-${ds.id}`}
+                  className="block text-xs font-medium text-slate-800"
+                >
+                  草稿备注（可改）
+                </label>
+                <p className="mt-0.5 text-[10px] text-slate-500">
+                  对比：草稿可随时改；下方已发布 version 标签旁内容仍不可改（immutable）。
+                </p>
+                <textarea
+                  id={`draft-note-${ds.id}`}
+                  className="mt-2 w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-800 outline-none focus:border-slate-400"
+                  rows={2}
+                  value={ds.draftNote}
+                  onChange={(e) => updateDraftNote(ds.id, e.target.value)}
+                />
+              </div>
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <Button
@@ -56,16 +79,20 @@ export function DatasetsPage() {
                     key={v.tag}
                     className="inline-flex flex-col gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5"
                   >
-                    <span className="inline-flex items-center gap-1.5">
+                    <span className="inline-flex flex-wrap items-center gap-1.5">
                       <span className="font-mono text-xs font-medium text-slate-800">{v.tag}</span>
                       <StatusPill tone={v.tone}>
                         {v.immutable ? 'immutable' : 'draft'}
                       </StatusPill>
                       {v.pinned ? <StatusPill tone="warn">pinned</StatusPill> : null}
+                      {isSeedHistoricalVersion(v) ? (
+                        <StatusPill tone="info">种子历史发布</StatusPill>
+                      ) : null}
                     </span>
                     <span className="font-mono text-[10px] text-slate-500">{v.checksum}</span>
                     <span className="text-[10px] text-slate-500">
                       rows {v.rows} · {v.publishedAt}
+                      {v.immutable ? ' · 内容不可改' : ''}
                     </span>
                     <Button
                       variant="secondary"

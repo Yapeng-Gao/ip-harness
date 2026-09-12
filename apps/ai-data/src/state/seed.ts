@@ -167,19 +167,50 @@ function seedRecipes(): Recipe[] {
   ]
 }
 
+/**
+ * Seed quality aligned with SEED_PUBLISHED immutable versions.
+ * Datasets that already have a published seed version start as `pass`
+ * (story: historical publish already gated). New publishes still hard-gate
+ * on current qualityPassFor — re-score / force-fail can still block.
+ */
 function seedQuality(): QualityReport[] {
-  return seedDatasets().map((ds) => ({
-    id: `q-${ds.id}`,
-    datasetId: ds.id,
-    datasetLabel: `${ds.name} @ ${ds.versions[0]?.tag ?? '?'}`,
-    score: null,
-    status: 'idle' as const,
-    findings: [],
-    ranAt: null,
-    tone: 'empty' as const,
-    note: '尚未打分 · 非真引擎',
-    forceFailNext: false,
-  }))
+  return seedDatasets().map((ds) => {
+    const hasPublished = ds.versions.some((v) => v.immutable)
+    if (hasPublished) {
+      return {
+        id: `q-${ds.id}`,
+        datasetId: ds.id,
+        datasetLabel: `${ds.name} @ ${ds.versions[0]?.tag ?? '?'}`,
+        score: 0.88,
+        status: 'pass' as const,
+        findings: [
+          {
+            id: `f-seed-${ds.id}`,
+            kind: '污染' as const,
+            severity: 'low' as const,
+            detail: '种子历史：示意轻微近重，可接受',
+            engineNote: '非真引擎 · 种子初始 pass',
+          },
+        ],
+        ranAt: '2026-09-12T09:55:00.000Z',
+        tone: 'ok' as const,
+        note: '种子历史已 pass · 对齐已发布 immutable 版 · 非真引擎',
+        forceFailNext: false,
+      }
+    }
+    return {
+      id: `q-${ds.id}`,
+      datasetId: ds.id,
+      datasetLabel: `${ds.name} @ ${ds.versions[0]?.tag ?? '?'}`,
+      score: null,
+      status: 'idle' as const,
+      findings: [],
+      ranAt: null,
+      tone: 'empty' as const,
+      note: '尚未打分 · 非真引擎',
+      forceFailNext: false,
+    }
+  })
 }
 
 function seedLineageNodes(): LineageNode[] {
