@@ -58,7 +58,7 @@ export function AuditReplayPanel({ entries, className = '', onExportEvidence }: 
 
   return (
     <div
-      className={`rounded-2xl border border-indigo-200/80 bg-indigo-50/40 p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] ${className}`}
+      className={`rounded-2xl border border-[color-mix(in_srgb,var(--color-accent)_28%,transparent)] bg-accent-soft/50 p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] ${className}`}
     >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
@@ -72,7 +72,7 @@ export function AuditReplayPanel({ entries, className = '', onExportEvidence }: 
             <button
               type="button"
               onClick={onExportEvidence}
-              className="mt-1.5 text-[11px] font-medium text-indigo-800 underline-offset-2 hover:underline focus-ring rounded"
+              className="mt-1.5 text-[11px] font-medium text-accent-muted underline-offset-2 hover:underline focus-ring rounded"
             >
               导出证据包
             </button>
@@ -126,15 +126,15 @@ export function AuditReplayPanel({ entries, className = '', onExportEvidence }: 
       </div>
 
       {current ? (
-        <div className="mb-3 rounded-xl border border-indigo-200 bg-white px-3 py-2.5 text-xs text-slate-700">
+        <div className="mb-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-700">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-indigo-100 px-1.5 py-0.5 text-[10px] font-medium text-indigo-800">
+            <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-[10px] font-medium text-accent-muted">
               当前步
             </span>
             <span
               className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${
                 current.actor === 'agent'
-                  ? 'bg-sky-50 text-sky-700'
+                  ? 'token-info-soft'
                   : 'bg-slate-100 text-slate-600'
               }`}
             >
@@ -178,12 +178,12 @@ export function AuditReplayPanel({ entries, className = '', onExportEvidence }: 
                 onClick={() => go(i)}
                 className={`btn-press flex w-full flex-wrap items-center gap-2 rounded-xl px-2.5 py-1.5 text-left text-xs transition-colors focus-ring ${
                   active
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'bg-primary-600 text-white shadow-sm'
                     : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50'
                 }`}
               >
                 <span
-                  className={`tabular-nums ${active ? 'text-indigo-100' : 'text-slate-400'}`}
+                  className={`tabular-nums ${active ? 'text-slate-200' : 'text-slate-400'}`}
                 >
                   #{i + 1}
                 </span>
@@ -192,7 +192,7 @@ export function AuditReplayPanel({ entries, className = '', onExportEvidence }: 
                     active
                       ? 'bg-white/20 text-white'
                       : a.actor === 'agent'
-                        ? 'bg-sky-50 text-sky-700'
+                        ? 'token-info-soft'
                         : 'bg-slate-100 text-slate-600'
                   }`}
                 >
@@ -204,7 +204,7 @@ export function AuditReplayPanel({ entries, className = '', onExportEvidence }: 
                 <span
                   className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums ${
                     active
-                      ? 'bg-white/15 text-indigo-50'
+                      ? 'bg-white/15 text-slate-50'
                       : legacy
                         ? 'bg-amber-50 text-amber-800'
                         : 'bg-emerald-50 text-emerald-800'
@@ -214,13 +214,13 @@ export function AuditReplayPanel({ entries, className = '', onExportEvidence }: 
                 </span>
                 <span
                   className={`min-w-0 flex-1 truncate ${
-                    active ? 'text-indigo-100' : 'text-slate-500'
+                    active ? 'text-slate-200' : 'text-slate-500'
                   }`}
                 >
                   {a.detail}
                 </span>
                 <span
-                  className={`tabular-nums ${active ? 'text-indigo-200' : 'text-slate-400'}`}
+                  className={`tabular-nums ${active ? 'text-slate-300' : 'text-slate-400'}`}
                 >
                   {fmtAt(a.at)}
                 </span>

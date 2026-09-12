@@ -199,7 +199,7 @@ export function Agencies() {
               className="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
             >
               <div className="mb-3 flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent-muted">
                   <Building2 className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -216,7 +216,7 @@ export function Agencies() {
                   {ag.capabilityTags.map((s) => (
                     <span
                       key={s}
-                      className="rounded-full border border-violet-100 bg-violet-50 px-2 py-0.5 text-xs text-violet-700"
+                      className="rounded-full border border-slate-200 bg-accent-soft px-2 py-0.5 text-xs text-accent-muted"
                     >
                       {s}
                     </span>

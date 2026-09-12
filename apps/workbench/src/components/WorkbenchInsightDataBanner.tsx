@@ -55,7 +55,7 @@ export function WorkbenchInsightDataBanner({ compact }: { compact?: boolean }) {
               onClick={() => setDataSourceMode('own_lake')}
               className={`rounded-md px-2 py-0.5 text-xs font-medium ${
                 dataSourceMode === 'own_lake'
-                  ? 'bg-white text-violet-700 shadow-sm'
+                  ? 'bg-white text-accent-muted shadow-sm'
                   : 'text-slate-500'
               }`}
             >

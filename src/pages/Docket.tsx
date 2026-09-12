@@ -409,7 +409,7 @@ export function Docket() {
                             esc === 'at_risk' || e.atRisk
                               ? 'border-rose-200 bg-rose-50 text-rose-800'
                               : esc === 'escalated_enterprise'
-                                ? 'border-indigo-200 bg-indigo-50 text-indigo-800'
+                                ? 'border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-accent-soft text-accent-muted'
                                 : 'border-amber-200 bg-amber-50 text-amber-900'
                           }`}
                         >
@@ -444,7 +444,7 @@ export function Docket() {
                             action === 'complete'
                               ? 'border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
                               : isPrimary
-                                ? 'border border-indigo-200 bg-indigo-50 text-indigo-900 hover:bg-indigo-100'
+                                ? 'border border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-accent-soft text-slate-900 hover:bg-[color-mix(in_srgb,var(--color-accent-soft)_80%,#fff)]'
                                 : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-100'
                           }`}
                           aria-label={`${ACTION_LABEL[action]} · ${e.title}`}

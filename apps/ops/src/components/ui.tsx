@@ -46,7 +46,7 @@ const DOT: Record<StatusTone, string> = {
   down: 'bg-rose-500',
   empty: 'bg-slate-300',
   warn: 'bg-amber-500',
-  info: 'bg-sky-500',
+  info: 'bg-[var(--color-status-info)]',
 }
 
 const PILL: Record<StatusTone, string> = {
@@ -55,7 +55,7 @@ const PILL: Record<StatusTone, string> = {
   down: 'border-rose-200 bg-rose-50 text-rose-800',
   empty: 'border-slate-200 bg-slate-50 text-slate-500',
   warn: 'border-amber-200 bg-amber-50 text-amber-900',
-  info: 'border-sky-200 bg-sky-50 text-sky-800',
+  info: 'token-info-chip',
 }
 
 export function StatusDot({ tone, label }: { tone: StatusTone; label?: string }) {

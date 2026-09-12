@@ -38,6 +38,40 @@ export type AgentPickerCardProps = {
  * Six-section meta hierarchy in details; Core/Assist/Beta badge on face.
  * Visual-only polish (Deep W6); start/HITL semantics unchanged.
  */
+
+/** P1-B · catalog meta: two-col dl + clamp + 「更多」 — visual only */
+function AgentMetaSections({
+  rows,
+}: {
+  rows: { label: string; value: string; title?: string }[]
+}) {
+  const primary = rows.slice(0, 3)
+  const rest = rows.slice(3)
+  return (
+    <div className="agent-meta-grid" role="list">
+      {primary.map((r) => (
+        <div key={r.label} className="agent-meta-row" role="listitem" title={r.title}>
+          <span className="agent-meta-label">{r.label}</span>
+          <span className="agent-meta-value agent-meta-value--clamp">{r.value}</span>
+        </div>
+      ))}
+      {rest.length > 0 && (
+        <details className="agent-meta-more">
+          <summary className="agent-meta-more-summary">更多 · {rest.length} 项</summary>
+          <div className="agent-meta-more-body" role="list">
+            {rest.map((r) => (
+              <div key={r.label} className="agent-meta-row" role="listitem" title={r.title}>
+                <span className="agent-meta-label">{r.label}</span>
+                <span className="agent-meta-value agent-meta-value--clamp">{r.value}</span>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
+  )
+}
+
 export function AgentPickerCard({
   agent: a,
   highlight,
@@ -145,49 +179,36 @@ export function AgentPickerCard({
             {a.tools.length > 0 ? ` · 工具 ${a.tools.length}` : ''}
             {a.hitlGates.length > 0 ? ` · 需确认 ${a.hitlGates.length}` : ''}
           </summary>
-          {/* Six-section information hierarchy — visual only */}
-          <div className="agent-meta-grid" role="list">
-            {a.whenToUse && (
-              <div className="agent-meta-row" role="listitem">
-                <span className="agent-meta-label">何时用</span>
-                <span className="agent-meta-value">{a.whenToUse}</span>
-              </div>
-            )}
-            {a.inputsHint && (
-              <div className="agent-meta-row" role="listitem">
-                <span className="agent-meta-label">输入</span>
-                <span className="agent-meta-value">{a.inputsHint}</span>
-              </div>
-            )}
-            {a.outputsHint && (
-              <div className="agent-meta-row" role="listitem">
-                <span className="agent-meta-label">输出</span>
-                <span className="agent-meta-value">{a.outputsHint}</span>
-              </div>
-            )}
-            {a.guardrails?.length > 0 && (
-              <div className="agent-meta-row" role="listitem">
-                <span className="agent-meta-label">护栏</span>
-                <span className="agent-meta-value">{a.guardrails.join(' · ')}</span>
-              </div>
-            )}
-            {a.tools.length > 0 && (
-              <div className="agent-meta-row" role="listitem" title={toolLabels.join(' · ')}>
-                <span className="agent-meta-label">工具</span>
-                <span className="agent-meta-value">{toolPreview}</span>
-              </div>
-            )}
-            <div className="agent-meta-row" role="listitem">
-              <span className="agent-meta-label">谁负责</span>
-              <span className="agent-meta-value">
-                {a.raciHint}
-                {a.hitlGates.length > 0
-                  ? ` · 需确认 ${a.hitlGates.map((g) => HITL_GATE_LABELS[g]).join(' / ')}`
-                  : ''}
-                {` · ${agentTierNote(a)}`}
-              </span>
-            </div>
-          </div>
+          {/* P1-B · 两列定义列表 + 弱标签 + 超高「更多」— visual only */}
+          <AgentMetaSections
+            rows={[
+              a.whenToUse ? { label: '何时用', value: a.whenToUse } : null,
+              a.inputsHint ? { label: '输入', value: a.inputsHint } : null,
+              a.outputsHint ? { label: '输出', value: a.outputsHint } : null,
+              a.guardrails?.length
+                ? { label: '护栏', value: a.guardrails.join(' · ') }
+                : null,
+              a.tools.length
+                ? {
+                    label: '工具',
+                    value: toolPreview,
+                    title: toolLabels.join(' · '),
+                  }
+                : null,
+              {
+                label: '谁负责',
+                value: [
+                  a.raciHint,
+                  a.hitlGates.length > 0
+                    ? `需确认 ${a.hitlGates.map((g) => HITL_GATE_LABELS[g]).join(' / ')}`
+                    : null,
+                  agentTierNote(a),
+                ]
+                  .filter(Boolean)
+                  .join(' · '),
+              },
+            ].filter(Boolean) as { label: string; value: string; title?: string }[]}
+          />
         </details>
       )}
     </article>

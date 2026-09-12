@@ -901,7 +901,7 @@ export function CaseDetail() {
                         : c.engagement.paymentStatus.includes('待确认') ||
                             c.engagement.paymentStatus === '未报价'
                           ? 'border-amber-200 bg-amber-50 text-amber-800'
-                          : 'border-blue-200 bg-blue-50 text-blue-700'
+                          : 'token-info-chip'
                   }`}
                 >
                   {c.engagement.paymentStatus}
@@ -1033,7 +1033,7 @@ export function CaseDetail() {
                       : inv.status === '逾期'
                         ? 'bg-rose-50 text-rose-800 ring-1 ring-rose-200'
                         : inv.status === '已开票'
-                          ? 'bg-sky-50 text-sky-800 ring-1 ring-sky-200'
+                          ? 'token-info-soft ring-1 ring-[color-mix(in_srgb,var(--color-status-info)_28%,transparent)]'
                           : 'bg-slate-100 text-slate-700 ring-1 ring-slate-200'
                   }`}
                 >
@@ -1046,7 +1046,7 @@ export function CaseDetail() {
                       void dispatchCommand({ type: 'issueInvoice', caseId: c.id, invoiceId: inv.id }, { actor: 'user' })
                       showToast('已开具发票')
                     }}
-                    className="btn-press focus-ring rounded-md bg-sky-50 px-2 py-1 text-xs font-medium text-sky-800 ring-1 ring-sky-200"
+                    className="btn-press focus-ring rounded-md bg-accent-soft px-2 py-1 text-xs font-medium text-accent-muted ring-1 ring-[color-mix(in_srgb,var(--color-accent)_28%,transparent)]"
                     aria-label={`开具发票 ${inv.title}`}
                   >
                     开具发票
@@ -1153,7 +1153,7 @@ export function CaseDetail() {
               >
                 <div className="flex flex-wrap items-center gap-2">
                   {row.sources.includes('Drive') && (
-                    <span className="rounded border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-[10px] font-medium text-sky-800">
+                    <span className="rounded token-info-chip px-1.5 py-0.5 text-[10px] font-medium">
                       Drive
                     </span>
                   )}
@@ -1235,7 +1235,7 @@ export function CaseDetail() {
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-xs font-medium ${
                     a.actor === 'agent'
-                      ? 'bg-sky-50 text-sky-700'
+                      ? 'token-info-soft'
                       : 'bg-slate-100 text-slate-600'
                   }`}
                 >
@@ -1296,7 +1296,7 @@ export function CaseDetail() {
               ))}
             {c.timeline.map((ev) => {
               const colors = {
-                info: 'bg-blue-500',
+                info: 'bg-[var(--color-status-info)]',
                 success: 'bg-emerald-500',
                 warning: 'bg-amber-500',
                 action: 'bg-slate-700',

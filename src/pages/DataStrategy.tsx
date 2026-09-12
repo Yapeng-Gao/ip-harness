@@ -81,7 +81,7 @@ export function DataStrategy() {
                     p.status === '已对接示意'
                       ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
                       : p.status === '可配置'
-                        ? 'bg-sky-50 text-sky-700 ring-1 ring-sky-200'
+                        ? 'token-info-soft ring-1 ring-[color-mix(in_srgb,var(--color-status-info)_28%,transparent)]'
                         : 'bg-slate-100 text-slate-500'
                   }`}
                 >
@@ -135,11 +135,11 @@ export function DataStrategy() {
       {/* Phase 2 */}
       <section className="mb-8">
         <div className="mb-3 flex items-center gap-2">
-          <Waves className="h-4 w-4 text-violet-600" />
+          <Waves className="h-4 w-4 text-accent-muted" />
           <h2 className="text-sm font-semibold text-slate-900">
             Phase 2 · 自建数据湖
           </h2>
-          <span className="rounded bg-violet-50 px-1.5 py-0.5 text-[10px] font-medium text-violet-700">
+          <span className="rounded bg-accent-soft px-1.5 py-0.5 text-[10px] font-medium text-accent-muted">
             路线图示意
           </span>
         </div>

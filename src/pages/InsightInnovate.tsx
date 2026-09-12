@@ -17,7 +17,7 @@ import type { InventionCandidate } from '../types'
 
 const maturityColor: Record<string, string> = {
   概念: 'bg-slate-100 text-slate-600',
-  实验室: 'bg-sky-50 text-sky-700',
+  实验室: 'token-info-soft',
   原型: 'bg-slate-100 text-slate-800',
   小试: 'bg-emerald-50 text-emerald-700',
 }

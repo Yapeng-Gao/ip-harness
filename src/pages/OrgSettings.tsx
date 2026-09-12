@@ -254,7 +254,7 @@ export function OrgSettings() {
 
       <div className="rounded-xl border border-slate-200 bg-white p-5">
         <div className="mb-4 flex items-center gap-2">
-          <Scale className="h-4 w-4 text-violet-600" />
+          <Scale className="h-4 w-4 text-accent-muted" />
           <h2 className="text-sm font-medium text-slate-800">入驻代理所权限（示意）</h2>
         </div>
         <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">

@@ -91,6 +91,30 @@ export function WbTip({
   )
 }
 
+/**
+ * P1-D · 同视口唯一 sticky tip 槽。
+ * tone: error=blocker > warn > info/neutral；调用方保证每页只渲染一个。
+ */
+export function WbStickyTip({
+  children,
+  tone = 'info',
+  className = '',
+}: {
+  children: ReactNode
+  tone?: TipTone
+  className?: string
+}) {
+  if (!children) return null
+  const role = tone === 'error' ? 'alert' : 'status'
+  return (
+    <div className={`wb-tip-sticky-slot ${className}`}>
+      <div className={`wb-tip wb-tip-sticky wb-tip-${tone}`} role={role} data-sticky-tip="1">
+        {children}
+      </div>
+    </div>
+  )
+}
+
 /** Checkbox row with intentional checked / hover states. */
 export function WbCheckRow({
   checked,

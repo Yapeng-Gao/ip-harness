@@ -43,18 +43,18 @@ export function IamLoginPage() {
           {returnUrl ? (
             <div
               role="status"
-              className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950"
+              className="rounded-xl border border-[color-mix(in_srgb,var(--color-accent)_28%,transparent)] bg-accent-soft px-4 py-3 text-sm text-slate-900"
             >
               <p className="font-medium">登录后将回跳：</p>
-              <p className="mt-1 break-all font-mono text-xs text-sky-900/80">{returnUrl}</p>
+              <p className="mt-1 break-all font-mono text-xs text-slate-600">{returnUrl}</p>
               <a
                 href={returnUrl}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-sky-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-800"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-500"
               >
                 回跳到来源
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden />
               </a>
-              <p className="mt-2 text-xs text-sky-800/70">
+              <p className="mt-2 text-xs text-slate-500">
                 建议先在下方选租户写入样机 cookie，再点回跳；共享 Login 的「进入」仍跳产品根，不读
                 return。
               </p>

@@ -36,7 +36,7 @@ const FLOW: DisclosureStatus[] = [
 
 const STATUS_STYLE: Record<DisclosureStatus, string> = {
   草稿: 'bg-slate-100 text-slate-600',
-  已提交: 'bg-sky-50 text-sky-700',
+  已提交: 'token-info-soft',
   部门审核: 'bg-amber-50 text-amber-800',
   IP受理: 'bg-slate-100 text-slate-800',
   已立案: 'bg-emerald-50 text-emerald-800',
@@ -290,11 +290,11 @@ export function InventorPortal() {
       </div>
 
       <div className="mb-4 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl border border-sky-200 bg-sky-50/50 px-3 py-2.5">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-sky-800">
+        <div className="rounded-xl border border-[color-mix(in_srgb,var(--color-accent)_28%,transparent)] bg-accent-soft/60 px-3 py-2.5">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-accent-muted">
             ① 发明人提报
           </div>
-          <p className="mt-0.5 text-[11px] text-sky-900/80">
+          <p className="mt-0.5 text-[11px] text-slate-700">
             门户表单推进 · 与办理交接无关
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -307,11 +307,11 @@ export function InventorPortal() {
             <span className="text-[11px] text-slate-400">（或 退回）</span>
           </div>
         </div>
-        <div className="rounded-xl border border-violet-200 bg-violet-50/50 px-3 py-2.5">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-violet-800">
+        <div className="rounded-xl border border-[color-mix(in_srgb,var(--color-accent)_28%,transparent)] bg-accent-soft/60 px-3 py-2.5">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-accent-muted">
             ② 交底包交接
           </div>
-          <p className="mt-0.5 text-[11px] text-violet-900/80">
+          <p className="mt-0.5 text-[11px] text-slate-700">
             disclosure_pack · Agent 写入 / 企业批准 · 六项齐套硬闸
           </p>
           <p className="mt-2 text-[11px] text-slate-600">
@@ -320,7 +320,7 @@ export function InventorPortal() {
         </div>
       </div>
 
-      <section className="mb-6 rounded-xl border border-violet-200 bg-white p-5" aria-labelledby="disclosure-pack-heading">
+      <section className="mb-6 rounded-xl border border-slate-200 bg-white p-5" aria-labelledby="disclosure-pack-heading">
         <h2 id="disclosure-pack-heading" className="text-sm font-medium text-slate-800">
           ② 结构化交底包 · {HANDOFF_ARTIFACT_LABELS.disclosure_pack}
         </h2>

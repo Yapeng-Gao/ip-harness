@@ -31,7 +31,7 @@ import {
 } from '../../components/FlowChrome'
 import { VersionPanel } from '../../components/VersionPanel'
 import { personaCanGo, personaCanVote, PERSONA_LABELS } from '@shared/data/persona'
-import { WbSection, WbField, WbTip, WbInset } from '../../components/FormBlocks'
+import { WbSection, WbField, WbTip, WbStickyTip, WbInset } from '../../components/FormBlocks'
 
 const STEPS = stepsForFlow('intake')
 const REVIEWERS = [
@@ -285,6 +285,21 @@ ${voteLines}
       </div>
       <Stepper steps={STEPS} current={stepperCurrent} />
 
+      {/* P1-D · 唯一 sticky tip：交底未批 / Persona / 投票硬闸 */}
+      {!disclosureApproved ? (
+        <WbStickyTip tone="error">
+          红灯：交底包未批准，不可 Go · 请先完成披露包批准后再确认决议
+        </WbStickyTip>
+      ) : decision === 'Go' &&
+        committeeVoteHardBlockGo &&
+        !hasAuditedCommitteeVote(caseId) ? (
+        <WbStickyTip tone="error">{COMMITTEE_VOTE_HARD_GATE_MSG}</WbStickyTip>
+      ) : role === 'enterprise' && !personaCanGo(persona) ? (
+        <WbStickyTip tone="warn">
+          当前 Persona={PERSONA_LABELS[persona]}：不可 Go/No-Go（须切企业 IP）
+        </WbStickyTip>
+      ) : null}
+
       <SplitDraft
         rightTitle="立项决策纪要"
         right={
@@ -318,12 +333,9 @@ ${voteLines}
                     <li>缺口/未齐项数：{gapHints}</li>
                   </ul>
                   {!disclosureApproved && (
-                    <p className="mt-1.5 text-[11px] font-medium text-rose-800">
-                      红灯：交底包未批准，不可 Go ·{' '}
-                      <Link
-                        className="underline"
-                        to={`/inventor?case=${caseId}`}
-                      >
+                    <p className="mt-1.5 text-[11px] text-slate-600">
+                      见上方红灯 ·{' '}
+                      <Link className="underline" to={`/inventor?case=${caseId}`}>
                         门户
                       </Link>
                       {' · '}
@@ -526,16 +538,14 @@ ${voteLines}
               />
               {role === 'enterprise' && (
                 <>
-                  <WbTip tone="neutral" className="mt-1">
-                    Go 闸门条件：须企业 IP Persona；交底包须已批准；自助须有预算；委托须报价确认 / intake_quote 已批准。
-                    {committeeVoteHardBlockGo
-                      ? '「投票硬挡 Go」已开：立项 Go / 确认报价前必须有效投票。'
-                      : '委员投票为报价提交 REQUIRED（默认可软提示）。'}
+                  <WbTip tone="neutral" className="mt-1 wb-tip-inline-muted">
+                    Go 闸门：企业 IP · 交底已批 · 自助有预算 / 委托报价已确认。
+                    {committeeVoteHardBlockGo ? ' 投票硬挡已开。' : ''}
                   </WbTip>
                   {!personaCanGo(persona) ? (
-                    <WbTip tone="warn" role="status" className="mt-1">
-                      当前 Persona={PERSONA_LABELS[persona]}：不可 Go/No-Go（须切企业 IP）
-                    </WbTip>
+                    <p className="mt-1 text-xs text-slate-500" role="status">
+                      Persona 限制见上方提示
+                    </p>
                   ) : (
                     <button
                       type="button"
@@ -561,13 +571,7 @@ ${voteLines}
                       {decision === 'No-Go' ? '记录 No-Go' : '确认决议并转入撰写'}
                     </button>
                   )}
-                  {decision === 'Go' &&
-                    committeeVoteHardBlockGo &&
-                    !hasAuditedCommitteeVote(caseId) && (
-                      <WbTip tone="error" role="alert" className="mt-1 font-medium">
-                        {COMMITTEE_VOTE_HARD_GATE_MSG}
-                      </WbTip>
-                    )}
+                  {/* 投票硬闸已在 sticky 槽展示 */}
                 </>
               )}
             </WbSection>

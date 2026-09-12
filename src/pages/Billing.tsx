@@ -56,7 +56,7 @@ const AGENCY_TERMS = [
 
 const STATUS_STYLE: Record<InvoiceStatus, string> = {
   待开票: 'bg-slate-100 text-slate-700 ring-1 ring-slate-200',
-  已开票: 'bg-sky-50 text-sky-800 ring-1 ring-sky-200',
+  已开票: 'token-info-soft ring-1 ring-[color-mix(in_srgb,var(--color-status-info)_28%,transparent)]',
   已付款: 'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200',
   逾期: 'bg-rose-50 text-rose-800 ring-1 ring-rose-200',
 }
@@ -306,7 +306,7 @@ export function Billing() {
                             <button
                               type="button"
                               onClick={() => void dispatchCommand({ type: 'issueInvoice', caseId: r.caseId, invoiceId: r.invId }, { actor: 'user' })}
-                              className="btn-press rounded-md bg-sky-50 px-2 py-1 text-xs font-medium text-sky-800 ring-1 ring-sky-200 hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
+                              className="btn-press rounded-md bg-accent-soft px-2 py-1 text-xs font-medium text-accent-muted ring-1 ring-[color-mix(in_srgb,var(--color-accent)_28%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-accent-soft)_85%,#fff)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
                               aria-label={`开具发票 ${r.title}`}
                             >
                               开具发票
@@ -420,7 +420,7 @@ export function Billing() {
             ))}
           </div>
           <div className="mb-4 flex items-center gap-2 text-sm text-slate-700">
-            <Scale className="h-4 w-4 text-violet-600" />
+            <Scale className="h-4 w-4 text-accent-muted" />
             代理侧结算（示意）
           </div>
           <div className="mb-6 grid gap-4 md:grid-cols-3">

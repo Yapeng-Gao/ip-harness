@@ -18,7 +18,7 @@ import {
   draftAreaCls,
 } from '../../components/FlowChrome'
 import { VersionPanel } from '../../components/VersionPanel'
-import { WbSection, WbField, WbTip, WbCheckRow, WbNodeCard, WbChip, WbEmpty } from '../../components/FormBlocks'
+import { WbSection, WbField, WbTip, WbStickyTip, WbCheckRow, WbNodeCard, WbChip, WbEmpty } from '../../components/FormBlocks'
 import { WorkbenchInsightDataBanner } from '../../components/WorkbenchInsightDataBanner'
 import {
   evaluateGuardrails,
@@ -318,6 +318,25 @@ ${
 
       <Stepper steps={STEPS} current={stepperCurrent} />
 
+      {/* P1-D · 唯一 sticky tip：blocker 优先，不落折线以下 */}
+      {(hitInlineError ||
+        (submitAttempted && selectedResults.length === 0) ||
+        (selectedResults.length > 0 && !hitsVerifiable) ||
+        conclusionBullets.length === 0) && (
+        <WbStickyTip tone="error">
+          {hitInlineError ??
+            (submitAttempted && selectedResults.length === 0
+              ? '请至少勾选 1 篇检索命中后再提交'
+              : selectedResults.length > 0 && !hitsVerifiable
+                ? `命中须含可核验 pubNo + 可点 url · 无链接不可提交${
+                    unverifiableHits.length
+                      ? `（${unverifiableHits.map((r) => r.pubNo || r.id).join('、')}）`
+                      : ''
+                  }`
+                : '尚未绑定 — 请勾选 ≥1 篇命中；空命中将阻断提交')}
+        </WbStickyTip>
+      )}
+
       <SplitDraft
         rightTitle="调研结论摘要"
         right={
@@ -421,7 +440,7 @@ ${
                 </ul>
               )}
               {noveltyNotes && (
-                <WbTip tone="neutral">{noveltyNotes}</WbTip>
+                <WbTip tone="neutral" className="wb-tip-inline-muted">{noveltyNotes}</WbTip>
               )}
             </WbSection>
 
@@ -437,9 +456,9 @@ ${
                 勾选/取消命中后立即重写结论要点并调整新颖性/创造性滑杆（示意绑定，非真实法律引擎）
               </p>
               {conclusionBullets.length === 0 ? (
-                <WbTip tone="error" role="alert">
-                  尚未绑定 — 请勾选 ≥1 篇命中；空命中将阻断提交
-                </WbTip>
+                <p className="text-xs text-slate-500">
+                  尚未绑定 — 见上方红灯提示；请勾选 ≥1 篇命中
+                </p>
               ) : (
                 <ul className="space-y-1.5">
                   {conclusionBullets.map((b, i) => (
@@ -449,21 +468,11 @@ ${
                   ))}
                 </ul>
               )}
-              {(hitInlineError || (submitAttempted && selectedResults.length === 0)) && (
-                <WbTip tone="error" role="alert" className="font-medium">
-                  {hitInlineError ?? '请至少勾选 1 篇检索命中后再提交'}
-                </WbTip>
-              )}
-              {selectedResults.length > 0 && !hitsVerifiable && (
-                <WbTip tone="error" role="alert" className="font-medium">
-                  命中须含可核验 pubNo + 可点 url · 无链接不可提交
-                  {unverifiableHits.length
-                    ? `（${unverifiableHits.map((r) => r.pubNo || r.id).join('、')}）`
-                    : ''}
-                </WbTip>
-              )}
+              {/* 内联闸门文案降级：blocker 已在 sticky 槽，避免叠层 */}
               {ftoNotes && (
-                <WbTip tone="warn">FTO 笔记：{ftoNotes}</WbTip>
+                <WbTip tone="warn" className="wb-tip-inline-muted">
+                  FTO 笔记：{ftoNotes}
+                </WbTip>
               )}
             </WbSection>
 

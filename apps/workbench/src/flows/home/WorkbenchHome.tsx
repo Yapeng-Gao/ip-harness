@@ -180,7 +180,7 @@ export function WorkbenchHome() {
                       </span>
                     )}
                     {t.source === 'handoff' && (
-                      <span className="rounded-full border border-indigo-200 bg-indigo-50 px-1.5 py-0.5 text-xs text-indigo-700">
+                      <span className="rounded-full border border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-accent-soft px-1.5 py-0.5 text-xs text-accent-muted">
                         交接驱动
                       </span>
                     )}
@@ -261,14 +261,14 @@ export function WorkbenchHome() {
             className="card-hover btn-press flat-card p-4 focus-ring shadow-[var(--shadow-rest)]"
           >
             <div className="mb-2 flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50">
-                <LayoutGrid className="h-4 w-4 text-violet-700" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft">
+                <LayoutGrid className="h-4 w-4 text-accent-muted" />
               </div>
               <div>
                 <div className="text-sm font-medium text-slate-800">布局洞察</div>
                 <div className="text-xs text-slate-500">
                   非阶段卡 · layout_insight · 可办{' '}
-                  <span className="tabular-nums font-medium text-violet-800">{layoutPoolCount}</span> 件
+                  <span className="tabular-nums font-medium text-accent-muted">{layoutPoolCount}</span> 件
                 </div>
               </div>
             </div>

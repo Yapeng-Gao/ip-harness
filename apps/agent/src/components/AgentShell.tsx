@@ -3,7 +3,7 @@ import {
   PanelRightClose,
   PanelRightOpen,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '@shared/context/AppContext'
 import { useAgents } from '@shared/context/AgentContext'
 import { getAgent, suggestAgent } from '@shared/data/agents'
@@ -20,9 +20,28 @@ export function AgentShell() {
   const { getSession } = useAgents()
   const loc = useLocation()
   const [rightOpen, setRightOpen] = useState(false)
+  /** P1-C · pending-confirm 首次进入自动展开上下文一次（视觉，不改 HITL） */
+  const autoExpandedFor = useRef<string | null>(null)
 
   const sessionIdMatch = loc.pathname.match(/^\/agent\/sessions\/([^/]+)/)
   const activeSession = sessionIdMatch ? getSession(sessionIdMatch[1]) : undefined
+
+  const contextBadgeCount = useMemo(() => {
+    if (!activeSession) return 0
+    const arts = activeSession.artifacts?.length ?? 0
+    const pending = activeSession.status === 'needs_human' || !!activeSession.hitlPending ? 1 : 0
+    return arts + pending
+  }, [activeSession])
+
+  useEffect(() => {
+    if (!activeSession) return
+    const pending =
+      activeSession.status === 'needs_human' || !!activeSession.hitlPending
+    if (pending && autoExpandedFor.current !== activeSession.id) {
+      setRightOpen(true)
+      autoExpandedFor.current = activeSession.id
+    }
+  }, [activeSession?.id, activeSession?.status, activeSession?.hitlPending])
 
   const topbarAgentLabel = useMemo(() => {
     if (!activeSession) return '自动匹配'
@@ -106,13 +125,24 @@ export function AgentShell() {
             <button
               type="button"
               onClick={() => setRightOpen((v) => !v)}
-              className="btn-press focus-ring hit-40 hidden items-center justify-center rounded-[var(--radius-sm)] border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50 lg:inline-flex"
+              className={`btn-press focus-ring hit-40 hidden items-center gap-1.5 rounded-[var(--radius-sm)] border px-2 py-1.5 text-xs font-medium lg:inline-flex ${
+                rightOpen
+                  ? 'border-[color-mix(in_srgb,var(--color-accent)_32%,transparent)] bg-accent-soft text-accent-muted'
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
               aria-label={rightOpen ? '折叠上下文' : '展开上下文'}
+              aria-pressed={rightOpen}
             >
               {rightOpen ? (
-                <PanelRightClose className="h-4 w-4" />
+                <PanelRightClose className="h-4 w-4" aria-hidden />
               ) : (
-                <PanelRightOpen className="h-4 w-4" />
+                <PanelRightOpen className="h-4 w-4" aria-hidden />
+              )}
+              <span>上下文</span>
+              {contextBadgeCount > 0 && (
+                <span className="inline-flex min-w-[1.125rem] items-center justify-center rounded-full bg-primary-600 px-1 py-px text-[10px] font-semibold tabular text-white">
+                  {contextBadgeCount > 9 ? '9+' : contextBadgeCount}
+                </span>
               )}
             </button>
           )}

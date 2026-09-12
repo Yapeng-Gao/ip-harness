@@ -3,7 +3,7 @@ import {
   PanelRightClose,
   PanelRightOpen,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { useAgents } from '../../context/AgentContext'
 import { getAgent, suggestAgent } from '../../data/agents'
@@ -20,9 +20,27 @@ export function AgentShell() {
   const { getSession } = useAgents()
   const loc = useLocation()
   const [rightOpen, setRightOpen] = useState(false)
+  const autoExpandedFor = useRef<string | null>(null)
 
   const sessionIdMatch = loc.pathname.match(/^\/agent\/sessions\/([^/]+)/)
   const activeSession = sessionIdMatch ? getSession(sessionIdMatch[1]) : undefined
+
+  const contextBadgeCount = useMemo(() => {
+    if (!activeSession) return 0
+    const arts = activeSession.artifacts?.length ?? 0
+    const pending = activeSession.status === 'needs_human' || !!activeSession.hitlPending ? 1 : 0
+    return arts + pending
+  }, [activeSession])
+
+  useEffect(() => {
+    if (!activeSession) return
+    const pending =
+      activeSession.status === 'needs_human' || !!activeSession.hitlPending
+    if (pending && autoExpandedFor.current !== activeSession.id) {
+      setRightOpen(true)
+      autoExpandedFor.current = activeSession.id
+    }
+  }, [activeSession?.id, activeSession?.status, activeSession?.hitlPending])
 
   const topbarAgentLabel = useMemo(() => {
     if (!activeSession) return '自动匹配'
@@ -70,14 +88,14 @@ export function AgentShell() {
   const inSession = loc.pathname.startsWith('/agent/sessions/')
 
   return (
-    <div className="flex h-full min-h-screen flex-col bg-white">
+    <div className="app-shell-bg flex h-full min-h-screen flex-col">
       <a href="#agent-main" className="skip-link">
         跳到主要内容
       </a>
 
-      <header className="flex h-11 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-3 lg:px-4">
+      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-3 shadow-[var(--shadow-rest)] backdrop-blur lg:px-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-900 text-[10px] font-semibold text-white">
+          <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[10px] font-semibold">
             IP
           </div>
           <div className="text-sm font-semibold tracking-tight text-slate-900">知产 Agent</div>
@@ -106,13 +124,24 @@ export function AgentShell() {
             <button
               type="button"
               onClick={() => setRightOpen((v) => !v)}
-              className="btn-press focus-ring hidden rounded-md border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50 lg:inline-flex"
+              className={`btn-press focus-ring hit-40 hidden items-center gap-1.5 rounded-[var(--radius-sm)] border px-2 py-1.5 text-xs font-medium lg:inline-flex ${
+                rightOpen
+                  ? 'border-[color-mix(in_srgb,var(--color-accent)_32%,transparent)] bg-accent-soft text-accent-muted'
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
               aria-label={rightOpen ? '折叠上下文' : '展开上下文'}
+              aria-pressed={rightOpen}
             >
               {rightOpen ? (
-                <PanelRightClose className="h-4 w-4" />
+                <PanelRightClose className="h-4 w-4" aria-hidden />
               ) : (
-                <PanelRightOpen className="h-4 w-4" />
+                <PanelRightOpen className="h-4 w-4" aria-hidden />
+              )}
+              <span>上下文</span>
+              {contextBadgeCount > 0 && (
+                <span className="inline-flex min-w-[1.125rem] items-center justify-center rounded-full bg-primary-600 px-1 py-px text-[10px] font-semibold tabular text-white">
+                  {contextBadgeCount > 9 ? '9+' : contextBadgeCount}
+                </span>
               )}
             </button>
           )}

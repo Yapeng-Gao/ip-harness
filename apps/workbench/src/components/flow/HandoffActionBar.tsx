@@ -254,7 +254,7 @@ export function HandoffActionBar({
         </div>
       )}
       {selfServe && role === 'enterprise' && (
-        <p className="text-xs text-sky-700">
+        <p className="text-xs text-accent-muted">
           自助办理：您可直接起草、提交并归档（企业作为执行方）
         </p>
       )}
@@ -264,7 +264,7 @@ export function HandoffActionBar({
         </p>
       )}
       {persona === 'inventor' && (
-        <p className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs text-violet-900" role="status">
+        <p className="rounded-lg border border-[color-mix(in_srgb,var(--color-accent)_28%,transparent)] bg-accent-soft px-3 py-2 text-xs text-slate-800" role="status">
           当前 Persona=发明人：工作台批准/授权/递交已禁用 ·{' '}
           <AppLink to="/inventor" className="font-medium underline">前往交底门户</AppLink>
         </p>

@@ -3,7 +3,7 @@ import { AGENT_TIER_LABEL, AGENT_TIER_SHORT } from '../../data/agents'
 
 const TIER_CLASS: Record<AgentTier, string> = {
   core: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-  assist: 'border-sky-200 bg-sky-50 text-sky-800',
+  assist: 'border-[color-mix(in_srgb,var(--color-accent)_28%,transparent)] bg-accent-soft text-accent-muted',
   beta: 'border-amber-200 bg-amber-50 text-amber-900',
 }
 

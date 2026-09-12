@@ -166,7 +166,7 @@ export const INITIAL_DOCKET_EVENTS: DocketEvent[] = [
     ruleId: 'oa1_response',
     title: '一通答复 · 边缘计算节点调度',
     triggerDate: '2026-05-28',
-    dueDate: '2026-09-28',
+    dueDate: '2026-09-16',
     status: 'due_soon',
     officialFeeHint: '延期请求费（示意）按月累进',
     linkedHandoffKey: 'prosecution_response',

@@ -104,7 +104,7 @@ function ScanChips({
 
 const SOURCE_PILL: Record<string, string> = {
   工作台: 'border-slate-200 bg-slate-50 text-slate-800',
-  Agent: 'border-sky-200 bg-sky-50 text-sky-900',
+  Agent: 'token-info-chip',
   期限: 'border-amber-200 bg-amber-50 text-amber-900',
   '监控·维持': 'border-rose-200 bg-rose-50 text-rose-900',
 }
@@ -515,7 +515,7 @@ export function Dashboard() {
                                 {item.title}
                               </span>
                               {item.source === 'agent' && item.gateLabel && (
-                                <span className="dash-inbox-tag border-sky-200 bg-sky-50 text-sky-900">
+                                <span className="dash-inbox-tag token-info-chip">
                                   闸 · {item.gateLabel}
                                 </span>
                               )}

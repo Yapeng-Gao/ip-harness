@@ -23,7 +23,7 @@ import {
 import { agentSessionPath, midInboxHref } from '../lib/deepLinks'
 
 const STATUS_DOT: Record<string, string> = {
-  running: 'bg-sky-500',
+  running: 'bg-[var(--color-status-info)]',
   needs_human: 'bg-amber-500',
   done: 'bg-emerald-500',
   queued: 'bg-slate-400',

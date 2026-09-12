@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { AppLink } from '../components/AppLink'
 import { useApp } from '../context/AppContext'
@@ -52,6 +52,17 @@ export function Pipeline() {
 
   const totalVisible = filtered.length
 
+  /** P1-A · 默认折叠空阶段，避免空列主导未完工感 */
+  const [showEmptyStages, setShowEmptyStages] = useState(false)
+  const emptyStageCount = useMemo(() => {
+    if (activeFilter !== 'all') return 0
+    return STAGES.filter((s) => !filtered.some((c) => c.stage === s.id)).length
+  }, [filtered, activeFilter])
+  const boardColumns = useMemo(() => {
+    if (activeFilter !== 'all' || showEmptyStages) return columns
+    return columns.filter((s) => filtered.some((c) => c.stage === s.id))
+  }, [columns, filtered, activeFilter, showEmptyStages])
+
   return (
     <div className="flex h-full flex-col p-6 lg:p-8">
       <TenantBanner />
@@ -94,6 +105,24 @@ export function Pipeline() {
             ))}
           </div>
         </div>
+        {activeFilter === 'all' && emptyStageCount > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="ui-btn ui-btn-secondary ui-btn-sm btn-press focus-ring"
+              aria-pressed={showEmptyStages}
+              onClick={() => setShowEmptyStages((v) => !v)}
+            >
+              {showEmptyStages ? '隐藏空阶段' : '显示空阶段'}
+              <span className="ml-1 tabular text-slate-500">({emptyStageCount})</span>
+            </button>
+            {!showEmptyStages && (
+              <span className="text-xs text-slate-500">
+                已折叠 {emptyStageCount} 个空阶段 · 专注有案阶段
+              </span>
+            )}
+          </div>
+        )}
       </PageHeader>
 
       {totalVisible === 0 ? (
@@ -115,10 +144,15 @@ export function Pipeline() {
         </div>
       ) : (
         <div className="flex flex-1 gap-3 overflow-x-auto pb-4">
-          {columns.map((stage) => {
+          {boardColumns.map((stage) => {
             const stageCases = filtered.filter((c) => c.stage === stage.id)
+            const isEmpty = stageCases.length === 0
             return (
-              <div key={stage.id} className="mid-pipeline-col">
+              <div
+                key={stage.id}
+                className="mid-pipeline-col"
+                data-empty={isEmpty ? 'true' : 'false'}
+              >
                 <div className="mid-pipeline-col-head">
                   <span
                     className="h-2 w-2 shrink-0 rounded-full"
@@ -133,9 +167,18 @@ export function Pipeline() {
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-2">
-                  {stageCases.length === 0 && (
-                    <div className="rounded-[calc(var(--radius-lg)-0.5rem)] border border-dashed border-slate-200 bg-slate-50/80 py-8 text-center text-xs text-slate-500">
-                      本列暂无可见案件
+                  {isEmpty && (
+                    <div className="ui-empty rounded-[calc(var(--radius-lg)-0.5rem)] border border-dashed border-slate-200 bg-slate-50/80 px-2 py-6 text-center">
+                      <div className="ui-empty-title text-xs">本列暂无可见案件</div>
+                      <div className="ui-empty-desc mt-1 text-[11px]">
+                        可筛选本阶段或前往工作台办理
+                      </div>
+                      <AppLink
+                        to="/workbench"
+                        className="ui-btn ui-btn-secondary ui-btn-sm btn-press focus-ring mt-3 inline-flex"
+                      >
+                        打开工作台
+                      </AppLink>
                     </div>
                   )}
                   {stageCases.map((c) => {
@@ -158,7 +201,10 @@ export function Pipeline() {
                           }
                         >
                           <div className="mb-1 flex flex-wrap items-center gap-1.5">
-                            <span className="text-sm font-medium leading-snug text-slate-900 text-pretty">
+                            <span
+                              className="line-clamp-2 text-sm font-medium leading-snug text-slate-900 text-pretty"
+                              title={c.title}
+                            >
                               {c.title}
                             </span>
                             {needsAction && (

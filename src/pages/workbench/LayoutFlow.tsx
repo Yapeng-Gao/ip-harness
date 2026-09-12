@@ -241,22 +241,22 @@ ${countries.join(' / ') || '（未选）'}
         </p>
 
         {/* 补挂向导：空态 / 手动 / 批准后同步 */}
-        <div className="rounded-lg border border-dashed border-violet-200 bg-violet-50/60 px-3 py-2">
+        <div className="rounded-lg border border-dashed border-[color-mix(in_srgb,var(--color-accent)_28%,transparent)] bg-accent-soft/70 px-3 py-2">
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
-              className="rounded-md bg-violet-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-violet-800"
+              className="rounded-md bg-primary-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-primary-500"
               onClick={() => setAttachOpen((o) => !o)}
             >
               {attachOpen ? '收起补挂' : '从已有案件补挂 layout_insight'}
             </button>
-            <span className="text-[11px] text-violet-900/80">
+            <span className="text-[11px] text-slate-700">
               布局 Agent 建案常深链调研案、源案未挂键 → 布局台空池。补挂写入 drafting，
               <span className="font-medium">不等于批准</span>、不绕过 REQUIRED。
             </span>
           </div>
           {attachOpen && (
-            <div className="mt-2 space-y-2 border-t border-violet-100 pt-2">
+            <div className="mt-2 space-y-2 border-t border-slate-200 pt-2">
               {attachCandidates.length === 0 ? (
                 <p className="text-xs text-slate-600">
                   暂无未挂键的调研阶段案可补挂（可见池内均已挂或无可办案）。
@@ -398,7 +398,7 @@ ${countries.join(' / ') || '（未选）'}
             <VersionPanel caseId={caseId} handoffKey="layout_insight" />
             <div className="rounded-xl border border-slate-200 bg-white p-3">
               {pendingSyncTarget && (
-                <label className="mb-2 flex items-start gap-2 rounded-md border border-violet-100 bg-violet-50/50 px-2 py-1.5 text-[11px] text-violet-950">
+                <label className="mb-2 flex items-start gap-2 rounded-md border border-slate-200 bg-accent-soft/50 px-2 py-1.5 text-[11px] text-slate-900">
                   <input
                     type="checkbox"
                     className="mt-0.5"
