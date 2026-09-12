@@ -382,29 +382,56 @@ function mapWatchSeedAlert(a: {
   }
 }
 
+
+/** Deep-clone one seed PatentCase (same shape as AppProvider initial state). */
+function clonePatentCaseFromSeed(c: PatentCase): PatentCase {
+  return {
+    ...c,
+    checklist: c.checklist.map((i) => ({ ...i })),
+    artifacts: [...c.artifacts],
+    timeline: [...c.timeline],
+    handoffs: Object.fromEntries(
+      Object.entries(c.handoffs).map(([k, v]) => [
+        k,
+        { ...v!, versions: v?.versions ? [...v.versions] : [] },
+      ]),
+    ),
+    engagement: {
+      ...c.engagement,
+      invoices: c.engagement.invoices
+        ? c.engagement.invoices.map((i) => ({ ...i }))
+        : [],
+      budgetApproved: c.engagement.budgetApproved,
+    },
+    fulfillmentMode: c.fulfillmentMode ?? 'delegated',
+    ownerEnterpriseId: c.ownerEnterpriseId ?? ENTERPRISE_XINGHE,
+    assignedAgencyId: c.assignedAgencyId,
+    linkedAlertId: c.linkedAlertId,
+  }
+}
+
+/**
+ * Hydrate merge: keep hydrated rows for existing ids (do not overwrite user edits);
+ * append seed cases whose ids are missing (e.g. new c12/c13 after old localStorage snapshot).
+ */
+export function mergeCasesWithSeedById(
+  hydrated: PatentCase[] | null | undefined,
+  seed: PatentCase[] = INITIAL_CASES,
+): PatentCase[] {
+  if (!hydrated?.length) {
+    return seed.map(clonePatentCaseFromSeed)
+  }
+  const have = new Set(hydrated.map((c) => c.id))
+  const missing = seed
+    .filter((c) => !have.has(c.id))
+    .map(clonePatentCaseFromSeed)
+  if (missing.length === 0) return hydrated
+  return [...hydrated, ...missing]
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [cases, setCases] = useState<PatentCase[]>(() =>
-    INITIAL_CASES.map((c) => ({
-      ...c,
-      checklist: c.checklist.map((i) => ({ ...i })),
-      artifacts: [...c.artifacts],
-      timeline: [...c.timeline],
-      handoffs: Object.fromEntries(
-        Object.entries(c.handoffs).map(([k, v]) => [
-          k,
-          { ...v!, versions: v?.versions ? [...v.versions] : [] },
-        ]),
-      ),
-      engagement: {
-        ...c.engagement,
-        invoices: c.engagement.invoices ? c.engagement.invoices.map((i) => ({ ...i })) : [],
-        budgetApproved: c.engagement.budgetApproved,
-      },
-      fulfillmentMode: c.fulfillmentMode ?? 'delegated',
-      ownerEnterpriseId: c.ownerEnterpriseId ?? ENTERPRISE_XINGHE,
-      assignedAgencyId: c.assignedAgencyId,
-      linkedAlertId: c.linkedAlertId,
-    })),
+    INITIAL_CASES.map(clonePatentCaseFromSeed),
   )
   const [watchAlertsByCase, setWatchAlertsByCase] = useState<
     Record<string, WatchAlert[]>
@@ -626,7 +653,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!snap || snapBootDone.current) return
     snapBootDone.current = true
     applyingRemoteSnap.current = true
-    if (snap.cases?.length) setCases(snap.cases)
+    if (snap.cases?.length) setCases(mergeCasesWithSeedById(snap.cases))
     if (snap.auditLog) setAuditLog(snap.auditLog)
     if (snap.flowProgressByCase) setFlowProgressByCase(snap.flowProgressByCase)
     if (snap.docketEvents) setDocketEvents(snap.docketEvents)
@@ -721,12 +748,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const snap = pickNewerSnapshot(local, incoming) ?? incoming
       if (!snap) return
       applyingRemoteSnap.current = true
-      if (snap.cases?.length) setCases(snap.cases)
+      const mergedCases = snap.cases?.length
+        ? mergeCasesWithSeedById(snap.cases)
+        : undefined
+      if (mergedCases) setCases(mergedCases)
       if (snap.auditLog) setAuditLog(snap.auditLog)
       if (snap.flowProgressByCase) setFlowProgressByCase(snap.flowProgressByCase)
       if (snap.docketEvents) setDocketEvents(snap.docketEvents)
       try {
-        writeLocalSnapshot(snap)
+        writeLocalSnapshot(
+          mergedCases ? { ...snap, cases: mergedCases } : snap,
+        )
       } catch {
         /* ignore */
       }

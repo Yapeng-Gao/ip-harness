@@ -3,7 +3,7 @@
  * Contexts + cross-port store. Domain/contracts stay the source for types and keys.
  */
 
-export { AppProvider, useApp } from './AppContext'
+export { AppProvider, mergeCasesWithSeedById, useApp } from './AppContext'
 export {
   AgentProvider,
   useAgents,
