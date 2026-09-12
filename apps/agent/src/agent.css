@@ -1,0 +1,6 @@
+/* Linux / box 环境：与 mid 统一，用已安装的 Noto Sans CJK SC，避免 SC 小写拉丁抢匹配导致中文破版 */
+html,
+body,
+#root {
+  font-family: "Noto Sans CJK SC", "Noto Sans SC", "Noto Sans CJK", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}

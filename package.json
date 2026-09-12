@@ -1,0 +1,53 @@
+{
+  "name": "ip-harness",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @ip/mid",
+    "dev:mid": "npm run dev -w @ip/mid",
+    "dev:workbench": "npm run dev -w @ip/workbench",
+    "dev:agent": "npm run dev -w @ip/agent",
+    "dev:ops": "npm run dev -w @ip/ops",
+    "dev:iam": "npm run dev -w @ip/iam",
+    "dev:legacy": "vite --config vite.config.ts",
+    "build": "npm run build -w @ip/mid",
+    "build:all": "npm run build -w @ip/contracts --if-present; npm run build -w @ip/mid -w @ip/workbench -w @ip/agent -w @ip/ops -w @ip/iam --if-present",
+    "typecheck": "npm run typecheck -w @ip/contracts && npm run typecheck -w @ip/domain && npm run typecheck -w @ip/app-state && npm run typecheck -w @ip/ui && npm run typecheck -w @ip/api && npm run typecheck -w @ip/api-mock && npm run typecheck -w @ip/mid",
+    "typecheck:contracts": "npm run typecheck -w @ip/contracts",
+    "lint": "oxlint",
+    "preview": "npm run preview -w @ip/mid",
+    "test:e2e": "playwright test",
+    "dev:api": "npm run dev -w @ip/api-mock",
+    "typecheck:api": "npm run typecheck -w @ip/contracts && npm run typecheck -w @ip/api && npm run typecheck -w @ip/api-mock",
+    "typecheck:domain": "npm run typecheck -w @ip/domain",
+    "typecheck:app-state": "npm run typecheck -w @ip/app-state",
+    "typecheck:ui": "npm run typecheck -w @ip/ui"
+  },
+  "dependencies": {
+    "lucide-react": "^1.44.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.3",
+    "@ip/domain": "*",
+    "@ip/contracts": "*",
+    "@ip/app-state": "*",
+    "@ip/ui": "*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "oxlint": "^1.81.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0"
+  }
+}

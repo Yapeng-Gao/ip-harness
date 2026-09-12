@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ip-harness cross-port bridge</title>
+  </head>
+  <body>
+    <!--
+      Mid-origin storage hub for multi-port prototype sync.
+      Keys MUST match @ip/contracts crossPortKeys:
+        CROSS_PORT_SNAPSHOT_LS_KEY = ip-harness.cross.v1.snapshot
+        CROSS_PORT_BRIDGE_MESSAGE_TYPE = ip-harness.cross.v1
+      Allowed parents: localhost 5173–5177 (Phase 0 APP_PORTS).
+    -->
+    <script>
+      (function () {
+        var LS_KEY = 'ip-harness.cross.v1.snapshot'
+        var MSG = 'ip-harness.cross.v1'
+        var ALLOWED = {
+          'http://localhost:5173': 1,
+          'http://localhost:5174': 1,
+          'http://localhost:5175': 1,
+          'http://localhost:5176': 1,
+          'http://localhost:5177': 1,
+          'http://127.0.0.1:5173': 1,
+          'http://127.0.0.1:5174': 1,
+          'http://127.0.0.1:5175': 1,
+          'http://127.0.0.1:5176': 1,
+          'http://127.0.0.1:5177': 1,
+        }
+        function okOrigin(o) {
+          return !!ALLOWED[o]
+        }
+        function reply(source, origin, payload) {
+          try {
+            source.postMessage(payload, origin)
+          } catch (e) {}
+        }
+        window.addEventListener('message', function (ev) {
+          if (!okOrigin(ev.origin)) return
+          var d = ev.data
+          if (!d || d.type !== MSG) return
+          if (d.op === 'get') {
+            var raw = null
+            try {
+              raw = localStorage.getItem(LS_KEY)
+            } catch (e) {}
+            reply(ev.source, ev.origin, {
+              type: MSG,
+              op: 'get:ok',
+              id: d.id,
+              raw: raw,
+            })
+          } else if (d.op === 'set' && typeof d.raw === 'string') {
+            try {
+              localStorage.setItem(LS_KEY, d.raw)
+            } catch (e) {}
+            reply(ev.source, ev.origin, {
+              type: MSG,
+              op: 'set:ok',
+              id: d.id,
+            })
+            // fan-out to other iframes / mid tabs via storage event + optional push
+            try {
+              if (window.parent && window.parent !== window) {
+                /* parent already wrote its own LS; hub holds mid copy */
+              }
+            } catch (e) {}
+          }
+        })
+        if (window.parent && window.parent !== window) {
+          try {
+            window.parent.postMessage({ type: MSG, op: 'ready' }, '*')
+          } catch (e) {}
+        }
+      })()
+    </script>
+  </body>
+</html>
