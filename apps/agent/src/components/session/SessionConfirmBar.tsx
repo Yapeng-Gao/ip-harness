@@ -100,6 +100,8 @@ export function SessionConfirmBar({
   focusGate = null,
 }: Props) {
   const firstActionable = gates.find((g) => !gateDisabledReason(g))
+  const pendingGate = gates.find((g) => !clearedGates.includes(g))
+  const legalNextGate = firstActionable ?? pendingGate
   const roleKind = role === 'agency' ? 'agency' : 'enterprise'
   const chainPreviewRaw =
     firstActionable
@@ -445,58 +447,104 @@ export function SessionConfirmBar({
                   : fullBlock
                     ? `Full-check 未过：${fullResult!.missing[0] ?? '缺项'}`
                     : null)
-              const isPrimary = !disabled && g === firstActionable
+              const isLegalNext = g === legalNextGate
+              const isPrimary = isLegalNext
               if (clearedGates.includes(g)) return null
-              // intake: current gate only in bubble; other gate as chips/dots — no dual voting CTAs
-              if (isIntake && g !== firstActionable) return null
+              // intake: current legal next only; other gates stay as chips/dots
+              if (isIntake && g !== legalNextGate) return null
               // research / layout: 批准策略 only (single gate already)
-              if ((isResearch || isLayout) && g !== firstActionable) return null
+              if ((isResearch || isLayout) && g !== legalNextGate) return null
+              const reasonId = disableReason
+                ? `agent-confirm-reason-${g}`
+                : undefined
               return (
-                <button
-                  key={g}
-                  type="button"
-                  onClick={() => onGate(g, { stepwise })}
-                  disabled={disabled}
-                  title={disableReason ?? HITL_GATE_LABELS[g]}
-                  className={`ui-btn ui-btn-sm btn-press focus-ring disabled:opacity-50 ${
-                    isPrimary
-                      ? isAuth
-                        ? 'ui-btn-primary'
-                        : 'ui-btn-success'
-                      : 'ui-btn-ghost'
-                  }`}
-                >
-                  {isPrimary && <Check className="h-3 w-3" aria-hidden />}
-                  {HITL_GATE_LABELS[g]}
-                </button>
+                <span key={g} className="agent-confirm-cta-wrap">
+                  <button
+                    type="button"
+                    onClick={() => onGate(g, { stepwise })}
+                    disabled={disabled}
+                    title={disableReason ?? HITL_GATE_LABELS[g]}
+                    aria-label={HITL_GATE_LABELS[g]}
+                    aria-describedby={reasonId}
+                    className={`ui-btn ui-btn-sm btn-press focus-ring ${
+                      isLegalNext ? 'agent-confirm-cta' : ''
+                    } ${
+                      isPrimary
+                        ? isAuth
+                          ? 'ui-btn-primary'
+                          : 'ui-btn-success'
+                        : 'ui-btn-ghost'
+                    }`}
+                  >
+                    {isPrimary && !disabled && (
+                      <Check className="h-3 w-3" aria-hidden />
+                    )}
+                    {HITL_GATE_LABELS[g]}
+                  </button>
+                  {disabled && disableReason ? (
+                    <span
+                      id={reasonId}
+                      className="agent-confirm-reason"
+                      data-tone="block"
+                      role="status"
+                    >
+                      {disableReason}
+                    </span>
+                  ) : null}
+                </span>
               )
             })
           )}
 
           {showFile && !firstActionable && (
-            <button
-              type="button"
-              onClick={submitFile}
-              disabled={
-                (!!block.blocked && role === 'agency') ||
-                (isClaims && !filingComplete) ||
-                (!!fullResult && !fullResult.ok)
-              }
-              title={
-                fullResult && !fullResult.ok
-                  ? `Full-check 未过：${fullResult.missing[0] ?? '缺项'}`
-                  : isClaims && !filingComplete
-                    ? `递交清单未齐套（${filingCount}/5）`
-                    : block.blocked && role === 'agency'
-                      ? block.reason
-                      : undefined
-              }
-              aria-label="递交归档"
-              className="ui-btn ui-btn-sm ui-btn-success btn-press focus-ring disabled:opacity-50"
-            >
-              <Check className="h-3 w-3" aria-hidden />
-              确认递交归档
-            </button>
+            <span className="agent-confirm-cta-wrap">
+              <button
+                type="button"
+                onClick={submitFile}
+                disabled={
+                  (!!block.blocked && role === 'agency') ||
+                  (isClaims && !filingComplete) ||
+                  (!!fullResult && !fullResult.ok)
+                }
+                title={
+                  fullResult && !fullResult.ok
+                    ? `Full-check 未过：${fullResult.missing[0] ?? '缺项'}`
+                    : isClaims && !filingComplete
+                      ? `递交清单未齐套（${filingCount}/5）`
+                      : block.blocked && role === 'agency'
+                        ? block.reason
+                        : undefined
+                }
+                aria-label="递交归档"
+                aria-describedby={
+                  (fullResult && !fullResult.ok) ||
+                  (isClaims && !filingComplete) ||
+                  (block.blocked && role === 'agency')
+                    ? 'agent-confirm-reason-file'
+                    : undefined
+                }
+                className="ui-btn ui-btn-sm ui-btn-success btn-press focus-ring agent-confirm-cta"
+              >
+                <Check className="h-3 w-3" aria-hidden />
+                确认递交归档
+              </button>
+              {(fullResult && !fullResult.ok) ||
+              (isClaims && !filingComplete) ||
+              (block.blocked && role === 'agency') ? (
+                <span
+                  id="agent-confirm-reason-file"
+                  className="agent-confirm-reason"
+                  data-tone="block"
+                  role="status"
+                >
+                  {fullResult && !fullResult.ok
+                    ? `Full-check 未过：${fullResult.missing[0] ?? '缺项'}`
+                    : isClaims && !filingComplete
+                      ? `递交清单未齐套（${filingCount}/5）`
+                      : (block.reason ?? '暂不能递交')}
+                </span>
+              ) : null}
+            </span>
           )}
 
           <button
@@ -577,27 +625,27 @@ export function SessionConfirmBar({
       )}
 
       {needsOaData && (
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="agent-confirm-reason mt-1.5" role="status">
           还差争点类型 / 陈述确认 · 点补充项
         </p>
       )}
       {needsFilingData && (
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="agent-confirm-reason mt-1.5" role="status">
           还差递交清单 {filingCount}/5 · 点补充项
         </p>
       )}
       {needsDisclosureData && (
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="agent-confirm-reason mt-1.5" role="status">
           还差交底包 · 点补充项
         </p>
       )}
       {needsFullCheck && (
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="agent-confirm-reason mt-1.5" role="status">
           Full-check 还差 · 点补充项
         </p>
       )}
       {annuityNoInvoice && (
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="agent-confirm-reason mt-1.5" role="status">
           无待付发票 · 请先去费用中心
           {caseId ? (
             <>

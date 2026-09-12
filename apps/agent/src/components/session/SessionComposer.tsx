@@ -96,14 +96,25 @@ export function SessionComposer({
             ))}
           </select>
           {hitlActive ? (
-            <button
-              type="button"
-              disabled
-              title="请先完成上方确认步骤"
-              className="btn-press focus-ring ml-auto inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-400"
-            >
-              <Send className="h-3.5 w-3.5" /> 确认完成后再办理
-            </button>
+            <span className="agent-confirm-cta-wrap ml-auto">
+              <button
+                type="button"
+                disabled
+                title="请先完成上方确认步骤"
+                aria-label="确认完成后再办理"
+                aria-describedby="agent-confirm-reason-composer"
+                className="ui-btn ui-btn-sm ui-btn-primary agent-confirm-cta"
+              >
+                <Send className="h-3.5 w-3.5" aria-hidden /> 确认完成后再办理
+              </button>
+              <span
+                id="agent-confirm-reason-composer"
+                className="agent-confirm-reason"
+                role="status"
+              >
+                请先完成上方确认步骤
+              </span>
+            </span>
           ) : (
             <button
               type="button"

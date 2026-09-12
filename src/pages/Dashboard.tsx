@@ -26,6 +26,82 @@ import { DashboardSecondary } from './DashboardSecondary'
 import { BillingHoldBanner } from '../components/BillingHoldBanner'
 import { AppLink } from '../components/AppLink'
 
+type ScanChipKind = 'sla' | 'risk' | 'who' | 'gate'
+type ScanChip = { kind: ScanChipKind; k: string; v: string }
+
+/** Presentation-only: split SLA / risk / who into chips. Does not change inbox data. */
+function scanChipsFromInbox(item: OpsInboxItem): { chips: ScanChip[]; residual?: string } {
+  const bits = (item.subtitle ?? '')
+    .split(' · ')
+    .map((part) => part.trim())
+    .filter(Boolean)
+
+  let sla: string | undefined
+  let slaOver = false
+  let risk: string | undefined
+  const residual: string[] = []
+
+  for (const bit of bits) {
+    if (bit === '超 SLA') {
+      slaOver = true
+      continue
+    }
+    const slaDate = bit.match(/^SLA\s+(\d{4}-\d{2}-\d{2})$/)
+    if (slaDate) {
+      sla = slaDate[1]
+      continue
+    }
+    if (bit === '已逾期' || bit === '逾期' || bit === '即将到期') {
+      sla = sla ? `${bit} · ${sla}` : bit
+      continue
+    }
+    if (bit === '风险旗标' || bit === '期限升级') {
+      risk = risk ? `${risk} · ${bit}` : bit
+      continue
+    }
+    if (bit.startsWith('风险')) {
+      risk = bit.slice(2) || '有'
+      continue
+    }
+    if (item.gateLabel && (bit === `闸 ${item.gateLabel}` || bit === '待确认')) continue
+    if (bit === item.title) continue
+    residual.push(bit)
+  }
+
+  if (!sla && item.due) sla = item.due
+  else if (slaOver && sla) sla = `已超 · ${sla}`
+  else if (slaOver) sla = '已超'
+
+  const chips: ScanChip[] = []
+  if (sla) chips.push({ kind: 'sla', k: 'SLA', v: sla })
+  if (risk) chips.push({ kind: 'risk', k: '风险', v: risk })
+  chips.push({ kind: 'who', k: '谁该动', v: item.whoShouldAct })
+  if (item.gateLabel) chips.push({ kind: 'gate', k: '闸', v: item.gateLabel })
+
+  return { chips, residual: residual.length ? residual.join(' · ') : undefined }
+}
+
+function ScanChips({
+  chips,
+  className,
+  label,
+}: {
+  chips: ScanChip[]
+  className?: string
+  label: string
+}) {
+  return (
+    <div className={className ?? 'dash-scan-chips'} aria-label={label}>
+      {chips.map((c) => (
+        <span key={`${c.kind}-${c.v}`} className="dash-scan-chip" data-kind={c.kind}>
+          <span className="dash-scan-chip-k">{c.k}</span>
+          <span className="dash-scan-chip-v tabular">{c.v}</span>
+        </span>
+      ))}
+    </div>
+  )
+}
+
 const SOURCE_PILL: Record<string, string> = {
   工作台: 'border-slate-200 bg-slate-50 text-slate-800',
   Agent: 'border-sky-200 bg-sky-50 text-sky-900',
@@ -133,6 +209,7 @@ export function Dashboard() {
   const inboxCounts = useMemo(() => countOpsInbox(inbox), [inbox])
   const inboxGroups = useMemo(() => groupInbox(inbox), [inbox])
   const nextItem = inbox[0]
+  const nextScan = nextItem ? scanChipsFromInbox(nextItem) : null
 
   useEffect(() => {
     if (!inboxFocusId) return
@@ -262,30 +339,17 @@ export function Dashboard() {
                 </span>
                 <div className="min-w-0">
                   <p className="dash-next-title truncate">{nextItem.title}</p>
-                  {nextItem.subtitle && (
-                    <p className="dash-next-sub truncate">{nextItem.subtitle}</p>
+                  {nextScan?.residual && (
+                    <p className="dash-next-sub">{nextScan.residual}</p>
                   )}
                 </div>
               </div>
             </div>
-            <div className="dash-next-meta" aria-label="优先事项要点">
-              {nextItem.due ? (
-                <span className="dash-next-fact">
-                  <span className="dash-next-fact-k">期限</span>
-                  <span className="dash-next-fact-v tabular">{nextItem.due}</span>
-                </span>
-              ) : null}
-              <span className="dash-next-fact">
-                <span className="dash-next-fact-k">谁该动</span>
-                <span className="dash-next-fact-v">{nextItem.whoShouldAct}</span>
-              </span>
-              {nextItem.gateLabel ? (
-                <span className="dash-next-fact">
-                  <span className="dash-next-fact-k">闸</span>
-                  <span className="dash-next-fact-v">{nextItem.gateLabel}</span>
-                </span>
-              ) : null}
-            </div>
+            <ScanChips
+              className="dash-next-meta dash-scan-chips"
+              label="优先事项要点"
+              chips={nextScan?.chips ?? []}
+            />
             <AppLink
               to={nextItem.href}
               className="ui-btn ui-btn-primary btn-press cta-work focus-ring dash-next-cta"
@@ -417,7 +481,7 @@ export function Dashboard() {
             <div className="dash-inbox-cols" aria-hidden>
               <span>来源</span>
               <span>事项</span>
-              <span>期限 / 谁该动</span>
+              <span>SLA · 风险 · 谁该动</span>
               <span className="text-right">动作</span>
             </div>
             {inboxGroups.map((group) => (
@@ -431,6 +495,7 @@ export function Dashboard() {
                 <ul>
                   {group.items.map((item) => {
                     const focused = inboxFocusId === item.id
+                    const scan = scanChipsFromInbox(item)
                     return (
                       <li key={item.id} id={`ops-inbox-row-${item.id}`}>
                         <AppLink
@@ -455,27 +520,20 @@ export function Dashboard() {
                                 </span>
                               )}
                             </div>
-                            {item.subtitle && (
-                              <p className="dash-inbox-sub truncate">
-                                {item.subtitle}
-                              </p>
+                            {scan.residual && (
+                              <p className="dash-inbox-sub">{scan.residual}</p>
                             )}
                             {item.sameCaseHint && (
-                              <p className="mt-0.5 truncate text-[11px] text-slate-400">
+                              <p className="dash-inbox-hint truncate">
                                 {item.sameCaseHint}
                               </p>
                             )}
                           </div>
-                          <div className="min-w-0">
-                            {item.due ? (
-                              <div className="dash-inbox-due">{item.due}</div>
-                            ) : (
-                              <div className="dash-inbox-due text-slate-300">—</div>
-                            )}
-                            <div className="mt-0.5 truncate text-[11px] text-slate-500">
-                              谁该动 · {item.whoShouldAct}
-                            </div>
-                          </div>
+                          <ScanChips
+                            className="dash-inbox-meta"
+                            label="SLA 风险 谁该动"
+                            chips={scan.chips.filter((c) => c.kind !== 'gate')}
+                          />
                           <span className="dash-inbox-action">
                             {item.source === 'agent' ? '确认' : '办理'}
                             <ArrowRight className="h-3.5 w-3.5" aria-hidden />
