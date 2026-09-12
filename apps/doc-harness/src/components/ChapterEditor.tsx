@@ -14,6 +14,8 @@ type Props = {
   document: Document
   revisions: DocumentRevision[]
   dirty: boolean
+  /** 只读预览某 revision 时：显示该版 body，不可编辑 */
+  previewRevision: DocumentRevision | null
   activeAnnotationId: string | null
   focusAnnotationId: string | null
   focusNonce: number
@@ -22,6 +24,7 @@ type Props = {
   onStartAnnotationDraft: (draft: AnnotationDraft) => void
   onAnnotationMarkClick: (annotationId: string) => void
   onEditorReady: (editor: Editor | null) => void
+  onExitRevisionPreview: () => void
 }
 
 export function ChapterEditor({
@@ -29,6 +32,7 @@ export function ChapterEditor({
   document,
   revisions,
   dirty,
+  previewRevision,
   activeAnnotationId,
   focusAnnotationId,
   focusNonce,
@@ -37,6 +41,7 @@ export function ChapterEditor({
   onStartAnnotationDraft,
   onAnnotationMarkClick,
   onEditorReady,
+  onExitRevisionPreview,
 }: Props) {
   const chapterRevs = revisions
     .filter((r) => r.chapterId === chapter.id)
@@ -45,8 +50,12 @@ export function ChapterEditor({
   const latest = chapterRevs[0]
   const revCount = chapterRevs.length
 
-  const readOnly =
+  const isPreview = Boolean(previewRevision)
+  const displayBody = previewRevision?.body ?? chapter.body
+
+  const gateReadOnly =
     !document.authorized || Boolean(chapter.locked)
+  const readOnly = gateReadOnly || isPreview
   const gateReason = !document.authorized
     ? document.unauthorizedReason ??
       `未授权 SKU「${document.skuLabel}」（mock 闸）· 编辑器只读`
@@ -66,6 +75,8 @@ export function ChapterEditor({
   const boundChapterId = chapter.id
   const [skuToast, setSkuToast] = useState<string | null>(null)
   const skuToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const previewModeRef = useRef(isPreview)
+  previewModeRef.current = isPreview
 
   const editor = useEditor({
     extensions: [
@@ -75,7 +86,7 @@ export function ChapterEditor({
       }),
       AnnotationMark,
     ],
-    content: chapter.body,
+    content: displayBody,
     editable: !readOnly,
     immediatelyRender: true,
     shouldRerenderOnTransaction: false,
@@ -97,6 +108,8 @@ export function ChapterEditor({
       },
     },
     onUpdate: ({ editor: next }) => {
+      // 预览模式不写回 head body
+      if (previewModeRef.current) return
       onChangeBodyRef.current(boundChapterId, next.getHTML())
     },
   })
@@ -111,26 +124,34 @@ export function ChapterEditor({
     editor.setEditable(!readOnly)
   }, [editor, readOnly])
 
-  // 章 id 变化时无条件 setContent；外部写入（Agent 确认等）再同步
+  // 章 id / 预览 revision / 外部 body 变化时同步 content
   const lastChapterIdRef = useRef(chapter.id)
-  const lastExternalBodyRef = useRef(chapter.body)
+  const lastExternalBodyRef = useRef(displayBody)
+  const lastPreviewIdRef = useRef<string | null>(previewRevision?.id ?? null)
   useEffect(() => {
     if (!editor || editor.isDestroyed) return
     const chapterChanged = lastChapterIdRef.current !== chapter.id
-    if (chapterChanged) {
-      // 切章：不要被 HTML 归一化比较跳过
-      editor.commands.setContent(chapter.body, { emitUpdate: false })
-      lastExternalBodyRef.current = chapter.body
+    const previewChanged =
+      lastPreviewIdRef.current !== (previewRevision?.id ?? null)
+    if (chapterChanged || previewChanged) {
+      editor.commands.setContent(displayBody, { emitUpdate: false })
+      lastExternalBodyRef.current = displayBody
       lastChapterIdRef.current = chapter.id
-    } else if (lastExternalBodyRef.current !== chapter.body) {
-      // 本编辑器 onUpdate 已写入时 HTML 已一致，只同步 ref，避免光标跳动
-      if (editor.getHTML() !== chapter.body) {
-        editor.commands.setContent(chapter.body, { emitUpdate: false })
+      lastPreviewIdRef.current = previewRevision?.id ?? null
+    } else if (lastExternalBodyRef.current !== displayBody) {
+      if (editor.getHTML() !== displayBody) {
+        editor.commands.setContent(displayBody, { emitUpdate: false })
       }
-      lastExternalBodyRef.current = chapter.body
+      lastExternalBodyRef.current = displayBody
     }
     editor.view.dom.setAttribute('aria-label', `${chapter.title} 正文`)
-  }, [editor, chapter.id, chapter.body, chapter.title])
+  }, [
+    editor,
+    chapter.id,
+    chapter.title,
+    displayBody,
+    previewRevision?.id,
+  ])
 
   useEffect(() => {
     if (!editor || editor.isDestroyed) return
@@ -147,10 +168,10 @@ export function ChapterEditor({
         Boolean(activeAnnotationId && id === activeAnnotationId),
       )
     })
-  }, [editor, activeAnnotationId, chapter.body])
+  }, [editor, activeAnnotationId, displayBody])
 
   useEffect(() => {
-    if (!editor || editor.isDestroyed || !focusAnnotationId) return
+    if (!editor || editor.isDestroyed || !focusAnnotationId || isPreview) return
     const range = findAnnotationRange(editor, focusAnnotationId)
     if (!range) return
     editor.chain().focus().setTextSelection(range).run()
@@ -158,7 +179,7 @@ export function ChapterEditor({
       `mark[data-annotation-id="${CSS.escape(focusAnnotationId)}"]`,
     )
     markEl?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }, [editor, focusAnnotationId, focusNonce, chapter.id])
+  }, [editor, focusAnnotationId, focusNonce, chapter.id, isPreview])
 
   const handleAddAnnotation = () => {
     if (!editor || editor.isDestroyed || readOnly) return
@@ -166,7 +187,6 @@ export function ChapterEditor({
     if (empty || to <= from) return
     const quote = editor.state.doc.textBetween(from, to, ' ').trim()
     if (!quote) return
-    // 切到批注 Tab + 侧栏内联输入（无 window.prompt）
     onStartDraftRef.current({ quote, from, to })
   }
 
@@ -210,13 +230,37 @@ export function ChapterEditor({
             </button>
           </div>
         </div>
-        {gateReason ? (
-          <div className="mx-4 mb-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-            <div className="text-[12px] font-medium text-slate-800">未授权 / 只读</div>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">{gateReason}</p>
+
+        {isPreview && previewRevision ? (
+          <div className="mx-4 mb-2 flex items-center justify-between gap-3 rounded-lg border border-sky-400 bg-sky-50 px-3 py-2.5">
+            <div className="min-w-0">
+              <div className="text-[12px] font-semibold text-sky-900">
+                预览 revision #{previewRevision.seq}
+              </div>
+              <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">
+                只读 · 未改正文 head
+                {previewRevision.note ? ` · ${previewRevision.note}` : ''}
+              </p>
+            </div>
             <button
               type="button"
-              className="btn-press focus-ring mt-2 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-50"
+              onClick={onExitRevisionPreview}
+              className="btn-press focus-ring shrink-0 rounded-md border border-sky-300 bg-white px-2.5 py-1.5 text-[11px] font-medium text-sky-900 hover:bg-sky-100"
+            >
+              返回编辑
+            </button>
+          </div>
+        ) : null}
+
+        {gateReason && !isPreview ? (
+          <div className="mx-4 mb-2 rounded-lg border-2 border-slate-400 bg-slate-100 px-3 py-2.5">
+            <div className="text-[12px] font-semibold text-slate-900">未授权 / 只读</div>
+            <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">
+              {gateReason}
+            </p>
+            <button
+              type="button"
+              className="btn-press focus-ring mt-2 rounded-md border border-slate-400 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
               onClick={() => {
                 setSkuToast('样机无真 SKU 开通')
                 if (skuToastTimer.current) clearTimeout(skuToastTimer.current)
@@ -227,7 +271,7 @@ export function ChapterEditor({
               申请开通（示意）
             </button>
             {skuToast ? (
-              <p className="mt-1.5 text-[10px] text-slate-500" role="status">
+              <p className="mt-1.5 text-[10px] text-slate-600" role="status">
                 {skuToast}
               </p>
             ) : null}

@@ -37,7 +37,7 @@ export function AnnotationPanel({
   onDelete,
 }: Props) {
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({})
-  const [hideResolved, setHideResolved] = useState(false)
+  const [hideResolved, setHideResolved] = useState(true)
   const [resolvedCollapsed, setResolvedCollapsed] = useState(true)
   const open = annotations.filter((a) => !a.resolved)
   const resolved = annotations.filter((a) => a.resolved)

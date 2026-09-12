@@ -30,6 +30,7 @@ type CaseRuntime = {
   selectedChapterId: string
   savedBodies: Record<string, string>
   proposal: DocProposal | null
+  proposalHistory: DocProposal[]
 }
 
 function bundleToRuntime(bundle: CaseBundle): CaseRuntime {
@@ -41,6 +42,7 @@ function bundleToRuntime(bundle: CaseBundle): CaseRuntime {
     selectedChapterId: bundle.defaultChapterId,
     savedBodies: Object.fromEntries(bundle.chapters.map((c) => [c.id, c.body])),
     proposal: null,
+    proposalHistory: [],
   }
 }
 
@@ -50,6 +52,21 @@ function initAllRuntimes(): Record<string, CaseRuntime> {
     map[c.id] = bundleToRuntime(buildCaseBundle(c.id))
   }
   return map
+}
+
+function archiveProposal(
+  history: DocProposal[],
+  proposal: DocProposal | null,
+  status: DocProposal['status'],
+): DocProposal[] {
+  if (!proposal) return history
+  // 避免重复归档同一 id
+  if (history.some((p) => p.id === proposal.id)) {
+    return history.map((p) =>
+      p.id === proposal.id ? { ...p, status } : p,
+    )
+  }
+  return [...history, { ...proposal, status }]
 }
 
 export default function App() {
@@ -63,6 +80,11 @@ export default function App() {
   const [draftBody, setDraftBody] = useState('')
   const [autoSavedHint, setAutoSavedHint] = useState<string | null>(null)
   const autoSavedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  /** 只读预览某 revision（不改正文 head） */
+  const [previewRevisionId, setPreviewRevisionId] = useState<string | null>(null)
+  const [timelineCollapsed, setTimelineCollapsed] = useState(false)
+  /** 恢复 revision 待确认 */
+  const [restoreTarget, setRestoreTarget] = useState<DocumentRevision | null>(null)
 
   const editorRef = useRef<Editor | null>(null)
   const caseIdRef = useRef(caseId)
@@ -87,6 +109,17 @@ export default function App() {
         : [],
     [rt?.annotations, selected],
   )
+  const chapterRevisions = useMemo(
+    () =>
+      selected
+        ? (rt?.revisions.filter((r) => r.chapterId === selected.id) ?? [])
+        : [],
+    [rt?.revisions, selected],
+  )
+  const previewRevision = useMemo(() => {
+    if (!previewRevisionId || !rt) return null
+    return rt.revisions.find((r) => r.id === previewRevisionId) ?? null
+  }, [previewRevisionId, rt])
 
   const patchRuntime = useCallback(
     (id: string, patch: Partial<CaseRuntime> | ((prev: CaseRuntime) => CaseRuntime)) => {
@@ -147,7 +180,7 @@ export default function App() {
         savedBodies: { ...state.savedBodies, [ch.id]: ch.body },
       })
       setCommandLog((prev) => [...prev, log])
-      showAutoSaved('上一章已自动保存')
+      showAutoSaved(`已自动保存 · ${ch.title}`)
       return true
     },
     [headRevisionForChapter, patchRuntime, showAutoSaved],
@@ -206,7 +239,7 @@ export default function App() {
         savedBodies: { ...state.savedBodies, [ch.id]: ch.body },
       })
       setCommandLog((prev) => [...prev, log])
-      if (opts?.silent) showAutoSaved('已保存')
+      if (opts?.silent) showAutoSaved(`已保存 · ${ch.title}`)
     },
     [headRevisionForChapter, patchRuntime, showAutoSaved],
   )
@@ -222,18 +255,32 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [onSaveDraft])
 
+  const exitRevisionPreview = useCallback(() => {
+    setPreviewRevisionId(null)
+  }, [])
+
   const selectChapter = useCallback(
     (nextChapterId: string) => {
       const id = caseIdRef.current
       autoSaveIfDirty(id)
-      patchRuntime(id, (prev) => ({
-        ...prev,
-        selectedChapterId: nextChapterId,
-        proposal:
-          prev.proposal && prev.proposal.chapterId !== nextChapterId
-            ? null
-            : prev.proposal,
-      }))
+      setPreviewRevisionId(null)
+      setRestoreTarget(null)
+      patchRuntime(id, (prev) => {
+        let history = prev.proposalHistory
+        let proposal = prev.proposal
+        if (proposal && proposal.chapterId !== nextChapterId) {
+          if (proposal.status === 'preview') {
+            history = archiveProposal(history, proposal, 'preview')
+          }
+          proposal = null
+        }
+        return {
+          ...prev,
+          selectedChapterId: nextChapterId,
+          proposal,
+          proposalHistory: history,
+        }
+      })
       setActiveAnnotationId(null)
       setFocusToken(null)
       setAnnotationDraft(null)
@@ -247,13 +294,14 @@ export default function App() {
       if (nextCaseId === caseIdRef.current) return
       autoSaveIfDirty(caseIdRef.current)
       setCaseId(nextCaseId)
+      setPreviewRevisionId(null)
+      setRestoreTarget(null)
       const next = runtimesRef.current[nextCaseId]
       setActiveAnnotationId(null)
       setFocusToken(null)
       setAnnotationDraft(null)
       setDraftBody('')
       setRightTab('annotations')
-      // 换案清当前 proposal 已在各 runtime 独立；确保目标案 proposal 不串
       if (next?.proposal) {
         patchRuntime(nextCaseId, { proposal: null })
       }
@@ -284,7 +332,17 @@ export default function App() {
       status: mode === 'formal' ? 'pending' : 'preview',
       createdAt: new Date().toISOString(),
     }
-    patchRuntime(id, { proposal: p })
+    // 替换当前提案时：若旧的是 preview，归档为 preview 结束
+    let history = state.proposalHistory
+    if (state.proposal) {
+      if (state.proposal.status === 'preview') {
+        history = archiveProposal(history, state.proposal, 'preview')
+      } else if (state.proposal.status === 'pending') {
+        // 被新提案替换的 pending 视为拒绝归档
+        history = archiveProposal(history, state.proposal, 'rejected')
+      }
+    }
+    patchRuntime(id, { proposal: p, proposalHistory: history })
     setRightTab('agent')
   }
 
@@ -297,7 +355,6 @@ export default function App() {
     const chapter = state.chapters.find((c) => c.id === proposal.chapterId)
     if (!chapter) return
 
-    // 批注保真：按 quote 重挂仍 open 的 annotations
     const { html: bodyWithMarks, annotations: nextAnns } =
       reattachOpenAnnotationsByQuote(
         proposal.proposedBody,
@@ -318,6 +375,7 @@ export default function App() {
       actor: 'agent',
       note: 'Agent 建议经 HITL 确认写入（含批注按 quote 重挂）',
     })
+    const accepted = { ...proposal, status: 'accepted' as const, proposedBody: bodyWithMarks }
     patchRuntime(id, {
       revisions: [...state.revisions, revision],
       chapters: state.chapters.map((c) =>
@@ -326,17 +384,67 @@ export default function App() {
       document: { ...state.document, headRevisionId: revision.id },
       annotations: nextAnns,
       savedBodies: { ...state.savedBodies, [proposal.chapterId]: bodyWithMarks },
-      proposal: { ...proposal, status: 'accepted', proposedBody: bodyWithMarks },
+      proposal: null,
+      proposalHistory: archiveProposal(state.proposalHistory, accepted, 'accepted'),
     })
     setCommandLog((prev) => [...prev, log])
+    setPreviewRevisionId(null)
   }
 
   const onReject = () => {
     const id = caseIdRef.current
-    const proposal = runtimesRef.current[id]?.proposal
-    if (!proposal || proposal.status !== 'pending') return
-    patchRuntime(id, { proposal: { ...proposal, status: 'rejected' } })
+    const state = runtimesRef.current[id]
+    const proposal = state?.proposal
+    if (!state || !proposal || proposal.status !== 'pending') return
+    patchRuntime(id, {
+      proposal: null,
+      proposalHistory: archiveProposal(state.proposalHistory, proposal, 'rejected'),
+    })
   }
+
+  const handlePreviewRevision = useCallback((rev: DocumentRevision) => {
+    setPreviewRevisionId(rev.id)
+    setRestoreTarget(null)
+  }, [])
+
+  const handleRequestRestore = useCallback((rev: DocumentRevision) => {
+    setRestoreTarget(rev)
+  }, [])
+
+  const confirmRestore = useCallback(() => {
+    const id = caseIdRef.current
+    const state = runtimesRef.current[id]
+    const rev = restoreTarget
+    if (!state || !rev) return
+    if (!state.document.authorized) return
+    const ch = state.chapters.find((c) => c.id === rev.chapterId)
+    if (!ch || ch.locked) return
+
+    const head = headRevisionForChapter(rev.chapterId, state.revisions)
+    const nextSeq = (head?.seq ?? 0) + 1
+    const { revision, log } = mockDispatch({
+      type: 'saveDraft',
+      caseId: state.document.caseId,
+      documentId: state.document.id,
+      chapterId: rev.chapterId,
+      body: rev.body,
+      seq: nextSeq,
+      parentRevisionId: head?.id,
+      actor: 'user',
+      note: `恢复自 seq ${rev.seq}`,
+    })
+    patchRuntime(id, {
+      revisions: [...state.revisions, revision],
+      chapters: state.chapters.map((c) =>
+        c.id === rev.chapterId ? { ...c, body: rev.body } : c,
+      ),
+      document: { ...state.document, headRevisionId: revision.id },
+      savedBodies: { ...state.savedBodies, [rev.chapterId]: rev.body },
+    })
+    setCommandLog((prev) => [...prev, log])
+    setRestoreTarget(null)
+    setPreviewRevisionId(null)
+  }, [headRevisionForChapter, patchRuntime, restoreTarget])
 
   const handleStartAnnotationDraft = useCallback(
     (draft: AnnotationDraft) => {
@@ -464,14 +572,26 @@ export default function App() {
   const formalBlocked =
     rt.proposal?.status === 'pending' && rt.proposal.mode === 'formal'
   const agentDisabled =
-    formalBlocked || !rt.document.authorized || Boolean(selected.locked)
+    formalBlocked ||
+    !rt.document.authorized ||
+    Boolean(selected.locked) ||
+    Boolean(previewRevision)
   const agentDisabledReason = formalBlocked
     ? '正式建议待确认'
-    : !rt.document.authorized
-      ? `本章未授权 SKU · 只读`
-      : selected.locked
-        ? selected.lockReason ?? '本章已锁定 · 只读'
-        : null
+    : previewRevision
+      ? '正在预览历史 revision · 返回编辑后再操作 Agent'
+      : !rt.document.authorized
+        ? `本章未授权 SKU · 只读`
+        : selected.locked
+          ? selected.lockReason ?? '本章已锁定 · 只读'
+          : null
+
+  // 当前活动提案：pending / preview；已结束的已进 history
+  const activeProposal =
+    rt.proposal &&
+    (rt.proposal.status === 'pending' || rt.proposal.status === 'preview')
+      ? rt.proposal
+      : null
 
   return (
     <div className="app-shell-bg flex h-full min-h-screen flex-col">
@@ -485,14 +605,20 @@ export default function App() {
       />
       <div className="flex min-h-0 flex-1">
         <DocTree
-          cases={CASES}
           activeCase={activeCase}
           document={rt.document}
           chapters={rt.chapters}
           selectedChapterId={selected.id}
           pending={rt.proposal}
+          annotations={rt.annotations}
+          chapterRevisions={chapterRevisions}
+          previewRevisionId={previewRevisionId}
+          timelineCollapsed={timelineCollapsed}
+          onToggleTimeline={() => setTimelineCollapsed((v) => !v)}
           onSelectChapter={selectChapter}
-          onSwitchCase={switchCase}
+          onPreviewRevision={handlePreviewRevision}
+          onRequestRestore={handleRequestRestore}
+          onExitPreview={exitRevisionPreview}
         />
         <ChapterEditor
           key={`${caseId}-${selected.id}`}
@@ -500,6 +626,7 @@ export default function App() {
           document={rt.document}
           revisions={rt.revisions}
           dirty={dirty}
+          previewRevision={previewRevision}
           activeAnnotationId={activeAnnotationId}
           focusAnnotationId={focusToken?.id ?? null}
           focusNonce={focusToken?.n ?? 0}
@@ -510,6 +637,7 @@ export default function App() {
           onEditorReady={(ed) => {
             editorRef.current = ed
           }}
+          onExitRevisionPreview={exitRevisionPreview}
         />
         <RightRail
           tab={rightTab}
@@ -535,12 +663,8 @@ export default function App() {
           }
           agentPane={
             <AgentPanel
-              proposal={
-                rt.proposal &&
-                (rt.proposal.status === 'pending' || rt.proposal.status === 'preview')
-                  ? rt.proposal
-                  : null
-              }
+              proposal={activeProposal}
+              proposalHistory={rt.proposalHistory}
               currentBody={selected.body}
               commandLog={commandLog}
               caseId={rt.document.caseId}
@@ -554,6 +678,47 @@ export default function App() {
           }
         />
       </div>
+
+      {/* 恢复 revision Confirm 对话框 */}
+      {restoreTarget ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="restore-rev-title"
+        >
+          <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-4 shadow-lg">
+            <h2 id="restore-rev-title" className="text-sm font-semibold text-slate-900">
+              确认恢复 revision
+            </h2>
+            <p className="mt-2 text-[12px] leading-relaxed text-slate-600">
+              将 seq {restoreTarget.seq} 的正文写入<strong>新</strong> revision（actor
+              user · note「恢复自 seq {restoreTarget.seq}」），并更新本章 body。不删除历史版本。
+            </p>
+            {restoreTarget.note ? (
+              <p className="mt-1 truncate text-[11px] text-slate-500" title={restoreTarget.note}>
+                源 note · {restoreTarget.note}
+              </p>
+            ) : null}
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={confirmRestore}
+                className="btn-press focus-ring flex-1 rounded-lg bg-slate-900 px-3 py-2 text-xs font-medium text-white hover:bg-slate-800"
+              >
+                确认恢复
+              </button>
+              <button
+                type="button"
+                onClick={() => setRestoreTarget(null)}
+                className="btn-press focus-ring flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
