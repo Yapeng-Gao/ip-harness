@@ -20,6 +20,7 @@
 | [curriculum-and-ops.md](./curriculum-and-ops.md) | 课表、持续学习、衔接 |
 | [topology.md](./topology.md) | ai-data ↔ ai-infra ↔ 网关 |
 | [roadmap.md](./roadmap.md) | MVP → 生产 |
+| [REVIEW.md](./REVIEW.md) | 架构评审（含润色轻量复评） |
 
 ## 一句话
 

@@ -23,6 +23,7 @@
 | [ip-sources.md](./ip-sources.md) | 专利/论文/公开资料源与字段 |
 | [topology.md](./topology.md) | 与 search 壳 / ai-data / 下游业务壳 |
 | [roadmap.md](./roadmap.md) | MVP → 生产 |
+| [REVIEW.md](./REVIEW.md) | 架构评审（含润色轻量复评） |
 
 ## 与现有包
 
