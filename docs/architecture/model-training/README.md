@@ -18,6 +18,7 @@
 | [data-prep.md](./data-prep.md) | 数据怎么准备 |
 | [eval-safety.md](./eval-safety.md) | 评测与安全 |
 | [curriculum-and-ops.md](./curriculum-and-ops.md) | 课表、持续学习、与平台衔接 |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 一句话
 

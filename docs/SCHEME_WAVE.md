@@ -27,4 +27,10 @@
 ## 明确不做
 
 - 新 Vite 壳 / 扩 deep-demo 代码  
-- 真 ES / 向量 / GPU / Spark 落地实施  
+- 真 ES / 向量 / GPU / Spark 落地实施
+
+## 评审
+
+- 汇总：[architecture/SCHEME_WAVE_REVIEW.md](./architecture/SCHEME_WAVE_REVIEW.md)
+- S1：[search-data/REVIEW.md](./architecture/search-data/REVIEW.md)
+- S2：[model-training/REVIEW.md](./architecture/model-training/REVIEW.md)

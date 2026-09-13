@@ -20,6 +20,7 @@
 | [retrieval.md](./retrieval.md) | 检索与排序 |
 | [ops-quality.md](./ops-quality.md) | 增量、版本、质量、合规 |
 | [ip-sources.md](./ip-sources.md) | 专利/论文/公开资料源与字段 |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 与现有包关系
 
