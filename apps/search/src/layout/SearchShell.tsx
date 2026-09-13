@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { Bookmark, Search, Users } from 'lucide-react'
+import { Bookmark, Database, Search, Users } from 'lucide-react'
 import { HONESTY_BANNER } from '../state/types'
 import { AgentPanel } from '../components/AgentPanel'
 import { useSearchStore } from '../state/store'
@@ -13,6 +13,7 @@ function linkClass(active: boolean): string {
 const NAV = [
   { to: '/', end: true, label: '检索工作台', icon: Search },
   { to: '/saved', end: false, label: '收藏 / 工作篮', icon: Bookmark },
+  { to: '/corpus', end: false, label: '语料 / 索引', icon: Database },
 ] as const
 
 export function SearchShell() {

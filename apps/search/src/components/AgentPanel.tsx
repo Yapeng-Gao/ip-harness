@@ -1,11 +1,20 @@
-import { Copy, Terminal } from 'lucide-react'
+import { Copy, ExternalLink, Terminal } from 'lucide-react'
 import { Button, Chip } from './ui'
 import { useSearchStore, searchActions } from '../state/store'
-import { HONESTY_BANNER } from '../state/types'
+import { DOWNSTREAM_PLACEHOLDERS, HONESTY_BANNER } from '../state/types'
 
 export function AgentPanel({ compact = false }: { compact?: boolean }) {
-  const { lastQuery, lastResponse, events, mode, text, advancedRows, filters, limit } =
-    useSearchStore()
+  const {
+    lastQuery,
+    lastResponse,
+    events,
+    mode,
+    text,
+    advancedRows,
+    filters,
+    limit,
+    currentIndexTag,
+  } = useSearchStore()
 
   const liveQuery =
     lastQuery ??
@@ -46,12 +55,18 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
       }
     : null
 
+  const lastCorpus = events.find(
+    (e) => e.action === 'corpus.ingest' || e.action === 'corpus.publishIndex',
+  )
+
   async function copyJson() {
     const payload = {
       operation: 'commercial_patent_search',
-      also: ['cluster_hits', 'get_family'],
+      also: ['cluster_hits', 'get_family', 'search.corpus.ingest', 'search.corpus.publishIndex'],
       query: liveQuery,
       lastResponse: responseView,
+      corpus: lastCorpus?.payload ?? null,
+      currentIndexTag,
     }
     try {
       await navigator.clipboard.writeText(JSON.stringify(payload, null, 2))
@@ -70,13 +85,15 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
             工具参数面板
           </p>
           <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-            search(query) ≡ commercial_patent_search；getFamily ≡ cluster_hits / get_family。无 HTTP，内存态即源。
+            search(query) ≡ commercial_patent_search；getFamily ≡ cluster_hits / get_family；corpus
+            ops / sendDownstream 同事件源。无 HTTP，内存态即源。
           </p>
         </div>
       ) : null}
 
       <div className="flex flex-wrap items-center gap-2 px-4 py-2">
         <Chip tone="mock">backend: mock</Chip>
+        <Chip tone="neutral">index: {currentIndexTag}</Chip>
         <Button variant="secondary" className="gap-1" onClick={() => void copyJson()}>
           <Copy className="h-3.5 w-3.5" aria-hidden />
           复制为工具参数
@@ -120,26 +137,80 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
 
         <section>
           <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Corpus ops（最近）
+          </h3>
+          {lastCorpus?.payload ? (
+            <pre className="max-h-36 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-2 text-[11px] leading-relaxed text-slate-800">
+              {JSON.stringify(lastCorpus.payload, null, 2)}
+            </pre>
+          ) : (
+            <p className="text-xs text-slate-500">
+              尚无 corpus 事件。到「语料 / 索引」入库或发布。
+            </p>
+          )}
+        </section>
+
+        <section>
+          <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            下游占位地图
+          </h3>
+          <ul className="space-y-1">
+            {DOWNSTREAM_PLACEHOLDERS.map((d) => (
+              <li key={d.target} className="text-[11px] text-slate-600">
+                <a
+                  href={d.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 underline decoration-slate-300 hover:decoration-slate-600"
+                >
+                  <ExternalLink className="h-3 w-3" aria-hidden />
+                  {d.label} → {d.href}
+                </a>
+                <span className="ml-1 text-slate-400">下游未建 / 占位</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
             事件日志
           </h3>
           <ul className="space-y-1.5">
             {events.length === 0 ? (
               <li className="text-xs text-slate-400">暂无事件</li>
             ) : (
-              events.slice(0, 12).map((e) => (
-                <li
-                  key={e.id}
-                  className="rounded-md border border-slate-100 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-700"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium">{e.tool ?? e.action}</span>
-                    <time className="tabular-nums text-slate-400">
-                      {new Date(e.at).toLocaleTimeString('zh-CN', { hour12: false })}
-                    </time>
-                  </div>
-                  {e.note ? <p className="mt-0.5 text-slate-500">{e.note}</p> : null}
-                </li>
-              ))
+              events.slice(0, 12).map((e) => {
+                const href =
+                  e.action === 'sendDownstream' && typeof e.payload?.href === 'string'
+                    ? e.payload.href
+                    : null
+                return (
+                  <li
+                    key={e.id}
+                    className="rounded-md border border-slate-100 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-700"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium">{e.tool ?? e.action}</span>
+                      <time className="tabular-nums text-slate-400">
+                        {new Date(e.at).toLocaleTimeString('zh-CN', { hour12: false })}
+                      </time>
+                    </div>
+                    {e.note ? <p className="mt-0.5 text-slate-500">{e.note}</p> : null}
+                    {href ? (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-0.5 inline-flex items-center gap-1 text-slate-600 underline decoration-slate-300"
+                      >
+                        <ExternalLink className="h-3 w-3" aria-hidden />
+                        {href} · 下游未建 / 占位
+                      </a>
+                    ) : null}
+                  </li>
+                )
+              })
             )}
           </ul>
         </section>

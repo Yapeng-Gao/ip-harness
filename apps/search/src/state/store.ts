@@ -1,15 +1,24 @@
 import { useSyncExternalStore } from 'react'
 import { buildFamilies, createInitialHits, SEED_HITS } from './seed'
+import {
+  CURRENT_INDEX_TAG,
+  SEED_CORPUS_SOURCES,
+  SEED_FIELD_COVERAGE,
+  SEED_INDEX_VERSIONS,
+} from './corpusSeed'
 import type {
   AdvancedRow,
+  CorpusIngestJob,
+  DownstreamTarget,
   EventLogEntry,
+  IndexVersion,
   SearchFilters,
   SearchHit,
   SearchMode,
   SearchResponse,
   SearchState,
 } from './types'
-import { emptyFilters } from './types'
+import { DOWNSTREAM_PLACEHOLDERS, emptyFilters } from './types'
 import {
   applyFilters,
   buildQuery,
@@ -38,6 +47,15 @@ let state: SearchState = {
   events: [],
   toast: null,
   limit: 50,
+  corpusSources: SEED_CORPUS_SOURCES.map((s) => ({ ...s })),
+  corpusJobs: [],
+  corpusForceNextFail: false,
+  indexVersions: SEED_INDEX_VERSIONS.map((v) => ({
+    ...v,
+    fieldCoverage: v.fieldCoverage.map((r) => ({ ...r })),
+  })),
+  currentIndexTag: CURRENT_INDEX_TAG,
+  pendingPublishDocs: null,
 }
 
 const listeners = new Set<() => void>()
@@ -344,6 +362,249 @@ export const searchActions = {
         payload: { query, backend: 'mock', hitCount: filtered.length },
       })
     }, delay)
+  },
+
+  setCorpusForceNextFail(v: boolean) {
+    setState({ corpusForceNextFail: v })
+  },
+
+  startCorpusIngest(sourceId: string) {
+    const src = state.corpusSources.find((s) => s.id === sourceId)
+    if (!src) return
+    if (
+      state.corpusJobs.some(
+        (j) =>
+          j.sourceId === sourceId &&
+          (j.status === 'queued' || j.status === 'running'),
+      )
+    ) {
+      toast('该源已有进行中的入库任务')
+      return
+    }
+    const jobId = uid('cing')
+    const job: CorpusIngestJob = {
+      id: jobId,
+      sourceId,
+      sourceName: src.name,
+      status: 'queued',
+      progress: 0,
+      docsWritten: 0,
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+      note: '假入库 · 无真 ES / 对象存储',
+    }
+    setState((s) => ({ ...s, corpusJobs: [job, ...s.corpusJobs] }))
+    pushEvent({
+      action: 'corpus.ingest',
+      tool: 'search.corpus.ingest',
+      note: `入库排队：${src.name}`,
+      payload: {
+        tool: 'search.corpus.ingest',
+        backend: 'mock',
+        sourceId,
+        sourceName: src.name,
+        jobId,
+        status: 'queued',
+      },
+    })
+    toast(`入库已排队：${src.name}`)
+
+    const willFail = state.corpusForceNextFail
+    if (willFail) setState({ corpusForceNextFail: false })
+
+    schedule(() => {
+      setState((s) => ({
+        ...s,
+        corpusJobs: s.corpusJobs.map((j) =>
+          j.id === jobId
+            ? { ...j, status: 'running', progress: 8, updatedAt: nowIso() }
+            : j,
+        ),
+      }))
+    }, 400)
+
+    const ticks = [22, 40, 58, 75, 90]
+    ticks.forEach((pct, i) => {
+      schedule(() => {
+        setState((s) => {
+          const cur = s.corpusJobs.find((j) => j.id === jobId)
+          if (!cur || cur.status === 'fail' || cur.status === 'done') return s
+          return {
+            ...s,
+            corpusJobs: s.corpusJobs.map((j) =>
+              j.id === jobId
+                ? { ...j, progress: pct, status: 'running', updatedAt: nowIso() }
+                : j,
+            ),
+          }
+        })
+      }, 700 + i * 380)
+    })
+
+    schedule(() => {
+      if (willFail) {
+        setState((s) => ({
+          ...s,
+          corpusJobs: s.corpusJobs.map((j) =>
+            j.id === jobId
+              ? {
+                  ...j,
+                  status: 'fail',
+                  progress: 100,
+                  updatedAt: nowIso(),
+                  note: '注入故障：下次强制失败（样机）',
+                }
+              : j,
+          ),
+        }))
+        pushEvent({
+          action: 'corpus.ingest',
+          tool: 'search.corpus.ingest',
+          note: `入库失败：${src.name}`,
+          payload: {
+            tool: 'search.corpus.ingest',
+            backend: 'mock',
+            sourceId,
+            jobId,
+            status: 'fail',
+          },
+        })
+        toast(`入库失败：${src.name}`)
+        return
+      }
+      const written = 120 + Math.floor(Math.random() * 380)
+      setState((s) => ({
+        ...s,
+        corpusJobs: s.corpusJobs.map((j) =>
+          j.id === jobId
+            ? {
+                ...j,
+                status: 'done',
+                progress: 100,
+                docsWritten: written,
+                updatedAt: nowIso(),
+                note: `假写入 +${written} 篇（不写 PatentCase）`,
+              }
+            : j,
+        ),
+        corpusSources: s.corpusSources.map((x) =>
+          x.id === sourceId
+            ? {
+                ...x,
+                docsIngested: x.docsIngested + written,
+                lastIngestAt: nowIso(),
+              }
+            : x,
+        ),
+        pendingPublishDocs: (s.pendingPublishDocs ?? 0) + written,
+      }))
+      pushEvent({
+        action: 'corpus.ingest',
+        tool: 'search.corpus.ingest',
+        note: `入库完成：${src.name} +${written}`,
+        payload: {
+          tool: 'search.corpus.ingest',
+          backend: 'mock',
+          sourceId,
+          jobId,
+          status: 'done',
+          docsWritten: written,
+        },
+      })
+      toast(`入库完成 · +${written} 篇（待发布索引）`)
+    }, 700 + ticks.length * 380 + 500)
+  },
+
+  publishIndex() {
+    const pending = state.pendingPublishDocs
+    if (pending == null || pending <= 0) {
+      toast('无可发布入库增量')
+      return
+    }
+    const hasDone = state.corpusJobs.some((j) => j.status === 'done')
+    if (!hasDone) {
+      toast('需先有成功入库任务')
+      return
+    }
+    const nextN =
+      Math.max(
+        ...state.indexVersions.map((v) => {
+          const m = /^idx-v(\d+)\.(\d+)$/.exec(v.tag)
+          return m ? Number(m[1]) * 100 + Number(m[2]) : 0
+        }),
+        3,
+      ) + 1
+    const major = Math.floor(nextN / 100)
+    const minor = nextN % 100
+    const tag = `idx-v${major}.${minor}`
+    const prev = state.indexVersions.find((v) => v.tag === state.currentIndexTag)
+    const docs = (prev?.docs ?? 7000) + pending
+    const version: IndexVersion = {
+      tag,
+      docs,
+      publishedAt: nowIso(),
+      checksum: `sha256:mock-${tag}-${Math.random().toString(36).slice(2, 10)}`,
+      fieldCoverage: SEED_FIELD_COVERAGE.map((r) => {
+        // slight honest drift after ingest
+        const drift = r.field === 'claims' || r.field === 'familyId' ? -1 : 0
+        return {
+          ...r,
+          coveragePct: Math.min(100, Math.max(50, r.coveragePct + drift)),
+        }
+      }),
+      immutable: true,
+      note: '已发布 · 不可改',
+    }
+    setState((s) => ({
+      ...s,
+      indexVersions: [version, ...s.indexVersions],
+      currentIndexTag: tag,
+      pendingPublishDocs: null,
+    }))
+    pushEvent({
+      action: 'corpus.publishIndex',
+      tool: 'search.corpus.publishIndex',
+      note: `发布索引 ${tag}`,
+      payload: {
+        tool: 'search.corpus.publishIndex',
+        backend: 'mock',
+        tag,
+        docs,
+        checksum: version.checksum,
+        fieldCoverage: version.fieldCoverage,
+      },
+    })
+    toast(`已发布索引 ${tag}（样机·无真 ES）`)
+  },
+
+  sendDownstream(target: DownstreamTarget) {
+    if (state.basketIds.length === 0) return
+    const ph = DOWNSTREAM_PLACEHOLDERS.find((d) => d.target === target)
+    if (!ph) return
+    const hits = state.basketIds
+      .map((id) => findHit(id))
+      .filter((h): h is SearchHit => !!h)
+      .map((h) => ({
+        id: h.id,
+        publicationNumber: h.publicationNumber,
+        title: h.title,
+      }))
+    const note = '样机事件·未真派发 · 下游壳占位'
+    pushEvent({
+      action: 'sendDownstream',
+      tool: 'search.sendDownstream',
+      hitIds: [...state.basketIds],
+      hits,
+      note,
+      payload: {
+        target: ph.target,
+        href: ph.href,
+        hitIds: [...state.basketIds],
+        hits,
+        note,
+      },
+    })
+    toast(`${ph.label}：${note}`)
   },
 }
 

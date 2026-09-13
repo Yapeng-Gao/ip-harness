@@ -4,6 +4,7 @@ import { SearchShell } from './layout/SearchShell'
 import { SearchPage } from './pages/SearchPage'
 import { FamilyPage } from './pages/FamilyPage'
 import { SavedPage } from './pages/SavedPage'
+import { CorpusPage } from './pages/CorpusPage'
 import { useSearchStore } from './state/store'
 
 function AppRoutes() {
@@ -15,6 +16,7 @@ function AppRoutes() {
           <Route index element={<SearchPage />} />
           <Route path="families/:familyId" element={<FamilyPage />} />
           <Route path="saved" element={<SavedPage />} />
+          <Route path="corpus" element={<CorpusPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

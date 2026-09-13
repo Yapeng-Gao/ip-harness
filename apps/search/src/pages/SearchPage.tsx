@@ -14,7 +14,7 @@ import { Button, Card, Chip, EmptyState, PageHeader } from '../components/ui'
 import { DetailDrawer } from '../components/DetailDrawer'
 import { searchActions, useSearchStore } from '../state/store'
 import type { AdvancedRow, SearchHit, SearchMode } from '../state/types'
-import { ADVANCED_FIELD_LABELS } from '../state/types'
+import { ADVANCED_FIELD_LABELS, DOWNSTREAM_PLACEHOLDERS } from '../state/types'
 
 const MODES: { id: SearchMode; label: string }[] = [
   { id: 'keyword', label: '关键词' },
@@ -511,32 +511,65 @@ function HitRow({
 
 function BasketBar() {
   const { basketIds, events } = useSearchStore()
+  const empty = basketIds.length === 0
+  const lastDown = events.find((e) => e.action === 'sendDownstream' || e.action === 'sendToAgent')
   return (
-    <Card className="mb-4 flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <p className="text-sm font-medium text-slate-800">
-          工作篮{' '}
-          <span className="rounded-full bg-slate-900 px-2 py-0.5 text-xs text-white">
-            {basketIds.length}
-          </span>
-        </p>
-        <p className="mt-0.5 text-xs text-slate-500">
-          送 Agent 仅写事件日志，不 dispatch DomainCommand / PatentCase。
-          <Link to="/saved" className="ml-1 underline decoration-slate-300">
-            打开收藏页
-          </Link>
-        </p>
+    <Card className="mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium text-slate-800">
+            工作篮{' '}
+            <span className="rounded-full bg-slate-900 px-2 py-0.5 text-xs text-white">
+              {basketIds.length}
+            </span>
+          </p>
+          <p className="mt-0.5 text-xs text-slate-500">
+            送 Agent / 下游仅写事件+占位深链，不 dispatch DomainCommand / PatentCase。
+            <Link to="/saved" className="ml-1 underline decoration-slate-300">
+              打开收藏页
+            </Link>
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            className="gap-1"
+            disabled={empty}
+            onClick={() => searchActions.sendToAgent()}
+          >
+            <Send className="h-4 w-4" aria-hidden />
+            送 Agent
+          </Button>
+          {DOWNSTREAM_PLACEHOLDERS.map((d) => (
+            <Button
+              key={d.target}
+              variant="secondary"
+              disabled={empty}
+              onClick={() => searchActions.sendDownstream(d.target)}
+            >
+              {d.label}
+            </Button>
+          ))}
+        </div>
       </div>
-      <Button
-        className="gap-1"
-        disabled={basketIds.length === 0}
-        onClick={() => searchActions.sendToAgent()}
-      >
-        <Send className="h-4 w-4" aria-hidden />
-        送 Agent
-      </Button>
-      {events[0]?.action === 'sendToAgent' ? (
-        <p className="w-full text-xs text-emerald-700">最近：{events[0].note}</p>
+      {lastDown ? (
+        <p className="mt-2 text-xs text-emerald-700">
+          最近：{lastDown.tool ?? lastDown.action}
+          {lastDown.note ? ` · ${lastDown.note}` : ''}
+          {lastDown.action === 'sendDownstream' &&
+          typeof lastDown.payload?.href === 'string' ? (
+            <>
+              {' · '}
+              <a
+                href={String(lastDown.payload.href)}
+                target="_blank"
+                rel="noreferrer"
+                className="underline decoration-emerald-300"
+              >
+                {String(lastDown.payload.href)} · 下游未建 / 占位
+              </a>
+            </>
+          ) : null}
+        </p>
       ) : null}
     </Card>
   )
