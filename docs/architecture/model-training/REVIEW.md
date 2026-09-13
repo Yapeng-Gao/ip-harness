@@ -32,3 +32,29 @@
 ## 裁决
 
 **通过。**
+
+## 轻量复评（润色 `23f4bcf` · 相对 Pass `4daf889`）
+
+| 项 | 值 |
+|----|-----|
+| 范围 | 仅增量：topology / roadmap / 阶段门禁 / 任务清单等 |
+| 日期 | 2026-09-13 |
+| **结论** | **维持通过** |
+
+| 增量 | 裁决 |
+|------|------|
+| `topology.md` | 过：ai-data→Job→门禁→Release→网关；禁 case-core |
+| `roadmap.md` | 过：外购基座优先；评测骨架→SFT→偏好→可选 CPT |
+| overview 阶段门禁 | 过：CPT/SFT/偏好/发布闸清楚 |
+| eval-safety 发布 Go/No-Go | 过：与 Release 门禁对齐 |
+| sft IP 任务清单 / RAG 对齐 / tokenizer | 过：补强可开工 |
+
+### 黄项（非阻塞 · 整编）
+
+润色追加导致 **章节号重复**（`preference-rl` / `eval-safety` / `data-prep` 出现双 §4）。不改变语义；择机整编编号，勿再叠床。
+
+### 未引入裂缝
+
+- 无真训/无绝对分数承诺
+- 与 ai-data/ai-infra 契约未动摇
+

@@ -33,4 +33,11 @@
 ## 明确不做
 
 - 新 Vite 壳 / 扩 deep-demo 代码  
-- 真 ES / 向量 / GPU / Spark **实施**（规格可写选型倾向）  
+- 真 ES / 向量 / GPU / Spark **实施**（规格可写选型倾向）
+
+## 评审
+
+- 汇总：[architecture/SCHEME_WAVE_REVIEW.md](./architecture/SCHEME_WAVE_REVIEW.md)（含润色轻量复评）
+- S1：[search-data/REVIEW.md](./architecture/search-data/REVIEW.md)
+- S2：[model-training/REVIEW.md](./architecture/model-training/REVIEW.md)
+- 润色对象 SHA：`23f4bcf`（相对草案 `4daf889`）

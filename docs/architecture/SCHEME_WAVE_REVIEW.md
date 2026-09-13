@@ -23,3 +23,20 @@
 | ⑤ | 诚实非样机码（停原型 · 禁改 apps） | 过 |
 
 **可总控总验。** 本波仍禁止新原型码。
+
+## 轻量复评（润色 SHA `23f4bcf`）
+
+相对已 Pass 草案 **`4daf889`** / 初评 **`5f5ab84`**：只扫 topology·roadmap·门禁·字段映射增量。
+
+| 结论 | **维持通过** |
+|------|----------------|
+| 禁 apps/* | 遵守 |
+| 新裂缝 | **无阻塞**；黄项见下 |
+
+**黄项（非阻塞）**
+
+1. `search-data/ops-quality.md`：必填失败策略 §2 `quarantine` vs §6 `reject` — 须择一冻。  
+2. model-training 若干篇章节号重复（润色叠加）— 整编即可。
+
+分篇补记：[search-data/REVIEW](./search-data/REVIEW.md) · [model-training/REVIEW](./model-training/REVIEW.md)。
+
