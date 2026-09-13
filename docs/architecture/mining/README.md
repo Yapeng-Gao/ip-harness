@@ -23,6 +23,7 @@
 | [overview.md](./overview.md) | 边界与对象 |
 | [human-ui.md](./human-ui.md) | 路由与四步 IA |
 | [deep-demo.md](./deep-demo.md) | 状态机与验收 |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 上游
 
