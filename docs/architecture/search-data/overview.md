@@ -40,4 +40,22 @@ Sources → Ingest Jobs → Parse/Normalize → Enrich (family, IPC, org resolve
 
 - 真全球专利采购商务条款  
 - 在 Search API 内训练大模型  
-- 用 case-core 当检索主存  
+- 用 case-core 当检索主存
+
+## 6. MVP 最小切片（落地开工）
+
+| 项 | MVP | 以后 |
+|----|-----|------|
+| 源 | 1 类专利 XML/JSON + 手工论文 CSV | 多商业源 + 爬虫治理 |
+| 存储 | PG 元数据 + 对象存储正文；倒排单集群 | 湖 Iceberg + 分片 + 向量独立 |
+| API | 与 search 壳同 `SearchQuery`/`SearchHit` | 异步 scroll、saved search |
+| 同族 | 规则/号段种子 | 权威同族源 |
+| 合规 | license 字段 + 禁爬名单表 | 自动 PII 扫描 |
+
+## 7. 验收（规格级）
+
+- [ ] 四层存储职责表无交叉糊弄  
+- [ ] Agent/人同 API；禁止壳直连引擎  
+- [ ] `indexVersion` 可回滚写进 ops 流程  
+- [ ] 与 ai-data 导出路径分离（另桶另密钥）  
+

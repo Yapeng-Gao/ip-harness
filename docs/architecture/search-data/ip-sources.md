@@ -23,3 +23,26 @@
 | FTO / mining / inspire | Hit 工作篮 |
 | landscape | 树节点挂文献密度与下钻 Hit |
 | ai-data | 仅经**导出作业**要切片，不共享写权限 |
+
+## 4. 与 SearchDocument 映射（例）
+
+| 源字段（专利） | SearchDocument |
+|----------------|----------------|
+| 公开号 | `aliases[]` + 展示 `publicationNumber`（可放 ext） |
+| 发明名称 | `title` |
+| 摘要 | `abstract` |
+| 权利要求全文 | `claims` |
+| IPC/CPC | `ipc[]`/`cpc[]` |
+| 申请人 | `applicants[]` → 解析 `orgIds[]` |
+| 同族号 | `familyId` |
+
+论文：DOI → `aliases`；作者不强制进 org 解析。  
+网页：URL 稳定化；正文抽取失败则仅题名进索引。
+
+## 5. 更新频率建议
+
+| 类 | MVP | 生产 |
+|----|-----|------|
+| 专利 | 周更增量 | 日更 + 法律状态周更 |
+| 论文 | 月更 | 周更开放获取 |
+| 网页 | 手工 | 受控爬取配额 |

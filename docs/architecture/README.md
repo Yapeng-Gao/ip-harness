@@ -33,8 +33,8 @@
 | 产品面规格（product-apps） | [product-apps/README.md](./product-apps/README.md) | 五壳产品规格；默认同壳不拆节点 app；工具/MCP/插件；评审 [product-apps/REVIEW.md](./product-apps/REVIEW.md) **通过** |
 | **原型总方案（执行表）** | [../PROTOTYPE_MASTER_PLAN.md](../PROTOTYPE_MASTER_PLAN.md) | 已有/在建/待建队列 · 端口 · 波次 · 标准剧本；样机口径 |
 | **方案波入口** | [../SCHEME_WAVE.md](../SCHEME_WAVE.md) · [汇总 REVIEW](./SCHEME_WAVE_REVIEW.md) | 停原型 · 检索数据面 · 模型训练 |
-| 检索数据面 | [search-data/README.md](./search-data/README.md) · [REVIEW](./search-data/REVIEW.md) | 处理/存储/检索（目标架构） |
-| 模型训练方案 | [model-training/README.md](./model-training/README.md) · [REVIEW](./model-training/REVIEW.md) | 预训练/SFT/偏好RL · 数据配比 |
+| 检索数据面 | [search-data/README.md](./search-data/README.md) · [REVIEW](./search-data/REVIEW.md) | 处理/存储/检索/增量版本/合规/拓扑；≠ ai-data（方案波 S1） |
+| 模型训练方案 | [model-training/README.md](./model-training/README.md) · [REVIEW](./model-training/REVIEW.md) | 预训练/SFT/偏好RL · 配比 · 评测安全 · 课表/拓扑（方案波 S2） |
 
 阅读顺序建议：本页 → [codebase](./codebase.md) → [data-flow](./data-flow.md) → [data-model](./data-model.md) → [backends](./backends.md) → [landing](./landing/README.md)（落地）→ [enterprise](./enterprise/README.md)（企业级 + Agent）→ [dev-spec](./dev-spec/README.md)（开发前规格 · 开 PR）→ [product-apps](./product-apps/README.md)（产品面规格 · 照壳设计）→（仓库策略附录）[repos-and-vcs](./repos-and-vcs.md)。
 

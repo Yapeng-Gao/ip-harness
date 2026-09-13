@@ -33,3 +33,7 @@
 ## 上游
 
 - [landing/backends](../landing/backends.md) · [ai-infra](../ai-infra/README.md) · [enterprise](../enterprise/README.md)
+
+## 训练阶段方案
+
+各阶段目标/配比/评测见 **[../model-training/](../model-training/README.md)**（方案波 S2）。

@@ -11,14 +11,15 @@
 | 篇 | 内容 |
 |----|------|
 | [overview.md](./overview.md) | 阶段全景与原则 |
-| [pretrain.md](./pretrain.md) | 预训练 |
+| [pretrain.md](./pretrain.md) | 预训练 / CPT |
 | [sft.md](./sft.md) | 监督微调 |
 | [preference-rl.md](./preference-rl.md) | 偏好学习 / RL |
 | [data-types-and-mix.md](./data-types-and-mix.md) | 数据类型与配比 |
 | [data-prep.md](./data-prep.md) | 数据怎么准备 |
 | [eval-safety.md](./eval-safety.md) | 评测与安全 |
-| [curriculum-and-ops.md](./curriculum-and-ops.md) | 课表、持续学习、与平台衔接 |
-| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
+| [curriculum-and-ops.md](./curriculum-and-ops.md) | 课表、持续学习、衔接 |
+| [topology.md](./topology.md) | ai-data ↔ ai-infra ↔ 网关 |
+| [roadmap.md](./roadmap.md) | MVP → 生产 |
 
 ## 一句话
 
