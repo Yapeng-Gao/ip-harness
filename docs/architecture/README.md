@@ -21,7 +21,7 @@
 | 原型后落地（landing） | [landing/README.md](./landing/README.md) | 落地切分与数据归属、默认栈、三阶段路线、提醒/通知；评审 [landing/REVIEW.md](./landing/REVIEW.md) **通过** |
 | 企业级后端 + Agent 平台 | [enterprise/README.md](./enterprise/README.md) | 七面之上拓扑/多租户/HA/安全/审计/私有化；Agent 选型（**C 混合 + DSH 和/或 Codex app-server + 自有闸**；LangGraph 降档；见 [enterprise/agent-runtime-options.md](./enterprise/agent-runtime-options.md)）；相对旧 [enterprise/REVIEW.md](./enterprise/REVIEW.md)（曾锁 C+LangGraph）再评已**通过**（见 REVIEW） |
 | 开发前规格包（dev-spec） | [dev-spec/README.md](./dev-spec/README.md) | 照文档开 PR：拓扑 / 落地表 / 冻 URL / 构建验收 / ADR；评审 [dev-spec/REVIEW.md](./dev-spec/REVIEW.md) **通过**（`678b54e`） |
-| 产业全景（D4/W5） | [landscape/README.md](./landscape/README.md) | 汽车种子域：树+企业+布局+竞品+卡脖子/围剿/前沿；壳 :5186；**无全球实时库**；真全行业另立项 |
+| 产业全景（D4/W5） | [landscape/README.md](./landscape/README.md) · [REVIEW](./landscape/REVIEW.md) | 汽车种子域：树+企业+布局+竞品+卡脖子/围剿/前沿；壳 :5186；**无全球实时库**；真全行业另立项 |
 | FTO 样机（D1/W2） | [fto/README.md](./fto/README.md) · [REVIEW](./fto/REVIEW.md) | 特征→命中→矩阵→风险→报告 Confirm；壳 :5183；吃 Search Hit；**无真 FTO 引擎**；≠ case-core 写库 |
 | 检索样机（search） | [search/README.md](./search/README.md) · [REVIEW](./search/REVIEW.md) | 人+Agent 同引擎形状；用法对标智慧芽/Innojoy；**无真后台**；壳 :5182；≠ ai-data |
 | AI Data（数据 Pipeline） | [ai-data/README.md](./ai-data/README.md) · [REVIEW](./ai-data/REVIEW.md) | **≠ ops / ≠ ai-infra / ≠ case-core**；dataset→训推；产品壳建议 :5181；禁 PatentCase；无真 Spark/湖仓/PII |

@@ -24,6 +24,7 @@
 | [human-ui.md](./human-ui.md) | :5186 IA |
 | [deep-demo.md](./deep-demo.md) | W5 最小可点闭环 |
 | [agent-api-shape.md](./agent-api-shape.md) | Agent 同形状查询（示意） |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 上游
 
