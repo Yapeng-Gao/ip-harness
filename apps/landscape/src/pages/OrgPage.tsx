@@ -1,0 +1,109 @@
+import { Link, useParams } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
+import { Button, Card, Chip, EmptyState, PageHeader } from '../components/ui'
+import { getNode, getOrg, useLandscapeStore } from '../state/store'
+import { STANCE_LABELS, type OrgStance } from '../state/types'
+
+function stanceTone(s: OrgStance): 'ok' | 'accent' | 'warn' | 'neutral' {
+  if (s === 'leader') return 'ok'
+  if (s === 'challenger') return 'accent'
+  if (s === 'niche') return 'warn'
+  return 'neutral'
+}
+
+export function OrgPage() {
+  const { orgId = '' } = useParams()
+  const { orgCompetitorEdges } = useLandscapeStore()
+  const org = getOrg(orgId)
+
+  if (!org) {
+    return (
+      <EmptyState
+        title="企业不存在"
+        body={`未找到 id=${orgId} 的种子企业。`}
+        action={
+          <Link to="/tree">
+            <Button variant="secondary">返回技术树</Button>
+          </Link>
+        }
+      />
+    )
+  }
+
+  const nodes = org.nodeIds.map((id) => getNode(id)).filter(Boolean)
+  const competitors = orgCompetitorEdges
+    .filter((e) => e.orgId === org.id || e.competitorOrgId === org.id)
+    .map((e) => (e.orgId === org.id ? e.competitorOrgId : e.orgId))
+    .map((id) => getOrg(id))
+    .filter(Boolean)
+
+  return (
+    <div>
+      <div className="mb-4">
+        <Link
+          to="/tree"
+          className="focus-ring inline-flex items-center gap-1 text-xs text-slate-600 hover:text-slate-900"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+          返回技术树
+        </Link>
+      </div>
+      <PageHeader
+        eyebrow="企业档案"
+        title={org.name}
+        desc="业务线 / 地位 / 关联 Taxonomy 节点 · 全内存种子"
+      />
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <div className="flex flex-wrap items-center gap-2">
+            <Chip tone={stanceTone(org.stance)}>{STANCE_LABELS[org.stance]}</Chip>
+            <Chip tone="mock">{org.stance}</Chip>
+          </div>
+          <h2 className="mt-4 text-sm font-semibold text-slate-900">业务线</h2>
+          <ul className="mt-2 list-inside list-disc text-sm text-slate-700">
+            {org.lines.map((l) => (
+              <li key={l}>{l}</li>
+            ))}
+          </ul>
+        </Card>
+        <Card>
+          <h2 className="text-sm font-semibold text-slate-900">关联节点</h2>
+          <ul className="mt-2 space-y-1">
+            {nodes.map((n) =>
+              n ? (
+                <li key={n.id}>
+                  <Link
+                    to={`/nodes/${n.id}`}
+                    className="focus-ring text-sm text-slate-800 underline-offset-2 hover:underline"
+                  >
+                    {n.name}
+                    <span className="ml-1 text-xs text-slate-400">L{n.depth}</span>
+                  </Link>
+                </li>
+              ) : null,
+            )}
+          </ul>
+          {competitors.length > 0 ? (
+            <>
+              <h2 className="mt-4 text-sm font-semibold text-slate-900">竞品边</h2>
+              <ul className="mt-2 space-y-1">
+                {competitors.map((c) =>
+                  c ? (
+                    <li key={c.id}>
+                      <Link
+                        to={`/orgs/${c.id}`}
+                        className="focus-ring text-sm text-slate-800 underline-offset-2 hover:underline"
+                      >
+                        {c.name}
+                      </Link>
+                    </li>
+                  ) : null,
+                )}
+              </ul>
+            </>
+          ) : null}
+        </Card>
+      </div>
+    </div>
+  )
+}

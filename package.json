@@ -22,6 +22,7 @@
     "dev:mining": "npm run dev -w @ip/mining",
     "dev:inspire": "npm run dev -w @ip/inspire",
     "dev:figure": "npm run dev -w @ip/figure",
+    "dev:landscape": "npm run dev -w @ip/landscape",
     "dev:legacy": "vite --config vite.config.ts",
     "build": "npm run build -w @ip/mid",
     "build:all": "npm run build -w @ip/contracts --if-present; npm run build -w @ip/mid -w @ip/workbench -w @ip/agent -w @ip/ops -w @ip/iam --if-present",
