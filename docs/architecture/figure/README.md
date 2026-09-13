@@ -23,6 +23,7 @@
 | [overview.md](./overview.md) | 为何双闭环；壳选型；边界 |
 | [human-ui.md](./human-ui.md) | 生成台 + 画布 IA |
 | [deep-demo.md](./deep-demo.md) | 可点状态机与验收 |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 上游
 
