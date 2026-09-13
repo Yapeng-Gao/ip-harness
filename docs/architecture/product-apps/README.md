@@ -42,6 +42,7 @@
 | search | **5182** | [../search/](../search/README.md) |
 | fto | **5183** | [../fto/](../fto/README.md) |
 | mining | **5184** | [../mining/](../mining/README.md) |
+| inspire | **5185** | [../inspire/](../inspire/README.md) |
 | landscape | **5186** | [../landscape/](../landscape/README.md) |
 | figure | **5187** | [../figure/](../figure/README.md) |
 
