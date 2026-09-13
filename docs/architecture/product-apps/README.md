@@ -41,6 +41,7 @@
 | ai-data | **5181** | [../ai-data/](../ai-data/README.md) |
 | search | **5182** | [../search/](../search/README.md) |
 | fto | **5183** | [../fto/](../fto/README.md) |
+| mining | **5184** | [../mining/](../mining/README.md) |
 | landscape | **5186** | [../landscape/](../landscape/README.md) |
 | figure | **5187** | [../figure/](../figure/README.md) |
 
