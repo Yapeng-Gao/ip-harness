@@ -24,6 +24,7 @@
 | [human-ui.md](./human-ui.md) | 路由与五步 IA |
 | [deep-demo.md](./deep-demo.md) | 内存状态机与验收 |
 | [agent-api-shape.md](./agent-api-shape.md) | （可选）Agent 同形状只读/报告草稿 |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 上游
 
