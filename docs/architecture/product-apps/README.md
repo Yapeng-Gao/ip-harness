@@ -41,6 +41,7 @@
 | ai-data | **5181** | [../ai-data/](../ai-data/README.md) |
 | search | **5182** | [../search/](../search/README.md) |
 | fto | **5183** | [../fto/](../fto/README.md) |
+| landscape | **5186** | [../landscape/](../landscape/README.md) |
 
 以上**不**改 `APP_PORTS`；不扩写为本目录九篇正文。
 
