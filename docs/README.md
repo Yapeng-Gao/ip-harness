@@ -13,6 +13,7 @@
 | 文档 | 说明 |
 |------|------|
 | [architecture/README.md](./architecture/README.md) | 架构目录索引 · 已知裂缝表 |
+| [**PROTOTYPE_MASTER_PLAN.md**](./PROTOTYPE_MASTER_PLAN.md) | **原型总方案执行表**（已有/在建/待建 · 波次 · 端口） |
 | [architecture/codebase.md](./architecture/codebase.md) | **代码架构 / 目录地图 / 分层** |
 | [architecture/data-flow.md](./architecture/data-flow.md) | 多壳读写数据流 |
 | [architecture/data-model.md](./architecture/data-model.md) | 数据模型与包归属 |

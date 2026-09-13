@@ -26,6 +26,7 @@
 | AI Infra（训推基建） | [ai-infra/README.md](./ai-infra/README.md) · [REVIEW](./ai-infra/REVIEW.md) | **≠ ops**：GPU/调度/训练/批推/在线推理/发布；产品壳建议 :5179；禁 PatentCase |
 | 文档编辑器并行样机（doc-harness） | [doc-harness/README.md](./doc-harness/README.md) | 另壳 :5178；三栏文档+Agent；MVP draft 权利要求；五壳零改 |
 | 产品面规格（product-apps） | [product-apps/README.md](./product-apps/README.md) | 五壳产品规格；默认同壳不拆节点 app；工具/MCP/插件；评审 [product-apps/REVIEW.md](./product-apps/REVIEW.md) **通过** |
+| **原型总方案（执行表）** | [../PROTOTYPE_MASTER_PLAN.md](../PROTOTYPE_MASTER_PLAN.md) | 已有/在建/待建队列 · 端口 · 波次 · 标准剧本；样机口径 |
 
 阅读顺序建议：本页 → [codebase](./codebase.md) → [data-flow](./data-flow.md) → [data-model](./data-model.md) → [backends](./backends.md) → [landing](./landing/README.md)（落地）→ [enterprise](./enterprise/README.md)（企业级 + Agent）→ [dev-spec](./dev-spec/README.md)（开发前规格 · 开 PR）→ [product-apps](./product-apps/README.md)（产品面规格 · 照壳设计）→（仓库策略附录）[repos-and-vcs](./repos-and-vcs.md)。
 
