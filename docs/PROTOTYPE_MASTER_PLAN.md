@@ -71,7 +71,7 @@
 | D2 | **专利挖掘** | `apps/mining` 或 workbench 模块 | 5184 或挂 workbench | 交底/技术点 → 候选发明点列表 → 评分 → 送立项/撰写 | `architecture/mining/` |
 | D3 | **创新激发** | `apps/inspire` | 5185 | 问题/技术点 → 语义扩召卡片 → 收藏 → 送交底/挖掘 | `architecture/inspire/` |
 | D4 | **产业全景图** | `apps/landscape` | 5186 | **目标产品**：行业树（系统→子系统→零部件多层级）+ 企业/业务线/地位 + 专利布局 + 竞品 + 卡脖子/围剿风险 + 前沿方向；样机先锁 **一个垂直域种子（建议汽车）** 可下钻，非全球全行业真库 | `architecture/landscape/` **规格 Pass** `f0e1c28` · 实现 **W5** |
-| D5 | **附图生成·编辑** | `apps/figure` 或 doc-harness 模式 | 5187 或 5178 扩 | **硬要求：能生成且能编辑**。上下文 → mock 生成草图 → 画布编辑（标注/图层/撤销）→ 版本资产 → 挂文档章；禁止只出图不可改 | `architecture/figure/` |
+| D5 | **附图生成·编辑** | `apps/figure` 或 doc-harness 模式 | 5187 或 5178 扩 | **硬要求：能生成且能编辑**。上下文 → mock 生成草图 → 画布编辑（标注/图层/撤销）→ 版本资产 → 挂文档章；禁止只出图不可改 | `architecture/figure/` **规格 Pass** `af7bfca` · 样机开工 |
 
 **模块 vs 独立壳（决策规则）**
 
@@ -230,7 +230,7 @@
 1. ~~B1 search~~ **Pass**（`a56b1cd`）  
 2. ~~W1 C1/C2~~ **Pass**（`f8f0ef6`）  
 3. ~~W2 FTO~~ **Pass**（`0d65061` · :5183）  
-4. **当前 W3**：附图生成+编辑 — 规格 `architecture/figure/` → 评审 → Owner → 样机  
+4. **当前 W3**：附图规格 **Pass**（`af7bfca`）→ **附图助手实现** `apps/figure:5187`  
 5. ~~landscape 规格~~ **Pass**（`f0e1c28`）· 实现仍 **W5**  
 6. 其后 W4 挖掘 → W5 全景+激发
 7. 本文件为权威执行表；变更需总控改版并记一笔  
