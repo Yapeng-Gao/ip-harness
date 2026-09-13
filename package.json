@@ -19,6 +19,7 @@
     "dev:ai-data": "npm run dev -w @ip/ai-data",
     "dev:search": "npm run dev -w @ip/search",
     "dev:fto": "npm run dev -w @ip/fto",
+    "dev:mining": "npm run dev -w @ip/mining",
     "dev:figure": "npm run dev -w @ip/figure",
     "dev:legacy": "vite --config vite.config.ts",
     "build": "npm run build -w @ip/mid",
