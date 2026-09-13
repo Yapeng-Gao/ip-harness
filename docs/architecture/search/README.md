@@ -21,6 +21,7 @@
 | [agent-api-shape.md](./agent-api-shape.md) | Agent 侧查询/结果契约 |
 | [deep-demo.md](./deep-demo.md) | 内存状态机（可点闭环规格） |
 | [vs-ai-data.md](./vs-ai-data.md) | 与 ai-data 边界 |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 产品壳
 
