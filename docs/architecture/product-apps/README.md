@@ -40,6 +40,7 @@
 | ai-infra | 5179 | [../ai-infra/](../ai-infra/README.md) |
 | ai-data | **5181** | [../ai-data/](../ai-data/README.md) |
 | search | **5182** | [../search/](../search/README.md) |
+| fto | **5183** | [../fto/](../fto/README.md) |
 
 以上**不**改 `APP_PORTS`；不扩写为本目录九篇正文。
 
