@@ -21,6 +21,7 @@
 | [roadmap.md](./roadmap.md) | MVP → 增强 → CI |
 | [vs-l0-l1.md](./vs-l0-l1.md) | 对照 `e2e/REVIEW_RUBRIC.md` |
 | [REVIEW.md](./REVIEW.md) | 架构评审结论 |
+| [MVP.md](./MVP.md) | **MVP 任务单**（当前可开实现） |
 
 ## 明确不做（本规格波）
 
