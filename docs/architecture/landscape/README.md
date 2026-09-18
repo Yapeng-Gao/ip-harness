@@ -12,7 +12,8 @@
 
 | 层级 | 能否做 |
 |------|--------|
-| **样机演示** | **能**（汽车种子树 + 企业卡 + 布局/竞品/洞察 mock） |
+| **样机演示** | **能**（汽车种子；见 deep-demo） |
+| **原型加深（本补丁）** | **能**（L1–L4 小图谱可导航；仍非全球库） |
 | **可售真产品（全行业）** | **不能只靠现有壳** → 真落地另立 industry-graph / entity 服务面 |
 
 ## 本目录
@@ -23,6 +24,7 @@
 | [domains.md](./domains.md) | L1–L6 能力面 |
 | [human-ui.md](./human-ui.md) | :5186 IA |
 | [deep-demo.md](./deep-demo.md) | W5 最小可点闭环 |
+| [deepen-l1-l4.md](./deepen-l1-l4.md) | **加深补丁**：L1–L4 真原型加深；默认壳内、可选 :5191 |
 | [agent-api-shape.md](./agent-api-shape.md) | Agent 同形状查询（示意） |
 | [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
