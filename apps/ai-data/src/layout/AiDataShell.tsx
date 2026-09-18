@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { APP_DEV_URLS } from '@ip/contracts'
 import {
   Database,
   Download,
@@ -9,9 +10,6 @@ import {
   Plug,
   ShieldAlert,
 } from 'lucide-react'
-
-const AI_INFRA_URL = 'http://localhost:5179'
-const OPS_URL = 'http://localhost:5176'
 
 const NAV = [
   { to: '/', end: true, label: '总览', icon: LayoutDashboard },
@@ -37,16 +35,16 @@ export function AiDataShell() {
         <span>数据 Pipeline 平面 · 与 ai-infra / ops 并行 · 不改 APP_PORTS</span>
         <span className="inline-flex flex-wrap items-center gap-3">
           <a
-            href={AI_INFRA_URL}
+            href={APP_DEV_URLS.aiInfra}
             className="focus-ring rounded font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600"
-            title={AI_INFRA_URL}
+            title={APP_DEV_URLS.aiInfra}
           >
             训推面
           </a>
           <a
-            href={OPS_URL}
+            href={APP_DEV_URLS.ops}
             className="focus-ring rounded font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600"
-            title={OPS_URL}
+            title={APP_DEV_URLS.ops}
           >
             运维面
           </a>

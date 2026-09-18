@@ -87,7 +87,7 @@ npm run typecheck -w @ip/ai-data
 | `/exports` | 脱敏导出 |
 | `*` | `Navigate` → `/` |
 
-顶栏横幅：`样机 · 非真 Spark / 湖仓 / PII`。深链：训推面 ai-infra → http://localhost:5179；运维面 ops → http://localhost:5176。
+顶栏横幅：`样机 · 非真 Spark / 湖仓 / PII`。深链：训推面 ai-infra → `APP_DEV_URLS.aiInfra`；运维面 ops → `APP_DEV_URLS.ops`（均来自 `@ip/contracts`）。
 
 ## 改动边界
 
