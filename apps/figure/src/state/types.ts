@@ -1,3 +1,5 @@
+import { APP_DEV_URLS } from '@ip/contracts'
+
 export type LayerKind = 'sketch' | 'annotation'
 export type AnnotationKind = 'bubble' | 'label' | 'callout'
 export type TemplateId = 'exploded' | 'flowchart'
@@ -102,7 +104,7 @@ export type FigureState = {
 
 export const HONESTY_BANNER = '样机 · 无真文生图 · 生成+编辑双闭环'
 
-export const DOC_HARNESS_DEEPLINK = 'http://localhost:5178'
+export const DOC_HARNESS_DEEPLINK = APP_DEV_URLS.docHarness
 
 export const CANVAS = { width: 800, height: 560 }
 

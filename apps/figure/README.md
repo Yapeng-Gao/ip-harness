@@ -21,4 +21,4 @@ npm run typecheck -w @ip/figure
 
 ## 诚实边界
 
-无真文生图、无 CAD；SVG 模板占位。挂章仅为 toast + 事件日志 + 深链 doc-harness :5178。不改 APP_PORTS / 五壳 / doc-harness。
+无真文生图、无 CAD；SVG 模板占位。挂章仅为 toast + 事件日志 + 深链 `APP_DEV_URLS.docHarness`（`@ip/contracts`）。不改 APP_PORTS / 五壳 / doc-harness 业务码。
