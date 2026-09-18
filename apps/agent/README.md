@@ -56,10 +56,15 @@ midInboxHref({ sessionId }) // 或 { itemId }
 
 - `src/pages/*` · Home / Sessions / Workspace / Catalog / Harness（已从根 `src/pages/agent` 迁入）
 - `src/components/*` · Shell / Sidebar / Catalog 卡 / session/*（含 HITL ConfirmBar）
-- `src/lib/deepLinks.ts` · 跨端口深链
+- `src/lib/deepLinks.ts` · re-export `@shared/lib/deepLinks` + 本面专用（`agentSessionPath` / `midInboxHref` 等）
 - 共享 context / data / domain / utils 仍引用 `@shared/...`（根 `src/`，本包只读）
 
-## 已知限制
+## mid → agent 深链（已对齐）
 
-- mid(5173) 上 `/agent/*` 的 MetaRedirect 仍可能丢 path；需中台助手改 mid。Agent 侧已能正确接收完整 `/agent/sessions/:id?focus=…` 并正确外链回 Inbox。
-- 其它跨面链接（如 `/cases`、`/workbench/*`）若仍用相对 path，在 Agent 端口会停错面；Inbox 已优先修绝对 URL。
+mid(5173) 对 `/agent/*` 使用 `RedirectExternal`（`base=APP_DEV_URLS.agent`，`prefix=/agent`），**保留** pathname + search + hash，例如：
+
+`/agent/sessions/:id?focus=hitl&gate=…` → `http://localhost:5175/agent/sessions/:id?focus=hitl&gate=…`
+
+Agent 侧接收完整 path+query，并滚到/高亮 ConfirmBar；回 Inbox 用 `midInboxHref` 绝对 URL。
+
+跨口 mid/workbench/iam helper 已 re-export `@shared/lib/deepLinks`（见 `src/lib/deepLinks.ts`）。
