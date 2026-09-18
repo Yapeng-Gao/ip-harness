@@ -6,7 +6,7 @@
 | **对象** | `apps/doc-harness` · http://127.0.0.1:5178/ |
 | **HEAD** | `3890b92` |
 | **对照** | `DESIGN_SYSTEM.md` · `EVAL_RUBRIC.md` · DS-UX-HABIT |
-| **证据** | `docs/ui-polish/doc-harness/` |
+| **证据** | `docs/ui-polish/doc-harness/` · smoke 快照见 [`doc-harness-smoke/`](./doc-harness-smoke/) |
 | **日期** | 2026-09-13 |
 | **总评** | **No-Go**（初评）→ 复评 **Go**（见文末 RECHECK · `f57d80a`） |
 | **综合** | ~3 / 5（壳可读，关键闸与状态诚实未过） |
