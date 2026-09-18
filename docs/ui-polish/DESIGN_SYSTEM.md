@@ -1,5 +1,8 @@
 # ip-harness Design System
 
+> **UI Skills（冻结 2026-09-18）**：`apple-design`（Emil）· `make-interfaces-feel-better` · `web-design-guidelines`。已退役 `apple-hig-full`。
+
+
 | 项 | 值 |
 |----|-----|
 | **权威源** | `src/index.css`（`@theme` + 组件类） |

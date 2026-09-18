@@ -29,7 +29,7 @@
 | 架构设计 | 架构设计助手 | `docs/architecture/` |
 | 架构评审 | 架构评审 | 架构文档评审 |
 | UI / UX 评估 | UI评估助手 | 只评不改：打分、P0/P1/P2、验收标准；与 UI质感助手分工 |
-| UI / UX 质感 | UI质感助手 | 视觉与交互打磨：共享组件/`@ip/ui` + mid/workbench/agent 页面质感；不改业务闸门/contracts；禁改 ops 业务逻辑 |
+| UI / UX 质感 | UI质感助手 | 视觉与交互打磨：共享组件/`@ip/ui` + 各壳质感；技能 **`apple-design` + `make-interfaces-feel-better` + `web-design-guidelines`**（已替 `apple-hig-full`）；不改业务闸门/contracts；禁改 ops 业务逻辑 |
 
 ## Owner 工作法（硬）
 
