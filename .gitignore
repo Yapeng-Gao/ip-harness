@@ -35,3 +35,6 @@ blob-report/
 
 # local UI polish scratch (canonical under docs/ui-polish)
 .ui-evidence/
+
+# e2e-hunt run artifacts
+tools/e2e-hunt/artifacts/
