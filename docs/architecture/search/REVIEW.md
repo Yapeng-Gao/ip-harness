@@ -46,3 +46,21 @@
 
 **非阻塞**：实现侧 toast 文案须含「跨口未共享 LS」；B 方案 URL 快照仅演示勿默认。
 
+## B席轻扫 · P2 策略A清单 + :5190 旗标（`3f0d488`）
+
+| 日期 | 2026-09-18 |
+|------|------------|
+| **结论** | **Pass**（黄项非阻塞） |
+
+| 篇 | 结果 |
+|----|------|
+| [basket-strategy-a-checklist.md](./basket-strategy-a-checklist.md) | 过：各壳要改/不改清；对齐键=公开号；禁 LS/真 basket/APP_PORTS/case-core |
+| [search-api-flag-5190.md](./search-api-flag-5190.md) | 过：默认 mock；旗标接 5190；失败回退；UI 展示 backend；不改 APP_PORTS |
+
+冻结遵守：无真 GPU/SFT、无 N4 case-core、无真 basket API。
+
+### 黄项（非阻塞）
+
+1. `CN118234567A` 在 landscape 种子仍缺（清单已标「可补」）— 实现策略 A 时择机加一行。  
+2. fto/mining「导入」诚实 toast 须落地才勾验收；文档已写死文案口径。
+
