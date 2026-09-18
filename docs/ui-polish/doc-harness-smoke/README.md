@@ -4,7 +4,7 @@
 
 | 文件 | 大致场景 |
 |------|----------|
-| `revision-timeline.png` | 左树 Revision 时间线 / 章切换上下文 |
+| `revision-timeline.png` | Revision 时间线 / 章切换上下文 |
 | `agent-diff-confirm.png` | Agent Diff + HITL Confirm 区 |
 
 说明：
