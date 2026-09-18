@@ -3,7 +3,7 @@
 | 项 | 值 |
 |----|-----|
 | **日期** | 2026-09-18（上海） |
-| **基线 HEAD** | `b9d0994` → 落地 `d1c38b6` |
+| **基线 HEAD** | `b9d0994` → 落地 `fc8a2d2` |
 | **技能** | apple-design · make-interfaces-feel-better · web-design-guidelines（未用 apple-hig-full） |
 | **范围** | 仅 P-P2-1/2/3 className；未改 contracts / HITL / Persona / STEPS |
 | **search 状态** | 动手前 `git status apps/search` **干净**，故一并修 CorpusPage（非「让检索服务先合」） |
