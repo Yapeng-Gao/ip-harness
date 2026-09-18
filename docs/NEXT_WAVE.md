@@ -65,6 +65,12 @@
 - 未改 `APP_PORTS`；未接线 `apps/search`（壳旗标另 PR）
 - B席：架构评审 Pass · 业务深度审计 Pass；总控冒烟绿
 
+### I2 数据切片验收（2026-09-18）
+
+- SHA `d0a66f7` · `ds-ip-sft-mvp@v0.1.0` · `docs/ai-data/mvp-sft/`（76 行）
+- B席：架构评审 Pass · 业务深度审计 Pass；checksum/泄漏复验绿
+- 待：AI Infra `train.sft` Job + 门禁 + Registry
+
 ### I2 边界
 
 - ai-data 出一个 SFT version；ai-infra 一个 train.sft 形状（可先本地/脚本跑通）
