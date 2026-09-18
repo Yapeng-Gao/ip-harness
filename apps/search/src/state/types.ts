@@ -1,3 +1,5 @@
+import { APP_DEV_URLS } from '@ip/contracts'
+
 export type SearchMode = 'semantic' | 'keyword' | 'advanced'
 
 export type SearchFilters = {
@@ -207,10 +209,10 @@ export type DownstreamPlaceholder = {
 }
 
 export const DOWNSTREAM_PLACEHOLDERS: DownstreamPlaceholder[] = [
-  { target: 'fto', label: '送 FTO', href: 'http://localhost:5183' },
-  { target: 'mining', label: '送 挖掘', href: 'http://localhost:5184' },
-  { target: 'landscape', label: '送 全景', href: 'http://localhost:5186' },
-  { target: 'doc', label: '送 文档', href: 'http://localhost:5178' },
+  { target: 'fto', label: '送 FTO', href: APP_DEV_URLS.fto },
+  { target: 'mining', label: '送 挖掘', href: APP_DEV_URLS.mining },
+  { target: 'landscape', label: '送 全景', href: APP_DEV_URLS.landscape },
+  { target: 'doc', label: '送 文档', href: APP_DEV_URLS.docHarness },
 ]
 
 export const CORPUS_HONESTY =
