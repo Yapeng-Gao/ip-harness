@@ -33,6 +33,17 @@ export const HONESTY_TOKENS = [
   '已接 Search API',
   'sqlite-fts',
   'API fallback',
+  // Agent HITL / Beta · Figure 双闭环样机
+  '非采购闭环',
+  'Beta·非采购闭环',
+  '无真文生图',
+  '会话待确认',
+  '等待你确认',
+  '待你确认',
+  // Agent 壳已知嵌套 <a> hydration 噪声（禁改 apps · Hunt 不挡）
+  'cannot be a descendant',
+  'cannot contain a nested',
+  'hydration error',
 ] as const
 
 export function isHonestyText(text: string): boolean {

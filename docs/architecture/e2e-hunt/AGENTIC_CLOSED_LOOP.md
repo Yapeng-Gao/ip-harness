@@ -259,11 +259,13 @@ npm run hunt:search-smoke
 | ID | 壳 | 目标 | 备注 |
 |----|-----|------|------|
 | `CP-search-smoke` | search:5182 | 关键词→列表→DetailDrawer | **已有** |
-| **`CP-fto-five`** | fto:5183 | 五步走到报告页（不要求真引擎） | adapter 已点名 |
-| **`CP-basket-strategy-a`** | search→fto/mining | 工作篮策略 A：共享种子 + 诚实 toast 可见 | toast **白名单**；验的是「链路可点」非「真跨端口 storage」 |
-| **`CP-search-api-flag`** | search:5182 + api:5190 | 旗标接 sqlite-fts；可回退 mock | mock 回退不记缺陷；旗标开时 quarantine/热索引诚实 |
+| `CP-fto-five` | fto:5183 | 五步走到报告页（不要求真引擎） | **已接线** |
+| `CP-basket-strategy-a` | search→fto/mining | 工作篮策略 A：共享种子 + 诚实 toast 可见 | **已接线**；toast **白名单**；验链路可点非真跨口 LS |
+| `CP-search-api-flag` / `CP-search-api-fallback` | search:5182 ± api:5190 | 旗标 sqlite-fts / 宕机回退 mock | **已接线**（A/B） |
+| **`CP-agent-hitl`** | agent:5175 | 进入办理 → HITL ConfirmBar 可见 | **已接线** · `hunt:agent-hitl` · 深链 `sess-oa-1?focus=hitl` |
+| **`CP-figure-dual`** | figure:5187 | 上下文 → mock 生成 → 画布编辑双闭环 | **已接线** · `hunt:figure-dual` · 样机级 |
 
-优先序：`CP-fto-five` → `CP-basket-strategy-a` → `CP-search-api-flag`。
+**现状**：§8.2 原优先序（fto → basket → search-api）与 agent/figure 尾巴均已接线。Hunt **不挡合并**；**不开 L5**。下一批可继续扩壳 / 规则短路 vs LLM，仍不要求真引擎。
 
 ---
 

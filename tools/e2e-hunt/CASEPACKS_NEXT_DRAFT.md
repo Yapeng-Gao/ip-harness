@@ -1,6 +1,6 @@
 # CasePack 下一批（对齐 AGENTIC_CLOSED_LOOP.md §8.2）
 
-> **状态**：`CP-fto-five` / `CP-basket-strategy-a` / `CP-search-api-flag`（分支 A）/ `CP-search-api-fallback`（分支 B）已接线  
+> **状态**：`CP-fto-five` / `CP-basket-strategy-a` / `CP-search-api-flag`（A）/ `CP-search-api-fallback`（B）/ **`CP-agent-hitl`** / **`CP-figure-dual`** 已接线  
 > **依据**：`docs/architecture/e2e-hunt/AGENTIC_CLOSED_LOOP.md` v1.2 §8.2  
 > **阶段**：Phase 0′ · 样机诚实白名单 · **不开 L5**（无自动修 / 禁 CloudAgent 改产品）  
 > **约束**：不改 L0（`e2e/l0-*` / `test:e2e`）；Hunt 不挡合并；不要求真 FTO 引擎 / 真跨口 LS
@@ -9,7 +9,9 @@
 
 1. **`CP-fto-five`** · 已接线  
 2. **`CP-basket-strategy-a`** · 已接线  
-3. **`CP-search-api-flag`** · 分支 A 已接线；**`CP-search-api-fallback`** · 分支 B 已接线
+3. **`CP-search-api-flag`** / **`CP-search-api-fallback`** · 已接线  
+4. **`CP-agent-hitl`** · 已接线  
+5. **`CP-figure-dual`** · 已接线
 
 ## 总览
 
@@ -20,6 +22,8 @@
 | `CP-basket-strategy-a` | search:5182 → fto:5183 | 加篮→送 FTO→导入共享种子 + 诚实 toast | **已接线** | 两壳同起 |
 | `CP-search-api-flag` | search:5182 + api:5190 | 旗标 sqlite-fts | **已接线（分支 A）** | `dev:search-api` + `dev:search:api` |
 | `CP-search-api-fallback` | search:5182（:5190 宕） | 旗标开但 API 不可用 → mock + toast | **已接线（分支 B）** | `dev:search:api` + **停** :5190 |
+| `CP-agent-hitl` | agent:5175 | 进入办理 → HITL ConfirmBar 可见 | **已接线** | `npm run dev:agent` |
+| `CP-figure-dual` | figure:5187 | 上下文 → mock 生成 → 画布编辑双闭环 | **已接线** | `npm run dev:figure` |
 
 字段对齐方案：Evidence Pack 本地 `artifacts/`；可选逐步 `agent_reasoning`（规则短路填 `rule:…`）；Finding 白名单见 `rules.ts`；schemaVersion 仍为 `1.0`。
 
@@ -105,15 +109,56 @@
 
 ---
 
+---
+
+## 4. `CP-agent-hitl`（agent:5175）· Phase 0′ 本波
+
+**baseURL**：`http://localhost:5175/`  
+**脚本**：`npm run hunt:agent-hitl`  
+**DEV**：`npm run dev:agent`  
+**maxSteps**：12 · `abortOnHard: true`  
+**目标**：进入办理 → HITL ConfirmBar 可见（种子 `sess-oa-1` · `needs_human` + `hitlPending`）
+
+| # | checkpointId | 断言 | decide |
+|---|--------------|------|--------|
+| 1 | `cp-home` | custom `agent-home`（url `/agent` 或「会话待确认」/知产 Agent） | `goto /` |
+| 2 | `cp-session` | custom `agent-session-oa1`（url 含 `sess-oa-1`） | goto 深链 `…/sessions/sess-oa-1?focus=hitl` |
+| 3 | `cp-hitl` | custom `hitl-confirm-bar`（批准策略 / 授权递交 / 立项决定 / 确认报价 / 付款解锁 · `.agent-confirm-cta` / `#agent-confirm-reason-primary` / 「待确认」） | wait（或兜底点「会话待确认」）→ stop |
+
+**白名单**：Beta/非采购闭环、样机横幅、HITL 等待态（「会话待确认」「等待你确认」）**不记缺陷**。  
+**不做**：真审批写回、L5、改 apps/*。
+
+---
+
+## 5. `CP-figure-dual`（figure:5187）· Phase 0′ 本波
+
+**baseURL**：`http://localhost:5187/`  
+**脚本**：`npm run hunt:figure-dual`  
+**DEV**：`npm run dev:figure`  
+**maxSteps**：20 · `abortOnHard: true`（生成 1–2s 假延迟）  
+**目标**：首页 → 新建上下文 → mock 生成 → 打开画布编辑（样机级双闭环）
+
+| # | checkpointId | 断言 | decide |
+|---|--------------|------|--------|
+| 1 | `cp-home` | heading「附图资产」 | `goto /` |
+| 2 | `cp-context` | heading「填写生成上下文」 | click「新建附图」 |
+| 3 | `cp-generate` | heading「套用模板草图」 | click「生成草图」（标题可默认）；wait generating→ready |
+| 4 | `cp-canvas` | custom `figure-canvas`（「③ 画布编辑」或「保存版本」） | click「打开画布编辑」→ stop |
+
+**白名单**：无真文生图、假延迟、样机横幅。  
+**不做**：真文生图 / CAD、L5、改 apps/*。
+
+
 ## 实现挂钩
 
 | 项 | 落点 |
 |----|------|
-| CasePack | `cp-fto-five.ts` · `cp-basket-strategy-a.ts` · `cp-search-api-flag.ts` · `cp-search-api-fallback.ts` |
+| CasePack | `cp-fto-five.ts` · `cp-basket-strategy-a.ts` · `cp-search-api-flag.ts` · `cp-search-api-fallback.ts` · **`cp-agent-hitl.ts`** · **`cp-figure-dual.ts`** |
 | Adapter | `adapter/ip-harness.ts` · `CASE_PACKS` · `DEV_SCRIPT_BY_PACK` · `EXTRA_BASES_BY_PACK`（flag A 探活 :5190）· `REQUIRE_DOWN_BY_PACK`（fallback B 要求 :5190 down） |
 | CLI | `ensureBasesUp` + `ensureRequiredDown`（分支 B fail-fast） |
-| 脚本 | `hunt:fto-five` · `hunt:basket-strategy-a` · `hunt:search-api-flag` · `hunt:search-api-fallback`；**勿动** `test:e2e` |
-| 白名单 | `rules.ts` 策略 A / 假比对 / Search API 旗标与回退 token + `:5190` requestfailed |
+| 脚本 | `hunt:fto-five` · `hunt:basket-strategy-a` · `hunt:search-api-flag` · `hunt:search-api-fallback` · **`hunt:agent-hitl`** · **`hunt:figure-dual`**；**勿动** `test:e2e` |
+| 白名单 | `rules.ts` 策略 A / 假比对 / Search API / Agent HITL·Beta / Figure 无真文生图 token + `:5190` requestfailed |
+| Observer custom | `agent-home` · `agent-session-oa1` · `hitl-confirm-bar` · `figure-canvas` |
 | L7 轻量 | 可选 `StepRecord.agent_reasoning`（§3.2）；schemaVersion 仍 1.0 |
 | L5 | **明确不做** |
 
@@ -121,3 +166,4 @@
 
 - decide：继续规则短路 vs 接 LLM  
 - `CP-basket-strategy-a` 已同 runId 探活 5182+5183；flag A 探活 5182+5190；fallback B 探活 5182 且要求 5190 down  
+- `CP-agent-hitl` / `CP-figure-dual` 已接线；下一批尾巴可继续扩壳（仍不挡合并 · 不开 L5）  

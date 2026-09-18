@@ -42,6 +42,8 @@
     "hunt:basket-strategy-a": "tsx tools/e2e-hunt/src/cli.ts --case CP-basket-strategy-a",
     "hunt:search-api-flag": "tsx tools/e2e-hunt/src/cli.ts --case CP-search-api-flag",
     "hunt:search-api-fallback": "tsx tools/e2e-hunt/src/cli.ts --case CP-search-api-fallback",
+    "hunt:agent-hitl": "tsx tools/e2e-hunt/src/cli.ts --case CP-agent-hitl",
+    "hunt:figure-dual": "tsx tools/e2e-hunt/src/cli.ts --case CP-figure-dual",
     "dev:search-api": "npm run dev -w @ip/search-api"
   },
   "dependencies": {

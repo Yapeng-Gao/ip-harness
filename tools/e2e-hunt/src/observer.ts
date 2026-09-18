@@ -153,6 +153,69 @@ async function checkAssert(
 ${status}`
           return hay.includes('跨口未共享') || hay.includes('已用共享种子')
         }
+        if (a.id === 'agent-home') {
+          const url = page.url()
+          if (url.includes('/agent')) return true
+          const body = await page.locator('body').innerText().catch(() => '')
+          return (
+            body.includes('会话待确认') ||
+            body.includes('知产 Agent') ||
+            /办理/.test(body)
+          )
+        }
+        if (a.id === 'agent-session-oa1') {
+          const url = page.url()
+          return url.includes('sess-oa-1')
+        }
+        if (a.id === 'hitl-confirm-bar') {
+          // 须在会话页，避免首页侧栏「待确认」误判
+          const url = page.url()
+          if (!url.includes('/agent/sessions/')) return false
+          const labels = [
+            '批准策略',
+            '授权递交',
+            '立项决定',
+            '确认报价',
+            '付款解锁',
+          ]
+          for (const lab of labels) {
+            const byAria = await page
+              .getByRole('button', { name: lab })
+              .first()
+              .isVisible()
+              .catch(() => false)
+            if (byAria) return true
+          }
+          const byClass = await page
+            .locator('.agent-confirm-cta, #agent-confirm-reason-primary')
+            .first()
+            .isVisible()
+            .catch(() => false)
+          if (byClass) return true
+          const bar = page.locator(
+            '.agent-confirm-cta-wrap, .confirm-hitl-sheet, .agent-confirm-sheet',
+          )
+          if ((await bar.count().catch(() => 0)) > 0) {
+            const body = await page.locator('body').innerText().catch(() => '')
+            if (body.includes('待确认') || labels.some((l) => body.includes(l))) {
+              return true
+            }
+          }
+          return false
+        }
+        if (a.id === 'figure-canvas') {
+          const url = page.url()
+          const onEdit = url.includes('/edit/')
+          const save = await page
+            .getByRole('button', { name: '保存版本' })
+            .first()
+            .isVisible()
+            .catch(() => false)
+          if (save) return true
+          if (!onEdit) return false
+          const body = await page.locator('body').innerText().catch(() => '')
+          return body.includes('③ 画布编辑')
+        }
         if (a.id === 'fto-import-done') {
           // 必须在 FTO 壳：Search 送 FTO 后也会出现策略 A toast，勿误判
           const url = page.url()

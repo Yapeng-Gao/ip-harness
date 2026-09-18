@@ -107,4 +107,5 @@
 
 口播短剧本（search→篮→FTO）：[`DEMO_PLAYBOOK.md`](./DEMO_PLAYBOOK.md)。
 
-下一批 CasePack（不挡本刀）：`CP-fto-five` · `CP-basket-strategy-a` · `CP-search-api-flag`。**不做** L5 自动修 / Hunt 挡合并 / 真 GPU·SFT。
+**已接线 CasePack（Hunt 不挡合并）**：`CP-search-smoke` · `CP-fto-five` · `CP-basket-strategy-a` · `CP-search-api-flag` · `CP-search-api-fallback` · **`CP-agent-hitl`**（`hunt:agent-hitl`）· **`CP-figure-dual`**（`hunt:figure-dual`）。
+下一批尾巴：继续扩壳 / decide 规则短路 vs LLM；**不做** L5 自动修 / Hunt 挡合并 / 真 GPU·SFT。
