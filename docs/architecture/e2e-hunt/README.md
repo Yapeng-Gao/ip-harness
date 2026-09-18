@@ -8,6 +8,12 @@
 
 **L0/L1 管绿灯；Hunt 管找虫。** Harness 跨系统复用，产品差异进 AppAdapter。
 
+## 完善版闭环方案（优先读）
+
+| 篇 | 内容 |
+|----|------|
+| **[AGENTIC_CLOSED_LOOP.md](./AGENTIC_CLOSED_LOOP.md)** | **完善版闭环方案 v1.2**：合并本包 e2e-hunt + 用户 Agentic L1–L7；噪声预算（积压 8）；样机白名单；**无 L5 自动修**；Phase 0′/1′/2′ 贴仓路线 |
+
 ## 本目录
 
 | 篇 | 内容 |
@@ -28,3 +34,4 @@
 - 一上来全壳全量 LLM 扫  
 - 用 Hunt 报告单独挡合并（除非人工升格 P0）  
 - 在通用 Rule 里写死某一产品 CSS 选择器  
+- L5 自动修复 Agent / Cloud Agent 改产品（见完善版闭环 §10）  

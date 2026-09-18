@@ -19,7 +19,7 @@
 
 ## 相关方案
 
-- 猎虫 Harness：[`docs/architecture/e2e-hunt/`](./architecture/e2e-hunt/README.md) · **规格 Pass** `4c83476` / REVIEW `fab595f`（N2 前后可开 MVP；不替代 L0）
+- 猎虫 Harness：[`docs/architecture/e2e-hunt/`](./architecture/e2e-hunt/README.md) · **规格 Pass** `4c83476` / REVIEW `fab595f` · **完善版闭环** [`AGENTIC_CLOSED_LOOP.md`](./architecture/e2e-hunt/AGENTIC_CLOSED_LOOP.md) v1.2（不替代 L0；无 L5 自动修）
 
 ## N2 范围（进行中）
 
@@ -99,3 +99,10 @@
 
 **明确不做**：真 GPU、真 Release 模型、大规模 CPT/DPO、真 ES 全球库、N4 case-core/真产业图谱（另令）。
 
+## T 波 · 测试闭环（文档）
+
+| 序 | 内容 | 状态 |
+|----|------|------|
+| **T0** | Agentic 闭环完善版 v1.2：合并 e2e-hunt + 用户 L1–L7；噪声预算（积压 8）；样机白名单；Phase 0′ 可跑 L0 + `hunt:search-smoke` | **文档** · [`AGENTIC_CLOSED_LOOP.md`](./architecture/e2e-hunt/AGENTIC_CLOSED_LOOP.md) |
+
+下一批 CasePack（不挡本刀）：`CP-fto-five` · `CP-basket-strategy-a` · `CP-search-api-flag`。**不做** L5 自动修 / Hunt 挡合并 / 真 GPU·SFT。
