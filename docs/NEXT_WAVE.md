@@ -19,4 +19,4 @@
 
 ## 相关方案
 
-- 猎虫 Harness：[`docs/architecture/e2e-hunt/`](./architecture/e2e-hunt/README.md)（建议 N2 前后立项 MVP）
+- 猎虫 Harness：[`docs/architecture/e2e-hunt/`](./architecture/e2e-hunt/README.md) · **规格 Pass** `4c83476` / REVIEW `fab595f`（N2 前后可开 MVP；不替代 L0）
