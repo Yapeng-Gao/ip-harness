@@ -98,4 +98,8 @@ ProjectFolder
 ## 9. Owner
 
 - 规格：架构设计（本稿）  
-- 壳实现：Agent应用助手（并行改 `apps/agent`）  
+- 壳实现：Agent应用助手（并行改 `apps/agent`）
+
+## 评审
+
+- [product-apps/REVIEW.md](./REVIEW.md) · B席轻扫段（对象 `2c98384`）

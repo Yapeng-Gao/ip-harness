@@ -31,3 +31,26 @@
 ## 裁决
 
 **通过。** 可总控总验。
+
+## B席轻扫 · Agent 项目文件夹 IA（`2c98384`）
+
+| 项 | 值 |
+|----|-----|
+| 对象 | [agent-project-folder.md](./agent-project-folder.md) |
+| 日期 | 2026-09-19 |
+| **结论** | **Pass** |
+
+| # | 尺子 | 结果 | 说明 |
+|---|------|------|------|
+| ① | 项目 / 总控 / 专家分层 | **过** | ProjectFolder → Orchestrator + Experts；总控=编排、专家=领域 |
+| ② | 每专家独立业务逻辑 | 过 | 四件套（工具/剧本/命令候选/护栏）；禁共用通用闲聊 script |
+| ③ | HITL 写库 | 过 | 试运行不写；正式=Confirm→DomainCommand；总控禁绕闸直 dispatch |
+| ④ | 样机边界 | 过 | 禁真 LLM；本波禁真 case-core；`backend: mock`；横幅钉死 |
+
+对齐 agent-surface / plugins / enterprise「禁 Agent 直写库」。
+
+### 非阻塞
+
+1. 路由 `?project=&expert=` vs `/projects/:pid` 实现择一即可（文已写）。  
+2. 现仓若仍有单一 `AGENT_SCRIPTS`，实现刀须按 expertId 拆分后再勾验收。
+
