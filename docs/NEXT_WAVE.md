@@ -49,7 +49,7 @@
 | 序 | 内容 | 依据 | 状态 |
 |----|------|------|------|
 | **I1** | 检索数据面落地 MVP：`apps/search-api:5190` sqlite-fts | `search-data/MVP.md` | **Pass**（`4c3b303` · B席双Pass + 冒烟绿） |
-| **I2（当前）** | 训练落地 MVP：SFT dataset@version + train.sft Job + 评测门禁记录 | `model-training/MVP.md` | **进行中** |
+| **I2** | 训练落地 MVP：SFT dataset@version + train.sft Job + 评测门禁记录 | `model-training/MVP.md` | **Pass**（数据 `d0a66f7` · Job `356e435` · 流水线接线；生产 Release No-Go） |
 | **N4** | case-core / 真产业图谱 | dev-spec | 另立项 |
 
 ### I1 边界
@@ -71,7 +71,14 @@
 - B席：架构评审 Pass · 业务深度审计 Pass；checksum/泄漏复验绿
 - 待：AI Infra `train.sft` Job + 门禁 + Registry
 
-### I2 边界
+### I2 train.sft 验收（2026-09-18）
+
+- SHA `356e435` · `tools/train-sft/` · pin `ds-ip-sft-mvp@v0.1.0` · stub revision `sft-mvp-29ff5e49`
+- 门禁：生产 Release **No-Go**；流水线接线 **Pass**（诚实 stub，无假 GPU）
+- B席：架构评审 Pass · 业务深度审计 Pass；总控 validate_job 绿
+- 非阻断（下刀）：禁 DATA_PATH 旁路 / 无 manifest synthetic；`TRAIN_SFT_REAL` 命名易误读
+
+### I2 边界（已完成，留档）
 
 - ai-data 出一个 SFT version；ai-infra 一个 train.sft 形状（可先本地/脚本跑通）
 - 不做预训练/DPO/真 K8s；禁 PatentCase/未脱敏直训；不经 Search API 旁路灌数
