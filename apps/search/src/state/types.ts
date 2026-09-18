@@ -42,12 +42,17 @@ export type FamilyGroup = {
   members: SearchHit[]
 }
 
+/** Engine id — mock default; Search API returns e.g. 'sqlite-fts'. */
+export type SearchBackend = 'mock' | 'sqlite-fts' | (string & {})
+
 export type SearchResponse = {
   query: SearchQuery
   hits: SearchHit[]
   families?: FamilyGroup[]
   tookMs: number
-  backend: 'mock'
+  backend: SearchBackend
+  indexVersion?: string
+  warnings?: string[]
 }
 
 export type AdvancedRow = {
@@ -108,6 +113,18 @@ export type SearchState = {
 
 export const HONESTY_BANNER =
   '样机 · 无真检索后台 · 非真专利库 / 非真 ES·向量 · 用法对标智慧芽/Innojoy'
+
+/** When lastResponse.backend === 'sqlite-fts' (flag-wired Search API). */
+export const API_STATUS_BANNER =
+  '已接 Search API · backend: sqlite-fts · 样机索引（非全球专利库）'
+
+/** P0 — downstream shells exist; basket is not cross-port synced. */
+export const DOWNSTREAM_HONESTY =
+  '已开壳 · 篮未跨口同步 · 请用共享种子/本壳导入'
+
+/** P5 strategy A — toast when sending to FTO/mining/etc. */
+export const STRATEGY_A_TOAST =
+  '样机·跨口未共享 LS，已用共享种子'
 
 export const ADVANCED_FIELD_LABELS: Record<AdvancedRow['field'], string> = {
   title: '标题',

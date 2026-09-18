@@ -3,7 +3,7 @@ import { ExternalLink, Send, Trash2 } from 'lucide-react'
 import { Button, Card, Chip, EmptyState, PageHeader } from '../components/ui'
 import { DetailDrawer } from '../components/DetailDrawer'
 import { getCorpus, searchActions, useSearchStore } from '../state/store'
-import { DOWNSTREAM_PLACEHOLDERS } from '../state/types'
+import { DOWNSTREAM_HONESTY, DOWNSTREAM_PLACEHOLDERS } from '../state/types'
 
 export function SavedPage() {
   const { basketIds, savedIds, events } = useSearchStore()
@@ -57,7 +57,7 @@ export function SavedPage() {
           </div>
         </div>
         <p className="mt-2 text-[11px] text-slate-500">
-          下游按钮仅写事件 + 占位深链（:5183 FTO / :5184 挖掘 / :5186 全景 / :5178 文档）；不真派发、不建下游壳。
+          下游深链（:5183 FTO / :5184 挖掘 / :5186 全景 / :5178 文档）：已开壳 · 篮未跨口同步 · 请用共享种子/本壳导入；不真派发 DomainCommand。
         </p>
         {empty ? (
           <p className="mt-3 text-xs text-slate-500">工作篮为空。从结果或详情加入。</p>
@@ -151,7 +151,7 @@ export function SavedPage() {
                         className="inline-flex items-center gap-1 text-slate-600 underline decoration-slate-300 hover:decoration-slate-600"
                       >
                         <ExternalLink className="h-3 w-3" aria-hidden />
-                        {href} · 下游未建 / 占位
+                        {href} · {DOWNSTREAM_HONESTY}
                       </a>
                     </div>
                   ) : null}

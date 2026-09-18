@@ -18,6 +18,7 @@
     "dev:ai-infra": "npm run dev -w @ip/ai-infra",
     "dev:ai-data": "npm run dev -w @ip/ai-data",
     "dev:search": "npm run dev -w @ip/search",
+    "dev:search:api": "VITE_SEARCH_API_URL=http://localhost:5190 npm run dev -w @ip/search",
     "dev:fto": "npm run dev -w @ip/fto",
     "dev:mining": "npm run dev -w @ip/mining",
     "dev:inspire": "npm run dev -w @ip/inspire",

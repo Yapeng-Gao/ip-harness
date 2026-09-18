@@ -14,7 +14,7 @@ import { Button, Card, Chip, EmptyState, PageHeader } from '../components/ui'
 import { DetailDrawer } from '../components/DetailDrawer'
 import { searchActions, useSearchStore } from '../state/store'
 import type { AdvancedRow, SearchHit, SearchMode } from '../state/types'
-import { ADVANCED_FIELD_LABELS, DOWNSTREAM_PLACEHOLDERS } from '../state/types'
+import { ADVANCED_FIELD_LABELS, DOWNSTREAM_HONESTY, DOWNSTREAM_PLACEHOLDERS } from '../state/types'
 
 const MODES: { id: SearchMode; label: string }[] = [
   { id: 'keyword', label: '关键词' },
@@ -320,14 +320,26 @@ export function SearchPage() {
         </span>
         {s.lastResponse ? (
           <>
-            <Chip tone="mock">backend: {s.lastResponse.backend}</Chip>
+            <Chip tone={s.lastResponse.backend === 'sqlite-fts' ? 'ok' : 'mock'}>
+              backend: {s.lastResponse.backend}
+            </Chip>
+            {s.lastResponse.indexVersion ? (
+              <Chip tone="neutral">index: {s.lastResponse.indexVersion}</Chip>
+            ) : null}
             <span className="tabular-nums text-xs text-slate-500">
               tookMs {s.lastResponse.tookMs} · 命中 {s.hits.length}
               {collapse ? ` · 折叠行 ${displayGroups.length}` : ''}
             </span>
           </>
         ) : null}
-        {s.mode === 'semantic' && s.status === 'done' ? (
+        {s.lastResponse?.warnings?.map((w) => (
+          <Chip key={w} tone="warn">
+            {w}
+          </Chip>
+        ))}
+        {s.mode === 'semantic' &&
+        s.status === 'done' &&
+        (!s.lastResponse || s.lastResponse.backend === 'mock') ? (
           <Chip tone="accent">语义相似·示意</Chip>
         ) : null}
       </div>
@@ -380,14 +392,14 @@ export function SearchPage() {
                 <HitRow
                   key={row.hit.id}
                   hit={row.hit}
-                  semantic={s.mode === 'semantic'}
+                  semantic={s.mode === 'semantic' && (!s.lastResponse || s.lastResponse.backend === 'mock')}
                 />
               )
             }
             const open = expandedFamilies[row.familyId] ?? false
             return (
               <li key={row.familyId}>
-                <HitRow hit={row.rep} semantic={s.mode === 'semantic'} />
+                <HitRow hit={row.rep} semantic={s.mode === 'semantic' && (!s.lastResponse || s.lastResponse.backend === 'mock')} />
                 <div className="ml-3 mt-1 border-l-2 border-slate-200 pl-3">
                   <button
                     type="button"
@@ -419,7 +431,7 @@ export function SearchPage() {
                       {row.members
                         .filter((m) => m.id !== row.rep.id)
                         .map((m) => (
-                          <HitRow key={m.id} hit={m} compact semantic={s.mode === 'semantic'} />
+                          <HitRow key={m.id} hit={m} compact semantic={s.mode === 'semantic' && (!s.lastResponse || s.lastResponse.backend === 'mock')} />
                         ))}
                     </ul>
                   ) : null}
@@ -543,7 +555,7 @@ function BasketBar() {
             </span>
           </p>
           <p className="mt-0.5 text-xs text-slate-500">
-            送 Agent / 下游仅写事件+占位深链，不 dispatch DomainCommand / PatentCase。
+            送 Agent / 下游写事件+深链（已开壳 · 篮未跨口同步）；不 dispatch DomainCommand / PatentCase。
             <Link to="/saved" className="ml-1 underline decoration-slate-300">
               打开收藏页
             </Link>
@@ -585,7 +597,7 @@ function BasketBar() {
                 rel="noreferrer"
                 className="underline decoration-emerald-300"
               >
-                {String(lastDown.payload.href)} · 下游未建 / 占位
+                {String(lastDown.payload.href)} · {DOWNSTREAM_HONESTY}
               </a>
             </>
           ) : null}

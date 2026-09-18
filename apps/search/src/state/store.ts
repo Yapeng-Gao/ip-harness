@@ -18,13 +18,19 @@ import type {
   SearchResponse,
   SearchState,
 } from './types'
-import { DOWNSTREAM_PLACEHOLDERS, emptyFilters } from './types'
+import { DOWNSTREAM_PLACEHOLDERS, emptyFilters, STRATEGY_A_TOAST } from './types'
 import {
   applyFilters,
   buildQuery,
   runScoring,
   validateQuery,
 } from '../lib/searchEngine'
+import {
+  SEARCH_API_FALLBACK_TOAST,
+  checkSearchApiHealth,
+  isSearchApiEnabled,
+  searchViaApi,
+} from '../lib/searchApi'
 
 let state: SearchState = {
   mode: 'keyword',
@@ -301,67 +307,139 @@ export const searchActions = {
       limit: state.limit,
     })
     setState({ status: 'running', error: null, lastQuery: query })
-    const delay = 280 + Math.floor(Math.random() * 170)
-    schedule(() => {
-      if (state.forceNextFail) {
-        const failResp: SearchResponse = {
+
+    const finishMock = (optsInner?: {
+      fromFilters?: boolean
+      delay?: number
+      afterApiFallback?: boolean
+    }) => {
+      const delay = optsInner?.delay ?? 280 + Math.floor(Math.random() * 170)
+      schedule(() => {
+        if (state.forceNextFail) {
+          const failResp: SearchResponse = {
+            query,
+            hits: [],
+            families: [],
+            tookMs: delay,
+            backend: 'mock',
+          }
+          setState({
+            status: 'error',
+            error: '注入故障：下次强制失败（样机）',
+            forceNextFail: false,
+            hits: [],
+            families: [],
+            lastResponse: failResp,
+          })
+          pushEvent({
+            action: 'search',
+            tool: 'commercial_patent_search',
+            note: 'search failed (injected)',
+            payload: { query, backend: 'mock' },
+          })
+          return
+        }
+        const scored = runScoring(
+          corpus,
+          query.mode,
+          query.text ?? '',
+          query.advanced,
+        )
+        const filtered = applyFilters(scored, query.filters ?? {}).slice(
+          0,
+          query.limit ?? 50,
+        )
+        const families = buildFamilies(filtered)
+        const response: SearchResponse = {
           query,
-          hits: [],
-          families: [],
+          hits: filtered,
+          families,
           tookMs: delay,
           backend: 'mock',
         }
         setState({
-          status: 'error',
-          error: '注入故障：下次强制失败（样机）',
-          forceNextFail: false,
-          hits: [],
-          families: [],
-          lastResponse: failResp,
+          status: filtered.length > 0 ? 'done' : 'empty',
+          hits: filtered,
+          families,
+          lastResponse: response,
+          error: null,
+          filters: {
+            ...state.filters,
+            collapseFamily: state.filters.collapseFamily ?? true,
+          },
         })
         pushEvent({
           action: 'search',
           tool: 'commercial_patent_search',
-          note: 'search failed (injected)',
-          payload: { query, backend: 'mock' },
+          note: optsInner?.afterApiFallback
+            ? 'API fallback → mock'
+            : optsInner?.fromFilters
+              ? '过滤后重跑'
+              : 'runSearch',
+          hitIds: filtered.map((h) => h.id),
+          payload: {
+            query,
+            backend: 'mock',
+            hitCount: filtered.length,
+            apiFallback: !!optsInner?.afterApiFallback,
+          },
         })
+      }, delay)
+    }
+
+    if (!isSearchApiEnabled()) {
+      finishMock({ fromFilters: opts?.fromFilters })
+      return
+    }
+
+    void (async () => {
+      // Optional health probe (best-effort); search failure path toasts + falls back
+      await checkSearchApiHealth()
+      if (state.forceNextFail) {
+        // Keep inject-fail path on mock even when flag is on
+        finishMock({ fromFilters: opts?.fromFilters })
         return
       }
-      const scored = runScoring(
-        corpus,
-        query.mode,
-        query.text ?? '',
-        query.advanced,
-      )
-      const filtered = applyFilters(scored, query.filters ?? {}).slice(0, query.limit ?? 50)
-      const families = buildFamilies(filtered)
-      const response: SearchResponse = {
-        query,
-        hits: filtered,
-        families,
-        tookMs: delay,
-        backend: 'mock',
+      const api = await searchViaApi(query)
+      if (!api.ok) {
+        toast(SEARCH_API_FALLBACK_TOAST)
+        finishMock({ fromFilters: opts?.fromFilters, afterApiFallback: true })
+        return
       }
+      const response = api.response
+      const hits = response.hits
+      const families =
+        response.families && response.families.length > 0
+          ? response.families
+          : buildFamilies(hits)
       setState({
-        status: filtered.length > 0 ? 'done' : 'empty',
-        hits: filtered,
+        status: hits.length > 0 ? 'done' : 'empty',
+        hits,
         families,
-        lastResponse: response,
+        lastResponse: { ...response, families },
         error: null,
-        // default collapse on after first search if undefined
         filters: {
           ...state.filters,
           collapseFamily: state.filters.collapseFamily ?? true,
         },
       })
+      if (response.warnings && response.warnings.length > 0) {
+        toast(response.warnings.join(' · '))
+      }
       pushEvent({
         action: 'search',
         tool: 'commercial_patent_search',
-        note: opts?.fromFilters ? '过滤后重跑' : 'runSearch',
-        hitIds: filtered.map((h) => h.id),
-        payload: { query, backend: 'mock', hitCount: filtered.length },
+        note: opts?.fromFilters ? '过滤后重跑 (API)' : 'runSearch (API)',
+        hitIds: hits.map((h) => h.id),
+        payload: {
+          query,
+          backend: response.backend,
+          hitCount: hits.length,
+          indexVersion: response.indexVersion,
+          warnings: response.warnings,
+        },
       })
-    }, delay)
+    })()
   },
 
   setCorpusForceNextFail(v: boolean) {
@@ -589,7 +667,8 @@ export const searchActions = {
         publicationNumber: h.publicationNumber,
         title: h.title,
       }))
-    const note = '样机事件·未真派发 · 下游壳占位'
+    const note = STRATEGY_A_TOAST
+    const publicationNumbers = hits.map((h) => h.publicationNumber)
     pushEvent({
       action: 'sendDownstream',
       tool: 'search.sendDownstream',
@@ -600,6 +679,7 @@ export const searchActions = {
         target: ph.target,
         href: ph.href,
         hitIds: [...state.basketIds],
+        publicationNumbers,
         hits,
         note,
       },

@@ -1,7 +1,7 @@
 import { Copy, ExternalLink, Terminal } from 'lucide-react'
 import { Button, Chip } from './ui'
 import { useSearchStore, searchActions } from '../state/store'
-import { DOWNSTREAM_PLACEHOLDERS, HONESTY_BANNER } from '../state/types'
+import { DOWNSTREAM_HONESTY, DOWNSTREAM_PLACEHOLDERS, HONESTY_BANNER } from '../state/types'
 
 export function AgentPanel({ compact = false }: { compact?: boolean }) {
   const {
@@ -92,8 +92,15 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
       ) : null}
 
       <div className="flex flex-wrap items-center gap-2 px-4 py-2">
-        <Chip tone="mock">backend: mock</Chip>
-        <Chip tone="neutral">index: {currentIndexTag}</Chip>
+        <Chip tone={lastResponse?.backend === 'sqlite-fts' ? 'ok' : 'mock'}>
+          backend: {lastResponse?.backend ?? 'mock'}
+        </Chip>
+        <Chip tone="neutral">
+          index:{' '}
+          {lastResponse?.backend === 'sqlite-fts' && lastResponse.indexVersion
+            ? lastResponse.indexVersion
+            : currentIndexTag}
+        </Chip>
         <Button variant="secondary" className="gap-1" onClick={() => void copyJson()}>
           <Copy className="h-3.5 w-3.5" aria-hidden />
           复制为工具参数
@@ -131,7 +138,7 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
               )}
             </pre>
           ) : (
-            <p className="text-xs text-slate-500">尚未检索。点「检索」后此处显示 backend:&apos;mock&apos;。</p>
+            <p className="text-xs text-slate-500">尚未检索。点「检索」后此处显示实际 backend（默认 mock；旗标接 API 时为 sqlite-fts）。</p>
           )}
         </section>
 
@@ -152,7 +159,7 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
 
         <section>
           <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            下游占位地图
+            下游深链（策略 A）
           </h3>
           <ul className="space-y-1">
             {DOWNSTREAM_PLACEHOLDERS.map((d) => (
@@ -167,7 +174,7 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
                   <ExternalLink className="h-3 w-3" aria-hidden />
                   {d.label}
                 </a>
-                <span className="ml-1 text-slate-400">下游未建 / 占位</span>
+                <span className="ml-1 text-slate-400">{DOWNSTREAM_HONESTY}</span>
               </li>
             ))}
           </ul>
@@ -206,7 +213,7 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
                         className="mt-0.5 inline-flex items-center gap-1 text-slate-600 underline decoration-slate-300"
                       >
                         <ExternalLink className="h-3 w-3" aria-hidden />
-                        {href} · 下游未建 / 占位
+                        {href} · {DOWNSTREAM_HONESTY}
                       </a>
                     ) : null}
                   </li>

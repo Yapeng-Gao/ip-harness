@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { Bookmark, Database, Search, Users } from 'lucide-react'
-import { HONESTY_BANNER } from '../state/types'
+import { API_STATUS_BANNER, HONESTY_BANNER } from '../state/types'
 import { AgentPanel } from '../components/AgentPanel'
 import { useSearchStore } from '../state/store'
 
@@ -17,7 +17,8 @@ const NAV = [
 ] as const
 
 export function SearchShell() {
-  const { basketIds } = useSearchStore()
+  const { basketIds, lastResponse } = useSearchStore()
+  const apiLive = lastResponse?.backend === 'sqlite-fts'
   return (
     <div className="app-shell-bg flex min-h-screen flex-col text-slate-900">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 py-2 text-xs text-slate-600">
@@ -25,7 +26,18 @@ export function SearchShell() {
         <span className="text-slate-400">≠ ai-data（语料 Pipeline）</span>
       </div>
       <div role="status" className="shell-banner-demo px-4 py-2 text-center">
-        {HONESTY_BANNER}
+        {apiLive ? (
+          <>
+            {API_STATUS_BANNER}
+            {lastResponse?.indexVersion ? (
+              <span className="ml-2 tabular-nums opacity-80">
+                · index {lastResponse.indexVersion}
+              </span>
+            ) : null}
+          </>
+        ) : (
+          HONESTY_BANNER
+        )}
       </div>
       <div className="flex min-h-0 flex-1">
         <aside className="shell-aside hidden w-52 shrink-0 lg:block">
