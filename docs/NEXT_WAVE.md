@@ -94,8 +94,8 @@
 | **P1** | 业务深度扫：五壳+并行壳关键路径逻辑/空态/闸门/诚实文案；出缺口清单 + 必改 P0 | 业务深度审计 | **Pass** `a0b9eae` · `P_WAVE_GAPS.md` |
 | **P2** | 架构补缺：跨壳工作篮样机策略 A 落地规格核对；search 旗标接线边界短文；case-core **仍 N4 不开工** | 架构设计 → 架构评审 | **Pass** `3f0d488` / 评 `5e50065` |
 | **P3** | UI/UX：N1 后残余 P2/习惯债 + 全壳抽检；有验收标准再交质感 | UI评估 → UI质感 | **Go** `ee61d37`（P0=P1=0；P2 择机） |
-| **P4** | 检索表现：`apps/search` 旗标接 `:5190`（可回退 mock）；不改 APP_PORTS | 检索服务 + 检索落地 | **进行中** |
-| **P5** | 工作篮样机策略 A：共享种子 ID + 诚实 toast；search→FTO/mining 深链可演示 | 检索服务 · FTO · 挖掘 | **进行中**（黄：landscape 可补 CN118） |
+| **P4** | 检索表现：`apps/search` 旗标接 `:5190`（可回退 mock）；不改 APP_PORTS | 检索服务 + 检索落地 | **Pass** `b6fcc3b` |
+| **P5** | 工作篮样机策略 A：共享种子 + 诚实 toast；search→FTO/mining | 检索服务 · FTO · 挖掘 | **Pass** search `b6fcc3b` · fto `19d0c1d` · mining `76ccfb4`（landscape CN118 黄项可择机） |
 
 **明确不做**：真 GPU、真 Release 模型、大规模 CPT/DPO、真 ES 全球库、N4 case-core/真产业图谱（另令）。
 
