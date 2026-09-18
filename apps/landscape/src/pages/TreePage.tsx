@@ -81,12 +81,12 @@ export function TreePage() {
       <PageHeader
         eyebrow="主画布"
         title="行业 / 技术分解树"
-        desc="左侧展开 ≥3 层汽车种子树；中间看节点摘要；右侧进洞察。点节点标题进详情。"
+        desc="左侧展开加深种子树（目标 ≥30 节点 / 深 0–4）；中间看节点摘要；右侧进洞察。点节点标题进详情与邻居表。"
       />
       <div className="grid gap-4 lg:grid-cols-12">
         <Card className="lg:col-span-4 p-3">
           <p className="mb-2 text-xs font-medium text-slate-500">
-            Taxonomy · {nodes.length} 节点
+            Taxonomy · {nodes.length} 节点 · 深 0–{Math.max(...nodes.map((n) => n.depth))}
           </p>
           <ul className="max-h-[28rem] overflow-auto">
             {roots.map((r) => (
@@ -103,6 +103,8 @@ export function TreePage() {
                   <h2 className="text-base font-semibold text-slate-900">{selected.name}</h2>
                   <p className="mt-1 text-xs text-slate-500">
                     id <code>{selected.id}</code> · depth {selected.depth}
+                    {selected.code ? <> · code <code>{selected.code}</code></> : null}
+                    {selected.aliases?.length ? <> · aliases {selected.aliases.join('/')}</> : null}
                   </p>
                 </div>
                 <Link to={`/nodes/${selected.id}`}>

@@ -1,12 +1,13 @@
 import type {
+  Edge,
+  GraphVersion,
   InsightCard,
   IngestTask,
   LandscapeState,
   NodeExtras,
-  OrgCompetitorEdge,
   OrgProfile,
-  PartOrgEdge,
   SearchHit,
+  StandardDoc,
   TaxonomyNode,
 } from './types'
 
@@ -16,27 +17,67 @@ function n(
   name: string,
   depth: number,
   patentDensity: number,
+  code?: string,
+  aliases?: string[],
 ): TaxonomyNode {
-  return { id, parentId, name, depth, domain: 'automotive', patentDensity }
+  return {
+    id,
+    parentId,
+    name,
+    depth,
+    domain: 'automotive',
+    patentDensity,
+    ...(code ? { code } : {}),
+    ...(aliases?.length ? { aliases } : {}),
+  }
 }
 
-/** ≥12 节点，含 depth 0/1/2/3 */
+export const GRAPH_VERSIONS: GraphVersion[] = [
+  { id: 'auto-seed-v1', label: '汽车种子 v1（加深）', domain: 'automotive' },
+  { id: 'auto-seed-v0', label: '汽车种子 v0（基线只读标签）', domain: 'automotive' },
+]
+
+export const ACTIVE_VERSION = GRAPH_VERSIONS[0]
+
+/** depth 0–4 · ≥30 节点 */
 export const SEED_NODES: TaxonomyNode[] = [
-  n('auto', null, '汽车（整车）', 0, 72),
-  n('power', 'auto', '动力系统', 1, 80),
-  n('edrive', 'power', '电驱动', 2, 88),
-  n('motor', 'edrive', '电机', 3, 85),
-  n('inverter', 'edrive', '逆变器', 3, 90),
-  n('reducer', 'edrive', '减速器', 3, 70),
-  n('thermal', 'power', '热管理', 2, 65),
-  n('batt-thermal', 'thermal', '电池热管理', 3, 78),
-  n('chassis', 'auto', '底盘', 1, 55),
-  n('suspension', 'chassis', '悬架', 2, 48),
-  n('brake', 'chassis', '制动', 2, 60),
-  n('adas', 'auto', '智能驾驶', 1, 82),
-  n('perception', 'adas', '感知', 2, 86),
-  n('lidar', 'perception', '激光雷达', 3, 92),
-  n('planning', 'adas', '规划控制', 2, 74),
+  n('auto', null, '汽车（整车）', 0, 72, 'AUTO', ['整车', 'Vehicle']),
+  n('power', 'auto', '动力系统', 1, 80, 'PWR', ['Powertrain']),
+  n('edrive', 'power', '电驱动', 2, 88, 'EDRV', ['Electric Drive']),
+  n('motor', 'edrive', '电机', 3, 85, 'MOT', ['Traction Motor']),
+  n('pmsm', 'motor', '永磁同步电机', 4, 87, 'PMSM'),
+  n('im', 'motor', '感应电机', 4, 62, 'IM'),
+  n('inverter', 'edrive', '逆变器', 3, 90, 'INV', ['Traction Inverter']),
+  n('sic-mod', 'inverter', 'SiC 功率模块', 4, 94, 'SIC'),
+  n('gate-drv', 'inverter', '栅极驱动', 4, 78, 'GDRV'),
+  n('reducer', 'edrive', '减速器', 3, 70, 'RED'),
+  n('planetary', 'reducer', '行星减速', 4, 68, 'PLAN'),
+  n('thermal', 'power', '热管理', 2, 65, 'THM'),
+  n('batt-thermal', 'thermal', '电池热管理', 3, 78, 'BTH'),
+  n('immersion', 'batt-thermal', '浸没冷却', 4, 71, 'IMM'),
+  n('cabin-thermal', 'thermal', '座舱热泵', 3, 58, 'CAB'),
+  n('ice', 'power', '内燃机（示意）', 2, 40, 'ICE'),
+  n('chassis', 'auto', '底盘', 1, 55, 'CHS'),
+  n('suspension', 'chassis', '悬架', 2, 48, 'SUS'),
+  n('air-sus', 'suspension', '空气悬架', 3, 52, 'ASUS'),
+  n('brake', 'chassis', '制动', 2, 60, 'BRK'),
+  n('brake-by-wire', 'brake', '线控制动', 3, 66, 'BBW'),
+  n('steer', 'chassis', '转向', 2, 54, 'STR'),
+  n('steer-by-wire', 'steer', '线控转向', 3, 57, 'SBW'),
+  n('adas', 'auto', '智能驾驶', 1, 82, 'ADAS', ['自动驾驶']),
+  n('perception', 'adas', '感知', 2, 86, 'PER'),
+  n('lidar', 'perception', '激光雷达', 3, 92, 'LID'),
+  n('solid-lidar', 'lidar', '固态激光雷达', 4, 88, 'SLID'),
+  n('camera', 'perception', '视觉相机', 3, 80, 'CAM'),
+  n('radar', 'perception', '毫米波雷达', 3, 74, 'RAD'),
+  n('planning', 'adas', '规划控制', 2, 74, 'PLN'),
+  n('e2e', 'planning', '端到端策略', 3, 81, 'E2E'),
+  n('cabin', 'auto', '座舱电子', 1, 68, 'CABIN'),
+  n('hmi', 'cabin', '人机交互', 2, 64, 'HMI'),
+  n('battery', 'auto', '动力电池', 1, 84, 'BAT'),
+  n('cell', 'battery', '电芯', 2, 86, 'CELL'),
+  n('pack', 'battery', '电池包', 2, 79, 'PACK'),
+  n('bms', 'battery', '电池管理', 2, 77, 'BMS'),
 ]
 
 export const SEED_ORGS: OrgProfile[] = [
@@ -45,99 +86,193 @@ export const SEED_ORGS: OrgProfile[] = [
     name: '比亚迪',
     lines: ['整车', '刀片电池', '电驱动三合一'],
     stance: 'leader',
-    nodeIds: ['auto', 'edrive', 'motor', 'inverter'],
+    nodeIds: ['auto', 'edrive', 'motor', 'inverter', 'battery', 'cell'],
+    groupId: 'grp-byd',
   },
   {
     id: 'org-tesla',
     name: '特斯拉',
     lines: ['整车', '一体化压铸', '自研电驱'],
     stance: 'leader',
-    nodeIds: ['auto', 'edrive', 'motor', 'inverter'],
+    nodeIds: ['auto', 'edrive', 'motor', 'inverter', 'pack'],
   },
   {
     id: 'org-nio',
     name: '蔚来',
     lines: ['整车', '换电', '智能驾驶'],
     stance: 'challenger',
-    nodeIds: ['auto', 'adas', 'perception'],
+    nodeIds: ['auto', 'adas', 'perception', 'battery'],
   },
   {
     id: 'org-xpeng',
     name: '小鹏',
     lines: ['整车', '城市 NG', '激光雷达量产'],
     stance: 'challenger',
-    nodeIds: ['auto', 'adas', 'lidar', 'planning'],
+    nodeIds: ['auto', 'adas', 'lidar', 'planning', 'e2e'],
+  },
+  {
+    id: 'org-li',
+    name: '理想汽车',
+    lines: ['整车', '增程', '座舱'],
+    stance: 'challenger',
+    nodeIds: ['auto', 'cabin', 'hmi', 'battery'],
   },
   {
     id: 'org-huawei',
     name: '华为智能汽车',
     lines: ['智能驾驶', '鸿蒙座舱', '电驱供应'],
     stance: 'challenger',
-    nodeIds: ['adas', 'perception', 'planning', 'edrive'],
+    nodeIds: ['adas', 'perception', 'planning', 'edrive', 'cabin'],
   },
   {
     id: 'org-bosch',
     name: '博世',
     lines: ['制动', '电控', '传感器'],
     stance: 'supplier',
-    nodeIds: ['brake', 'chassis', 'perception'],
+    nodeIds: ['brake', 'brake-by-wire', 'chassis', 'perception'],
   },
   {
     id: 'org-conti',
     name: '大陆集团',
     lines: ['制动', '轮胎压力', 'ADAS 感知'],
     stance: 'supplier',
-    nodeIds: ['brake', 'perception'],
+    nodeIds: ['brake', 'perception', 'radar'],
   },
   {
     id: 'org-zf',
     name: '采埃孚',
     lines: ['减速器', '底盘', '转向'],
     stance: 'supplier',
-    nodeIds: ['reducer', 'chassis', 'suspension'],
+    nodeIds: ['reducer', 'chassis', 'suspension', 'steer'],
   },
   {
     id: 'org-infineon',
     name: '英飞凌',
     lines: ['SiC 功率器件', '逆变器芯片'],
     stance: 'leader',
-    nodeIds: ['inverter'],
+    nodeIds: ['inverter', 'sic-mod', 'gate-drv'],
   },
   {
     id: 'org-st',
     name: '意法半导体',
     lines: ['功率模块', 'MCU'],
     stance: 'challenger',
-    nodeIds: ['inverter'],
+    nodeIds: ['inverter', 'sic-mod'],
   },
   {
     id: 'org-hesai',
     name: '禾赛科技',
     lines: ['车载激光雷达'],
     stance: 'niche',
-    nodeIds: ['lidar', 'perception'],
+    nodeIds: ['lidar', 'solid-lidar', 'perception'],
   },
   {
     id: 'org-robosense',
     name: '速腾聚创',
     lines: ['车载激光雷达', '感知软件'],
     stance: 'niche',
-    nodeIds: ['lidar', 'perception'],
+    nodeIds: ['lidar', 'solid-lidar', 'perception'],
   },
   {
-    id: 'org-valeо',
+    id: 'org-valeo',
     name: '法雷奥',
     lines: ['热管理', '感知相机'],
     stance: 'supplier',
-    nodeIds: ['thermal', 'batt-thermal', 'perception'],
+    nodeIds: ['thermal', 'batt-thermal', 'camera', 'perception'],
   },
   {
     id: 'org-denso',
     name: '电装',
     lines: ['热管理', '电控', '传感器'],
     stance: 'supplier',
-    nodeIds: ['thermal', 'batt-thermal', 'perception'],
+    nodeIds: ['thermal', 'batt-thermal', 'perception', 'cabin-thermal'],
   },
+  {
+    id: 'org-catl',
+    name: '宁德时代',
+    lines: ['动力电池', '电芯', '储能'],
+    stance: 'leader',
+    nodeIds: ['battery', 'cell', 'pack', 'bms'],
+  },
+  {
+    id: 'org-byd-fl',
+    name: '弗迪动力',
+    lines: ['电驱动', '电机'],
+    stance: 'supplier',
+    nodeIds: ['edrive', 'motor', 'pmsm'],
+    groupId: 'grp-byd',
+    holdingOf: 'org-byd',
+  },
+  {
+    id: 'org-motional',
+    name: 'Momenta',
+    lines: ['高阶辅助驾驶', '规划'],
+    stance: 'niche',
+    nodeIds: ['planning', 'e2e', 'adas'],
+  },
+  {
+    id: 'org-desay',
+    name: '德赛西威',
+    lines: ['座舱域控', '智能驾驶域控'],
+    stance: 'supplier',
+    nodeIds: ['cabin', 'hmi', 'adas'],
+  },
+  {
+    id: 'org-huawei-asc',
+    name: '引望（示意）',
+    lines: ['智能汽车部件'],
+    stance: 'supplier',
+    nodeIds: ['edrive', 'adas'],
+    holdingOf: 'org-huawei',
+  },
+  {
+    id: 'org-nxp',
+    name: '恩智浦',
+    lines: ['车规 MCU', '雷达芯片'],
+    stance: 'leader',
+    nodeIds: ['radar', 'bms', 'gate-drv'],
+  },
+  {
+    id: 'org-aptiv',
+    name: '安波福',
+    lines: ['线控', '电气架构'],
+    stance: 'supplier',
+    nodeIds: ['steer-by-wire', 'brake-by-wire', 'chassis'],
+  },
+  {
+    id: 'org-magna',
+    name: '麦格纳',
+    lines: ['电驱总成', '座椅'],
+    stance: 'supplier',
+    nodeIds: ['edrive', 'reducer', 'motor'],
+  },
+  {
+    id: 'org-hyundai-mobis',
+    name: '现代摩比斯',
+    lines: ['底盘模块', '灯具'],
+    stance: 'supplier',
+    nodeIds: ['chassis', 'suspension', 'brake'],
+  },
+  {
+    id: 'org-gowin',
+    name: '国轩高科',
+    lines: ['动力电池', '电芯'],
+    stance: 'challenger',
+    nodeIds: ['battery', 'cell', 'pack'],
+  },
+  {
+    id: 'org-horizon',
+    name: '地平线',
+    lines: ['智驾芯片', '感知算法'],
+    stance: 'niche',
+    nodeIds: ['perception', 'planning', 'camera'],
+  },
+]
+
+export const SEED_STANDARDS: StandardDoc[] = [
+  { id: 'std-iso26262', code: 'ISO 26262', title: '道路车辆功能安全' },
+  { id: 'std-gb-t-18384', code: 'GB/T 18384', title: '电动汽车安全要求（示意）' },
+  { id: 'std-iso21448', code: 'ISO 21448', title: '预期功能安全 SOTIF' },
 ]
 
 export const SEED_HITS: SearchHit[] = [
@@ -211,10 +346,29 @@ export const SEED_HITS: SearchHit[] = [
     score: 0.76,
     snippet: 'Compact high gear-ratio planetary reducer…',
   },
+  {
+    id: 'hit-8',
+    publicationNumber: 'CN118234567A',
+    title: '动力电池包浸没式冷却流道结构',
+    applicant: '宁德时代新能源科技股份有限公司',
+    date: '2024-06-20',
+    ipc: ['H01M10/613', 'B60L58/26'],
+    score: 0.91,
+    snippet: '浸没冷却介质与流道分区设计，抑制热失控蔓延…',
+  },
+  {
+    id: 'hit-9',
+    publicationNumber: 'CN119876543A',
+    title: '线控制动冗余液压备份方法',
+    applicant: '罗伯特·博世有限公司',
+    date: '2024-09-01',
+    ipc: ['B60T13/74', 'B60T17/18'],
+    score: 0.81,
+    snippet: '电子液压制动失效时的机械/液压冗余路径…',
+  },
 ]
 
 export const SEED_INSIGHTS: InsightCard[] = [
-
   {
     id: 'ins-cp-edrive',
     kind: 'chokepoint',
@@ -299,35 +453,120 @@ export const SEED_INSIGHTS: InsightCard[] = [
     title: '800V+ 平台 SiC 拓扑演进',
     body: '示意：800V 架构普及推动三电平与混合拓扑专利活跃，可与充电桩侧协同布局。',
   },
+  {
+    id: 'ins-cp-cell',
+    kind: 'chokepoint',
+    nodeId: 'cell',
+    title: '高镍正极与电解液添加剂依赖',
+    body: '示意：高能量密度电芯关键材料与添加剂专利/产能集中，扩产节奏受制。',
+  },
+  {
+    id: 'ins-fr-e2e',
+    kind: 'frontier',
+    nodeId: 'e2e',
+    title: '端到端模型安全论证方法',
+    body: '示意：规则增强过滤；非实时舆情。端到端策略的可解释与场景覆盖仍在探索。',
+  },
 ]
 
-/** 零件→企业 ≥5 */
-export const SEED_PART_ORG: PartOrgEdge[] = [
-  { partNodeId: 'motor', orgId: 'org-byd' },
-  { partNodeId: 'motor', orgId: 'org-tesla' },
-  { partNodeId: 'inverter', orgId: 'org-infineon' },
-  { partNodeId: 'inverter', orgId: 'org-st' },
-  { partNodeId: 'reducer', orgId: 'org-zf' },
-  { partNodeId: 'lidar', orgId: 'org-hesai' },
-  { partNodeId: 'lidar', orgId: 'org-robosense' },
-  { partNodeId: 'brake', orgId: 'org-bosch' },
-  { partNodeId: 'batt-thermal', orgId: 'org-valeo' },
+/** 统一边：part-org / org-competitor / part-hit / node-insight / org-standard */
+export const SEED_EDGES: Edge[] = [
+  // part-org
+  { type: 'part-org', partId: 'motor', orgId: 'org-byd', role: '整车自研' },
+  { type: 'part-org', partId: 'motor', orgId: 'org-tesla', role: '整车自研' },
+  { type: 'part-org', partId: 'motor', orgId: 'org-byd-fl', role: '集团供应' },
+  { type: 'part-org', partId: 'pmsm', orgId: 'org-byd-fl' },
+  { type: 'part-org', partId: 'inverter', orgId: 'org-infineon', role: '器件' },
+  { type: 'part-org', partId: 'inverter', orgId: 'org-st', role: '器件' },
+  { type: 'part-org', partId: 'sic-mod', orgId: 'org-infineon' },
+  { type: 'part-org', partId: 'sic-mod', orgId: 'org-st' },
+  { type: 'part-org', partId: 'reducer', orgId: 'org-zf' },
+  { type: 'part-org', partId: 'planetary', orgId: 'org-zf' },
+  { type: 'part-org', partId: 'lidar', orgId: 'org-hesai' },
+  { type: 'part-org', partId: 'lidar', orgId: 'org-robosense' },
+  { type: 'part-org', partId: 'solid-lidar', orgId: 'org-hesai' },
+  { type: 'part-org', partId: 'brake', orgId: 'org-bosch' },
+  { type: 'part-org', partId: 'brake-by-wire', orgId: 'org-bosch' },
+  { type: 'part-org', partId: 'brake-by-wire', orgId: 'org-conti' },
+  { type: 'part-org', partId: 'batt-thermal', orgId: 'org-valeo' },
+  { type: 'part-org', partId: 'immersion', orgId: 'org-catl' },
+  { type: 'part-org', partId: 'cell', orgId: 'org-catl' },
+  { type: 'part-org', partId: 'cell', orgId: 'org-gowin' },
+  { type: 'part-org', partId: 'camera', orgId: 'org-valeo' },
+  { type: 'part-org', partId: 'radar', orgId: 'org-conti' },
+  { type: 'part-org', partId: 'radar', orgId: 'org-nxp' },
+  { type: 'part-org', partId: 'e2e', orgId: 'org-xpeng' },
+  { type: 'part-org', partId: 'e2e', orgId: 'org-motional' },
+  { type: 'part-org', partId: 'hmi', orgId: 'org-desay' },
+  { type: 'part-org', partId: 'steer-by-wire', orgId: 'org-aptiv' },
+  { type: 'part-org', partId: 'edrive', orgId: 'org-magna' },
+  // org-competitor
+  { type: 'org-competitor', a: 'org-byd', b: 'org-tesla' },
+  { type: 'org-competitor', a: 'org-nio', b: 'org-xpeng' },
+  { type: 'org-competitor', a: 'org-xpeng', b: 'org-li' },
+  { type: 'org-competitor', a: 'org-hesai', b: 'org-robosense' },
+  { type: 'org-competitor', a: 'org-infineon', b: 'org-st' },
+  { type: 'org-competitor', a: 'org-bosch', b: 'org-conti' },
+  { type: 'org-competitor', a: 'org-catl', b: 'org-byd' },
+  { type: 'org-competitor', a: 'org-catl', b: 'org-gowin' },
+  { type: 'org-competitor', a: 'org-horizon', b: 'org-huawei' },
+  // part-hit
+  { type: 'part-hit', partId: 'motor', hitId: 'hit-1' },
+  { type: 'part-hit', partId: 'pmsm', hitId: 'hit-1' },
+  { type: 'part-hit', partId: 'inverter', hitId: 'hit-2' },
+  { type: 'part-hit', partId: 'sic-mod', hitId: 'hit-2' },
+  { type: 'part-hit', partId: 'inverter', hitId: 'hit-3' },
+  { type: 'part-hit', partId: 'motor', hitId: 'hit-3' },
+  { type: 'part-hit', partId: 'lidar', hitId: 'hit-4' },
+  { type: 'part-hit', partId: 'solid-lidar', hitId: 'hit-4' },
+  { type: 'part-hit', partId: 'batt-thermal', hitId: 'hit-5' },
+  { type: 'part-hit', partId: 'perception', hitId: 'hit-6' },
+  { type: 'part-hit', partId: 'planning', hitId: 'hit-6' },
+  { type: 'part-hit', partId: 'reducer', hitId: 'hit-7' },
+  { type: 'part-hit', partId: 'immersion', hitId: 'hit-8' },
+  { type: 'part-hit', partId: 'pack', hitId: 'hit-8' },
+  { type: 'part-hit', partId: 'brake-by-wire', hitId: 'hit-9' },
+  // node-insight
+  ...SEED_INSIGHTS.map(
+    (i): Edge => ({ type: 'node-insight', nodeId: i.nodeId, insightId: i.id }),
+  ),
+  // org-standard（少量）
+  { type: 'org-standard', orgId: 'org-bosch', standardId: 'std-iso26262', relation: '参与/符合示意' },
+  { type: 'org-standard', orgId: 'org-conti', standardId: 'std-iso26262', relation: '符合示意' },
+  { type: 'org-standard', orgId: 'org-huawei', standardId: 'std-iso21448', relation: '关注示意' },
+  { type: 'org-standard', orgId: 'org-catl', standardId: 'std-gb-t-18384', relation: '符合示意' },
 ]
 
-/** 企业→竞品 ≥5 */
-export const SEED_ORG_COMP: OrgCompetitorEdge[] = [
-  { orgId: 'org-byd', competitorOrgId: 'org-tesla' },
-  { orgId: 'org-tesla', competitorOrgId: 'org-byd' },
-  { orgId: 'org-nio', competitorOrgId: 'org-xpeng' },
-  { orgId: 'org-xpeng', competitorOrgId: 'org-nio' },
-  { orgId: 'org-hesai', competitorOrgId: 'org-robosense' },
-  { orgId: 'org-infineon', competitorOrgId: 'org-st' },
-  { orgId: 'org-bosch', competitorOrgId: 'org-conti' },
+/** ingest 跑完后追加到内存图的预置包 */
+export const INGEST_APPEND_HITS: SearchHit[] = [
+  {
+    id: 'hit-ingest-1',
+    publicationNumber: 'CN118999001A',
+    title: '（入库追加）扁线电机油冷流道优化',
+    applicant: '示意申请人甲',
+    date: '2025-01-10',
+    ipc: ['H02K9/19'],
+    score: 0.77,
+    snippet: '假 ingest 追加 Hit · 非真爬取',
+  },
+  {
+    id: 'hit-ingest-2',
+    publicationNumber: 'CN118999002A',
+    title: '（入库追加）毫米波雷达杂波抑制',
+    applicant: '示意申请人乙',
+    date: '2025-02-02',
+    ipc: ['G01S7/41'],
+    score: 0.74,
+    snippet: '假 ingest 追加 Hit · 非真爬取',
+  },
 ]
 
-/** 节点→洞察 ≥5（由 insights.nodeId 亦可推导；显式边便于计数） */
-export const SEED_NODE_INSIGHT: { nodeId: string; insightId: string }[] =
-  SEED_INSIGHTS.map((i) => ({ nodeId: i.nodeId, insightId: i.id }))
+export const INGEST_APPEND_EDGES: Edge[] = [
+  { type: 'part-hit', partId: 'motor', hitId: 'hit-ingest-1' },
+  { type: 'part-hit', partId: 'pmsm', hitId: 'hit-ingest-1' },
+  { type: 'part-hit', partId: 'radar', hitId: 'hit-ingest-2' },
+  { type: 'part-org', partId: 'radar', orgId: 'org-nxp', role: 'ingest 追加' },
+]
 
 function extrasFor(
   hitIds: string[],
@@ -359,6 +598,16 @@ export const SEED_NODE_EXTRAS: Record<string, NodeExtras> = {
       ['H02P', 15],
     ],
   ),
+  pmsm: extrasFor(
+    ['hit-1'],
+    ['org-byd', 'org-byd-fl'],
+    [
+      ['2022', 10],
+      ['2023', 16],
+      ['2024', 18],
+    ],
+    [['H02K', 30]],
+  ),
   inverter: extrasFor(
     ['hit-2', 'hit-3'],
     ['org-infineon', 'org-st', 'org-byd', 'org-tesla'],
@@ -373,6 +622,16 @@ export const SEED_NODE_EXTRAS: Record<string, NodeExtras> = {
       ['H01L', 30],
       ['B60L', 18],
     ],
+  ),
+  'sic-mod': extrasFor(
+    ['hit-2'],
+    ['org-infineon', 'org-st'],
+    [
+      ['2022', 14],
+      ['2023', 22],
+      ['2024', 25],
+    ],
+    [['H01L', 40]],
   ),
   reducer: extrasFor(
     ['hit-7'],
@@ -402,6 +661,15 @@ export const SEED_NODE_EXTRAS: Record<string, NodeExtras> = {
       ['G02B', 12],
     ],
   ),
+  'solid-lidar': extrasFor(
+    ['hit-4'],
+    ['org-hesai', 'org-robosense'],
+    [
+      ['2023', 12],
+      ['2024', 16],
+    ],
+    [['G01S', 28]],
+  ),
   'batt-thermal': extrasFor(
     ['hit-5'],
     ['org-valeo', 'org-denso'],
@@ -415,6 +683,25 @@ export const SEED_NODE_EXTRAS: Record<string, NodeExtras> = {
       ['H01M', 26],
       ['B60H', 14],
     ],
+  ),
+  immersion: extrasFor(
+    ['hit-8'],
+    ['org-catl', 'org-valeo'],
+    [
+      ['2023', 8],
+      ['2024', 14],
+    ],
+    [['H01M', 20]],
+  ),
+  pack: extrasFor(
+    ['hit-8'],
+    ['org-catl', 'org-byd', 'org-gowin'],
+    [
+      ['2022', 20],
+      ['2023', 28],
+      ['2024', 30],
+    ],
+    [['H01M', 35]],
   ),
   perception: extrasFor(
     ['hit-4', 'hit-6'],
@@ -444,6 +731,15 @@ export const SEED_NODE_EXTRAS: Record<string, NodeExtras> = {
       ['G05D', 18],
     ],
   ),
+  e2e: extrasFor(
+    ['hit-6'],
+    ['org-xpeng', 'org-motional', 'org-huawei'],
+    [
+      ['2023', 14],
+      ['2024', 22],
+    ],
+    [['B60W', 24]],
+  ),
   edrive: extrasFor(
     ['hit-1', 'hit-2', 'hit-3', 'hit-7'],
     ['org-byd', 'org-tesla', 'org-huawei'],
@@ -460,7 +756,7 @@ export const SEED_NODE_EXTRAS: Record<string, NodeExtras> = {
     ],
   ),
   brake: extrasFor(
-    [],
+    ['hit-9'],
     ['org-bosch', 'org-conti'],
     [
       ['2021', 11],
@@ -473,36 +769,80 @@ export const SEED_NODE_EXTRAS: Record<string, NodeExtras> = {
       ['B60W', 10],
     ],
   ),
+  'brake-by-wire': extrasFor(
+    ['hit-9'],
+    ['org-bosch', 'org-conti', 'org-aptiv'],
+    [
+      ['2022', 9],
+      ['2023', 13],
+      ['2024', 15],
+    ],
+    [['B60T', 22]],
+  ),
+  cell: extrasFor(
+    [],
+    ['org-catl', 'org-byd', 'org-gowin'],
+    [
+      ['2022', 40],
+      ['2023', 48],
+      ['2024', 52],
+    ],
+    [['H01M', 55]],
+  ),
+  radar: extrasFor(
+    [],
+    ['org-conti', 'org-nxp'],
+    [
+      ['2022', 12],
+      ['2023', 15],
+      ['2024', 14],
+    ],
+    [['G01S', 30]],
+  ),
 }
 
 export const SEED_INGEST: IngestTask[] = [
   {
     id: 'ingest-1',
     source: '公开专利公报（示意）',
-    status: 'running',
-    progress: 42,
-    note: '假进度条 · 未接真实爬虫；刷新可失',
+    status: 'idle',
+    progress: 0,
+    note: '假任务 · 可跑完并追加预置 Hit/边到内存图 · 未接真实爬虫',
   },
 ]
 
 export function defaultExpanded(): Set<string> {
-  return new Set(['auto', 'power', 'edrive', 'adas', 'perception'])
+  return new Set([
+    'auto',
+    'power',
+    'edrive',
+    'motor',
+    'inverter',
+    'adas',
+    'perception',
+    'lidar',
+    'battery',
+  ])
 }
 
 export function createInitialState(): LandscapeState {
   return {
     domain: 'automotive',
+    version: ACTIVE_VERSION,
+    versionId: ACTIVE_VERSION.id,
+    availableVersions: GRAPH_VERSIONS,
     nodes: SEED_NODES,
     orgs: SEED_ORGS,
+    edges: SEED_EDGES,
     insights: SEED_INSIGHTS,
     hits: SEED_HITS,
-    partOrgEdges: SEED_PART_ORG,
-    orgCompetitorEdges: SEED_ORG_COMP,
-    nodeInsightEdges: SEED_NODE_INSIGHT,
+    standards: SEED_STANDARDS,
     nodeExtras: SEED_NODE_EXTRAS,
     expandedIds: defaultExpanded(),
     selectedNodeId: 'edrive',
     ingestTasks: SEED_INGEST,
+    ingestAppended: false,
     toast: null,
+    backend: 'seed-graph',
   }
 }

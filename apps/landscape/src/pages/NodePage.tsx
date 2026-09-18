@@ -15,13 +15,16 @@ import {
   getNode,
   hitsForNode,
   insightsForNode,
+  neighborsForNode,
   orgsForNode,
   pathToRoot,
   useLandscapeStore,
 } from '../state/store'
 import {
+  EDGE_TYPE_LABELS,
   KIND_LABELS,
   STANCE_LABELS,
+  type Edge,
   type InsightKind,
   type OrgStance,
 } from '../state/types'
@@ -33,9 +36,16 @@ function stanceTone(s: OrgStance): 'ok' | 'accent' | 'warn' | 'neutral' {
   return 'neutral'
 }
 
+const NEIGHBOR_TYPES: Edge['type'][] = [
+  'part-org',
+  'part-hit',
+  'node-insight',
+  'org-competitor',
+]
+
 export function NodePage() {
   const { nodeId = '' } = useParams()
-  const { nodeExtras } = useLandscapeStore()
+  const { nodeExtras, version } = useLandscapeStore()
   const node = getNode(nodeId)
 
   if (!node) {
@@ -58,6 +68,7 @@ export function NodePage() {
   const insights = insightsForNode(node.id)
   const hits = hitsForNode(node.id)
   const extras = nodeExtras[node.id]
+  const neighbors = neighborsForNode(node.id)
   const byKind = (k: InsightKind) => insights.filter((i) => i.kind === k)
 
   return (
@@ -74,8 +85,20 @@ export function NodePage() {
       <PageHeader
         eyebrow="节点详情"
         title={node.name}
-        desc={`路径：${crumbs.map((c) => c.name).join(' → ')} · 专利密度示意 ${node.patentDensity}`}
+        desc={`路径：${crumbs.map((c) => c.name).join(' → ')} · 专利密度示意 ${node.patentDensity} · ${version.label}`}
       />
+
+      <div className="mb-4 flex flex-wrap gap-2 text-xs text-slate-600">
+        {node.code ? (
+          <Chip tone="neutral">code {node.code}</Chip>
+        ) : null}
+        {node.aliases?.map((a) => (
+          <Chip key={a} tone="mock">
+            alias {a}
+          </Chip>
+        ))}
+        <Chip tone="accent">L{node.depth}</Chip>
+      </div>
 
       <div className="mb-4">
         <HeatBar value={node.patentDensity} label="专利密度（假）" />
@@ -101,6 +124,55 @@ export function NodePage() {
                 </li>
               ))}
             </ul>
+          )}
+        </Card>
+
+        <Card>
+          <h2 className="text-sm font-semibold text-slate-900">一度邻居</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            边类型可列：part-org / part-hit / node-insight / org-competitor（≥3 类）
+          </p>
+          {neighbors.length === 0 ? (
+            <p className="mt-3 text-xs text-slate-400">无邻居边。</p>
+          ) : (
+            <div className="mt-3 overflow-x-auto">
+              <table className="w-full min-w-[22rem] text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-500">
+                    <th className="py-1.5 pr-2 font-medium">边</th>
+                    <th className="py-1.5 pr-2 font-medium">邻居</th>
+                    <th className="py-1.5 font-medium">备注</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {neighbors.slice(0, 24).map((row, i) => (
+                    <tr key={`${row.edgeType}-${row.label}-${i}`} className="border-b border-slate-100">
+                      <td className="py-2 pr-2">
+                        <Chip tone="mock">{EDGE_TYPE_LABELS[row.edgeType]}</Chip>
+                      </td>
+                      <td className="py-2 pr-2">
+                        {row.href ? (
+                          <Link
+                            to={row.href}
+                            className="font-medium text-slate-800 underline-offset-2 hover:underline"
+                          >
+                            {row.label}
+                          </Link>
+                        ) : (
+                          <span className="font-medium text-slate-800">{row.label}</span>
+                        )}
+                      </td>
+                      <td className="py-2 text-slate-600">{row.meta ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="mt-2 text-[11px] text-slate-400">
+                本表含{' '}
+                {NEIGHBOR_TYPES.filter((t) => neighbors.some((n) => n.edgeType === t)).length}{' '}
+                类边 · 共 {neighbors.length} 行（截断 24）
+              </p>
+            </div>
           )}
         </Card>
 
@@ -144,7 +216,10 @@ export function NodePage() {
                   {comps.map((o) => (
                     <tr key={o.id} className="border-b border-slate-100">
                       <td className="py-2 pr-2">
-                        <Link to={`/orgs/${o.id}`} className="font-medium text-slate-800 underline-offset-2 hover:underline">
+                        <Link
+                          to={`/orgs/${o.id}`}
+                          className="font-medium text-slate-800 underline-offset-2 hover:underline"
+                        >
                           {o.name}
                         </Link>
                       </td>
@@ -198,7 +273,7 @@ export function NodePage() {
       <Card className="mt-4">
         <h2 className="text-sm font-semibold text-slate-900">假 SearchHit 文献</h2>
         <p className="mt-1 text-xs text-slate-500">
-          字段对齐 search · 「加入工作篮」仅 toast 占位，不跨口
+          字段对齐 search · 含 CN115123456A / CN118234567A · 「加入工作篮」仅 toast
         </p>
         {hits.length === 0 ? (
           <p className="mt-3 text-xs text-slate-400">本节点无挂载 Hit。</p>

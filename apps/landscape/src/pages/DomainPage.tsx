@@ -13,7 +13,7 @@ export function DomainPage() {
       <PageHeader
         eyebrow="入口"
         title="选择产业域"
-        desc="样机默认锁定「汽车」种子域。其他域灰显并标注「另立项」——本仓不做真全行业库。"
+        desc="样机默认锁定「汽车」种子域（加深图谱）。其他域灰显并标注「另立项」——无全球实时产业库。"
       />
       <div className="grid gap-4 sm:grid-cols-2">
         {DOMAINS.map((d) => {
@@ -40,7 +40,7 @@ export function DomainPage() {
                   </div>
                   {enabled ? (
                     <p className="mt-2 text-xs text-slate-500">
-                      节点 {nodes.length} · 深度 0–{depthMax} · 企业 {orgs.length} · 全内存
+                      加深图谱 · 节点 {nodes.length} · 深度 0–{depthMax} · 企业 {orgs.length} · seed-graph · 全内存
                     </p>
                   ) : (
                     <p className="mt-2 text-xs text-slate-500">

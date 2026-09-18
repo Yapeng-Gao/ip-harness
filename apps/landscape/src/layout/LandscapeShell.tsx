@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { HONESTY_BANNER, SEARCH_DEEPLINK } from '../state/types'
 import { Chip } from '../components/ui'
-import { useLandscapeStore } from '../state/store'
+import { graphCounts, setVersionLabel, useLandscapeStore } from '../state/store'
 
 const NAV = [
   { to: '/', label: '域选择', icon: Network, end: true },
@@ -24,12 +24,13 @@ function linkClass(active: boolean): string {
 }
 
 export function LandscapeShell() {
-  const { nodes, orgs, insights } = useLandscapeStore()
+  const { version, versionId, availableVersions, backend } = useLandscapeStore()
+  const counts = graphCounts()
 
   return (
     <div className="app-shell-bg flex min-h-screen flex-col text-slate-900">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 py-2 text-xs text-slate-600">
-        <span>产业全景平面 · Taxonomy + 企业 + 洞察 · 不改 APP_PORTS</span>
+        <span>产业全景平面 · 加深图谱 · 不改 APP_PORTS · 不开 5191</span>
         <span className="inline-flex flex-wrap items-center gap-3">
           <a
             href={SEARCH_DEEPLINK}
@@ -53,9 +54,25 @@ export function LandscapeShell() {
               产业全景
             </p>
             <div className="mt-2 flex flex-wrap gap-1">
-              <Chip tone="mock">mock</Chip>
+              <Chip tone="mock">{backend}</Chip>
               <Chip tone="accent">汽车</Chip>
             </div>
+            <label className="mt-3 block text-[11px] text-slate-500">
+              图版本（只读标签）
+              <select
+                className="focus-ring mt-1 w-full rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-800"
+                value={versionId}
+                onChange={(e) => setVersionLabel(e.target.value)}
+                aria-label="图版本只读切换"
+              >
+                {availableVersions.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="mt-1 text-[10px] text-slate-400">当前：{version.label}</p>
           </div>
           <nav aria-label="全景导航" className="flex flex-col gap-0.5 px-3 py-2">
             {NAV.map((item) => {
@@ -75,7 +92,10 @@ export function LandscapeShell() {
           </nav>
           <div className="mt-4 space-y-1 px-4 text-[11px] leading-relaxed text-slate-400">
             <p>
-              节点 {nodes.length} · 企业 {orgs.length} · 洞察 {insights.length}
+              节点 {counts.nodes} · 深 0–{counts.maxDepth} · 企业 {counts.orgs}
+            </p>
+            <p>
+              边 {counts.edges} · Hit {counts.hits} · 洞察 {counts.insights}
             </p>
             <p className="inline-flex items-center gap-1">
               <Building2 className="h-3 w-3" aria-hidden />

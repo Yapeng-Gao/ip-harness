@@ -1,17 +1,46 @@
 import { Link } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, PageHeader } from '../components/ui'
-import { useLandscapeStore } from '../state/store'
+import { graphCounts, runIngestTask, useLandscapeStore } from '../state/store'
 
 export function IngestPage() {
-  const { ingestTasks } = useLandscapeStore()
+  const { ingestTasks, ingestAppended } = useLandscapeStore()
+  const counts = graphCounts()
 
   return (
     <div>
       <PageHeader
         eyebrow="入库示意"
         title="多源入库（假任务）"
-        desc="仅示意进度条 / 空态。勿假装真爬取或已接通全球产业库。"
+        desc="可跑完并追加预置 Hit/边到内存图。计数变化可见。勿假装真爬取或已接通全球产业库。"
       />
+
+      <Card className="mb-4 p-4">
+        <h2 className="text-sm font-semibold text-slate-900">图计数（内存）</h2>
+        <p className="mt-2 flex flex-wrap gap-3 text-xs text-slate-600">
+          <span>
+            节点 <strong className="tabular-nums">{counts.nodes}</strong>
+          </span>
+          <span>
+            企业 <strong className="tabular-nums">{counts.orgs}</strong>
+          </span>
+          <span>
+            边 <strong className="tabular-nums">{counts.edges}</strong>
+          </span>
+          <span>
+            Hit <strong className="tabular-nums">{counts.hits}</strong>
+          </span>
+          <span>
+            洞察 <strong className="tabular-nums">{counts.insights}</strong>
+          </span>
+        </p>
+        <p className="mt-2 text-[11px] text-slate-400">
+          边分类：part-org {counts.byType['part-org']} · org-competitor{' '}
+          {counts.byType['org-competitor']} · part-hit {counts.byType['part-hit']} · node-insight{' '}
+          {counts.byType['node-insight']} · org-standard {counts.byType['org-standard']}
+          {ingestAppended ? ' · 已追加过预置包' : ' · 尚未追加'}
+        </p>
+      </Card>
+
       {ingestTasks.length === 0 ? (
         <EmptyState
           title="暂无入库任务"
@@ -32,9 +61,20 @@ export function IngestPage() {
                     <h2 className="text-sm font-semibold text-slate-900">{t.source}</h2>
                     <p className="mt-1 text-xs text-slate-500">{t.note}</p>
                   </div>
-                  <Chip tone={t.status === 'running' ? 'warn' : t.status === 'done' ? 'ok' : 'mock'}>
-                    {t.status}
-                  </Chip>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Chip
+                      tone={t.status === 'running' ? 'warn' : t.status === 'done' ? 'ok' : 'mock'}
+                    >
+                      {t.status}
+                    </Chip>
+                    <Button
+                      variant="primary"
+                      disabled={t.status === 'running'}
+                      onClick={() => runIngestTask(t.id)}
+                    >
+                      {t.status === 'done' ? '已完成' : t.status === 'running' ? '推进中…' : '跑假入库'}
+                    </Button>
+                  </div>
                 </div>
                 <div className="mt-3">
                   <div className="mb-1 flex justify-between text-[11px] text-slate-500">
@@ -54,7 +94,7 @@ export function IngestPage() {
         </ul>
       )}
       <p className="mt-4 text-xs text-slate-400">
-        非目标：真持续爬取、真图数据库、改 APP_PORTS。
+        非目标：真持续爬取、真图数据库、改 APP_PORTS、开 landscape-api:5191。
       </p>
     </div>
   )
