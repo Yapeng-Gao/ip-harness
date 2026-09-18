@@ -45,6 +45,6 @@
 
 ### 黄项（非阻塞）
 
-1. L4 表写 `org-standard?` 带问号，与下方 `Edge` 联合中无对应成员——实现前删 `?` 或补边类型。  
+1. ~~L4 `org-standard?`~~ — **已关**（`c07c4b3`：表与 Edge 联合均含 `org-standard` 可选）。  
 2. overview 旧横幅未含「加深图谱」——加深 UI 以本补丁冻结文案为准即可，不必强改 overview。
 
