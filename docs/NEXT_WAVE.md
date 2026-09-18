@@ -28,3 +28,5 @@
 3. **e2e-hunt**：规格已 Pass；开 MVP Owner/任务单（Cursor 浏览器 + 1 CasePack），实现可另派  
 
 残余 UI P2 不挡 N2。
+
+- ~~跨口工作篮规格~~ **Pass** `4681bd4` / 补记 `2c7d477`（`docs/architecture/search/cross-shell-basket.md`）
