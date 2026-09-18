@@ -25,7 +25,7 @@ const HONESTY = [
   '无真 GPU / 无真 K8s / 无真权重仓 — 状态机在浏览器内存。',
   '跨端口（5179↔5181）靠共享种子契约，不靠 localStorage 互通。',
   '禁止持有或写入 PatentCase / DomainCommand。',
-  'ops:5176 仅深链，不改运维六路由、不改 APP_PORTS。',
+  'ops 深链走 APP_DEV_URLS.ops，仅深链、不改运维六路由、不改 APP_PORTS。',
 ] as const
 
 export function OverviewPage() {

@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { OPS_URL } from '../lib/opsLinks'
 import {
   Activity,
   Bell,
@@ -9,8 +10,6 @@ import {
   Server,
   SquareTerminal,
 } from 'lucide-react'
-
-const OPS_URL = 'http://localhost:5176'
 
 const NAV = [
   { to: '/', end: true, label: '总览', icon: LayoutDashboard },

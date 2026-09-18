@@ -11,5 +11,5 @@ export const HONESTY = [
   '无真 GPU / 无真 K8s / 无真权重仓 — 数字为内存 mock。',
   '禁止持有或写入 PatentCase / DomainCommand。',
   '办案 Agent 只消费已发布端点（经网关）；本壳不申请 GPU job。',
-  'ops:5176 仅深链，不改运维六路由、不改 APP_PORTS。',
+  'ops 深链走 APP_DEV_URLS.ops，仅深链、不改运维六路由、不改 APP_PORTS。',
 ] as const

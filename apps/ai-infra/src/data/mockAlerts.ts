@@ -1,6 +1,6 @@
 import type { StatusTone } from '../components/ui'
 
-export const OPS_ALERTS_URL = 'http://localhost:5176/config#alerts'
+export { OPS_ALERTS_URL } from '../lib/opsLinks'
 
 export type AlertRule = {
   id: string

@@ -1,7 +1,6 @@
 import { Button, Card, PageHeader, StatusPill } from '../components/ui'
+import { OPS_ALERTS_URL } from '../lib/opsLinks'
 import { useAiInfra } from '../state/AiInfraStore'
-
-const OPS_ALERTS_URL = 'http://localhost:5176/config#alerts'
 
 const KIND_LABEL = {
   job_failed: '作业失败',

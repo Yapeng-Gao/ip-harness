@@ -101,7 +101,7 @@ Vite **不同端口 = 不同 origin**（5179 ≠ 5181），浏览器 **`localSto
 | `/alerts` | 告警 |
 | `*` | → `/` |
 
-顶栏横幅保持：`样机 · 非真 GPU / 非真 K8s`。ops 深链：`http://localhost:5176`。
+顶栏横幅保持：`样机 · 非真 GPU / 非真 K8s`。ops 深链：`APP_DEV_URLS.ops`（`@ip/contracts`；告警通道为 `…/config#alerts`）。
 
 ## 改动边界
 
