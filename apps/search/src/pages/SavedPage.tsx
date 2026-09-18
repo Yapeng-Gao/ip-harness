@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ExternalLink, Send, Trash2 } from 'lucide-react'
-import { Button, Card, EmptyState, PageHeader } from '../components/ui'
+import { Button, Card, Chip, EmptyState, PageHeader } from '../components/ui'
 import { DetailDrawer } from '../components/DetailDrawer'
 import { getCorpus, searchActions, useSearchStore } from '../state/store'
 import { DOWNSTREAM_PLACEHOLDERS } from '../state/types'
@@ -53,6 +53,7 @@ export function SavedPage() {
                 {d.label}
               </Button>
             ))}
+            {empty ? <Chip tone="warn">请先加入工作篮</Chip> : null}
           </div>
         </div>
         <p className="mt-2 text-[11px] text-slate-500">
@@ -95,6 +96,11 @@ export function SavedPage() {
           <EmptyState
             title="尚无收藏"
             body="在详情抽屉点「收藏」。仅内存，刷新即失，不写 case。"
+            action={
+              <Link to="/">
+                <Button>去检索</Button>
+              </Link>
+            }
           />
         ) : (
           <ul className="mt-3 space-y-2">

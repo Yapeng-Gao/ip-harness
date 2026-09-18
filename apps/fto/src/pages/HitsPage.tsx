@@ -80,7 +80,7 @@ export function HitsPage() {
                       <p className="mt-2 text-xs leading-relaxed text-slate-600">{h.snippet}</p>
                     ) : null}
                     {h.mockClaims && h.mockClaims.length > 0 ? (
-                      <p className="mt-2 text-[11px] text-violet-700">
+                      <p className="mt-2 text-[11px] text-amber-800">
                         假 claim ×{h.mockClaims.length}（样机）
                       </p>
                     ) : null}

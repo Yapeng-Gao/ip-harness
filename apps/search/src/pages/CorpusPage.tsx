@@ -119,6 +119,19 @@ export function CorpusPage() {
           <EmptyState
             title="尚无入库任务"
             body="在上方源卡片点「入库」创建假进度任务。"
+            action={
+              <Button
+                className="gap-1"
+                onClick={() => {
+                  const first = corpusSources[0]
+                  if (first) searchActions.startCorpusIngest(first.id)
+                }}
+                disabled={corpusSources.length === 0}
+              >
+                <Upload className="h-3.5 w-3.5" aria-hidden />
+                入库第一个源
+              </Button>
+            }
           />
         ) : (
           <ul className="space-y-2">

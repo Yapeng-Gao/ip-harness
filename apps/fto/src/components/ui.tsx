@@ -114,7 +114,7 @@ export function Chip({
         : tone === 'ok'
           ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
           : tone === 'mock'
-            ? 'border-violet-200 bg-violet-50 text-violet-900'
+            ? 'border-amber-200/80 bg-[#fffbeb] text-[#78350f]'
             : tone === 'danger'
               ? 'border-rose-200 bg-rose-50 text-rose-800'
               : 'border-slate-200 bg-slate-50 text-slate-700'

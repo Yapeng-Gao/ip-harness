@@ -16,7 +16,7 @@ export function HomePage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <Beaker className="h-5 w-5 text-violet-600" aria-hidden />
+              <Beaker className="h-5 w-5 text-amber-700" aria-hidden />
               <h2 className="text-base font-semibold text-slate-900">{projectName}</h2>
               <Chip tone="mock">样机</Chip>
               <Chip tone={report.status === 'confirmed' ? 'ok' : 'neutral'}>

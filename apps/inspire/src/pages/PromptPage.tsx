@@ -33,7 +33,7 @@ export function PromptPage() {
         <label className="mt-4 block">
           <span className="text-sm font-medium text-slate-800">技术点 / 问题</span>
           <textarea
-            className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm leading-relaxed text-slate-900 shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-200"
+            className="ui-input mt-2 min-h-[7.5rem] resize-y leading-relaxed"
             rows={5}
             value={prompt}
             onChange={(e) => inspireActions.setPrompt(e.target.value)}

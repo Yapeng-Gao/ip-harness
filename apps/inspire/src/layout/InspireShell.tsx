@@ -44,21 +44,21 @@ export function InspireShell() {
             className="focus-ring rounded font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600"
             title={MINING_DEEPLINK}
           >
-            mining → {MINING_DEEPLINK}
+            挖掘
           </a>
           <a
             href={DOC_HARNESS_DEEPLINK}
             className="focus-ring rounded font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600"
             title={DOC_HARNESS_DEEPLINK}
           >
-            doc-harness → {DOC_HARNESS_DEEPLINK}
+            文档
           </a>
           <a
             href={SEARCH_DEEPLINK}
             className="focus-ring rounded font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600"
             title={SEARCH_DEEPLINK}
           >
-            search → {SEARCH_DEEPLINK}
+            检索
           </a>
           <span className="text-slate-400">只深链、不改邻居</span>
         </span>

@@ -27,9 +27,20 @@ export function InfraPage() {
       </div>
 
       <h2 className="mt-8 mb-3 text-sm font-semibold text-slate-800">GPU</h2>
-      <EmptyState title={GPU_EMPTY.title} body={GPU_EMPTY.body} />
+      <EmptyState
+        title={GPU_EMPTY.title}
+        body={GPU_EMPTY.body}
+        action={
+          <a
+            href="#containers"
+            className="focus-ring inline-flex rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 hover:bg-slate-50"
+          >
+            查看下方容器示意
+          </a>
+        }
+      />
 
-      <h2 className="mt-8 mb-3 text-sm font-semibold text-slate-800">容器</h2>
+      <h2 id="containers" className="mt-8 mb-3 scroll-mt-4 text-sm font-semibold text-slate-800">容器</h2>
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-rest">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs text-slate-500">

@@ -1,4 +1,5 @@
-import { Card, Chip, EmptyState, PageHeader } from '../components/ui'
+import { Link } from 'react-router-dom'
+import { Button, Card, Chip, EmptyState, PageHeader } from '../components/ui'
 import { useLandscapeStore } from '../state/store'
 
 export function IngestPage() {
@@ -15,6 +16,11 @@ export function IngestPage() {
         <EmptyState
           title="暂无入库任务"
           body="样机可预置一条假进度，或保持空态。本页不触发任何网络抓取。"
+          action={
+            <Link to="/">
+              <Button variant="secondary">回域选择</Button>
+            </Link>
+          }
         />
       ) : (
         <ul className="space-y-3">
@@ -37,7 +43,7 @@ export function IngestPage() {
                   </div>
                   <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                     <div
-                      className="h-full rounded-full bg-violet-400/80"
+                      className="h-full rounded-full bg-[var(--color-accent)]/70"
                       style={{ width: `${t.progress}%` }}
                     />
                   </div>

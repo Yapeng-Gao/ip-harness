@@ -110,7 +110,7 @@ export function Chip({
         : tone === 'ok'
           ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
           : tone === 'mock'
-            ? 'border-violet-200 bg-violet-50 text-violet-900'
+            ? 'border-amber-200/80 bg-[#fffbeb] text-[#78350f]'
             : 'border-slate-200 bg-slate-50 text-slate-700'
   return (
     <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${cls}`}>

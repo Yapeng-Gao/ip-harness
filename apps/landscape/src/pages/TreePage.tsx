@@ -136,7 +136,7 @@ export function TreePage() {
                       <div key={b.label} className="flex-1 text-center">
                         <div className="mx-auto h-16 w-full max-w-[2rem] rounded-t bg-slate-100 relative">
                           <div
-                            className="absolute bottom-0 w-full rounded-t bg-violet-400/80"
+                            className="absolute bottom-0 w-full rounded-t bg-[var(--color-accent)]/70"
                             style={{
                               height: `${Math.round((b.count / Math.max(...extras.patentByYear.map((x) => x.count))) * 100)}%`,
                             }}

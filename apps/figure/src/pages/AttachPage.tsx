@@ -56,7 +56,7 @@ export function AttachPage() {
       <PageHeader
         eyebrow="⑤ 挂文档章"
         title="挂到假文档 / 章节"
-        desc="确认后 toast + 事件日志「已挂章（样机）」。可选打开 doc-harness :5178。不调用 DomainCommand、不写 PatentCase。"
+        desc="确认后 toast + 事件日志「已挂章（样机）」。可选打开文档壳。不调用 DomainCommand、不写 PatentCase。"
       />
       <Card className="p-5">
         <p className="mb-3 text-sm text-slate-600">
@@ -99,14 +99,14 @@ export function AttachPage() {
             checked={openDoc}
             onChange={(e) => setOpenDoc(e.target.checked)}
           />
-          确认后 window.open doc-harness（{DOC_HARNESS_DEEPLINK}）
+          确认后打开文档壳（只读深链）
         </label>
         <div className="mt-4 flex flex-wrap gap-2">
           <Button onClick={onAttach} className="inline-flex items-center gap-1.5">
             <Link2 className="h-3.5 w-3.5" aria-hidden />
             确认挂章（样机）
           </Button>
-          <a href={DOC_HARNESS_DEEPLINK} target="_blank" rel="noreferrer">
+          <a href={DOC_HARNESS_DEEPLINK} target="_blank" rel="noreferrer" title={DOC_HARNESS_DEEPLINK}>
             <Button variant="secondary" className="inline-flex items-center gap-1.5">
               <ExternalLink className="h-3.5 w-3.5" aria-hidden />
               仅打开文档壳

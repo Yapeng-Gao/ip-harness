@@ -336,6 +336,14 @@ export function SearchPage() {
         <EmptyState
           title="尚未检索"
           body="选择模式并输入查询后点「检索」。种子库约 23 条示意专利，含 ≥3 个多成员同族。不会声称已扫全库。"
+          action={
+            <Button
+              variant="secondary"
+              onClick={() => searchActions.runSearch()}
+            >
+              用当前查询检索
+            </Button>
+          }
         />
       ) : null}
 
@@ -350,6 +358,17 @@ export function SearchPage() {
         <EmptyState
           title="无命中"
           body="当前 Query + filters 在内存种子中无匹配。这是合法空态，并非「全库已扫」。可放宽过滤或改关键词。"
+          action={
+            <Button
+              variant="secondary"
+              onClick={() => {
+                searchActions.clearFilters()
+                searchActions.runSearch({ fromFilters: true })
+              }}
+            >
+              清空过滤并重跑
+            </Button>
+          }
         />
       ) : null}
 
@@ -530,7 +549,7 @@ function BasketBar() {
             </Link>
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             className="gap-1"
             disabled={empty}
@@ -549,6 +568,7 @@ function BasketBar() {
               {d.label}
             </Button>
           ))}
+          {empty ? <Chip tone="warn">请先加入工作篮</Chip> : null}
         </div>
       </div>
       {lastDown ? (

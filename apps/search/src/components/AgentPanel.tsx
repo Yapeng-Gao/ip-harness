@@ -161,10 +161,11 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
                   href={d.href}
                   target="_blank"
                   rel="noreferrer"
+                  title={d.href}
                   className="inline-flex items-center gap-1 underline decoration-slate-300 hover:decoration-slate-600"
                 >
                   <ExternalLink className="h-3 w-3" aria-hidden />
-                  {d.label} → {d.href}
+                  {d.label}
                 </a>
                 <span className="ml-1 text-slate-400">下游未建 / 占位</span>
               </li>

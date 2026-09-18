@@ -76,7 +76,7 @@ export function FigureShell() {
             className="focus-ring rounded font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600"
             title={DOC_HARNESS_DEEPLINK}
           >
-            文档 doc-harness → {DOC_HARNESS_DEEPLINK}
+            文档
           </a>
           <span className="text-slate-400">只深链、不改邻居</span>
         </span>

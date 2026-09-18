@@ -169,7 +169,7 @@ export function AlertNotifyPanel() {
           <select
             value={trigger}
             onChange={(e) => setTrigger(e.target.value as NotifyTriggerChoice)}
-            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 font-mono text-xs text-slate-800 focus:border-slate-400 focus:outline-none"
+            className="ui-input ui-input-sm w-auto font-mono"
           >
             {NOTIFY_TRIGGER_OPTIONS.map((o) => (
               <option key={o.choice} value={o.choice}>
@@ -194,13 +194,13 @@ export function AlertNotifyPanel() {
         <div className="mt-3 flex flex-wrap gap-2">
           <a
             href={MID_LINKS.docket}
-            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 shadow-rest hover:bg-slate-50"
+            className="focus-ring inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 shadow-rest hover:bg-slate-50"
           >
             期限 Docket
           </a>
           <a
             href={`${MID_LINKS.inbox}#ops-inbox`}
-            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 shadow-rest hover:bg-slate-50"
+            className="focus-ring inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 shadow-rest hover:bg-slate-50"
           >
             中台 Inbox
           </a>
@@ -212,6 +212,15 @@ export function AlertNotifyPanel() {
           <EmptyState
             title="尚未配置通知渠道"
             body="填写下方示意字段后点「保存」。诚实空态：未接真通道，试发只会追加本地通知日志。"
+            action={
+              <button
+                type="button"
+                onClick={onSave}
+                className="btn-press focus-ring rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 hover:bg-slate-50"
+              >
+                保存示意配置
+              </button>
+            }
           />
         </div>
       ) : null}
@@ -240,7 +249,7 @@ export function AlertNotifyPanel() {
                       value={fieldValue(cfg, ch.kind, f.key)}
                       onChange={(e) => setCfg(setField(cfg, ch.kind, f.key, e.target.value))}
                       placeholder={f.placeholder}
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 font-mono text-xs text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none"
+                      className="ui-input ui-input-sm mt-1 font-mono"
                       autoComplete="off"
                     />
                   </label>
@@ -264,6 +273,15 @@ export function AlertNotifyPanel() {
           <EmptyState
             title="暂无试发记录"
             body="点「试发」后在此追加时间 / 渠道 / 触发事件 / 结果=skipped|mock。不写远端。"
+            action={
+              <button
+                type="button"
+                onClick={onTrialAll}
+                className="btn-press focus-ring rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 hover:bg-slate-50"
+              >
+                总控试发
+              </button>
+            }
           />
         ) : (
           <ul className="divide-y divide-slate-100">

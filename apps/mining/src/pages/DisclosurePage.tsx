@@ -90,7 +90,7 @@ export function DisclosurePage() {
                   <label
                     className={`flex cursor-pointer gap-3 rounded-lg border px-3 py-2 text-sm ${
                       checked
-                        ? 'border-violet-200 bg-violet-50'
+                        ? 'border-[var(--color-accent)]/30 bg-[var(--color-accent-soft)]'
                         : 'border-slate-200 bg-white hover:bg-slate-50'
                     }`}
                   >

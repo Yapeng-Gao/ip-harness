@@ -98,7 +98,7 @@ export function SendPage() {
                     <label
                       className={`flex cursor-pointer gap-3 rounded-lg border px-3 py-2 text-sm ${
                         checked
-                          ? 'border-violet-200 bg-violet-50'
+                          ? 'border-[var(--color-accent)]/30 bg-[var(--color-accent-soft)]'
                           : 'border-slate-200 hover:bg-slate-50'
                       }`}
                     >
@@ -161,9 +161,10 @@ export function SendPage() {
                   href={DOC_HARNESS_DEEPLINK}
                   target="_blank"
                   rel="noopener noreferrer"
+                  title={DOC_HARNESS_DEEPLINK}
                   className="inline-flex items-center gap-1.5 font-medium text-slate-800 underline decoration-slate-300 underline-offset-2"
                 >
-                  doc-harness {DOC_HARNESS_DEEPLINK}
+                  文档
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                 </a>
                 <p className="mt-0.5 text-xs text-slate-500">送交底占位 · 不写 PatentCase</p>
@@ -173,9 +174,10 @@ export function SendPage() {
                   href={MINING_DEEPLINK}
                   target="_blank"
                   rel="noopener noreferrer"
+                  title={MINING_DEEPLINK}
                   className="inline-flex items-center gap-1.5 font-medium text-slate-800 underline decoration-slate-300 underline-offset-2"
                 >
-                  mining {MINING_DEEPLINK}
+                  挖掘
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                 </a>
                 <p className="mt-0.5 text-xs text-slate-500">送挖掘占位 · 不打分建案</p>

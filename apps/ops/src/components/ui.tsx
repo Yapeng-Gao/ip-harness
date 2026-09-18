@@ -77,11 +77,22 @@ export function StatusPill({ tone, children }: { tone: StatusTone; children: Rea
   )
 }
 
-export function EmptyState({ title, body }: { title: string; body: string }) {
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string
+  body: string
+  action?: ReactNode
+}) {
   return (
     <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
       <p className="text-sm font-medium text-slate-700">{title}</p>
       <p className="mt-1 text-xs leading-relaxed text-slate-500">{body}</p>
+      {action ? (
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">{action}</div>
+      ) : null}
     </div>
   )
 }
@@ -90,15 +101,18 @@ export function ExtLink({
   href,
   children,
   className = '',
+  title,
 }: {
   href: string
   children: ReactNode
   className?: string
+  title?: string
 }) {
   return (
     <a
       href={href}
-      className={`text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600 ${className}`}
+      title={title ?? href}
+      className={`focus-ring rounded text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600 ${className}`}
     >
       {children}
     </a>

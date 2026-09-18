@@ -82,7 +82,7 @@ export function SendPage() {
                     <label
                       className={`flex cursor-pointer gap-3 rounded-lg border px-3 py-2 text-sm ${
                         checked
-                          ? 'border-violet-200 bg-violet-50'
+                          ? 'border-[var(--color-accent)]/30 bg-[var(--color-accent-soft)]'
                           : 'border-slate-200 hover:bg-slate-50'
                       }`}
                     >
@@ -154,15 +154,15 @@ export function SendPage() {
               <h2 className="text-sm font-semibold text-slate-900">深链占位（只读打开）</h2>
               <p className="mt-1 text-xs text-slate-500">不改邻居代码；仅打开 URL。</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <a href={WORKBENCH_DEEPLINK} target="_blank" rel="noreferrer">
+                <a href={WORKBENCH_DEEPLINK} target="_blank" rel="noreferrer" title={WORKBENCH_DEEPLINK}>
                   <Button variant="secondary" className="inline-flex items-center gap-1.5">
-                    workbench:5174
+                    工作台
                     <ExternalLink className="h-3 w-3" aria-hidden />
                   </Button>
                 </a>
-                <a href={DOC_HARNESS_DEEPLINK} target="_blank" rel="noreferrer">
+                <a href={DOC_HARNESS_DEEPLINK} target="_blank" rel="noreferrer" title={DOC_HARNESS_DEEPLINK}>
                   <Button variant="secondary" className="inline-flex items-center gap-1.5">
-                    doc-harness:5178
+                    文档
                     <ExternalLink className="h-3 w-3" aria-hidden />
                   </Button>
                 </a>

@@ -27,7 +27,7 @@ export function DomainPage() {
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     {d.id === 'automotive' ? (
-                      <Car className="h-5 w-5 text-violet-600" aria-hidden />
+                      <Car className="h-5 w-5 text-[var(--color-accent)]" aria-hidden />
                     ) : (
                       <Lock className="h-4 w-4 text-slate-400" aria-hidden />
                     )}
@@ -56,9 +56,12 @@ export function DomainPage() {
                     </Button>
                   </Link>
                 ) : (
-                  <Button variant="secondary" disabled>
-                    不可用
-                  </Button>
+                  <div className="text-right">
+                    <Button variant="secondary" disabled title="另立项 · 非样机域">
+                      不可用
+                    </Button>
+                    <p className="mt-1 text-[11px] text-slate-500">另立项 · 非样机域</p>
+                  </div>
                 )}
               </div>
             </Card>
