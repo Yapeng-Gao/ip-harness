@@ -20,6 +20,7 @@
 | [ip-harness-adapter.md](./ip-harness-adapter.md) | 本仓多壳适配示意 |
 | [roadmap.md](./roadmap.md) | MVP → 增强 → CI |
 | [vs-l0-l1.md](./vs-l0-l1.md) | 对照 `e2e/REVIEW_RUBRIC.md` |
+| [REVIEW.md](./REVIEW.md) | 架构评审结论 |
 
 ## 明确不做（本规格波）
 

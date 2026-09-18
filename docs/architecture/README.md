@@ -35,6 +35,7 @@
 | **方案波入口** | [../SCHEME_WAVE.md](../SCHEME_WAVE.md) · [汇总 REVIEW](./SCHEME_WAVE_REVIEW.md) | 停原型 · 检索数据面 · 模型训练 |
 | 检索数据面 | [search-data/README.md](./search-data/README.md) · [REVIEW](./search-data/REVIEW.md) | 处理/存储/检索/增量版本/合规/拓扑；≠ ai-data（方案波 S1） |
 | 模型训练方案 | [model-training/README.md](./model-training/README.md) · [REVIEW](./model-training/REVIEW.md) | 预训练/SFT/偏好RL · 配比 · 评测安全 · 课表/拓扑（方案波 S2） |
+| 探索猎虫 Harness（e2e-hunt） | [e2e-hunt/README.md](./e2e-hunt/README.md) · [REVIEW](./e2e-hunt/REVIEW.md) | L0/L1 管绿灯；Hunt 管找虫；Harness/Adapter；CheapSignals 优先；report 契约 |
 
 阅读顺序建议：本页 → [codebase](./codebase.md) → [data-flow](./data-flow.md) → [data-model](./data-model.md) → [backends](./backends.md) → [landing](./landing/README.md)（落地）→ [enterprise](./enterprise/README.md)（企业级 + Agent）→ [dev-spec](./dev-spec/README.md)（开发前规格 · 开 PR）→ [product-apps](./product-apps/README.md)（产品面规格 · 照壳设计）→（仓库策略附录）[repos-and-vcs](./repos-and-vcs.md)。
 
