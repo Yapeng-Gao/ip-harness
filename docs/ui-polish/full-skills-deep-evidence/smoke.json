@@ -1,0 +1,762 @@
+[
+  {
+    "shell": "mid",
+    "port": 5173,
+    "route": "/pipeline",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mid-5173-pipeline.png",
+    "url": "http://127.0.0.1:5173/pipeline",
+    "status": 200,
+    "title": "IP Harness · 作业中台",
+    "ok": true
+  },
+  {
+    "shell": "mid",
+    "port": 5173,
+    "route": "/cases",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mid-5173-cases.png",
+    "url": "http://127.0.0.1:5173/cases",
+    "status": 200,
+    "title": "IP Harness · 作业中台",
+    "ok": true
+  },
+  {
+    "shell": "mid",
+    "port": 5173,
+    "route": "/docket",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mid-5173-docket.png",
+    "url": "http://127.0.0.1:5173/docket",
+    "status": 200,
+    "title": "IP Harness · 作业中台",
+    "ok": true
+  },
+  {
+    "shell": "mid",
+    "port": 5173,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mid-5173-home.png",
+    "url": "http://127.0.0.1:5173/",
+    "status": 200,
+    "title": "IP Harness · 作业中台",
+    "ok": true
+  },
+  {
+    "shell": "mid",
+    "port": 5173,
+    "route": "/settings",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mid-5173-settings.png",
+    "url": "http://127.0.0.1:5173/settings",
+    "status": 200,
+    "title": "IP Harness · 作业中台",
+    "ok": true
+  },
+  {
+    "shell": "mid",
+    "port": 5173,
+    "route": "/insight/tracks",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mid-5173-insight-tracks.png",
+    "url": "http://127.0.0.1:5173/insight/tracks",
+    "status": 200,
+    "title": "IP Harness · 作业中台",
+    "ok": true
+  },
+  {
+    "shell": "workbench",
+    "port": 5174,
+    "route": "/workbench",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/workbench-5174-workbench.png",
+    "url": "http://127.0.0.1:5174/workbench",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "ok": true
+  },
+  {
+    "shell": "mid",
+    "port": 5173,
+    "route": "/agencies",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mid-5173-agencies.png",
+    "url": "http://127.0.0.1:5173/agencies",
+    "status": 200,
+    "title": "IP Harness · 作业中台",
+    "ok": true
+  },
+  {
+    "shell": "workbench",
+    "port": 5174,
+    "route": "/workbench/intake",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/workbench-5174-intake.png",
+    "url": "http://127.0.0.1:5174/workbench/intake",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "ok": true
+  },
+  {
+    "shell": "workbench",
+    "port": 5174,
+    "route": "/workbench/prosecution",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/workbench-5174-prosecution.png",
+    "url": "http://127.0.0.1:5174/workbench/prosecution",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "ok": true
+  },
+  {
+    "shell": "workbench",
+    "port": 5174,
+    "route": "/workbench/draft",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/workbench-5174-draft.png",
+    "url": "http://127.0.0.1:5174/workbench/draft",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "ok": true
+  },
+  {
+    "shell": "workbench",
+    "port": 5174,
+    "route": "/workbench/research",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/workbench-5174-research.png",
+    "url": "http://127.0.0.1:5174/workbench/research",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "ok": true
+  },
+  {
+    "shell": "workbench",
+    "port": 5174,
+    "route": "/workbench/layout",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/workbench-5174-layout.png",
+    "url": "http://127.0.0.1:5174/workbench/layout",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "ok": true
+  },
+  {
+    "shell": "workbench",
+    "port": 5174,
+    "route": "/workbench/watch",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/workbench-5174-watch.png",
+    "url": "http://127.0.0.1:5174/workbench/watch",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "ok": true
+  },
+  {
+    "shell": "workbench",
+    "port": 5174,
+    "route": "/workbench/maintain",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/workbench-5174-maintain.png",
+    "url": "http://127.0.0.1:5174/workbench/maintain",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "ok": true
+  },
+  {
+    "shell": "workbench",
+    "port": 5174,
+    "route": "/workbench/monetize",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/workbench-5174-monetize.png",
+    "url": "http://127.0.0.1:5174/workbench/monetize",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "ok": true
+  },
+  {
+    "shell": "agent",
+    "port": 5175,
+    "route": "/agent",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/agent-5175-agent.png",
+    "url": "http://127.0.0.1:5175/agent",
+    "status": 200,
+    "title": "IP Harness · 知产 Agent",
+    "ok": true
+  },
+  {
+    "shell": "agent",
+    "port": 5175,
+    "route": "/agent/sessions",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/agent-5175-sessions.png",
+    "url": "http://127.0.0.1:5175/agent/sessions",
+    "status": 200,
+    "title": "IP Harness · 知产 Agent",
+    "ok": true
+  },
+  {
+    "shell": "agent",
+    "port": 5175,
+    "route": "/agent/agents",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/agent-5175-agents.png",
+    "url": "http://127.0.0.1:5175/agent/agents",
+    "status": 200,
+    "title": "IP Harness · 知产 Agent",
+    "ok": true
+  },
+  {
+    "shell": "agent",
+    "port": 5175,
+    "route": "/agent/harness",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/agent-5175-harness.png",
+    "url": "http://127.0.0.1:5175/agent/harness",
+    "status": 200,
+    "title": "IP Harness · 知产 Agent",
+    "ok": true
+  },
+  {
+    "shell": "agent",
+    "port": 5175,
+    "route": "/agent/sessions/sess-oa-1",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/agent-5175-session-oa.png",
+    "url": "http://127.0.0.1:5175/agent/sessions/sess-oa-1",
+    "status": 200,
+    "title": "IP Harness · 知产 Agent",
+    "ok": true
+  },
+  {
+    "shell": "ops",
+    "port": 5176,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ops-5176-home.png",
+    "url": "http://127.0.0.1:5176/",
+    "status": 200,
+    "title": "IP Harness · 运维面（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ops",
+    "port": 5176,
+    "route": "/logs",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ops-5176-logs.png",
+    "url": "http://127.0.0.1:5176/logs",
+    "status": 200,
+    "title": "IP Harness · 运维面（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ops",
+    "port": 5176,
+    "route": "/monitor",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ops-5176-monitor.png",
+    "url": "http://127.0.0.1:5176/monitor",
+    "status": 200,
+    "title": "IP Harness · 运维面（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ops",
+    "port": 5176,
+    "route": "/models",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ops-5176-models.png",
+    "url": "http://127.0.0.1:5176/models",
+    "status": 200,
+    "title": "IP Harness · 运维面（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ops",
+    "port": 5176,
+    "route": "/infra",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ops-5176-infra.png",
+    "url": "http://127.0.0.1:5176/infra",
+    "status": 200,
+    "title": "IP Harness · 运维面（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ops",
+    "port": 5176,
+    "route": "/config",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ops-5176-config.png",
+    "url": "http://127.0.0.1:5176/config",
+    "status": 200,
+    "title": "IP Harness · 运维面（样机）",
+    "ok": true
+  },
+  {
+    "shell": "doc-harness",
+    "port": 5178,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/doc-harness-5178-home.png",
+    "url": "http://127.0.0.1:5178/",
+    "status": 200,
+    "title": "IP Harness · TipTap 批注样机 · 非 Word 修订/协同",
+    "ok": true
+  },
+  {
+    "shell": "iam",
+    "port": 5177,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/iam-5177-home.png",
+    "url": "http://127.0.0.1:5177/",
+    "status": 200,
+    "title": "IP Harness · IAM",
+    "ok": true
+  },
+  {
+    "shell": "ai-infra",
+    "port": 5179,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-infra-5179-home.png",
+    "url": "http://127.0.0.1:5179/",
+    "status": 200,
+    "title": "IP Harness · AI Infra（样机）",
+    "ok": true
+  },
+  {
+    "shell": "iam",
+    "port": 5177,
+    "route": "/login",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/iam-5177-login.png",
+    "url": "http://127.0.0.1:5177/login",
+    "status": 200,
+    "title": "IP Harness · IAM",
+    "ok": true
+  },
+  {
+    "shell": "ai-infra",
+    "port": 5179,
+    "route": "/gpus",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-infra-5179-gpus.png",
+    "url": "http://127.0.0.1:5179/gpus",
+    "status": 200,
+    "title": "IP Harness · AI Infra（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-infra",
+    "port": 5179,
+    "route": "/jobs",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-infra-5179-jobs.png",
+    "url": "http://127.0.0.1:5179/jobs",
+    "status": 200,
+    "title": "IP Harness · AI Infra（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-infra",
+    "port": 5179,
+    "route": "/endpoints",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-infra-5179-endpoints.png",
+    "url": "http://127.0.0.1:5179/endpoints",
+    "status": 200,
+    "title": "IP Harness · AI Infra（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-infra",
+    "port": 5179,
+    "route": "/models",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-infra-5179-models.png",
+    "url": "http://127.0.0.1:5179/models",
+    "status": 200,
+    "title": "IP Harness · AI Infra（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-infra",
+    "port": 5179,
+    "route": "/pipelines",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-infra-5179-pipelines.png",
+    "url": "http://127.0.0.1:5179/pipelines",
+    "status": 200,
+    "title": "IP Harness · AI Infra（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-infra",
+    "port": 5179,
+    "route": "/loadtest",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-infra-5179-loadtest.png",
+    "url": "http://127.0.0.1:5179/loadtest",
+    "status": 200,
+    "title": "IP Harness · AI Infra（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-infra",
+    "port": 5179,
+    "route": "/alerts",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-infra-5179-alerts.png",
+    "url": "http://127.0.0.1:5179/alerts",
+    "status": 200,
+    "title": "IP Harness · AI Infra（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-data",
+    "port": 5181,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-data-5181-home.png",
+    "url": "http://127.0.0.1:5181/",
+    "status": 200,
+    "title": "IP Harness · AI Data（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-data",
+    "port": 5181,
+    "route": "/sources",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-data-5181-sources.png",
+    "url": "http://127.0.0.1:5181/sources",
+    "status": 200,
+    "title": "IP Harness · AI Data（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-data",
+    "port": 5181,
+    "route": "/pipelines",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-data-5181-pipelines.png",
+    "url": "http://127.0.0.1:5181/pipelines",
+    "status": 200,
+    "title": "IP Harness · AI Data（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-data",
+    "port": 5181,
+    "route": "/datasets",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-data-5181-datasets.png",
+    "url": "http://127.0.0.1:5181/datasets",
+    "status": 200,
+    "title": "IP Harness · AI Data（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-data",
+    "port": 5181,
+    "route": "/recipes",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-data-5181-recipes.png",
+    "url": "http://127.0.0.1:5181/recipes",
+    "status": 200,
+    "title": "IP Harness · AI Data（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-data",
+    "port": 5181,
+    "route": "/quality",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-data-5181-quality.png",
+    "url": "http://127.0.0.1:5181/quality",
+    "status": 200,
+    "title": "IP Harness · AI Data（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-data",
+    "port": 5181,
+    "route": "/lineage",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-data-5181-lineage.png",
+    "url": "http://127.0.0.1:5181/lineage",
+    "status": 200,
+    "title": "IP Harness · AI Data（样机）",
+    "ok": true
+  },
+  {
+    "shell": "ai-data",
+    "port": 5181,
+    "route": "/exports",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/ai-data-5181-exports.png",
+    "url": "http://127.0.0.1:5181/exports",
+    "status": 200,
+    "title": "IP Harness · AI Data（样机）",
+    "ok": true
+  },
+  {
+    "shell": "search",
+    "port": 5182,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/search-5182-home.png",
+    "url": "http://127.0.0.1:5182/",
+    "status": 200,
+    "title": "IP Harness · 检索服务（样机）",
+    "ok": true
+  },
+  {
+    "shell": "search",
+    "port": 5182,
+    "route": "/saved",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/search-5182-saved.png",
+    "url": "http://127.0.0.1:5182/saved",
+    "status": 200,
+    "title": "IP Harness · 检索服务（样机）",
+    "ok": true
+  },
+  {
+    "shell": "search",
+    "port": 5182,
+    "route": "/corpus",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/search-5182-corpus.png",
+    "url": "http://127.0.0.1:5182/corpus",
+    "status": 200,
+    "title": "IP Harness · 检索服务（样机）",
+    "ok": true
+  },
+  {
+    "shell": "search",
+    "port": 5182,
+    "route": "/families/fam-battery-solid",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/search-5182-families-fam-battery-solid.png",
+    "url": "http://127.0.0.1:5182/families/fam-battery-solid",
+    "status": 200,
+    "title": "IP Harness · 检索服务（样机）",
+    "ok": true
+  },
+  {
+    "shell": "fto",
+    "port": 5183,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/fto-5183-home.png",
+    "url": "http://127.0.0.1:5183/",
+    "status": 200,
+    "title": "IP Harness · FTO（样机）",
+    "ok": true
+  },
+  {
+    "shell": "fto",
+    "port": 5183,
+    "route": "/features",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/fto-5183-features.png",
+    "url": "http://127.0.0.1:5183/features",
+    "status": 200,
+    "title": "IP Harness · FTO（样机）",
+    "ok": true
+  },
+  {
+    "shell": "fto",
+    "port": 5183,
+    "route": "/hits",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/fto-5183-hits.png",
+    "url": "http://127.0.0.1:5183/hits",
+    "status": 200,
+    "title": "IP Harness · FTO（样机）",
+    "ok": true
+  },
+  {
+    "shell": "fto",
+    "port": 5183,
+    "route": "/risk",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/fto-5183-risk.png",
+    "url": "http://127.0.0.1:5183/risk",
+    "status": 200,
+    "title": "IP Harness · FTO（样机）",
+    "ok": true
+  },
+  {
+    "shell": "fto",
+    "port": 5183,
+    "route": "/matrix",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/fto-5183-matrix.png",
+    "url": "http://127.0.0.1:5183/matrix",
+    "status": 200,
+    "title": "IP Harness · FTO（样机）",
+    "ok": true
+  },
+  {
+    "shell": "fto",
+    "port": 5183,
+    "route": "/report",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/fto-5183-report.png",
+    "url": "http://127.0.0.1:5183/report",
+    "status": 200,
+    "title": "IP Harness · FTO（样机）",
+    "ok": true
+  },
+  {
+    "shell": "mining",
+    "port": 5184,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mining-5184-home.png",
+    "url": "http://127.0.0.1:5184/",
+    "status": 200,
+    "title": "IP Harness · 专利挖掘（样机）",
+    "ok": true
+  },
+  {
+    "shell": "mining",
+    "port": 5184,
+    "route": "/candidates",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mining-5184-candidates.png",
+    "url": "http://127.0.0.1:5184/candidates",
+    "status": 200,
+    "title": "IP Harness · 专利挖掘（样机）",
+    "ok": true
+  },
+  {
+    "shell": "mining",
+    "port": 5184,
+    "route": "/disclosure",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mining-5184-disclosure.png",
+    "url": "http://127.0.0.1:5184/disclosure",
+    "status": 200,
+    "title": "IP Harness · 专利挖掘（样机）",
+    "ok": true
+  },
+  {
+    "shell": "mining",
+    "port": 5184,
+    "route": "/score",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mining-5184-score.png",
+    "url": "http://127.0.0.1:5184/score",
+    "status": 200,
+    "title": "IP Harness · 专利挖掘（样机）",
+    "ok": true
+  },
+  {
+    "shell": "mining",
+    "port": 5184,
+    "route": "/send",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/mining-5184-send.png",
+    "url": "http://127.0.0.1:5184/send",
+    "status": 200,
+    "title": "IP Harness · 专利挖掘（样机）",
+    "ok": true
+  },
+  {
+    "shell": "inspire",
+    "port": 5185,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/inspire-5185-home.png",
+    "url": "http://127.0.0.1:5185/",
+    "status": 200,
+    "title": "IP Harness · 创新激发（样机）",
+    "ok": true
+  },
+  {
+    "shell": "inspire",
+    "port": 5185,
+    "route": "/sparks",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/inspire-5185-sparks.png",
+    "url": "http://127.0.0.1:5185/sparks",
+    "status": 200,
+    "title": "IP Harness · 创新激发（样机）",
+    "ok": true
+  },
+  {
+    "shell": "inspire",
+    "port": 5185,
+    "route": "/favorites",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/inspire-5185-favorites.png",
+    "url": "http://127.0.0.1:5185/favorites",
+    "status": 200,
+    "title": "IP Harness · 创新激发（样机）",
+    "ok": true
+  },
+  {
+    "shell": "inspire",
+    "port": 5185,
+    "route": "/send",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/inspire-5185-send.png",
+    "url": "http://127.0.0.1:5185/send",
+    "status": 200,
+    "title": "IP Harness · 创新激发（样机）",
+    "ok": true
+  },
+  {
+    "shell": "landscape",
+    "port": 5186,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/landscape-5186-home.png",
+    "url": "http://127.0.0.1:5186/",
+    "status": 200,
+    "title": "IP Harness · 产业全景（样机）",
+    "ok": true
+  },
+  {
+    "shell": "landscape",
+    "port": 5186,
+    "route": "/tree",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/landscape-5186-tree.png",
+    "url": "http://127.0.0.1:5186/tree",
+    "status": 200,
+    "title": "IP Harness · 产业全景（样机）",
+    "ok": true
+  },
+  {
+    "shell": "landscape",
+    "port": 5186,
+    "route": "/insights",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/landscape-5186-insights.png",
+    "url": "http://127.0.0.1:5186/insights",
+    "status": 200,
+    "title": "IP Harness · 产业全景（样机）",
+    "ok": true
+  },
+  {
+    "shell": "landscape",
+    "port": 5186,
+    "route": "/ingest",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/landscape-5186-ingest.png",
+    "url": "http://127.0.0.1:5186/ingest",
+    "status": 200,
+    "title": "IP Harness · 产业全景（样机）",
+    "ok": true
+  },
+  {
+    "shell": "landscape",
+    "port": 5186,
+    "route": "/nodes/edrive",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/landscape-5186-nodes-edrive.png",
+    "url": "http://127.0.0.1:5186/nodes/edrive",
+    "status": 200,
+    "title": "IP Harness · 产业全景（样机）",
+    "ok": true
+  },
+  {
+    "shell": "landscape",
+    "port": 5186,
+    "route": "/orgs/org-byd",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/landscape-5186-orgs-org-byd.png",
+    "url": "http://127.0.0.1:5186/orgs/org-byd",
+    "status": 200,
+    "title": "IP Harness · 产业全景（样机）",
+    "ok": true
+  },
+  {
+    "shell": "figure",
+    "port": 5187,
+    "route": "/",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/figure-5187-home.png",
+    "url": "http://127.0.0.1:5187/",
+    "status": 200,
+    "title": "IP Harness · 附图（样机）",
+    "ok": true
+  },
+  {
+    "shell": "figure",
+    "port": 5187,
+    "route": "/new",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/figure-5187-new.png",
+    "url": "http://127.0.0.1:5187/new",
+    "status": 200,
+    "title": "IP Harness · 附图（样机）",
+    "ok": true
+  },
+  {
+    "shell": "figure",
+    "port": 5187,
+    "route": "/edit/fig-seed-exploded",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/figure-5187-edit-fig-seed-exploded.png",
+    "url": "http://127.0.0.1:5187/edit/fig-seed-exploded",
+    "status": 200,
+    "title": "IP Harness · 附图（样机）",
+    "ok": true
+  },
+  {
+    "shell": "figure",
+    "port": 5187,
+    "route": "/versions/fig-seed-exploded",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/figure-5187-versions-fig-seed-exploded.png",
+    "url": "http://127.0.0.1:5187/versions/fig-seed-exploded",
+    "status": 200,
+    "title": "IP Harness · 附图（样机）",
+    "ok": true
+  },
+  {
+    "shell": "figure",
+    "port": 5187,
+    "route": "/attach/fig-seed-exploded",
+    "file": "/workspace/ip-harness/docs/ui-polish/full-skills-deep-evidence/figure-5187-attach-fig-seed-exploded.png",
+    "url": "http://127.0.0.1:5187/attach/fig-seed-exploded",
+    "status": 200,
+    "title": "IP Harness · 附图（样机）",
+    "ok": true
+  }
+]
