@@ -8,10 +8,10 @@ import type {
 
 const MARK = '【示意·非真库】'
 
-/** 与 search 种子公开号有交集，便于演示故事 */
+/** 策略 A：与 search 共享公开号；id 对齐 search（h01/h02/h03/h15） */
 export const SEED_HITS: SearchHit[] = [
   {
-    id: 'fto-h01',
+    id: 'h01',
     publicationNumber: 'CN115123456A',
     title: '一种固态电解质及其制备方法',
     applicant: '宁德时代新能源科技股份有限公司',
@@ -29,7 +29,7 @@ export const SEED_HITS: SearchHit[] = [
     ],
   },
   {
-    id: 'fto-h02',
+    id: 'h02',
     publicationNumber: 'US20230123456A1',
     title: 'Solid-state electrolyte and preparation thereof',
     applicant: 'Contemporary Amperex Technology Co., Limited',
@@ -43,7 +43,7 @@ export const SEED_HITS: SearchHit[] = [
     ],
   },
   {
-    id: 'fto-h03',
+    id: 'h03',
     publicationNumber: 'EP4123456A1',
     title: 'Festelektrolyt und Herstellungsverfahren',
     applicant: 'Contemporary Amperex Technology Co., Limited',
@@ -57,7 +57,7 @@ export const SEED_HITS: SearchHit[] = [
     ],
   },
   {
-    id: 'fto-h04',
+    id: 'h15',
     publicationNumber: 'CN118234567A',
     title: '刀片电池模组热管理系统',
     applicant: '比亚迪股份有限公司',

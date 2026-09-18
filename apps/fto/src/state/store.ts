@@ -221,19 +221,32 @@ export const ftoActions = {
     toast('已移除命中')
   },
 
-  /** 示意导入：无跨口数据，toast + 仍用/补种子 */
+  /** 策略 A：不读跨口 LS；加载/合并本壳共享种子 + 诚实 toast */
   importFromSearchBasket() {
     if (!assertEditable()) return
-    toast('无跨口 Search 工作篮数据（不同 Vite 端口 localStorage 不互通）· 仍用/补种子篮')
     setState((s) => {
-      const have = new Set(s.hits.map((h) => h.publicationNumber))
-      const extras = SEED_HITS.filter((h) => !have.has(h.publicationNumber)).map((h) => ({
-        ...h,
-        mockClaims: h.mockClaims?.map((c) => ({ ...c })),
-      }))
-      if (extras.length === 0) return s
-      return { ...s, hits: [...s.hits, ...extras] }
+      const byPub = new Map(s.hits.map((h) => [h.publicationNumber, h]))
+      for (const seed of SEED_HITS) {
+        if (!byPub.has(seed.publicationNumber)) {
+          byPub.set(seed.publicationNumber, {
+            ...seed,
+            mockClaims: seed.mockClaims?.map((c) => ({ ...c })),
+          })
+        }
+      }
+      // 稳定顺序：共享种子在前，其余用户保留项在后
+      const seedPubs = SEED_HITS.map((h) => h.publicationNumber)
+      const ordered: typeof s.hits = []
+      for (const pub of seedPubs) {
+        const hit = byPub.get(pub)
+        if (hit) ordered.push(hit)
+      }
+      for (const h of s.hits) {
+        if (!seedPubs.includes(h.publicationNumber)) ordered.push(h)
+      }
+      return { ...s, hits: ordered }
     })
+    toast('样机·跨口未共享 LS，已用共享种子')
   },
 
   resetSeedHits() {

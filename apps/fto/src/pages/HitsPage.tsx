@@ -13,7 +13,7 @@ export function HitsPage() {
       <PageHeader
         eyebrow="② 检索命中"
         title="检索命中 / 工作篮"
-        desc="默认种子篮（与 search 公开号有交集）。「从 Search 工作篮导入」为示意：无跨口数据时 toast + 仍用/补种子。"
+        desc="策略 A：本壳种子与 search 共享公开号/id。「从 Search 工作篮导入」= 加载共享种子 + 诚实 toast（不跨口 LS）。"
       />
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Button
