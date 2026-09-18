@@ -1,0 +1,92 @@
+{
+  "nest": {
+    "outerR": 12,
+    "innerR": 8,
+    "pad": 4,
+    "concentricOk": true,
+    "delta": 0
+  },
+  "press": {
+    "hasBtnPress": true,
+    "activeRule": true,
+    "w": 72,
+    "h": 32,
+    "tag": "A",
+    "cls": "segmented-item btn-press focus-ring inline-flex items-center ",
+    "before": "none"
+  },
+  "small": [
+    {
+      "w": 72,
+      "h": 32,
+      "label": "作业中台",
+      "tag": "A"
+    },
+    {
+      "w": 60,
+      "h": 32,
+      "label": "办理台",
+      "tag": "A"
+    },
+    {
+      "w": 85,
+      "h": 32,
+      "label": "知产 Agent",
+      "tag": "A"
+    },
+    {
+      "w": 48,
+      "h": 32,
+      "label": "运维",
+      "tag": "A"
+    },
+    {
+      "w": 47,
+      "h": 32,
+      "label": "IAM",
+      "tag": "A"
+    },
+    {
+      "w": 116,
+      "h": 37,
+      "label": "跳到主要内容",
+      "tag": "A"
+    },
+    {
+      "w": 216,
+      "h": 34,
+      "label": "切换工作区",
+      "tag": "BUTTON"
+    },
+    {
+      "w": 216,
+      "h": 17,
+      "label": "洞察",
+      "tag": "BUTTON"
+    },
+    {
+      "w": 120,
+      "h": 20,
+      "label": "返回工作台待办",
+      "tag": "A"
+    },
+    {
+      "w": 48,
+      "h": 16,
+      "label": "回工作台",
+      "tag": "A"
+    },
+    {
+      "w": 48,
+      "h": 16,
+      "label": "案件列表",
+      "tag": "A"
+    },
+    {
+      "w": 22,
+      "h": 15,
+      "label": "门户",
+      "tag": "A"
+    }
+  ]
+}

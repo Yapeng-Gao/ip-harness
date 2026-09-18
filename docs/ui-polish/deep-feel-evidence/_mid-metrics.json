@@ -1,0 +1,244 @@
+{
+  "press": {
+    "hasBtnPress": true,
+    "activeRule": true,
+    "w": 145,
+    "h": 40,
+    "tag": "A",
+    "cls": "ui-btn ui-btn-primary btn-press cta-work focus-ring",
+    "before": "none"
+  },
+  "small": [
+    {
+      "w": 72,
+      "h": 32,
+      "label": "作业中台",
+      "tag": "A"
+    },
+    {
+      "w": 60,
+      "h": 32,
+      "label": "办理台",
+      "tag": "A"
+    },
+    {
+      "w": 85,
+      "h": 32,
+      "label": "知产 Agent",
+      "tag": "A"
+    },
+    {
+      "w": 48,
+      "h": 32,
+      "label": "运维",
+      "tag": "A"
+    },
+    {
+      "w": 47,
+      "h": 32,
+      "label": "IAM",
+      "tag": "A"
+    },
+    {
+      "w": 116,
+      "h": 37,
+      "label": "跳到主要内容",
+      "tag": "A"
+    },
+    {
+      "w": 215,
+      "h": 34,
+      "label": "切换工作区",
+      "tag": "BUTTON"
+    },
+    {
+      "w": 215,
+      "h": 17,
+      "label": "洞察",
+      "tag": "BUTTON"
+    },
+    {
+      "w": 215,
+      "h": 36,
+      "label": "全部阶段",
+      "tag": "BUTTON"
+    },
+    {
+      "w": 48,
+      "h": 17,
+      "label": "官方期限",
+      "tag": "A"
+    },
+    {
+      "w": 81,
+      "h": 17,
+      "label": "我方承办 · 答复",
+      "tag": "A"
+    },
+    {
+      "w": 48,
+      "h": 16,
+      "label": "全部会话",
+      "tag": "A"
+    }
+  ],
+  "tab": [
+    {
+      "text": "4",
+      "tabular": true,
+      "cls": "tabular"
+    },
+    {
+      "text": "3",
+      "tabular": true,
+      "cls": "tabular"
+    },
+    {
+      "text": "已超 · 2026-09-05",
+      "tabular": true,
+      "cls": "dash-scan-chip-v tabular"
+    },
+    {
+      "text": "待我办理14工作台 1Agent 3期限 2监控·维持 8期限压力10期限 2监",
+      "tabular": false,
+      "cls": "kpi-strip kpi-stagger mb-8"
+    },
+    {
+      "text": "待我办理14工作台 1Agent 3期限 2监控·维持 8",
+      "tabular": false,
+      "cls": "kpi-tile focus-ring"
+    },
+    {
+      "text": "14",
+      "tabular": true,
+      "cls": "kpi-tile-value"
+    },
+    {
+      "text": "工作台 1Agent 3期限 2监控·维持 8",
+      "tabular": false,
+      "cls": "kpi-tile-chips"
+    },
+    {
+      "text": "工作台 1",
+      "tabular": false,
+      "cls": "kpi-chip"
+    },
+    {
+      "text": "Agent 3",
+      "tabular": false,
+      "cls": "kpi-chip"
+    },
+    {
+      "text": "期限 2",
+      "tabular": false,
+      "cls": "kpi-chip"
+    },
+    {
+      "text": "监控·维持 8",
+      "tabular": false,
+      "cls": "kpi-chip"
+    },
+    {
+      "text": "期限压力10期限 2监控·维持 8待付款 1",
+      "tabular": false,
+      "cls": "kpi-tile focus-ring"
+    },
+    {
+      "text": "10",
+      "tabular": true,
+      "cls": "kpi-tile-value"
+    },
+    {
+      "text": "期限 2监控·维持 8待付款 1",
+      "tabular": false,
+      "cls": "kpi-tile-chips"
+    },
+    {
+      "text": "期限 2",
+      "tabular": false,
+      "cls": "kpi-chip"
+    },
+    {
+      "text": "监控·维持 8",
+      "tabular": false,
+      "cls": "kpi-chip"
+    },
+    {
+      "text": "待付款 1",
+      "tabular": false,
+      "cls": "kpi-chip"
+    },
+    {
+      "text": "待付款发票1已开票 / 逾期在管 4",
+      "tabular": false,
+      "cls": "kpi-tile focus-ring"
+    },
+    {
+      "text": "1",
+      "tabular": true,
+      "cls": "kpi-tile-value"
+    },
+    {
+      "text": "已开票 / 逾期在管 4",
+      "tabular": false,
+      "cls": "kpi-tile-chips"
+    },
+    {
+      "text": "在管 4",
+      "tabular": false,
+      "cls": "kpi-chip"
+    },
+    {
+      "text": "14",
+      "tabular": true,
+      "cls": "rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium tabular text-slate-600"
+    },
+    {
+      "text": "10",
+      "tabular": true,
+      "cls": "rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-medium tabular text-slat"
+    },
+    {
+      "text": "已超 · 2026-09-05",
+      "tabular": true,
+      "cls": "dash-scan-chip-v tabular"
+    },
+    {
+      "text": "已超 · 2026-09-05",
+      "tabular": true,
+      "cls": "dash-scan-chip-v tabular"
+    },
+    {
+      "text": "已超 · 2026-09-05",
+      "tabular": true,
+      "cls": "dash-scan-chip-v tabular"
+    },
+    {
+      "text": "已超 · 2026-09-05",
+      "tabular": true,
+      "cls": "dash-scan-chip-v tabular"
+    },
+    {
+      "text": "2026-09-20",
+      "tabular": true,
+      "cls": "dash-scan-chip-v tabular"
+    },
+    {
+      "text": "2026-09-20",
+      "tabular": true,
+      "cls": "dash-scan-chip-v tabular"
+    },
+    {
+      "text": "2026-09-20",
+      "tabular": true,
+      "cls": "dash-scan-chip-v tabular"
+    }
+  ],
+  "nest": {
+    "outerR": 16,
+    "innerR": 8,
+    "pad": 0,
+    "concentricOk": false,
+    "delta": 8
+  }
+}
