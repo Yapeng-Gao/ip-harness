@@ -1,7 +1,7 @@
 # 工作台 Owner 状态（apps/workbench · :5174）
 
 > Owner：工作台应用助手 · 章程见 [TEAM_CHARTER.md](../TEAM_CHARTER.md)  
-> 更新：2026-09-12 · 所有权见 [OWNERSHIP.md](./OWNERSHIP.md) · 可卖节点见 [STAGE_MODULE_SKU.md](./STAGE_MODULE_SKU.md)
+> 更新：2026-09-18 · 所有权见 [OWNERSHIP.md](./OWNERSHIP.md) · 可卖节点见 [STAGE_MODULE_SKU.md](./STAGE_MODULE_SKU.md)
 
 ## 边界
 
@@ -24,6 +24,7 @@
 | 字体 | `main.tsx` → `@shared/index.css`（与根统一，无第二套 webfont） |
 | 所有权文档 | `docs/workbench/OWNERSHIP.md`（stages vs root pages · InventorPortal） |
 | Stage SKU 规格 | [STAGE_MODULE_SKU.md](./STAGE_MODULE_SKU.md)（可卖=模块+授权，非默认拆壳） |
+| Stage SKU 闸 | 内存 entitlement + `StageSkuGate` 诚实空态；layout 默认未购；home 不闸；样机面板可 toggle（`lib/stageSku` · `context/StageSkuContext`） |
 
 ## 怎么验
 

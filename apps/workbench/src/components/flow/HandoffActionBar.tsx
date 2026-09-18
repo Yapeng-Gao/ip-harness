@@ -19,6 +19,8 @@ import {
 } from './styles'
 import { BILLING_HOLD_COPY } from '@shared/utils/billingHoldBanner'
 import { AppLink } from '@shared/components/AppLink'
+import { useStageSkuOptional } from '../../context/StageSkuContext'
+import { moduleIdForHandoffKey, skuForModuleId } from '../../lib/stageSku'
 
 export function HandoffActionBar({
   caseId,
@@ -62,6 +64,13 @@ export function HandoffActionBar({
     committeeVoteHardBlockGo,
     hasAuditedCommitteeVote,
   } = useApp()
+  const stageSku = useStageSkuOptional()
+  const skuModuleId = moduleIdForHandoffKey(handoffKey)
+  const skuDenied =
+    !!stageSku &&
+    !!skuModuleId &&
+    skuModuleId !== 'home' &&
+    !stageSku.hasModule(skuModuleId)
   const caseData = getCase(caseId)
   const mode = caseData?.fulfillmentMode ?? 'delegated'
   const status = getHandoff(caseId, handoffKey)
@@ -92,6 +101,10 @@ export function HandoffActionBar({
   }
 
   const run = async (action: HandoffAction, note?: string, annotation?: string) => {
+    if (skuDenied) {
+      onResult('未购 SKU，不写交接', true)
+      return
+    }
     const check = canPerformHandoff(status, action, role, mode, handoffOpts)
     if (!check.ok) {
       onResult(check.reason ?? '无法执行', true)
@@ -178,24 +191,30 @@ export function HandoffActionBar({
   const label = (action: HandoffAction) => actionLabel(action, handoffKey, mode)
 
   const reqIncomplete = missingRequired().length > 0
-  const saveDisabled = !canPerformHandoff(status, 'save_draft', role, mode, handoffOpts).ok
+  const saveDisabled =
+    skuDenied || !canPerformHandoff(status, 'save_draft', role, mode, handoffOpts).ok
   const submitDisabled =
+    skuDenied ||
     !canPerformHandoff(status, 'submit', role, mode, handoffOpts).ok ||
     !!blockPrimary ||
     (!!checkedRequired && reqIncomplete) ||
     agencyInvoiceBlocked
   const entApproveDisabled =
+    skuDenied ||
     !canPerformHandoff(status, 'approve', role, mode, handoffOpts).ok ||
     !!blockPrimary ||
     (!!checkedRequired && reqIncomplete)
-  const entChangesDisabled = !canPerformHandoff(status, 'request_changes', role, mode, handoffOpts).ok
+  const entChangesDisabled =
+    skuDenied || !canPerformHandoff(status, 'request_changes', role, mode, handoffOpts).ok
   const entAuthDisabled =
+    skuDenied ||
     !canPerformHandoff(status, 'authorize', role, mode, handoffOpts).ok ||
     !!blockPrimary ||
     !!blockAuthorize ||
     (!!checkedRequired && reqIncomplete)
   const receiptIncomplete = !receiptNo.trim() || !filedAt.trim()
   const fileDisabled =
+    skuDenied ||
     !canPerformHandoff(status, 'file', role, mode, handoffOpts).ok ||
     !!blockPrimary ||
     !!blockAuthorize ||
@@ -284,6 +303,17 @@ export function HandoffActionBar({
             委员投票未达硬闸 · 须 Persona=委员投下可审计票后方可确认报价 / 批准
           </p>
         )}
+
+      {skuDenied && (
+        <p
+          className="rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-xs text-slate-800"
+          role="status"
+        >
+          未购 SKU
+          {skuModuleId ? `（${skuForModuleId(skuModuleId) ?? skuModuleId}）` : ''}
+          ，不写交接 · 样机 mock
+        </p>
+      )}
       {showFile && showExecutor && ['authorized_to_file', 'approved'].includes(status) && (
         <div className="grid gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-2">
           {receiptIncomplete && (
