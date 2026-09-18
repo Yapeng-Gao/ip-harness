@@ -1,3 +1,5 @@
+import { APP_DEV_URLS } from '@ip/contracts'
+
 /** FTO 消费形状（与 search 对齐子集 + mockClaims） */
 export type SearchHit = {
   id: string
@@ -91,7 +93,7 @@ export const RISK_LABELS: Record<RiskLevel, string> = {
 
 export const RISK_ORDER: RiskLevel[] = ['low', 'medium', 'high', 'unclear']
 
-export const SEARCH_DEEPLINK = 'http://localhost:5182'
+export const SEARCH_DEEPLINK = APP_DEV_URLS.search
 
 export const STEPS = [
   { path: '/features', step: 1, label: '产品特征', short: '特征' },

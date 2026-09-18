@@ -34,7 +34,7 @@ npm run typecheck -w @ip/fto
 | ⑤ | `/report` | 预览 → Confirm → 只读；复制 Markdown；重新打开编辑 |
 | `*` | → `/` | |
 
-顶栏深链只读：`检索 search → http://localhost:5182`。
+顶栏深链只读：`检索 search → APP_DEV_URLS.search`（`@ip/contracts`）。
 
 ## 门禁（deep-demo）
 
