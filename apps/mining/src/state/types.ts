@@ -1,3 +1,5 @@
+import { APP_DEV_URLS } from '@ip/contracts'
+
 /** Search Hit 子集（与 search / fto 对齐） */
 export type SearchHit = {
   id: string
@@ -58,9 +60,9 @@ export type MiningState = {
 
 export const HONESTY_BANNER = '样机 · 无真挖掘引擎 · 不写立案库'
 
-export const WORKBENCH_DEEPLINK = 'http://localhost:5174'
-export const DOC_HARNESS_DEEPLINK = 'http://localhost:5178'
-export const SEARCH_DEEPLINK = 'http://localhost:5182'
+export const WORKBENCH_DEEPLINK = APP_DEV_URLS.workbench
+export const DOC_HARNESS_DEEPLINK = APP_DEV_URLS.docHarness
+export const SEARCH_DEEPLINK = APP_DEV_URLS.search
 
 export const STEPS = [
   { path: '/disclosure', step: 1, label: '交底/技术点', short: '交底' },
