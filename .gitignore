@@ -38,3 +38,8 @@ blob-report/
 
 # e2e-hunt run artifacts
 tools/e2e-hunt/artifacts/
+
+# search-api local index / objects (samples may be committed)
+apps/search-api/data/search.db
+apps/search-api/data/search.db-*
+apps/search-api/data/objects/

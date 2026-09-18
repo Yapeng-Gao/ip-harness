@@ -1,0 +1,17 @@
+{
+  "id": "p108",
+  "publicationNumber": "EP4000108A",
+  "title": "Uplink control information multiplexing for 5G (#108)",
+  "applicant": "Huawei Technologies Co., Ltd.",
+  "inventor": "Inventor 1",
+  "date": "2022-01-01",
+  "ipc": [
+    "H04W16/28"
+  ],
+  "familyId": "fam-comms-3",
+  "country": "EP",
+  "legalStatus": "有效",
+  "abstract": "【样本·非真库】 Multiplexing UCI on PUSCH for NR uplink.",
+  "claims": "1. A device or method comprising… (sample p108)",
+  "snippet": "Uplink control information multiplexing "
+}

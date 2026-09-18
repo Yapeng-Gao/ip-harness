@@ -1,0 +1,18 @@
+{
+  "id": "p076",
+  "publicationNumber": "KR100000076B1",
+  "title": "Beam management method and apparatus for NR (#76)",
+  "applicant": "Huawei Technologies Co., Ltd.",
+  "inventor": "Inventor 5",
+  "date": "2022-01-01",
+  "ipc": [
+    "H04W16/28",
+    "H04W72/04"
+  ],
+  "familyId": "fam-comms-1",
+  "country": "KR",
+  "legalStatus": "审查中",
+  "abstract": "【样本·非真库】 Beam switching and measurement reporting for mmWave NR.",
+  "claims": "1. A device or method comprising… (sample p076)",
+  "snippet": "Beam management method and apparatus for"
+}

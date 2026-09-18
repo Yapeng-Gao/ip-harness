@@ -1,0 +1,19 @@
+{
+  "id": "p047",
+  "publicationNumber": "JP2025100047A",
+  "title": "OLED 亮度补偿方法 (#47)",
+  "applicant": "三星显示株式会社",
+  "inventor": "发明人3",
+  "date": "2021-10-22",
+  "ipc": [
+    "H01L27/32",
+    "G09G3/3208",
+    "H01L51/50"
+  ],
+  "familyId": "fam-display-2",
+  "country": "JP",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 基于传感反馈的亮度漂移补偿。",
+  "claims": "1. 一种装置或方法，其特征在于…（样本 p047）",
+  "snippet": "OLED 亮度补偿方法"
+}

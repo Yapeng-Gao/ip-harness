@@ -1,0 +1,18 @@
+{
+  "id": "p046",
+  "publicationNumber": "WO2024100046A",
+  "title": "Patent abstract generation with large language models (#46)",
+  "applicant": "Samsung Electronics Co., Ltd.",
+  "inventor": "Inventor 2",
+  "date": "2024-07-15",
+  "ipc": [
+    "G06N3/08",
+    "G06N3/063"
+  ],
+  "familyId": "fam-ai-1",
+  "country": "WO",
+  "legalStatus": "审查中",
+  "abstract": "【样本·非真库】 Generating patent abstracts with pretrained language models.",
+  "claims": "1. A device or method comprising… (sample p046)",
+  "snippet": "Patent abstract generation with large la"
+}

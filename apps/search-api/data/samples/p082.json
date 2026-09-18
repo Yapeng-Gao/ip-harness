@@ -1,0 +1,18 @@
+{
+  "id": "p082",
+  "publicationNumber": "JP2024100082A",
+  "title": "Gate-all-around FinFET device (#82)",
+  "applicant": "Taiwan Semiconductor Manufacturing Company, Ltd.",
+  "inventor": "Inventor 2",
+  "date": "2020-07-15",
+  "ipc": [
+    "H01L29/66",
+    "H01L29/78"
+  ],
+  "familyId": "fam-semicon-2",
+  "country": "JP",
+  "legalStatus": "审查中",
+  "abstract": "【样本·非真库】 GAA FinFET improving short-channel control.",
+  "claims": "1. A device or method comprising… (sample p082)",
+  "snippet": "Gate-all-around FinFET device"
+}

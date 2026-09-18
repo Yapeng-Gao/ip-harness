@@ -36,7 +36,8 @@
     "typecheck:domain": "npm run typecheck -w @ip/domain",
     "typecheck:app-state": "npm run typecheck -w @ip/app-state",
     "typecheck:ui": "npm run typecheck -w @ip/ui",
-    "hunt:search-smoke": "tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke"
+    "hunt:search-smoke": "tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke",
+    "dev:search-api": "npm run dev -w @ip/search-api"
   },
   "dependencies": {
     "lucide-react": "^1.44.0",

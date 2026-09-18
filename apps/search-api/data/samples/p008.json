@@ -1,0 +1,19 @@
+{
+  "id": "p008",
+  "publicationNumber": "CN110000008A",
+  "title": "Automated parking path planning method",
+  "applicant": "Toyota Motor Corporation",
+  "inventor": "Inventor 9",
+  "date": "2018-01-01",
+  "ipc": [
+    "B60L53/00",
+    "B60W30/06",
+    "H01M4/38"
+  ],
+  "familyId": "fam-auto-3",
+  "country": "CN",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 Multi-segment path planning for tight parking.",
+  "claims": "1. A device or method comprising… (sample p008)",
+  "snippet": "Automated parking path planning method"
+}

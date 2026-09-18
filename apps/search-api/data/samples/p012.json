@@ -1,0 +1,17 @@
+{
+  "id": "p012",
+  "publicationNumber": "JP2020100012A",
+  "title": "Terminal apparatus for beam measurement reporting",
+  "applicant": "Huawei Technologies Co., Ltd.",
+  "inventor": "Inventor 4",
+  "date": "2022-01-01",
+  "ipc": [
+    "H04W16/28"
+  ],
+  "familyId": "fam-comms-2",
+  "country": "JP",
+  "legalStatus": "有效",
+  "abstract": "【样本·非真库】 Terminal-side beam measurement reporting configuration.",
+  "claims": "1. A device or method comprising… (sample p012)",
+  "snippet": "Terminal apparatus for beam measurement "
+}

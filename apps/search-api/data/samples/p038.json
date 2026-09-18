@@ -1,0 +1,19 @@
+{
+  "id": "p038",
+  "publicationNumber": "EP4000038A",
+  "title": "Multimodal retrieval re-ranking method",
+  "applicant": "Samsung Electronics Co., Ltd.",
+  "inventor": "Inventor 3",
+  "date": "2024-07-15",
+  "ipc": [
+    "G06N3/08",
+    "G06N3/063",
+    "G06F40/216"
+  ],
+  "familyId": "fam-ai-3",
+  "country": "EP",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 Cross-modal feature fusion for retrieval re-ranking.",
+  "claims": "1. A device or method comprising… (sample p038)",
+  "snippet": "Multimodal retrieval re-ranking method"
+}

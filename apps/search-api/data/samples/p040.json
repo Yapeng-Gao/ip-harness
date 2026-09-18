@@ -1,0 +1,18 @@
+{
+  "id": "p040",
+  "publicationNumber": "JP2024100040A",
+  "title": "Redundant domain controller architecture",
+  "applicant": "Toyota Motor Corporation",
+  "inventor": "Inventor 5",
+  "date": "2018-01-01",
+  "ipc": [
+    "B60L53/00",
+    "B60W30/06"
+  ],
+  "familyId": "fam-auto-2",
+  "country": "JP",
+  "legalStatus": "审查中",
+  "abstract": "【样本·非真库】 Failover between dual domain controllers.",
+  "claims": "1. A device or method comprising… (sample p040)",
+  "snippet": "Redundant domain controller architecture"
+}

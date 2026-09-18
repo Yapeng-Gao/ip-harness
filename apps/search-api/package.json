@@ -1,0 +1,27 @@
+{
+  "name": "@ip/search-api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate-samples": "tsx scripts/generate-samples.ts",
+    "ingest": "tsx scripts/ingest-cli.ts",
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "index:list": "tsx scripts/index-cli.ts list",
+    "index:rollback": "tsx scripts/index-cli.ts rollback",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.4",
+    "@ip/contracts": "*",
+    "better-sqlite3": "^11.10.0",
+    "hono": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.13.3",
+    "tsx": "^4.20.5",
+    "typescript": "~6.0.2"
+  }
+}

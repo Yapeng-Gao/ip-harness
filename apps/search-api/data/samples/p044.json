@@ -1,0 +1,19 @@
+{
+  "id": "p044",
+  "publicationNumber": "US2022100044A1",
+  "title": "Wireless sensing with MIMO radar waveforms (#44)",
+  "applicant": "Huawei Technologies Co., Ltd.",
+  "inventor": "Inventor 9",
+  "date": "2022-01-01",
+  "ipc": [
+    "H04W16/28",
+    "H04W72/04",
+    "H04L5/00"
+  ],
+  "familyId": "fam-comms-1",
+  "country": "US",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 Joint communication and sensing waveforms for MIMO radar.",
+  "claims": "1. A device or method comprising… (sample p044)",
+  "snippet": "Wireless sensing with MIMO radar wavefor"
+}

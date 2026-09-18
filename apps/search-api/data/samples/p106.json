@@ -1,0 +1,18 @@
+{
+  "id": "p106",
+  "publicationNumber": "CN110000106A",
+  "title": "FinFET structure with gate-all-around channel (#106)",
+  "applicant": "Taiwan Semiconductor Manufacturing Company, Ltd.",
+  "inventor": "Inventor 8",
+  "date": "2020-07-15",
+  "ipc": [
+    "H01L29/66",
+    "H01L29/78"
+  ],
+  "familyId": "fam-semicon-1",
+  "country": "CN",
+  "legalStatus": "审查中",
+  "abstract": "【样本·非真库】 A FinFET device with wrapped gate and reduced short-channel effect.",
+  "claims": "1. A device or method comprising… (sample p106)",
+  "snippet": "FinFET structure with gate-all-around ch"
+}
