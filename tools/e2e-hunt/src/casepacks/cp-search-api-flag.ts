@@ -10,7 +10,7 @@ export const CP_SEARCH_API_FLAG: CasePack = {
   maxSteps: 12,
   abortOnHard: true,
   allowedActionsNote:
-    '须 npm run dev:search-api (:5190) + npm run dev:search:api（VITE_SEARCH_API_URL）；禁裸 dev:search。分支 B（宕机回退）后置。',
+    '须 npm run dev:search-api (:5190) + npm run dev:search:api（VITE_SEARCH_API_URL）；禁裸 dev:search。分支 B 见 CP-search-api-fallback。',
   checkpoints: [
     {
       id: 'cp-wb',

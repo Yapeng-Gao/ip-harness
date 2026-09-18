@@ -1,6 +1,6 @@
 # CasePack 下一批（对齐 AGENTIC_CLOSED_LOOP.md §8.2）
 
-> **状态**：`CP-fto-five` / `CP-basket-strategy-a` / `CP-search-api-flag`（分支 A）已接线；分支 B 后置  
+> **状态**：`CP-fto-five` / `CP-basket-strategy-a` / `CP-search-api-flag`（分支 A）/ `CP-search-api-fallback`（分支 B）已接线  
 > **依据**：`docs/architecture/e2e-hunt/AGENTIC_CLOSED_LOOP.md` v1.2 §8.2  
 > **阶段**：Phase 0′ · 样机诚实白名单 · **不开 L5**（无自动修 / 禁 CloudAgent 改产品）  
 > **约束**：不改 L0（`e2e/l0-*` / `test:e2e`）；Hunt 不挡合并；不要求真 FTO 引擎 / 真跨口 LS
@@ -9,7 +9,7 @@
 
 1. **`CP-fto-five`** · 已接线  
 2. **`CP-basket-strategy-a`** · 已接线  
-3. **`CP-search-api-flag`** ← 本波实现（分支 A；分支 B 后置）
+3. **`CP-search-api-flag`** · 分支 A 已接线；**`CP-search-api-fallback`** · 分支 B 已接线
 
 ## 总览
 
@@ -18,7 +18,8 @@
 | `CP-search-smoke` | search:5182 | 关键词→列表→DetailDrawer | **已有** | `npm run dev:search` |
 | `CP-fto-five` | fto:5183 | 五步走到报告页（不要求真引擎） | **已接线** | `npm run dev:fto` |
 | `CP-basket-strategy-a` | search:5182 → fto:5183 | 加篮→送 FTO→导入共享种子 + 诚实 toast | **已接线** | 两壳同起 |
-| `CP-search-api-flag` | search:5182 + api:5190 | 旗标 sqlite-fts；宕机回退 mock | **已接线（分支 A）**；分支 B 后置 | `dev:search-api` + `dev:search:api` |
+| `CP-search-api-flag` | search:5182 + api:5190 | 旗标 sqlite-fts | **已接线（分支 A）** | `dev:search-api` + `dev:search:api` |
+| `CP-search-api-fallback` | search:5182（:5190 宕） | 旗标开但 API 不可用 → mock + toast | **已接线（分支 B）** | `dev:search:api` + **停** :5190 |
 
 字段对齐方案：Evidence Pack 本地 `artifacts/`；可选逐步 `agent_reasoning`（规则短路填 `rule:…`）；Finding 白名单见 `rules.ts`；schemaVersion 仍为 `1.0`。
 
@@ -83,14 +84,22 @@
 | 2 | `cp-sqlite` | custom `backend-sqlite-fts`（页文含 `backend: sqlite-fts` 或「已接 Search API」） | fill+检索 |
 | 3 | `cp-results-fts` | custom `search-results` 有命中 | wait；sqlite+results 都达 → stop success |
 
-### 分支 B · API 宕机（**后置** · 本 CasePack 未跑）
+### 分支 B · API 宕机 → 独立 CasePack `CP-search-api-fallback`（已接线）
+
+**id**：`CP-search-api-fallback`（文档：flag 分支 B）  
+**脚本**：`npm run hunt:search-api-fallback`  
+**探活**：只要 `:5182` 起来；**不要**要求 `:5190/health` 成功（与分支 A `EXTRA_BASES` 相反）  
+**CLI**：`REQUIRE_DOWN_BY_PACK` — 若 `:5190/health` 仍通 → fail-fast exit 2，提示停掉 `:5190`  
+**前置**：`npm run dev:search:api` + **停掉** `dev:search-api`
 
 | # | checkpointId | 断言 | 动作 |
 |---|--------------|------|------|
-| 1 | `cp-fallback` | toast「Search API 不可用，已回退样机 mock」 | 停 5190 后检索 |
-| 2 | `cp-mock-chip` | `backend: mock` 可见 | — |
+| 1 | `cp-wb` | heading「专利检索工作台」 | goto |
+| 2 | `cp-fallback` | custom `api-fallback-toast`（页文含「Search API 不可用，已回退样机 mock」） | fill+检索；toast 短暂 → 短 wait |
+| 3 | `cp-mock-chip` | custom `backend-mock-after-search`（`backend: mock` 且无 sqlite-fts 成功态） | wait |
+| 4 | `cp-results-mock` | custom `search-results` 有 mock 命中 | wait → stop success |
 
-白名单已含「已回退样机 mock」「非全球专利库」「已接 Search API」「sqlite-fts」。若易实现可另加可选第二段；当前以分支 A 验收为准。
+白名单：「Search API 不可用」「已回退样机 mock」「API fallback」；`requestfailed` URL 含 `localhost:5190` / `:5190/`。该 toast **不记缺陷**。
 
 **不做**：改 APP_PORTS / apps/*；无旗标时行为应与 `CP-search-smoke` 一致；不开 L5。
 
@@ -100,16 +109,15 @@
 
 | 项 | 落点 |
 |----|------|
-| CasePack | `cp-fto-five.ts` · `cp-basket-strategy-a.ts` · `cp-search-api-flag.ts` |
-| Adapter | `adapter/ip-harness.ts` · `CASE_PACKS` · `DEV_SCRIPT_BY_PACK` · `EXTRA_BASES_BY_PACK`（flag 探活 :5190/health） |
-| CLI | `ensureBasesUp`（按 pack 提示 `dev:search` / `dev:fto` / `dev:search-api`+`dev:search:api`） |
-| 脚本 | `hunt:fto-five` · `hunt:basket-strategy-a` · `hunt:search-api-flag`；**勿动** `test:e2e` |
-| 白名单 | `rules.ts` 策略 A / 假比对 / Search API 旗标与回退 token |
+| CasePack | `cp-fto-five.ts` · `cp-basket-strategy-a.ts` · `cp-search-api-flag.ts` · `cp-search-api-fallback.ts` |
+| Adapter | `adapter/ip-harness.ts` · `CASE_PACKS` · `DEV_SCRIPT_BY_PACK` · `EXTRA_BASES_BY_PACK`（flag A 探活 :5190）· `REQUIRE_DOWN_BY_PACK`（fallback B 要求 :5190 down） |
+| CLI | `ensureBasesUp` + `ensureRequiredDown`（分支 B fail-fast） |
+| 脚本 | `hunt:fto-five` · `hunt:basket-strategy-a` · `hunt:search-api-flag` · `hunt:search-api-fallback`；**勿动** `test:e2e` |
+| 白名单 | `rules.ts` 策略 A / 假比对 / Search API 旗标与回退 token + `:5190` requestfailed |
 | L7 轻量 | 可选 `StepRecord.agent_reasoning`（§3.2）；schemaVersion 仍 1.0 |
 | L5 | **明确不做** |
 
 ## 待定 / 后置
 
-- 分支 B（宕机回退）可选第二段或另 CasePack  
 - decide：继续规则短路 vs 接 LLM  
-- `CP-basket-strategy-a` 已同 runId 探活 5182+5183；flag 探活 5182+5190  
+- `CP-basket-strategy-a` 已同 runId 探活 5182+5183；flag A 探活 5182+5190；fallback B 探活 5182 且要求 5190 down  

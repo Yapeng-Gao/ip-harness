@@ -64,6 +64,39 @@ async function checkAssert(
             hay.includes('已接 Search API')
           )
         }
+        if (a.id === 'api-fallback-toast') {
+          // toast ~2.8s；decide 短 wait 捕抓；once reached 由 previouslyReached 保留
+          const body = await page.locator('body').innerText().catch(() => '')
+          const status = await page
+            .getByRole('status')
+            .innerText()
+            .catch(() => '')
+          const hay = `${body}\n${status}`
+          return (
+            hay.includes('Search API 不可用，已回退样机 mock') ||
+            (hay.includes('Search API 不可用') &&
+              hay.includes('已回退样机 mock'))
+          )
+        }
+        if (a.id === 'backend-mock-after-search') {
+          // 默认 chip 也可能是 mock；须有检索后证据，且无 sqlite-fts 成功态
+          const body = await page.locator('body').innerText().catch(() => '')
+          const status = await page
+            .getByRole('status')
+            .innerText()
+            .catch(() => '')
+          const hay = `${body}\n${status}`
+          const hasMock = /backend:\s*mock/i.test(hay)
+          const sqliteSuccess =
+            /backend:\s*sqlite-fts/i.test(hay) ||
+            hay.includes('已接 Search API')
+          const postSearch =
+            hay.includes('Search API 不可用') ||
+            hay.includes('已回退样机 mock') ||
+            hay.includes('API fallback') ||
+            /score\s+\d+/.test(hay)
+          return hasMock && !sqliteSuccess && postSearch
+        }
         if (a.id === 'search-results') {
           const hasScore = await page
             .getByText(/score\s+\d+/)

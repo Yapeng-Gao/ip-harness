@@ -15,11 +15,13 @@ export class CheapSignalCollector {
     page.on('console', (msg) => {
       const type = msg.type()
       if (type !== 'error' && type !== 'warning') return
+      // Chromium resource failures: text 无 URL，location.url 才有 :5190 等
+      const locUrl = msg.location()?.url
       const entry: CheapSignal = {
         kind: 'console',
         level: type === 'warning' ? 'warn' : 'error',
         text: msg.text(),
-        url: page.url(),
+        url: locUrl && locUrl.length > 0 ? locUrl : page.url(),
         at: new Date().toISOString(),
       }
       entry.whitelisted = isWhitelistedSignal(entry)

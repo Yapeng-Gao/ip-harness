@@ -14,6 +14,7 @@ import {
   ADAPTER_ID,
   DEV_SCRIPT_BY_PACK,
   EXTRA_BASES_BY_PACK,
+  REQUIRE_DOWN_BY_PACK,
   getCasePack,
 } from './adapter/ip-harness.js'
 import { PlaywrightDriver } from './driver.js'
@@ -35,7 +36,7 @@ function parseArgs(argv: string[]) {
       headed = true
     } else if (a === '--help' || a === '-h') {
       console.log(
-        `Usage: tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke|CP-fto-five|CP-basket-strategy-a|CP-search-api-flag [--headed]`,
+        `Usage: tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke|CP-fto-five|CP-basket-strategy-a|CP-search-api-flag|CP-search-api-fallback [--headed]`,
       )
       process.exit(0)
     }
@@ -66,10 +67,25 @@ async function ensureBasesUp(baseURL: string, caseId: string): Promise<void> {
   process.exit(2)
 }
 
+/** 分支 B 等：指定 URL 必须 down；仍健康则 fail-fast */
+async function ensureRequiredDown(caseId: string): Promise<void> {
+  const urls = REQUIRE_DOWN_BY_PACK[caseId] ?? []
+  const stillUp: string[] = []
+  for (const u of urls) {
+    if (await probeBase(u)) stillUp.push(u)
+  }
+  if (stillUp.length === 0) return
+  const hint = DEV_SCRIPT_BY_PACK[caseId] ?? '确保依赖服务已停'
+  console.error(`[e2e-hunt] 分支 B 需要停掉 :5190（仍健康: ${stillUp.join(', ')}）`)
+  console.error(`[e2e-hunt] 请停掉 search-api 后再跑；提示: ${hint}`)
+  process.exit(2)
+}
+
 async function main() {
   const { caseId, headed } = parseArgs(process.argv.slice(2))
   const pack = getCasePack(caseId)
   await ensureBasesUp(pack.baseURL, caseId)
+  await ensureRequiredDown(caseId)
 
   const runId = randomUUID()
   const outDir = path.join(ARTIFACTS_ROOT, runId)

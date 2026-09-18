@@ -10,6 +10,10 @@ import {
   CP_SEARCH_API_FLAG,
   decideSearchApiFlag,
 } from '../casepacks/cp-search-api-flag.js'
+import {
+  CP_SEARCH_API_FALLBACK,
+  decideSearchApiFallback,
+} from '../casepacks/cp-search-api-fallback.js'
 import type { CasePack, DecideResult, Observation } from '../types.js'
 
 export const ADAPTER_ID = 'ip-harness'
@@ -28,12 +32,20 @@ export const DEV_SCRIPT_BY_PACK: Record<string, string> = {
   [CP_BASKET_STRATEGY_A.id]: 'npm run dev:search 与 npm run dev:fto',
   [CP_SEARCH_API_FLAG.id]:
     'npm run dev:search-api 与 npm run dev:search:api（勿用裸 npm run dev:search）',
+  [CP_SEARCH_API_FALLBACK.id]:
+    'npm run dev:search:api（旗标）+ 确保 :5190 已停（勿起 dev:search-api）',
 }
 
 /** 除 pack.baseURL 外还需探活的 base（跨壳 Case） */
 export const EXTRA_BASES_BY_PACK: Record<string, string[]> = {
   [CP_BASKET_STRATEGY_A.id]: [ENTRY_URLS.fto],
   [CP_SEARCH_API_FLAG.id]: ['http://localhost:5190/health'],
+  // 分支 B：只要 :5182；不要探活 :5190/health（应 down）
+}
+
+/** CasePack id → 这些 URL 必须不可达（宕机回退场景 fail-fast） */
+export const REQUIRE_DOWN_BY_PACK: Record<string, string[]> = {
+  [CP_SEARCH_API_FALLBACK.id]: ['http://localhost:5190/health'],
 }
 
 export const CASE_PACKS: Record<string, CasePack> = {
@@ -41,6 +53,7 @@ export const CASE_PACKS: Record<string, CasePack> = {
   [CP_FTO_FIVE.id]: CP_FTO_FIVE,
   [CP_BASKET_STRATEGY_A.id]: CP_BASKET_STRATEGY_A,
   [CP_SEARCH_API_FLAG.id]: CP_SEARCH_API_FLAG,
+  [CP_SEARCH_API_FALLBACK.id]: CP_SEARCH_API_FALLBACK,
 }
 
 export function getCasePack(id: string): CasePack {
@@ -55,5 +68,6 @@ export function decide(obs: Observation, pack: CasePack): DecideResult {
   if (pack.id === CP_FTO_FIVE.id) return decideFtoFive(obs, pack)
   if (pack.id === CP_BASKET_STRATEGY_A.id) return decideBasketStrategyA(obs, pack)
   if (pack.id === CP_SEARCH_API_FLAG.id) return decideSearchApiFlag(obs, pack)
+  if (pack.id === CP_SEARCH_API_FALLBACK.id) return decideSearchApiFallback(obs, pack)
   return { kind: 'stop', reason: `no decide strategy for ${pack.id}` }
 }

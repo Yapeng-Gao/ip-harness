@@ -41,6 +41,7 @@
     "hunt:fto-five": "tsx tools/e2e-hunt/src/cli.ts --case CP-fto-five",
     "hunt:basket-strategy-a": "tsx tools/e2e-hunt/src/cli.ts --case CP-basket-strategy-a",
     "hunt:search-api-flag": "tsx tools/e2e-hunt/src/cli.ts --case CP-search-api-flag",
+    "hunt:search-api-fallback": "tsx tools/e2e-hunt/src/cli.ts --case CP-search-api-fallback",
     "dev:search-api": "npm run dev -w @ip/search-api"
   },
   "dependencies": {

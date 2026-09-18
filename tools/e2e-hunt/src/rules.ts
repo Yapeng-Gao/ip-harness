@@ -26,11 +26,13 @@ export const HONESTY_TOKENS = [
   '请用共享种子',
   '篮未跨口同步',
   '已填假比对',
-  // Search API 旗标 / 回退诚实（CP-search-api-flag）
+  // Search API 旗标 / 回退诚实（CP-search-api-flag / CP-search-api-fallback）
+  'Search API 不可用',
   '已回退样机 mock',
   '非全球专利库',
   '已接 Search API',
   'sqlite-fts',
+  'API fallback',
 ] as const
 
 export function isHonestyText(text: string): boolean {
@@ -42,16 +44,19 @@ export function isHonestyText(text: string): boolean {
 export const REQUEST_WHITELIST_SUBSTRINGS = [
   'favicon.ico',
   'chrome-extension://',
+  // 分支 B：旗标指向 :5190 但 API 宕机时的 requestfailed
+  'localhost:5190',
+  '127.0.0.1:5190',
+  ':5190/',
 ] as const
 
 export function isWhitelistedSignal(signal: CheapSignal): boolean {
   if (signal.whitelisted) return true
   if (isHonestyText(signal.text)) return true
   if (signal.url && isHonestyText(signal.url)) return true
-  if (signal.kind === 'requestfailed') {
-    const hay = `${signal.url ?? ''} ${signal.text}`
-    if (REQUEST_WHITELIST_SUBSTRINGS.some((s) => hay.includes(s))) return true
-  }
+  // requestfailed / console resource fail（ERR_CONNECTION_REFUSED 文案无 URL）
+  const hay = `${signal.url ?? ''} ${signal.text}`
+  if (REQUEST_WHITELIST_SUBSTRINGS.some((s) => hay.includes(s))) return true
   return false
 }
 
