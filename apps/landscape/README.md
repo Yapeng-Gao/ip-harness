@@ -41,15 +41,15 @@ npm run typecheck -w @ip/landscape
 
 ## 加深验收清单（L1–L4）
 
-- [ ] **L1** 节点 ≥30 或深度 ≥4（本种子两者皆达标）；节点含 `code?` / `aliases?`；图 `version`（automotive）；UI 只读版本标签可切换
-- [ ] **L2** 企业 ≥25；每企 `lines` ≥1；stance 可见；集团/持股示意（字段）
-- [ ] **L3** `/ingest` 假任务跑完后 Hit/边计数增加（内存追加）
-- [ ] **L4** 统一 Edge：`part-org` / `org-competitor` / `part-hit` / `node-insight` / `org-standard`；节点详情与企业页邻居表；UI ≥3 类边可列
-- [ ] **Hits** 含 `CN115123456A` 与 `CN118234567A`（SearchHit 子集）
-- [ ] **L5** 洞察按节点过滤/计数；非实时舆情
-- [ ] 横幅含「加深图谱」且「无全球实时」
-- [ ] 默认无新端口；不开 5191
-- [ ] 非汽车域仍 disabled；无他域 apps 变更
+- [x] **L1** 节点 ≥30 或深度 ≥4（本种子两者皆达标）；节点含 `code?` / `aliases?`；图 `version`（automotive）；UI 只读版本标签可切换
+- [x] **L2** 企业 ≥25；每企 `lines` ≥1；stance 可见；集团/持股示意（字段）
+- [x] **L3** `/ingest` 假任务跑完后 Hit/边计数增加（内存追加）
+- [x] **L4** 统一 Edge：`part-org` / `org-competitor` / `part-hit` / `node-insight` / `org-standard`；节点详情与企业页邻居表；UI ≥3 类边可列
+- [x] **Hits** 含 `CN115123456A` 与 `CN118234567A`（SearchHit 子集）
+- [x] **L5** 洞察按节点过滤/计数；非实时舆情
+- [x] 横幅含「加深图谱」且「无全球实时」
+- [x] 默认无新端口；不开 5191
+- [x] 非汽车域仍 disabled；无他域 apps 变更
 
 ## 诚实边界
 

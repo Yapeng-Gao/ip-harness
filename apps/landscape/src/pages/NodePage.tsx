@@ -20,11 +20,10 @@ import {
   pathToRoot,
   useLandscapeStore,
 } from '../state/store'
+import { NeighborGroups } from '../components/NeighborGroups'
 import {
-  EDGE_TYPE_LABELS,
   KIND_LABELS,
   STANCE_LABELS,
-  type Edge,
   type InsightKind,
   type OrgStance,
 } from '../state/types'
@@ -35,13 +34,6 @@ function stanceTone(s: OrgStance): 'ok' | 'accent' | 'warn' | 'neutral' {
   if (s === 'niche') return 'warn'
   return 'neutral'
 }
-
-const NEIGHBOR_TYPES: Edge['type'][] = [
-  'part-org',
-  'part-hit',
-  'node-insight',
-  'org-competitor',
-]
 
 export function NodePage() {
   const { nodeId = '' } = useParams()
@@ -130,50 +122,9 @@ export function NodePage() {
         <Card>
           <h2 className="text-sm font-semibold text-slate-900">一度邻居</h2>
           <p className="mt-1 text-xs text-slate-500">
-            边类型可列：part-org / part-hit / node-insight / org-competitor（≥3 类）
+            按边类型分组：part-org / part-hit / node-insight / org-competitor（≥3 类）
           </p>
-          {neighbors.length === 0 ? (
-            <p className="mt-3 text-xs text-slate-400">无邻居边。</p>
-          ) : (
-            <div className="mt-3 overflow-x-auto">
-              <table className="w-full min-w-[22rem] text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 text-slate-500">
-                    <th className="py-1.5 pr-2 font-medium">边</th>
-                    <th className="py-1.5 pr-2 font-medium">邻居</th>
-                    <th className="py-1.5 font-medium">备注</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {neighbors.slice(0, 24).map((row, i) => (
-                    <tr key={`${row.edgeType}-${row.label}-${i}`} className="border-b border-slate-100">
-                      <td className="py-2 pr-2">
-                        <Chip tone="mock">{EDGE_TYPE_LABELS[row.edgeType]}</Chip>
-                      </td>
-                      <td className="py-2 pr-2">
-                        {row.href ? (
-                          <Link
-                            to={row.href}
-                            className="font-medium text-slate-800 underline-offset-2 hover:underline"
-                          >
-                            {row.label}
-                          </Link>
-                        ) : (
-                          <span className="font-medium text-slate-800">{row.label}</span>
-                        )}
-                      </td>
-                      <td className="py-2 text-slate-600">{row.meta ?? '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <p className="mt-2 text-[11px] text-slate-400">
-                本表含{' '}
-                {NEIGHBOR_TYPES.filter((t) => neighbors.some((n) => n.edgeType === t)).length}{' '}
-                类边 · 共 {neighbors.length} 行（截断 24）
-              </p>
-            </div>
-          )}
+          <NeighborGroups neighbors={neighbors} />
         </Card>
 
         <Card>

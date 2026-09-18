@@ -1,3 +1,5 @@
+import { APP_DEV_URLS } from '@ip/contracts'
+
 /** 对齐 docs/architecture/landscape/deepen-l1-l4.md + search SearchHit 子集 */
 
 export type GraphVersion = {
@@ -133,7 +135,7 @@ export type LandscapeState = {
 
 export const HONESTY_BANNER = '样机 · 汽车种子域 · 加深图谱 · 无全球实时产业库'
 
-export const SEARCH_DEEPLINK = 'http://localhost:5182'
+export const SEARCH_DEEPLINK = APP_DEV_URLS.search
 
 export const STANCE_LABELS: Record<OrgStance, string> = {
   leader: '领先者',

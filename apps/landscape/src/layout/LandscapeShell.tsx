@@ -23,14 +23,48 @@ function linkClass(active: boolean): string {
     : 'sidebar-link focus-ring flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900'
 }
 
+function VersionSelect({
+  id,
+  className = '',
+}: {
+  id: string
+  className?: string
+}) {
+  const { versionId, availableVersions } = useLandscapeStore()
+  return (
+    <select
+      id={id}
+      className={`focus-ring rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-800 ${className}`}
+      value={versionId}
+      onChange={(e) => setVersionLabel(e.target.value)}
+      aria-label="图版本只读切换"
+    >
+      {availableVersions.map((v) => (
+        <option key={v.id} value={v.id}>
+          {v.label}
+        </option>
+      ))}
+    </select>
+  )
+}
+
 export function LandscapeShell() {
-  const { version, versionId, availableVersions, backend } = useLandscapeStore()
+  const { version, backend } = useLandscapeStore()
   const counts = graphCounts()
 
   return (
     <div className="app-shell-bg flex min-h-screen flex-col text-slate-900">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 py-2 text-xs text-slate-600">
-        <span>产业全景平面 · 加深图谱 · 不改 APP_PORTS · 不开 5191</span>
+        <span className="inline-flex flex-wrap items-center gap-2">
+          <span>产业全景平面 · 加深图谱 · 不改 APP_PORTS · 不开 5191</span>
+          <label className="inline-flex items-center gap-1.5 text-slate-700">
+            <span className="whitespace-nowrap text-[11px] text-slate-500">版本</span>
+            <VersionSelect id="landscape-version-top" />
+          </label>
+          <span className="max-w-xl text-[10px] leading-snug text-slate-400">
+            只换只读标签，不换第二套图谱数据（当前仍用 v1 种子）
+          </span>
+        </span>
         <span className="inline-flex flex-wrap items-center gap-3">
           <a
             href={SEARCH_DEEPLINK}
@@ -57,20 +91,9 @@ export function LandscapeShell() {
               <Chip tone="mock">{backend}</Chip>
               <Chip tone="accent">汽车</Chip>
             </div>
-            <label className="mt-3 block text-[11px] text-slate-500">
-              图版本（只读标签）
-              <select
-                className="focus-ring mt-1 w-full rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-800"
-                value={versionId}
-                onChange={(e) => setVersionLabel(e.target.value)}
-                aria-label="图版本只读切换"
-              >
-                {availableVersions.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.label}
-                  </option>
-                ))}
-              </select>
+            <label className="mt-3 block text-[11px] text-slate-500" htmlFor="landscape-version-side">
+              图版本
+              <VersionSelect id="landscape-version-side" className="mt-1 w-full" />
             </label>
             <p className="mt-1 text-[10px] text-slate-400">当前：{version.label}</p>
           </div>

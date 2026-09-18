@@ -1,8 +1,9 @@
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { Button, Card, Chip, EmptyState, PageHeader } from '../components/ui'
+import { NeighborGroups } from '../components/NeighborGroups'
 import { getNode, getOrg, neighborsForOrg, useLandscapeStore } from '../state/store'
-import { EDGE_TYPE_LABELS, STANCE_LABELS, type OrgStance } from '../state/types'
+import { STANCE_LABELS, type OrgStance } from '../state/types'
 
 function stanceTone(s: OrgStance): 'ok' | 'accent' | 'warn' | 'neutral' {
   if (s === 'leader') return 'ok'
@@ -85,47 +86,11 @@ export function OrgPage() {
       </div>
 
       <Card className="mt-4">
-        <h2 className="text-sm font-semibold text-slate-900">一度邻居表</h2>
+        <h2 className="text-sm font-semibold text-slate-900">一度邻居</h2>
         <p className="mt-1 text-xs text-slate-500">
-          part-org / org-competitor / org-standard（及集团·持股示意）
+          按边类型分组：part-org / org-competitor / org-standard（及集团·持股示意）
         </p>
-        {neighbors.length === 0 ? (
-          <p className="mt-3 text-xs text-slate-400">无邻居。</p>
-        ) : (
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[22rem] text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500">
-                  <th className="py-1.5 pr-2 font-medium">边</th>
-                  <th className="py-1.5 pr-2 font-medium">邻居</th>
-                  <th className="py-1.5 font-medium">备注</th>
-                </tr>
-              </thead>
-              <tbody>
-                {neighbors.map((row, i) => (
-                  <tr key={`${row.edgeType}-${row.label}-${i}`} className="border-b border-slate-100">
-                    <td className="py-2 pr-2">
-                      <Chip tone="mock">{EDGE_TYPE_LABELS[row.edgeType]}</Chip>
-                    </td>
-                    <td className="py-2 pr-2">
-                      {row.href ? (
-                        <Link
-                          to={row.href}
-                          className="font-medium text-slate-800 underline-offset-2 hover:underline"
-                        >
-                          {row.label}
-                        </Link>
-                      ) : (
-                        <span className="font-medium text-slate-800">{row.label}</span>
-                      )}
-                    </td>
-                    <td className="py-2 text-slate-600">{row.meta ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <NeighborGroups neighbors={neighbors} emptyText="无邻居。" />
       </Card>
     </div>
   )

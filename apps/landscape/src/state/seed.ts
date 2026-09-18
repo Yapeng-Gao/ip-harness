@@ -33,8 +33,8 @@ function n(
 }
 
 export const GRAPH_VERSIONS: GraphVersion[] = [
-  { id: 'auto-seed-v1', label: '汽车种子 v1（加深）', domain: 'automotive' },
-  { id: 'auto-seed-v0', label: '汽车种子 v0（基线只读标签）', domain: 'automotive' },
+  { id: 'auto-seed-v1', label: '汽车种子 v1（加深·当前数据）', domain: 'automotive' },
+  { id: 'auto-seed-v0', label: '汽车种子 v0（仅标签·数据仍 v1）', domain: 'automotive' },
 ]
 
 export const ACTIVE_VERSION = GRAPH_VERSIONS[0]
