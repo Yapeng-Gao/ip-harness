@@ -20,6 +20,7 @@
 | [human-ui.md](./human-ui.md) | 三模式 · 结果 · 过滤 · 同族 |
 | [agent-api-shape.md](./agent-api-shape.md) | Agent 侧查询/结果契约 |
 | [deep-demo.md](./deep-demo.md) | 内存状态机（可点闭环规格） |
+| [cross-shell-basket.md](./cross-shell-basket.md) | 跨口工作篮：分端口 LS · 目标契约 · 样机示意 |
 | [vs-ai-data.md](./vs-ai-data.md) | 与 ai-data 边界 |
 | **数据面规格（方案波）** | [../search-data/](../search-data/README.md) | 处理/存储/检索落地规格 |
 | [REVIEW.md](./REVIEW.md) | 架构评审结论 |
