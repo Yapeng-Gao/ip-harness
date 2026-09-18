@@ -2,7 +2,7 @@ import type { Disclosure, MiningState, SearchHit } from './types'
 
 const MARK = '【示意·非真库】'
 
-/** 与 fto / search 种子公开号有交集，便于演示故事 */
+/** 策略 A：与 fto / search 共享公开号（对齐键）；id 可壳内不同（mining-h01…） */
 export const SEED_HITS: SearchHit[] = [
   {
     id: 'mining-h01',

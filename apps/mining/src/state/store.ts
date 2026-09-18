@@ -186,6 +186,38 @@ export const miningActions = {
     })
   },
 
+  /** 策略 A：不读跨口 LS；加载/合并本壳共享种子 + 诚实 toast */
+  importFromSearchBasket() {
+    setState((s) => {
+      const byPub = new Map(s.hits.map((h) => [h.publicationNumber, h]))
+      for (const seed of SEED_HITS) {
+        if (!byPub.has(seed.publicationNumber)) {
+          byPub.set(seed.publicationNumber, { ...seed })
+        }
+      }
+      // 稳定顺序：共享种子在前，其余用户保留项在后
+      const seedPubs = SEED_HITS.map((h) => h.publicationNumber)
+      const ordered: typeof s.hits = []
+      for (const pub of seedPubs) {
+        const hit = byPub.get(pub)
+        if (hit) ordered.push(hit)
+      }
+      for (const h of s.hits) {
+        if (!seedPubs.includes(h.publicationNumber)) ordered.push(h)
+      }
+      return { ...s, hits: ordered }
+    })
+    toast('样机·跨口未共享 LS，已用共享种子')
+  },
+
+  resetSeedHits() {
+    setState((s) => ({
+      ...s,
+      hits: SEED_HITS.map((h) => ({ ...h })),
+    }))
+    toast('已恢复种子篮')
+  },
+
   generateCandidates() {
     if (state.generating) return
     const hasText =

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Eraser, Sprout } from 'lucide-react'
+import { Download, Eraser, RotateCcw, Sprout } from 'lucide-react'
 import { Button, Card, Chip, PageHeader } from '../components/ui'
 import { miningActions, useMiningStore } from '../state/store'
 
@@ -11,9 +11,25 @@ export function DisclosurePage() {
       <PageHeader
         eyebrow="① 交底 / 技术点"
         title="交底编辑"
-        desc="分节填写背景、技术点、效果。可从种子加载或清空。可选关联 Search Hit（种子篮，非跨口 localStorage）。"
+        desc="策略 A：本壳种子与 search 共享公开号。「从 Search 工作篮导入」= 加载共享种子 + 诚实 toast（不跨口 LS）。可编辑交底并关联 Hit。"
       />
       <div className="mb-4 flex flex-wrap items-center gap-2">
+        <Button
+          variant="secondary"
+          className="inline-flex items-center gap-1"
+          onClick={() => miningActions.importFromSearchBasket()}
+        >
+          <Download className="h-3.5 w-3.5" aria-hidden />
+          从 Search 工作篮导入
+        </Button>
+        <Button
+          variant="secondary"
+          className="inline-flex items-center gap-1"
+          onClick={() => miningActions.resetSeedHits()}
+        >
+          <RotateCcw className="h-3.5 w-3.5" aria-hidden />
+          恢复种子篮
+        </Button>
         <Button
           variant="secondary"
           className="inline-flex items-center gap-1"
@@ -80,7 +96,7 @@ export function DisclosurePage() {
         <Card className="p-4">
           <h2 className="text-sm font-semibold text-slate-900">关联 Search Hit（多选）</h2>
           <p className="mt-1 text-xs text-slate-500">
-            种子 ≥3 条；与 fto 公开号有交集便于演示。勾选后挂到交底 relatedHitIds。
+            策略 A 共享种子公开号；与 fto / search 对齐便于演示。勾选后挂到交底 relatedHitIds（不跨口 localStorage）。
           </p>
           <ul className="mt-3 space-y-2">
             {hits.map((h) => {
