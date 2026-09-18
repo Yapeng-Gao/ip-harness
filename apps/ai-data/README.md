@@ -8,6 +8,8 @@
 
 规格：`docs/architecture/ai-data/`（含 [deep-demo.md](../../docs/architecture/ai-data/deep-demo.md)）。
 
+**MVP 真切片（I2）**：不可变 SFT version [`ds-ip-sft-mvp@v0.1.0`](../../docs/ai-data/mvp-sft/)（`docs/ai-data/mvp-sft/`；非样机种子 `claims-sft@v1.4`）。
+
 ## 启动
 
 在 **repo 根**：
