@@ -4,7 +4,7 @@
 |----|-----|
 | **日期** | 2026-09-18（Asia/Shanghai） |
 | **权威** | `docs/ui-polish/REVIEW_FULL_SKILLS_2026-09-18.md` §6 |
-| **基线 HEAD** | `db14ec9` |
+| **基线 HEAD** | `db14ec9` → 落地 `df724af` |
 | **Skills** | apple-design · make-interfaces-feel-better · web-design-guidelines（无 apple-hig-full） |
 | **范围** | 仅视觉 / 文案 / CSS；未改 contracts / HITL / 业务门；跳过 **FS-ENV-1**；未启 Cloud Agent |
 | **证据目录** | `docs/ui-polish/full-skills-p2/` |
