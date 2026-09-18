@@ -48,8 +48,8 @@
 
 | 序 | 内容 | 依据 | 状态 |
 |----|------|------|------|
-| **I1（当前）** | 检索数据面落地 MVP：单源入库 + 倒排 + Search API | `search-data/MVP.md` | **进行中** |
-| **I2** | 训练落地 MVP：SFT dataset@version + train.sft Job + 评测门禁记录 | `model-training/MVP.md` | 排队（I1 有可演示 API 后再全力） |
+| **I1** | 检索数据面落地 MVP：`apps/search-api:5190` sqlite-fts | `search-data/MVP.md` | **Pass**（`4c3b303` · B席双Pass + 冒烟绿） |
+| **I2（当前）** | 训练落地 MVP：SFT dataset@version + train.sft Job + 评测门禁记录 | `model-training/MVP.md` | **进行中** |
 | **N4** | case-core / 真产业图谱 | dev-spec | 另立项 |
 
 ### I1 边界
@@ -59,7 +59,14 @@
 - quarantine 必填失败；不做全球库/完整向量
 - `apps/search` 接线用旗标另 PR 或本刀末尾最小切换；优先 API 可 curl 验收
 
+### I1 验收（2026-09-18）
+
+- SHA `4c3b303` @ `origin/dev`；`backend=sqlite-fts`；热索引 110 · quarantine 5
+- 未改 `APP_PORTS`；未接线 `apps/search`（壳旗标另 PR）
+- B席：架构评审 Pass · 业务深度审计 Pass；总控冒烟绿
+
 ### I2 边界
 
 - ai-data 出一个 SFT version；ai-infra 一个 train.sft 形状（可先本地/脚本跑通）
-- 不做预训练/DPO/真 K8s
+- 不做预训练/DPO/真 K8s；禁 PatentCase/未脱敏直训；不经 Search API 旁路灌数
+- 壳 deep-demo / UI 大改不在本刀；合入前挂 B 席轻扫
