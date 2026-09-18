@@ -3,7 +3,7 @@
 > **样机诚实**：今日是多 Vite 壳（`APP_PORTS`）+ 共享 `@ip/*` + `api-mock:5180` 内存店；无真 SSO、真 MCP、真 Agent harness、真可观测。  
 > **落地目标**：本目录按**产品壳**写开发可照着设计的规格——路由面、读写边界、与 landing 七面 / case-core / Agent 分层对齐。  
 > **不是**架构评审文（评审见 landing / enterprise / dev-spec 的 REVIEW）；**不是**已交付实现说明。
-## 本目录九篇
+## 本目录
 
 | 篇 | 路径 | 回答什么 |
 |----|------|----------|
@@ -15,6 +15,7 @@
 | Agent 产品面 | [agent-surface.md](./agent-surface.md) | 5175 Catalog/会话/Confirm；与 ① runtime 分层 |
 | 工具与 MCP | [agent-tools-mcp.md](./agent-tools-mcp.md) | tools[] vs MCP；副作用→DomainCommand |
 | Agent 插件 | [agent-plugins.md](./agent-plugins.md) | AgentDef 插件；版本化 catalog；对齐 stage |
+| Agent 项目文件夹 IA | [agent-project-folder.md](./agent-project-folder.md) | 项目=文件夹；专家分剧本；总控只编排 |
 | 横切 | [cross-cutting.md](./cross-cutting.md) | 深链、contracts、禁壳直写库、Persona、e2e |
 
 ## 与五壳 + api 对照表
