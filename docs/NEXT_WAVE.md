@@ -5,7 +5,7 @@
 | 序 | 内容 | 状态 |
 |----|------|------|
 | **N1** | UI：`apple-design` + `make-interfaces-feel-better` + `web-design-guidelines` 重评 → 质感排修 | **Go** `6dc1675` / 复评 `6f24ea9` |
-| **N2** | 样机缺口：跨口工作篮、深链/挂章、并行壳 e2e L0；e2e-hunt MVP 预备 | **进行中** |
+| **N2** | 样机缺口：跨口工作篮、深链/挂章、并行壳 e2e L0；e2e-hunt MVP 预备 | **收口中**（篮规格+并行 L0 已 Pass；Hunt MVP 待开） |
 | **N3** | 检索数据面 / 模型训练 **落地 MVP 任务单**（跟定稿规格） | 排队 |
 | **N4** | case-core · 真产业图谱 | 另立项 |
 
@@ -29,4 +29,6 @@
 
 残余 UI P2 不挡 N2。
 
-- ~~跨口工作篮规格~~ **Pass** `4681bd4` / 补记 `2c7d477`（`docs/architecture/search/cross-shell-basket.md`）
+- ~~跨口工作篮规格~~ **Pass** `4681bd4` / 补记 `2c7d477`
+- ~~并行壳 e2e L0~~ **Pass** `3d737e8`（21 passed，含 5182–5187）
+- e2e-hunt MVP：**待开**（规格已 Pass `fab595f`）
