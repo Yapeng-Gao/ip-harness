@@ -10,7 +10,12 @@ import { randomUUID } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { ADAPTER_ID, DEV_SCRIPT_BY_PACK, getCasePack } from './adapter/ip-harness.js'
+import {
+  ADAPTER_ID,
+  DEV_SCRIPT_BY_PACK,
+  EXTRA_BASES_BY_PACK,
+  getCasePack,
+} from './adapter/ip-harness.js'
 import { PlaywrightDriver } from './driver.js'
 import { runAgentLoop } from './loop.js'
 import { writeReports } from './reporter.js'
@@ -29,29 +34,42 @@ function parseArgs(argv: string[]) {
     } else if (a === '--headed') {
       headed = true
     } else if (a === '--help' || a === '-h') {
-      console.log(`Usage: tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke|CP-fto-five [--headed]`)
+      console.log(
+        `Usage: tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke|CP-fto-five|CP-basket-strategy-a [--headed]`,
+      )
       process.exit(0)
     }
   }
   return { caseId, headed }
 }
 
-async function ensureBaseUp(baseURL: string, caseId: string): Promise<void> {
+async function probeBase(baseURL: string): Promise<boolean> {
   try {
     const res = await fetch(baseURL, { signal: AbortSignal.timeout(2000) })
-    if (res.ok) return
+    return res.ok
   } catch {
-    // down
+    return false
   }
+}
+
+async function ensureBasesUp(baseURL: string, caseId: string): Promise<void> {
+  const extras = EXTRA_BASES_BY_PACK[caseId] ?? []
+  const bases = [baseURL, ...extras]
+  const down: string[] = []
+  for (const u of bases) {
+    if (!(await probeBase(u))) down.push(u)
+  }
+  if (down.length === 0) return
   const hint = DEV_SCRIPT_BY_PACK[caseId] ?? 'npm run dev:search'
-  console.error(`[e2e-hunt] ${baseURL} 未就绪。请先在仓库根执行: ${hint}`)
+  console.error(`[e2e-hunt] 以下 base 未就绪: ${down.join(', ')}`)
+  console.error(`[e2e-hunt] 请先在仓库根执行: ${hint}`)
   process.exit(2)
 }
 
 async function main() {
   const { caseId, headed } = parseArgs(process.argv.slice(2))
   const pack = getCasePack(caseId)
-  await ensureBaseUp(pack.baseURL, caseId)
+  await ensureBasesUp(pack.baseURL, caseId)
 
   const runId = randomUUID()
   const outDir = path.join(ARTIFACTS_ROOT, runId)

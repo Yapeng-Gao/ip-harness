@@ -1,5 +1,9 @@
 /** AppAdapter · ip-harness */
 
+import {
+  CP_BASKET_STRATEGY_A,
+  decideBasketStrategyA,
+} from '../casepacks/cp-basket-strategy-a.js'
 import { CP_FTO_FIVE, decideFtoFive } from '../casepacks/cp-fto-five.js'
 import { CP_SEARCH_SMOKE, decideSearchSmoke } from '../casepacks/cp-search-smoke.js'
 import type { CasePack, DecideResult, Observation } from '../types.js'
@@ -17,11 +21,18 @@ export const ENTRY_URLS = {
 export const DEV_SCRIPT_BY_PACK: Record<string, string> = {
   [CP_SEARCH_SMOKE.id]: 'npm run dev:search',
   [CP_FTO_FIVE.id]: 'npm run dev:fto',
+  [CP_BASKET_STRATEGY_A.id]: 'npm run dev:search 与 npm run dev:fto',
+}
+
+/** 除 pack.baseURL 外还需探活的 base（跨壳 Case） */
+export const EXTRA_BASES_BY_PACK: Record<string, string[]> = {
+  [CP_BASKET_STRATEGY_A.id]: [ENTRY_URLS.fto],
 }
 
 export const CASE_PACKS: Record<string, CasePack> = {
   [CP_SEARCH_SMOKE.id]: CP_SEARCH_SMOKE,
   [CP_FTO_FIVE.id]: CP_FTO_FIVE,
+  [CP_BASKET_STRATEGY_A.id]: CP_BASKET_STRATEGY_A,
 }
 
 export function getCasePack(id: string): CasePack {
@@ -34,5 +45,6 @@ export function getCasePack(id: string): CasePack {
 export function decide(obs: Observation, pack: CasePack): DecideResult {
   if (pack.id === CP_SEARCH_SMOKE.id) return decideSearchSmoke(obs, pack)
   if (pack.id === CP_FTO_FIVE.id) return decideFtoFive(obs, pack)
+  if (pack.id === CP_BASKET_STRATEGY_A.id) return decideBasketStrategyA(obs, pack)
   return { kind: 'stop', reason: `no decide strategy for ${pack.id}` }
 }

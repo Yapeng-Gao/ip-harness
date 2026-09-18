@@ -23,6 +23,8 @@ export const HONESTY_TOKENS = [
   '跨口未共享',
   '共享种子',
   '已用共享种子',
+  '请用共享种子',
+  '篮未跨口同步',
   '已填假比对',
 ] as const
 

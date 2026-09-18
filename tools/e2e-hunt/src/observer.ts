@@ -64,6 +64,74 @@ async function checkAssert(
             .catch(() => false)
           return hasScore || hasList
         }
+        if (a.id === 'basket-nonempty') {
+          const body = await page.locator('body').innerText().catch(() => '')
+          if (body.includes('已加入工作篮')) return true
+          const removeBtn = await page
+            .getByRole('button', { name: '移出篮' })
+            .first()
+            .isVisible()
+            .catch(() => false)
+          if (removeBtn) return true
+          const sendFto = page.getByRole('button', { name: '送 FTO' })
+          if ((await sendFto.count()) > 0) {
+            const enabled = await sendFto.first().isEnabled().catch(() => false)
+            if (enabled) return true
+          }
+          const badge = await page
+            .evaluate(() => {
+              const labels = Array.from(document.querySelectorAll('p, span, div'))
+              for (const el of labels) {
+                const t = (el.textContent ?? '').trim()
+                if (t === '工作篮' || t.startsWith('工作篮')) {
+                  const m = /工作篮\s*(\d+)/.exec(
+                    (el.parentElement?.textContent ?? el.textContent ?? '').replace(/\s+/g, ' '),
+                  )
+                  if (m && Number(m[1]) > 0) return true
+                }
+              }
+              return false
+            })
+            .catch(() => false)
+          return !!badge
+        }
+        if (a.id === 'strategy-a-toast') {
+          // AgentPanel 常驻 DOWNSTREAM_HONESTY（含「请用共享种子」）≠ 已点「送 FTO」
+          // 仅认策略 A toast / 事件 note：跨口未共享 · 已用共享种子
+          const body = await page.locator('body').innerText().catch(() => '')
+          const status = await page
+            .getByRole('status')
+            .innerText()
+            .catch(() => '')
+          const hay = `${body}
+${status}`
+          return hay.includes('跨口未共享') || hay.includes('已用共享种子')
+        }
+        if (a.id === 'fto-import-done') {
+          // 必须在 FTO 壳：Search 送 FTO 后也会出现策略 A toast，勿误判
+          const url = page.url()
+          if (!url.includes('localhost:5183') && !url.includes(':5183/')) {
+            return false
+          }
+          const body = await page.locator('body').innerText().catch(() => '')
+          const status = await page
+            .getByRole('status')
+            .innerText()
+            .catch(() => '')
+          const hay = `${body}
+${status}`
+          const honesty =
+            hay.includes('已用共享种子') || hay.includes('跨口未共享')
+          if (!honesty) return false
+          const empty = body.includes('工作篮为空')
+          const hasHitCard = await page
+            .locator('ul li code, ul li')
+            .first()
+            .isVisible()
+            .catch(() => false)
+          const hasPub = /CN\d{9,}|US\d+|EP\d+|WO\d+/i.test(body)
+          return !empty && (hasHitCard || hasPub)
+        }
         return false
       default:
         return false

@@ -1,14 +1,14 @@
 # CasePack 下一批（对齐 AGENTIC_CLOSED_LOOP.md §8.2）
 
-> **状态**：`CP-fto-five` 已接线；basket / flag 仍为草案  
+> **状态**：`CP-fto-five` / `CP-basket-strategy-a` 已接线；flag 仍为草案  
 > **依据**：`docs/architecture/e2e-hunt/AGENTIC_CLOSED_LOOP.md` v1.2 §8.2  
 > **阶段**：Phase 0′ · 样机诚实白名单 · **不开 L5**（无自动修 / 禁 CloudAgent 改产品）  
 > **约束**：不改 L0（`e2e/l0-*` / `test:e2e`）；Hunt 不挡合并；不要求真 FTO 引擎 / 真跨口 LS
 
 ## 优先序（方案 §8.2）
 
-1. **`CP-fto-five`** ← 本波实现  
-2. **`CP-basket-strategy-a`**  
+1. **`CP-fto-five`** · 已接线  
+2. **`CP-basket-strategy-a`** ← 本波实现  
 3. **`CP-search-api-flag`**
 
 ## 总览
@@ -17,7 +17,7 @@
 |----|---------|----------------|------|------|
 | `CP-search-smoke` | search:5182 | 关键词→列表→DetailDrawer | **已有** | `npm run dev:search` |
 | `CP-fto-five` | fto:5183 | 五步走到报告页（不要求真引擎） | **已接线** | `npm run dev:fto` |
-| `CP-basket-strategy-a` | search:5182 → fto:5183 | 加篮→送 FTO→导入共享种子 + 诚实 toast | 草案 | 两壳同起 |
+| `CP-basket-strategy-a` | search:5182 → fto:5183 | 加篮→送 FTO→导入共享种子 + 诚实 toast | **已接线** | 两壳同起 |
 | `CP-search-api-flag` | search:5182 + api:5190 | 旗标 sqlite-fts；宕机回退 mock | 草案 | `dev:search` + `dev:search-api` |
 
 字段对齐方案：Evidence Pack 本地 `artifacts/`；可选逐步 `agent_reasoning`（规则短路填 `rule:…`）；Finding 白名单见 `rules.ts`；schemaVersion 仍为 `1.0`。
@@ -45,10 +45,11 @@
 
 ---
 
-## 2. `CP-basket-strategy-a`（跨口策略 A · 样机）· 下一批
+## 2. `CP-basket-strategy-a`（跨口策略 A · 样机）· Phase 0′ 本波
 
 **入口**：`http://localhost:5182/` → 深链 `http://localhost:5183/`  
-**maxSteps**：建议 14  
+**脚本**：`npm run hunt:basket-strategy-a`  
+**maxSteps**：16 · `abortOnHard: true`  
 **验的是**：链路可点 + 诚实 toast 可见；**不是**真跨端口 storage
 
 | # | checkpointId | 断言 | decide 建议 |
@@ -95,16 +96,16 @@
 
 | 项 | 落点 |
 |----|------|
-| CasePack | `tools/e2e-hunt/src/casepacks/cp-fto-five.ts`（+ 日后 basket/flag） |
+| CasePack | `tools/e2e-hunt/src/casepacks/cp-fto-five.ts` · `cp-basket-strategy-a.ts`（+ 日后 flag） |
 | Adapter | `adapter/ip-harness.ts` · `ENTRY_URLS.fto` · `CASE_PACKS` · decide 分支 |
 | CLI | `ensureBaseUp`（按 pack 提示 `dev:search` / `dev:fto`） |
-| 脚本 | `hunt:fto-five`（根 `package.json`）；**勿动** `test:e2e` |
+| 脚本 | `hunt:fto-five` · `hunt:basket-strategy-a`（根 `package.json`）；**勿动** `test:e2e` |
 | 白名单 | `rules.ts` 策略 A / 假比对 token |
 | L7 轻量 | 可选 `StepRecord.agent_reasoning`（§3.2）；schemaVersion 仍 1.0 |
 | L5 | **明确不做** |
 
-## 待定（basket / flag 接线时）
+## 待定（flag 接线时）
 
 - decide：继续规则短路 vs 接 LLM  
-- 多壳串跑是否同一 runId  
 - flag Case 拆双 CasePack 或单包双分支  
+- `CP-basket-strategy-a` 已同 runId 探活 5182+5183  
