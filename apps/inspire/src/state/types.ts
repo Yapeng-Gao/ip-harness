@@ -1,3 +1,5 @@
+import { APP_DEV_URLS } from '@ip/contracts'
+
 /** 问题 / 技术点输入 */
 export type SeedPrompt = string
 
@@ -38,9 +40,9 @@ export type InspireState = {
 
 export const HONESTY_BANNER = '样机 · 无真 LLM · 扩召为种子拼装'
 
-export const MINING_DEEPLINK = 'http://localhost:5184'
-export const DOC_HARNESS_DEEPLINK = 'http://localhost:5178'
-export const SEARCH_DEEPLINK = 'http://localhost:5182'
+export const MINING_DEEPLINK = APP_DEV_URLS.mining
+export const DOC_HARNESS_DEEPLINK = APP_DEV_URLS.docHarness
+export const SEARCH_DEEPLINK = APP_DEV_URLS.search
 
 export const STEPS = [
   { path: '/', step: 1, label: '输入台', short: '输入' },
