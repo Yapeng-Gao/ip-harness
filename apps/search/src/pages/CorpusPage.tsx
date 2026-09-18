@@ -148,7 +148,7 @@ export function CorpusPage() {
                 </div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
                   <div
-                    className={`h-full rounded-full transition-all ${
+                    className={`h-full rounded-full transition-[width] duration-300 ease-out ${
                       j.status === 'fail' ? 'bg-amber-500' : 'bg-slate-800'
                     }`}
                     style={{ width: `${j.progress}%` }}

@@ -183,7 +183,7 @@ export function AgentHome() {
             onKeyDown={onKeyDown}
             rows={5}
             placeholder="例如：对本案固态电解质配方完成现有技术检索，并对照答复期限输出可专利性结论"
-            className="w-full resize-none bg-transparent px-4 pt-4 text-sm leading-relaxed text-slate-800 outline-none placeholder:text-slate-400"
+            className="focus-ring w-full resize-none bg-transparent px-4 pt-4 text-sm leading-relaxed text-slate-800 outline-none placeholder:text-slate-400 focus-visible:rounded-[var(--radius-md)]"
             aria-label="办理目标"
           />
           <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-3 pb-3 pt-2">

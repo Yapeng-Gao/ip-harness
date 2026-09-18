@@ -67,7 +67,7 @@ export function SessionComposer({
           rows={2}
           aria-label="会话目标输入"
           placeholder="描述要办的事… 例如：对固态电解质配方做现有技术检索并输出结论"
-          className="w-full resize-none bg-transparent px-3.5 pt-3 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+          className="focus-ring w-full resize-none bg-transparent px-3.5 pt-3 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus-visible:rounded-[var(--radius-md)]"
           disabled={hitlActive}
         />
         <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-3 py-2.5">

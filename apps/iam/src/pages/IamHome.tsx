@@ -220,31 +220,31 @@ export function IamHome() {
 
         <div className="mt-8 flex flex-wrap gap-3 text-sm">
           <a
-            className="ui-btn ui-btn-primary btn-press"
+            className="ui-btn ui-btn-primary btn-press focus-ring"
             href={iamHref('/login')}
           >
             打开登录页
           </a>
           <a
-            className="ui-btn ui-btn-secondary btn-press"
+            className="ui-btn ui-btn-secondary btn-press focus-ring"
             href={midHref('/')}
           >
             进入作业中台
           </a>
           <a
-            className="ui-btn ui-btn-secondary btn-press"
+            className="ui-btn ui-btn-secondary btn-press focus-ring"
             href={workbenchHref('/workbench')}
           >
             进入办理台
           </a>
           <a
-            className="ui-btn ui-btn-secondary btn-press"
+            className="ui-btn ui-btn-secondary btn-press focus-ring"
             href={agentHref('/agent')}
           >
             进入知产 Agent
           </a>
           <a
-            className="ui-btn ui-btn-secondary btn-press"
+            className="ui-btn ui-btn-secondary btn-press focus-ring"
             href={opsHref('/')}
           >
             进入运维面
