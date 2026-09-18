@@ -171,3 +171,14 @@
 - [x] 计划路径：`/workspace/ip-harness/e2e/PLAN-L0-L1.md`
 - [x] 严格对齐 `REVIEW_RUBRIC.md`：L0 五壳+health；L1 必保五条；×9→1～2 代表；Catalog 仅 heading
 - [x] 未写 spec、未改业务代码
+
+
+---
+
+## 9. 并行壳 L0 增量（2026-09-18 UTC+8）
+
+五壳 + api 的 L0/L1 **本文件仍为权威**，不因并行壳改编号或推翻。
+
+**并行壳首页 L0（5182–5187）**另立计划：[`PLAN-L0-PARALLEL-5182-5187.md`](./PLAN-L0-PARALLEL-5182-5187.md)（search/fto/mining/inspire/landscape/figure · 仅 L0 · Hunt 不进）。
+
+RESULTS 端口矩阵已**追加** 5182–5187（见 `RESULTS.md` 并行壳 L0 表）；未跑标「未跑」，禁止用五壳绿掩饰并行壳未覆盖。实现：`e2e/l0-parallel-smoke.spec.ts` + config 六 project。

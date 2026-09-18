@@ -12,7 +12,7 @@
 
 | 事实 | 含义 |
 |------|------|
-| 多壳多端口 | mid `5173` · workbench `5174` · agent `5175` · ops `5176` · iam `5177` · api-mock `5180` |
+| 多壳多端口 | mid `5173` · workbench `5174` · agent `5175` · ops `5176` · iam `5177` · api-mock `5180` · 并行壳 `5182–5187`（search/fto/mining/inspire/landscape/figure） |
 | 共享内核 | 壳薄、业务在 `@ip/*` / 根 `src`；e2e 验的是**壳路由可达 + 关键路径**，不是每个装饰页的视觉回归 |
 | ops / iam | 占位或薄壳；L0 只验入口可见，不验 ELK / 真 SSO |
 | api-mock | `GET /health` 即可；禁止把 mock HTTP 当成生产契约回归 |
@@ -35,12 +35,20 @@
 | agent | 5175 | `/agent`：可见办理入口（composer /「要办哪件事」/「发送|启动」） |
 | ops | 5176 | 运维入口页：可见占位标题（不要求真实监控数据） |
 | iam | 5177 | 登录/工作区薄壳：可见登录或 Persona/工作区切换地标 |
-| api-mock | 5180 | `GET /health` → 2xx + 健康 JSON（或约定字段） |
+| api-mock | 5180 | `GET /health` → 2xx + 健康 JSON（`ok === true`） |
+| search | 5182 | `/`：h1「专利检索工作台」 |
+| fto | 5183 | `/`：h1「FTO 样机项目」 |
+| mining | 5184 | `/`：h1「专利挖掘样机项目」 |
+| inspire | 5185 | `/`：h1「问题 / 技术点」（可 `.or` 壳品牌「创新激发」） |
+| landscape | 5186 | `/`：h1「选择产业域」 |
+| figure | 5187 | `/`：h1「附图资产」 |
+
+**并行壳增量**：`e2e/PLAN-L0-PARALLEL-5182-5187.md` · `l0-parallel-smoke.spec.ts`；端口权威在各 app `vite.config.ts`（本期**不**写入 `APP_PORTS`）。**Hunt 不进 L0**。
 
 **L0 允许**：`request.get` / `page.goto` + `getByRole('heading'|…)` / 稳定 `data-testid`。  
 **L0 禁止**：多步 click 链、填表、formal play、等动画、扫侧栏每一个 link。
 
-**通过线**：五壳 + api health 各自独立 baseURL（或显式 `http://127.0.0.1:<port>`）；报告里写清端口。缺任一壳且声称「全绿」→ 驳回。
+**通过线**：五壳 + api + 并行六壳各自独立 baseURL（显式 `http://localhost:<port>`，禁止 `127.0.0.1`）；报告里写清端口。缺任一已宣称覆盖的壳却标「全绿」→ 驳回。跑前 curl≠200 → RESULTS 该口写「未跑」（不得假绿）；已跑但无 h1 / 白屏 → **FAIL**。
 
 ---
 
@@ -148,3 +156,4 @@
 | 日期 (UTC+8) | 变更 |
 |--------------|------|
 | 2026-09-12 | 初版：总控要求「建评审标准」；L0/L1/L2 + 驳回 R1–R6；路径 `e2e/REVIEW_RUBRIC.md` |
+| 2026-09-18 | 并行壳 L0（5182–5187）纳入尺子；host=`localhost`；未跑 vs FAIL 口径；Hunt 不进 L0 |
