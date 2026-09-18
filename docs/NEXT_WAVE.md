@@ -6,7 +6,7 @@
 |----|------|------|
 | **N1** | UI：`apple-design` + `make-interfaces-feel-better` + `web-design-guidelines` 重评 → 质感排修 | **Go** `6dc1675` / 复评 `6f24ea9` |
 | **N2** | 样机缺口：跨口工作篮、深链/挂章、并行壳 e2e L0；e2e-hunt MVP | **Go**（篮+并行 L0+Hunt MVP `f5ab2a6`） |
-| **N3** | 检索数据面 / 模型训练 **落地 MVP 任务单**（跟定稿规格） | **进行中** |
+| **N3** | 检索数据面 / 模型训练 **落地 MVP 任务单**（跟定稿规格） | **Pass** `acefd5d` / 评 `7ed0085` |
 | **N4** | case-core · 真产业图谱 | 另立项 |
 
 ## N1 范围
@@ -37,3 +37,9 @@
 
 1. 从 `search-data/` + `model-training/` 定稿规格各切一张 **落地 MVP 任务单**（可开工、有边界）  
 2. 不在本波上真 ES/GPU；任务单写清第一刀做什么 / 不做什么  
+
+## N3 关闸
+
+- search-data/MVP.md · model-training/MVP.md **Pass**
+- 真实施：另开 PR / Owner，**不**自动改 apps/*
+- 下一可选：按任务单开工检索 API 或 SFT 流水线；或 N4 另立
