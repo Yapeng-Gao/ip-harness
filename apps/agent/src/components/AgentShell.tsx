@@ -160,7 +160,7 @@ export function AgentShell() {
         <main
           id="agent-main"
           tabIndex={-1}
-          className="flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-none"
+          className="flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-accent)]"
           data-right-open={rightOpen ? '1' : '0'}
         >
           <PersonaRouteGate>

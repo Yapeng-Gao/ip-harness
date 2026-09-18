@@ -68,8 +68,8 @@ export function SearchShell() {
               )
             })}
             <div className="mt-3 px-3 text-[11px] leading-relaxed text-slate-400">
-              <Users className="mb-1 inline h-3.5 w-3.5" aria-hidden /> 同族详情走{' '}
-              <code className="text-slate-500">/families/:id</code>
+              <Users className="mb-1 inline h-3.5 w-3.5" aria-hidden />{' '}
+              从结果进入同族
             </div>
           </nav>
         </aside>
