@@ -14,7 +14,7 @@
 | **L1 Taxonomy** | 树 ≥4 层或节点 ≥30；节点含 `code`/`aliases`/`version`；可按版本切换只读标签 | 全行业多域切换；用户在线编辑永久存库 |
 | **L2 实体** | 企业 ≥25；业务线 ≥1 条/企；地位枚举稳定；集团/持股 **示意边** | 工商真源同步；股权穿透生产级 |
 | **L3 多源** | ingest 假任务可「跑完」并 **追加** 预置 Hit/边到图（内存或本地 JSON） | 真爬虫、真论文 API、持续调度 |
-| **L4 图谱** | 边类型齐全可查：`part-org` / `org-competitor` / `part-hit` / `org-standard?`；节点详情出邻居表；简单「一度邻居」浏览 | Neo4j/真图 DB；全图力导向大表演除非已有轻量 |
+| **L4 图谱** | 边类型齐全可查：`part-org` / `org-competitor` / `part-hit` / `node-insight` / `org-standard`（可选）；节点详情出邻居表；简单「一度邻居」浏览 | Neo4j/真图 DB；全图力导向大表演除非已有轻量 |
 
 L5：允许在现有洞察卡上 **按节点过滤/计数**；禁止假装实时舆情。
 
@@ -55,6 +55,7 @@ type Edge =
   | { type: 'org-competitor'; a: string; b: string }
   | { type: 'part-hit'; partId: string; hitId: string }
   | { type: 'node-insight'; nodeId: string; insightId: string }
+  | { type: 'org-standard'; orgId: string; standardId: string; relation?: string }  // 可选；无标准种子时可零条
 
 type LandscapeGraph = {
   version: GraphVersion
