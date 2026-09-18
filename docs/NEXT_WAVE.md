@@ -105,4 +105,6 @@
 |----|------|------|
 | **T0** | Agentic 闭环完善版 v1.2：合并 e2e-hunt + 用户 L1–L7；噪声预算（积压 8）；样机白名单；Phase 0′ 可跑 L0 + `hunt:search-smoke` | **文档** · [`AGENTIC_CLOSED_LOOP.md`](./architecture/e2e-hunt/AGENTIC_CLOSED_LOOP.md) |
 
+口播短剧本（search→篮→FTO）：[`DEMO_PLAYBOOK.md`](./DEMO_PLAYBOOK.md)。
+
 下一批 CasePack（不挡本刀）：`CP-fto-five` · `CP-basket-strategy-a` · `CP-search-api-flag`。**不做** L5 自动修 / Hunt 挡合并 / 真 GPU·SFT。

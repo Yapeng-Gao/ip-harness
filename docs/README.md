@@ -16,6 +16,7 @@
 | [**PROTOTYPE_MASTER_PLAN.md**](./PROTOTYPE_MASTER_PLAN.md) | **原型总方案执行表**（已有/在建/待建 · 波次 · 端口） |
 | [**SCHEME_WAVE.md**](./SCHEME_WAVE.md) | **方案波**（停原型 · 检索数据面 · 模型训练） |
 | [architecture/e2e-hunt/](./architecture/e2e-hunt/README.md) | **e2e 猎虫 Harness**（通用层 + Adapter；≠ L0/L1） |
+| [**DEMO_PLAYBOOK.md**](./DEMO_PLAYBOOK.md) | **原型演示剧本**（search→篮→FTO · 策略 A） |
 | [architecture/codebase.md](./architecture/codebase.md) | **代码架构 / 目录地图 / 分层** |
 | [architecture/data-flow.md](./architecture/data-flow.md) | 多壳读写数据流 |
 | [architecture/data-model.md](./architecture/data-model.md) | 数据模型与包归属 |
