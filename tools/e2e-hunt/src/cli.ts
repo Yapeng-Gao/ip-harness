@@ -35,7 +35,7 @@ function parseArgs(argv: string[]) {
       headed = true
     } else if (a === '--help' || a === '-h') {
       console.log(
-        `Usage: tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke|CP-fto-five|CP-basket-strategy-a [--headed]`,
+        `Usage: tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke|CP-fto-five|CP-basket-strategy-a|CP-search-api-flag [--headed]`,
       )
       process.exit(0)
     }

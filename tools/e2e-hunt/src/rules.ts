@@ -26,6 +26,11 @@ export const HONESTY_TOKENS = [
   '请用共享种子',
   '篮未跨口同步',
   '已填假比对',
+  // Search API 旗标 / 回退诚实（CP-search-api-flag）
+  '已回退样机 mock',
+  '非全球专利库',
+  '已接 Search API',
+  'sqlite-fts',
 ] as const
 
 export function isHonestyText(text: string): boolean {

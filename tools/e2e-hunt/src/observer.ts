@@ -51,6 +51,19 @@ async function checkAssert(
           }
           return false
         }
+        if (a.id === 'backend-sqlite-fts') {
+          // 勿把常驻 mock 横幅（HONESTY_BANNER / 「backend: mock」）误判为已接 API
+          const body = await page.locator('body').innerText().catch(() => '')
+          const status = await page
+            .getByRole('status')
+            .innerText()
+            .catch(() => '')
+          const hay = `${body}\n${status}`
+          return (
+            /backend:\s*sqlite-fts/i.test(hay) ||
+            hay.includes('已接 Search API')
+          )
+        }
         if (a.id === 'search-results') {
           const hasScore = await page
             .getByText(/score\s+\d+/)

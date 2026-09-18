@@ -11,7 +11,8 @@
 1. 仓库根已 `npm install`（含 `@playwright/test` / playwright）
 2. 浏览器：`npx playwright install chromium`（若本机缺）
 3. 目标壳就绪（按 CasePack）：
-   - Search：`npm run dev:search` → `http://localhost:5182/`
+   - Search（mock）：`npm run dev:search` → `http://localhost:5182/`
+   - Search（旗标 API）：`npm run dev:search-api`（:5190）+ `npm run dev:search:api`（:5182，`VITE_SEARCH_API_URL`）
    - FTO：`npm run dev:fto` → `http://localhost:5183/`
 
 ## 跑 CasePack
@@ -21,9 +22,10 @@
 npm run hunt:search-smoke   # CP-search-smoke · :5182
 npm run hunt:fto-five       # CP-fto-five · :5183 · 五步到报告
 npm run hunt:basket-strategy-a  # CP-basket-strategy-a · :5182→:5183 · 策略 A
+npm run hunt:search-api-flag    # CP-search-api-flag · :5182+:5190 · sqlite-fts 分支 A
 
 # 或
-npx tsx tools/e2e-hunt/src/cli.ts --case CP-basket-strategy-a
+npx tsx tools/e2e-hunt/src/cli.ts --case CP-search-api-flag
 ```
 
 产物目录：`tools/e2e-hunt/artifacts/<runId>/`
@@ -39,8 +41,9 @@ npx tsx tools/e2e-hunt/src/cli.ts --case CP-basket-strategy-a
 | `CP-search-smoke` | search:5182 | 关键词检索→列表可见→开 DetailDrawer | `hunt:search-smoke` |
 | `CP-fto-five` | fto:5183 | 五步走到报告页（不要求真引擎） | `hunt:fto-five` |
 | `CP-basket-strategy-a` | search:5182 → fto:5183 | 加篮→送 FTO→导入共享种子 + 诚实 toast（非真跨口 LS） | `hunt:basket-strategy-a` |
+| `CP-search-api-flag` | search:5182 + api:5190 | 旗标 `backend: sqlite-fts` + 有命中（分支 A）；分支 B 宕机回退后置 | `hunt:search-api-flag` |
 
-下一批草案（优先序 basket 已接线 → flag）：见 `CASEPACKS_NEXT_DRAFT.md`（§8.2）。
+详见 `CASEPACKS_NEXT_DRAFT.md`（§8.2）。
 
 ## Driver 语义（≤10）
 
@@ -50,4 +53,4 @@ MVP 实现：Playwright（报告字段 `driver: "playwright"`，语义对齐 cur
 
 ## 样机诚实
 
-文案含「样机」「演示」「mock」「非法律意见」「非真 / 无真」等、API `backend:'mock'`、假比对 toast、策略 A「跨口未共享 / 共享种子 / 已用共享种子」→ **不记缺陷**。
+文案含「样机」「演示」「mock」「非法律意见」「非真 / 无真」等、API `backend:'mock'`、假比对 toast、策略 A「跨口未共享 / 共享种子 / 已用共享种子」、Search API「已接 Search API / sqlite-fts / 非全球专利库 / 已回退样机 mock」→ **不记缺陷**。

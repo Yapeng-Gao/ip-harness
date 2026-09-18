@@ -1,6 +1,6 @@
 # CasePack 下一批（对齐 AGENTIC_CLOSED_LOOP.md §8.2）
 
-> **状态**：`CP-fto-five` / `CP-basket-strategy-a` 已接线；flag 仍为草案  
+> **状态**：`CP-fto-five` / `CP-basket-strategy-a` / `CP-search-api-flag`（分支 A）已接线；分支 B 后置  
 > **依据**：`docs/architecture/e2e-hunt/AGENTIC_CLOSED_LOOP.md` v1.2 §8.2  
 > **阶段**：Phase 0′ · 样机诚实白名单 · **不开 L5**（无自动修 / 禁 CloudAgent 改产品）  
 > **约束**：不改 L0（`e2e/l0-*` / `test:e2e`）；Hunt 不挡合并；不要求真 FTO 引擎 / 真跨口 LS
@@ -8,8 +8,8 @@
 ## 优先序（方案 §8.2）
 
 1. **`CP-fto-five`** · 已接线  
-2. **`CP-basket-strategy-a`** ← 本波实现  
-3. **`CP-search-api-flag`**
+2. **`CP-basket-strategy-a`** · 已接线  
+3. **`CP-search-api-flag`** ← 本波实现（分支 A；分支 B 后置）
 
 ## 总览
 
@@ -18,7 +18,7 @@
 | `CP-search-smoke` | search:5182 | 关键词→列表→DetailDrawer | **已有** | `npm run dev:search` |
 | `CP-fto-five` | fto:5183 | 五步走到报告页（不要求真引擎） | **已接线** | `npm run dev:fto` |
 | `CP-basket-strategy-a` | search:5182 → fto:5183 | 加篮→送 FTO→导入共享种子 + 诚实 toast | **已接线** | 两壳同起 |
-| `CP-search-api-flag` | search:5182 + api:5190 | 旗标 sqlite-fts；宕机回退 mock | 草案 | `dev:search` + `dev:search-api` |
+| `CP-search-api-flag` | search:5182 + api:5190 | 旗标 sqlite-fts；宕机回退 mock | **已接线（分支 A）**；分支 B 后置 | `dev:search-api` + `dev:search:api` |
 
 字段对齐方案：Evidence Pack 本地 `artifacts/`；可选逐步 `agent_reasoning`（规则短路填 `rule:…`）；Finding 白名单见 `rules.ts`；schemaVersion 仍为 `1.0`。
 
@@ -66,29 +66,33 @@
 
 ---
 
-## 3. `CP-search-api-flag`（旗标 :5190）· 下一批
+## 3. `CP-search-api-flag`（旗标 :5190）· Phase 0′ 本波（分支 A）
 
 **baseURL**：`http://localhost:5182/`  
-**env**：`VITE_SEARCH_API_URL=http://localhost:5190`  
-**maxSteps**：建议 12  
-**口径**：mock 回退不记缺陷；旗标开时 quarantine/热索引诚实
+**env**：`VITE_SEARCH_API_URL=http://localhost:5190`（须 `npm run dev:search:api`，**勿**裸 `dev:search`）  
+**脚本**：`npm run hunt:search-api-flag`  
+**maxSteps**：12 · `abortOnHard: true`  
+**前置**：`npm run dev:search-api`（:5190）+ `npm run dev:search:api`（:5182）  
+**口径**：mock 回退 toast **白名单不记缺陷**；旗标开时 quarantine/热索引诚实；observer 勿把常驻 mock 横幅误判为已接 API
 
-### 分支 A · API 存活
+### 分支 A · API 存活（本波已接线）
 
 | # | checkpointId | 断言 | 动作 |
 |---|--------------|------|------|
-| 1 | `cp-wb` | 工作台可见 | goto |
-| 2 | `cp-sqlite` | `backend: sqlite-fts`（或「已接 Search API」） | fill+检索 |
-| 3 | `cp-results-fts` | 有命中且非假成功空列表装成真库 | wait |
+| 1 | `cp-wb` | heading「专利检索工作台」 | goto |
+| 2 | `cp-sqlite` | custom `backend-sqlite-fts`（页文含 `backend: sqlite-fts` 或「已接 Search API」） | fill+检索 |
+| 3 | `cp-results-fts` | custom `search-results` 有命中 | wait；sqlite+results 都达 → stop success |
 
-### 分支 B · API 宕机
+### 分支 B · API 宕机（**后置** · 本 CasePack 未跑）
 
 | # | checkpointId | 断言 | 动作 |
 |---|--------------|------|------|
 | 1 | `cp-fallback` | toast「Search API 不可用，已回退样机 mock」 | 停 5190 后检索 |
 | 2 | `cp-mock-chip` | `backend: mock` 可见 | — |
 
-**不做**：改 APP_PORTS；无旗标时行为应与 `CP-search-smoke` 一致。
+白名单已含「已回退样机 mock」「非全球专利库」「已接 Search API」「sqlite-fts」。若易实现可另加可选第二段；当前以分支 A 验收为准。
+
+**不做**：改 APP_PORTS / apps/*；无旗标时行为应与 `CP-search-smoke` 一致；不开 L5。
 
 ---
 
@@ -96,16 +100,16 @@
 
 | 项 | 落点 |
 |----|------|
-| CasePack | `tools/e2e-hunt/src/casepacks/cp-fto-five.ts` · `cp-basket-strategy-a.ts`（+ 日后 flag） |
-| Adapter | `adapter/ip-harness.ts` · `ENTRY_URLS.fto` · `CASE_PACKS` · decide 分支 |
-| CLI | `ensureBaseUp`（按 pack 提示 `dev:search` / `dev:fto`） |
-| 脚本 | `hunt:fto-five` · `hunt:basket-strategy-a`（根 `package.json`）；**勿动** `test:e2e` |
-| 白名单 | `rules.ts` 策略 A / 假比对 token |
+| CasePack | `cp-fto-five.ts` · `cp-basket-strategy-a.ts` · `cp-search-api-flag.ts` |
+| Adapter | `adapter/ip-harness.ts` · `CASE_PACKS` · `DEV_SCRIPT_BY_PACK` · `EXTRA_BASES_BY_PACK`（flag 探活 :5190/health） |
+| CLI | `ensureBasesUp`（按 pack 提示 `dev:search` / `dev:fto` / `dev:search-api`+`dev:search:api`） |
+| 脚本 | `hunt:fto-five` · `hunt:basket-strategy-a` · `hunt:search-api-flag`；**勿动** `test:e2e` |
+| 白名单 | `rules.ts` 策略 A / 假比对 / Search API 旗标与回退 token |
 | L7 轻量 | 可选 `StepRecord.agent_reasoning`（§3.2）；schemaVersion 仍 1.0 |
 | L5 | **明确不做** |
 
-## 待定（flag 接线时）
+## 待定 / 后置
 
+- 分支 B（宕机回退）可选第二段或另 CasePack  
 - decide：继续规则短路 vs 接 LLM  
-- flag Case 拆双 CasePack 或单包双分支  
-- `CP-basket-strategy-a` 已同 runId 探活 5182+5183  
+- `CP-basket-strategy-a` 已同 runId 探活 5182+5183；flag 探活 5182+5190  
