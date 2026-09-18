@@ -166,3 +166,10 @@
 | MD path | `docs/ui-polish/REVIEW_DEEP_FEEL_2026-09-18.md` |
 | Blockers | DF-M1（Inbox 行动层级）· DF-M2（search 调试文案主位）· DF-M3（figure 叠字）· DF-M4（chrome 热区） |
 | 未改产品代码 | 是 · 无 commit/push · 无 Cloud Agent |
+
+---
+
+## 短复评附注（`d8feddf`）
+
+见 [`REVIEW_DEEP_FEEL_RECHECK.md`](./REVIEW_DEEP_FEEL_RECHECK.md)。  
+**结论**：DF-M1…M4 · DF-S1…S6 全 **PASS**（Could 亦落地）→ 手感升 **Go**。
