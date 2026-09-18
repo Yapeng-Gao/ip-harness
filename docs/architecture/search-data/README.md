@@ -22,6 +22,7 @@
 | [ops-quality.md](./ops-quality.md) | 增量、版本、质量、合规 |
 | [ip-sources.md](./ip-sources.md) | 专利/论文/公开资料源与字段 |
 | [topology.md](./topology.md) | 与 search 壳 / ai-data / 下游业务壳 |
+| [MVP.md](./MVP.md) | **落地 MVP 任务单**（第一刀范围/不做/验收） |
 | [roadmap.md](./roadmap.md) | MVP → 生产 |
 | [REVIEW.md](./REVIEW.md) | 架构评审（含润色轻量复评） |
 

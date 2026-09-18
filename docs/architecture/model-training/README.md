@@ -19,6 +19,7 @@
 | [eval-safety.md](./eval-safety.md) | 评测与安全 |
 | [curriculum-and-ops.md](./curriculum-and-ops.md) | 课表、持续学习、衔接 |
 | [topology.md](./topology.md) | ai-data ↔ ai-infra ↔ 网关 |
+| [MVP.md](./MVP.md) | **落地 MVP 任务单**（第一刀范围/不做/验收） |
 | [roadmap.md](./roadmap.md) | MVP → 生产 |
 | [REVIEW.md](./REVIEW.md) | 架构评审（含润色轻量复评） |
 
