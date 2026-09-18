@@ -40,3 +40,12 @@
 
 分篇补记：[search-data/REVIEW](./search-data/REVIEW.md) · [model-training/REVIEW](./model-training/REVIEW.md)。
 
+## N3 落地 MVP 任务单（`acefd5d`）
+
+| 包 | 结论 |
+|----|------|
+| [search-data/MVP.md](./search-data/MVP.md) | **通过**（见 search-data/REVIEW） |
+| [model-training/MVP.md](./model-training/MVP.md) | **通过**（见 model-training/REVIEW） |
+
+四条尺子（可开工 / 明确不做 / 验收 / 与样机壳诚实）均过。search-data 必填→quarantine 关闭既有黄项。本刀仍禁改 `apps/*`。
+
