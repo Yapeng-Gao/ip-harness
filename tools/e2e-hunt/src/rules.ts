@@ -19,6 +19,11 @@ export const HONESTY_TOKENS = [
   'backend:"mock"',
   '非真专利库',
   '非真 ES',
+  // 策略 A / 跨口 toast（样机诚实 · 即使当前 Case 主要走 fto）
+  '跨口未共享',
+  '共享种子',
+  '已用共享种子',
+  '已填假比对',
 ] as const
 
 export function isHonestyText(text: string): boolean {

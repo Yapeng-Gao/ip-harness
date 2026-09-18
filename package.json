@@ -38,6 +38,7 @@
     "typecheck:app-state": "npm run typecheck -w @ip/app-state",
     "typecheck:ui": "npm run typecheck -w @ip/ui",
     "hunt:search-smoke": "tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke",
+    "hunt:fto-five": "tsx tools/e2e-hunt/src/cli.ts --case CP-fto-five",
     "dev:search-api": "npm run dev -w @ip/search-api"
   },
   "dependencies": {

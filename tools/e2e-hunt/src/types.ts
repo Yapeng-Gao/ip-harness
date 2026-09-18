@@ -93,6 +93,13 @@ export type Observation = {
 
 export type JudgeVerdict = 'pass_step' | 'suspect' | 'fail_hard' | 'stop'
 
+/** L7 轻量留痕（§3.2）；可选，不破 schemaVersion 1.0 */
+export type AgentReasoning = {
+  observation_digest: string
+  judgement: string
+  judgement_basis: string
+}
+
 export type StepRecord = {
   i: number
   url: string
@@ -103,6 +110,8 @@ export type StepRecord = {
   judge: JudgeVerdict
   checkpointId?: CheckpointId | null
   note?: string
+  /** 规则短路可填 judgement_basis: "rule:…" */
+  agent_reasoning?: AgentReasoning
 }
 
 export type FindingSeverity = 'fail_hard' | 'suspect'

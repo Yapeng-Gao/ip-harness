@@ -76,14 +76,19 @@ async function checkAssert(
 export async function evaluateCheckpoints(
   page: Page,
   pack: CasePack,
+  previouslyReached: CheckpointId[] = [],
 ): Promise<{ reached: CheckpointId[]; next: CheckpointId | null }> {
-  const reached: CheckpointId[] = []
+  const reachedSet = new Set<CheckpointId>(previouslyReached)
   for (const cp of pack.checkpoints) {
-    if (await checkAssert(page, cp, pack)) reached.push(cp.id)
+    if (await checkAssert(page, cp, pack)) reachedSet.add(cp.id)
   }
+  // Preserve CasePack order
+  const reached = pack.checkpoints
+    .map((c) => c.id)
+    .filter((id) => reachedSet.has(id))
   let next: CheckpointId | null = null
   for (const cp of pack.checkpoints) {
-    if (!reached.includes(cp.id)) {
+    if (!reachedSet.has(cp.id)) {
       next = cp.id
       break
     }
@@ -130,8 +135,11 @@ export async function observe(opts: {
   stepIndex: number
   artifactsDir: string
   signals: CheapSignal[]
+  /** 多页向导：已达检查点跨页累计（避免离开后丢失） */
+  previouslyReached?: CheckpointId[]
 }): Promise<Observation> {
   const { page, pack, stepIndex, artifactsDir, signals } = opts
+  const previouslyReached = opts.previouslyReached ?? []
   await fs.mkdir(artifactsDir, { recursive: true })
   const shotName = `step-${String(stepIndex).padStart(3, '0')}.png`
   const shotPath = path.join(artifactsDir, shotName)
@@ -149,7 +157,7 @@ export async function observe(opts: {
     a11yText = '(a11y snapshot unavailable)'
   }
 
-  const { reached, next } = await evaluateCheckpoints(page, pack)
+  const { reached, next } = await evaluateCheckpoints(page, pack, previouslyReached)
   const pageTextSnippet = (
     await page
       .locator('body')

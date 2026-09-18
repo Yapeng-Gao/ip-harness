@@ -10,7 +10,7 @@ import { randomUUID } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { ADAPTER_ID, getCasePack } from './adapter/ip-harness.js'
+import { ADAPTER_ID, DEV_SCRIPT_BY_PACK, getCasePack } from './adapter/ip-harness.js'
 import { PlaywrightDriver } from './driver.js'
 import { runAgentLoop } from './loop.js'
 import { writeReports } from './reporter.js'
@@ -29,28 +29,29 @@ function parseArgs(argv: string[]) {
     } else if (a === '--headed') {
       headed = true
     } else if (a === '--help' || a === '-h') {
-      console.log(`Usage: tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke [--headed]`)
+      console.log(`Usage: tsx tools/e2e-hunt/src/cli.ts --case CP-search-smoke|CP-fto-five [--headed]`)
       process.exit(0)
     }
   }
   return { caseId, headed }
 }
 
-async function ensureSearchUp(baseURL: string): Promise<void> {
+async function ensureBaseUp(baseURL: string, caseId: string): Promise<void> {
   try {
     const res = await fetch(baseURL, { signal: AbortSignal.timeout(2000) })
     if (res.ok) return
   } catch {
     // down
   }
-  console.error(`[e2e-hunt] ${baseURL} 未就绪。请先在仓库根执行: npm run dev:search`)
+  const hint = DEV_SCRIPT_BY_PACK[caseId] ?? 'npm run dev:search'
+  console.error(`[e2e-hunt] ${baseURL} 未就绪。请先在仓库根执行: ${hint}`)
   process.exit(2)
 }
 
 async function main() {
   const { caseId, headed } = parseArgs(process.argv.slice(2))
   const pack = getCasePack(caseId)
-  await ensureSearchUp(pack.baseURL)
+  await ensureBaseUp(pack.baseURL, caseId)
 
   const runId = randomUUID()
   const outDir = path.join(ARTIFACTS_ROOT, runId)

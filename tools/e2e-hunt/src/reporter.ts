@@ -45,6 +45,12 @@ function renderMarkdown(r: HuntReport): string {
     lines.push(`- action: ${act}`)
     if (s.checkpointId) lines.push(`- nextCheckpoint: ${s.checkpointId}`)
     if (s.note) lines.push(`- note: ${s.note}`)
+    if (s.agent_reasoning) {
+      lines.push(
+        `- agent_reasoning: judgement=\`${s.agent_reasoning.judgement}\` · basis=\`${s.agent_reasoning.judgement_basis}\``,
+      )
+      lines.push(`  - digest: ${s.agent_reasoning.observation_digest}`)
+    }
     lines.push(`- screenshot: ![step-${s.i}](${s.screenshot})`)
     if (s.signals?.length) {
       lines.push(`- signals:`)

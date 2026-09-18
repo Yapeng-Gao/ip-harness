@@ -12,7 +12,9 @@ import {
 } from './rules.js'
 import type {
   AbortReason,
+  AgentReasoning,
   CasePack,
+  CheckpointId,
   DriverAction,
   Finding,
   HuntReport,
@@ -29,6 +31,24 @@ function serializeAction(action: DriverAction): DriverAction {
     if (v instanceof RegExp) clone[k] = v.toString()
   }
   return clone as DriverAction
+}
+
+
+function ruleReasoning(
+  obs: Observation,
+  judgement: string,
+  basis: string,
+): AgentReasoning {
+  const digest = [
+    `url=${obs.url}`,
+    `next=${obs.nextCheckpointId ?? 'none'}`,
+    `reached=${obs.reachedCheckpoints.join(',') || 'none'}`,
+  ].join('; ')
+  return {
+    observation_digest: digest.slice(0, 240),
+    judgement,
+    judgement_basis: basis.startsWith('rule:') ? basis : `rule:${basis}`,
+  }
 }
 
 export type LoopOptions = {
@@ -127,6 +147,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
   const findings: Finding[] = []
   let findingSeq = 0
   const fingerprintCounts = new Map<string, number>()
+  let everReached: CheckpointId[] = []
   let lastCheckpointKey = ''
   let stalledStreak = 0
   let stopReason: AbortReason | string = 'budget_exceeded'
@@ -144,7 +165,9 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
       stepIndex: i,
       artifactsDir,
       signals: preSignals.filter((s) => !s.whitelisted),
+      previouslyReached: everReached,
     })
+    everReached = obs.reachedCheckpoints
 
     // Progress tracking
     const cpKey = obs.reachedCheckpoints.join(',')
@@ -168,6 +191,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         judge: 'stop',
         checkpointId: obs.nextCheckpointId,
         note: 'stalled: no checkpoint progress',
+        agent_reasoning: ruleReasoning(obs, 'stop', 'stalled'),
       })
       break
     }
@@ -191,6 +215,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         judge: 'stop',
         checkpointId: null,
         note: 'all checkpoints reached',
+        agent_reasoning: ruleReasoning(obs, 'stop', `${pack.id}:success`),
       })
       break
     }
@@ -221,6 +246,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         judge: 'stop',
         checkpointId: obs.nextCheckpointId,
         note: decision.reason,
+        agent_reasoning: ruleReasoning(obs, 'stop', `${pack.id}:${decision.reason}`),
       })
       break
     }
@@ -255,6 +281,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         judge: 'stop',
         checkpointId: obs.nextCheckpointId,
         note: `loop fingerprint ${fp}`,
+        agent_reasoning: ruleReasoning(obs, 'stop', 'loop_detected'),
       })
       break
     }
@@ -273,7 +300,9 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
       stepIndex: i,
       artifactsDir,
       signals: postSignals,
+      previouslyReached: everReached,
     })
+    everReached = postObs.reachedCheckpoints
     // overwrite screenshot with post-act
     const mergedObs: Observation = {
       ...postObs,
@@ -313,6 +342,11 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
       judge: judged.verdict,
       checkpointId: mergedObs.nextCheckpointId,
       note: judged.note,
+      agent_reasoning: ruleReasoning(
+        mergedObs,
+        judged.verdict,
+        `${pack.id}:${obs.nextCheckpointId ?? 'act'}→${action.type}`,
+      ),
     })
 
     if (judged.verdict === 'fail_hard' && abortOnHard) {
