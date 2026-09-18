@@ -16,3 +16,7 @@
 3. 不改 contracts / HITL / Persona / STEPS；禁 Cloud Agent  
 
 入口：`docs/ui-polish/UI_SKILLS.md`
+
+## 相关方案
+
+- 猎虫 Harness：[`docs/architecture/e2e-hunt/`](./architecture/e2e-hunt/README.md)（建议 N2 前后立项 MVP）

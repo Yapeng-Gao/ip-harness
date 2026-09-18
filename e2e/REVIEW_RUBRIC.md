@@ -3,7 +3,8 @@
 > **适用**：`/workspace/ip-harness` Playwright 样机冒烟与关键路径。  
 > **立场**：多壳 + 共享内核样机；**不是**生产全量回归。  
 > **分工**：本文件由「e2e用例评审」维护；「e2e测试助手」按此尺子写/改 spec。  
-> **总控约束**：用户说「页面都加 e2e」≠ 全页深度交互。装饰页、Catalog 全深链、Insight/Billing 细则 → **L2 暂缓**。
+> **总控约束**：用户说「页面都加 e2e」≠ 全页深度交互。装饰页、Catalog 全深链、Insight/Billing 细则 → **L2 暂缓**。  
+> **探索猎虫**：过程遥测 + LLM 环见 [`docs/architecture/e2e-hunt/`](../docs/architecture/e2e-hunt/README.md)；**不替代**本文件 L0/L1。
 
 ---
 
