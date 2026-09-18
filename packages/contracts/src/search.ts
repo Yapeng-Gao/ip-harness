@@ -1,6 +1,6 @@
 /**
  * Search API shapes — shared by apps/search (mock) and apps/search-api (sqlite-fts).
- * Additive only; does not touch APP_PORTS / APP_DEV_URLS.
+ * Search DTO shapes only; ports live in ports.ts (APP_PORTS.search / searchApi).
  */
 
 export type SearchMode = 'semantic' | 'keyword' | 'advanced'
