@@ -37,3 +37,8 @@
 ## 上游
 
 - [landing/backends](../landing/backends.md) · [ai-data](../ai-data/README.md) · [ops-observability](../ops-observability.md) · [product-apps/ops](../product-apps/ops.md) · [enterprise](../enterprise/README.md)
+
+## I2 · train.sft Job（monorepo 最小实现）
+
+训练 Job 契约与本地/stub 跑通脚本在 **`tools/train-sft/`**（钉死 `ds-ip-sft-mvp@v0.1.0`）。样机壳 deep-link 可选指向该路径；**本刀不新增** `apps/ai-infra` 页面/路由。
+

@@ -51,4 +51,9 @@
 ## 6. 建议 Owner / 依赖
 
 - 数据：AI Data · 训练 Job：AI Infra · 评测门禁：算法+架构会签  
-- 阻塞：无基座许可、无最小算力、无合规语料则不开训  
+- 阻塞：无基座许可、无最小算力、无合规语料则不开训
+
+## 7. I2 Job 落地指针
+
+本仓最小 `train.sft` Job 实现见 **`tools/train-sft/`**（契约 `job.train.sft.yaml`，钉死 `ds-ip-sft-mvp@v0.1.0` + `docs/ai-data/mvp-sft/manifest.json`）。跑通：`python3 tools/train-sft/scripts/validate_job.py` → `python3 tools/train-sft/scripts/run_train_sft.py`。**不**改 `apps/ai-infra` UI。
+
