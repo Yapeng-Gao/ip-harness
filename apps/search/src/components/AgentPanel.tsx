@@ -79,15 +79,24 @@ export function AgentPanel({ compact = false }: { compact?: boolean }) {
     <div className={`flex h-full flex-col ${compact ? 'pt-3' : ''}`}>
       {!compact ? (
         <div className="border-b border-slate-100 px-4 py-3">
-          <p className="shell-page-kicker">Agent · 同引擎形状</p>
+          <p className="shell-page-kicker">Agent · 工具侧</p>
           <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-slate-900">
             <Terminal className="h-4 w-4" aria-hidden />
             工具参数面板
           </p>
           <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-            search(query) ≡ commercial_patent_search；getFamily ≡ cluster_hits / get_family；corpus
-            ops / sendDownstream 同事件源。无 HTTP，内存态即源。
+            与主台共用同一检索结果。协议字段见下方代码块（
+            <code className="font-mono text-[10px]">search(query)</code> 等）。无 HTTP，内存态即源。
           </p>
+          <details className="mt-2 rounded-md border border-dashed border-slate-200 bg-slate-50 px-2 py-1.5">
+            <summary className="cursor-pointer text-[11px] font-medium text-slate-500">
+              开发者 · 引擎等价说明
+            </summary>
+            <p className="mt-1 text-[10px] leading-relaxed text-slate-400">
+              search(query) ≡ commercial_patent_search；getFamily ≡ cluster_hits / get_family；corpus
+              ops / sendDownstream 同事件源（同引擎形状）。
+            </p>
+          </details>
         </div>
       ) : null}
 

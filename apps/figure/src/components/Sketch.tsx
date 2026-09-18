@@ -9,11 +9,11 @@ function ExplodedSketch() {
         外壳 10
       </text>
       <rect x={80} y={80} width={140} height={80} rx={8} fill="#e8f2ff" />
-      <text x={150} y={126} textAnchor="middle" fill="#1e293b" stroke="none" fontSize={12}>
+      <text x={150} y={148} textAnchor="middle" fill="#1e293b" stroke="none" fontSize={12}>
         传感模块
       </text>
       <rect x={580} y={80} width={140} height={80} rx={8} fill="#ecfdf5" />
-      <text x={650} y={126} textAnchor="middle" fill="#1e293b" stroke="none" fontSize={12}>
+      <text x={650} y={148} textAnchor="middle" fill="#1e293b" stroke="none" fontSize={12}>
         处理单元
       </text>
       <rect x={80} y={400} width={140} height={80} rx={8} fill="#fff7ed" />

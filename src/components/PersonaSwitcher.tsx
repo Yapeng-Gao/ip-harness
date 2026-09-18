@@ -46,7 +46,7 @@ export function PersonaSwitcher({ variant = 'sidebar', className = '' }: Props) 
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="btn-press focus-ring flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-[var(--color-accent-soft)] px-2 py-1 text-xs text-slate-800 hover:border-[color-mix(in_srgb,var(--color-accent)_35%,transparent)]"
+        className="btn-press focus-ring hit-40 flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-[var(--color-accent-soft)] px-2.5 py-2 text-xs text-slate-800 hover:border-[color-mix(in_srgb,var(--color-accent)_35%,transparent)]"
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label="切换 Persona"

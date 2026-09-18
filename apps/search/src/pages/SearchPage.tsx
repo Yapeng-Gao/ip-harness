@@ -172,22 +172,41 @@ export function SearchPage() {
             </p>
           ) : null}
 
-          <label className="flex items-center gap-2 text-xs text-slate-600">
-            <input
-              type="checkbox"
-              checked={s.forceNextFail}
-              onChange={(e) => searchActions.setForceNextFail(e.target.checked)}
-            />
-            下次强制失败（注入故障 → error）
-          </label>
+          <details className="rounded-md border border-dashed border-slate-200 bg-slate-50/80 px-3 py-2">
+            <summary className="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700">
+              开发者选项
+            </summary>
+            <label
+              className="mt-2 flex items-center gap-2 text-xs text-slate-600"
+              title="forceNextFail · 下次检索注入故障"
+            >
+              <input
+                type="checkbox"
+                checked={s.forceNextFail}
+                onChange={(e) => searchActions.setForceNextFail(e.target.checked)}
+              />
+              <span>
+                下次检索故意失败
+                <code className="ml-1 rounded bg-slate-100 px-1 font-mono text-[10px] text-slate-400">
+                  → error
+                </code>
+              </span>
+            </label>
+          </details>
         </form>
       </Card>
 
       <Card className="mb-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <p className="flex items-center gap-2 text-sm font-medium text-slate-800">
+          <p
+            className="flex items-center gap-2 text-sm font-medium text-slate-800"
+            title="写入 Query.filters"
+          >
             <Filter className="h-4 w-4" aria-hidden />
-            过滤（写入 Query.filters）
+            过滤条件
+            <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-normal text-slate-400">
+              Query.filters
+            </code>
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <Button
@@ -311,13 +330,19 @@ export function SearchPage() {
           </div>
         </div>
 
-        <label className="mt-4 flex items-center gap-2 text-sm text-slate-700">
+        <label
+          className="mt-4 flex items-center gap-2 text-sm text-slate-700"
+          title="filters.collapseFamily"
+        >
           <input
             type="checkbox"
             checked={collapse}
             onChange={() => searchActions.toggleCollapseFamily()}
           />
-          同族折叠（collapseFamily）
+          同族折叠
+          <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+            collapseFamily
+          </code>
         </label>
       </Card>
 

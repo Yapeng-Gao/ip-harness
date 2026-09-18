@@ -26,12 +26,25 @@ function AnnotationMark({
 }) {
   const ring = selected ? '#007aff' : 'transparent'
   if (ann.kind === 'bubble') {
+    // DF-M3 · optical offset above anchor so bubble does not crop part labels
+    const oy = -28
     return (
       <g transform={`translate(${ann.x} ${ann.y})`} style={{ cursor: 'grab' }}>
-        <circle r={16} fill="#0f172a" stroke={ring} strokeWidth={3} />
+        <line
+          x1={0}
+          y1={0}
+          x2={0}
+          y2={oy + 16}
+          stroke="#0f172a"
+          strokeWidth={1.4}
+          strokeLinecap="round"
+        />
+        <circle cx={0} cy={0} r={3.5} fill="#0f172a" />
+        <circle cx={0} cy={oy} r={16} fill="#0f172a" stroke={ring} strokeWidth={3} />
         <text
           textAnchor="middle"
-          y={5}
+          x={0}
+          y={oy + 5}
           fill="#fff"
           fontSize={13}
           fontWeight={600}

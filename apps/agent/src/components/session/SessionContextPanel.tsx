@@ -187,70 +187,81 @@ export function SessionContextPanel({
           </details>
         )}
 
-        <section className="agent-aside-section">
-          <div className="agent-aside-kicker">
+        {/* DF-S3 · demote deadline / deliverables so Confirm CTA keeps L1 */}
+        <details className="agent-aside-meta border-b border-slate-100">
+          <summary className="agent-aside-meta-summary">
             <CalendarDays className="h-3 w-3" aria-hidden /> 期限
-          </div>
-          {caseDockets.length === 0 ? (
-            <p className="agent-aside-empty">无关联期限</p>
-          ) : (
-            <ul className="divide-y divide-slate-100 border-y border-slate-100">
-              {caseDockets.map((d) => (
-                <li key={d.id} className="py-2 text-xs">
-                  <div className="font-medium text-slate-800">{d.title}</div>
-                  <div className="text-xs text-slate-500">
-                    截止 {d.dueDate} · {DOCKET_STATUS_LABEL[d.status] ?? d.status}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section className="agent-aside-section">
-          <div className="agent-aside-kicker">
-            <FileText className="h-3 w-3" aria-hidden /> 产物
-          </div>
-          {artifacts.length === 0 ? (
-            <p className="agent-aside-empty">办理后出现草稿</p>
-          ) : (
-            <div className="space-y-2">
-              <div className="agent-artifact-tabs" role="tablist" aria-label="会话产物">
-                {artifacts.map((a) => (
-                  <button
-                    key={a.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeArt?.id === a.id}
-                    data-active={activeArt?.id === a.id ? 'true' : 'false'}
-                    onClick={() => onSelectArtifact(a.id)}
-                    className="agent-artifact-tab btn-press focus-ring"
-                  >
-                    {a.title}
-                  </button>
+            <span className="ml-auto tabular-nums text-slate-300">
+              {caseDockets.length}
+            </span>
+          </summary>
+          <div className="agent-aside-meta-body">
+            {caseDockets.length === 0 ? (
+              <p className="agent-aside-empty">无关联期限</p>
+            ) : (
+              <ul className="divide-y divide-slate-100 border-y border-slate-100">
+                {caseDockets.map((d) => (
+                  <li key={d.id} className="py-2 text-xs">
+                    <div className="font-medium text-slate-600">{d.title}</div>
+                    <div className="text-xs text-slate-400">
+                      截止 {d.dueDate} · {DOCKET_STATUS_LABEL[d.status] ?? d.status}
+                    </div>
+                  </li>
                 ))}
+              </ul>
+            )}
+          </div>
+        </details>
+
+        <details className="agent-aside-meta border-b border-slate-100">
+          <summary className="agent-aside-meta-summary">
+            <FileText className="h-3 w-3" aria-hidden /> 产物
+            <span className="ml-auto tabular-nums text-slate-300">
+              {artifacts.length}
+            </span>
+          </summary>
+          <div className="agent-aside-meta-body">
+            {artifacts.length === 0 ? (
+              <p className="agent-aside-empty">办理后出现草稿</p>
+            ) : (
+              <div className="space-y-2">
+                <div className="agent-artifact-tabs" role="tablist" aria-label="会话产物">
+                  {artifacts.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeArt?.id === a.id}
+                      data-active={activeArt?.id === a.id ? 'true' : 'false'}
+                      onClick={() => onSelectArtifact(a.id)}
+                      className="agent-artifact-tab btn-press focus-ring"
+                    >
+                      {a.title}
+                    </button>
+                  ))}
+                </div>
+                {activeArt && (
+                  <details className="agent-artifact-panel">
+                    <summary className="cursor-pointer px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-700">
+                      {activeArt.editable ? '编辑产物' : '查看产物'}
+                      {' · '}
+                      {activeArt.title}
+                    </summary>
+                    <textarea
+                      value={activeArt.content}
+                      onChange={(e) =>
+                        onUpdateArtifact(activeArt.id, e.target.value)
+                      }
+                      rows={10}
+                      className="agent-artifact-editor focus-ring"
+                      readOnly={!activeArt.editable}
+                    />
+                  </details>
+                )}
               </div>
-              {activeArt && (
-                <details className="agent-artifact-panel" open>
-                  <summary className="cursor-pointer px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-700">
-                    {activeArt.editable ? '编辑产物' : '查看产物'}
-                    {' · '}
-                    {activeArt.title}
-                  </summary>
-                  <textarea
-                    value={activeArt.content}
-                    onChange={(e) =>
-                      onUpdateArtifact(activeArt.id, e.target.value)
-                    }
-                    rows={10}
-                    className="agent-artifact-editor focus-ring"
-                    readOnly={!activeArt.editable}
-                  />
-                </details>
-              )}
-            </div>
-          )}
-        </section>
+            )}
+          </div>
+        </details>
 
         {caseId && (
           <details className="border-b border-slate-100">

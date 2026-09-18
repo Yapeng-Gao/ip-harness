@@ -22,7 +22,7 @@ export function SearchShell() {
   return (
     <div className="app-shell-bg flex min-h-screen flex-col text-slate-900">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 py-2 text-xs text-slate-600">
-        <span>检索平面 · 人机与 Agent 同引擎形状 · 不改 APP_PORTS</span>
+        <span title="人机与 Agent 共用同一检索引擎契约">检索平面 · 人机与 Agent 共用同一检索引擎 · 不改 APP_PORTS</span>
         <span className="text-slate-400">≠ ai-data（语料 Pipeline）</span>
       </div>
       <div role="status" className="shell-banner-demo px-4 py-2 text-center">

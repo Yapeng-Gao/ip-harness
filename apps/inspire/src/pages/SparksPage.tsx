@@ -56,7 +56,7 @@ export function SparksPage() {
         />
         <EmptyState
           title="还没有扩召结果"
-          body="主路径：输入台 → 激发 → 本页 ≥6 张卡。"
+          body="激发后这里会出现一组扩召卡片。请先去输入台填写技术点并点「激发」。"
           action={
             <Link to="/">
               <Button>去输入台</Button>

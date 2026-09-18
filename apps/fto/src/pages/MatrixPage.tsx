@@ -121,11 +121,14 @@ export function MatrixPage() {
                     return (
                       <td
                         key={h.id}
-                        className="border-b border-l border-slate-100 px-2 py-2 align-top"
+                        className="fto-matrix-cell border-b border-l border-slate-100"
+                        data-filled={c ? 'true' : 'false'}
+                        data-verdict={c?.verdict ?? ''}
                       >
                         <select
-                          className="w-full rounded border border-slate-200 bg-white px-1.5 py-1 text-xs focus-ring"
+                          className="fto-matrix-select focus-ring"
                           disabled={locked}
+                          aria-label={`${f.name} × ${h.publicationNumber}`}
                           value={c?.verdict ?? ''}
                           onChange={(e) => {
                             const v = e.target.value as CellVerdict
@@ -154,7 +157,9 @@ export function MatrixPage() {
                               </p>
                             ) : null}
                           </div>
-                        ) : null}
+                        ) : (
+                          <p className="mt-1 text-[10px] text-slate-400">点击选择比对结论</p>
+                        )}
                       </td>
                     )
                   })}

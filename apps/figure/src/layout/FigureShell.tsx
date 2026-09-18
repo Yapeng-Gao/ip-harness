@@ -73,7 +73,7 @@ export function FigureShell() {
         <span className="inline-flex flex-wrap items-center gap-3">
           <a
             href={DOC_HARNESS_DEEPLINK}
-            className="focus-ring rounded font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-600"
+            className="figure-top-link focus-ring"
             title={DOC_HARNESS_DEEPLINK}
           >
             文档
@@ -90,7 +90,7 @@ export function FigureShell() {
           {STEPS.map((s, i) => {
             const to = stepPath(s.key, activeDraftId, activeAssetId)
             const active = currentStep === s.key
-            const cls = `focus-ring inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${
+            const cls = `figure-step-chip focus-ring ${
               active
                 ? 'bg-[var(--color-accent-soft)] text-slate-900'
                 : to

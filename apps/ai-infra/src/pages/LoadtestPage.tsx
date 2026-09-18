@@ -95,7 +95,29 @@ export function LoadtestPage() {
       <div className="space-y-3">
         {state.loadTests.length === 0 ? (
           <Card>
-            <p className="text-sm text-slate-600">尚无压测。调参后启动。</p>
+            <p className="text-sm font-medium text-slate-800">尚无压测跑次</p>
+            <p className="mt-1 text-sm text-slate-600">
+              上方调好端点 / 并发 / 时长后点「开始压测」，报告会出现在这里。
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={noEndpoints}
+                onClick={() => {
+                  const ep = endpointId || state.endpoints[0]?.id
+                  if (!ep) return
+                  startLoadTest(ep, concurrency, durationSec)
+                }}
+              >
+                用当前参数启动
+              </Button>
+              <Link to="/endpoints">
+                <Button type="button" variant="secondary">
+                  去端点
+                </Button>
+              </Link>
+            </div>
           </Card>
         ) : null}
         {state.loadTests.map((lt) => {

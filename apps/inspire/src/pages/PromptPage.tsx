@@ -22,26 +22,26 @@ export function PromptPage() {
         desc="输入一条技术点或问题，点「激发」进入语义扩召墙。卡片由领域种子与动词模板拼装，无真 LLM。可预填种子便于演示。"
       />
 
-      <Card className="p-5">
-        <div className="flex flex-wrap items-center gap-2">
+      <Card className="p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <Chip tone="mock">backend: mock</Chip>
           <Chip tone="neutral">阶段 {phase}</Chip>
           <Chip tone="accent">已扩召 {cards.length}</Chip>
           <Chip tone="ok">收藏 {favorites.length}</Chip>
         </div>
 
-        <label className="mt-4 block">
+        <label className="mt-3 block">
           <span className="text-sm font-medium text-slate-800">技术点 / 问题</span>
           <textarea
-            className="ui-input mt-2 min-h-[7.5rem] resize-y leading-relaxed"
-            rows={5}
+            className="ui-input mt-1.5 min-h-[6.5rem] resize-y leading-relaxed"
+            rows={4}
             value={prompt}
             onChange={(e) => inspireActions.setPrompt(e.target.value)}
             placeholder="例如：柔性显示模组的弯折区应力缓冲结构…"
           />
         </label>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
           <Button
             className="inline-flex items-center gap-1.5"
             disabled={phase === 'expanding'}
@@ -59,11 +59,10 @@ export function PromptPage() {
           <Button variant="secondary" onClick={() => inspireActions.setPrompt('')}>
             清空
           </Button>
+          <p className="ml-auto max-w-xs text-[11px] leading-relaxed text-slate-400">
+            空输入 → empty · 墙页 <code>/sparks</code> · 无真 LLM
+          </p>
         </div>
-
-        <p className="mt-4 text-xs leading-relaxed text-slate-500">
-          空输入会进入 empty 态。扩召结果墙路径 <code>/sparks</code>；诚实横幅含「无真 LLM」。
-        </p>
       </Card>
     </div>
   )

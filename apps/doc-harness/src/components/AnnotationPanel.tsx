@@ -50,7 +50,7 @@ export function AnnotationPanel({
       </p>
 
       {draft ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 shadow-[var(--shadow-rest)]">
+        <div className="anno-draft-card">
           <div className="text-[11px] font-medium text-slate-800">新建批注</div>
           <blockquote className="mt-1.5 border-l-2 border-slate-300 pl-2 text-[11px] italic leading-relaxed text-slate-600">
             「{draft.quote}」
@@ -60,7 +60,7 @@ export function AnnotationPanel({
             onChange={(e) => onDraftBodyChange(e.target.value)}
             placeholder="输入批注内容…"
             rows={3}
-            className="ui-input mt-2 w-full resize-y rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[12px] text-slate-800 placeholder:text-slate-400"
+            className="ui-input mt-2 w-full resize-y border border-slate-200 bg-white px-2 py-1.5 text-[12px] text-slate-800 placeholder:text-slate-400"
             aria-label="批注内容"
             autoFocus
           />
@@ -209,10 +209,10 @@ function AnnotationCard({
 }) {
   return (
     <li
-      className={`rounded-xl border p-2.5 transition-colors ${
+      className={`border p-2.5 transition-colors ${
         active
-          ? 'border-slate-400 bg-[var(--color-accent-soft,#e8f2ff)] shadow-sm ring-1 ring-[var(--color-accent,#007aff)]/30'
-          : 'border-slate-200 bg-white hover:border-slate-300'
+          ? 'rounded-[0.875rem] border-slate-400 bg-[var(--color-accent-soft,#e8f2ff)] shadow-sm ring-1 ring-[var(--color-accent,#007aff)]/30'
+          : 'rounded-[0.875rem] border-slate-200 bg-white hover:border-slate-300'
       }`}
     >
       <button type="button" onClick={onSelect} className="w-full text-left">
