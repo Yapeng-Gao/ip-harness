@@ -5,6 +5,7 @@ import {
   requestExport,
   useAiDataStore,
 } from '../state/store'
+import { Link } from 'react-router-dom'
 import { Button, Card, EmptyState, PageHeader, StatusPill } from '../components/ui'
 import type { ExportStatus } from '../state/types'
 import type { StatusTone } from '../components/ui'
@@ -83,6 +84,11 @@ export function ExportsPage() {
         <EmptyState
           title="无案正文"
           body="样机只展示导出单状态机；不读取案卷、不落湖、不写 PatentCase。"
+          action={
+            <Link to="/" className="ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring">
+              回总览
+            </Link>
+          }
         />
       )}
     </div>

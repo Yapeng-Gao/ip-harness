@@ -189,7 +189,7 @@ export function SearchPage() {
             <Filter className="h-4 w-4" aria-hidden />
             过滤（写入 Query.filters）
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="secondary"
               onClick={() => {
@@ -205,6 +205,15 @@ export function SearchPage() {
             >
               应用过滤并重跑
             </Button>
+            {!s.lastQuery ? (
+              <span className="agent-confirm-reason" data-tone="block" role="status">
+                请先检索
+              </span>
+            ) : s.status === 'running' ? (
+              <span className="text-xs text-slate-500" role="status">
+                检索进行中
+              </span>
+            ) : null}
           </div>
         </div>
 

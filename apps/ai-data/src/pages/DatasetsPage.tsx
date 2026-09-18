@@ -17,7 +17,7 @@ export function DatasetsPage() {
       <PageHeader
         eyebrow="数据集"
         title="不可变 version"
-        desc="草稿备注可改；已发布 version 内容不可改（immutable），只能 bump 新 tag。发布产生新 version（vN + 假 checksum）。可 pin。质量门未 pass 时发布 disabled。"
+        desc="草稿备注可改；已发布 version 内容不可改（immutable），只能 bump 新 tag。发布产生新 version（vN + 假 checksum）。可 pin。质量门未 pass 时发布按钮已禁用。"
       />
 
       <div className="space-y-4">
@@ -49,7 +49,7 @@ export function DatasetsPage() {
                 </p>
                 <textarea
                   id={`draft-note-${ds.id}`}
-                  className="mt-2 w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-800 outline-none focus:border-slate-400"
+                  className="ui-input ui-input-sm mt-2 min-h-[2.5rem] resize-y bg-slate-50 text-xs"
                   rows={2}
                   value={ds.draftNote}
                   onChange={(e) => updateDraftNote(ds.id, e.target.value)}
@@ -66,7 +66,7 @@ export function DatasetsPage() {
                 </Button>
                 {!canPublish ? (
                   <span className="text-xs text-rose-700">
-                    质量门未 pass（当前 {q?.status ?? 'idle'}）· 按钮 disabled
+                    质量门未 pass（当前 {q?.status ?? 'idle'}）· 按钮已禁用
                   </span>
                 ) : (
                   <StatusPill tone="ok">质量门 pass · 可发布</StatusPill>

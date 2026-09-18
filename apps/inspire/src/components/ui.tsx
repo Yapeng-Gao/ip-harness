@@ -48,9 +48,9 @@ export function EmptyState({
   action?: ReactNode
 }) {
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
-      <p className="text-sm font-medium text-slate-700">{title}</p>
-      <p className="mt-1 text-xs leading-relaxed text-slate-500">{body}</p>
+    <div className="ui-empty">
+      <p className="ui-empty-title">{title}</p>
+      <p className="ui-empty-desc">{body}</p>
       {action ? (
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2">{action}</div>
       ) : null}

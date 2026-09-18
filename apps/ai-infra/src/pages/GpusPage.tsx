@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Button, Card, EmptyState, PageHeader, ProgressBar, StatusDot, StatusPill } from '../components/ui'
 import { useAiInfra } from '../state/AiInfraStore'
 
@@ -15,6 +16,11 @@ export function GpusPage() {
       <EmptyState
         title="无真实 GPU 集群"
         body="节点与配额为内存表。新作业只落到非 drain 且 pool=queue 的节点（gpu-c 为 batch 池）；否则继续排队。"
+        action={
+          <Link to="/" className="ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring">
+            回总览
+          </Link>
+        }
       />
 
       <Card className="mt-4">

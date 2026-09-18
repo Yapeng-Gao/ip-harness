@@ -16,6 +16,17 @@
   min-height: 60vh;
   font-size: 16px;
   line-height: 1.75;
+  border-radius: 2px;
+  transition: box-shadow 0.15s ease;
+}
+
+/* FS-P2-3: visible paper focus frame (not bare outline:none strip) */
+.doc-paper .ProseMirror:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--color-accent),
+    0 0 0 7px rgba(0, 122, 255, 0.18);
 }
 
 .doc-paper .ProseMirror p {
