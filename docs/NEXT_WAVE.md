@@ -43,3 +43,23 @@
 - search-data/MVP.md · model-training/MVP.md **Pass**
 - 真实施：另开 PR / Owner，**不**自动改 apps/*
 - 下一可选：按任务单开工检索 API 或 SFT 流水线；或 N4 另立
+
+## I 波 · 落地实施（2026-09-18 · 总控自定）
+
+| 序 | 内容 | 依据 | 状态 |
+|----|------|------|------|
+| **I1（当前）** | 检索数据面落地 MVP：单源入库 + 倒排 + Search API | `search-data/MVP.md` | **进行中** |
+| **I2** | 训练落地 MVP：SFT dataset@version + train.sft Job + 评测门禁记录 | `model-training/MVP.md` | 排队（I1 有可演示 API 后再全力） |
+| **N4** | case-core / 真产业图谱 | dev-spec | 另立项 |
+
+### I1 边界
+
+- 可新建 `services/search-api` 或 `apps/search-api`（端口另定，**先不改 APP_PORTS**）
+- 契约对齐 `SearchQuery`/`SearchHit`；`backend` 可标非 mock
+- quarantine 必填失败；不做全球库/完整向量
+- `apps/search` 接线用旗标另 PR 或本刀末尾最小切换；优先 API 可 curl 验收
+
+### I2 边界
+
+- ai-data 出一个 SFT version；ai-infra 一个 train.sft 形状（可先本地/脚本跑通）
+- 不做预训练/DPO/真 K8s
