@@ -246,7 +246,7 @@ export function SessionTimeline({
   runMode = null,
 }: Props) {
   return (
-    <div className="flex-1 space-y-1.5 overflow-y-auto px-4 py-5 lg:px-6">
+    <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-4 py-5 lg:px-6" data-testid="session-timeline-scroller">
       {steps.map((step, i) => (
         <StepBubble
           key={step.id}

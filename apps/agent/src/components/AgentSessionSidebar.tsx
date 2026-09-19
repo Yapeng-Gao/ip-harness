@@ -50,6 +50,11 @@ export function AgentSessionSidebar() {
   /** Home: primary story is「新办」— demote Inbox list (P0-AE-2) */
   const isHome =
     loc.pathname === '/agent' || loc.pathname === '/agent/'
+  /** P1-AF-5 · Catalog / Harness 默认收起会话 Inbox（与 Home compact 一致） */
+  const isCatalogOrHarness =
+    loc.pathname.startsWith('/agent/agents') ||
+    loc.pathname.startsWith('/agent/harness')
+  const collapseInbox = isHome || isCatalogOrHarness
   const [overflowOpen, setOverflowOpen] = useState(false)
   const overflowRef = useRef<HTMLDivElement>(null)
   const [renamingId, setRenamingId] = useState<string | null>(null)
@@ -306,7 +311,7 @@ export function AgentSessionSidebar() {
         </nav>
 
         {/* P0-AE-1: no navy primary「新建」competing with Home 发送 */}
-        {!isHome && (
+        {!collapseInbox && (
           <div className="border-b border-slate-100 px-2.5 py-1.5">
             <button
               type="button"
@@ -319,13 +324,15 @@ export function AgentSessionSidebar() {
           </div>
         )}
 
-        {isHome ? (
+        {collapseInbox ? (
           <div
             className="flex flex-1 flex-col gap-3 px-3 py-4"
-            data-testid="home-sidebar-compact"
+            data-testid={isHome ? "home-sidebar-compact" : "browse-sidebar-compact"}
           >
             <p className="text-[11px] leading-relaxed text-slate-500">
-              首屏主路径：主区输入后点「开始办理」开工。
+              {isHome
+                ? '首屏主路径：主区输入后点「开始办理」开工。'
+                : '浏览目录 / 运行说明时收起会话列表；需要办理请打开会话 Inbox。'}
             </p>
             {statusCounts.needs_human > 0 ? (
               <Link

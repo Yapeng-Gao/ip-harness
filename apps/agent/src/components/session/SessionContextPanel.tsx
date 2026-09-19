@@ -83,7 +83,7 @@ export function SessionContextPanel({
   const driveHidden = caseDriveItems.length - driveVisible.length
 
   return (
-    <aside className="agent-aside hidden w-72 shrink-0 flex-col lg:flex xl:w-80">
+    <aside className="agent-aside hidden w-56 shrink-0 flex-col lg:flex 2xl:w-72">
       <div className="agent-aside-head">上下文</div>
       <div className="flex-1 overflow-y-auto">
         {agent && (

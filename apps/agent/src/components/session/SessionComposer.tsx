@@ -19,6 +19,8 @@ type Props = {
   hitlActive?: boolean
   /** R-P1-3 · 仅复述 Confirm 主因 */
   hitlDisableReason?: string | null
+  /** P1-AF-3 · 不重复渲染可见禁用原因（Confirm 已展示） */
+  hideDisableReason?: boolean
   /** Optional case bind toolbar (create/bind) above composer */
   caseBindSlot?: React.ReactNode
 }
@@ -39,6 +41,7 @@ export function SessionComposer({
   onCancelAgentSwitch,
   hitlActive = false,
   hitlDisableReason = null,
+  hideDisableReason = false,
   caseBindSlot,
 }: Props) {
   return (
@@ -116,13 +119,19 @@ export function SessionComposer({
               >
                 <Send className="h-3.5 w-3.5" aria-hidden /> 确认完成后再办理
               </button>
-              <span
-                id="agent-confirm-reason-composer"
-                className="agent-confirm-reason"
-                role="status"
-              >
-                {hitlDisableReason ?? '请先完成上方确认步骤'}
-              </span>
+              {!hideDisableReason ? (
+                <span
+                  id="agent-confirm-reason-composer"
+                  className="agent-confirm-reason"
+                  role="status"
+                >
+                  {hitlDisableReason ?? '请先完成上方确认步骤'}
+                </span>
+              ) : (
+                <span id="agent-confirm-reason-composer" className="sr-only">
+                  {hitlDisableReason ?? '请先完成上方确认步骤'}
+                </span>
+              )}
             </span>
           ) : (
             <button

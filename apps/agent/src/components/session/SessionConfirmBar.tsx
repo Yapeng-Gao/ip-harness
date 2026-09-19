@@ -284,8 +284,28 @@ export function SessionConfirmBar({
     })
   }
 
-  const gateChipLabel = (g: HitlGateId) =>
-    isWatch && g === 'approve_strategy' ? '告警处置' : HITL_GATE_LABELS[g]
+  /** P1-AF-6 · 步进用状态名，避免与主 CTA「批准策略」同名双可点感 */
+  const gateChipLabel = (g: HitlGateId) => {
+    const done = clearedGates.includes(g)
+    if (isWatch && g === 'approve_strategy') {
+      return done ? '已处置' : '待处置'
+    }
+    const pending: Record<HitlGateId, string> = {
+      go_nogo: '待立项',
+      approve_strategy: '待批准',
+      authorize_file: '待授权',
+      pay_unlock: '待付款',
+      confirm_quote: '待确认报价',
+    }
+    const cleared: Record<HitlGateId, string> = {
+      go_nogo: '已决定',
+      approve_strategy: '已批准',
+      authorize_file: '已授权',
+      pay_unlock: '已解锁',
+      confirm_quote: '已确认',
+    }
+    return done ? cleared[g] : pending[g]
+  }
 
   const confirmLabel = watchStrategyPending
     ? '告警处置'
@@ -440,7 +460,7 @@ export function SessionConfirmBar({
       data-confirm-bar
       data-focus-hitl={focusHitl ? '1' : undefined}
       data-focus-gate={focusGate ?? undefined}
-      className={`confirm-hitl shrink-0 border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 sm:py-4${
+      className={`confirm-hitl shrink-0 rounded-[var(--radius-md)] border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 sm:py-4${
         focusHitl ? ' confirm-hitl-focus' : ''
       }`}
       data-agent={agent?.id}

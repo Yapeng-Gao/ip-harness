@@ -90,7 +90,7 @@ export function AgentShell() {
   const inProjects = loc.pathname.startsWith('/agent/projects')
 
   return (
-    <div className="app-shell-bg flex h-full min-h-screen flex-col">
+    <div className="app-shell-bg flex h-full flex-col overflow-hidden">
       <a href="#agent-main" className="skip-link">
         跳到主要内容
       </a>
