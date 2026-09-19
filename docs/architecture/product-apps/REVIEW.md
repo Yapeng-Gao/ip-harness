@@ -191,3 +191,13 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 **风险**：Agent/mid 双入口建项目须同一 `projectId`（样机映射表）；实现勿做成两套项目真相。
 
+## B席轻扫 · L3 STAGE 对齐（`944dc8b`）
+
+| 结论 | **Pass** |
+|------|----------|
+| STAGE 对齐 | 过：research/intake 命名与 handoff 键对齐 STAGE_MODULES + ARTIFACT_FOR_STAGE |
+| 辅席/缺口诚实 | 过：figure/fto 无伪造 key；layout/maintain/monetize/watch 标缺口 |
+| 入口/写库 | 过：从建项目起；禁截入；不改 packages；Confirm 示意 |
+
+**风险**：旧 id `expert-search`/`expert-mining` 须靠别名迁移；实现勿把 FTO 写成 `layout_insight`。
+
