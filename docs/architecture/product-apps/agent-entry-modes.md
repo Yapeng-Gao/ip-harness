@@ -103,4 +103,8 @@ type AgentProject = {
 ## 8. Owner
 
 - 规格：架构设计（本稿）  
-- 壳：Agent应用助手并行改 `apps/agent`  
+- 壳：Agent应用助手并行改 `apps/agent`
+
+## 评审
+
+- [product-apps/REVIEW.md](./REVIEW.md) · B席轻扫段（对象 `4cf2e47`）

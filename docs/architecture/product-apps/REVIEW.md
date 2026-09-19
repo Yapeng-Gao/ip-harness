@@ -54,3 +54,26 @@
 1. 路由 `?project=&expert=` vs `/projects/:pid` 实现择一即可（文已写）。  
 2. 现仓若仍有单一 `AGENT_SCRIPTS`，实现刀须按 expertId 拆分后再勾验收。
 
+## B席轻扫 · Agent 入口模式（`4cf2e47`）
+
+| 项 | 值 |
+|----|-----|
+| 对象 | [agent-entry-modes.md](./agent-entry-modes.md) |
+| 日期 | 2026-09-19 |
+| **结论** | **Pass** |
+
+| # | 尺子 | 结果 | 说明 |
+|---|------|------|------|
+| ① | 通用 Agent vs 项目 | **过** | 默认 `/agent` 单聊；项目可选，不强制建夹 |
+| ② | general vs domain+DomainPack | 过 | general=协作夹无专利步骤；domain 挂 Pack |
+| ③ | patent 首包可扩展 | 过 | `patent` 启用；预留灰显「另立项」 |
+| ④ | 旧 sessions 定位 | 过 | 主心智=通用历史；兼容深链；不与项目抢默认入口 |
+| ⑤ | 样机边界 | 过 | HITL→DomainCommand；禁真 LLM/本波真 case-core |
+
+与 agent-project-folder（domain/patent）互补：入口冻结在本稿。
+
+### 非阻塞
+
+1. `agent-project-folder` §路由仍写「`?project=` 或 `/projects/` 择一」——以 **entry-modes 路由表为准**；实现刀勿两套真相。  
+2. `DomainPackId` 类型示意可写成 `'patent' \| string` 预留，与正文 `future_*` 一致即可。
+
