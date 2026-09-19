@@ -1,0 +1,35 @@
+{
+  "chipBox": {
+    "w": 199,
+    "h": 36,
+    "bg": "rgba(0, 0, 0, 0)",
+    "fs": "12px",
+    "text": "待确认 · 3"
+  },
+  "sendBox": {
+    "w": 88,
+    "h": 40,
+    "bg": "rgb(15, 23, 42)",
+    "fs": "14px"
+  },
+  "foldOpen": false,
+  "visibleCore": [
+    "Core 检索现有技术 · 可专利性",
+    "Core 拆 OA · 起草答复",
+    "Core 立项评估 · 报价",
+    "Core 整理发明交底包",
+    "Core 核对年费 · 解锁付款",
+    "Core 梳理权利要求与期限"
+  ],
+  "metas": [
+    {
+      "fs": "11px",
+      "text": "Core 主闭环 · Assist 辅办 · Beta 非采购闭环"
+    },
+    {
+      "fs": "11px",
+      "text": "默认通用单聊 · 项目模式（次级 · general / domain）"
+    }
+  ],
+  "homeCaseBind": 1
+}

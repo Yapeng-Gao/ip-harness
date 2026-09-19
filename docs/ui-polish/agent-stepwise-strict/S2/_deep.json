@@ -1,0 +1,21 @@
+{
+  "tlH": null,
+  "gapComposer": null,
+  "switchH": null,
+  "startH": null,
+  "banners": [
+    "import { injectIntoGlobalHook } from \"/@react-refresh\"; injectIntoGlobalHook(window); window.$RefreshReg$ = () => {}; wi",
+    "/* Linux / box 环境：与 mid 统一，用已安装的 Noto Sans CJK SC，避免 SC 小写拉丁抢匹配导致中文破版 */ html, body, #root { font-family: \"Noto Sans CJK",
+    "跳到主要内容IP知产 Agent代理所租户 · 德恒知产代理所·自动匹配作业中台知产 Agent上下文开始Agent会话更多 新建会话通用历史筛选通用单聊历史 · 非项目文件夹搜索会话全部 · 4待确认 · 3进行中 · 0一通创造性答复 "
+  ],
+  "primaryFilled": [
+    "代理所",
+    "作业中台",
+    "更多",
+    "筛选",
+    "待确认 · 3",
+    "进行中 · 0",
+    "一通创造性答复 · 边缘调度 OA 答复 Agent · 待",
+    ""
+  ]
+}

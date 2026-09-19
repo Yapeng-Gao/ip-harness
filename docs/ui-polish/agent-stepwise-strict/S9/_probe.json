@@ -1,0 +1,26 @@
+{
+  "s9orch": {
+    "url": "http://127.0.0.1:5175/agent/projects/proj-1789794357492-l0u7k",
+    "stepBar": true,
+    "noPatent": false,
+    "english": [],
+    "toolish": [],
+    "composerTop": 815,
+    "vh": 900
+  },
+  "s9ex": {
+    "url": "http://127.0.0.1:5175/agent/projects/proj-1789794357492-l0u7k/bots/expert-search",
+    "expertHeader": "检索专家",
+    "stepBar": true,
+    "softYellow": [],
+    "english": [
+      "approve_strategy",
+      "commercial_patent_search"
+    ]
+  },
+  "gates": {
+    "midDeep": [],
+    "billing": false,
+    "origin": "http://127.0.0.1:5175"
+  }
+}
