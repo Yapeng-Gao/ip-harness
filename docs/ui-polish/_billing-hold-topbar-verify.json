@@ -1,0 +1,27 @@
+{
+  "base": "http://127.0.0.1:5175",
+  "startedAt": "2026-09-19T03:44:33.367Z",
+  "pass": true,
+  "checks": [
+    {
+      "name": "no data-billing-hold-banner",
+      "pass": true
+    },
+    {
+      "name": "header next is not billing banner",
+      "pass": true
+    },
+    {
+      "name": "sidebar weak chip when hold forced",
+      "pass": true
+    }
+  ],
+  "probe": {
+    "hasBannerAttr": false,
+    "afterHeaderIsBanner": false,
+    "afterClass": "flex min-h-0 flex-1",
+    "hasChip": true,
+    "chipText": "递交已停权 · 4 案 · 4 张欠票"
+  },
+  "screenshot": "docs/ui-polish/_billing-hold-topbar-home.png"
+}

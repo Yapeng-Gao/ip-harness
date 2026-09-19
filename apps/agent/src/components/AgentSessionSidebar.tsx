@@ -23,6 +23,10 @@ import {
 } from './session/sessionGates'
 import { agentSessionPath } from '../lib/deepLinks'
 import { agentRunStatusLabel } from '../lib/statusLabels'
+import {
+  BILLING_HOLD_COPY,
+  summarizeBillingHold,
+} from '@shared/utils/billingHoldBanner'
 
 const STATUS_DOT: Record<string, string> = {
   running: 'bg-[var(--color-status-info)]',
@@ -34,7 +38,7 @@ const STATUS_DOT: Record<string, string> = {
 
 /** Mail-like session list sidebar for AgentShell. */
 export function AgentSessionSidebar() {
-  const { workspace, getCase, hasBlockingInvoiceForCase, role } = useApp()
+  const { workspace, getCase, hasBlockingInvoiceForCase, role, visibleCases, persona, overdueStopEnabled } = useApp()
   const {
     visibleSessions,
     createSession,
@@ -241,6 +245,22 @@ export function AgentSessionSidebar() {
   const moreActive =
     loc.pathname.startsWith('/agent/harness') ||
     loc.pathname.startsWith('/agent/projects')
+
+  const billingHold = useMemo(
+    () =>
+      summarizeBillingHold({
+        cases: visibleCases,
+        role,
+        persona,
+        overdueStopEnabled,
+      }),
+    [visibleCases, role, persona, overdueStopEnabled],
+  )
+  const billingHoldCopy = billingHold.visible
+    ? billingHold.variant === 'agency_hard'
+      ? BILLING_HOLD_COPY.agency
+      : BILLING_HOLD_COPY.enterprise
+    : null
 
   return (
     <>
@@ -734,6 +754,22 @@ export function AgentSessionSidebar() {
         </div>
         </>
         )}
+
+        {billingHold.visible && billingHoldCopy ? (
+          <div
+            className="mx-2 mb-2 shrink-0 rounded-md border border-slate-200/90 bg-slate-50 px-2 py-1.5 text-[10px] leading-snug text-slate-500"
+            role="status"
+            aria-label={billingHoldCopy.headline}
+            data-billing-hold-chip={billingHold.variant}
+            title={`${billingHold.cases.length} 案 · ${billingHold.invoiceCount} 张欠票`}
+          >
+            <span className="font-medium text-slate-600">{billingHoldCopy.headline}</span>
+            <span className="opacity-80">
+              {' '}
+              · {billingHold.cases.length} 案 · {billingHold.invoiceCount} 张欠票
+            </span>
+          </div>
+        ) : null}
       </aside>
 
       {archiveToast && (
