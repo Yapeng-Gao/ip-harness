@@ -151,3 +151,13 @@
 
 entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
+## B席轻扫 · L2 团队 bot 自发互通（`ee40a57`）
+
+| 结论 | **Pass** |
+|------|----------|
+| bot→bot 自发 | 过：区别于用户转发；`spontaneous` + 协作任务状态机 |
+| 协作 mock | 过：编排→search→draft 可点故事；无真 LLM |
+| 路由仅 team/bots | 过：L1 `/agent` 禁多 bot 墙；L2=`/agent/team`+`/bots/*` |
+
+**风险**：`agent-entry-modes` 附录仍偏「默认多 bot」——实现以 **layers + 本稿** 为准（L1 单助手，互通只在 L2）。
+
