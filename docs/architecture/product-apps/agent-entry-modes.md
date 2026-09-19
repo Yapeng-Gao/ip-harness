@@ -96,4 +96,8 @@
 ## 10. Owner
 
 - 规格：架构设计  
-- 壳：Agent应用助手（`apps/agent`）  
+- 壳：Agent应用助手（`apps/agent`）
+
+## 评审
+
+- [product-apps/REVIEW.md](./REVIEW.md) · B席轻扫段（对象 `101e948` IA 改向）
