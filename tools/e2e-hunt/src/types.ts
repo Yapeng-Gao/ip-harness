@@ -72,6 +72,12 @@ export type CasePack = {
   abortOnHard?: boolean
   /** Optional seed actions before rule decide takes over */
   allowedActionsNote?: string
+  /**
+   * Opt-in 增强遥测（signals-and-telemetry §2）。
+   * 默认关；heap 永不经此旗标开启。
+   * - 'network'：轻量失败/慢请求摘要
+   */
+  enhancedTelemetry?: 'network'
 }
 
 export type A11yNodeSummary = {
@@ -100,6 +106,32 @@ export type AgentReasoning = {
   judgement_basis: string
 }
 
+
+/** 轻量 Network 失败条目（增强档；可选） */
+export type NetworkFailure = {
+  url: string
+  method: string
+  reason: string
+  status?: number
+}
+
+/** 轻量 Network 摘要 / step delta（增强档；可选） */
+export type NetworkSummary = {
+  failedCount: number
+  /** 耗时 >2s 的请求数 */
+  slowCount: number
+  /** 本窗口内观察到的请求数（可选） */
+  requestCount?: number
+  failures: NetworkFailure[]
+}
+
+/** 报告级遥测元信息（可选，不破 schemaVersion 1.0） */
+export type HuntTelemetryMeta = {
+  mode: 'network'
+  /** 对齐 signals-and-telemetry：heap 默认关 */
+  heap: false
+}
+
 export type StepRecord = {
   i: number
   url: string
@@ -112,6 +144,8 @@ export type StepRecord = {
   note?: string
   /** 规则短路可填 judgement_basis: "rule:…" */
   agent_reasoning?: AgentReasoning
+  /** 增强档 Network delta（opt-in） */
+  networkDelta?: NetworkSummary
 }
 
 export type FindingSeverity = 'fail_hard' | 'suspect'
@@ -143,10 +177,14 @@ export type HuntReport = {
     steps: number
     findings: { fail_hard: number; suspect: number }
     stopReason?: string
+    /** 增强档 Network 汇总（opt-in） */
+    network?: NetworkSummary
   }
   casePackId: string
   steps: StepRecord[]
   findings: Finding[]
+  /** 增强遥测元信息（可选；heap 恒 false） */
+  telemetry?: HuntTelemetryMeta
 }
 
 export type DecideResult =

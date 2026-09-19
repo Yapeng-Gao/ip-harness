@@ -55,11 +55,70 @@ function renderMarkdown(r: HuntReport): string {
     if (s.signals?.length) {
       lines.push(`- signals:`)
       for (const sig of s.signals) {
-        lines.push(`  - \`${sig.kind}\` ${sig.text.slice(0, 100)}`)
+        const wl = sig.whitelisted ? ' [白名单]' : ''
+        lines.push(`  - \`${sig.kind}\`${wl} ${sig.text.slice(0, 100)}`)
+      }
+    }
+    if (s.networkDelta) {
+      const nd = s.networkDelta
+      lines.push(
+        `- networkDelta: failed=${nd.failedCount} slow(>2s)=${nd.slowCount} reqs=${nd.requestCount ?? '?'}`,
+      )
+      for (const f of nd.failures.slice(0, 5)) {
+        lines.push(`  - ${f.method} ${f.url.slice(0, 80)} → ${f.reason}`)
       }
     }
     lines.push('')
   }
+  lines.push('## CheapSignals / 失败请求摘要')
+  lines.push('')
+  if (r.telemetry) {
+    lines.push(
+      `- **telemetry**: mode=\`${r.telemetry.mode}\` · heap=\`${r.telemetry.heap}\`（默认关）`,
+    )
+  } else {
+    lines.push('- **telemetry**: 未开启增强档（heap 默认关）')
+  }
+  const allSigs = r.steps.flatMap((s) => s.signals ?? [])
+  const byKind: Record<string, number> = {}
+  let wlCount = 0
+  for (const s of allSigs) {
+    byKind[s.kind] = (byKind[s.kind] ?? 0) + 1
+    if (s.whitelisted) wlCount += 1
+  }
+  lines.push(
+    `- **CheapSignals**: total=${allSigs.length} · whitelisted=${wlCount}` +
+      (Object.keys(byKind).length
+        ? ` · byKind={ ${Object.entries(byKind)
+            .map(([k, v]) => `${k}:${v}`)
+            .join(', ')} }`
+        : ' · （本 run 无信号）'),
+  )
+  if (allSigs.length) {
+    lines.push('- 抽样（最多 8 条）:')
+    for (const sig of allSigs.slice(0, 8)) {
+      const wl = sig.whitelisted ? ' [白名单]' : ''
+      lines.push(`  - \`${sig.kind}\`${wl} ${sig.text.slice(0, 120)}`)
+    }
+  }
+  const net = r.summary.network
+  if (net) {
+    lines.push(
+      `- **Network 汇总**: failed=${net.failedCount} · slow(>2s)=${net.slowCount} · reqs=${net.requestCount ?? '?'}`,
+    )
+    if (net.failures.length) {
+      lines.push('- 失败请求:')
+      for (const f of net.failures.slice(0, 10)) {
+        lines.push(`  - ${f.method} ${f.url} → ${f.reason}`)
+      }
+    } else {
+      lines.push('- 失败请求: _无_')
+    }
+  } else {
+    lines.push('- **Network 汇总**: _未采集（CasePack 未 opt-in enhancedTelemetry: network）_')
+  }
+  lines.push('')
+
   lines.push('## Findings')
   lines.push('')
   if (r.findings.length === 0) {

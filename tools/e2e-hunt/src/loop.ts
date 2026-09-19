@@ -4,6 +4,7 @@ import type { Page } from 'playwright'
 import { decide as adapterDecide } from './adapter/ip-harness.js'
 import { CheapSignalCollector } from './cheap-signals.js'
 import type { PlaywrightDriver } from './driver.js'
+import { NetworkTelemetryCollector } from './network-telemetry.js'
 import { observe } from './observer.js'
 import {
   actionFingerprint,
@@ -19,6 +20,7 @@ import type {
   Finding,
   HuntReport,
   JudgeResult,
+  NetworkSummary,
   Observation,
   StepRecord,
 } from './types.js'
@@ -142,6 +144,11 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
   const signals = new CheapSignalCollector()
   signals.attach(page)
 
+  const netEnabled = pack.enhancedTelemetry === 'network'
+  const network = netEnabled ? new NetworkTelemetryCollector() : null
+  network?.attach(page)
+  const networkDeltas: NetworkSummary[] = []
+
   const startedAt = new Date().toISOString()
   const steps: StepRecord[] = []
   const findings: Finding[] = []
@@ -157,14 +164,16 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
   let bootstrapped = false
 
   for (let i = 1; i <= maxSteps; i++) {
-    // Drain pre-step noise then observe
+    // Drain pre-step signals（含白名单，标 whitelisted）then observe
     const preSignals = signals.drain()
+    const preNet = network?.drain()
+    if (preNet) networkDeltas.push(preNet)
     const obs = await observe({
       page,
       pack,
       stepIndex: i,
       artifactsDir,
-      signals: preSignals.filter((s) => !s.whitelisted),
+      signals: preSignals,
       previouslyReached: everReached,
     })
     everReached = obs.reachedCheckpoints
@@ -192,6 +201,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         checkpointId: obs.nextCheckpointId,
         note: 'stalled: no checkpoint progress',
         agent_reasoning: ruleReasoning(obs, 'stop', 'stalled'),
+        ...(preNet ? { networkDelta: preNet } : {}),
       })
       break
     }
@@ -216,6 +226,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         checkpointId: null,
         note: 'all checkpoints reached',
         agent_reasoning: ruleReasoning(obs, 'stop', `${pack.id}:success`),
+        ...(preNet ? { networkDelta: preNet } : {}),
       })
       break
     }
@@ -247,6 +258,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         checkpointId: obs.nextCheckpointId,
         note: decision.reason,
         agent_reasoning: ruleReasoning(obs, 'stop', `${pack.id}:${decision.reason}`),
+        ...(preNet ? { networkDelta: preNet } : {}),
       })
       break
     }
@@ -282,6 +294,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         checkpointId: obs.nextCheckpointId,
         note: `loop fingerprint ${fp}`,
         agent_reasoning: ruleReasoning(obs, 'stop', 'loop_detected'),
+        ...(preNet ? { networkDelta: preNet } : {}),
       })
       break
     }
@@ -293,7 +306,9 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
     } else if (action.type !== 'wait' && action.type !== 'stop') {
       await page.waitForTimeout(250)
     }
-    const postSignals = signals.drain().filter((s) => !s.whitelisted)
+    const postSignals = signals.drain()
+    const postNet = network?.drain()
+    if (postNet) networkDeltas.push(postNet)
     const postObs = await observe({
       page,
       pack,
@@ -303,7 +318,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
       previouslyReached: everReached,
     })
     everReached = postObs.reachedCheckpoints
-    // overwrite screenshot with post-act
+    // overwrite screenshot with post-act；signals 全量 drain（含白名单）
     const mergedObs: Observation = {
       ...postObs,
       signals: postSignals,
@@ -347,6 +362,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         judged.verdict,
         `${pack.id}:${obs.nextCheckpointId ?? 'act'}→${action.type}`,
       ),
+      ...(postNet ? { networkDelta: postNet } : {}),
     })
 
     if (judged.verdict === 'fail_hard' && abortOnHard) {
@@ -400,6 +416,10 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
   }
 
   const finishedAt = new Date().toISOString()
+  const networkSummary =
+    netEnabled && networkDeltas.length > 0
+      ? NetworkTelemetryCollector.merge(networkDeltas)
+      : undefined
   return {
     schemaVersion: '1.0',
     runId,
@@ -415,9 +435,11 @@ export async function runAgentLoop(opts: LoopOptions): Promise<HuntReport> {
         suspect: findings.filter((f) => f.severity === 'suspect').length,
       },
       stopReason: String(stopReason),
+      ...(networkSummary ? { network: networkSummary } : {}),
     },
     casePackId: pack.id,
     steps,
     findings,
+    ...(netEnabled ? { telemetry: { mode: 'network' as const, heap: false as const } } : {}),
   }
 }

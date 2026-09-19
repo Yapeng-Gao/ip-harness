@@ -11,6 +11,7 @@ export const CP_AGENT_HITL: CasePack = {
   baseURL: 'http://localhost:5175/',
   maxSteps: 12,
   abortOnHard: true,
+  enhancedTelemetry: 'network',
   allowedActionsNote:
     '深链优先进种子 sess-oa-1（needs_human+hitlPending）；勿把 HITL 等待态 / Beta·非采购闭环 / 样机横幅当缺陷',
   checkpoints: [
