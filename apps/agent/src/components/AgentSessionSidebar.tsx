@@ -298,22 +298,27 @@ export function AgentSessionSidebar() {
         >
           <NavLink to="/agent" end className={navCls}>
             <Home className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
-            开始
+            {isHome ? '回 Grok' : '开始'}
           </NavLink>
-          <NavLink to="/agent/agents" className={navCls}>
-            <Users className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
-            Agent
-          </NavLink>
-          <NavLink to="/agent/sessions" end className={navCls}>
-            <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
-            会话
-          </NavLink>
+          {/* compose / catalog：会话·Agent 收进「更多」，勿与主入口同权 */}
+          {!collapseInbox ? (
+            <>
+              <NavLink to="/agent/agents" className={navCls}>
+                <Users className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+                Agent
+              </NavLink>
+              <NavLink to="/agent/sessions" end className={navCls}>
+                <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+                会话
+              </NavLink>
+            </>
+          ) : null}
           <div ref={overflowRef} className="relative">
             <button
               type="button"
               onClick={() => setOverflowOpen((v) => !v)}
               className={`btn-press focus-ring flex min-h-10 w-full items-center gap-2 rounded-[var(--radius-sm)] px-2.5 py-2 text-xs ${
-                moreActive
+                moreActive || (collapseInbox && (loc.pathname.startsWith('/agent/agents') || loc.pathname.startsWith('/agent/sessions')))
                   ? 'list-row-active font-semibold text-slate-900'
                   : 'font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
@@ -326,6 +331,27 @@ export function AgentSessionSidebar() {
             </button>
             {overflowOpen && (
               <div className="menu-enter absolute left-0 right-0 top-full z-30 mt-0.5 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+                {collapseInbox ? (
+                  <>
+                    <Link
+                      to="/agent/sessions"
+                      onClick={() => setOverflowOpen(false)}
+                      className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                      data-testid="sidebar-sessions-secondary"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5 text-slate-400" /> 会话 · 历史
+                    </Link>
+                    <Link
+                      to="/agent/agents"
+                      onClick={() => setOverflowOpen(false)}
+                      className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                      data-testid="sidebar-catalog-secondary"
+                    >
+                      <Users className="h-3.5 w-3.5 text-slate-400" /> Catalog · Agent
+                    </Link>
+                    <div className="border-t border-slate-100" />
+                  </>
+                ) : null}
                 {!isSessionsList ? (
                 <button
                   type="button"

@@ -1,17 +1,39 @@
-import { Link, useParams } from 'react-router-dom'
-import { Bot, Plus, FolderKanban, History, LayoutGrid } from 'lucide-react'
+import { Link, useParams, useLocation } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Bot, Plus, FolderKanban, History, LayoutGrid, MoreHorizontal, PenLine } from 'lucide-react'
 import { useGeneralBots } from '../../projects/GeneralBotsContext'
 import { expertAccentClass } from '../../projects/experts'
 import { freeBotPath, kindLabel } from '../../projects/generalBots'
 
 /**
  * Free bot rail — seed customs + user-created; optional template-backed.
- * No welded patent roster. Spec §3 / §5 (cec9d79).
+ * Main path: bot list + 新建. Sessions / Catalog / compose tucked under「更多」.
+ * Spec §3 / §5 (cec9d79) · UI converge: secondary ≠ peer weight.
  */
 export function GeneralBotSidebar() {
   const { botId } = useParams<{ botId?: string }>()
+  const loc = useLocation()
   const { activeBots } = useGeneralBots()
   const active = botId ?? activeBots[0]?.id
+  const [moreOpen, setMoreOpen] = useState(false)
+  const moreRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!moreOpen) return
+    const onDoc = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', onDoc)
+    return () => document.removeEventListener('mousedown', onDoc)
+  }, [moreOpen])
+
+  const moreActive =
+    loc.pathname.startsWith('/agent/sessions') ||
+    loc.pathname.startsWith('/agent/agents') ||
+    loc.pathname.startsWith('/agent/compose') ||
+    loc.pathname.startsWith('/agent/harness')
 
   return (
     <aside
@@ -85,37 +107,76 @@ export function GeneralBotSidebar() {
         </p>
       </div>
 
-      <div className="space-y-0.5 border-t border-slate-100 px-2 py-2">
+      <div className="space-y-1 border-t border-slate-100 px-2 py-2">
+        {/* Single weak project entry — not peer weight with bot list */}
         <Link
           to="/agent/projects"
-          className="focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs text-slate-600 hover:bg-slate-50"
+          className="block truncate px-1.5 text-[11px] text-slate-400 hover:text-slate-600 hover:underline"
           data-testid="general-nav-projects"
         >
-          <FolderKanban className="h-3.5 w-3.5" aria-hidden />
-          项目模式
-          <span className="ml-auto text-[9px] text-amber-700">专家固定</span>
+          项目模式（专家固定）
         </Link>
-        <Link
-          to="/agent/sessions"
-          className="focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs text-slate-600 hover:bg-slate-50"
-        >
-          <History className="h-3.5 w-3.5" aria-hidden />
-          历史聚合
-        </Link>
-        <Link
-          to="/agent/agents"
-          className="focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs text-slate-500 hover:bg-slate-50"
-        >
-          <LayoutGrid className="h-3.5 w-3.5" aria-hidden />
-          Catalog · 管理
-        </Link>
-        <Link
-          to="/agent/compose"
-          className="focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-[11px] text-slate-400 hover:bg-slate-50 hover:text-slate-600"
-          data-testid="general-compose-compat"
-        >
-          旧 Composer · 次级
-        </Link>
+
+        <div ref={moreRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setMoreOpen((v) => !v)}
+            className={`focus-ring hit-40 flex w-full items-center gap-1.5 rounded-md px-1.5 text-[11px] ${
+              moreActive
+                ? 'bg-slate-50 font-medium text-slate-700'
+                : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
+            }`}
+            aria-label="更多"
+            aria-expanded={moreOpen}
+            data-testid="general-side-more"
+          >
+            <MoreHorizontal className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+            更多
+          </button>
+          {moreOpen && (
+            <div
+              className="menu-enter absolute bottom-full left-0 right-0 z-30 mb-0.5 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm"
+              data-testid="general-side-more-menu"
+            >
+              <Link
+                to="/agent/sessions"
+                onClick={() => setMoreOpen(false)}
+                className="focus-ring flex min-h-9 items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
+                data-testid="general-more-sessions"
+              >
+                <History className="h-3.5 w-3.5 text-slate-400" aria-hidden />
+                历史聚合
+              </Link>
+              <Link
+                to="/agent/agents"
+                onClick={() => setMoreOpen(false)}
+                className="focus-ring flex min-h-9 items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
+                data-testid="general-more-catalog"
+              >
+                <LayoutGrid className="h-3.5 w-3.5 text-slate-400" aria-hidden />
+                Catalog · 管理
+              </Link>
+              <Link
+                to="/agent/compose"
+                onClick={() => setMoreOpen(false)}
+                className="focus-ring flex min-h-9 items-center gap-2 px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-50"
+                data-testid="general-compose-compat"
+              >
+                <PenLine className="h-3.5 w-3.5 text-slate-400" aria-hidden />
+                旧 Composer · 次级
+              </Link>
+              <div className="border-t border-slate-100" />
+              <Link
+                to="/agent/projects"
+                onClick={() => setMoreOpen(false)}
+                className="focus-ring flex min-h-9 items-center gap-2 px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-50"
+              >
+                <FolderKanban className="h-3.5 w-3.5 text-slate-400" aria-hidden />
+                项目列表
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     </aside>
   )

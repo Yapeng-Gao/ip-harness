@@ -91,14 +91,14 @@ export function AgentHome() {
               className="font-medium text-slate-800 underline-offset-2 hover:underline"
               data-testid="compose-back-to-grok"
             >
-              Grok 多专家壳
+              通用 Grok（自由 bot）
             </Link>
-            ：左侧选 bot / 总控一对一聊。
+            ：侧栏选 bot 一对一 · 可新建 / 转发。
           </p>
         </div>
 
         <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold text-slate-800">选壳级 bot 开聊</div>
+          <div className="text-xs font-semibold text-slate-800">选自由 bot 开聊</div>
           <ul className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
             {botLinks.map((b) => (
               <li key={b.id}>
