@@ -1,0 +1,10 @@
+[
+  {
+    "href": "/agent/projects/proj-demo-general",
+    "text": "课题协作 · 通用演示 通用 general：总控 + 研究/写作/审查（无专利步骤） bot 3 · 含总控席"
+  },
+  {
+    "href": "/agent/projects/proj-demo-patent",
+    "text": "边缘调度模组 · 专利演示 专利 domain/patent：总控 + 检索/撰稿/FTO bot 3 · 含总控席 · pack=patent"
+  }
+]

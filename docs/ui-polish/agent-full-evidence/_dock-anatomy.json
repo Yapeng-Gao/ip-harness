@@ -1,0 +1,156 @@
+{
+  "dockH": 383,
+  "dockTop": 517,
+  "confirmH": 173,
+  "kids": [
+    {
+      "cls": "",
+      "tag": "DIV",
+      "h": 173,
+      "w": 896,
+      "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 批准策略 授权递交 批准策略 授权递交 退回 在运营 Inbox 中查看 逐步 请先选争点类型并填策略要点 还有 3 条 补充项 · "
+    },
+    {
+      "cls": "shrink-0 border-t border-slate-200/90 bg-white px-4 py-3.5 shadow-[0_-4px_16px_r",
+      "tag": "DIV",
+      "h": 210,
+      "w": 896,
+      "text": "自动匹配 Core · 调研检索 Agent Core · 交底整理 Agent Core · 立项评估 Agent Core · 权利要求撰写 Agent Core · OA 答复 Agent Co"
+    }
+  ],
+  "centerW": 896,
+  "leftW": 224,
+  "rightW": 320,
+  "reasons": [
+    "请先选争点类型并填策略要点",
+    "请先选争点类型并填策略要点"
+  ],
+  "allRed": [
+    {
+      "tag": "HTML",
+      "cls": "",
+      "text": "IP Apps\n作业中台\n办理台\n知产 Agent\n运维\nIAM\n跳到主要内容\nIP\n知产 Agent\n代理所租户 · 德恒知产\n代理所\n·\nOA 答复 Age"
+    },
+    {
+      "tag": "BODY",
+      "cls": "",
+      "text": "IP Apps\n作业中台\n办理台\n知产 Agent\n运维\nIAM\n跳到主要内容\nIP\n知产 Agent\n代理所租户 · 德恒知产\n代理所\n·\nOA 答复 Age"
+    },
+    {
+      "tag": "DIV",
+      "cls": "",
+      "text": "IP Apps\n作业中台\n办理台\n知产 Agent\n运维\nIAM\n跳到主要内容\nIP\n知产 Agent\n代理所租户 · 德恒知产\n代理所\n·\nOA 答复 Age"
+    },
+    {
+      "tag": "DIV",
+      "cls": "app-shell-bg flex h-full min-h-screen flex-col",
+      "text": "跳到主要内容\nIP\n知产 Agent\n代理所租户 · 德恒知产\n代理所\n·\nOA 答复 Agent\n作业中台\n知产 Agent\n上下文\n2\n开始\nAgent\n会"
+    },
+    {
+      "tag": "DIV",
+      "cls": "flex min-h-0 flex-1",
+      "text": "开始\nAgent\n会话\n更多\n新建会话\n会话\n筛选\n搜索会话\n全部4\n待确认3\n一通创造性答复 · 边缘调度\nOA 答复 Agent · 待你确认\n待企业确认\n"
+    },
+    {
+      "tag": "MAIN",
+      "cls": "flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-n",
+      "text": "一通创造性答复 · 边缘调度\n改名\n\nOA 答复 Agent · 待你确认 · 一种边缘计算节点调度方法\n\n回中台\n已绑案件\n一种边缘计算节点调度方法\n解除绑定"
+    },
+    {
+      "tag": "DIV",
+      "cls": "flex min-h-0 flex-1",
+      "text": "一通创造性答复 · 边缘调度\n改名\n\nOA 答复 Agent · 待你确认 · 一种边缘计算节点调度方法\n\n回中台\n已绑案件\n一种边缘计算节点调度方法\n解除绑定"
+    },
+    {
+      "tag": "SECTION",
+      "cls": "flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50",
+      "text": "一通创造性答复 · 边缘调度\n改名\n\nOA 答复 Agent · 待你确认 · 一种边缘计算节点调度方法\n\n回中台\n已绑案件\n一种边缘计算节点调度方法\n解除绑定"
+    }
+  ],
+  "scrollers": [
+    {
+      "cls": "flex-1 space-y-1.5 overflow-y-auto px-4 py-5 lg:px-6",
+      "scrollH": 369,
+      "clientH": 347,
+      "h": 347,
+      "top": 171
+    },
+    {
+      "cls": "agent-artifact-editor focus-ring",
+      "scrollH": 243,
+      "clientH": 206,
+      "h": 207,
+      "top": 563
+    }
+  ],
+  "confirmStyle": {
+    "radius": "0px",
+    "bg": "rgba(0, 0, 0, 0)",
+    "parentRadius": "0px"
+  },
+  "fontSamples": [
+    {
+      "tag": "P",
+      "fs": "14px",
+      "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起"
+    },
+    {
+      "tag": "SPAN",
+      "fs": "14px",
+      "text": "需要你确认："
+    },
+    {
+      "tag": "SPAN",
+      "fs": "14px",
+      "text": "批准策略"
+    },
+    {
+      "tag": "SPAN",
+      "fs": "14px",
+      "text": " · OA 答复 Agent"
+    },
+    {
+      "tag": "SPAN",
+      "fs": "14px",
+      "text": "交接：代理起草中"
+    },
+    {
+      "tag": "SPAN",
+      "fs": "12px",
+      "text": "交接：代理起草中"
+    },
+    {
+      "tag": "SPAN",
+      "fs": "14px",
+      "text": "批准策略\n授权递交"
+    },
+    {
+      "tag": "SPAN",
+      "fs": "10px",
+      "text": "批准策略"
+    },
+    {
+      "tag": "SPAN",
+      "fs": "10px",
+      "text": "授权递交"
+    },
+    {
+      "tag": "SPAN",
+      "fs": "15px",
+      "text": "批准策略"
+    },
+    {
+      "tag": "BUTTON",
+      "fs": "12px",
+      "text": "批准策略"
+    },
+    {
+      "tag": "SPAN",
+      "fs": "15px",
+      "text": "授权递交"
+    }
+  ],
+  "bodyScroll": true,
+  "docScrollH": 957,
+  "vh": 900
+}

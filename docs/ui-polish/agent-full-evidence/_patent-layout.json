@@ -1,0 +1,22 @@
+{
+  "ta": [
+    {
+      "ph": "输入分派摘要，或点「分派给…」",
+      "top": 872,
+      "bottom": 930,
+      "h": 58,
+      "inView": true
+    }
+  ],
+  "stepRect": {
+    "w": 992,
+    "h": 95,
+    "top": 191,
+    "text": "总控席\n编排 · 分派 · 汇总\n样机 · 无真 LLM · 专家分剧本\n\n只拆派任务与汇总专家回执；禁止直接改 handoff / 写案。深链可打开各专家私聊"
+  },
+  "toolCards": [],
+  "leftW": 224,
+  "rightW": 224,
+  "bodyTextLen": 704,
+  "hasEnglishIds": true
+}

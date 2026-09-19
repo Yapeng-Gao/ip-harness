@@ -1,0 +1,15 @@
+{
+  "ta": [
+    {
+      "ph": "输入分派摘要，或点「分派给…」",
+      "top": 872,
+      "inView": true
+    }
+  ],
+  "hasPatentSteps": false,
+  "hasNoPatentNote": true,
+  "englishIds": [
+    "GENERAL",
+    "ORCHESTRATOR"
+  ]
+}

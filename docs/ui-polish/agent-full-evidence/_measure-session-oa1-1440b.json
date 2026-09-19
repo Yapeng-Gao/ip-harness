@@ -1,0 +1,121 @@
+{
+  "vw": 1440,
+  "vh": 900,
+  "asides": [
+    {
+      "tag": "ASIDE",
+      "cls": "shell-aside flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex-col sm:w-",
+      "w": 224,
+      "h": 852,
+      "left": 0,
+      "top": 48,
+      "overflowY": "visible",
+      "position": "static"
+    },
+    {
+      "tag": "ASIDE",
+      "cls": "agent-aside hidden w-72 shrink-0 flex-col lg:flex xl:w-80",
+      "w": 320,
+      "h": 852,
+      "left": 1120,
+      "top": 48,
+      "overflowY": "visible",
+      "position": "static"
+    },
+    {
+      "tag": "SECTION",
+      "cls": "agent-aside-section",
+      "w": 319,
+      "h": 148,
+      "left": 1121,
+      "top": 174,
+      "overflowY": "visible",
+      "position": "static"
+    },
+    {
+      "tag": "DIV",
+      "cls": "agent-aside-meta-body",
+      "w": 319,
+      "h": 111,
+      "left": 1121,
+      "top": 448,
+      "overflowY": "visible",
+      "position": "static"
+    }
+  ],
+  "mains": [
+    {
+      "tag": "MAIN",
+      "cls": "flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-none focus-visible:ring-2 focus",
+      "w": 1216,
+      "h": 852,
+      "left": 224,
+      "overflowY": "visible",
+      "position": "static"
+    }
+  ],
+  "sticky": [
+    {
+      "cls": "agent-hitl-dock sticky bottom-0 z-20 shrink-0",
+      "tag": "DIV",
+      "pos": "sticky",
+      "topCss": "auto",
+      "w": 896,
+      "h": 383,
+      "y": 517
+    }
+  ],
+  "scrollers": [
+    {
+      "cls": "flex-1 space-y-1.5 overflow-y-auto px-4 py-5 lg:px-6",
+      "scrollH": 369,
+      "clientH": 347,
+      "w": 896,
+      "h": 347,
+      "left": 224
+    },
+    {
+      "cls": "agent-artifact-editor focus-ring",
+      "scrollH": 243,
+      "clientH": 206,
+      "w": 293,
+      "h": 207,
+      "left": 1134
+    }
+  ],
+  "confirm": {
+    "cls": "confirm-hitl shrink-0 border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 sm:py-4",
+    "w": 896,
+    "h": 173,
+    "top": 517,
+    "bottom": 690,
+    "position": "relative",
+    "inViewport": true
+  },
+  "visibleTextareas": [
+    {
+      "ph": "策略要点：缩限 / 争辩 / 补实验…",
+      "w": 826,
+      "h": 47,
+      "top": 787,
+      "visible": true
+    },
+    {
+      "ph": "描述要办的事… 例如：对固态电解质配方做现有技术检索并输出结论",
+      "w": 766,
+      "h": 52,
+      "top": 708,
+      "visible": true
+    },
+    {
+      "ph": "",
+      "w": 293,
+      "h": 207,
+      "top": 563,
+      "visible": true
+    }
+  ],
+  "bodyScroll": true,
+  "h1": "一通创造性答复 · 边缘调度\n改名",
+  "title": "IP Harness · 知产 Agent"
+}

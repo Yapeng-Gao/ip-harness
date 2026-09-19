@@ -1,0 +1,10 @@
+{
+  "found": true,
+  "cls": "confirm-hitl shrink-0 border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 sm:py-4",
+  "top": 517,
+  "bottom": 690,
+  "h": 173,
+  "inViewport": true,
+  "position": "relative",
+  "stickyAncestor": "agent-hitl-dock sticky bottom-0 z-20 shrink-0"
+}
