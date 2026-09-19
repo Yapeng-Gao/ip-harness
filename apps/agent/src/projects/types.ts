@@ -12,6 +12,8 @@ export type ProjectExpertId =
   | 'expert-search'
   | 'expert-draft'
   | 'expert-fto'
+  | 'expert-mining'
+  | 'expert-figure'
   | 'general-orchestrator'
   | 'general-research'
   | 'general-write'
@@ -25,6 +27,7 @@ export type TimelineEventKind =
   | 'expert_report'
   | 'step'
   | 'hitl'
+  | 'domain_command'
   | 'system'
 
 export type ChatRole = 'user' | 'assistant' | 'system' | 'tool'
@@ -145,4 +148,16 @@ export type AgentProject = {
   expertIds: ProjectExpertId[]
   createdAt: string
   updatedAt: string
+}
+
+/** L3 prototype: Confirm → DomainCommand write indication (in-memory only). */
+export type DomainCommandWriteLog = {
+  id: string
+  projectId: string
+  expertId: ProjectExpertId
+  command: CommandName
+  payload: Record<string, unknown>
+  at: string
+  midCaseHref?: string
+  note: string
 }

@@ -10,6 +10,7 @@ import {
   projectKindBadge,
 } from '../../projects/experts'
 import { CaseBindControls } from '../../components/case/CaseBindControls'
+import { PatentMidMapPanel } from '../../components/projects/PatentMidMapPanel'
 
 export function ProjectWorkspacePage() {
   const { projectId, botId, expertId } = useParams<{
@@ -69,6 +70,14 @@ export function ProjectWorkspacePage() {
             >
               项目 · 专家固定
             </span>
+            {(project.kind === 'domain' || project.domainPackId === 'patent') && (
+              <span
+                className="rounded border border-violet-300 bg-violet-50 px-1.5 py-px font-semibold text-violet-800"
+                data-testid="project-l3-badge"
+              >
+                L3 · 专利中台
+              </span>
+            )}
             <span className={`rounded border px-1 py-px ${badge.className}`}>
               {badge.label}
             </span>
@@ -107,6 +116,13 @@ export function ProjectWorkspacePage() {
             caseId={project.caseId}
           />
           <ProjectTimelinePanel projectId={projectId} currentExpertId={resolved} />
+          {(project.kind === 'domain' || project.domainPackId === 'patent') && (
+            <PatentMidMapPanel
+              projectId={projectId}
+              expertId={resolved}
+              caseId={project.caseId}
+            />
+          )}
         </div>
       </div>
     </div>

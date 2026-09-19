@@ -18,6 +18,7 @@ const KIND_LABEL: Record<string, string> = {
   expert_report: '回报',
   step: '步骤',
   hitl: '待确认',
+  domain_command: '写库示意',
   system: '系统',
 }
 

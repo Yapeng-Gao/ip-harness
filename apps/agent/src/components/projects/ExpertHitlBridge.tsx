@@ -12,6 +12,8 @@ import {
 import type { HitlGateId } from '@shared/types'
 import type { ProjectExpertDef, ProjectThread } from '../../projects/types'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
+import { midCaseHref } from '../../lib/deepLinks'
+import type { CommandName } from '@ip/domain'
 
 const ACTION_LABEL: Record<string, string> = {
   approve_strategy: '批准策略',
@@ -44,8 +46,8 @@ export function ExpertHitlBridge({
 }: Props) {
   const { createSession, getSession, patchSession, sessionHitlAction } =
     useAgents()
-  const { workspace, role, getHandoff, hasBlockingInvoiceForCase } = useApp()
-  const { bindSession, setThreadHitl, appendMessage } = useProjectFolder()
+  const { workspace, role, getHandoff, hasBlockingInvoiceForCase, dispatchCommand } = useApp()
+  const { bindSession, setThreadHitl, appendMessage, recordDomainCommandWrite } = useProjectFolder()
   const [toast, setToast] = useState<string | null>(null)
   const [ensuring, setEnsuring] = useState(false)
 
@@ -195,6 +197,66 @@ export function ExpertHitlBridge({
         opts?.stepwise != null ? { stepwise: opts.stepwise } : undefined,
       )
       setToast(r.message)
+
+      const writeCand = expert.domainCommandCandidates.find(
+        (c) => c.command != null,
+      )
+
+      const recordL3Write = (reason: string) => {
+        if (!writeCand?.command) return
+        const cmd = writeCand.command as CommandName
+        const effectiveCaseId = caseId || 'case-mock-l3'
+        const payload: Record<string, unknown> =
+          cmd === 'createCaseFromInsight'
+            ? {
+                type: cmd,
+                title: 'L3 挖掘洞察建案（样机）',
+                stage: 'decision',
+                fromInsight: true,
+                actor: 'agent',
+              }
+            : cmd === 'saveDraft'
+              ? {
+                  type: cmd,
+                  caseId: effectiveCaseId,
+                  handoffKey: 'draft_claims',
+                  note: 'L3 Confirm → saveDraft 写库示意',
+                  actor: 'agent',
+                }
+              : cmd === 'submitHandoff'
+                ? {
+                    type: cmd,
+                    caseId: effectiveCaseId,
+                    handoffKey: 'disclosure_pack',
+                    note: 'L3 Confirm → submitHandoff 写库示意',
+                    actor: 'agent',
+                  }
+                : {
+                    type: cmd,
+                    caseId: effectiveCaseId,
+                    note: `L3 Confirm → ${cmd} 写库示意`,
+                    actor: 'agent',
+                  }
+        const href = midCaseHref(effectiveCaseId)
+        recordDomainCommandWrite({
+          projectId,
+          expertId: expert.id,
+          command: cmd,
+          payload,
+          midCaseHref: href,
+          note: `${writeCand.label} · ${reason}`,
+        })
+        void dispatchCommand(payload as never).catch(() => {
+          /* local log already recorded */
+        })
+        appendMessage(projectId, expert.id, {
+          role: 'system',
+          content: `写库示意 · DomainCommand.${cmd} → mid ${effectiveCaseId} · ${reason}`,
+          meta: { backend: 'mock' },
+        })
+        setToast(`DomainCommand.${cmd} 已记入 L3 写库示意`)
+      }
+
       if (r.ok) {
         setThreadHitl(projectId, expert.id, false)
         appendMessage(projectId, expert.id, {
@@ -202,6 +264,12 @@ export function ExpertHitlBridge({
           content: `已确认 · ${projectToolLabelSafe(action)} → ${r.message}`,
           meta: { backend: 'mock' },
         })
+        recordL3Write(`HITL ${action} · 样机内存（非真 case-core）`)
+      } else if (writeCand?.command) {
+        // Formal gate may block (e.g. disclosure not ready); still surface L3 write shape.
+        recordL3Write(
+          `正式闸未过（${r.message}）；仍记 DomainCommand 写库示意（样机）`,
+        )
       }
     },
     [
@@ -212,6 +280,9 @@ export function ExpertHitlBridge({
       setThreadHitl,
       projectId,
       appendMessage,
+      expert.domainCommandCandidates,
+      recordDomainCommandWrite,
+      dispatchCommand,
     ],
   )
 

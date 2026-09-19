@@ -9,6 +9,8 @@ export type PatentExpertId =
   | 'expert-search'
   | 'expert-draft'
   | 'expert-fto'
+  | 'expert-mining'
+  | 'expert-figure'
 
 export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
   orchestrator: {
@@ -38,13 +40,25 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         action: 'dispatch_hint',
         hint: 'expert-fto',
       },
+      {
+        id: 'dispatch-mining',
+        label: '分派给挖掘',
+        action: 'dispatch_hint',
+        hint: 'expert-mining',
+      },
+      {
+        id: 'dispatch-figure',
+        label: '分派给附图',
+        action: 'dispatch_hint',
+        hint: 'expert-figure',
+      },
     ],
     steps: [
       {
         id: 'brief',
         label: '收目标',
         script:
-          '【总控】已记下项目目标。请用下方「分派给…」把任务交给检索 / 撰稿 / 自由实施；我不会替专家跑领域剧本。',
+          '【总控】已记下项目目标。请用下方「分派给…」把任务交给检索 / 撰稿 / 自由实施 / 挖掘 / 附图；或点「演示 L3」走撰稿 Confirm→写库示意。我不会替专家跑领域剧本。',
       },
       {
         id: 'dispatch',
@@ -336,6 +350,166 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
     catalogAgentId: 'agent-research',
     accent: 'amber',
   },
+  'expert-mining': {
+    id: 'expert-mining',
+    name: '挖掘专家',
+    role: 'expert',
+    specialty: '发明点挖掘 · 立项前',
+    description:
+      '交底→发明点→评分→送立项占位。可链 intake_quote；建案须 HITL（createCaseFromInsight）。',
+    tools: [
+      'parse_disclosure',
+      'extract_invention_points',
+      'score_invention',
+      'propose_intake',
+    ],
+    shortcuts: [
+      { id: 'disclosure', label: '读交底', action: 'jump', stepId: 'disclosure' },
+      { id: 'points', label: '抽发明点', action: 'jump', stepId: 'points' },
+      { id: 'score', label: '评分', action: 'jump', stepId: 'score' },
+      { id: 'report-orch', label: '回报总控/项目', action: 'report' },
+    ],
+    steps: [
+      {
+        id: 'disclosure',
+        label: '交底',
+        script:
+          '【挖掘】已解析交底要点：边缘调度模组 · 动态频率 · 能耗约束。下一步抽取发明点。',
+        tool: {
+          name: 'parse_disclosure',
+          preview: 'sections=背景/方案/效果 · tokens≈1200',
+        },
+      },
+      {
+        id: 'points',
+        label: '发明点',
+        script:
+          '【挖掘】候选发明点 3 条：①负载预测调度 ②能耗约束频率 ③边缘节点热迁移。',
+        tool: {
+          name: 'extract_invention_points',
+          preview: 'candidates=3 · theme=边缘调度',
+        },
+      },
+      {
+        id: 'score',
+        label: '评分',
+        script:
+          '【挖掘】评分：新颖性 0.78 · 可专利性 0.71 · 商业价值 0.84。建议送立项占位。',
+        tool: {
+          name: 'score_invention',
+          preview: 'novelty=0.78 · patentability=0.71 · business=0.84',
+        },
+      },
+      {
+        id: 'intake',
+        label: '送立项确认',
+        script:
+          '【挖掘】请确认是否以洞察建案（createCaseFromInsight）。确认前仅事件占位，不写真 case-core。',
+        triggersHitl: true,
+        hitlGate: 'approve_strategy',
+        tool: {
+          name: 'propose_intake',
+          preview: 'handoffKey=intake_quote · command=createCaseFromInsight',
+        },
+      },
+    ],
+    hitlGates: ['approve_strategy'],
+    domainCommandCandidates: [
+      {
+        command: 'createCaseFromInsight',
+        label: '洞察建案',
+        note: 'HITL 后 · actor:agent · 样机内存',
+      },
+    ],
+    guardrails: [
+      '送立项≠已建案',
+      '建案须 HITL',
+      '输出非法律意见',
+    ],
+    catalogAgentId: 'agent-research',
+    accent: 'emerald',
+  },
+
+  'expert-figure': {
+    id: 'expert-figure',
+    name: '附图专家',
+    role: 'expert',
+    specialty: '附图草图 · 挂章事件',
+    description:
+      '上下文→mock 草图→画布占位→版本→挂文档章事件。默认不写 handoff；真挂 doc 另刀。',
+    tools: [
+      'gather_figure_context',
+      'mock_sketch',
+      'canvas_placeholder',
+      'version_figure',
+      'attach_chapter_event',
+    ],
+    shortcuts: [
+      { id: 'context', label: '收上下文', action: 'jump', stepId: 'context' },
+      { id: 'sketch', label: '出草图', action: 'jump', stepId: 'sketch' },
+      { id: 'attach', label: '挂章事件', action: 'jump', stepId: 'attach' },
+      { id: 'report-orch', label: '回报总控/项目', action: 'report' },
+    ],
+    steps: [
+      {
+        id: 'context',
+        label: '上下文',
+        script:
+          '【附图】已收集说明书图号需求：图1系统架构 · 图2调度时序 · 图3能耗曲线。',
+        tool: {
+          name: 'gather_figure_context',
+          preview: 'figures=3 · linked=disclosure_pack',
+        },
+      },
+      {
+        id: 'sketch',
+        label: '草图',
+        script:
+          '【附图】已生成 mock 草图资产 fig-mock-01（SVG 占位）。可进画布编辑占位。',
+        tool: {
+          name: 'mock_sketch',
+          preview: 'assetId=fig-mock-01 · format=svg-placeholder',
+        },
+      },
+      {
+        id: 'canvas',
+        label: '画布',
+        script:
+          '【附图】画布编辑占位已打开（样机无真编辑器）。版本 v1 待挂章。',
+        tool: {
+          name: 'canvas_placeholder',
+          preview: 'editor=mock · version=v1',
+        },
+      },
+      {
+        id: 'attach',
+        label: '挂章确认',
+        script:
+          '【附图】请确认将附图挂到交底/权利要求章节（事件示意，非真 doc revision）。',
+        triggersHitl: true,
+        hitlGate: 'approve_strategy',
+        tool: {
+          name: 'attach_chapter_event',
+          preview: 'event=attach_figure · target=disclosure_pack|draft_claims',
+        },
+      },
+    ],
+    hitlGates: ['approve_strategy'],
+    domainCommandCandidates: [
+      {
+        command: null,
+        label: '默认事件挂章',
+        note: 'Confirm 只记挂章事件；真写文档 revision 对齐 doc-harness 另刀',
+      },
+    ],
+    guardrails: [
+      '挂章≠真写入文档库',
+      '草图为 mock 资产',
+      '输出非制图终稿',
+    ],
+    catalogAgentId: 'agent-claims',
+    accent: 'rose',
+  },
 }
 
 export const PATENT_PROJECT_EXPERT_IDS: ProjectExpertId[] = [
@@ -343,4 +517,6 @@ export const PATENT_PROJECT_EXPERT_IDS: ProjectExpertId[] = [
   'expert-search',
   'expert-draft',
   'expert-fto',
+  'expert-mining',
+  'expert-figure',
 ]

@@ -19,6 +19,7 @@ import {
 } from './generalShell'
 import type {
   AgentProject,
+  DomainCommandWriteLog,
   DomainPackId,
   ProjectChatMessage,
   ProjectDispatch,
@@ -202,6 +203,14 @@ type ProjectFolderContextValue = {
     projectId: string,
     patch: Partial<Pick<AgentProject, 'caseId' | 'caseBindState' | 'title' | 'summary'>>,
   ) => void
+  /** L3: Confirm → DomainCommand write indications (in-memory) */
+  domainCommandWrites: DomainCommandWriteLog[]
+  getDomainCommandWrites: (projectId: string) => DomainCommandWriteLog[]
+  recordDomainCommandWrite: (
+    input: Omit<DomainCommandWriteLog, 'id' | 'at'> & { at?: string },
+  ) => DomainCommandWriteLog
+  /** L3 demo: orch spontaneous dispatch → draft claims card → HITL */
+  runL3Demo: (projectId: string) => void
 }
 
 const ProjectFolderContext = createContext<ProjectFolderContextValue | null>(
@@ -214,6 +223,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
   const [threads, setThreads] = useState<ProjectThread[]>(seed.threads)
   const [timeline, setTimeline] = useState<ProjectTimelineEvent[]>(seed.timeline)
   const [dispatches, setDispatches] = useState<ProjectDispatch[]>(seed.dispatches)
+  const [domainCommandWrites, setDomainCommandWrites] = useState<DomainCommandWriteLog[]>([])
 
   const getProject = useCallback(
     (id: string) => projects.find((p) => p.id === id),
@@ -579,6 +589,101 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     [updateThread],
   )
 
+
+  const getDomainCommandWrites = useCallback(
+    (projectId: string) =>
+      domainCommandWrites
+        .filter((w) => w.projectId === projectId)
+        .slice()
+        .reverse(),
+    [domainCommandWrites],
+  )
+
+  const recordDomainCommandWrite = useCallback(
+    (input: Omit<DomainCommandWriteLog, 'id' | 'at'> & { at?: string }) => {
+      const entry: DomainCommandWriteLog = {
+        id: uid('dcw'),
+        at: input.at ?? stamp(),
+        projectId: input.projectId,
+        expertId: input.expertId,
+        command: input.command,
+        payload: input.payload,
+        midCaseHref: input.midCaseHref,
+        note: input.note,
+      }
+      setDomainCommandWrites((prev) => [...prev, entry])
+      setTimeline((prev) => [
+        ...prev,
+        {
+          id: uid('tl'),
+          projectId: input.projectId,
+          kind: 'domain_command',
+          title: `DomainCommand · ${input.command}`,
+          detail: input.note,
+          at: entry.at,
+          expertId: input.expertId,
+        },
+      ])
+      return entry
+    },
+    [],
+  )
+
+  const runL3Demo = useCallback(
+    (projectId: string) => {
+      const project = projects.find((p) => p.id === projectId)
+      if (!project || project.domainPackId !== 'patent') return
+
+      if (!project.caseId) {
+        setProjects((prev) =>
+          prev.map((p) =>
+            p.id === projectId
+              ? {
+                  ...p,
+                  caseId: 'case-mock-l3',
+                  caseBindState: 'bound' as const,
+                  updatedAt: nowIso(),
+                }
+              : p,
+          ),
+        )
+        setTimeline((prev) => [
+          ...prev,
+          {
+            id: uid('tl'),
+            projectId,
+            kind: 'system',
+            title: 'L3 演示 · 已绑 mock 案件 case-mock-l3',
+            detail: '样机绑定 · 非真 case-core',
+            at: stamp(),
+          },
+        ])
+      }
+
+      const orchId = orchestratorIdForProject(project)
+      appendMessage(projectId, orchId, {
+        role: 'assistant',
+        content:
+          '【L3 演示】自发拆派撰稿专家：请出假权利要求草稿 → 提请 Confirm → DomainCommand.saveDraft 写库示意。',
+        meta: { backend: 'mock' },
+      })
+      dispatchToExpert({
+        projectId,
+        toExpertId: 'expert-draft',
+        summary: 'L3 演示：请生成权利要求草稿并提请 Confirm 写库示意',
+      })
+      jumpToStep(projectId, 'expert-draft', 'chapter')
+      jumpToStep(projectId, 'expert-draft', 'confirm')
+      appendMessage(projectId, orchId, {
+        role: 'system',
+        content:
+          '【L3】撰稿席已出假权利要求草稿并进入 Confirm。请到撰稿席点确认 → 观察 DomainCommand 写库示意与中台映射。',
+        meta: { backend: 'mock' },
+      })
+    },
+    [projects, appendMessage, dispatchToExpert, jumpToStep],
+  )
+
   const patchProject = useCallback(
     (
       projectId: string,
@@ -648,6 +753,10 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       setThreadHitl,
       patchThread,
       patchProject,
+      domainCommandWrites,
+      getDomainCommandWrites,
+      recordDomainCommandWrite,
+      runL3Demo,
     }),
     [
       projects,
@@ -667,6 +776,10 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       setThreadHitl,
       patchThread,
       patchProject,
+      domainCommandWrites,
+      getDomainCommandWrites,
+      recordDomainCommandWrite,
+      runL3Demo,
     ],
   )
 

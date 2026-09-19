@@ -58,7 +58,7 @@ type Props = {
 }
 
 export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
-  const {
+    const {
     getProject,
     getThread,
     appendMessage,
@@ -66,8 +66,12 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
     jumpToStep,
     dispatchToExpert,
     reportToProject,
+    runL3Demo,
   } = useProjectFolder()
   const project = getProject(projectId)
+  const isPatentL3 =
+    !!project &&
+    (project.kind === 'domain' || project.domainPackId === 'patent')
   const expert = getProjectExpert(expertId)
   const thread = getThread(projectId, expertId)
   const showDomainSteps =
@@ -165,6 +169,16 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
             {expert.name}
           </span>
           <span className="text-xs text-slate-500">{expert.specialty}</span>
+          {isPatentL3 && isOrchestratorExpert(expertId) ? (
+            <button
+              type="button"
+              data-testid="l3-demo-btn"
+              className="btn-press focus-ring ml-auto rounded-full border border-violet-300 bg-violet-50 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800 hover:bg-violet-100"
+              onClick={() => runL3Demo(projectId)}
+            >
+              演示 L3
+            </button>
+          ) : null}
         </div>
         <p className="mt-1 text-[11px] text-slate-500">{expert.description}</p>
 

@@ -66,6 +66,16 @@ const CARDS: LabCard[] = [
     secondary: { label: '会话列表', href: '/agent/sessions' },
   },
   {
+    id: 'l3',
+    version: 'V·L3 专利·中台',
+    badge: '项目焊死',
+    blurb: '专利固定专家（检索/FTO/撰稿±挖掘/附图）· Confirm→DomainCommand 写库示意 · 勿污染 L1/L2。',
+    href: '/agent/projects/proj-demo-patent',
+    cta: '打开 L3 专利项目',
+    icon: FolderKanban,
+    secondary: { label: '项目列表', href: '/agent/projects' },
+  },
+  {
     id: 'projects',
     version: 'V·项目·固定专家',
     blurb: '项目夹 + 固定专家轨；种子专利包可直接进。',
