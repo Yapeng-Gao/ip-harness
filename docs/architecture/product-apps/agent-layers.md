@@ -79,11 +79,12 @@
 
 1. **已有**：曾按 Grok 复刻把 `/agent` 做成多 bot 主屏（偏 L2）；HITL/Command 形状在。  
 2. **缺口（本刀）**：**L1 单助手默认主路径**未钉——需把冷启动改回 ChatGPT 形，团队改为显式升级。  
-3. **缺口（后刀）**：L3→中台端到端闭环仍弱；先不做大拆 L3。
+3. **缺口（本刀·L3）**：项目模式焊死专家 + Confirm→中台示意；详见 [agent-l3-patent](./agent-l3-patent.md)。
 
-## 7. L2 专文
+## 7. L2 / L3 专文
 
-bot 自发互通与协作任务样机路径见 **[agent-l2-team.md](./agent-l2-team.md)**（开 L2 刀）。
+- L2：bot 自发互通见 **[agent-l2-team.md](./agent-l2-team.md)**
+- L3：专利专家 + 中台映射见 **[agent-l3-patent.md](./agent-l3-patent.md)**（开 L3 刀）
 
 ## 8. 本刀实现令（Agent）
 

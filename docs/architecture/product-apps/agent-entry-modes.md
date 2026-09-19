@@ -78,7 +78,7 @@
 | `expert-mining` | 挖掘（±；可配置缺省隐藏，仍属固定池） |
 
 - UI：**无**「新建专家」；设置里最多「显示/隐藏 mining」。  
-- 四件套见 [agent-project-folder](./agent-project-folder.md)。  
+- 四件套见 [agent-project-folder](./agent-project-folder.md)；L3 中台对接见 [agent-l3-patent](./agent-l3-patent.md)。  
 - 角标：`项目 · 专家固定`。
 
 ## 5. 默认落地路由
