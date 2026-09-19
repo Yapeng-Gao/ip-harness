@@ -286,3 +286,20 @@
 
 ---
 *UI 附段 · 只评不改。*
+
+---
+
+## 附 · Live 走查补记（S7–S9）
+
+- **S7 · Catalog 选 Agent**：Live **Ok**；`/agent/agents` 可达，九大 Agent heading 清晰可见。
+- **S8 · 项目模式 general**：Live **Ok**；通用项目进入总控，无专利步骤条 / FTO / 权利要求 HITL。
+- **S9 · domain/patent + 专家私聊**：Live **Ok**；领域总控步骤条与专家私聊席位切换清晰。
+
+## 总控汇总结（暂）
+
+- **Live**：S0–S9 **Pass**
+- **e2e**：`f1b9a07` **Pass**
+- **biz**：`7057e37`；无 P0；P1 = `sessions IA`
+- **UI/Hunt**：pending
+- **Should**：dense recommend；collapsed tools
+- **Won't**：prototype yellow banner
