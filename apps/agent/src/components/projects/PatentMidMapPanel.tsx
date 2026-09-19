@@ -1,4 +1,3 @@
-import { midCaseHref } from '../../lib/deepLinks'
 import { getProjectExpert } from '../../projects/experts'
 import { PATENT_MID_MAP, midMapForExpert } from '../../projects/patentMidMap'
 import type { DomainCommandWriteLog, ProjectExpertId } from '../../projects/types'
@@ -15,7 +14,7 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
   const { getDomainCommandWrites } = useProjectFolder()
   const row = midMapForExpert(expertId)
   const writes = getDomainCommandWrites(projectId)
-  const midHref = caseId ? midCaseHref(caseId) : midCaseHref('case-mock-l3')
+  const caseLabel = caseId ?? 'case-mock-l3'
 
   return (
     <aside
@@ -54,15 +53,12 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
             </div>
             <div className="mt-1 text-[10px] text-amber-800">{row.honesty}</div>
           </div>
-          <a
-            href={midHref}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-press focus-ring inline-flex text-[10px] font-medium text-violet-700 underline-offset-2 hover:underline"
-            data-testid="patent-mid-case-link"
+          <p
+            className="text-[10px] text-slate-500"
+            data-testid="patent-mid-case-label"
           >
-            深链 mid 案详（示意）
-          </a>
+            中台节点示意 · 案 {caseLabel}（终端不跳 mid）
+          </p>
         </div>
       ) : null}
 
@@ -113,15 +109,12 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
                   {JSON.stringify(w.payload)}
                 </div>
                 <div className="mt-0.5 text-emerald-700">{w.note}</div>
-                {w.midCaseHref ? (
-                  <a
-                    href={w.midCaseHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-0.5 inline-block text-violet-700 underline"
-                  >
-                    mid 案详
-                  </a>
+                {w.payload && typeof w.payload === 'object' && 'caseId' in (w.payload as object) ? (
+                  <div className="mt-0.5 text-slate-500">
+                    中台节点示意 · 案 {(w.payload as { caseId?: string }).caseId}
+                  </div>
+                ) : w.midCaseHref ? (
+                  <div className="mt-0.5 text-slate-500">中台节点示意（无跳转）</div>
                 ) : null}
               </li>
             ))}

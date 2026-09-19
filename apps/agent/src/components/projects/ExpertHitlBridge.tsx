@@ -12,7 +12,6 @@ import {
 import type { HitlGateId } from '@shared/types'
 import type { ProjectExpertDef, ProjectThread } from '../../projects/types'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
-import { midCaseHref } from '../../lib/deepLinks'
 import type { CommandName } from '@ip/domain'
 
 const ACTION_LABEL: Record<string, string> = {
@@ -237,14 +236,12 @@ export function ExpertHitlBridge({
                     note: `L3 Confirm → ${cmd} 写库示意`,
                     actor: 'agent',
                   }
-        const href = midCaseHref(effectiveCaseId)
         recordDomainCommandWrite({
           projectId,
           expertId: expert.id,
           command: cmd,
           payload,
-          midCaseHref: href,
-          note: `${writeCand.label} · ${reason}`,
+          note: `${writeCand.label} · ${reason} · 中台节点示意案 ${effectiveCaseId}`,
         })
         void dispatchCommand(payload as never).catch(() => {
           /* local log already recorded */

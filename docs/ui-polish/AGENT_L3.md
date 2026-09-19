@@ -35,3 +35,7 @@
 - [x] 「演示 L3」→ Confirm → DomainCommand 写库示意
 - [x] `/agent` 仍 L1；`/agent/team` 仍 L2 自由 bot
 - [x] `npm run typecheck -w @ip/agent` 通过
+
+## 快修（终端禁 mid CTA）
+
+- PatentMidMapPanel / ExpertHitlBridge：**去掉**可点 midCaseHref；映射表 + DomainCommand 日志保留；文案「中台节点示意」无 `:5173` 跳转。
