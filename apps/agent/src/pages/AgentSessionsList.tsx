@@ -224,7 +224,10 @@ export function AgentSessionsList() {
                           aria-label="重命名会话"
                         />
                       ) : (
-                        <span className="flex min-h-[44px] items-center font-medium text-slate-900">
+                        <span
+                          className="flex min-h-[44px] items-center font-medium text-slate-900"
+                          title="打开会话"
+                        >
                           <span>
                             {s.title}
                             {s.archived ? (
@@ -244,14 +247,24 @@ export function AgentSessionsList() {
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-600">
                       {c ? (
-                        <a
-                          href={midHref(`/cases/${c.id}`)}
-                          className="text-slate-700 hover:underline"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {c.caseNo ? `${c.caseNo} · ` : ''}
-                          {c.title}
-                        </a>
+                        <span className="inline-flex max-w-full items-center gap-1.5">
+                          <span className="min-w-0 truncate text-slate-600">
+                            {c.caseNo ? `${c.caseNo} · ` : ''}
+                            {c.title}
+                          </span>
+                          <button
+                            type="button"
+                            className="btn-press focus-ring shrink-0 rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                            title="打开中台案详"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              e.preventDefault()
+                              window.location.href = midHref(`/cases/${c.id}`)
+                            }}
+                          >
+                            案详
+                          </button>
+                        </span>
                       ) : (
                         '—'
                       )}
@@ -273,7 +286,13 @@ export function AgentSessionsList() {
                             badges.includes('待代理')) && (
                             <a
                               href={midInboxHref({ sessionId: s.id })}
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                e.preventDefault()
+                                window.location.href = midInboxHref({
+                                  sessionId: s.id,
+                                })
+                              }}
                               className="text-[10px] text-slate-400 underline-offset-2 hover:text-slate-700 hover:underline"
                               title="在运营 Inbox 中查看"
                             >

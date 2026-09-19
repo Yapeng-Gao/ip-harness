@@ -532,8 +532,9 @@ export function AgentSessionSidebar() {
                       >
                         <button
                           type="button"
-                          onClick={() => navigate(agentSessionPath(s.id))}
+                          onClick={() => navigate('/agent/sessions/' + s.id)}
                           className="agent-rail-row__link min-w-0 flex-1 text-left"
+                          title="打开会话"
                         >
                           <div className="flex items-start gap-2">
                             <span
@@ -565,28 +566,29 @@ export function AgentSessionSidebar() {
                                       {b}
                                     </span>
                                   ))}
-                                  {(badges.includes('待我确认') ||
-                                    badges.includes('待企业确认') ||
-                                    badges.includes('待代理')) && (
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        window.location.href = midInboxHref({
-                                          sessionId: s.id,
-                                        })
-                                      }}
-                                      className="text-[9px] text-slate-400 hover:text-slate-700 hover:underline"
-                                      title="在运营 Inbox 中查看"
-                                    >
-                                      Inbox
-                                    </button>
-                                  )}
                                 </div>
                               )}
                             </div>
                           </div>
                         </button>
+                        {(badges.includes('待我确认') ||
+                          badges.includes('待企业确认') ||
+                          badges.includes('待代理')) && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              e.preventDefault()
+                              window.location.href = midInboxHref({
+                                sessionId: s.id,
+                              })
+                            }}
+                            className="shrink-0 self-center px-1 text-[9px] text-slate-400 hover:text-slate-700 hover:underline"
+                            title="在运营 Inbox 中查看"
+                          >
+                            Inbox
+                          </button>
+                        )}
                         <div
                           className="relative shrink-0 self-center pr-1"
                           ref={rowMenuId === s.id ? rowMenuRef : undefined}
