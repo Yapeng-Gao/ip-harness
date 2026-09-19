@@ -85,4 +85,8 @@
 ## 7. Owner
 
 - 规格：架构设计  
-- 壳：Agent应用助手（等总控按层开刀）  
+- 壳：Agent应用助手（等总控按层开刀）
+
+## 评审
+
+- [product-apps/REVIEW.md](./REVIEW.md) · B席轻扫段（对象 `1737b1a`）
