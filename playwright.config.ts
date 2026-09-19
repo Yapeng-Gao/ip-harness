@@ -43,7 +43,7 @@ export default defineConfig({
     {
       name: 'agent-stepwise',
       use: { ...chrome, baseURL: 'http://localhost:5175' },
-      testMatch: /agent-stepwise-s0-s2\.spec\.ts/,
+      testMatch: /agent-stepwise-s0-s2\.spec\.ts|agent-stepwise-s3-s5\.spec\.ts|agent-stepwise-s6-s9\.spec\.ts/,
       timeout: 90_000,
     },
     {

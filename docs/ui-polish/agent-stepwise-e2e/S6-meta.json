@@ -1,0 +1,24 @@
+{
+  "id": "S6",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent/sessions",
+  "assertions": [
+    "URL=/agent/sessions · no mid",
+    "segmented group「会话状态筛选」可见",
+    "segmented: 全部 / 待确认 / 进行中",
+    "点「待确认」→ aria-pressed=true",
+    "侧栏导航仍可见",
+    "切回「全部」",
+    "无 BillingHold 全宽黄条"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "session-segments": {
+      "x": 8,
+      "y": 339,
+      "width": 207,
+      "height": 38
+    }
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S6-sessions-filter.png"
+}

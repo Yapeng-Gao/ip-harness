@@ -1,0 +1,30 @@
+{
+  "id": "S9",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent/projects/proj-1789790312336-9ul8z/bots/expert-search",
+  "assertions": [
+    "选「领域包」· patent",
+    "专利项目总控 http://localhost:5175/agent/projects/proj-1789790312336-9ul8z",
+    "总控 · domain-step-bar 可见 · 非 general",
+    "总控区文案含编排迹象=true",
+    "专家私聊 URL=http://localhost:5175/agent/projects/proj-1789790312336-9ul8z/bots/expert-search",
+    "专家 pane project-chat-expert-search + domain-step-bar",
+    "专家头栏文案≠总控 · snippet=检索专家 现有技术检索 · 工作篮  对齐 agent-research：布尔检索 → 命中 → 工作篮；通常只读，策略"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "domain-step-bar": {
+      "x": 240,
+      "y": 212,
+      "width": 800,
+      "height": 23.5
+    },
+    "project-chat-expert-search": {
+      "x": 224,
+      "y": 155.5,
+      "width": 832,
+      "height": 87
+    }
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S9-patent-expert.png"
+}
