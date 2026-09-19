@@ -68,15 +68,16 @@ type AgentProject = {
 | 「Agent 产品 = 只有专利包」 | **patent** 是第一个 DomainPack；入口仍含通用单聊 |
 | 「旧 Catalog 废弃」 | Catalog/`AgentDef` 仍是专家插件源；Pack 引用哪些 expertId |
 
-## 4. 旧 `sessions` 定位
+## 4. `sessions` 与项目线程
 
 | 用法 | 说明 |
 |------|------|
-| **主心智** | 通用 Agent 的历史会话列表（`/agent/sessions`） |
-| **兼容** | 旧深链 `/agent/sessions/:id` 仍打开；若无 `projectId` 视为通用历史 |
-| **不** | 把「项目文件夹」与「sessions 列表」并列为两个主入口抢默认；项目从「项目」导航进 |
+| **列表主心智** | `/agent/sessions` = **历史聚合**：通用会话 + 项目专家线程（带标签） |
+| **默认入口** | 仍是通用单聊 `/agent`；项目从「项目」进——列表聚合**不**抢默认 |
+| **兼容** | `/agent/sessions/:id` 打开通用会话；项目线程点进 `projects/.../bots/...` |
+| **存储** | 底层可仍分池；合流在列表视图（见专文） |
 
-项目内专家一对一聊产生的线程：挂在 `projectId + expertId` 下；可在 sessions 列表用标签过滤，避免两套真相。
+细则：[agent-sessions-project-threads.md](./agent-sessions-project-threads.md)。
 
 ## 5. DomainPack 插拔（样机最小）
 
