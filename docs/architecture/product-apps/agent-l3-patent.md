@@ -1,19 +1,21 @@
 # L3 专利领域 bot（中台对接）
 
-> **冻结**：L1+L2 Pass 后开 L3。在 **L2 团队壳**上叠 **专利领域 bot**；每 bot 有**独立业务逻辑**；产出能对接**中台节点**。  
-> **入口**：仅 **项目模式**（`/agent/projects…`）；**勿污染** L1 `/agent` 与 L2 通用团队 `/agent/team`。  
-> **样机诚实**：剧本/Confirm 可 mock；正式写形状对齐 DomainCommand；禁真 LLM / 真 case-core。  
-> **对齐**：[agent-layers](./agent-layers.md) §5 · [agent-project-folder](./agent-project-folder.md) · [agent-l2-team](./agent-l2-team.md) · contracts `ARTIFACT_FOR_STAGE`。
+> **冻结**：L3 = 专利领域 bot；每 bot 有**独立业务逻辑**；产出对接**中台节点**（壳内映射展示 + DomainCommand 示意）。  
+> **入口钉**：**独立** `/agent/projects`（顶栏「专利项目」）；**并列**于 L2「团队」，**勿**写成「只能从 L2 升」。  
+> **勿污染** L1 `/agent` 与 L2 `/agent/team`。  
+> **用户口径**：Agent 终端**不可跳中台**——映射表 + Confirm→DomainCommand 示意即可，**勿要求可点 mid 深链**。  
+> **样机诚实**：禁真 LLM / 真 case-core。  
+> **对齐**：[agent-layers](./agent-layers.md) · [agent-project-folder](./agent-project-folder.md) · contracts `ARTIFACT_FOR_STAGE`。
 
-## 1. 入口边界
+## 1. 入口边界（独立 · 并列）
 
-| 面 | 路由 | L3？ |
-|----|------|------|
-| L1 单助手 | `/agent` | **否** |
-| L2 通用团队 | `/agent/team`、`/agent/bots/*` | **否**（可自由 bot，非焊死专利专家） |
-| **L3 项目** | `/agent/projects`、`/agent/projects/:id`、`…/bots/:expertId` | **是**：夹内焊死 IP 专家 |
+| 面 | 路由 | 顶栏 | L3？ |
+|----|------|------|------|
+| L1 | `/agent` | （主） | **否** |
+| L2 | `/agent/team`、`/agent/bots/*` | 「团队」 | **否** |
+| **L3** | `/agent/projects…` | 「专利项目」 | **是**：焊死 IP 专家 |
 
-创建项目 = 在 team 壳上挂 **DomainPack:patent**（固定花名册）。侧栏**无**「新建专家」。
+创建项目 = 挂 **DomainPack:patent**（固定花名册）。侧栏**无**「新建专家」。**不**要求先进入 `/agent/team`。
 
 ## 2. 固定 IP 专家清单 + 业务逻辑（样机 mock）
 
@@ -32,7 +34,8 @@
 ## 3. 产出 ↔ 中台节点映射
 
 > 中台权威：案态 / handoff 以 **mid + contracts** 为准；Agent 不另起案库。  
-> 正式写 = **HITL Confirm → `dispatchCommand(actor:'agent')`**（样机可落到内存/api-mock）。
+> 正式写 = **HITL Confirm → `dispatchCommand(actor:'agent')`**（样机可落到内存/api-mock）。  
+> **展示**：壳内映射表 + 命令示意卡片即可；**禁止**要求用户点进 mid 验证。
 
 | 专利 bot | 中台阶段/节点 | 主工件 `HandoffArtifactKey` | 只读/提案（例） | HITL 后写候选 |
 |----------|---------------|-----------------------------|-----------------|---------------|
@@ -49,11 +52,11 @@
 ### 可点样机路径（最小）
 
 ```text
-1. /agent/projects 新建专利项目（空案或绑 mock caseId）
+1. 顶栏「专利项目」→ /agent/projects 新建（空案或绑 mock caseId；不经 /agent/team）
 2. 总控：「演示 L3」→ 自发派 expert-draft
 3. draft 出假权利要求草稿卡片 → 用户 Confirm
-4. Confirm 后 dispatch 形状落案（内存/api-mock）；可选深链 mid 案详看 handoff 示意
-5. L1 / L2 通用路径无此焊死专家、无此写库演示入口
+4. Confirm 后 dispatch 形状落案（内存/api-mock）；壳内展示「已写 · 映射到 draft_claims」示意
+5. 不做：可点跳转 mid / workbench
 ```
 
 ## 4. 与 L1 / L2 隔离
@@ -69,16 +72,16 @@
 
 | 角色 | 本刀 |
 |------|------|
-| Agent应用助手 | 改 `apps/agent` 项目模式：焊死专家 + mock 剧本 + Confirm→dispatch 示意 |
-| 中台应用助手 | **只读**契约：深链/展示 handoff 示意即可；**勿**为本刀大改 mid 业务 |
+| Agent应用助手 | 改 `apps/agent`：独立项目入口 + 焊死专家 + mock 剧本 + Confirm→dispatch **壳内**示意 |
+| 中台应用助手 | **本刀不要求改 mid**；勿做跨壳深链验收项 |
 | 共享包 | 已有 `HandoffArtifactKey` / `DomainCommand`；本刀**不**改 packages，除非缺字段另开 |
 
 ## 6. 验收
 
-- [ ] 项目夹侧栏 = 固定专家（含检索/FTO/撰稿；附图/挖掘可 ± 显示）  
-- [ ] 每专家可走通各自 mock 剧本，逻辑可区分  
-- [ ] 至少一条：Confirm 后写库**示意**（形状对齐 DomainCommand）  
-- [ ] L1 `/agent`、L2 `/agent/team` **无**焊死专利花名册  
+- [ ] 顶栏「专利项目」可直达 `/agent/projects`（不经 L2）  
+- [ ] 侧栏固定专家；各 mock 剧本可区分  
+- [ ] Confirm → DomainCommand **壳内**示意；**无**可点 mid 深链要求  
+- [ ] 不污染 L1 / L2  
 - [ ] 无真 LLM / 真 case-core  
 
 ## 7. Owner

@@ -1,20 +1,21 @@
-> **叠层主心智**：[agent-layers.md](./agent-layers.md)。**默认冷启动 = L1 单助手（Kimi/ChatGPT）**；L2 团队显式升级；顺序 1→2→3。
-# Agent 入口模式（IA · 对齐 layers · 2026-09-19）
+> **叠层主心智**：[agent-layers.md](./agent-layers.md)。**默认冷启动 = L1**；**L2 与 L3 并列独立入口**（顶栏可达），勿写成「L3 只能从 L2 升」。
+# Agent 入口模式（IA · 并列入口钉 · 2026-09-19）
 
-> **冻结（对齐 B 席 · layers）**：  
-> 1) **默认冷启动** = **L1 单助手**（`/agent`）：一会话一助手 + composer；**不是**多 bot 墙。  
-> 2) **多 bot / bot 互通** = **仅 L2**（`/agent/team` 与 `/agent/bots/*`）；见 [agent-l2-team](./agent-l2-team.md) · [agent-grok-replica](./agent-grok-replica.md)。  
-> 3) **项目模式** = 在 L2 壳上再设项目夹；**IP 专家固定**（默认：`orchestrator` / `search` / `draft` / `fto` ± `mining`）——不如通用团队自由。  
-> **样机诚实**：L2 侧 mock「新建 bot / bot 自发互通」；写库 **HITL → DomainCommand**；禁真 LLM / 真 case-core。  
-> **对齐**：[agent-layers](./agent-layers.md) · [agent-project-folder](./agent-project-folder.md) · [agent-case-binding](./agent-case-binding.md) · [agent-sessions-project-threads](./agent-sessions-project-threads.md)。
+> **冻结（入口钉）**：  
+> 1) **L1 默认** = `/agent` 单助手（一会话一助手 + composer）。  
+> 2) **L2 独立入口** = `/agent/team`（顶栏「团队」）+ `/agent/bots/*`；见 [agent-l2-team](./agent-l2-team.md)。  
+> 3) **L3 独立入口** = `/agent/projects`（顶栏「专利项目」）；夹内 **IP 专家焊死**；见 [agent-l3-patent](./agent-l3-patent.md)。  
+> **废止**：「L3 只能从 L2 升级进入」「项目埋在团队里无顶栏」。  
+> **样机诚实**：写库 **HITL → DomainCommand**；禁真 LLM / 真 case-core。  
+> **对齐**：[agent-layers](./agent-layers.md) · [agent-project-folder](./agent-project-folder.md) · [agent-case-binding](./agent-case-binding.md)。
 
-## 1. 入口分层（冻结）
+## 1. 入口分层（冻结 · 并列）
 
-| 入口 | 路由 | 形态 | 何时用 |
-|------|------|------|--------|
-| **L1 单助手（默认冷启动）** | `/agent` | 无多 bot 侧栏；一助手 + composer | 日常对话 |
-| **L2 团队（显式升级）** | `/agent/team`、`/agent/bots/*` | 侧栏 bot 列表 + 一对一 + **自发互通** | 多 bot 协作 |
-| **项目模式** | `/agent/projects…` | 同 L2 壳，夹内 **IP 专家焊死** | 专利专班 |
+| 入口 | 路由 | 顶栏 | 形态 |
+|------|------|------|------|
+| **L1 单助手（默认）** | `/agent` | （主） | 一助手 + composer |
+| **L2 团队（独立）** | `/agent/team`、`/agent/bots/*` | 「团队」 | 多 bot + 自发互通 |
+| **L3 专利项目（独立）** | `/agent/projects…` | 「专利项目」 | 焊死 IP 专家 + 中台映射示意 |
 
 ```text
 /agent                              → L1 单助手（默认冷启动）
@@ -81,12 +82,12 @@
 - 四件套见 [agent-project-folder](./agent-project-folder.md)；L3 中台对接见 [agent-l3-patent](./agent-l3-patent.md)。  
 - 角标：`项目 · 专家固定`。
 
-## 5. 默认落地路由
+## 5. 默认落地路由（并列入口）
 
-1. `/agent` = **L1 单助手**（默认冷启动）。  
-2. 显式「团队」→ `/agent/team`（L2 多 bot）。  
-3. 「项目」→ 固定专家夹。  
-4. 旧单 Composer 兼容若保留 → `/agent/compose` 可重定向到 L1。
+1. `/agent` = **L1**（默认冷启动）。  
+2. 顶栏「团队」→ `/agent/team`（**L2 独立**）。  
+3. 顶栏「专利项目」→ `/agent/projects`（**L3 独立**；不经 L2）。  
+4. 旧 `/agent/compose` 若保留 → 重定向 L1。
 
 ## 6. sessions / Catalog
 
@@ -103,10 +104,9 @@
 
 ## 8. 验收
 
-- [ ] **默认冷启动进 L1 单助手**，非多 bot 墙  
-- [ ] 多 bot / 互通 **仅** `/agent/team` 与 `/agent/bots/*`  
-- [ ] L2 通用：可 mock 新建 bot、自发互通  
-- [ ] 项目：侧栏专家固定；无「新建专家」  
+- [ ] **默认冷启动进 L1**  
+- [ ] 顶栏可直接进 **L2 `/agent/team`** 与 **L3 `/agent/projects`**（并列，互不埋）  
+- [ ] 多 bot / 互通仅 L2 路由；L3 专家焊死且无「新建专家」  
 - [ ] 写库路径未放松  
 
 ## 9. Owner
