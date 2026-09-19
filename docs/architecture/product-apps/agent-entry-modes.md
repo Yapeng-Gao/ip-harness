@@ -8,9 +8,9 @@
 
 | 模式 | 默认路由心智 | 强制项目？ | 绑案 / 专利步骤？ |
 |------|--------------|------------|-------------------|
-| **通用 Agent** | `/agent` **单聊**（Catalog 选一个 AgentDef 或默认助手） | **否** | 否；可选挂只读 CaseContext |
+| **通用 Agent** | `/agent` **单聊**（Catalog 选一个 AgentDef 或默认助手） | **否** | **不强制案**；可一直无案；可选后绑 Context |
 | **项目 · general** | 项目文件夹 + 多 bot + 总控席（Grok Bot 形式） | 是（进该模式才有夹） | **否**；无专利步骤条、无案绑死 |
-| **项目 · domain** | 同上文件夹形态 + **DomainPack 可插拔** | 是 | 由 Pack 决定；**patent** 为首包 |
+| **项目 · domain** | 同上文件夹形态 + **DomainPack 可插拔** | 是 | Pack 决定步骤；**patent** 首包；**可空开**，案后绑（见 [agent-case-binding](./agent-case-binding.md)） |
 
 ```text
 /agent                          → 通用 Agent（默认落地）
@@ -38,12 +38,13 @@
 - 形式：多 bot 列表 + 总控拆派/汇总（同 [agent-project-folder](./agent-project-folder.md) 形式）。  
 - **无**专利五步 / FTO 矩阵等 DomainPack 步骤。  
 - bot 仍须**分剧本**（禁换皮同 script）；但剧本是「通用协作」级（纪要、拆派、检索只读…），不绑 `StageId`/案。  
-- `caseId`：**可选空**。
+- `caseId`：**可选空**；可一直无案（见 [agent-case-binding](./agent-case-binding.md)）。
 
 ### 3.2 `domain`（领域包项目）
 
 - 挂一个 **DomainPack**（可插拔）。  
-- **`patent` 为首包**：现有专家四件套（工具 / 剧本状态机 / DomainCommand 候选 / 护栏）见 [agent-project-folder §2–3](./agent-project-folder.md)。  
+- **`patent` 为首包**：现有专家四件套见 [agent-project-folder §2–3](./agent-project-folder.md)。  
+- **可空开**：进夹不强制 `caseId`；区内「创建并绑定」/「绑定已有案」。  
 - 预留槽：`DomainPackId = 'patent' | 'future_*'`（样机只实现 patent；其他 disabled +「另立项」）。  
 
 ```ts
@@ -99,6 +100,7 @@ type AgentProject = {
 - [ ] 可建 domain/patent 项目：专家四件套可区分  
 - [ ] sessions 不与项目主心智打架  
 - [ ] 写库路径未放松  
+- [ ] 新建会话/项目不强制 caseId；patent 可空开再绑  
 
 ## 8. Owner
 
