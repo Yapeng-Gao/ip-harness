@@ -39,3 +39,7 @@
 ## 快修（终端禁 mid CTA）
 
 - PatentMidMapPanel / ExpertHitlBridge：**去掉**可点 midCaseHref；映射表 + DomainCommand 日志保留；文案「中台节点示意」无 `:5173` 跳转。
+
+## P0 工件键修正（审计 8049acd）
+
+`ExpertHitlBridge` 按席 `primaryHandoffKeyForExpert`：disclosure→disclosure_pack，draft→draft_claims，oa→prosecution_response；filing 无键不绑 claims。

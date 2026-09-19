@@ -13,6 +13,7 @@ import type { HitlGateId } from '@shared/types'
 import type { ProjectExpertDef, ProjectThread } from '../../projects/types'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { CommandName } from '@ip/domain'
+import { primaryHandoffKeyForExpert } from '../../projects/patentMidMap'
 
 const ACTION_LABEL: Record<string, string> = {
   approve_strategy: '批准策略',
@@ -205,6 +206,9 @@ export function ExpertHitlBridge({
         if (!writeCand?.command) return
         const cmd = writeCand.command as CommandName
         const effectiveCaseId = caseId || 'case-mock-l3'
+        // Per-seat handoff key (audit 8049acd): disclosure→disclosure_pack, draft→draft_claims,
+        // oa→prosecution_response; filing has null — never hard-bind claims.
+        const seatKey = primaryHandoffKeyForExpert(expert.id)
         const payload: Record<string, unknown> =
           cmd === 'createCaseFromInsight'
             ? {
@@ -214,25 +218,20 @@ export function ExpertHitlBridge({
                 fromInsight: true,
                 actor: 'agent',
               }
-            : cmd === 'saveDraft'
+            : cmd === 'saveDraft' || cmd === 'submitHandoff' || cmd === 'submitClaims'
               ? {
                   type: cmd,
                   caseId: effectiveCaseId,
-                  handoffKey: 'draft_claims',
-                  note: 'L3 Confirm → saveDraft 写库示意',
+                  ...(seatKey ? { handoffKey: seatKey } : {}),
+                  note: seatKey
+                    ? `L3 Confirm → ${cmd} · ${seatKey}`
+                    : `L3 Confirm → ${cmd}（本席无 handoff 键，不绑 claims）`,
                   actor: 'agent',
                 }
-              : cmd === 'submitHandoff'
-                ? {
+              : {
                     type: cmd,
                     caseId: effectiveCaseId,
-                    handoffKey: 'disclosure_pack',
-                    note: 'L3 Confirm → submitHandoff 写库示意',
-                    actor: 'agent',
-                  }
-                : {
-                    type: cmd,
-                    caseId: effectiveCaseId,
+                    ...(seatKey && cmd === 'submitResearch' ? { handoffKey: seatKey } : {}),
                     note: `L3 Confirm → ${cmd} 写库示意`,
                     actor: 'agent',
                   }

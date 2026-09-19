@@ -106,3 +106,11 @@ export function midMapForExpert(
 ): PatentMidMapRow | undefined {
   return PATENT_MID_MAP.find((r) => r.expertId === expertId)
 }
+
+/** Primary HandoffArtifactKey for L3 write payloads — never hardcode draft_claims across seats. */
+export function primaryHandoffKeyForExpert(
+  expertId: ProjectExpertId,
+): HandoffArtifactKey | null {
+  const keys = midMapForExpert(expertId)?.handoffKeys
+  return keys?.[0] ?? null
+}
