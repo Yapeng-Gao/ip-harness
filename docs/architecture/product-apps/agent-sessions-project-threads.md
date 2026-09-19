@@ -75,4 +75,8 @@ URL 例：`/agent/sessions?source=project`。
 ## 6. Owner
 
 - 规格：架构设计（本稿）  
-- 实现：Agent应用助手 · 只改 `apps/agent`  
+- 实现：Agent应用助手 · 只改 `apps/agent`
+
+## 评审
+
+- [product-apps/REVIEW.md](./REVIEW.md) · B席轻扫段（对象 `b4dc487`）

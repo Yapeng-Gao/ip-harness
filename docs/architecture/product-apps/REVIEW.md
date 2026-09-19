@@ -94,3 +94,19 @@
 
 与 entry-modes §6 / 验收「不强制 caseId」一致。
 
+## B席轻扫 · Sessions×项目线程合流（`b4dc487`）
+
+| 项 | 值 |
+|----|-----|
+| 对象 | [agent-sessions-project-threads.md](./agent-sessions-project-threads.md) |
+| 日期 | 2026-09-19 |
+| **结论** | **Pass** |
+
+| # | 尺子 | 结果 | 说明 |
+|---|------|------|------|
+| ① | 两套存储诚实 | **过** | 通用会话 / 项目线程分池；合流=视图聚合；禁第三套影子库 |
+| ② | 筛选 / 深链边界 | 过 | `?source=`；通用→sessions/:id；项目→projects/.../bots |
+| ③ | 不扩 mid | 过 | Owner 只改 `apps/agent`；不造第二案库；不删项目夹导航 |
+
+与 entry-modes §4 修订一致。
+
