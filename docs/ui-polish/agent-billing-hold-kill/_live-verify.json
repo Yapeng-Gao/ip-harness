@@ -1,0 +1,71 @@
+{
+  "base": "http://127.0.0.1:5175",
+  "startedAt": "2026-09-19T03:42:17.864Z",
+  "pages": [
+    {
+      "label": "home-forced-hold",
+      "url": "http://127.0.0.1:5175/agent",
+      "textHits": {
+        "不停审": false,
+        "仅提示·不停审": false,
+        "仅提示（企业不停审）": false,
+        "递交已停权": false
+      },
+      "bannerEl": null,
+      "amberFullWidth": [],
+      "forbiddenVisible": false,
+      "shot": "live-01-home.png"
+    },
+    {
+      "label": "sessions-forced-hold",
+      "url": "http://127.0.0.1:5175/agent/sessions",
+      "textHits": {
+        "不停审": false,
+        "仅提示·不停审": false,
+        "仅提示（企业不停审）": false,
+        "递交已停权": false
+      },
+      "bannerEl": null,
+      "amberFullWidth": [],
+      "forbiddenVisible": false,
+      "shot": "live-02-sessions.png"
+    },
+    {
+      "label": "projects-list-forced-hold",
+      "url": "http://127.0.0.1:5175/agent/projects",
+      "textHits": {
+        "不停审": false,
+        "仅提示·不停审": false,
+        "仅提示（企业不停审）": false,
+        "递交已停权": false
+      },
+      "bannerEl": null,
+      "amberFullWidth": [],
+      "forbiddenVisible": false,
+      "shot": "live-03-projects-list.png"
+    },
+    {
+      "label": "project-workspace-forced-hold",
+      "url": "http://127.0.0.1:5175/agent/projects/proj-demo-general",
+      "textHits": {
+        "不停审": false,
+        "仅提示·不停审": false,
+        "仅提示（企业不停审）": false,
+        "递交已停权": false
+      },
+      "bannerEl": null,
+      "amberFullWidth": [],
+      "forbiddenVisible": false,
+      "shot": "live-04-project.png"
+    }
+  ],
+  "pass": true,
+  "note": "Assert NO full-width BillingHold / 不停审 amber on Agent shell routes",
+  "forcePatch": {
+    "ok": true,
+    "overdueStopEnabled": true,
+    "caseCount": 13
+  },
+  "projectHref": "/agent/projects/proj-demo-general",
+  "finishedAt": "2026-09-19T03:42:26.996Z"
+}

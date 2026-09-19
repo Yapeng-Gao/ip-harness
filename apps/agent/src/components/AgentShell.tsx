@@ -12,7 +12,6 @@ import { AgentWorkspaceMenu } from './AgentWorkspaceMenu'
 import { PersonaSwitcher } from '@shared/components/PersonaSwitcher'
 import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { AgentSessionSidebar } from './AgentSessionSidebar'
-import { AgentBillingHoldBanner } from './AgentBillingHoldBanner'
 import { PersonaRouteGate } from '@shared/components/PersonaRouteGate'
 
 export function AgentShell() {
@@ -150,10 +149,7 @@ export function AgentShell() {
         </div>
       </header>
 
-      <AgentBillingHoldBanner
-        compact
-        className="mx-3 mt-2 shrink-0 lg:mx-4"
-      />
+      {/* P0: AgentBillingHoldBanner unmounted from shell chrome — no full-width amber on Home/Sessions/Projects */}
 
       <div className="flex min-h-0 flex-1">
         {!inProjects && <AgentSessionSidebar />}
