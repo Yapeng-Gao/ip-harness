@@ -184,3 +184,52 @@
 **S0 总结：Pass。**
 
 **证据截图**：`shot-call_efhXWNRP...`、`shot-call_hwnJ00pZ...`
+
+
+---
+
+## S1 · Live verify append
+
+| 维 | 级 | 结论 |
+|----|----|------|
+| **业务逻辑** | **Pass** | 创建并绑定「走查S1新案」后可成功解绑；mock 案件保持诚实标注。 |
+| **页面逻辑** | **Pass** | 创建/绑定 → 当前案件 → 解绑流程完整；解绑后仍可开工。 |
+| **业务表现** | Ok | 绑定态展示样机案，解绑后回到无案态，不伪装为真实 case-core 案件。 |
+| **页面表现** | Ok | Home 案件入口仍为单套 CaseBind，无额外「关联案件」 select。 |
+| **UX** | Ok | 绑案可选且可逆，不阻断「开始办理」。 |
+| **UI** | Ok | 创建、绑定、解绑控件与样机文案清晰可见。 |
+
+### Live hard gates
+
+- **Pass**：创建并绑定 S1 案后成功 unbind。
+- **Pass**：mock 案件以样机身份诚实呈现。
+- **Pass**：无 BillingHold banner、无 mid 深链、无禁用中间 CTA。
+- **Pass**：Home 案件入口保持单一。
+
+**S1 总结：Pass。**
+
+**证据**：`docs/ui-polish/agent-stepwise-ui/S1/S1-bound.png`、`S1-case-bind-bound.png`、`_probe.json`
+
+---
+
+## S2 · Live verify append
+
+| 维 | 级 | 结论 |
+|----|----|------|
+| **业务逻辑** | **Pass** | 无案直接「开始办理」可进入 `/agent/sessions/sess-*`，没有强制绑案墙。 |
+| **页面逻辑** | **Pass** | 会话 URL 命中 `/agent/sessions/sess-*`，会话主区与可选案件控件可见。 |
+| **业务表现** | Ok | 支持「先聊后案」；案件可稍后创建或绑定。 |
+| **页面表现** | Ok | 无强制绑案 dialog 或弹死页，进入后仍可继续办理。 |
+| **UX** | Ok | 文案明确说明无案也可继续聊，路径不被案件前置条件打断。 |
+| **UI** | Ok | 复制文案诚实，包含「确认后不会写入案件」。 |
+
+### Live hard gates
+
+- **Pass**：无案启动后 URL 为 `/agent/sessions/sess-*`。
+- **Pass**：无强制 case wall；`mustBindBanner=false`。
+- **Pass**：文案包含「无案也可继续聊」及「确认后不会写入案件」。
+- **Pass**：无 BillingHold banner、无 mid 深链、console error 为 0。
+
+**S2 总结：Pass。**
+
+**证据**：`docs/ui-polish/agent-stepwise-ui/S2/S2-home-unbound.png`、`S2-session.png`、`S2-session-full.png`、`_probe.json`
