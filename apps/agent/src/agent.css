@@ -319,3 +319,15 @@ body,
   font-variant-numeric: tabular-nums;
   vertical-align: middle;
 }
+
+/* P0 HITL · 禁用主 CTA 外包可点：看起来禁用，点击仍反馈 */
+.agent-confirm-cta-wrap.is-blocked,
+.agent-confirm-cta-wrap[data-blocked='1'] {
+  cursor: not-allowed;
+  display: inline-flex;
+}
+.agent-confirm-cta-wrap.is-blocked .ui-btn,
+.agent-confirm-cta-wrap[data-blocked='1'] .ui-btn {
+  opacity: 0.5;
+  pointer-events: none;
+}

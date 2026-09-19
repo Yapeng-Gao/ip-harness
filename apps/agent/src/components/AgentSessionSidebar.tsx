@@ -390,12 +390,12 @@ export function AgentSessionSidebar() {
                 className="agent-remind-chip btn-press focus-ring"
                 data-testid="home-needs-human-chip"
               >
-                待确认 · {statusCounts.needs_human}
+                待确认队列 · {statusCounts.needs_human}
               </Link>
             ) : null}
             {/* ATT-S-1 · mini structure without restoring full inbox list */}
             <div className="space-y-1">
-              <div className="nav-section !m-0 !px-0">最近待确认</div>
+              <div className="nav-section !m-0 !px-0">待确认队列（演示）</div>
               {sorted
                 .filter((s) => !s.archived && s.status === 'needs_human')
                 .slice(0, 2)

@@ -6,6 +6,11 @@ import { workbenchHref as workbenchAbsHref } from '../../lib/deepLinks'
 /** 无案时 Confirm 主闸不可点清 · 与 CaseBindControls strong 同句 */
 export const NO_CASE_GATE_REASON = '写入案件前须绑定'
 
+/** 须绑案才能清的闸（付款/授权/确认报价写库）；approve_strategy / go_nogo 可无案清闸、不写库 */
+export function gateRequiresCase(g: HitlGateId): boolean {
+  return g === 'pay_unlock' || g === 'authorize_file' || g === 'confirm_quote'
+}
+
 /** Map confirm-step gate id → sessionHitlAction */
 export function gateToAction(gate: HitlGateId): HitlSessionAction {
   switch (gate) {

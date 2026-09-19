@@ -27,6 +27,7 @@ import {
 } from '../components/session/SessionWorkspaceHeader'
 import {
   DEMO_AGENTS,
+  gateRequiresCase,
   gateToAction,
   NO_CASE_GATE_REASON,
   sortGatesForRole,
@@ -339,8 +340,8 @@ export function AgentSessionWorkspace() {
   /** Session 闸禁用原因 · 走 domain/guardrails【唯一入口】evaluateGuardrails */
   const gateDisabledReason = (g: HitlGateId): string | null => {
     if (clearedGates.includes(g)) return '已通过'
-    // P2 · S4：无案时芯片级禁用，禁 silently 点清 gate（写库本就不会发生，须显性）
-    if (!sess.caseId) return NO_CASE_GATE_REASON
+    // P0 HITL：无案仅禁须案闸（付款/授权/报价）；approve_strategy / go_nogo 可清闸不写库
+    if (!sess.caseId && gateRequiresCase(g)) return NO_CASE_GATE_REASON
     const hitsVerifiable =
       agent?.id === 'agent-research' || handoffKey === 'research_report'
         ? hasVerifiableResearchHitsFromSession(sess)
@@ -395,11 +396,28 @@ export function AgentSessionWorkspace() {
     }
     const action = gateToAction(gate)
     const r = await sessionHitlAction(sess.id, action, opts?.note, opts)
-    markDomainSync(
-      r.ok,
-      `${HITL_GATE_LABELS[gate]} · ${r.message}`,
-      r.navigateTo,
-    )
+    const toastMsg = r.message.includes('未绑案不写入')
+      ? r.message
+      : `${HITL_GATE_LABELS[gate]} · ${r.message}`
+    markDomainSync(r.ok, toastMsg, r.navigateTo)
+  }
+
+  const onBlockedGateClick = (gate: HitlGateId, reason: string) => {
+    showToast(`${HITL_GATE_LABELS[gate]} · ${reason}`, false)
+  }
+
+  const scrollToCaseBind = () => {
+    setCaseBindGuide(true)
+    window.setTimeout(() => {
+      caseBindTopRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      })
+      const el = document.querySelector<HTMLElement>(
+        '[data-testid="case-bind-controls"] button, [data-testid="case-bind-existing"]',
+      )
+      el?.focus()
+    }, 60)
   }
 
   const doHitl = async (action: HitlSessionAction, opts?: { stepwise?: boolean; note?: string }) => {
@@ -598,6 +616,8 @@ export function AgentSessionWorkspace() {
                 gateDisabledReason={gateDisabledReason}
                 onGate={doGate}
                 onHitl={doHitl}
+                onBlockedGateClick={onBlockedGateClick}
+                onScrollToCaseBind={scrollToCaseBind}
                 focusHitl={focusHitl}
                 focusGate={focusGate}
                 onPrimaryBlockerChange={setPrimaryBlocker}
@@ -689,6 +709,8 @@ export function AgentSessionWorkspace() {
                 gateDisabledReason={gateDisabledReason}
                 onGate={doGate}
                 onHitl={doHitl}
+                onBlockedGateClick={onBlockedGateClick}
+                onScrollToCaseBind={scrollToCaseBind}
                 focusHitl={focusHitl}
                 focusGate={focusGate}
                 onPrimaryBlockerChange={setPrimaryBlocker}

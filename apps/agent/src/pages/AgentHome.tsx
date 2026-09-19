@@ -109,12 +109,34 @@ export function AgentHome() {
   const start = () => {
     const selected = selectedAgent
     if (selected && !confirmNonCoreTier(selected)) return
+    const goalTrim = goal.trim()
+    // P0：空目标 + 自动匹配 → research 新会话（勿默认 OA 种子 / 审查阶段）
+    let resolvedAgentId: 'auto' | string = agentId
+    let resolvedGoal = goalTrim
+    let resolvedSelected = selected
+    if (!goalTrim && (agentId === 'auto' || !agentId)) {
+      const research = AGENT_CATALOG.find((a) => a.id === 'agent-research')
+      resolvedAgentId = 'agent-research'
+      resolvedGoal =
+        PROMPT_PILLS.find((x) => x.agentId === 'agent-research')?.goal ??
+        defaultSessionGoal(research, { hasCase: !!caseId })
+      resolvedSelected = research ?? null
+    } else if (!goalTrim) {
+      resolvedGoal = defaultSessionGoal(selected, { hasCase: !!caseId })
+    }
+    if (resolvedSelected && resolvedSelected !== selected) {
+      if (!confirmNonCoreTier(resolvedSelected)) return
+    }
     const s = createSession({
-      goal: goal.trim() || defaultSessionGoal(selected, { hasCase: !!caseId }),
-      agentId: agentId as 'auto' | string,
+      goal: resolvedGoal,
+      agentId: resolvedAgentId,
       caseId: caseId || undefined,
-      title: goal.trim() ? goal.trim().slice(0, 28) : undefined,
-      confirmedNonCoreTier: selected ? true : undefined,
+      title: goalTrim
+        ? goalTrim.slice(0, 28)
+        : resolvedAgentId === 'agent-research'
+          ? '检索现有技术 · 新办理'
+          : undefined,
+      confirmedNonCoreTier: resolvedSelected ? true : undefined,
     })
     if (!s) {
       showCreateFailedToast()
@@ -282,6 +304,26 @@ export function AgentHome() {
             </p>
           ) : null}
         </div>
+
+        {/* P0：空目标优先引导检索 chip（非 OA） */}
+        {!goal.trim() ? (
+          <div
+            className="mt-3 flex flex-wrap items-center justify-center gap-2"
+            data-testid="home-research-default-chip"
+          >
+            <button
+              type="button"
+              className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 shadow-sm hover:border-slate-300 hover:bg-slate-50"
+              onClick={() => {
+                const pill = PROMPT_PILLS.find((x) => x.agentId === 'agent-research')
+                if (pill) onPill(pill)
+              }}
+            >
+              检索现有技术 · 可专利性
+            </button>
+            <span className="text-[11px] text-slate-400">推荐第一步 · 非审查答复</span>
+          </div>
+        ) : null}
 
         {/* SS-M-S0-1 · Core pills folded — not a full row under compose */}
         <details className="group mt-4" data-testid="home-common-fold">

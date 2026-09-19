@@ -17,7 +17,11 @@ import {
   disclosurePackMissing,
   HANDOFF_LABELS,
 } from '@shared/data/handoff'
-import { NO_CASE_GATE_REASON, previewHitlCommandChain } from './sessionGates'
+import {
+  NO_CASE_GATE_REASON,
+  gateRequiresCase,
+  previewHitlCommandChain,
+} from './sessionGates'
 import { HandoffChip } from '@shared/components/HandoffChip'
 import { Link } from 'react-router-dom'
 import { workbenchHref } from '../../lib/deepLinks'
@@ -78,6 +82,10 @@ type Props = {
   focusGate?: HitlGateId | null
   /** R-P1-3 · 主因回传 composer（仅展示） */
   onPrimaryBlockerChange?: (reason: string | null) => void
+  /** 禁用主 CTA 外包可点：toast 原因 + 去补全 / 滚绑案 */
+  onBlockedGateClick?: (g: HitlGateId, reason: string) => void
+  /** 无案须绑闸：滚到 CaseBindControls */
+  onScrollToCaseBind?: () => void
 }
 
 export function SessionConfirmBar({
@@ -100,6 +108,8 @@ export function SessionConfirmBar({
   focusHitl = false,
   focusGate = null,
   onPrimaryBlockerChange,
+  onBlockedGateClick,
+  onScrollToCaseBind,
 }: Props) {
   const firstActionable = gates.find((g) => !gateDisabledReason(g))
   const pendingGate = gates.find((g) => !clearedGates.includes(g))
@@ -461,6 +471,23 @@ export function SessionConfirmBar({
     }
   }
 
+  /** 禁用钮外包可点：反馈原因 + 自动去补全 / 滚绑案 */
+  const fireBlockedGate = (g: HitlGateId, reason: string) => {
+    onBlockedGateClick?.(g, reason)
+    if (reason === NO_CASE_GATE_REASON || gateRequiresCase(g)) {
+      onScrollToCaseBind?.()
+    }
+    if (
+      (g === 'approve_strategy' && isOa && oaMetaMissing) ||
+      needsOaData ||
+      needsFilingData ||
+      needsDisclosureData ||
+      needsFullCheck
+    ) {
+      goComplete()
+    }
+  }
+
   useEffect(() => {
     onPrimaryBlockerChange?.(primaryBlocker)
   }, [primaryBlocker, onPrimaryBlockerChange])
@@ -576,7 +603,38 @@ export function SessionConfirmBar({
                   ? 'agent-confirm-reason-primary'
                   : undefined
               return (
-                <span key={g} className="agent-confirm-cta-wrap">
+                <span
+                  key={g}
+                  className={`agent-confirm-cta-wrap${disabled ? ' is-blocked' : ''}`}
+                  data-blocked={disabled ? '1' : undefined}
+                  onClick={
+                    disabled
+                      ? (e) => {
+                          e.preventDefault()
+                          fireBlockedGate(
+                            g,
+                            disableReason ?? primaryBlocker ?? '暂不可用',
+                          )
+                        }
+                      : undefined
+                  }
+                  onKeyDown={
+                    disabled
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            fireBlockedGate(
+                              g,
+                              disableReason ?? primaryBlocker ?? '暂不可用',
+                            )
+                          }
+                        }
+                      : undefined
+                  }
+                  role={disabled ? 'button' : undefined}
+                  tabIndex={disabled ? 0 : undefined}
+                  title={disabled ? (disableReason ?? undefined) : undefined}
+                >
                   <button
                     type="button"
                     onClick={() => onGate(g, { stepwise })}
@@ -587,12 +645,16 @@ export function SessionConfirmBar({
                     data-testid={
                       disabled && disableReason === NO_CASE_GATE_REASON
                         ? 'confirm-gate-no-case'
-                        : undefined
+                        : disabled
+                          ? 'confirm-gate-blocked'
+                          : 'confirm-gate-action'
                     }
                     aria-disabled={disabled || undefined}
-                    className={`ui-btn ui-btn-sm btn-press focus-ring disabled:cursor-not-allowed disabled:opacity-50 ${
-                      isLegalNext ? 'agent-confirm-cta' : ''
-                    } ${
+                    className={`ui-btn ui-btn-sm btn-press focus-ring ${
+                      disabled
+                        ? 'pointer-events-none cursor-not-allowed opacity-50'
+                        : ''
+                    } ${isLegalNext ? 'agent-confirm-cta' : ''} ${
                       isPrimary
                         ? isAuth
                           ? 'ui-btn-primary'

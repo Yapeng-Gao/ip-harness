@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -160,6 +161,42 @@ function nowStamp() {
 const sessionHasVerifiableResearchHits = hasVerifiableResearchHitsFromSession
 
 
+
+/** P0 HITL · session 列表持久化，刷新后保留 clearedHitlGates / OA meta / 步骤 */
+const AGENT_SESSIONS_LS_KEY = 'ip-harness-agent-sessions-v1'
+
+function loadPersistedSessions(): AgentSession[] | null {
+  try {
+    const raw = localStorage.getItem(AGENT_SESSIONS_LS_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as AgentSession[]
+    return Array.isArray(parsed) ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+function mergeSeedWithPersisted(
+  seed: AgentSession[],
+  persisted: AgentSession[] | null,
+): AgentSession[] {
+  if (!persisted?.length) return seed
+  const byId = new Map(persisted.map((s) => [s.id, s]))
+  const seedIds = new Set(seed.map((s) => s.id))
+  // 种子 id：以持久化为准（HITL 清闸 / OA meta 不回滚）；用户会话前置
+  const mergedSeed = seed.map((s) => byId.get(s.id) ?? s)
+  const extras = persisted.filter((s) => !seedIds.has(s.id))
+  return [...extras, ...mergedSeed]
+}
+
+function persistSessions(sessions: AgentSession[]) {
+  try {
+    localStorage.setItem(AGENT_SESSIONS_LS_KEY, JSON.stringify(sessions))
+  } catch {
+    /* quota / private mode */
+  }
+}
+
 export function AgentProvider({ children }: { children: ReactNode }) {
   const {
     visibleCases,
@@ -183,7 +220,13 @@ export function AgentProvider({ children }: { children: ReactNode }) {
   } = useApp()
 
   const [runs, setRuns] = useState<AgentRun[]>(() => buildInitialRuns())
-  const [sessions, setSessions] = useState<AgentSession[]>(() => buildSeedSessions())
+  const [sessions, setSessions] = useState<AgentSession[]>(() =>
+    mergeSeedWithPersisted(buildSeedSessions(), loadPersistedSessions()),
+  )
+
+  useEffect(() => {
+    persistSessions(sessions)
+  }, [sessions])
   const [sessionSearch, setSessionSearch] = useState('')
   const [showArchivedSessions, setShowArchivedSessions] = useState(false)
   const timersRef = useRef<Record<string, number[]>>({})
@@ -1659,9 +1702,13 @@ export function AgentProvider({ children }: { children: ReactNode }) {
         : navigateTo?.includes('/monetize/')
           ? ' · 法务会签/合同状态请到转化工作台（beta · 非合同 PDF）'
           : ''
+      const noCaseAck =
+        !sess.caseId && last.ok && gate !== 'request_changes'
       return {
         ok: true,
-        message: (midOk ? `中台已更新 · ${baseMsg}` : baseMsg) + navHint,
+        message: noCaseAck
+          ? `${title} · 未绑案不写入`
+          : (midOk ? `中台已更新 · ${baseMsg}` : baseMsg) + navHint,
         navigateTo,
         createdCaseId: layoutDeepLinkCaseId,
       }

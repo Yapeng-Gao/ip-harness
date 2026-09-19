@@ -4,6 +4,7 @@ import { useApp } from '@shared/context/AppContext'
 import { getAgent } from '@shared/data/agents'
 import { SessionConfirmBar } from '../session/SessionConfirmBar'
 import {
+  gateRequiresCase,
   gateToAction,
   NO_CASE_GATE_REASON,
   sortGatesForRole,
@@ -155,8 +156,8 @@ export function ExpertHitlBridge({
             : 'FTO 样机仅开放策略确认口径'
         }
       }
-      // P2 · S4：无案时主闸芯片禁用（FTO 口径确认除外）
-      if (!caseId) return NO_CASE_GATE_REASON
+      // P0 HITL：无案仅禁须案闸；approve_strategy / go_nogo 可点清
+      if (!caseId && gateRequiresCase(g)) return NO_CASE_GATE_REASON
       if (g === 'authorize_file' && role !== 'enterprise') {
         return '仅企业可授权递交'
       }
@@ -281,6 +282,9 @@ export function ExpertHitlBridge({
         }}
         onHitl={(action, opts) => {
           void runHitl(action, opts)
+        }}
+        onBlockedGateClick={(g, reason) => {
+          setToast(`${ACTION_LABEL[g] ?? g} · ${reason}`)
         }}
         runMode="formal"
         focusGate={thread.pendingGate ?? null}
