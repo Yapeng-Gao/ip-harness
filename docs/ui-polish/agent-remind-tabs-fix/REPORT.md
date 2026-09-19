@@ -3,7 +3,7 @@
 | 项 | 值 |
 |----|-----|
 | **日期** | 2026-09-19（Asia/Shanghai） |
-| **基线 HEAD** | `94cb31e` → **落地**（见下文 SHA） |
+| **基线 HEAD** | `94cb31e` → **落地** `c665a7d` |
 | **权威** | `docs/ui-polish/REVIEW_AGENT_REMIND_TABS_2026-09-19.md` |
 | **范围** | **仅** Agent `:5175` · `apps/agent/**` + `apps/agent/src/agent.css` |
 | **禁止** | mid/wb/ops · HITL 闸语义 / DomainCommand · ENTRY/FULL/P0-AF-1 dock · P1-AF-5 compact 存在性 · Cloud Agent |
