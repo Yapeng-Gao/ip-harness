@@ -6,7 +6,7 @@ import { expertAccentClass } from '../../projects/experts'
 type Props = { botId: string }
 
 /**
- * Grok-like 1:1 stream + sticky composer. No badge/honesty walls.
+ * Grok-like 1:1 stream + sticky composer. Optical user/assistant bubbles; no tip walls.
  * Spec: agent-grok-replica.md — forward stays secondary.
  */
 export function GeneralBotChatPane({ botId }: Props) {
@@ -65,6 +65,7 @@ export function GeneralBotChatPane({ botId }: Props) {
   }
 
   const visible = messages.filter((m) => m.role !== 'system')
+  const canSend = draft.trim().length > 0
 
   return (
     <div
@@ -72,56 +73,63 @@ export function GeneralBotChatPane({ botId }: Props) {
       data-testid="general-bot-chat"
       data-bot-id={botId}
     >
-      <header className="shrink-0 border-b border-slate-100 px-4 py-2.5">
-        <div className="flex items-center gap-2">
+      <header className="shrink-0 border-b border-slate-100/90 px-5 py-3">
+        <div className="flex items-center gap-2.5">
           <span
-            className={`flex h-7 w-7 items-center justify-center rounded-full border text-[10px] ${expertAccentClass(bot.accent)}`}
+            className={`flex h-8 w-8 items-center justify-center rounded-full border text-[11px] font-semibold ${expertAccentClass(bot.accent)}`}
             aria-hidden
           >
             {bot.name.slice(0, 1)}
           </span>
-          <h1 className="truncate text-sm font-semibold text-slate-900">
+          <h1 className="truncate text-[15px] font-semibold tracking-tight text-slate-900 text-balance">
             {bot.name}
           </h1>
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+      <div className="general-grok-messages min-h-0 flex-1 space-y-3.5 overflow-y-auto px-5 py-5">
         {visible.length === 0 && (
-          <p className="py-8 text-center text-sm text-slate-400">
+          <p className="py-12 text-center text-[14px] leading-relaxed text-slate-400">
             开始和 {bot.name} 聊天
           </p>
         )}
-        {visible.map((m) => (
-          <div
-            key={m.id}
-            className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
-              m.role === 'user'
-                ? 'ml-auto bg-slate-900 text-white'
-                : 'border border-slate-100 bg-slate-50 text-slate-800'
-            }`}
-            data-testid={
-              m.meta?.forwardFrom
-                ? 'general-bot-forward-recv'
-                : m.meta?.forwardTo
-                  ? 'general-bot-forward-sent'
-                  : undefined
-            }
-          >
-            <div className="whitespace-pre-wrap">{m.content}</div>
-          </div>
-        ))}
+        {visible.map((m) => {
+          const isUser = m.role === 'user'
+          return (
+            <div
+              key={m.id}
+              className={`general-grok-bubble max-w-[min(36rem,85%)] px-4 py-2.5 text-[15px] leading-[1.55] text-pretty ${
+                isUser
+                  ? 'general-grok-bubble--user ml-auto'
+                  : 'general-grok-bubble--assistant mr-auto'
+              }`}
+              data-role={m.role}
+              data-testid={
+                m.meta?.forwardFrom
+                  ? 'general-bot-forward-recv'
+                  : m.meta?.forwardTo
+                    ? 'general-bot-forward-sent'
+                    : undefined
+              }
+            >
+              <div className="whitespace-pre-wrap">{m.content}</div>
+            </div>
+          )
+        })}
       </div>
 
-      <div className="sticky bottom-0 z-10 shrink-0 border-t border-slate-200 bg-white px-3 py-2.5 shadow-[0_-6px_16px_rgba(15,23,42,0.04)]">
+      <div
+        className="general-grok-composer sticky bottom-0 z-10 shrink-0 border-t border-slate-200/80 bg-white/95 px-4 pb-3.5 pt-3 backdrop-blur-sm"
+        data-testid="general-bot-composer-bar"
+      >
         {forwardOpen && (
           <div
-            className="mb-2 flex flex-wrap items-center gap-2 rounded-md border border-sky-200 bg-sky-50/80 px-2 py-1.5"
+            className="mb-2.5 flex flex-wrap items-center gap-2 rounded-[var(--radius-md)] border border-sky-200 bg-sky-50/80 px-2.5 py-2"
             data-testid="general-bot-forward-panel"
           >
-            <span className="text-[11px] font-medium text-sky-900">转发给</span>
+            <span className="text-[12px] font-medium text-sky-900">转发给</span>
             <select
-              className="focus-ring rounded border border-sky-200 bg-white px-2 py-1 text-xs"
+              className="focus-ring rounded-[var(--radius-sm)] border border-sky-200 bg-white px-2 py-1.5 text-[13px]"
               value={forwardTarget || others[0]?.id || ''}
               onChange={(e) => setForwardTarget(e.target.value)}
               aria-label="转发目标 bot"
@@ -137,7 +145,7 @@ export function GeneralBotChatPane({ botId }: Props) {
               type="button"
               onClick={doForward}
               disabled={others.length === 0}
-              className="btn-press focus-ring hit-40 rounded-md bg-sky-700 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-40"
+              className="btn-press focus-ring hit-40 rounded-[var(--radius-sm)] bg-sky-700 px-3 py-1.5 text-[13px] font-medium text-white disabled:opacity-40"
               data-testid="general-bot-forward-confirm"
             >
               确认
@@ -145,23 +153,24 @@ export function GeneralBotChatPane({ botId }: Props) {
             <button
               type="button"
               onClick={() => setForwardOpen(false)}
-              className="text-[11px] text-slate-500 hover:underline"
+              className="focus-ring rounded px-1.5 text-[12px] text-slate-500 hover:underline"
             >
               取消
             </button>
           </div>
         )}
-        <div className="flex items-end gap-2">
+        {/* Concentric shell: outer 16 + pad 6 ≈ inner 10 */}
+        <div className="general-grok-composer-shell flex items-end gap-2 rounded-2xl border border-slate-200 bg-[#f5f5f7] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
           <button
             type="button"
             onClick={() => setForwardOpen((v) => !v)}
             disabled={others.length === 0}
-            className="btn-press focus-ring mb-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30"
+            className="btn-press focus-ring mb-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-white hover:text-slate-700 disabled:opacity-30"
             aria-label="转发给 bot"
             data-testid="general-bot-forward-open"
             title="转发"
           >
-            <Forward className="h-3.5 w-3.5" aria-hidden />
+            <Forward className="h-4 w-4" strokeWidth={1.75} aria-hidden />
           </button>
           <textarea
             value={draft}
@@ -169,17 +178,19 @@ export function GeneralBotChatPane({ botId }: Props) {
             onKeyDown={onKey}
             rows={1}
             placeholder="发消息…"
-            className="focus-ring max-h-32 min-h-[2.5rem] flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm"
+            className="focus-ring max-h-36 min-h-[2.5rem] flex-1 resize-none rounded-xl border-0 bg-transparent px-2.5 py-2.5 text-[15px] leading-[1.45] text-slate-900 placeholder:text-slate-400"
             aria-label="消息"
             data-testid="general-bot-composer"
           />
           <button
             type="button"
             onClick={sendUser}
-            className="btn-press focus-ring hit-40 inline-flex h-9 items-center gap-1 rounded-full bg-slate-900 px-3.5 text-xs font-medium text-white"
+            disabled={!canSend}
+            className="btn-press focus-ring hit-40 inline-flex h-10 shrink-0 items-center gap-1 rounded-full bg-slate-900 px-3.5 text-[13px] font-semibold text-white disabled:opacity-35"
             data-testid="general-bot-send"
+            aria-label="发送"
           >
-            <Send className="h-3.5 w-3.5" aria-hidden />
+            <Send className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
             发送
           </button>
         </div>

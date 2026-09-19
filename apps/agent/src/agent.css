@@ -331,3 +331,68 @@ body,
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* —— AGENT_GROK_FEEL 2026-09-19 · sidebar / bubbles / sticky composer —— */
+
+.general-bot-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem; /* 40 */
+}
+
+.general-bot-row--selected,
+.general-bot-row[aria-current='page'] {
+  background: var(--color-accent-soft, #e8f2ff);
+  box-shadow: inset 3px 0 0 var(--color-accent, #007aff);
+  color: #0b1f33;
+}
+
+.general-grok-new {
+  min-height: 2.5rem;
+  letter-spacing: 0.01em;
+}
+
+.general-grok-bubble {
+  word-break: break-word;
+}
+
+.general-grok-bubble--user {
+  border-radius: 1.125rem 1.125rem 0.375rem 1.125rem; /* modern chat tail BR */
+  background: #0f172a;
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+}
+
+.general-grok-bubble--assistant {
+  border-radius: 1.125rem 1.125rem 1.125rem 0.375rem; /* modern chat tail BL */
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.general-grok-messages {
+  padding-bottom: 1.25rem;
+}
+
+.general-grok-composer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.general-grok-composer-shell:focus-within {
+  border-color: color-mix(in srgb, var(--color-accent, #007aff) 45%, #cbd5e1);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--color-accent, #007aff) 18%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.general-grok-sidebar,
+.general-grok-sidebar *,
+.general-grok-composer,
+.general-grok-composer *,
+.general-grok-bubble {
+  transition-property: transform, opacity, background-color, border-color, color, box-shadow, filter, outline-color !important;
+}
