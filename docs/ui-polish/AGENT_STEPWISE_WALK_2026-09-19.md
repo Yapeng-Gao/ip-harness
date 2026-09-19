@@ -233,3 +233,52 @@
 **S2 总结：Pass。**
 
 **证据**：`docs/ui-polish/agent-stepwise-ui/S2/S2-home-unbound.png`、`S2-session.png`、`S2-session-full.png`、`_probe.json`
+
+
+---
+
+## S3 · Live verify append
+
+| 维 | 级 | 结论 |
+|----|----|------|
+| **业务逻辑** | **Pass** | 启动并推进 mock 剧本，交底整理、特征抽取等步骤进入会话轨迹；mock 轨迹明确为缓冲态。 |
+| **页面逻辑** | **Pass** | URL=`/agent/sessions/sess-oa-1`；`session-timeline-scroller` 可见，轨迹内容长度=303。 |
+| **业务表现** | Ok | mock trail 展示系统/思考/调用步骤，未伪装成真实写库结果。 |
+| **页面表现** | Ok | 会话轨迹按时间顺序呈现，推进前后均可取证。 |
+| **UX** | Ok | 推进反馈可见，不被强制绑案或 BillingHold 阻断。 |
+| **UI** | **Should** | 工具调用明细可进一步默认折叠，降低长轨迹噪声。 |
+
+### Live hard gates
+
+- **Pass**：mock trail 成功启动并推进，`session-timeline-scroller` 可见。
+- **Pass**：无 mid 深链、无 BillingHold 全宽黄条，console error 为 0。
+- **Pass**：轨迹包含 mock steps，且调用项标明「未写库 · 缓冲」。
+
+**S3 总结：Pass。**
+
+**证据**：`docs/ui-polish/agent-stepwise-ui/S3/S3-before-start.png`、`S3-after-advance.png`、`S3-timeline-closeup.png`、`_probe.json`；`docs/ui-polish/agent-stepwise-e2e/S3-meta.json`
+
+
+---
+
+## S4 · Live verify append
+
+| 维 | 级 | 结论 |
+|----|----|------|
+| **业务逻辑** | **Pass** | HITL ConfirmBar 可见；选定「新颖性」并填入策略要点后，专科 CTA「批准策略」正确 enabled。 |
+| **页面逻辑** | **Pass** | URL=`/agent/sessions/sess-oa-1?focus=hitl`；`.confirm-hitl` 可见，CTA 断言限制在 ConfirmBar 内。 |
+| **业务表现** | Ok | ConfirmBar 业务闸正确，确认前置字段齐备后才允许批准策略。 |
+| **页面表现** | Ok | HITL 确认区在会话中可定位、可操作，未被其他 CTA 混淆。 |
+| **UX** | Ok | 确认动作与策略上下文同屏，用户可在写入前明确批准。 |
+| **UI** | **Should** | ConfirmBar 周边工具调用明细可进一步折叠，优先突出确认主动作。 |
+
+### Live hard gates
+
+- **Pass**：`.confirm-hitl` 可见，且专科 CTA「批准策略」可见并 enabled。
+- **Pass**：已选争点类型「新颖性」、已填策略要点。
+- **Pass**：无 BillingHold 全宽黄条、无 mid 深链，console error 为 0。
+- **Pass**：CTA 断言 scoped 在 `.confirm-hitl` 内（R5）。
+
+**S4 总结：Pass。**
+
+**证据**：`docs/ui-polish/agent-stepwise-ui/S4/S4-hitl-session.png`、`S4-confirmbar-closeup.png`；`docs/ui-polish/agent-stepwise-e2e/S4-meta.json`
