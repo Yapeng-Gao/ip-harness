@@ -73,12 +73,12 @@
 | id | 角色 |
 |----|------|
 | `orchestrator` | 总控 |
-| `expert-search` | 检索 |
-| `expert-mining` | 挖掘 |
+| `expert-research` | 调研（`research_report`） |
+| `expert-intake` | 立项（`intake_quote`+`go_nogo`） |
 | `expert-disclosure` | 交底整理 |
 | `expert-draft` | 撰稿 |
-| `expert-figure` | 附图 |
-| `expert-fto` | FTO |
+| `expert-figure` | 附图（辅席） |
+| `expert-fto` | FTO（辅席） |
 | `expert-filing` | 递交/形式 |
 | `expert-oa` | OA答复 |
 

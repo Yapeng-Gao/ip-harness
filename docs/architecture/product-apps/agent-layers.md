@@ -60,8 +60,8 @@
 | 专利 bot | 中台阶段/节点（示意） | 主工件 `HandoffArtifactKey` | 只读/提案工具（例） | 正式写候选（HITL 后） |
 |----------|----------------------|------------------------------|----------------------|------------------------|
 | **总控** `orchestrator` | 跨阶段编排 | — | 拆派/汇总 | **无**直接 handoff 写 |
-| **检索** `expert-search` | `pre_research` | `research_report` 素材 | 检索工具（多 `null`） | 通常只读 |
-| **挖掘** `expert-mining` | 立项前 / `decision` | `intake_quote` | 评分 mock | HITL 后建案/送立项 |
+| **调研** `expert-research` | `pre_research` | `research_report` 素材 | 检索工具（多 `null`） | 通常只读 |
+| **立项** `expert-intake` | 立项前 / `decision` | `intake_quote` | 评分 mock | HITL 后建案/送立项 |
 | **交底** `expert-disclosure` | 交底 | **`disclosure_pack`** | 结构整理 | `submitHandoff` / `saveDraft` |
 | **撰稿** `expert-draft` | `drafting` | **`draft_claims`** | 起草形状 | `saveDraft` / `submitClaims` |
 | **附图** `expert-figure` | `drafting` 辅助 | 附件示意 | 清单 mock | 挂章事件 |
@@ -69,7 +69,7 @@
 | **递交** `expert-filing` | authorize→file | 齐套清单 | 形式检查 | 闸+HITL；禁真递交 |
 | **OA** `expert-oa` | `prosecution` | **`prosecution_response`** | OA 策略 | `saveDraft` / `submitHandoff` |
 
-完整剧本与验收见 **[agent-l3-patent.md](./agent-l3-patent.md)**。
+完整名单/STAGE 映射/辅席口径见 **[agent-l3-patent.md](./agent-l3-patent.md)**（含 maintain/monetize/watch 缺口）。
 
 闸门键（勿另起）：`go_nogo` · `approve_strategy` · `authorize_file` · `pay_unlock` · `confirm_quote`。  
 阶段↔工件权威：`ARTIFACT_FOR_STAGE`（contracts）。

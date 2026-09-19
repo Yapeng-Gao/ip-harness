@@ -76,19 +76,24 @@ flowchart LR
 截短验收至少：`创建项目 → mid 可见 → Agent 项目可进 → 一条 Confirm 示意`。  
 **不要**把「打开 expert-oa」当成步骤 1。
 
-## 6. 与 L3 专家链关系
+## 6. STAGE_MODULES ↔ L3（摘要）
+
+完整表见 [agent-l3-patent §4](./agent-l3-patent.md#4-stage_modules--l3-专家映射表)。  
+要点：调研=`research_report`；立项=`intake_quote`+`go_nogo`；**maintain / monetize / watch / layout 暂无 L3 bot**；附图/FTO 为辅席（无独立 handoff key）。
+
+## 7. 与 L3 专家链关系
 
 - [agent-l3-patent](./agent-l3-patent.md) = **项目内**专家花名册与剧本。  
 - **本文** = 项目如何挂上 mid / workbench / IAM。  
 - 专家链路演示须挂在**已创建项目**下，且宜从总控/检索等**链路前端**开始，而非默认 OA/递交截入。
 
-## 7. 不做
+## 8. 不做
 
 - 真 SSO / 真 case-core  
 - Agent 可点跳 mid 当验收（映射+命令示意即可）  
 - 在 L1/L2 焊死专利花名册  
 - 无项目上下文的「裸专家」当跨面主入口  
 
-## 8. Owner
+## 9. Owner
 
 规格：架构设计 · 实现：各面 Owner 按边界改本壳 · B 席可后扫  

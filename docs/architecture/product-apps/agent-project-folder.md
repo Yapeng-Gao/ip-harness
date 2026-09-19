@@ -43,12 +43,12 @@ ProjectFolder
 | 专家 id（示意） | 业务故事 | mock 状态机（须可点） | 写库候选（HITL 后） |
 |-----------------|----------|------------------------|---------------------|
 | `orchestrator` | 总控 | 拆派 → 回执 → 汇总 | **禁止**直接改 handoff |
-| `expert-search` | 检索 | query → hits → 工作篮 | 通常只读 |
-| `expert-mining` | 挖掘 | 发明点 → 评分 → 送立项 | HITL 建案 |
+| `expert-research` | 调研 | query → hits → 工作篮 | 通常只读 |
+| `expert-intake` | 立项 | intake_quote + go_nogo | HITL 建案 |
 | `expert-disclosure` | 交底整理 | 技术点 → 交底结构 → Confirm | `disclosure_pack` |
 | `expert-draft` | 撰稿 | 权利要求/摘要 → Confirm | `draft_claims` |
-| `expert-figure` | 附图 | 示意图清单 → 挂章事件 | 附件示意 |
-| `expert-fto` | FTO | 五步 → 报告 Confirm | **默认不写案** |
+| `expert-figure` | 附图（辅） | 示意图清单 → 挂章事件 | 附件示意 |
+| `expert-fto` | FTO（辅） | 五步 → 报告 Confirm | **默认不写案** |
 | `expert-filing` | 递交/形式 | 齐套清单 → Confirm | 闸+HITL；禁真递交 |
 | `expert-oa` | OA答复 | 策略要点 → Confirm | `prosecution_response` |
 
