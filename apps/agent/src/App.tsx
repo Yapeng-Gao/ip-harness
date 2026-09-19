@@ -14,6 +14,7 @@ import { GeneralBotsProvider } from './projects/GeneralBotsContext'
 import { GeneralBotNewPage } from './pages/GeneralBotNewPage'
 import { ProjectListPage } from './pages/projects/ProjectListPage'
 import { ProjectWorkspacePage } from './pages/projects/ProjectWorkspacePage'
+import { AgentLabGallery } from './pages/AgentLabGallery'
 
 export default function App() {
   return (
@@ -34,6 +35,8 @@ export default function App() {
                 <Route path="sessions/:id" element={<AgentSessionWorkspace />} />
                 <Route path="agents" element={<AgentCatalogPage />} />
                 <Route path="harness" element={<AgentHarnessOverview />} />
+                <Route path="lab" element={<AgentLabGallery />} />
+                <Route path="gallery" element={<Navigate to="/agent/lab" replace />} />
                 <Route path="projects" element={<ProjectListPage />} />
                 <Route path="projects/:projectId" element={<ProjectWorkspacePage />} />
                 <Route path="projects/:projectId/bots/:botId" element={<ProjectWorkspacePage />} />

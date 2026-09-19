@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Navigate, useParams, Link } from 'react-router-dom'
-import { Settings2, Plus } from 'lucide-react'
+import { Settings2, Plus, Sparkles } from 'lucide-react'
 import { GeneralBotSidebar } from '../components/general/GeneralBotSidebar'
 import { GeneralBotChatPane } from '../components/general/GeneralBotChatPane'
 import { CaseBindControls } from '../components/case/CaseBindControls'
@@ -58,6 +58,16 @@ export function GeneralGrokShell() {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
         {/* Ultra-thin chrome: settings toggle only — no honesty wall / case strip by default */}
         <div className="flex shrink-0 items-center justify-end gap-2 px-3 py-1">
+          <Link
+            to="/agent/lab"
+            className="btn-press focus-ring inline-flex min-h-8 items-center gap-1 rounded-[var(--radius-sm)] px-2 py-1 text-[11px] text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+            aria-label="原型展廊"
+            data-testid="agent-lab-corner"
+            title="原型展廊"
+          >
+            <Sparkles className="h-3.5 w-3.5" aria-hidden />
+            展廊
+          </Link>
           <button
             type="button"
             onClick={() => setChromeOpen((v) => !v)}
