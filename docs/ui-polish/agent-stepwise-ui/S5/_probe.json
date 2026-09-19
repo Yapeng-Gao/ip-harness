@@ -1,0 +1,39 @@
+{
+  "pre": {
+    "url": "http://127.0.0.1:5175/agent/sessions/sess-1789790267780",
+    "sessionId": "sess-1789790267780",
+    "hasTop": true,
+    "hasControls": true,
+    "bound": false,
+    "currentText": null,
+    "createVisible": true,
+    "existingVisible": true,
+    "guide": true
+  },
+  "post": {
+    "url": "http://127.0.0.1:5175/agent/sessions/sess-1789790267780",
+    "bound": true,
+    "currentText": "走查S5绑案-269268· 样机",
+    "unbind": true,
+    "hasTop": false,
+    "stillOnSession": true
+  },
+  "bindMode": "create",
+  "gates": {
+    "midDeep": [],
+    "midCta": [],
+    "billingBanner": null,
+    "amberFullWidth": [],
+    "shell5173Count": 0
+  },
+  "evidence": [
+    "docs/ui-polish/agent-stepwise-ui/S5/S5-unbound-top.png",
+    "docs/ui-polish/agent-stepwise-ui/S5/S5-case-bind-top-unbound.png",
+    "docs/ui-polish/agent-stepwise-ui/S5/S5-bound.png"
+  ],
+  "checks": {
+    "bizLogic": true,
+    "pageLogic": true,
+    "hardOk": true
+  }
+}

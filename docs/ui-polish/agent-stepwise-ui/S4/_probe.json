@@ -1,0 +1,53 @@
+{
+  "probe": {
+    "url": "http://127.0.0.1:5175/agent/sessions/sess-oa-1?focus=hitl",
+    "hasConfirm": true,
+    "hasDock": true,
+    "barBox": {
+      "w": 992,
+      "h": 190,
+      "top": 669,
+      "bottom": 859
+    },
+    "approveVisible": true,
+    "approveDisabled": true,
+    "approveText": "批准策略",
+    "otherCtas": [
+      "批准策略",
+      "授权递交",
+      "退回",
+      "还有 3 条"
+    ],
+    "disabledReason": "请先选争点类型并填策略要点",
+    "sticky": true,
+    "caseTopPresent": true,
+    "caseTopY": 112,
+    "confirmY": 669,
+    "caseConfirmSeparated": true,
+    "focusClass": true
+  },
+  "clickProbe": {
+    "attempted": true,
+    "kind": "disabled-with-reason",
+    "disabled": true,
+    "reason": "请先选争点类型并填策略要点",
+    "sheetOpened": true
+  },
+  "gates": {
+    "midDeep": [],
+    "midCta": [],
+    "billingBanner": null,
+    "amberFullWidth": [],
+    "shell5173Count": 0
+  },
+  "evidence": [
+    "docs/ui-polish/agent-stepwise-ui/S4/S4-hitl-session.png",
+    "docs/ui-polish/agent-stepwise-ui/S4/S4-confirmbar-closeup.png",
+    "docs/ui-polish/agent-stepwise-ui/S4/S4-confirm-sheet.png"
+  ],
+  "checks": {
+    "bizLogic": true,
+    "pageLogic": true,
+    "hardOk": true
+  }
+}

@@ -243,3 +243,46 @@
 - `playwright.config.ts`（project `agent-stepwise` 匹配 S0–S9）
 - `docs/ui-polish/agent-stepwise-e2e/S0`…`S9` 截图 + meta.json
 - 本报告 `docs/ui-polish/AGENT_STEPWISE_WALK_2026-09-19.md`
+
+---
+
+## 附 · UI 评估侧取证（`agent-stepwise-ui/` · S0–S5）
+
+| 项 | 值 |
+|----|-----|
+| **评审** | UI评估助手 · 三 skill（apple-design · make-interfaces-feel-better · web-design-guidelines） |
+| **证据** | `docs/ui-polish/agent-stepwise-ui/{S0..S5}/` + `_walk_s0_s2_report.json` · `_walk_s3_s5_report.json` |
+| **对照** | 上表 e2e 走查；本附为页面表现 / UX / UI 深看，不改 e2e Pass 结论 |
+| **硬闸抽核** | mid `:5173` CTA=0 · BillingHold 全宽=0 · Home `home-case-bind`=1 |
+
+### UI 步结论（S0–S5）
+
+| ID | UI 总评 | Must | Should |
+|----|---------|------|--------|
+| S0 | **Pass** | — | **SW-S0-1** Home 推荐卡/辅文密度仍偏挤（可扫但非致命） |
+| S1 | **Pass** | — | — |
+| S2 | **Pass** | — | — |
+| S3 | **Pass** | — | — |
+| S4 | **Pass** | — | — |
+| S5 | **Pass** | — | **SW-S5-1** 会话案件：顶栏软绑与主区 CaseBind 并存感；绑后顶带卸载时机可更干脆 |
+
+### Should 明细
+
+#### SW-S0-1 · Home 推荐密度
+- **现象**：中央 compose + 推荐区/辅说明同屏，信息块偏多。
+- **改法**：推荐折叠或降为次级一行；主 CTA 留白优先。
+- **验收**：首屏扫视主路径（输入→开始办理→绑案）一眼可读，辅卡不抢主 CTA。
+- **证据**：`agent-stepwise-ui/S0/S0-home.png` · `S0-compose.png`
+
+#### SW-S5-1 · 会话绑案双入口感
+- **现象**：无案时顶栏软引导 + 控件并存；绑后顶带卸载可更明确。
+- **改法**：无案仅保留一处主绑案；绑后顶带立即收起并留「已绑」弱标。
+- **验收**：无案/已绑两态各仅一个主入口；截图对照 `S5-unbound-top` / `S5-bound`。
+- **证据**：`agent-stepwise-ui/S5/S5-unbound-top.png` · `S5-bound.png`
+
+### Must 汇总（UI）
+
+**无 Must**（S0–S5）。e2e S0–S9 Pass 与 UI 侧不冲突。
+
+---
+*UI 附段 · 只评不改。*
