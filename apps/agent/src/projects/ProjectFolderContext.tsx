@@ -579,6 +579,10 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
           return next
         }),
       )
+      // pending_create-only is a UI flash — no timeline spam
+      const pendingOnly =
+        patch.caseBindState === 'pending_create' && !('caseId' in patch)
+      if (pendingOnly) return
       setTimeline((prev) => [
         ...prev,
         {

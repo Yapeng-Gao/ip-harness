@@ -182,10 +182,10 @@ export function AgentHome() {
             知产 Agent
           </h1>
           <p className="mt-1.5 text-pretty text-sm text-slate-600">
-            专利检索 · OA · 交底 · 年费 · 确认后写入案件
+            先聊起来 · 案可选 · 确认后再写入
           </p>
           <p className="mt-1.5 text-[12px] text-slate-400">
-            主闭环优先 ·{' '}
+            可先开聊，不必先选案 ·{' '}
             <Link
               to="/agent/projects"
               className="text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
@@ -203,7 +203,7 @@ export function AgentHome() {
             onChange={(e) => setGoal(e.target.value)}
             onKeyDown={onKeyDown}
             rows={5}
-            placeholder="例如：对本案固态电解质配方完成现有技术检索，并对照答复期限输出可专利性结论"
+            placeholder="例如：帮我梳理这件事的目标、可选方案和下一步（案可稍后绑定）"
             className="focus-ring w-full resize-none bg-transparent px-4 pt-4 text-sm leading-relaxed text-slate-800 placeholder:text-slate-400 focus-visible:rounded-[var(--radius-md)]"
             aria-label="办理目标"
           />
@@ -229,8 +229,8 @@ export function AgentHome() {
             ) : null}
             <div className="ml-auto flex items-center gap-2">
               {caseId ? (
-                <span className="hidden text-[10px] text-slate-400 sm:inline" title="确认后写入案件">
-                  确认后写入案件
+                <span className="hidden text-[10px] text-slate-400 sm:inline" title="有案时：确认后再写入">
+                  有案 · 确认后再写入
                 </span>
               ) : null}
               <button

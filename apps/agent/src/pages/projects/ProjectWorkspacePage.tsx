@@ -80,6 +80,9 @@ export function ProjectWorkspacePage() {
                 ? 'strong'
                 : 'soft'
             }
+            onCreateStart={() =>
+              patchProject(projectId, { caseBindState: 'pending_create' })
+            }
             onBind={(id) =>
               patchProject(projectId, { caseId: id, caseBindState: 'bound' })
             }

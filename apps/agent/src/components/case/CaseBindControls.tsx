@@ -21,6 +21,8 @@ type Props = {
   writebackRequiresBind?: boolean
   onBind: (caseId: string, meta?: { title: string; created: boolean }) => void
   onUnbind?: () => void
+  /** Fires when create-and-bind enters pending_create (project can mirror state) */
+  onCreateStart?: () => void
 }
 
 /**
@@ -33,12 +35,17 @@ export function CaseBindControls({
   writebackRequiresBind,
   onBind,
   onUnbind,
+  onCreateStart,
 }: Props) {
   const { visibleCases, getCase, addCase } = useApp()
   const [mode, setMode] = useState<'idle' | 'create' | 'bind'>('idle')
   const [title, setTitle] = useState('')
   const [pick, setPick] = useState('')
-  const bindState: CaseBindState = caseBindStateFromId(caseId)
+  /** Short-lived UI state while mock create runs — keeps CaseBindState honest */
+  const [pendingCreate, setPendingCreate] = useState(false)
+  const bindState: CaseBindState = pendingCreate
+    ? 'pending_create'
+    : caseBindStateFromId(caseId)
 
   const boundTitle = (() => {
     if (!caseId) return null
@@ -58,23 +65,30 @@ export function CaseBindControls({
       : 'rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5'
 
   const createAndBind = () => {
+    if (pendingCreate) return
     const t = title.trim() || '样机新案'
-    const id = newMockCaseId()
-    // Seed into local AppContext cases (not case-core); keep mock-case-* id
-    try {
-      addCase({
-        id,
-        title: t,
-        stage: 'pre_research',
-        summary: 'Agent 样机·创建并绑定（未进中台库 / 非真 case-core）',
-        fromInsight: true,
-      })
-    } catch {
-      // hang id only if seed fails
-    }
-    onBind(id, { title: t, created: true })
-    setTitle('')
-    setMode('idle')
+    // Spec: pending_create briefly (button loading) → then bound
+    setPendingCreate(true)
+    onCreateStart?.()
+    window.setTimeout(() => {
+      const id = newMockCaseId()
+      // Seed into local AppContext cases (not case-core); keep mock-case-* id
+      try {
+        addCase({
+          id,
+          title: t,
+          stage: 'pre_research',
+          summary: 'Agent 样机·创建并绑定（未进中台库 / 非真 case-core）',
+          fromInsight: true,
+        })
+      } catch {
+        // hang id only if seed fails
+      }
+      onBind(id, { title: t, created: true })
+      setTitle('')
+      setMode('idle')
+      setPendingCreate(false)
+    }, 280)
   }
 
   const bindExisting = () => {
@@ -93,9 +107,11 @@ export function CaseBindControls({
         <span className="text-[11px] font-medium text-slate-700">
           {bindState === 'bound'
             ? '已绑案件'
-            : mustBind
-              ? '请先绑定案件'
-              : '案件（可选）'}
+            : bindState === 'pending_create'
+              ? '正在创建案件…'
+              : mustBind
+                ? '请先绑定案件'
+                : '案件（可选）'}
         </span>
         {boundTitle ? (
           <span
@@ -123,7 +139,8 @@ export function CaseBindControls({
             <button
               type="button"
               onClick={onUnbind}
-              className="btn-press focus-ring case-bind-btn hit-40 rounded border border-slate-200 bg-white px-2.5 text-xs text-slate-600"
+              disabled={pendingCreate}
+              className="btn-press focus-ring case-bind-btn hit-40 rounded border border-slate-200 bg-white px-2.5 text-xs text-slate-600 disabled:opacity-40"
               data-testid="case-unbind"
             >
               解除绑定
@@ -132,21 +149,24 @@ export function CaseBindControls({
           <button
             type="button"
             onClick={() => setMode(mode === 'create' ? 'idle' : 'create')}
-            className={`btn-press focus-ring case-bind-btn hit-40 inline-flex items-center gap-1 rounded px-2.5 text-xs font-medium ${
+            disabled={pendingCreate}
+            className={`btn-press focus-ring case-bind-btn hit-40 inline-flex items-center gap-1 rounded px-2.5 text-xs font-medium disabled:opacity-40 ${
               soft
                 ? 'border border-slate-200 bg-white text-slate-700'
                 : 'border border-sky-300 bg-white text-sky-900'
             }`}
             data-testid="case-create-bind"
             aria-expanded={mode === 'create'}
+            aria-busy={pendingCreate || undefined}
           >
             <Plus className="h-3 w-3" aria-hidden />
-            创建并绑定新案
+            {pendingCreate ? '创建中…' : '创建并绑定新案'}
           </button>
           <button
             type="button"
             onClick={() => setMode(mode === 'bind' ? 'idle' : 'bind')}
-            className={`btn-press focus-ring case-bind-btn hit-40 inline-flex items-center gap-1 rounded px-2.5 text-xs font-medium ${
+            disabled={pendingCreate}
+            className={`btn-press focus-ring case-bind-btn hit-40 inline-flex items-center gap-1 rounded px-2.5 text-xs font-medium disabled:opacity-40 ${
               soft
                 ? 'border border-slate-200 bg-white text-slate-700'
                 : 'border border-sky-300 bg-white text-sky-900'
@@ -168,7 +188,8 @@ export function CaseBindControls({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="例如：边缘调度模组"
-              className="focus-ring rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-800"
+              disabled={pendingCreate}
+              className="focus-ring rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-800 disabled:opacity-40"
               aria-label="新案标题"
               data-testid="case-create-title"
             />
@@ -176,10 +197,12 @@ export function CaseBindControls({
           <button
             type="button"
             onClick={createAndBind}
-            className="btn-press focus-ring case-bind-btn hit-40 rounded bg-slate-900 px-3 text-xs font-medium text-white"
+            disabled={pendingCreate}
+            className="btn-press focus-ring case-bind-btn hit-40 rounded bg-slate-900 px-3 text-xs font-medium text-white disabled:opacity-40"
             data-testid="case-create-confirm"
+            aria-busy={pendingCreate || undefined}
           >
-            生成 mock 案并绑定
+            {pendingCreate ? '创建中…' : '生成 mock 案并绑定'}
           </button>
           <p className="w-full text-[10px] text-amber-800">
             样机：写入本地种子（mock-case-*），不进真 case-core / 中台库
