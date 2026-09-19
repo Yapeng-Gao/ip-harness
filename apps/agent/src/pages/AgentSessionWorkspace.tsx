@@ -28,6 +28,7 @@ import {
 import {
   DEMO_AGENTS,
   gateToAction,
+  NO_CASE_GATE_REASON,
   sortGatesForRole,
   workbenchHref,
 } from '../components/session/sessionGates'
@@ -338,6 +339,8 @@ export function AgentSessionWorkspace() {
   /** Session 闸禁用原因 · 走 domain/guardrails【唯一入口】evaluateGuardrails */
   const gateDisabledReason = (g: HitlGateId): string | null => {
     if (clearedGates.includes(g)) return '已通过'
+    // P2 · S4：无案时芯片级禁用，禁 silently 点清 gate（写库本就不会发生，须显性）
+    if (!sess.caseId) return NO_CASE_GATE_REASON
     const hitsVerifiable =
       agent?.id === 'agent-research' || handoffKey === 'research_report'
         ? hasVerifiableResearchHitsFromSession(sess)

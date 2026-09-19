@@ -1,0 +1,39 @@
+{
+  "patch": {
+    "ok": false,
+    "before": null,
+    "paths": [],
+    "foundAt": null,
+    "topKeys": [
+      "v",
+      "revisedAt",
+      "cases",
+      "auditLog",
+      "flowProgressByCase",
+      "docketEvents"
+    ]
+  },
+  "after": {
+    "bodyHas须绑定": false,
+    "bodyHas无案": false,
+    "reason": "请先选争点类型并填策略要点",
+    "noCaseBtn": false,
+    "noCaseTitle": null,
+    "disabled": [
+      {
+        "text": "批准策略",
+        "testid": null,
+        "title": "请先选争点类型并填策略要点"
+      },
+      {
+        "text": "授权递交",
+        "testid": null,
+        "title": "代理 Persona：该闸仅企业可确认"
+      }
+    ],
+    "enabledGateBtns": [
+      "确认陈述"
+    ],
+    "bindTop": false
+  }
+}

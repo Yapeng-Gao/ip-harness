@@ -5,6 +5,7 @@ import { getAgent } from '@shared/data/agents'
 import { SessionConfirmBar } from '../session/SessionConfirmBar'
 import {
   gateToAction,
+  NO_CASE_GATE_REASON,
   sortGatesForRole,
 } from '../session/sessionGates'
 import type { HitlGateId } from '@shared/types'
@@ -122,8 +123,8 @@ export function ExpertHitlBridge({
     }
     if (!caseId) {
       return {
-        blocked: false,
-        reason: '未绑案件时 Confirm 仍走会话闸，写库命令可能被领域层拒绝',
+        blocked: true,
+        reason: NO_CASE_GATE_REASON,
       }
     }
     if (hasBlockingInvoiceForCase(caseId)) {
@@ -136,17 +137,20 @@ export function ExpertHitlBridge({
     (g: HitlGateId): string | null => {
       if (expert.domainCommandCandidates.every((c) => c.command === null)) {
         if (expert.id === 'expert-fto') {
+          // FTO 无案可确认口径（不写库）；其它闸仍禁
           return g === 'approve_strategy'
             ? null
             : 'FTO 样机仅开放策略确认口径'
         }
       }
+      // P2 · S4：无案时主闸芯片禁用（FTO 口径确认除外）
+      if (!caseId) return NO_CASE_GATE_REASON
       if (g === 'authorize_file' && role !== 'enterprise') {
         return '仅企业可授权递交'
       }
       return null
     },
-    [expert.domainCommandCandidates, expert.id, role],
+    [expert.domainCommandCandidates, expert.id, role, caseId],
   )
 
   const runHitl = useCallback(

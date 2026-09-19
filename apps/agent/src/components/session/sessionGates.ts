@@ -3,6 +3,9 @@ import type { AgentRunStatus, HandoffStatus, HitlGateId } from '@shared/types'
 import type { HandoffAction } from '@shared/data/handoff'
 import { workbenchHref as workbenchAbsHref } from '../../lib/deepLinks'
 
+/** 无案时 Confirm 主闸不可点清 · 与 CaseBindControls strong 同句 */
+export const NO_CASE_GATE_REASON = '写入案件前须绑定'
+
 /** Map confirm-step gate id → sessionHitlAction */
 export function gateToAction(gate: HitlGateId): HitlSessionAction {
   switch (gate) {

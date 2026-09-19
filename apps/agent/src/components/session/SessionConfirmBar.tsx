@@ -17,7 +17,7 @@ import {
   disclosurePackMissing,
   HANDOFF_LABELS,
 } from '@shared/data/handoff'
-import { previewHitlCommandChain } from './sessionGates'
+import { NO_CASE_GATE_REASON, previewHitlCommandChain } from './sessionGates'
 import { HandoffChip } from '@shared/components/HandoffChip'
 import { Link } from 'react-router-dom'
 import { workbenchHref } from '../../lib/deepLinks'
@@ -573,7 +573,13 @@ export function SessionConfirmBar({
                     title={disableReason ?? HITL_GATE_LABELS[g]}
                     aria-label={HITL_GATE_LABELS[g]}
                     aria-describedby={reasonId}
-                    className={`ui-btn ui-btn-sm btn-press focus-ring ${
+                    data-testid={
+                      disabled && disableReason === NO_CASE_GATE_REASON
+                        ? 'confirm-gate-no-case'
+                        : undefined
+                    }
+                    aria-disabled={disabled || undefined}
+                    className={`ui-btn ui-btn-sm btn-press focus-ring disabled:cursor-not-allowed disabled:opacity-50 ${
                       isLegalNext ? 'agent-confirm-cta' : ''
                     } ${
                       isPrimary

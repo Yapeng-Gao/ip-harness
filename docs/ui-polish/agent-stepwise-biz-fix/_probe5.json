@@ -1,0 +1,20 @@
+{
+  "success": {
+    "hasBar": true,
+    "has须绑定": true,
+    "noCaseBtn": true,
+    "noCaseTitle": "写入案件前须绑定",
+    "reason": "写入案件前须绑定",
+    "bindTop": true,
+    "disabledGate": [
+      {
+        "text": "批准策略",
+        "title": "写入案件前须绑定",
+        "tid": "confirm-gate-no-case"
+      }
+    ],
+    "enabledWriteGates": [],
+    "playing": true
+  },
+  "url": "http://127.0.0.1:5175/agent/sessions/sess-1789794610184"
+}

@@ -412,7 +412,7 @@ export function AgentSessionSidebar() {
                 to="/agent/sessions"
                 className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring w-full justify-center"
               >
-                打开会话 Inbox
+                打开通用历史
               </Link>
               <Link
                 to="/agent/projects"
@@ -426,8 +426,8 @@ export function AgentSessionSidebar() {
         ) : (
         <>
         <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-          <span className="nav-section !m-0 !px-0">
-            会话
+          <span className="nav-section !m-0 !px-0" title="通用单聊历史 · 与项目文件夹区分">
+            通用历史
           </span>
           <div className="relative" ref={filterMenuRef}>
             <button
@@ -497,6 +497,10 @@ export function AgentSessionSidebar() {
             )}
           </div>
         </div>
+
+        <p className="px-3 pb-1 text-[10px] leading-snug text-slate-400">
+          通用单聊历史 · 非项目文件夹
+        </p>
 
         <div className="px-2 pb-1.5">
           <label className="sr-only" htmlFor="agent-session-search">
@@ -603,10 +607,12 @@ export function AgentSessionSidebar() {
           {filtered.length === 0 ? (
             <div className="agent-rail-empty">
               <p className="ui-empty-title">
-                {sorted.length === 0 ? '暂无会话' : '无匹配结果'}
+                {sorted.length === 0 ? '暂无通用历史' : '无匹配结果'}
               </p>
               <p className="ui-empty-desc">
-                {sorted.length === 0 ? '新建一条会话开始办理。' : '试试清空筛选或换关键词。'}
+                {sorted.length === 0
+                  ? '通用单聊历史为空 · 与项目文件夹分开。新建一条开始办理。'
+                  : '试试清空筛选或换关键词。'}
               </p>
               <button
                 type="button"
@@ -767,7 +773,7 @@ export function AgentSessionSidebar() {
         <div className="border-t border-slate-100 px-3 py-2">
           <div className="truncate text-[11px] text-slate-400">{workspace.chipLabel}</div>
           <Link to="/agent/sessions" className="text-[11px] text-slate-600 hover:underline">
-            全部会话 →
+            通用历史 →
           </Link>
         </div>
         </>

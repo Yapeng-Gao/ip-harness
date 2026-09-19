@@ -1,0 +1,56 @@
+{
+  "url1": "http://127.0.0.1:5175/agent/sessions/sess-oa-1?focus=hitl",
+  "bindUI": [],
+  "selectCount": 1,
+  "lastSelectOpts": [
+    {
+      "v": "auto",
+      "t": "自动匹配"
+    },
+    {
+      "v": "agent-research",
+      "t": "Core · 调研检索 Agent"
+    },
+    {
+      "v": "agent-disclosure",
+      "t": "Core · 交底整理 Agent"
+    },
+    {
+      "v": "agent-intake",
+      "t": "Core · 立项评估 Agent"
+    },
+    {
+      "v": "agent-claims",
+      "t": "Core · 权利要求撰写 Agent"
+    },
+    {
+      "v": "agent-oa",
+      "t": "Core · OA 答复 Agent"
+    },
+    {
+      "v": "agent-annuity",
+      "t": "Core · 年费与维持 Agent"
+    },
+    {
+      "v": "agent-monetize",
+      "t": "Beta · 转化条款 Agent"
+    }
+  ],
+  "afterUnbind": {
+    "hasConfirm": true,
+    "has须绑定": false,
+    "has无案": false,
+    "noCaseBtn": false,
+    "reason": "请先选争点类型并填策略要点",
+    "disabledGateTitles": [
+      "请先选争点类型并填策略要点",
+      "代理 Persona：该闸仅企业可确认"
+    ],
+    "confirmSnippet": "待确认：批准策略 · OA 答复 Agent交接：代理起草中待批准待授权批准策略授权递交退回逐步请先选争点类型并填策略要点还有 3 条补充项 · 陈述/争点 · Full-check护栏 · 须先选争点类型并写策略要点再 HITL · 未确认陈述禁用授权 · 授权/file 前 Full-check · 输出非法律意见答复草稿确认陈述未确认前授权/递交请先确认陈述OA 争点类型 + 策略要点· 须填写后再 HITL 批准新颖性创造性清楚支持 / 充分公开其他未选类型或未填要点：禁用批准策略递交前 Full-check· OA · 案级共享勾选 · 演示术语与交底/对比文献口径一致（轻量）说明书/附图对权项有支持（轻量勾选）非法律意见戳 · 本输出不构成律师意见未过：意见陈述未确认；未选 OA 争点类型；未填策略要点；术语一致性未勾…"
+  },
+  "lsKeys": [
+    "ip-harness-last-agent-session-id",
+    "ip-harness-activeProduct",
+    "ip-harness.cross.v1.snapshot"
+  ]
+}
