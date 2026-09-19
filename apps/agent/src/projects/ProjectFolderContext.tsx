@@ -77,7 +77,7 @@ function buildDemo(): {
   const patent: AgentProject = {
     id: DEMO_PATENT_ID,
     title: '边缘调度模组 · 专利演示',
-    summary: 'domain/patent：总控 + 检索/撰稿/FTO',
+    summary: '专利领域：总控 + 检索 / 撰稿 / 自由实施',
     kind: 'domain',
     domainPackId: 'patent',
     caseBindState: 'none',
@@ -88,7 +88,7 @@ function buildDemo(): {
   const general: AgentProject = {
     id: DEMO_GENERAL_ID,
     title: '课题协作 · 通用演示',
-    summary: 'general：总控 + 研究/写作/审查（无专利步骤）',
+    summary: '通用：总控 + 研究 / 写作 / 审查（无专利步骤）',
     kind: 'general',
     caseBindState: 'none',
     expertIds: [...generalIds],
@@ -105,7 +105,7 @@ function buildDemo(): {
       projectId: patent.id,
       kind: 'project_created',
       title: '专利演示项目已种子',
-      detail: '专利领域 · 总控 + 检索/撰稿/FTO',
+      detail: '专利领域 · 总控 + 检索 / 撰稿 / 自由实施',
       at: stamp(),
     },
     {

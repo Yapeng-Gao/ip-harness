@@ -443,7 +443,8 @@ export function AgentSessionWorkspace() {
   const activeBanner: BannerKind = (() => {
     if (sess.status === 'failed') return 'failed'
     // SW-S5-1: CaseBindControls is sole bind entry — no parallel no_case banner
-    if (sess.agentId === 'auto' && suggested && !hitlActive) return 'route'
+    // SS-S-S5-1 · after case bind, demote/collapse match bar (no route CTA)
+    if (sess.agentId === 'auto' && suggested && !hitlActive && !sess.caseId) return 'route'
     return null
   })()
 
@@ -791,6 +792,7 @@ export function AgentSessionWorkspace() {
           sessionId={sess.id}
           persona={persona}
           clearedHitlGates={sess.clearedHitlGates}
+          hitlActive={hitlActive}
         />
       )}
     </div>

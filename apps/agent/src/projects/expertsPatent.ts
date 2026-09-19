@@ -34,7 +34,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
       },
       {
         id: 'dispatch-fto',
-        label: '分派给 FTO',
+        label: '分派给自由实施',
         action: 'dispatch_hint',
         hint: 'expert-fto',
       },
@@ -44,7 +44,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'brief',
         label: '收目标',
         script:
-          '【总控·mock】已记下项目目标。请用下方「分派给…」把任务交给检索 / 撰稿 / FTO；我不会替专家跑领域剧本。',
+          '【总控】已记下项目目标。请用下方「分派给…」把任务交给检索 / 撰稿 / 自由实施；我不会替专家跑领域剧本。',
       },
       {
         id: 'dispatch',
@@ -56,7 +56,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'await',
         label: '等回执',
         script:
-          '【总控·mock】等待专家「回报总控/项目」。汇总只读时间线，不绕过专家闸写库。',
+          '【总控】等待专家「回报总控/项目」。汇总只读时间线，不绕过专家闸写库。',
       },
       {
         id: 'summarize',
@@ -88,7 +88,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
     role: 'expert',
     specialty: '现有技术检索 · 工作篮',
     description:
-      '按检索主路径：构造检索式 → 查看命中 → 放入工作篮；通常只读，策略确认走「批准策略」。',
+      '先写好检索词并查看结果，再把有用文献放进工作篮；需要时请你确认检索策略（默认只读，不直接改案件）。',
     tools: [
       'commercial_patent_search',
       'cluster_hits',
@@ -126,7 +126,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'basket',
         label: '工作篮',
         script:
-          '【检索】已将 Top5 放入工作篮（只读样机）。可选送 FTO/挖掘占位，不写案。',
+          '【检索】已将 Top5 放入工作篮（只读样机）。可选送自由实施/挖掘占位，不写案。',
         tool: {
           name: 'bind_novelty',
           preview: 'basket=5 · novelty_gap=能耗约束动态阈值',
@@ -248,7 +248,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
 
   'expert-fto': {
     id: 'expert-fto',
-    name: 'FTO 专家',
+    name: '自由实施专家',
     role: 'expert',
     specialty: '自由实施风险 · 五步分析',
     description:
@@ -271,7 +271,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'features',
         label: '特征',
         script:
-          '【FTO】已抽取产品特征 6 项（边缘节点 · 调度策略 · 能耗阈值…）。聚焦自由实施风险，非新颖性结论。',
+          '【自由实施】已抽取产品特征 6 项（边缘节点 · 调度策略 · 能耗阈值…）。聚焦自由实施风险，非新颖性结论。',
         tool: {
           name: 'extract_fto_features',
           preview: 'features=6 · product_scope=边缘调度模组',
@@ -281,7 +281,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'hits',
         label: '命中',
         script:
-          '【FTO·mock】障碍专利候选 4 件。高相关：CN114882901A（权利要求 1 覆盖调度步骤）。',
+          '【自由实施】障碍专利候选 4 件。高相关：CN114882901A（权利要求 1 覆盖调度步骤）。',
         tool: {
           name: 'fto_hit_scan',
           preview: 'obstacle_candidates=4 · jurisdictions=CN,US',
@@ -291,7 +291,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'matrix',
         label: '矩阵',
         script:
-          '【FTO·mock】特征×专利矩阵已填：2 红 / 1 黄 / 3 绿。红格=可能落入独立权利要求。',
+          '【自由实施】特征×专利矩阵已填：2 红 / 1 黄 / 3 绿。红格=可能落入独立权利要求。',
         tool: {
           name: 'build_risk_matrix',
           preview: 'red=2 · amber=1 · green=3',
@@ -301,7 +301,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'risk',
         label: '风险',
         script:
-          '【FTO·mock】风险卡片：高——调度步骤可能落入 CN114… 权1；建议设计规避或许可路径（示意，非法律意见）。',
+          '【自由实施】风险卡片：高——调度步骤可能落入 CN114… 权1；建议设计规避或许可路径（示意，非法律意见）。',
         tool: {
           name: 'draft_fto_risk_card',
           preview: 'severity=high · theme=自由实施风险',
@@ -311,7 +311,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'report',
         label: '报告确认',
         script:
-          '【FTO】FTO 报告草稿在内存。请确认报告口径（批准策略）；默认不写案、不假装法律入库。',
+          '【自由实施】自由实施报告草稿在内存。请确认报告口径（批准策略）；默认不写案、不假装法律入库。',
         triggersHitl: true,
         hitlGate: 'approve_strategy',
         tool: {
@@ -330,7 +330,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
     ],
     guardrails: [
       '输出非法律意见',
-      '禁假装 FTO 结论入库',
+      '禁假装自由实施结论入库',
       '强调自由实施风险而非可专利性',
     ],
     catalogAgentId: 'agent-research',

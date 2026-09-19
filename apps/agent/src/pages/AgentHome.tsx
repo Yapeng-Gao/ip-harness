@@ -184,16 +184,22 @@ export function AgentHome() {
           <p className="mt-1.5 text-pretty text-sm text-slate-600">
             先聊起来 · 案可选 · 确认后再写入
           </p>
-          <p className="mt-1.5 text-[12px] text-slate-400">
-            可先开聊，不必先选案 ·{' '}
-            <Link
-              to="/agent/projects"
-              className="text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
-            >
-              项目模式
-            </Link>
-            （次级）
-          </p>
+          {/* SS-S-S0-1 · dual 11px meta → single line + 「说明」 */}
+          <details className="mt-1.5 inline-block" data-testid="home-meta-help">
+            <summary className="cursor-pointer list-none text-[12px] text-slate-400 hover:text-slate-600 [&::-webkit-details-marker]:hidden">
+              说明
+            </summary>
+            <p className="mt-1 text-[12px] leading-relaxed text-slate-400">
+              可先开聊，不必先选案 ·{' '}
+              <Link
+                to="/agent/projects"
+                className="text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
+              >
+                项目模式
+              </Link>
+              （次级）
+            </p>
+          </details>
         </div>
 
         {/* Composer — Agent primary act */}

@@ -202,10 +202,10 @@ export function CaseBindControls({
             data-testid="case-create-confirm"
             aria-busy={pendingCreate || undefined}
           >
-            {pendingCreate ? '创建中…' : '生成 mock 案并绑定'}
+            {pendingCreate ? '创建中…' : '创建样机案并绑定'}
           </button>
           <p className="w-full text-[10px] text-amber-800">
-            样机：写入本地种子（mock-case-*），不进真 case-core / 中台库
+            样机：仅写入本机演示数据，不会进入正式案件库
           </p>
         </div>
       )}

@@ -1,0 +1,60 @@
+{
+  "at": "2026-09-19T13:53:00+08:00",
+  "should": {
+    "SS-S-S0-1": {
+      "pass": true
+    },
+    "SS-S-S3-1": {
+      "pass": true,
+      "detail": {
+        "groupCount": 1,
+        "label": "调用组 · OA 争点分析 ×2"
+      }
+    },
+    "SS-S-S4-1": {
+      "pass": true,
+      "detail": {
+        "collapse": true,
+        "collapseOpen": false
+      }
+    },
+    "SS-S-S5-1": {
+      "pass": true,
+      "detail": {
+        "switchAfterBind": false
+      }
+    },
+    "SS-S-S6-1": {
+      "pass": true,
+      "detail": {
+        "h1": "待确认会话"
+      }
+    },
+    "SS-S-S7-1": {
+      "pass": true,
+      "detail": {
+        "lineClamp": 1
+      }
+    },
+    "SS-S-S8-1": {
+      "pass": true,
+      "detail": {
+        "domainPack": false,
+        "mockJargon": false
+      }
+    },
+    "SS-S-S9-1": {
+      "pass": true,
+      "detail": {
+        "boolean": false,
+        "arrowChain": false
+      }
+    }
+  },
+  "gates": {
+    "caseBind": 1,
+    "billing": false,
+    "mid": 0
+  },
+  "allPass": true
+}

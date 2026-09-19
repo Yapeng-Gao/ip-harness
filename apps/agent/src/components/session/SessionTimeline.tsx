@@ -239,6 +239,105 @@ type Props = {
   runMode?: 'dry-run' | 'formal' | null
 }
 
+
+type TimelineItem =
+  | { type: 'single'; step: AgentStep; index: number }
+  | {
+      type: 'tool_group'
+      toolKey: string
+      label: string
+      steps: { step: AgentStep; index: number }[]
+    }
+
+function toolKeyOf(step: AgentStep): string {
+  return step.toolName || step.title || step.id
+}
+
+/** SS-S-S3-1 · merge consecutive tool_call/tool_result with same tool into one expandable group */
+function groupTimelineSteps(steps: AgentStep[]): TimelineItem[] {
+  const items: TimelineItem[] = []
+  let i = 0
+  while (i < steps.length) {
+    const s = steps[i]
+    if (s.kind === 'tool_call' || s.kind === 'tool_result') {
+      const key = toolKeyOf(s)
+      const group: { step: AgentStep; index: number }[] = [{ step: s, index: i }]
+      let j = i + 1
+      while (j < steps.length) {
+        const n = steps[j]
+        if (
+          (n.kind === 'tool_call' || n.kind === 'tool_result') &&
+          toolKeyOf(n) === key
+        ) {
+          group.push({ step: n, index: j })
+          j++
+        } else break
+      }
+      if (group.length > 1) {
+        const label =
+          toolCatalogLabel(key) ||
+          group[0].step.title ||
+          key
+        items.push({ type: 'tool_group', toolKey: key, label, steps: group })
+      } else {
+        items.push({ type: 'single', step: s, index: i })
+      }
+      i = j
+    } else {
+      items.push({ type: 'single', step: s, index: i })
+      i++
+    }
+  }
+  return items
+}
+
+function ToolGroupBubble({
+  label,
+  items,
+  allSteps,
+  runMode,
+}: {
+  label: string
+  items: { step: AgentStep; index: number }[]
+  allSteps: AgentStep[]
+  runMode: 'dry-run' | 'formal' | null
+}) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="max-w-[42rem] px-1 py-0.5" data-testid="timeline-tool-group">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="btn-press focus-ring inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+        aria-expanded={open}
+      >
+        <ChevronDown
+          className={`h-3 w-3 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`}
+          aria-hidden
+        />
+        <span className="text-slate-400">调用组 ·</span>
+        <span className="font-medium text-slate-700">{label}</span>
+        <span className="tabular-nums text-slate-400">×{items.length}</span>
+      </button>
+      {open ? (
+        <div className="mt-1 ml-3 space-y-1 border-l-2 border-slate-100 pl-2">
+          {items.map(({ step, index }) => (
+            <StepBubble
+              key={step.id}
+              step={step}
+              writeTag={toolWriteTag(step, allSteps.slice(index + 1), runMode)}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="ml-6 mt-0.5 text-[11px] text-slate-400">
+          {items.length} 次同类办理 · 默认折叠细节
+        </p>
+      )}
+    </div>
+  )
+}
+
 export function SessionTimeline({
   steps,
   playing,
@@ -263,13 +362,23 @@ export function SessionTimeline({
           </p>
         </div>
       ) : null}
-      {steps.map((step, i) => (
-        <StepBubble
-          key={step.id}
-          step={step}
-          writeTag={toolWriteTag(step, steps.slice(i + 1), runMode)}
-        />
-      ))}
+      {groupTimelineSteps(steps).map((item) =>
+        item.type === 'tool_group' ? (
+          <ToolGroupBubble
+            key={`g-${item.toolKey}-${item.steps[0].step.id}`}
+            label={item.label}
+            items={item.steps}
+            allSteps={steps}
+            runMode={runMode}
+          />
+        ) : (
+          <StepBubble
+            key={item.step.id}
+            step={item.step}
+            writeTag={toolWriteTag(item.step, steps.slice(item.index + 1), runMode)}
+          />
+        ),
+      )}
       {playing && (
         <div className="flex items-center gap-2 px-1 text-xs text-slate-500">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-400" />

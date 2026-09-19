@@ -38,7 +38,7 @@ export function ProjectListPage() {
           项目模式
         </h1>
         <p className="mt-1 text-sm text-slate-600">
-          可选模式：通用多 bot 协作，或挂 patent DomainPack。默认入口仍是{' '}
+          可选模式：通用多席协作，或启用专利领域流程。默认入口仍是{' '}
           <Link to="/agent" className="underline">
             /agent 通用单聊
           </Link>
@@ -90,18 +90,18 @@ export function ProjectListPage() {
           </fieldset>
           {kind === 'domain' ? (
             <label className="mb-2 flex items-center gap-2 text-xs text-slate-500">
-              DomainPack
+              领域
               <select
                 value={domainPackId}
                 onChange={(e) => setDomainPackId(e.target.value as DomainPackId)}
                 className="focus-ring rounded border border-slate-200 bg-slate-50 px-2 py-1"
               >
-                <option value="patent">patent（专利）</option>
+                <option value="patent">专利</option>
               </select>
             </label>
           ) : (
             <p className="mb-2 text-[11px] text-slate-400">
-              通用项目无专利步骤条 / FTO / 权利要求 HITL。
+              通用项目不含专利步骤条、自由实施分析或权利要求确认。
             </p>
           )}
           <label className="mb-1 flex items-center gap-2 text-xs text-slate-500">
@@ -156,9 +156,9 @@ export function ProjectListPage() {
                     <div className="mt-0.5 text-xs text-slate-500">{p.summary}</div>
                   )}
                   <div className="mt-1 text-[10px] text-slate-400">
-                    bot {p.expertIds.filter((e) => !isOrchestratorExpert(e)).length} ·
+                    席位 {p.expertIds.filter((e) => !isOrchestratorExpert(e)).length} ·
                     含总控席
-                    {p.domainPackId ? ` · pack=${p.domainPackId}` : ''}
+                    {p.domainPackId === 'patent' ? ' · 专利领域' : p.domainPackId ? ` · ${p.domainPackId}` : ''}
                   </div>
                 </Link>
               </li>

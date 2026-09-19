@@ -181,10 +181,10 @@ export function ExpertHitlBridge({
         appendMessage(projectId, expert.id, {
           role: 'system',
           content:
-            '已确认 FTO 报告口径（内存草稿 · 未写案 · 非法律意见）。backend=mock',
+            '已确认自由实施报告口径（本机草稿 · 未写入案件 · 非法律意见）。',
           meta: { backend: 'mock' },
         })
-        setToast('FTO 口径已确认（未写库）')
+        setToast('自由实施口径已确认（未写库）')
         return
       }
       const r = await sessionHitlAction(

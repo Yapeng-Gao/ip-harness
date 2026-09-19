@@ -44,24 +44,24 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
         id: 'brief',
         label: '收目标',
         script:
-          '【通用总控·mock】已记下课题目标。请用「分派给研究/写作/审查」下发；我不会替专家跑专利领域剧本。',
+          '【总控】已记下课题目标。请用「分派给研究/写作/审查」下发；我不会替专家跑专利领域剧本。',
       },
       {
         id: 'dispatch',
         label: '拆派',
         script:
-          '【通用总控·mock】拆派卡片已就绪。点快捷动作写入专家私聊与时间线。backend=mock',
+          '【总控】拆派卡片已就绪。点快捷动作写入专家私聊与时间线。',
       },
       {
         id: 'await',
         label: '等回执',
-        script: '【通用总控·mock】等待专家「回报总控」。汇总只读时间线。',
+        script: '【总控】等待专家「回报总控」。汇总只读时间线。',
       },
       {
         id: 'summarize',
         label: '汇总',
         script:
-          '【通用总控·mock】已汇总各专家回执。通用项目无专利 DomainCommand 写库。',
+          '【总控】已汇总各专家回执。通用项目不会写入专利案件库。',
       },
     ],
     hitlGates: [],
@@ -72,7 +72,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
         note: '通用总控仅拆派/汇总',
       },
     ],
-    guardrails: ['禁止一键写库', '分派≠替专家执行', '无专利 DomainPack'],
+    guardrails: ['禁止一键写库', '分派≠替专家执行', '无专利领域包流程'],
     catalogAgentId: null,
     accent: 'slate',
   },
@@ -96,21 +96,21 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
         id: 'topic',
         label: '选题',
         script:
-          '【研究·mock】已收窄选题范围，列出 3 个可推进方向。backend=mock',
+          '【研究】已收窄选题范围，列出 3 个可推进方向。',
         tool: { name: 'outline_brief', preview: 'topics=3 · focus=用户课题' },
       },
       {
         id: 'collect',
         label: '收集',
         script:
-          '【研究·mock】已 skim 公开资料 8 条，标注可信度与引用占位。',
+          '【研究】已 skim 公开资料 8 条，标注可信度与引用占位。',
         tool: { name: 'web_skim', preview: 'sources=8 · skim_only=true' },
       },
       {
         id: 'points',
         label: '要点',
         script:
-          '【研究·mock】要点卡：背景 / 争议点 / 待核事实。可回报总控。',
+          '【研究】要点卡：背景 / 争议点 / 待核事实。可回报总控。',
         tool: {
           name: 'note_cluster',
           preview: 'clusters=背景,争议,待核',
@@ -140,7 +140,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
     role: 'expert',
     specialty: '大纲 · 草稿 · 润色',
     description:
-      '通用写作 bot：大纲 → 草稿 → 润色。无权利要求/交底 DomainPack。',
+      '通用写作 bot：大纲 → 草稿 → 润色。无权利要求或交底专项流程。',
     tools: ['draft_outline', 'expand_section', 'polish_tone'],
     shortcuts: [
       { id: 'outline', label: '写大纲', action: 'jump', stepId: 'outline' },
@@ -153,14 +153,14 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
         id: 'outline',
         label: '大纲',
         script:
-          '【写作·mock】已生成三级大纲（引言 / 主体 / 收束）。backend=mock',
+          '【写作】已生成三级大纲（引言 / 主体 / 收束）。',
         tool: { name: 'draft_outline', preview: 'sections=3 · depth=2' },
       },
       {
         id: 'draft',
         label: '草稿',
         script:
-          '【写作·mock】主体段落已扩写为可读草稿（示意字数 ~800）。',
+          '【写作】主体段落已扩写为可读草稿（示意字数 ~800）。',
         tool: {
           name: 'expand_section',
           preview: 'chars≈800 · tone=neutral',
@@ -170,7 +170,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
         id: 'polish',
         label: '润色',
         script:
-          '【写作·mock】已压短冗余句、统一术语。可回报总控。',
+          '【写作】已压短冗余句、统一术语。可回报总控。',
         tool: {
           name: 'polish_tone',
           preview: 'pass=clarity · no_domain_write',
@@ -196,7 +196,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
     role: 'expert',
     specialty: '一致性 · 风险提示 · 清单',
     description:
-      '通用审查 bot：通读 → 问题清单 → 弱确认。无 FTO 五步 / 专利风险矩阵。',
+      '通用审查 bot：通读 → 问题清单 → 弱确认。无自由实施五步或专利风险矩阵。',
     tools: ['lint_consistency', 'risk_checklist', 'suggest_fix'],
     shortcuts: [
       { id: 'read', label: '通读', action: 'jump', stepId: 'read' },
@@ -209,24 +209,24 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
         id: 'read',
         label: '通读',
         script:
-          '【审查·mock】已通读当前材料，标记模糊表述 4 处。backend=mock',
+          '【审查】已通读当前材料，标记模糊表述 4 处。',
         tool: { name: 'lint_consistency', preview: 'flags=4 · scope=draft' },
       },
       {
         id: 'issues',
         label: '清单',
         script:
-          '【审查·mock】问题清单：事实待核×2 · 口径不一×1 · 缺引用×1。非专利 FTO 矩阵。',
+          '【审查】问题清单：事实待核×2 · 口径不一×1 · 缺引用×1。非专利自由实施矩阵。',
         tool: {
           name: 'risk_checklist',
-          preview: 'items=4 · fto_pack=false',
+          preview: 'items=4 · 非自由实施包',
         },
       },
       {
         id: 'ack',
         label: '弱确认',
         script:
-          '【审查·mock】请本地确认「已阅问题清单」（弱 Confirm · 无 catalog 绑会话 · 不写 DomainCommand）。',
+          '【审查】请本地确认「已阅问题清单」（不写入案件指令）。',
         triggersHitl: true,
         hitlGate: 'approve_strategy',
         tool: {
@@ -244,7 +244,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
       },
     ],
     guardrails: [
-      '无 FTO DomainPack',
+      '无自由实施专项流程',
       '弱确认不写库',
       '与 expert-fto 剧本隔离',
     ],

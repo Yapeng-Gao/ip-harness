@@ -48,6 +48,8 @@ type Props = {
   sessionId?: string
   persona?: PersonaId
   clearedHitlGates?: HitlGateId[]
+  /** SS-S-S4-1 · HITL 时默认折叠右栏次要块 */
+  hitlActive?: boolean
 }
 
 export function SessionContextPanel({
@@ -65,6 +67,7 @@ export function SessionContextPanel({
   sessionId,
   persona = 'enterprise_ip',
   clearedHitlGates,
+  hitlActive = false,
 }: Props) {
   const wb = caseData ? workbenchHref(agent?.workbenchPath, caseData.id) : null
   const caseContextSnap = buildCaseContextFromSession({
@@ -85,6 +88,12 @@ export function SessionContextPanel({
     <aside className="agent-aside agent-aside--demoted hidden w-56 shrink-0 flex-col lg:flex 2xl:w-72">
       <div className="agent-aside-head">上下文</div>
       <div className="flex-1 overflow-y-auto">
+        {hitlActive ? (
+          <details className="border-b border-slate-100" data-testid="aside-hitl-collapse">
+            <summary className="cursor-pointer px-3 py-2.5 text-[11px] font-medium text-slate-400 hover:text-slate-600">
+              案件与 Agent 概况
+            </summary>
+            <div className="pb-1">
         {agent && (
           <section className="agent-aside-section">
             <div className="agent-aside-kicker">当前 Agent</div>
@@ -129,6 +138,56 @@ export function SessionContextPanel({
           )}
         </section>
 
+            </div>
+          </details>
+        ) : (
+          <>
+        {agent && (
+          <section className="agent-aside-section">
+            <div className="agent-aside-kicker">当前 Agent</div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <div className="text-xs font-semibold tracking-tight text-slate-900">
+                {agent.name}
+              </div>
+              <AgentTierBadge tier={agent.tier} />
+            </div>
+            <p className="mt-0.5 text-pretty text-xs leading-relaxed text-slate-600">
+              {agent.specialty || agent.description}
+            </p>
+          </section>
+        )}
+
+        <section className="agent-aside-section">
+          <div className="agent-aside-kicker">
+            <FolderOpen className="h-3 w-3" aria-hidden /> 案件
+          </div>
+          {caseData ? (
+            <div>
+              <div className="py-1">
+                <div className="text-xs font-medium text-slate-900">{caseData.title}</div>
+                <div className="mt-0.5 text-xs text-slate-500">
+                  {caseData.caseNo} · 风险 {caseData.risk} · {caseData.progress}%
+                  {handoffStatus
+                    ? ` · 交接 ${HANDOFF_LABELS[handoffStatus]}`
+                    : ''}
+                </div>
+              </div>
+              {wb && (
+                <a
+                  href={wb}
+                  className="agent-aside-form-link btn-press focus-ring hit-40 mt-1 inline-flex items-center text-xs text-slate-600 hover:underline"
+                >
+                  打开对应表单工作台
+                </a>
+              )}
+            </div>
+          ) : (
+            <p className="agent-aside-empty">未关联案件</p>
+          )}
+        </section>
+
+          </>
+        )}
         <div className="border-b border-slate-100 px-2 py-2">
           <CaseContextContractPanel snap={caseContextSnap} compact />
         </div>
