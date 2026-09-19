@@ -468,7 +468,7 @@ export function SessionConfirmBar({
       {/* Chat-native HITL bubble row */}
       <div className="confirm-hitl-inner">
         <p className="min-w-0 flex-1 text-[13px] leading-relaxed text-slate-800 sm:text-sm">
-          <span className="text-amber-800/90">需要你确认：</span>
+          <span className="text-amber-800/90">待确认：</span>
           <span className="font-semibold text-slate-900">{confirmLabel}</span>
           {agent && (
             <span className="font-normal text-slate-400"> · {agent.name}</span>

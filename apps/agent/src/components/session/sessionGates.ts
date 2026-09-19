@@ -153,8 +153,8 @@ export function pickNextHandoffAction(
 export type SessionBizBadge =
   | '未关联案件'
   | '发票阻塞'
-  | '待我确认'
-  | '待企业确认'
+  | '我方'
+  | '待企业'
   | '待代理'
 
 export function sessionBizBadges(input: {
@@ -174,9 +174,10 @@ export function sessionBizBadges(input: {
   const waiting = input.status === 'needs_human' || !!input.hitlPending
   const viewer = input.viewerRole
   if (waiting && entLeft.length > 0) {
-    out.push(viewer === 'enterprise' ? '待我确认' : '待企业确认')
+    /* ART-M-1 · role secondary: 我方 / 待企业 (primary remains 待确认) */
+    out.push(viewer === 'enterprise' ? '我方' : '待企业')
   } else if (waiting) {
-    out.push(viewer === 'agency' ? '待我确认' : '待代理')
+    out.push(viewer === 'agency' ? '我方' : '待代理')
   }
   return out
 }
@@ -184,7 +185,12 @@ export function sessionBizBadges(input: {
 export const BIZ_BADGE_CLASS: Record<SessionBizBadge, string> = {
   未关联案件: 'border-slate-200 bg-slate-50 text-slate-600',
   发票阻塞: 'border-rose-200 bg-rose-50 text-rose-800',
-  待我确认: 'border-amber-300 bg-amber-100 text-amber-950',
-  待企业确认: 'border-amber-200 bg-amber-50 text-amber-900',
+  我方: 'border-amber-300 bg-amber-100 text-amber-950',
+  待企业: 'border-amber-200 bg-amber-50 text-amber-900',
   待代理: 'border-sky-200 bg-sky-50 text-sky-800',
+}
+
+/** ART-M-1/M-3 · confirm-role secondary chips (not primary 待确认) */
+export function isConfirmRoleBadge(b: SessionBizBadge): boolean {
+  return b === '我方' || b === '待企业' || b === '待代理'
 }

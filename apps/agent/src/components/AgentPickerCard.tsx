@@ -190,7 +190,11 @@ export function AgentPickerCard({
           <summary className="agent-picker-card__details-summary">
             详情
             {a.tools.length > 0 ? ` · 工具 ${a.tools.length}` : ''}
-            {a.hitlGates.length > 0 ? ` · 需确认 ${a.hitlGates.length}` : ''}
+            {a.hitlGates.length > 0 ? (
+              <span className="agent-catalog-remind-chip" title="启动后需人工确认闸">
+                待确认 {a.hitlGates.length}
+              </span>
+            ) : null}
           </summary>
           {/* P1-B · 两列定义列表 + 弱标签 + 超高「更多」— visual only */}
           <AgentMetaSections
@@ -213,7 +217,7 @@ export function AgentPickerCard({
                 value: [
                   a.raciHint,
                   a.hitlGates.length > 0
-                    ? `需确认 ${a.hitlGates.map((g) => HITL_GATE_LABELS[g]).join(' / ')}`
+                    ? `待确认 ${a.hitlGates.map((g) => HITL_GATE_LABELS[g]).join(' / ')}`
                     : null,
                   agentTierNote(a),
                 ]

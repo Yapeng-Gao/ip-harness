@@ -16,12 +16,14 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '@shared/context/AppContext'
 import { useAgents } from '@shared/context/AgentContext'
-import { RUN_STATUS_LABEL, getAgent, AGENT_CATALOG, AGENT_TIER_LABEL } from '@shared/data/agents'
+import { getAgent, AGENT_CATALOG, AGENT_TIER_LABEL } from '@shared/data/agents'
 import {
   sessionBizBadges,
   BIZ_BADGE_CLASS,
+  isConfirmRoleBadge,
 } from './session/sessionGates'
 import { agentSessionPath, midInboxHref } from '../lib/deepLinks'
+import { agentRunStatusLabel } from '../lib/statusLabels'
 
 const STATUS_DOT: Record<string, string> = {
   running: 'bg-[var(--color-status-info)]',
@@ -221,7 +223,6 @@ export function AgentSessionSidebar() {
   }
 
   const extraActive =
-    statusFilter === 'running' ||
     statusFilter === 'done' ||
     agentFilter !== 'all'
 
@@ -233,58 +234,60 @@ export function AgentSessionSidebar() {
   }
 
   const navCls = ({ isActive }: { isActive: boolean }) =>
-    `btn-press focus-ring relative flex flex-1 flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[11px] sm:flex-row sm:gap-1 sm:text-xs ${
+    `btn-press focus-ring flex min-h-10 w-full items-center gap-2 rounded-[var(--radius-sm)] px-2.5 py-2 text-xs ${
       isActive
-        ? 'font-semibold text-slate-900 after:absolute after:inset-x-1 after:bottom-0 after:h-0.5 after:rounded-full after:bg-slate-900'
-        : 'font-normal text-slate-500 hover:text-slate-800'
+        ? 'list-row-active font-semibold text-slate-900'
+        : 'font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900'
     }`
+  const moreActive =
+    loc.pathname.startsWith('/agent/harness') ||
+    loc.pathname.startsWith('/agent/projects')
 
   return (
     <>
       <aside className="shell-aside flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex-col sm:w-52 lg:w-56">
         <nav
-          className="flex gap-0 border-b border-slate-100 px-0.5 py-1"
+          className="flex flex-col gap-0.5 border-b border-slate-100 px-1.5 py-1.5"
           aria-label="办理导航"
           data-testid="agent-side-nav"
         >
           <NavLink to="/agent" end className={navCls}>
-            <Home className="h-3 w-3 shrink-0" aria-hidden />
+            <Home className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
             开始
           </NavLink>
           <NavLink to="/agent/agents" className={navCls}>
-            <Users className="h-3 w-3 shrink-0" aria-hidden />
+            <Users className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
             Agent
           </NavLink>
           <NavLink to="/agent/sessions" end className={navCls}>
-            <MessageSquare className="h-3 w-3 shrink-0" aria-hidden />
+            <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
             会话
           </NavLink>
-          <div ref={overflowRef} className="relative shrink-0">
+          <div ref={overflowRef} className="relative">
             <button
               type="button"
               onClick={() => setOverflowOpen((v) => !v)}
-              className={`btn-press focus-ring relative flex h-full flex-col items-center justify-center gap-0.5 px-1.5 py-1.5 text-[11px] sm:flex-row sm:gap-1 sm:text-xs ${
-                loc.pathname.startsWith('/agent/harness') ||
-                loc.pathname.startsWith('/agent/projects')
-                  ? 'font-semibold text-slate-900 after:absolute after:inset-x-1 after:bottom-0 after:h-0.5 after:rounded-full after:bg-slate-900'
-                  : 'font-normal text-slate-500 hover:text-slate-800'
+              className={`btn-press focus-ring flex min-h-10 w-full items-center gap-2 rounded-[var(--radius-sm)] px-2.5 py-2 text-xs ${
+                moreActive
+                  ? 'list-row-active font-semibold text-slate-900'
+                  : 'font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
               aria-label="更多"
               aria-expanded={overflowOpen}
               data-testid="agent-side-more"
             >
-              <MoreHorizontal className="h-3 w-3" aria-hidden />
-              <span className="hidden sm:inline">更多</span>
+              <MoreHorizontal className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+              更多
             </button>
             {overflowOpen && (
-              <div className="menu-enter absolute right-0 top-full z-30 mt-0.5 w-44 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+              <div className="menu-enter absolute left-0 right-0 top-full z-30 mt-0.5 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
                 <button
                   type="button"
                   onClick={() => {
                     setOverflowOpen(false)
                     newSession()
                   }}
-                  className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                  className="focus-ring flex min-h-10 w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                   data-testid="sidebar-new-session-secondary"
                 >
                   <Plus className="h-3.5 w-3.5 text-slate-400" /> 新建会话
@@ -292,7 +295,7 @@ export function AgentSessionSidebar() {
                 <Link
                   to="/agent/projects"
                   onClick={() => setOverflowOpen(false)}
-                  className="focus-ring flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                  className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
                   data-testid="sidebar-projects-secondary"
                 >
                   <FolderKanban className="h-3.5 w-3.5 text-slate-400" /> 项目（次级）
@@ -301,7 +304,7 @@ export function AgentSessionSidebar() {
                 <Link
                   to="/agent/harness"
                   onClick={() => setOverflowOpen(false)}
-                  className="focus-ring flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                  className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
                 >
                   <Network className="h-3.5 w-3.5 text-slate-400" /> 运行说明
                 </Link>
@@ -331,32 +334,52 @@ export function AgentSessionSidebar() {
           >
             <p className="text-[11px] leading-relaxed text-slate-500">
               {isHome
-                ? '首屏主路径：主区输入后点「开始办理」开工。'
-                : '浏览目录 / 运行说明时收起会话列表；需要办理请打开会话 Inbox。'}
+                ? '主区输入后点「开始办理」开工。'
+                : '目录 / 运行说明收起列表；办理请打开会话。'}
             </p>
             {statusCounts.needs_human > 0 ? (
               <Link
                 to="/agent/sessions?filter=needs_human"
-                className="btn-press focus-ring inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-950 hover:bg-amber-100"
+                className="agent-remind-chip btn-press focus-ring"
                 data-testid="home-needs-human-chip"
               >
                 待确认 · {statusCounts.needs_human}
               </Link>
-            ) : (
+            ) : null}
+            {/* ATT-S-1 · mini structure without restoring full inbox list */}
+            <div className="space-y-1">
+              <div className="nav-section !m-0 !px-0">最近待确认</div>
+              {sorted
+                .filter((s) => !s.archived && s.status === 'needs_human')
+                .slice(0, 2)
+                .map((s) => (
+                  <Link
+                    key={s.id}
+                    to={agentSessionPath(s.id, { focus: 'hitl' })}
+                    className="btn-press focus-ring block truncate rounded-[var(--radius-sm)] px-2 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    {s.title}
+                  </Link>
+                ))}
+              {statusCounts.needs_human === 0 && (
+                <p className="px-2 text-[11px] text-slate-400">暂无待确认</p>
+              )}
+            </div>
+            <div className="mt-auto space-y-2 pt-2">
               <Link
                 to="/agent/sessions"
-                className="text-center text-[11px] text-slate-400 hover:text-slate-700 hover:underline"
+                className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring w-full justify-center"
               >
-                查看全部会话
+                打开会话 Inbox
               </Link>
-            )}
-            <Link
-              to="/agent/projects"
-              className="text-center text-[11px] text-slate-400 hover:text-slate-600 hover:underline"
-              data-testid="home-projects-text-link"
-            >
-              项目模式（次级）
-            </Link>
+              <Link
+                to="/agent/projects"
+                className="block text-center text-[11px] text-slate-400 hover:text-slate-600 hover:underline"
+                data-testid="home-projects-text-link"
+              >
+                项目模式（次级）
+              </Link>
+            </div>
           </div>
         ) : (
         <>
@@ -383,17 +406,6 @@ export function AgentSessionSidebar() {
             </button>
             {filterMenuOpen && (
               <div className="menu-enter absolute right-0 top-full z-30 mt-1 w-40 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
-                <button
-                  type="button"
-                  className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
-                  onClick={() => {
-                    setStatusFilter('running')
-                    setShowArchivedSessions(false)
-                    setFilterMenuOpen(false)
-                  }}
-                >
-                  进行中 · {statusCounts.running}
-                </button>
                 <button
                   type="button"
                   className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
@@ -467,7 +479,7 @@ export function AgentSessionSidebar() {
         </div>
 
         <div
-          className="segmented mx-2 mb-1.5 w-[calc(100%-1rem)]"
+          className="segmented agent-session-segments mx-2 mb-1.5 w-[calc(100%-1rem)]"
           role="group"
           aria-label="会话状态筛选"
         >
@@ -475,6 +487,7 @@ export function AgentSessionSidebar() {
             [
               ['all', '全部', statusCounts.all],
               ['needs_human', '待确认', statusCounts.needs_human],
+              ['running', '进行中', statusCounts.running],
             ] as const
           ).map(([key, label, count]) => (
             <button
@@ -486,27 +499,18 @@ export function AgentSessionSidebar() {
               }}
               className="segmented-item btn-press focus-ring flex-1 tabular"
               aria-pressed={statusFilter === key}
+              data-tone={key === 'needs_human' ? 'remind' : undefined}
             >
               {label}
-              <span className="ml-0.5 font-normal opacity-60">{count}</span>
+              <span className="agent-seg-count font-normal opacity-70">
+                {' '}· {count}
+              </span>
             </button>
           ))}
         </div>
 
         {(extraActive || agentFilterOpen) && (
           <div className="mx-2 mb-1.5 space-y-1 border-b border-slate-100 pb-1.5">
-            {statusFilter === 'running' && (
-              <div className="flex items-center justify-between text-[11px] text-slate-600">
-                <span>进行中</span>
-                <button
-                  type="button"
-                  className="text-slate-400 hover:text-slate-700"
-                  onClick={() => setStatusFilter('all')}
-                >
-                  清除
-                </button>
-              </div>
-            )}
             {statusFilter === 'done' && (
               <div className="flex items-center justify-between text-[11px] text-slate-600">
                 <span>已完成</span>
@@ -641,14 +645,15 @@ export function AgentSessionSidebar() {
                                 ) : null}
                               </div>
                               <div className="agent-rail-sub truncate">
-                                {ag?.name ?? '自动匹配'} · {RUN_STATUS_LABEL[s.status]}
+                                {ag?.name ?? '自动匹配'} ·{' '}
+                                {agentRunStatusLabel(s.status)}
                               </div>
                               {badges.length > 0 && (
                                 <div className="mt-0.5 flex flex-wrap gap-0.5">
                                   {badges.map((b) => (
                                     <span
                                       key={b}
-                                      className={`inline-flex rounded-full border px-1 py-px text-[9px] font-medium ${BIZ_BADGE_CLASS[b]}`}
+                                      className={`agent-biz-badge inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium ${BIZ_BADGE_CLASS[b]}`}
                                     >
                                       {b}
                                     </span>
@@ -658,24 +663,6 @@ export function AgentSessionSidebar() {
                             </div>
                           </div>
                         </button>
-                        {(badges.includes('待我确认') ||
-                          badges.includes('待企业确认') ||
-                          badges.includes('待代理')) && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              e.preventDefault()
-                              window.location.href = midInboxHref({
-                                sessionId: s.id,
-                              })
-                            }}
-                            className="shrink-0 self-center px-1 text-[9px] text-slate-400 hover:text-slate-700 hover:underline"
-                            title="在运营 Inbox 中查看"
-                          >
-                            Inbox
-                          </button>
-                        )}
                         <div
                           className="relative shrink-0 self-center pr-1"
                           ref={rowMenuId === s.id ? rowMenuRef : undefined}
@@ -688,15 +675,15 @@ export function AgentSessionSidebar() {
                               e.stopPropagation()
                               setRowMenuId((id) => (id === s.id ? null : s.id))
                             }}
-                            className="btn-press focus-ring rounded p-1 text-slate-400 opacity-0 hover:bg-slate-100 hover:text-slate-700 group-hover:opacity-100 focus:opacity-100"
+                            className="btn-press focus-ring hit-40 rounded p-1 text-slate-400 opacity-0 hover:bg-slate-100 hover:text-slate-700 group-hover:opacity-100 focus:opacity-100"
                           >
                             <MoreHorizontal className="h-3.5 w-3.5" />
                           </button>
                           {rowMenuId === s.id && (
-                            <div className="menu-enter absolute right-0 z-40 mt-1 w-28 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+                            <div className="menu-enter absolute right-0 z-40 mt-1 w-40 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
                               <button
                                 type="button"
-                                className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                                className="focus-ring flex min-h-10 w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                                 onClick={() => {
                                   setRenamingId(s.id)
                                   setRenameDraft(s.title)
@@ -708,7 +695,7 @@ export function AgentSessionSidebar() {
                               {!s.archived ? (
                                 <button
                                   type="button"
-                                  className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                                  className="focus-ring flex min-h-10 w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                                   onClick={() => {
                                     archiveWithUndo(s.id, s.title)
                                     setRowMenuId(null)
@@ -719,13 +706,27 @@ export function AgentSessionSidebar() {
                               ) : (
                                 <button
                                   type="button"
-                                  className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                                  className="focus-ring flex min-h-10 w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                                   onClick={() => {
                                     patchSession(s.id, { archived: false })
                                     setRowMenuId(null)
                                   }}
                                 >
                                   <Archive className="h-3 w-3" /> 取消归档
+                                </button>
+                              )}
+                              {badges.some(isConfirmRoleBadge) && (
+                                <button
+                                  type="button"
+                                  className="focus-ring flex min-h-10 w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                                  onClick={() => {
+                                    setRowMenuId(null)
+                                    window.location.href = midInboxHref({
+                                      sessionId: s.id,
+                                    })
+                                  }}
+                                >
+                                  在运营 Inbox 打开
                                 </button>
                               )}
                             </div>
@@ -767,10 +768,7 @@ export function AgentSessionSidebar() {
 
       {createToast && (
         <div className="toast-enter pointer-events-none fixed bottom-6 right-6 z-50 max-w-sm">
-          <div
-            role="status"
-            className="pointer-events-auto border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950 shadow-lg"
-          >
+          <div role="status" className="ui-toast ui-toast-info">
             {createToast}
           </div>
         </div>

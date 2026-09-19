@@ -7,7 +7,7 @@ import {
   AlertTriangle,
   MoreHorizontal,
 } from 'lucide-react'
-import { RUN_STATUS_LABEL } from '@shared/data/agents'
+import { agentRunStatusLabel } from '../../lib/statusLabels'
 import type { AgentSession } from '@shared/types'
 
 type BannerKind = 'failed' | 'no_case' | 'route' | null
@@ -111,7 +111,7 @@ export function SessionWorkspaceHeader({
             </h1>
           )}
           <p className="truncate text-xs text-slate-500">
-            {subtitleLabel} · {RUN_STATUS_LABEL[sess.status]}
+            {subtitleLabel} · {agentRunStatusLabel(sess.status)}
             {caseTitle ? ` · ${caseTitle}` : ''}
           </p>
         </div>

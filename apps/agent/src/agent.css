@@ -219,3 +219,80 @@ body,
 .project-chat-composer * {
   transition-property: transform, opacity, background-color, border-color, color, box-shadow, filter, outline-color !important;
 }
+
+/* —— AGENT_REMIND_TABS 2026-09-19 · ART/ATT Must —— */
+
+/* ART-M-2 · elevated remind chip (dash-next spirit, not success green) */
+.agent-remind-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 2.25rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid #d97706;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #f59e0b 18%, transparent) 0, transparent 3.5rem),
+    linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+  box-shadow: inset 3px 0 0 #d97706, var(--shadow-rest);
+  font-size: var(--font-size-caption); /* 12 */
+  font-weight: 650;
+  color: #78350f;
+  text-decoration: none;
+}
+.agent-remind-chip:hover {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #f59e0b 24%, transparent) 0, transparent 3.5rem),
+    linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+  color: #451a03;
+}
+
+/* ART-M-3 · status badge ≥11px */
+.agent-biz-badge {
+  font-size: 0.6875rem; /* 11px floor */
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ATT-M-2 · session segmented density + remind selected amber rail */
+.agent-session-segments {
+  flex-wrap: nowrap;
+  gap: 0.125rem;
+  padding: 0.1875rem;
+}
+.agent-session-segments .segmented-item {
+  min-height: 2rem;
+  padding: 0.25rem 0.35rem;
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+.agent-session-segments .agent-seg-count {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.agent-session-segments .segmented-item[aria-pressed="true"][data-tone="remind"] {
+  background: #fffbeb;
+  color: #92400e;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #f59e0b 55%, transparent),
+    inset 2px 0 0 #d97706,
+    var(--shadow-rest);
+  font-weight: 650;
+}
+
+/* ART-S-2 · Catalog foot amber mini-chip */
+.agent-catalog-remind-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid #f59e0b;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.6875rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+}

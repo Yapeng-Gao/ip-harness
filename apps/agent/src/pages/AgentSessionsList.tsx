@@ -4,13 +4,15 @@ import { Plus, Briefcase, Search, Pencil, Archive } from 'lucide-react'
 import { useAgents } from '@shared/context/AgentContext'
 import { matchSessionSearch } from '@shared/utils/sessionSearch'
 import { useApp } from '@shared/context/AppContext'
-import { RUN_STATUS_LABEL, getAgent } from '@shared/data/agents'
+import { getAgent } from '@shared/data/agents'
 import { PageHeader, EmptyState } from '@shared/components/PageHeader'
 import {
   sessionBizBadges,
   BIZ_BADGE_CLASS,
+  isConfirmRoleBadge,
 } from '../components/session/sessionGates'
 import { agentSessionPath, midHref, midInboxHref, workbenchHref } from '../lib/deepLinks'
+import { agentRunStatusLabel } from '../lib/statusLabels'
 
 export function AgentSessionsList() {
   const {
@@ -287,20 +289,18 @@ export function AgentSessionsList() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-600">
-                      <div>{RUN_STATUS_LABEL[s.status]}</div>
+                      <div>{agentRunStatusLabel(s.status)}</div>
                       {badges.length > 0 && (
-                        <div className="mt-1 flex flex-wrap items-center gap-1">
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
                           {badges.map((b) => (
                             <span
                               key={b}
-                              className={`inline-flex rounded-full border px-1.5 py-0.5 text-[10px] font-medium ${BIZ_BADGE_CLASS[b]}`}
+                              className={`agent-biz-badge inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium ${BIZ_BADGE_CLASS[b]}`}
                             >
                               {b}
                             </span>
                           ))}
-                          {(badges.includes('待我确认') ||
-                            badges.includes('待企业确认') ||
-                            badges.includes('待代理')) && (
+                          {badges.some(isConfirmRoleBadge) && (
                             <a
                               href={midInboxHref({ sessionId: s.id })}
                               onClick={(e) => {
@@ -310,10 +310,10 @@ export function AgentSessionsList() {
                                   sessionId: s.id,
                                 })
                               }}
-                              className="text-[10px] text-slate-400 underline-offset-2 hover:text-slate-700 hover:underline"
+                              className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring hit-40 !min-h-10 px-2.5 text-[11px]"
                               title="在运营 Inbox 中查看"
                             >
-                              运营 Inbox
+                              在运营 Inbox 打开
                             </a>
                           )}
                         </div>
@@ -384,7 +384,7 @@ export function AgentSessionsList() {
         <div className="toast-enter pointer-events-none fixed bottom-6 right-6 z-50 max-w-sm">
           <div
             role="status"
-            className="pointer-events-auto border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950 shadow-lg"
+            className="ui-toast ui-toast-info"
           >
             {createToast}
           </div>

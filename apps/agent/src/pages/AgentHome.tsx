@@ -95,14 +95,6 @@ export function AgentHome() {
     ? visibleSessions.find((s) => s.id === lastSessionId)
     : undefined
 
-  const needsHumanCount = useMemo(
-    () =>
-      visibleSessions.filter(
-        (s) => !s.archived && (s.status === 'needs_human' || s.hitlPending),
-      ).length,
-    [visibleSessions],
-  )
-
   const selectedCase = caseId
     ? visibleCases.find((c) => c.id === caseId)
     : undefined
@@ -388,15 +380,7 @@ export function AgentHome() {
               继续上次 · {lastSession.title}
             </Link>
           )}
-          {needsHumanCount > 0 && (
-            <Link
-              to="/agent/sessions?filter=needs_human"
-              className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-medium text-amber-950 hover:bg-amber-100"
-              data-testid="home-needs-human-link"
-            >
-              待确认 · {needsHumanCount}
-            </Link>
-          )}
+          {/* ART-M-2 · remind chip lives only in compact sidebar */}
           <Link
             to="/agent/agents"
             className="hover:text-slate-700 hover:underline"
@@ -410,7 +394,7 @@ export function AgentHome() {
         <div className="toast-enter pointer-events-none fixed bottom-6 right-6 z-50 max-w-sm">
           <div
             role="status"
-            className="pointer-events-auto border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950 shadow-lg"
+            className="ui-toast ui-toast-info"
           >
             {createToast}
           </div>

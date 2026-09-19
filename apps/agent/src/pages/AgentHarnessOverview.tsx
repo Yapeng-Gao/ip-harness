@@ -5,11 +5,11 @@ import {
   AGENT_CATALOG,
   BETA_HONEST_COPY,
   HITL_GATE_LABELS,
-  RUN_STATUS_LABEL,
   confirmNonCoreTier,
   defaultSessionGoal,
   getAgent,
 } from '@shared/data/agents'
+import { agentRunStatusLabel } from '../lib/statusLabels'
 import { AgentTierBadge } from '../components/AgentTierBadge'
 import { getStageMeta } from '@shared/data/stages'
 import { PageHeader } from '@shared/components/PageHeader'
@@ -258,7 +258,7 @@ export function AgentHarnessOverview() {
                       <div className="truncate text-xs text-slate-400">{s.goal}</div>
                     </div>
                     <span className="shrink-0 text-[11px] text-slate-400">
-                      {RUN_STATUS_LABEL[s.status]}
+                      {agentRunStatusLabel(s.status)}
                     </span>
                   </div>
                 </Link>
