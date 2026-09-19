@@ -55,6 +55,7 @@ HITL 闸键（勿另起）：`go_nogo` · `approve_strategy` · `authorize_file`
 - 正式提交 / HITL 通过 → 只经 `dispatchCommand`（`actor: 'agent'`）。
 - 工具副作用必须可映射到 DomainCommand 或只读（见 [agent-tools-mcp.md](./agent-tools-mcp.md)）。
 
+入口模式（通用 / 项目 general·domain）见 [agent-entry-modes.md](./agent-entry-modes.md)。  
 项目文件夹 / 专家分剧本 IA 见 [agent-project-folder.md](./agent-project-folder.md)。
 
 ## 5. 样机 vs 落地

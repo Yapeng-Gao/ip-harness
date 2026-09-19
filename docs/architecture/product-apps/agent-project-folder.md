@@ -2,7 +2,8 @@
 
 > **样机诚实**：形式可参考 **Grok Bot**（侧栏 bot 列表、一对一聊、总控编排），但 **每个专家 bot 必须有自己的业务逻辑**——不是同一套通用聊天换皮。今日无真 LLM、无真 case-core 写库。  
 > **落地目标**：5175 壳内「项目=文件夹」工作区；专家 = 版本化 `AgentDef` + **独立剧本/工具/闸**；总控席只拆派与汇总。  
-> **对齐**：[agent-surface](./agent-surface.md) · [agent-plugins](./agent-plugins.md) · [agent-tools-mcp](./agent-tools-mcp.md) · enterprise C 混合。
+> **对齐**：[agent-entry-modes](./agent-entry-modes.md)（入口冻结）· [agent-surface](./agent-surface.md) · [agent-plugins](./agent-plugins.md) · [agent-tools-mcp](./agent-tools-mcp.md)。  
+> **范围**：本稿描述 **domain/patent 包** 与文件夹内专家/总控；**不是**唯一入口——通用单聊与 general 项目见 entry-modes。
 
 ## 1. 心智模型（冻结）
 

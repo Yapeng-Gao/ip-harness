@@ -16,6 +16,7 @@
 | 工具与 MCP | [agent-tools-mcp.md](./agent-tools-mcp.md) | tools[] vs MCP；副作用→DomainCommand |
 | Agent 插件 | [agent-plugins.md](./agent-plugins.md) | AgentDef 插件；版本化 catalog；对齐 stage |
 | Agent 项目文件夹 IA | [agent-project-folder.md](./agent-project-folder.md) | 项目=文件夹；专家分剧本；总控只编排 |
+| Agent 入口模式 | [agent-entry-modes.md](./agent-entry-modes.md) | 通用单聊默认；项目 general/domain；DomainPack |
 | 横切 | [cross-cutting.md](./cross-cutting.md) | 深链、contracts、禁壳直写库、Persona、e2e |
 
 ## 与五壳 + api 对照表
