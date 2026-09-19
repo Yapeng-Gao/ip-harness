@@ -1,0 +1,24 @@
+{
+  "patched": {
+    "ok": true,
+    "overdueStopEnabled": true,
+    "invoiceStatuses": [
+      {
+        "id": "c1",
+        "inv": []
+      },
+      {
+        "id": "c2",
+        "inv": []
+      },
+      {
+        "id": "c3",
+        "inv": []
+      }
+    ]
+  },
+  "banner": {
+    "present": false,
+    "maybe": null
+  }
+}

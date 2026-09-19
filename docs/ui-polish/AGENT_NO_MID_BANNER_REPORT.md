@@ -41,3 +41,19 @@
 ## SHA
 
 `d2d91faeefad7c6e19b587917bb6af7364df119d`
+
+---
+
+## 活验（Playwright · 2026-09-19 11:24 CST）
+
+基址 `http://127.0.0.1:5175` · 证据目录 `docs/ui-polish/agent-p0-overlay/`
+
+| URL | 操作 | 截图 | 结果 |
+|-----|------|------|------|
+| `/agent` | goto | `live-01-home.png` | PASS |
+| `/agent/sessions` | goto | `live-02-sessions.png` | PASS |
+| `/agent/sessions/sess-oa-1?focus=hitl` | **click** 行 | `live-03-session-via-click.png` | PASS · Confirm 无 mid |
+| `/agent/projects` | goto | `live-04-projects-list.png` | PASS · 无全宽样机黄条 |
+| `/agent/projects/proj-demo-general` | **click** 卡 | `live-05-project-workspace-via-click.png` | PASS · 非 amber tip wall |
+
+`_live-verify.json` → `PASS=true`。BillingHold：组件无 `<a href>`；种子未挂出横幅。
