@@ -3,7 +3,7 @@
 | 项 | 值 |
 |----|-----|
 | **日期** | 2026-09-19（Asia/Shanghai） |
-| **基线 HEAD** | `92de45e`（`dev`） |
+| **基线 HEAD** | `92de45e` → **落地** `e431083`（`dev`） |
 | **权威** | `docs/ui-polish/REVIEW_AGENT_FEEL_2026-09-19.md` |
 | **范围** | **仅** `apps/agent/**` 视觉/密度/文案/CSS + `src/index.css` agent 确认热区补强 |
 | **禁止** | HITL 闸语义 / DomainCommand / onHitl·onGate / ENTRY·FULL 已关 P0/P1 / Cloud Agent |
@@ -100,4 +100,4 @@
 无。Must 全清；Should 1–7 已落地；Could 未做。
 
 ## SHA
-见本提交 `git rev-parse HEAD`（push `origin dev` 后回填）。
+`e431083`（`dev` · 已 push）
