@@ -52,9 +52,9 @@ export function AgentSessionSidebar() {
   const navigate = useNavigate()
   const loc = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
-  /** Home: primary story is「新办」— demote Inbox list (P0-AE-2) */
+  /** Compat compose: demote Inbox list (Grok shell hides this sidebar entirely) */
   const isHome =
-    loc.pathname === '/agent' || loc.pathname === '/agent/'
+    loc.pathname === '/agent/compose' || loc.pathname === '/agent/compose/'
   /** P1-AF-5 · Catalog / Harness 默认收起会话 Inbox（与 Home compact 一致） */
   const isCatalogOrHarness =
     loc.pathname.startsWith('/agent/agents') ||

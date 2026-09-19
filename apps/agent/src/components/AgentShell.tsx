@@ -87,6 +87,11 @@ export function AgentShell() {
 
   const inSession = loc.pathname.startsWith('/agent/sessions/')
   const inProjects = loc.pathname.startsWith('/agent/projects')
+  /** Grok multi-bot shell owns its left rail — hide mail-like session inbox */
+  const inGrokShell =
+    loc.pathname === '/agent' ||
+    loc.pathname === '/agent/' ||
+    loc.pathname.startsWith('/agent/bots/')
 
   return (
     <div className="app-shell-bg flex h-full flex-col overflow-hidden">
@@ -152,7 +157,7 @@ export function AgentShell() {
       {/* P0: AgentBillingHoldBanner unmounted from shell chrome — no full-width amber on Home/Sessions/Projects */}
 
       <div className="flex min-h-0 flex-1">
-        {!inProjects && <AgentSessionSidebar />}
+        {!inProjects && !inGrokShell && <AgentSessionSidebar />}
 
         <main
           id="agent-main"

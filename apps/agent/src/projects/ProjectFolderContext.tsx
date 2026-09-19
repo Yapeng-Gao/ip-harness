@@ -12,6 +12,12 @@ import {
   isOrchestratorExpert,
   orchestratorIdForProject,
 } from './experts'
+import {
+  GENERAL_SHELL_ID,
+  GENERAL_SHELL_EXPERT_IDS,
+  buildGeneralShellProject,
+  isGeneralShellId,
+} from './generalShell'
 import type {
   AgentProject,
   DomainPackId,
@@ -53,7 +59,9 @@ function emptyThread(
       {
         id: uid('msg'),
         role: 'system',
-        content: `项目协作 · 总控编排\n${intro}`,
+        content: isGeneralShellId(projectId)
+          ? `通用壳 · Grok 多专家\n${intro}`
+          : `项目协作 · 总控编排\n${intro}`,
         at: stamp(),
         meta: { backend: 'mock', stepId: def.steps[0]?.id },
       },
@@ -72,6 +80,7 @@ function buildDemo(): {
   timeline: ProjectTimelineEvent[]
   dispatches: ProjectDispatch[]
 } {
+  const shell = buildGeneralShellProject(nowIso())
   const patentIds = expertIdsForKind('domain', 'patent')
   const generalIds = expertIdsForKind('general')
   const patent: AgentProject = {
@@ -96,10 +105,19 @@ function buildDemo(): {
     updatedAt: nowIso(),
   }
   const threads = [
+    ...GENERAL_SHELL_EXPERT_IDS.map((id) => emptyThread(shell.id, id)),
     ...patentIds.map((id) => emptyThread(patent.id, id)),
     ...generalIds.map((id) => emptyThread(general.id, id)),
   ]
   const timeline: ProjectTimelineEvent[] = [
+    {
+      id: uid('tl'),
+      projectId: shell.id,
+      kind: 'project_created',
+      title: '通用 Grok 壳已就绪',
+      detail: '壳级专利专家 + 总控 · 样机 · 无真 LLM',
+      at: stamp(),
+    },
     {
       id: uid('tl'),
       projectId: patent.id,
@@ -118,7 +136,7 @@ function buildDemo(): {
     },
   ]
   return {
-    projects: [general, patent],
+    projects: [shell, general, patent],
     threads,
     timeline,
     dispatches: [],
@@ -127,6 +145,8 @@ function buildDemo(): {
 
 type ProjectFolderContextValue = {
   projects: AgentProject[]
+  /** Projects excluding the implicit general Grok shell (folder list / project rail). */
+  folderProjects: AgentProject[]
   /** Read-only project expert threads (view-layer aggregation; do not merge stores). */
   threads: ProjectThread[]
   createProject: (input: {
@@ -606,9 +626,15 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  const folderProjects = useMemo(
+    () => projects.filter((p) => !isGeneralShellId(p.id)),
+    [projects],
+  )
+
   const value = useMemo<ProjectFolderContextValue>(
     () => ({
       projects,
+      folderProjects,
       threads,
       createProject,
       getProject,
@@ -627,6 +653,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     }),
     [
       projects,
+      folderProjects,
       threads,
       createProject,
       getProject,
@@ -660,4 +687,4 @@ export function useProjectFolder() {
   return ctx
 }
 
-export { DEMO_PATENT_ID, DEMO_GENERAL_ID, DEMO_PATENT_ID as DEMO_PROJECT_ID }
+export { DEMO_PATENT_ID, DEMO_GENERAL_ID, DEMO_PATENT_ID as DEMO_PROJECT_ID, GENERAL_SHELL_ID }

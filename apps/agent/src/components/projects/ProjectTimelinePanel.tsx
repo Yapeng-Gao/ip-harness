@@ -5,6 +5,10 @@ import {
   isOrchestratorExpert,
 } from '../../projects/experts'
 import type { ProjectExpertId } from '../../projects/types'
+import {
+  generalBotPath,
+  isGeneralShellId,
+} from '../../projects/generalShell'
 
 type Props = { projectId: string; currentExpertId?: ProjectExpertId }
 
@@ -32,7 +36,7 @@ export function ProjectTimelinePanel({ projectId, currentExpertId }: Props) {
   return (
     <aside className="hidden w-56 shrink-0 flex-col border-l border-slate-200 bg-white lg:flex">
       <div className="border-b border-slate-100 px-3 py-2 text-xs font-semibold text-slate-800">
-        项目时间线
+        {isGeneralShellId(projectId) ? '壳时间线' : '项目时间线'}
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2">
         {events.length === 0 ? (
@@ -82,7 +86,11 @@ export function ProjectTimelinePanel({ projectId, currentExpertId }: Props) {
             <div className="mt-2 flex flex-col gap-1">
               {orchId && currentExpertId !== orchId && (
                 <Link
-                  to={`/agent/projects/${projectId}`}
+                  to={
+                    isGeneralShellId(projectId)
+                      ? generalBotPath(orchId)
+                      : `/agent/projects/${projectId}`
+                  }
                   className="btn-press focus-ring hit-40 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 hover:bg-slate-50"
                   data-testid="project-timeline-cta-orch"
                 >
@@ -102,7 +110,11 @@ export function ProjectTimelinePanel({ projectId, currentExpertId }: Props) {
                 .map((eid) => (
                 <Link
                   key={eid}
-                  to={`/agent/projects/${projectId}/bots/${eid}`}
+                  to={
+                    isGeneralShellId(projectId)
+                      ? generalBotPath(eid)
+                      : `/agent/projects/${projectId}/bots/${eid}`
+                  }
                   className="btn-press focus-ring hit-40 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700"
                 >
                   去{getProjectExpert(eid).name}

@@ -7,12 +7,12 @@ import { useApp } from '@shared/context/AppContext'
 import type { DomainPackId, ProjectKind } from '../../projects/types'
 
 export function ProjectListPage() {
-  const { projects, createProject } = useProjectFolder()
+  const { folderProjects, createProject } = useProjectFolder()
   const { visibleCases } = useApp()
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [summary, setSummary] = useState('')
-  const [kind, setKind] = useState<ProjectKind>('general')
+  const [kind, setKind] = useState<ProjectKind>('domain')
   const [domainPackId, setDomainPackId] = useState<DomainPackId>('patent')
   const [caseId, setCaseId] = useState('')
 
@@ -38,11 +38,11 @@ export function ProjectListPage() {
           项目模式
         </h1>
         <p className="mt-1 text-sm text-slate-600">
-          可选模式：通用多席协作，或启用专利领域流程。默认入口仍是{' '}
+          在 Grok 多专家壳上设项目夹并挂 IP 专家。默认入口是{' '}
           <Link to="/agent" className="underline">
-            /agent 通用单聊
+            /agent 通用壳
           </Link>
-          。
+          （壳级专利 bot，无需先建夹）。
         </p>
 
         <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -136,7 +136,7 @@ export function ProjectListPage() {
         </div>
 
         <ul className="mt-6 space-y-2">
-          {projects.map((p) => {
+          {folderProjects.map((p) => {
             const badge = projectKindBadge(p)
             return (
               <li key={p.id}>

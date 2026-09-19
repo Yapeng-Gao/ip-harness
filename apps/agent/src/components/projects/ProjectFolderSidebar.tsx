@@ -24,7 +24,7 @@ export function ProjectFolderSidebar() {
   const seatId = (botId ?? expertId) as ProjectExpertId | undefined
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const { projects, getProject } = useProjectFolder()
+  const { folderProjects, getProject } = useProjectFolder()
   const project = projectId ? getProject(projectId) : undefined
   const defaultOrch = project
     ? orchestratorIdForProject(project)
@@ -48,7 +48,7 @@ export function ProjectFolderSidebar() {
           项目
         </div>
         <ul className="space-y-0.5">
-          {projects.map((p) => {
+          {folderProjects.map((p) => {
             const open = p.id === projectId
             const projectPath = `/agent/projects/${p.id}`
             const projectActive =

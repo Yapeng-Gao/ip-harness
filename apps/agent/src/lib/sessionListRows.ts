@@ -7,6 +7,11 @@ import type { AgentSession } from '@ip/domain/types'
 import { getAgent } from '@shared/data/agents'
 import { getProjectExpert } from '../projects/experts'
 import type { AgentProject, ProjectThread } from '../projects/types'
+import {
+  generalBotPath,
+  isGeneralShellId,
+} from '../projects/generalShell'
+import { isOrchestratorExpert } from '../projects/experts'
 import { agentSessionPath } from './deepLinks'
 
 export type SessionListSource = 'general' | 'project'
@@ -69,10 +74,32 @@ export function projectThreadToRow(
   project: AgentProject | undefined,
 ): SessionListRow {
   const expert = getProjectExpert(t.expertId)
-  const projectTitle = project?.title ?? t.projectId
   const expertName = expert.name
+  // Implicit Grok shell threads aggregate as general (not project folder)
+  if (isGeneralShellId(t.projectId)) {
+    const href = generalBotPath(t.expertId)
+    return {
+      id: t.id,
+      source: 'general',
+      title: t.title || expertName,
+      updatedAt: t.updatedAt,
+      projectId: t.projectId,
+      expertId: t.expertId,
+      expertName,
+      caseId: project?.caseId,
+      sourceLabel: `通用壳 · ${expertName}`,
+      href,
+      searchText: `${t.title} 通用壳 ${expertName}`,
+      pendingHitl: t.pendingHitl,
+      goal: project?.summary,
+    }
+  }
+  const projectTitle = project?.title ?? t.projectId
   const sourceLabel = `${projectTitle} · ${expertName}`
-  const href = `/agent/projects/${t.projectId}/bots/${t.expertId}${
+  const seatHref = isOrchestratorExpert(t.expertId)
+    ? `/agent/projects/${t.projectId}`
+    : `/agent/projects/${t.projectId}/bots/${t.expertId}`
+  const href = `${seatHref}${
     t.id ? `?thread=${encodeURIComponent(t.id)}` : ''
   }`
   return {
