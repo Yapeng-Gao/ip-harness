@@ -1,0 +1,361 @@
+{
+  "meta": {
+    "at": "2026-09-19T03:25:41.938Z",
+    "base": "http://127.0.0.1:5175",
+    "tip": "9d2ff62",
+    "product": "d2d91fa"
+  },
+  "path": {
+    "home": "http://127.0.0.1:5175/agent",
+    "sessions": "http://127.0.0.1:5175/agent/sessions",
+    "session": "http://127.0.0.1:5175/agent/sessions/sess-oa-1?focus=hitl",
+    "workspace_general": "http://127.0.0.1:5175/agent/projects/proj-demo-general",
+    "workspace_patent": "http://127.0.0.1:5175/agent/projects/proj-demo-patent"
+  },
+  "art": {
+    "homeRemindClickables": [
+      {
+        "t": "待确认 · 3",
+        "testid": "home-needs-human-chip",
+        "href": "/agent/sessions?filter=needs_human"
+      }
+    ],
+    "homeStripTwins": {
+      "strip": false,
+      "bottom": 0
+    },
+    "homeChip": {
+      "h": 36,
+      "fs": "12px",
+      "boxShadow": "rgb(217, 119, 6) 3px 0px 0px 0px inset, rgba(0, 0, 0, 0.04) 0px 1px 2px 0px, rgba(0, 0, 0, 0.05) 0px 4px 14px 0px",
+      "borderColor": "rgb(217, 119, 6)",
+      "className": "agent-remind-chip btn-press focus-ring"
+    },
+    "badges": [
+      {
+        "text": "待企业",
+        "fs": "11px",
+        "fsNum": 11,
+        "h": 20
+      },
+      {
+        "text": "待企业",
+        "fs": "11px",
+        "fsNum": 11,
+        "h": 20
+      },
+      {
+        "text": "待企业",
+        "fs": "11px",
+        "fsNum": 11,
+        "h": 20
+      },
+      {
+        "text": "待企业",
+        "fs": "11px",
+        "fsNum": 11,
+        "h": 20
+      },
+      {
+        "text": "待企业",
+        "fs": "11px",
+        "fsNum": 11,
+        "h": 20
+      },
+      {
+        "text": "待企业",
+        "fs": "11px",
+        "fsNum": 11,
+        "h": 20
+      }
+    ],
+    "copyHits": {
+      "待你确认": 1,
+      "待企业确认": 0,
+      "待我确认": 0,
+      "需确认": 0,
+      "待确认": 7,
+      "待企业": 6
+    },
+    "inboxGhost9px": [],
+    "catalogCopy": {
+      "需确认": 0,
+      "待确认": 11
+    }
+  },
+  "att": {
+    "nav": {
+      "layout": "vertical",
+      "items": [
+        {
+          "text": "开始",
+          "h": 40,
+          "active": false,
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Agent",
+          "h": 40,
+          "active": false,
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "会话",
+          "h": 40,
+          "active": true,
+          "bg": "rgb(232, 242, 255)"
+        },
+        {
+          "text": "更多",
+          "h": 40,
+          "active": false,
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    },
+    "segments": [
+      {
+        "text": "全部 · 4",
+        "pressed": "true",
+        "tone": null,
+        "sticky": false
+      },
+      {
+        "text": "待确认 · 3",
+        "pressed": "false",
+        "tone": "remind",
+        "sticky": false
+      },
+      {
+        "text": "进行中 · 0",
+        "pressed": "false",
+        "tone": null,
+        "sticky": false
+      }
+    ],
+    "remindSelected": {
+      "text": "待确认 · 3",
+      "pressed": "true",
+      "bg": "rgb(255, 251, 235)",
+      "boxShadow": "color(srgb 0.960784 0.619608 0.0431373 / 0.55) 0px 0px 0px 1px inset, rgb(217, 119, 6) 2px 0px 0px 0px inset, rgba(0, 0, 0, 0.04) 0px 1px 2px 0px, rgba(0, 0, 0, 0.05) 0px 4px 14px 0px"
+    }
+  },
+  "y1": {
+    "projectsList": {
+      "bands": [],
+      "topAmberHonesty": [],
+      "fullWidthTop": [],
+      "bodyHasHonesty": false
+    },
+    "workspace_general": {
+      "bands": [],
+      "topAmberHonesty": [],
+      "fullWidthTop": [],
+      "bodyHasHonesty": false
+    },
+    "workspace_patent": {
+      "bands": [],
+      "topAmberHonesty": [],
+      "fullWidthTop": [],
+      "bodyHasHonesty": false
+    }
+  },
+  "y2": {
+    "home": {
+      "a5173": [],
+      "clickables": [
+        {
+          "text": "作业中台",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "作业中台"
+          ],
+          "top": -18,
+          "visible": true,
+          "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+        }
+      ]
+    },
+    "sessions": {
+      "a5173": [],
+      "clickables": [
+        {
+          "text": "作业中台",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "作业中台"
+          ],
+          "top": -18,
+          "visible": true,
+          "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+        }
+      ]
+    },
+    "session": {
+      "a5173": [],
+      "clickables": [
+        {
+          "text": "作业中台",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "作业中台"
+          ],
+          "top": -18,
+          "visible": true,
+          "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+        }
+      ]
+    },
+    "projects": {
+      "a5173": [],
+      "clickables": [
+        {
+          "text": "作业中台",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "作业中台"
+          ],
+          "top": -18,
+          "visible": true,
+          "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+        }
+      ]
+    },
+    "workspace_general": {
+      "a5173": [],
+      "clickables": [
+        {
+          "text": "作业中台",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "作业中台"
+          ],
+          "top": -18,
+          "visible": true,
+          "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+        }
+      ]
+    },
+    "workspace_patent": {
+      "a5173": [],
+      "clickables": [
+        {
+          "text": "作业中台",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "作业中台"
+          ],
+          "top": -18,
+          "visible": true,
+          "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "ART_M_1": "PASS",
+    "ART_M_2": "PASS",
+    "ART_M_3": "PASS",
+    "ATT_M_1": "PASS",
+    "ATT_M_2": "PASS",
+    "P0-Y1": "PASS",
+    "P0-Y2": "PASS",
+    "y2SwitcherOnlyCount": 6,
+    "y2SwitcherNote": "Top chrome ProductSwitcher still shows label「作业中台」(href=null). Gate string list includes 作业中台 — scored in Y2Content filter as switcher-only; if parent treats switcher as FAIL, flip.",
+    "allY2Count": 6,
+    "allA5173Count": 0,
+    "y2ContentSamples": [],
+    "y2SwitcherSamples": [
+      {
+        "surface": "home",
+        "text": "作业中台",
+        "aria": null,
+        "title": null,
+        "href": null,
+        "tag": "BUTTON",
+        "matched": [
+          "作业中台"
+        ],
+        "top": -18,
+        "visible": true,
+        "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+      },
+      {
+        "surface": "sessions",
+        "text": "作业中台",
+        "aria": null,
+        "title": null,
+        "href": null,
+        "tag": "BUTTON",
+        "matched": [
+          "作业中台"
+        ],
+        "top": -18,
+        "visible": true,
+        "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+      },
+      {
+        "surface": "session",
+        "text": "作业中台",
+        "aria": null,
+        "title": null,
+        "href": null,
+        "tag": "BUTTON",
+        "matched": [
+          "作业中台"
+        ],
+        "top": -18,
+        "visible": true,
+        "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+      },
+      {
+        "surface": "projects",
+        "text": "作业中台",
+        "aria": null,
+        "title": null,
+        "href": null,
+        "tag": "BUTTON",
+        "matched": [
+          "作业中台"
+        ],
+        "top": -18,
+        "visible": true,
+        "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+      },
+      {
+        "surface": "workspace_general",
+        "text": "作业中台",
+        "aria": null,
+        "title": null,
+        "href": null,
+        "tag": "BUTTON",
+        "matched": [
+          "作业中台"
+        ],
+        "top": -18,
+        "visible": true,
+        "className": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m"
+      }
+    ],
+    "a5173Samples": [],
+    "verdict": "Go"
+  }
+}
