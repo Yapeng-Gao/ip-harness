@@ -90,3 +90,10 @@
 ---
 
 *只文档与证据；未改 apps/contracts；未 git commit/push；未启 Cloud Agent。*
+
+---
+
+## 附注 · P0-Y3（2026-09-19）
+
+总控纠偏后暂搁本文件 Go；`7755a9c` 卸全宽 `AgentBillingHoldBanner`。  
+见 [`REVIEW_AGENT_BILLING_HOLD_KILL_RECHECK.md`](./REVIEW_AGENT_BILLING_HOLD_KILL_RECHECK.md)：**P0-Y3 PASS** → **本面 Go 恢复**。
