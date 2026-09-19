@@ -87,6 +87,7 @@ export function AgentShell() {
   ])
 
   const inSession = loc.pathname.startsWith('/agent/sessions/')
+  const inProjects = loc.pathname.startsWith('/agent/projects')
 
   return (
     <div className="app-shell-bg flex h-full min-h-screen flex-col">
@@ -155,7 +156,7 @@ export function AgentShell() {
       />
 
       <div className="flex min-h-0 flex-1">
-        <AgentSessionSidebar />
+        {!inProjects && <AgentSessionSidebar />}
 
         <main
           id="agent-main"

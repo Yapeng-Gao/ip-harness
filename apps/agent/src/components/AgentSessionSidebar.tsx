@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Home,
   Users,
+  FolderKanban,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '@shared/context/AppContext'
@@ -224,6 +225,10 @@ export function AgentSessionSidebar() {
           <NavLink to="/agent/sessions" end className={navCls}>
             <MessageSquare className="h-3 w-3 shrink-0" aria-hidden />
             会话
+          </NavLink>
+          <NavLink to="/agent/projects" className={navCls}>
+            <FolderKanban className="h-3 w-3 shrink-0" aria-hidden />
+            项目
           </NavLink>
           <div ref={overflowRef} className="relative shrink-0">
             <button

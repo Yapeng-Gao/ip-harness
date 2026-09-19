@@ -173,6 +173,14 @@ export function AgentHome() {
           <p className="mt-1 text-[11px] text-slate-400">
             Core 主闭环 · Assist 辅办 · Beta 非采购闭环
           </p>
+          <p className="mt-3">
+            <Link
+              to="/agent/projects"
+              className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-950 hover:bg-amber-100"
+            >
+              项目文件夹 · 总控 + 专家私聊（样机）
+            </Link>
+          </p>
         </div>
 
         {/* Composer — Agent primary act */}
