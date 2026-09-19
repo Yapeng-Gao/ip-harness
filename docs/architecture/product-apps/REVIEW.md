@@ -181,3 +181,13 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 **风险**：全链路 9 席演示偏重——实现须用文内「可截短 3～4 席」；`filing` 无独立 handoff key，勿臆造 packages 字段。
 
+## B席轻扫 · 跨面项目串接（`eb81e3f`）
+
+| 结论 | **Pass** |
+|------|----------|
+| 建项目起串 | 过：IAM→创建项目→mid→workbench→Agent L3；禁专家截入当主路径 |
+| 面职责/权威 | 过：mid=案权威；workbench=人工作业；Agent=专家队；写仍 DomainCommand |
+| 诚实边界 | 过：mock caseId；禁真 SSO/case-core；Agent 不要求可点 mid 验收 |
+
+**风险**：Agent/mid 双入口建项目须同一 `projectId`（样机映射表）；实现勿做成两套项目真相。
+
