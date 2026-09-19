@@ -1,0 +1,69 @@
+{
+  "at": "2026-09-19T05:49:32.009Z",
+  "checks": {
+    "bothSourcesVisible": {
+      "general": 4,
+      "project": 8,
+      "pass": true
+    },
+    "rowLabels": {
+      "chips": [
+        "边缘调度模组 · 专利演示 · 总控席",
+        "边缘调度模组 · 专利演示 · 检索专家",
+        "边缘调度模组 · 专利演示 · 撰稿专家",
+        "边缘调度模组 · 专利演示 · FTO 专家",
+        "课题协作 · 通用演示 · 总控",
+        "课题协作 · 通用演示 · 研究",
+        "课题协作 · 通用演示 · 写作",
+        "课题协作 · 通用演示 · 审查"
+      ],
+      "projectChipTexts": [
+        "边缘调度模组 · 专利演示 · 总控席",
+        "边缘调度模组 · 专利演示 · 检索专家",
+        "边缘调度模组 · 专利演示 · 撰稿专家",
+        "边缘调度模组 · 专利演示 · FTO 专家"
+      ],
+      "pass": true
+    },
+    "sourceProjectFilter": {
+      "url": "http://127.0.0.1:5175/agent/sessions?source=project",
+      "general": 0,
+      "project": 8,
+      "pass": true
+    },
+    "sourceGeneralFilter": {
+      "url": "http://127.0.0.1:5175/agent/sessions?source=general",
+      "general": 4,
+      "project": 0,
+      "pass": true
+    },
+    "filterCoexist": {
+      "url": "http://127.0.0.1:5175/agent/sessions?filter=needs_human&source=all",
+      "hasFilter": true,
+      "hasSourceOrDefault": true,
+      "sourceAllPressed": "true",
+      "pass": true
+    },
+    "clickGeneral": {
+      "url": "http://127.0.0.1:5175/agent/sessions/sess-oa-1?focus=hitl",
+      "pass": true
+    },
+    "clickProject": {
+      "url": "http://127.0.0.1:5175/agent/projects/proj-demo-patent/bots/orchestrator?thread=thr-orchestrator-1789796976734-6z6p6",
+      "pass": true
+    },
+    "projectFolderEntry": {
+      "sidebarLinkVisible": true,
+      "url": "http://127.0.0.1:5175/agent/projects",
+      "projectLinks": 2,
+      "pass": true
+    },
+    "copyHonesty": {
+      "h1": "会话历史",
+      "mentionsBoth": true,
+      "pass": true
+    }
+  },
+  "errors": [],
+  "passAll": true
+}

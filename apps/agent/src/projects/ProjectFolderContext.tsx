@@ -127,6 +127,8 @@ function buildDemo(): {
 
 type ProjectFolderContextValue = {
   projects: AgentProject[]
+  /** Read-only project expert threads (view-layer aggregation; do not merge stores). */
+  threads: ProjectThread[]
   createProject: (input: {
     title: string
     summary?: string
@@ -607,6 +609,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ProjectFolderContextValue>(
     () => ({
       projects,
+      threads,
       createProject,
       getProject,
       getThread,
@@ -624,6 +627,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     }),
     [
       projects,
+      threads,
       createProject,
       getProject,
       getThread,
