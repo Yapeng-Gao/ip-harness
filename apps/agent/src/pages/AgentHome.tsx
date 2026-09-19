@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAgents } from '@shared/context/AgentContext'
 import {
@@ -9,12 +9,8 @@ import {
 import { getLastAgentSessionId } from '@shared/utils/lastVisited'
 import type { AgentDef } from '@shared/types'
 import { agentSessionPath } from '../lib/deepLinks'
-import {
-  GENERAL_SHELL_SIDEBAR,
-  generalBotPath,
-} from '../projects/generalShell'
-import type { ProjectExpertId } from '../projects/types'
-import { getProjectExpert } from '../projects/experts'
+import { freeBotPath } from '../projects/generalBots'
+import { useGeneralBots } from '../projects/GeneralBotsContext'
 
 /**
  * Legacy / compat Composer — demoted secondary entry at /agent/compose.
@@ -37,15 +33,12 @@ export function AgentHome() {
     ? visibleSessions.find((s) => s.id === lastSessionId)
     : undefined
 
-  const activeBots = useMemo(
-    () =>
-      GENERAL_SHELL_SIDEBAR.filter((s) => !s.disabled).map((s) => {
-        const def = getProjectExpert(s.id as ProjectExpertId)
-        return { id: s.id, name: def.name, specialty: def.specialty }
-      }),
-    [],
-  )
-
+    const { activeBots } = useGeneralBots()
+  const botLinks = activeBots.map((b) => ({
+    id: b.id,
+    name: b.name,
+    specialty: b.systemBrief.slice(0, 40),
+  }))
   const startResearchCompat = () => {
     const research = AGENT_CATALOG.find((a) => a.id === 'agent-research')
     if (!research || !confirmNonCoreTier(research)) return
@@ -107,10 +100,10 @@ export function AgentHome() {
         <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="text-xs font-semibold text-slate-800">选壳级 bot 开聊</div>
           <ul className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-            {activeBots.map((b) => (
+            {botLinks.map((b) => (
               <li key={b.id}>
                 <Link
-                  to={generalBotPath(b.id)}
+                  to={freeBotPath(b.id)}
                   className="focus-ring flex w-full flex-col rounded-md border border-slate-200 bg-slate-50/80 px-3 py-2 text-left hover:border-slate-300 hover:bg-white"
                   data-testid={`compose-pick-bot-${b.id}`}
                 >

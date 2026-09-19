@@ -10,6 +10,8 @@ import { AgentSessionsList } from './pages/AgentSessionsList'
 import { AgentCatalogPage } from './pages/AgentCatalogPage'
 import { AgentHarnessOverview } from './pages/AgentHarnessOverview'
 import { ProjectFolderProvider } from './projects/ProjectFolderContext'
+import { GeneralBotsProvider } from './projects/GeneralBotsContext'
+import { GeneralBotNewPage } from './pages/GeneralBotNewPage'
 import { ProjectListPage } from './pages/projects/ProjectListPage'
 import { ProjectWorkspacePage } from './pages/projects/ProjectWorkspacePage'
 
@@ -19,11 +21,13 @@ export default function App() {
       <AgentProvider>
         <ProductProvider>
           <ProjectFolderProvider>
+          <GeneralBotsProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Navigate to="/agent" replace />} />
               <Route path="/agent" element={<AgentShell />}>
                 <Route index element={<GeneralGrokShell />} />
+                <Route path="bots/new" element={<GeneralBotNewPage />} />
                 <Route path="bots/:botId" element={<GeneralGrokShell />} />
                 <Route path="compose" element={<AgentHome />} />
                 <Route path="sessions" element={<AgentSessionsList />} />
@@ -43,6 +47,7 @@ export default function App() {
               <Route path="/agents/*" element={<Navigate to="/agent" replace />} />
             </Routes>
           </BrowserRouter>
+          </GeneralBotsProvider>
           </ProjectFolderProvider>
         </ProductProvider>
       </AgentProvider>

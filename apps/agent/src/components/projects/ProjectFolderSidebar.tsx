@@ -34,6 +34,14 @@ export function ProjectFolderSidebar() {
   return (
     <aside className="flex w-[min(14rem,42vw)] min-w-[11rem] max-w-[15rem] shrink-0 flex-col border-r border-slate-200 bg-white">
       <div className="border-b border-slate-100 px-2.5 py-2">
+        <div className="mb-1 flex items-center gap-1">
+          <span
+            className="rounded border border-amber-200 bg-amber-50 px-1.5 py-px text-[9px] font-medium text-amber-900"
+            data-testid="project-experts-fixed-badge"
+          >
+            项目 · 专家固定
+          </span>
+        </div>
         <Link
           to="/agent/projects"
           className="project-bot-link focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"

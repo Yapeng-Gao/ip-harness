@@ -14,7 +14,6 @@ import {
 } from './experts'
 import {
   GENERAL_SHELL_ID,
-  GENERAL_SHELL_EXPERT_IDS,
   buildGeneralShellProject,
   isGeneralShellId,
 } from './generalShell'
@@ -105,7 +104,6 @@ function buildDemo(): {
     updatedAt: nowIso(),
   }
   const threads = [
-    ...GENERAL_SHELL_EXPERT_IDS.map((id) => emptyThread(shell.id, id)),
     ...patentIds.map((id) => emptyThread(patent.id, id)),
     ...generalIds.map((id) => emptyThread(general.id, id)),
   ]
@@ -114,8 +112,8 @@ function buildDemo(): {
       id: uid('tl'),
       projectId: shell.id,
       kind: 'project_created',
-      title: '通用 Grok 壳已就绪',
-      detail: '壳级专利专家 + 总控 · 样机 · 无真 LLM',
+      title: '通用自由 bot 壳已就绪',
+      detail: '自由 bot 工作区 · 样机 · 无真 LLM',
       at: stamp(),
     },
     {

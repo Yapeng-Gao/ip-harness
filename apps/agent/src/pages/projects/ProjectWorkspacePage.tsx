@@ -63,6 +63,12 @@ export function ProjectWorkspacePage() {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <div className="shrink-0 space-y-2 border-b border-slate-200 bg-white px-3 py-2">
           <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
+            <span
+              className="rounded border border-amber-200 bg-amber-50 px-1.5 py-px text-amber-900"
+              data-testid="project-experts-fixed-badge"
+            >
+              项目 · 专家固定
+            </span>
             <span className={`rounded border px-1 py-px ${badge.className}`}>
               {badge.label}
             </span>
