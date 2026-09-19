@@ -34,7 +34,6 @@ type Props = {
   suggested?: Suggested
   switchReasonChip: string | null
   onRetry: () => void
-  onFocusCaseSelect: () => void
   onSwitchSuggested: () => void
   onStop: () => void
   onDryRun: () => void
@@ -60,7 +59,6 @@ export function SessionWorkspaceHeader({
   suggested,
   switchReasonChip,
   onRetry,
-  onFocusCaseSelect,
   onSwitchSuggested,
   onStop,
   onDryRun,
@@ -199,24 +197,6 @@ export function SessionWorkspaceHeader({
         </div>
       )}
 
-      {activeBanner === 'no_case' && (
-        <div
-          className="mt-2.5 flex flex-wrap items-center gap-2 rounded-[var(--radius-md)] border border-slate-200/80 border-l-4 border-l-slate-400 bg-white px-3 py-2 text-xs text-slate-700 shadow-[var(--shadow-rest)]"
-          data-testid="session-no-case-hint"
-        >
-          <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-slate-500" aria-hidden />
-          <span className="min-w-0 flex-1">
-            可稍后创建或绑定案件 · 无案也可继续聊 · 确认后不会写入案件
-          </span>
-          <button
-            type="button"
-            className="btn-press focus-ring shrink-0 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-800 hover:bg-slate-50"
-            onClick={onFocusCaseSelect}
-          >
-            绑定已有案
-          </button>
-        </div>
-      )}
 
       {activeBanner === 'route' && suggested && (
         suggested.requiresTierConfirm ? (

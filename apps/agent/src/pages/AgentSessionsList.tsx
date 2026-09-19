@@ -89,10 +89,22 @@ export function AgentSessionsList() {
     setRenameDraft('')
   }
 
+
+  const listTitle =
+    urlFilter === 'needs_human'
+      ? '待确认会话'
+      : urlFilter === 'running'
+        ? '进行中'
+        : urlFilter === 'done'
+          ? '已完成'
+          : urlFilter === 'archived'
+            ? '已归档'
+            : '全部会话'
+
   return (
     <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-8">
       <PageHeader
-        title="全部会话"
+        title={listTitle}
         context={
           urlFilter === 'needs_human'
             ? '筛选：待确认 · 与左侧同步'
@@ -138,8 +150,12 @@ export function AgentSessionsList() {
       <div className="overflow-hidden border border-slate-200 bg-white">
         {sorted.length === 0 ? (
           <EmptyState
-            title="暂无任务会话"
-            description="新建会话启动，或从左侧打开已有会话。"
+            title={urlFilter ? '无匹配会话' : '暂无任务会话'}
+            description={
+              urlFilter
+                ? '当前筛选下没有会话，可点左侧「全部」清除筛选。'
+                : '新建会话启动，或从左侧打开已有会话。'
+            }
             primary={{
               label: '新建任务会话',
               onClick: newSession,

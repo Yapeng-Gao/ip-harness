@@ -298,18 +298,27 @@ export function AgentHome() {
           })}
         </div>
 
-        {/* Recommended agent cards with tier badges */}
-        <div className="mt-6">
-          <div className="mb-2 flex items-baseline justify-between">
-            <h2 className="text-balance text-[13px] font-semibold text-slate-800">推荐</h2>
-            <Link
-              to="/agent/agents"
-              className="text-[11px] text-slate-400 hover:text-slate-700 hover:underline"
-            >
-              目录 · 分层
-            </Link>
-          </div>
-          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {/* SW-S0-1 · recommend demoted — compose + primary CTA first */}
+        <details className="group mt-6" data-testid="home-recommend-fold">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-md px-1 py-1.5 text-[12px] text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
+            <span className="font-medium text-slate-600">
+              推荐 Agent
+              <span className="ml-1 font-normal text-slate-400">· 次级</span>
+            </span>
+            <span className="flex items-center gap-2">
+              <Link
+                to="/agent/agents"
+                className="text-[11px] text-slate-400 hover:text-slate-700 hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                目录 · 分层
+              </Link>
+              <span className="text-slate-400 transition group-open:rotate-180" aria-hidden>
+                ▾
+              </span>
+            </span>
+          </summary>
+          <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {recommendCards.map((a) => (
               <li key={a.id}>
                 <button
@@ -320,10 +329,10 @@ export function AgentHome() {
                       defaultSessionGoal(a, { hasCase: !!caseId }),
                     )
                   }
-                  className="btn-press focus-ring flex w-full flex-col items-start rounded-[var(--radius-md)] border border-slate-200/90 bg-white px-3 py-2.5 text-left shadow-[var(--shadow-rest)] hover:border-slate-300 hover:bg-slate-50"
+                  className="btn-press focus-ring flex w-full flex-col items-start rounded-[var(--radius-md)] border border-slate-200/80 bg-slate-50/80 px-3 py-2 text-left hover:border-slate-300 hover:bg-white"
                 >
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs font-medium text-slate-900">{a.name}</span>
+                    <span className="text-xs font-medium text-slate-800">{a.name}</span>
                     <AgentTierBadge tier={a.tier} />
                   </div>
                   <span className="mt-0.5 line-clamp-1 text-[11px] text-slate-500">
@@ -343,7 +352,7 @@ export function AgentHome() {
               目录 Beta
             </Link>
           </p>
-        </div>
+        </details>
 
         {/* Thin strip: continue / HITL queue / catalog */}
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-center text-[11px] text-slate-400">

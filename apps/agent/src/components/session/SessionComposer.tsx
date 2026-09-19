@@ -1,17 +1,12 @@
 import { Send } from 'lucide-react'
 import { AGENT_CATALOG, AGENT_TIER_LABEL } from '@shared/data/agents'
-import type { PatentCase } from '@shared/types'
 
 type Props = {
   goal: string
   onGoalChange: (v: string) => void
   agentPick: string
   onAgentPickRequest: (nextAgentId: string) => void
-  casePick: string
-  onCasePick: (caseId: string) => void
-  visibleCases: PatentCase[]
   composerRef: React.RefObject<HTMLTextAreaElement | null>
-  caseSelectRef: React.RefObject<HTMLSelectElement | null>
   onSubmit: () => void
   pendingAgentSwitch: { id: string; reason?: string } | null
   onConfirmAgentSwitch: () => void
@@ -30,11 +25,7 @@ export function SessionComposer({
   onGoalChange,
   agentPick,
   onAgentPickRequest,
-  casePick,
-  onCasePick,
-  visibleCases,
   composerRef,
-  caseSelectRef,
   onSubmit,
   pendingAgentSwitch,
   onConfirmAgentSwitch,
@@ -90,20 +81,6 @@ export function SessionComposer({
             {AGENT_CATALOG.map((a) => (
               <option key={a.id} value={a.id}>
                 {AGENT_TIER_LABEL[a.tier]} · {a.name}
-              </option>
-            ))}
-          </select>
-          <select
-            ref={caseSelectRef}
-            value={casePick}
-            onChange={(e) => onCasePick(e.target.value)}
-            className="ui-input ui-input-sm focus-ring max-w-[180px] truncate w-auto"
-            aria-label="关联案件"
-          >
-            <option value="">可稍后创建或绑定案件</option>
-            {visibleCases.map((cs) => (
-              <option key={cs.id} value={cs.id}>
-                {cs.title}
               </option>
             ))}
           </select>

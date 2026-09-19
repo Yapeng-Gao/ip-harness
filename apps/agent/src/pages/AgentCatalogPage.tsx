@@ -240,7 +240,11 @@ export function AgentCatalogPage() {
                   className="flex items-center gap-2 text-[13px] font-semibold tracking-tight text-slate-900"
                 >
                   <AgentTierBadge tier={tier} />
-                  <span>{AGENT_TIER_SHORT[tier]}</span>
+                  <span>
+                    {tier === 'beta'
+                      ? AGENT_TIER_SHORT.beta.replace(/^Beta[·・]?/, '')
+                      : AGENT_TIER_SHORT[tier]}
+                  </span>
                 </h2>
                 <span className="tabular text-[11px] text-slate-400">{list.length} 个</span>
               </div>

@@ -53,7 +53,6 @@ export function AgentSessionWorkspace() {
   } = useAgents()
   const {
     getCase,
-    visibleCases,
     visibleDocketEvents,
     hasBlockingInvoiceForCase,
     getDraftFilingCheck,
@@ -129,7 +128,6 @@ export function AgentSessionWorkspace() {
   const [caseBindGuide, setCaseBindGuide] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLTextAreaElement>(null)
-  const caseSelectRef = useRef<HTMLSelectElement>(null)
   const caseBindTopRef = useRef<HTMLDivElement>(null)
   const switchChipTimer = useRef<number | null>(null)
   const toastTimer = useRef<number | null>(null)
@@ -441,7 +439,7 @@ export function AgentSessionWorkspace() {
   // Idle confirm chips stay in ConfirmBar only (not topbar when not hitlActive stacking)
   const activeBanner: BannerKind = (() => {
     if (sess.status === 'failed') return 'failed'
-    if (!(casePick || sess.caseId)) return 'no_case'
+    // SW-S5-1: CaseBindControls is sole bind entry — no parallel no_case banner
     if (sess.agentId === 'auto' && suggested && !hitlActive) return 'route'
     return null
   })()
@@ -479,7 +477,6 @@ export function AgentSessionWorkspace() {
               mode: 'formal',
             })
           }}
-          onFocusCaseSelect={() => caseSelectRef.current?.focus()}
           onSwitchSuggested={switchToSuggested}
           onStop={() => stopSessionPlay(sess.id)}
           onDryRun={() => {
@@ -540,7 +537,7 @@ export function AgentSessionWorkspace() {
         )}
 
         {/* P1-AE-2: when HITL, case bind lives in top band — not beside ConfirmBar */}
-        {(hitlActive || caseBindGuide) && (
+        {!sess.caseId && (hitlActive || caseBindGuide) && (
           <div
             ref={caseBindTopRef}
             className="shrink-0 border-b border-slate-100 bg-white px-4 py-2"
@@ -656,14 +653,7 @@ export function AgentSessionWorkspace() {
             onGoalChange={setGoal}
             agentPick={agentPick}
             onAgentPickRequest={(v) => requestAgentSwitch(v)}
-            casePick={casePick}
-            onCasePick={(v) => {
-              setCasePick(v)
-              patchSession(sess.id, { caseId: v || undefined })
-            }}
-            visibleCases={visibleCases}
             composerRef={composerRef}
-            caseSelectRef={caseSelectRef}
             onSubmit={submitComposer}
             pendingAgentSwitch={pendingAgentSwitch}
             onConfirmAgentSwitch={confirmPendingAgentSwitch}
@@ -747,14 +737,7 @@ export function AgentSessionWorkspace() {
             onGoalChange={setGoal}
             agentPick={agentPick}
             onAgentPickRequest={(v) => requestAgentSwitch(v)}
-            casePick={casePick}
-            onCasePick={(v) => {
-              setCasePick(v)
-              patchSession(sess.id, { caseId: v || undefined })
-            }}
-            visibleCases={visibleCases}
             composerRef={composerRef}
-            caseSelectRef={caseSelectRef}
             onSubmit={submitComposer}
             pendingAgentSwitch={pendingAgentSwitch}
             onConfirmAgentSwitch={confirmPendingAgentSwitch}
@@ -762,7 +745,7 @@ export function AgentSessionWorkspace() {
             hitlActive={hitlActive}
             hitlDisableReason={primaryBlocker}
             caseBindSlot={
-              hitlActive || caseBindGuide
+              !sess.caseId && (hitlActive || caseBindGuide)
                 ? undefined
                 : (
             <CaseBindControls

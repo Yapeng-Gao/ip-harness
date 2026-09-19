@@ -51,7 +51,7 @@ export function AgentSessionSidebar() {
   } = useAgents()
   const navigate = useNavigate()
   const loc = useLocation()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   /** Home: primary story is「新办」— demote Inbox list (P0-AE-2) */
   const isHome =
     loc.pathname === '/agent' || loc.pathname === '/agent/'
@@ -145,14 +145,38 @@ export function AgentSessionSidebar() {
     if (f === 'needs_human' || f === 'running' || f === 'done' || f === 'archived') {
       setStatusFilter(f)
       if (f === 'archived') setShowArchivedSessions(true)
-    } else if (f === 'all' || f === null) {
-      /* keep local unless explicit all */
-      if (f === 'all') {
-        setStatusFilter('all')
-        setShowArchivedSessions(false)
-      }
+    } else {
+      setStatusFilter('all')
+      if (f === 'all') setShowArchivedSessions(false)
     }
   }, [searchParams, setShowArchivedSessions])
+
+  /** SW-S6-1 · segmented / menu write ?filter= (same contract as Home chip) */
+  const applyStatusFilter = (
+    key: 'all' | 'needs_human' | 'running' | 'done' | 'archived',
+  ) => {
+    setStatusFilter(key)
+    if (key === 'archived') {
+      setShowArchivedSessions(true)
+    } else if (showArchivedSessions) {
+      setShowArchivedSessions(false)
+    }
+    const onList =
+      loc.pathname === '/agent/sessions' || loc.pathname === '/agent/sessions/'
+    if (onList) {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          if (key === 'all') next.delete('filter')
+          else next.set('filter', key)
+          return next
+        },
+        { replace: true },
+      )
+    } else {
+      navigate(key === 'all' ? '/agent/sessions' : `/agent/sessions?filter=${key}`)
+    }
+  }
 
   const sorted = useMemo(
     () =>
@@ -185,7 +209,7 @@ export function AgentSessionSidebar() {
       if (statusFilter === 'archived') {
         if (!s.archived) return false
       } else {
-        if (statusFilter === 'needs_human' && s.status !== 'needs_human') return false
+        if (statusFilter === 'needs_human' && s.status !== 'needs_human' && !s.hitlPending) return false
         if (
           statusFilter === 'running' &&
           s.status !== 'running' &&
@@ -230,10 +254,9 @@ export function AgentSessionSidebar() {
     agentFilter !== 'all'
 
   const clearExtras = () => {
-    setStatusFilter('all')
     setAgentFilter('all')
     setAgentFilterOpen(false)
-    setShowArchivedSessions(false)
+    applyStatusFilter('all')
   }
 
   const navCls = ({ isActive }: { isActive: boolean }) =>
@@ -429,8 +452,7 @@ export function AgentSessionSidebar() {
                   type="button"
                   className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                   onClick={() => {
-                    setStatusFilter('done')
-                    setShowArchivedSessions(false)
+                    applyStatusFilter('done')
                     setFilterMenuOpen(false)
                   }}
                 >
@@ -452,8 +474,7 @@ export function AgentSessionSidebar() {
                   className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                   onClick={() => {
                     const next = !(showArchivedSessions && statusFilter === 'archived')
-                    setShowArchivedSessions(next)
-                    setStatusFilter(next ? 'archived' : 'all')
+                    applyStatusFilter(next ? 'archived' : 'all')
                     setFilterMenuOpen(false)
                   }}
                 >
@@ -512,10 +533,7 @@ export function AgentSessionSidebar() {
             <button
               key={key}
               type="button"
-              onClick={() => {
-                setStatusFilter(key)
-                if (showArchivedSessions) setShowArchivedSessions(false)
-              }}
+              onClick={() => applyStatusFilter(key)}
               className="segmented-item btn-press focus-ring flex-1 tabular"
               aria-pressed={statusFilter === key}
               data-tone={key === 'needs_human' ? 'remind' : undefined}
@@ -536,7 +554,7 @@ export function AgentSessionSidebar() {
                 <button
                   type="button"
                   className="text-slate-400 hover:text-slate-700"
-                  onClick={() => setStatusFilter('all')}
+                  onClick={() => applyStatusFilter('all')}
                 >
                   清除
                 </button>
