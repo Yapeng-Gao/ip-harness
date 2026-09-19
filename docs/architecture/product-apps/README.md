@@ -19,6 +19,7 @@
 | Agent 入口模式 | [agent-entry-modes.md](./agent-entry-modes.md) | 通用 Grok**自由**（自设 bot+互通）；项目**专家固定** |
 | Grok Bot 复刻 | [agent-grok-replica.md](./agent-grok-replica.md) | **优先**：通用壳布局/交互对标 Grok |
 | Agent 三层叠法 | [agent-layers.md](./agent-layers.md) | **L1→L2→L3**；非并列双产品；L3↔中台映射 |
+| L2 团队互通 | [agent-l2-team.md](./agent-l2-team.md) | bot 自发消息；协作任务样机；仅 /agent/team |
 | Agent 案绑定 | [agent-case-binding.md](./agent-case-binding.md) | 先聊/先项目；案可后创建或绑定；不挡入口 |
 | Sessions×项目线程 | [agent-sessions-project-threads.md](./agent-sessions-project-threads.md) | 列表聚合展示；存储可分；标签筛选 |
 | 横切 | [cross-cutting.md](./cross-cutting.md) | 深链、contracts、禁壳直写库、Persona、e2e |
