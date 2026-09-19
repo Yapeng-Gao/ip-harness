@@ -1,4 +1,4 @@
-import { NavLink, Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { FolderKanban, Bot, Sparkles } from 'lucide-react'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import {
@@ -7,11 +7,17 @@ import {
 } from '../../projects/experts'
 import type { ProjectExpertId } from '../../projects/types'
 
+/**
+ * Project folder rail — project row and expert links are siblings (never nested <a>).
+ * Project title → /agent/projects/:id (总控席); experts → /agent/projects/:id/experts/:eid.
+ */
 export function ProjectFolderSidebar() {
   const { projectId, expertId } = useParams<{
     projectId: string
     expertId?: string
   }>()
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
   const { projects, getProject } = useProjectFolder()
   const project = projectId ? getProject(projectId) : undefined
   const activeExpert = (expertId as ProjectExpertId | undefined) ?? 'orchestrator'
@@ -35,40 +41,51 @@ export function ProjectFolderSidebar() {
         <ul className="space-y-0.5">
           {projects.map((p) => {
             const open = p.id === projectId
+            const projectPath = `/agent/projects/${p.id}`
+            const projectActive =
+              pathname === projectPath ||
+              pathname.startsWith(`${projectPath}/`)
             return (
-              <li key={p.id}>
-                <NavLink
-                  to={`/agent/projects/${p.id}`}
-                  className={`focus-ring block truncate rounded-md px-2 py-1.5 text-xs ${
-                    open
+              <li key={p.id} className="space-y-0.5">
+                {/* Project title: button only — not wrapping expert links */}
+                <button
+                  type="button"
+                  onClick={() => navigate(projectPath)}
+                  className={`focus-ring flex w-full items-center truncate rounded-md px-2 py-1.5 text-left text-xs ${
+                    projectActive && !expertId
                       ? 'bg-slate-900 font-medium text-white'
-                      : 'text-slate-700 hover:bg-slate-50'
+                      : open
+                        ? 'bg-slate-100 font-medium text-slate-900'
+                        : 'text-slate-700 hover:bg-slate-50'
                   }`}
                   title={p.title}
+                  aria-current={projectActive && !expertId ? 'page' : undefined}
                 >
                   {p.title}
-                </NavLink>
+                </button>
+
+                {/* Expert list: sibling of project button, each Link is independent */}
                 {open && project && (
-                  <ul className="mt-1 space-y-0.5 border-l border-slate-200 pl-2 ml-1">
+                  <ul className="mt-0.5 space-y-0.5 border-l border-slate-200 pl-2 ml-1">
                     {project.expertIds.map((eid) => {
                       const def = getProjectExpert(eid)
                       const isOrch = eid === 'orchestrator'
                       const to = isOrch
-                        ? `/agent/projects/${p.id}`
+                        ? projectPath
                         : `/agent/projects/${p.id}/experts/${eid}`
                       const active =
                         activeExpert === eid &&
                         (isOrch ? !expertId : expertId === eid)
                       return (
                         <li key={eid}>
-                          <NavLink
+                          <Link
                             to={to}
-                            end={isOrch}
                             className={`focus-ring flex items-center gap-1.5 rounded-md px-1.5 py-1 text-[11px] ${
                               active
                                 ? 'bg-accent-soft font-semibold text-accent-muted'
                                 : 'text-slate-600 hover:bg-slate-50'
                             }`}
+                            aria-current={active ? 'page' : undefined}
                           >
                             {isOrch ? (
                               <Sparkles className="h-3 w-3 shrink-0" aria-hidden />
@@ -80,7 +97,7 @@ export function ProjectFolderSidebar() {
                             >
                               {def.name}
                             </span>
-                          </NavLink>
+                          </Link>
                         </li>
                       )
                     })}

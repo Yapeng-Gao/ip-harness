@@ -29,6 +29,14 @@ export function AgentSessionsList() {
   const [renameDraft, setRenameDraft] = useState('')
   const [archiveToast, setArchiveToast] = useState<{ id: string; title: string } | null>(null)
   const archiveToastTimer = useRef<number | null>(null)
+  const [createToast, setCreateToast] = useState<string | null>(null)
+  const createToastTimer = useRef<number | null>(null)
+
+  const showCreateFailedToast = () => {
+    setCreateToast('当前 Persona 不能新建会话，请切换为企业 IP / 代理所')
+    if (createToastTimer.current) window.clearTimeout(createToastTimer.current)
+    createToastTimer.current = window.setTimeout(() => setCreateToast(null), 4500)
+  }
 
   const archiveWithUndo = (sessionId: string, title: string) => {
     archiveSession(sessionId)
@@ -55,7 +63,10 @@ export function AgentSessionsList() {
 
   const newSession = () => {
     const s = createSession({ goal: '', agentId: 'auto', title: '新 IP 任务会话' })
-    if (!s) return
+    if (!s) {
+      showCreateFailedToast()
+      return
+    }
     navigate(agentSessionPath(s.id), { state: { focusComposer: true } })
   }
 
@@ -329,6 +340,17 @@ export function AgentSessionsList() {
             >
               撤销
             </button>
+          </div>
+        </div>
+      )}
+
+      {createToast && (
+        <div className="toast-enter pointer-events-none fixed bottom-6 right-6 z-50 max-w-sm">
+          <div
+            role="status"
+            className="pointer-events-auto border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950 shadow-lg"
+          >
+            {createToast}
           </div>
         </div>
       )}

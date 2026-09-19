@@ -57,6 +57,17 @@ export function AgentSessionSidebar() {
   const filterMenuRef = useRef<HTMLDivElement>(null)
   const [archiveToast, setArchiveToast] = useState<{ id: string; title: string } | null>(null)
   const archiveToastTimer = useRef<number | null>(null)
+  const [createToast, setCreateToast] = useState<string | null>(null)
+  const createToastTimer = useRef<number | null>(null)
+
+  const showCreateFailedToast = (msg?: string) => {
+    setCreateToast(
+      msg ??
+        '当前 Persona 不能新建会话，请切换为企业 IP / 代理所',
+    )
+    if (createToastTimer.current) window.clearTimeout(createToastTimer.current)
+    createToastTimer.current = window.setTimeout(() => setCreateToast(null), 4500)
+  }
 
   const archiveWithUndo = (sessionId: string, title: string) => {
     archiveSession(sessionId)
@@ -167,7 +178,10 @@ export function AgentSessionSidebar() {
       agentId: 'auto',
       title: '新 IP 任务会话',
     })
-    if (!s) return
+    if (!s) {
+      showCreateFailedToast()
+      return
+    }
     navigate(agentSessionPath(s.id), { state: { focusComposer: true } })
   }
 
@@ -516,9 +530,10 @@ export function AgentSessionSidebar() {
                           active ? 'list-row-active' : 'hover:bg-slate-50'
                         }`}
                       >
-                        <Link
-                          to={agentSessionPath(s.id)}
-                          className="agent-rail-row__link"
+                        <button
+                          type="button"
+                          onClick={() => navigate(agentSessionPath(s.id))}
+                          className="agent-rail-row__link min-w-0 flex-1 text-left"
                         >
                           <div className="flex items-start gap-2">
                             <span
@@ -553,20 +568,25 @@ export function AgentSessionSidebar() {
                                   {(badges.includes('待我确认') ||
                                     badges.includes('待企业确认') ||
                                     badges.includes('待代理')) && (
-                                    <a
-                                      href={midInboxHref({ sessionId: s.id })}
-                                      onClick={(e) => e.stopPropagation()}
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        window.location.href = midInboxHref({
+                                          sessionId: s.id,
+                                        })
+                                      }}
                                       className="text-[9px] text-slate-400 hover:text-slate-700 hover:underline"
                                       title="在运营 Inbox 中查看"
                                     >
                                       Inbox
-                                    </a>
+                                    </button>
                                   )}
                                 </div>
                               )}
                             </div>
                           </div>
-                        </Link>
+                        </button>
                         <div
                           className="relative shrink-0 self-center pr-1"
                           ref={rowMenuId === s.id ? rowMenuRef : undefined}
@@ -650,6 +670,17 @@ export function AgentSessionSidebar() {
             >
               撤销
             </button>
+          </div>
+        </div>
+      )}
+
+      {createToast && (
+        <div className="toast-enter pointer-events-none fixed bottom-6 right-6 z-50 max-w-sm">
+          <div
+            role="status"
+            className="pointer-events-auto border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950 shadow-lg"
+          >
+            {createToast}
           </div>
         </div>
       )}

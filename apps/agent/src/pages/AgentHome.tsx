@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type KeyboardEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAgents } from '@shared/context/AgentContext'
 import { useApp } from '@shared/context/AppContext'
@@ -71,6 +71,14 @@ export function AgentHome() {
   const [agentId, setAgentId] = useState<string>('auto')
   const [caseId, setCaseId] = useState('')
   const [pickerTouched, setPickerTouched] = useState(false)
+  const [createToast, setCreateToast] = useState<string | null>(null)
+  const createToastTimer = useRef<number | null>(null)
+
+  const showCreateFailedToast = () => {
+    setCreateToast('当前 Persona 不能新建会话，请切换为企业 IP / 代理所')
+    if (createToastTimer.current) window.clearTimeout(createToastTimer.current)
+    createToastTimer.current = window.setTimeout(() => setCreateToast(null), 4500)
+  }
 
   useEffect(() => {
     if (pickerTouched) return
@@ -118,7 +126,10 @@ export function AgentHome() {
       title: goal.trim() ? goal.trim().slice(0, 28) : undefined,
       confirmedNonCoreTier: selected ? true : undefined,
     })
-    if (!s) return
+    if (!s) {
+      showCreateFailedToast()
+      return
+    }
     navigate(agentSessionPath(s.id), { state: { focusComposer: true } })
   }
 
@@ -133,7 +144,10 @@ export function AgentHome() {
       title: promptGoal.slice(0, 28) || `${a.name} · 新任务`,
       confirmedNonCoreTier: true,
     })
-    if (!s) return
+    if (!s) {
+      showCreateFailedToast()
+      return
+    }
     navigate(agentSessionPath(s.id), { state: { focusComposer: true } })
   }
 
@@ -357,6 +371,17 @@ export function AgentHome() {
           </Link>
         </div>
       </div>
+
+      {createToast && (
+        <div className="toast-enter pointer-events-none fixed bottom-6 right-6 z-50 max-w-sm">
+          <div
+            role="status"
+            className="pointer-events-auto border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950 shadow-lg"
+          >
+            {createToast}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
