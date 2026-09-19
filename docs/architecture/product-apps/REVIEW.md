@@ -171,3 +171,13 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 **风险**：`expert-figure` 为 ± 新成员，实现勿默认塞进 L2；映射与 layers §5 双写，改键时须同步。
 
+## B席轻扫 · L3 全链路补丁（`afe94aa`）
+
+| 结论 | **Pass** |
+|------|----------|
+| disclosure/filing/oa 必选 | 过：三席入焊死花名册；mining/figure 升必选；撰稿≠交底 |
+| 映射/HITL | 过：工件键对齐 contracts；禁真递交；Confirm→DomainCommand 壳内示意 |
+| 入口/隔离 | 过：仅 projects；不经 team；不污染 L1/L2 |
+
+**风险**：全链路 9 席演示偏重——实现须用文内「可截短 3～4 席」；`filing` 无独立 handoff key，勿臆造 packages 字段。
+
