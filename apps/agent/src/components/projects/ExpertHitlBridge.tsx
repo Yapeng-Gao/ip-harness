@@ -201,9 +201,31 @@ export function ExpertHitlBridge({
   if (!needHitl) return null
 
   if (!catalogId) {
+    // General bots / orchestrator: local weak ack only — no patent catalog bind.
     return (
-      <div className="border-t border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-        总控席无 HITL 写库闸（只能拆派/汇总）。
+      <div className="flex items-center justify-between gap-2 border-t border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        <span>
+          {expert.role === 'orchestrator'
+            ? '总控席无 HITL 写库闸（只能拆派/汇总）。'
+            : '弱确认 · 未绑专利 catalog · 不写 DomainCommand（通用 bot）。'}
+        </span>
+        {expert.role !== 'orchestrator' ? (
+          <button
+            type="button"
+            className="btn-press focus-ring rounded border border-amber-400 bg-white px-2 py-1 text-[11px] font-medium"
+            onClick={() => {
+              setThreadHitl(projectId, expert.id, false)
+              appendMessage(projectId, expert.id, {
+                role: 'system',
+                content: '已本地弱确认（无 catalog · 未写库）。backend=mock',
+                meta: { backend: 'mock' },
+              })
+              setToast('弱确认完成（未写库）')
+            }}
+          >
+            确认已阅
+          </button>
+        ) : null}
       </div>
     )
   }

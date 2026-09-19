@@ -4,23 +4,32 @@ import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import {
   expertAccentClass,
   getProjectExpert,
+  isOrchestratorExpert,
+  orchestratorIdForProject,
+  projectKindBadge,
 } from '../../projects/experts'
 import type { ProjectExpertId } from '../../projects/types'
 
 /**
- * Project folder rail — project row and expert links are siblings (never nested <a>).
- * Project title → /agent/projects/:id (总控席); experts → /agent/projects/:id/experts/:eid.
+ * Project folder rail — project row and bot links are siblings (never nested <a>).
+ * Project title → /agent/projects/:id (总控); bots → /agent/projects/:id/bots/:botId.
+ * Legacy /experts/:id redirects at the router.
  */
 export function ProjectFolderSidebar() {
-  const { projectId, expertId } = useParams<{
+  const { projectId, botId, expertId } = useParams<{
     projectId: string
+    botId?: string
     expertId?: string
   }>()
+  const seatId = (botId ?? expertId) as ProjectExpertId | undefined
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { projects, getProject } = useProjectFolder()
   const project = projectId ? getProject(projectId) : undefined
-  const activeExpert = (expertId as ProjectExpertId | undefined) ?? 'orchestrator'
+  const defaultOrch = project
+    ? orchestratorIdForProject(project)
+    : 'orchestrator'
+  const activeExpert = seatId ?? defaultOrch
 
   return (
     <aside className="flex w-[min(14rem,42vw)] min-w-[11rem] max-w-[15rem] shrink-0 flex-col border-r border-slate-200 bg-white">
@@ -30,7 +39,7 @@ export function ProjectFolderSidebar() {
           className="focus-ring flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
         >
           <FolderKanban className="h-3.5 w-3.5" aria-hidden />
-          项目文件夹
+          项目模式
         </Link>
       </div>
 
@@ -43,39 +52,46 @@ export function ProjectFolderSidebar() {
             const open = p.id === projectId
             const projectPath = `/agent/projects/${p.id}`
             const projectActive =
-              pathname === projectPath ||
-              pathname.startsWith(`${projectPath}/`)
+              pathname === projectPath || pathname.startsWith(`${projectPath}/`)
+            const badge = projectKindBadge(p)
             return (
               <li key={p.id} className="space-y-0.5">
-                {/* Project title: button only — not wrapping expert links */}
                 <button
                   type="button"
                   onClick={() => navigate(projectPath)}
-                  className={`focus-ring flex w-full items-center truncate rounded-md px-2 py-1.5 text-left text-xs ${
-                    projectActive && !expertId
+                  className={`focus-ring flex w-full items-center gap-1 truncate rounded-md px-2 py-1.5 text-left text-xs ${
+                    projectActive && !seatId
                       ? 'bg-slate-900 font-medium text-white'
                       : open
                         ? 'bg-slate-100 font-medium text-slate-900'
                         : 'text-slate-700 hover:bg-slate-50'
                   }`}
                   title={p.title}
-                  aria-current={projectActive && !expertId ? 'page' : undefined}
+                  aria-current={projectActive && !seatId ? 'page' : undefined}
                 >
-                  {p.title}
+                  <span className="truncate">{p.title}</span>
+                  <span
+                    className={`ml-auto shrink-0 rounded border px-1 py-px text-[9px] ${
+                      projectActive && !seatId
+                        ? 'border-white/40 text-white'
+                        : badge.className
+                    }`}
+                  >
+                    {badge.label}
+                  </span>
                 </button>
 
-                {/* Expert list: sibling of project button, each Link is independent */}
                 {open && project && (
-                  <ul className="mt-0.5 space-y-0.5 border-l border-slate-200 pl-2 ml-1">
+                  <ul className="ml-1 mt-0.5 space-y-0.5 border-l border-slate-200 pl-2">
                     {project.expertIds.map((eid) => {
                       const def = getProjectExpert(eid)
-                      const isOrch = eid === 'orchestrator'
+                      const isOrch = isOrchestratorExpert(eid)
                       const to = isOrch
                         ? projectPath
-                        : `/agent/projects/${p.id}/experts/${eid}`
+                        : `/agent/projects/${p.id}/bots/${eid}`
                       const active =
                         activeExpert === eid &&
-                        (isOrch ? !expertId : expertId === eid)
+                        (isOrch ? !seatId : seatId === eid)
                       return (
                         <li key={eid}>
                           <Link

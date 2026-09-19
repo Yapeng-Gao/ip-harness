@@ -7,14 +7,19 @@ import {
   type ReactNode,
 } from 'react'
 import {
-  DEFAULT_PROJECT_EXPERT_IDS,
+  expertIdsForKind,
   getProjectExpert,
+  isOrchestratorExpert,
+  orchestratorIdForProject,
 } from './experts'
 import type {
   AgentProject,
+  DomainPackId,
   ProjectChatMessage,
   ProjectDispatch,
+  ProjectDispatchExpertId,
   ProjectExpertId,
+  ProjectKind,
   ProjectThread,
   ProjectTimelineEvent,
 } from './types'
@@ -41,7 +46,7 @@ function emptyThread(
     id: uid(`thr-${expertId}`),
     projectId,
     expertId,
-    kind: expertId === 'orchestrator' ? 'orchestrator' : 'expert',
+    kind: isOrchestratorExpert(expertId) ? 'orchestrator' : 'expert',
     title: def.name,
     messages: [
       {
@@ -57,7 +62,8 @@ function emptyThread(
   }
 }
 
-const DEMO_PROJECT_ID = 'proj-demo-edge'
+const DEMO_PATENT_ID = 'proj-demo-patent'
+const DEMO_GENERAL_ID = 'proj-demo-general'
 
 function buildDemo(): {
   projects: AgentProject[]
@@ -65,28 +71,55 @@ function buildDemo(): {
   timeline: ProjectTimelineEvent[]
   dispatches: ProjectDispatch[]
 } {
-  const project: AgentProject = {
-    id: DEMO_PROJECT_ID,
-    title: '边缘调度模组 · 演示项目',
-    summary: '口播：建项目 → 总控派活 → 专家私聊见差异化逻辑',
-    expertIds: [...DEFAULT_PROJECT_EXPERT_IDS],
+  const patentIds = expertIdsForKind('domain', 'patent')
+  const generalIds = expertIdsForKind('general')
+  const patent: AgentProject = {
+    id: DEMO_PATENT_ID,
+    title: '边缘调度模组 · 专利演示',
+    summary: 'domain/patent：总控 + 检索/撰稿/FTO',
+    kind: 'domain',
+    domainPackId: 'patent',
+    expertIds: [...patentIds],
     createdAt: nowIso(),
     updatedAt: nowIso(),
   }
-  const threads = DEFAULT_PROJECT_EXPERT_IDS.map((id) =>
-    emptyThread(project.id, id),
-  )
+  const general: AgentProject = {
+    id: DEMO_GENERAL_ID,
+    title: '课题协作 · 通用演示',
+    summary: 'general：总控 + 研究/写作/审查（无专利步骤）',
+    kind: 'general',
+    expertIds: [...generalIds],
+    createdAt: nowIso(),
+    updatedAt: nowIso(),
+  }
+  const threads = [
+    ...patentIds.map((id) => emptyThread(patent.id, id)),
+    ...generalIds.map((id) => emptyThread(general.id, id)),
+  ]
   const timeline: ProjectTimelineEvent[] = [
     {
       id: uid('tl'),
-      projectId: project.id,
+      projectId: patent.id,
       kind: 'project_created',
-      title: '演示项目已种子',
-      detail: '含总控席 + 检索 / 撰稿 / FTO 三专家',
+      title: '专利演示项目已种子',
+      detail: 'domainPack=patent · 总控 + 检索/撰稿/FTO',
+      at: stamp(),
+    },
+    {
+      id: uid('tl'),
+      projectId: general.id,
+      kind: 'project_created',
+      title: '通用演示项目已种子',
+      detail: 'general · 总控 + 研究/写作/审查 · 无专利步骤',
       at: stamp(),
     },
   ]
-  return { projects: [project], threads, timeline, dispatches: [] }
+  return {
+    projects: [general, patent],
+    threads,
+    timeline,
+    dispatches: [],
+  }
 }
 
 type ProjectFolderContextValue = {
@@ -94,6 +127,8 @@ type ProjectFolderContextValue = {
   createProject: (input: {
     title: string
     summary?: string
+    kind: ProjectKind
+    domainPackId?: DomainPackId
     caseId?: string
   }) => AgentProject
   getProject: (id: string) => AgentProject | undefined
@@ -116,12 +151,12 @@ type ProjectFolderContextValue = {
   ) => void
   dispatchToExpert: (input: {
     projectId: string
-    toExpertId: Exclude<ProjectExpertId, 'orchestrator'>
+    toExpertId: ProjectDispatchExpertId
     summary: string
   }) => ProjectDispatch | null
   reportToProject: (input: {
     projectId: string
-    fromExpertId: Exclude<ProjectExpertId, 'orchestrator'>
+    fromExpertId: ProjectDispatchExpertId
     summary?: string
   }) => void
   bindSession: (
@@ -211,20 +246,30 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
   )
 
   const createProject = useCallback(
-    (input: { title: string; summary?: string; caseId?: string }) => {
+    (input: {
+      title: string
+      summary?: string
+      kind: ProjectKind
+      domainPackId?: DomainPackId
+      caseId?: string
+    }) => {
       const id = uid('proj')
+      const kind = input.kind
+      const domainPackId =
+        kind === 'domain' ? (input.domainPackId ?? 'patent') : undefined
+      const expertIds = expertIdsForKind(kind, domainPackId)
       const project: AgentProject = {
         id,
         title: input.title.trim() || '未命名项目',
         summary: input.summary?.trim() || '',
-        caseId: input.caseId,
-        expertIds: [...DEFAULT_PROJECT_EXPERT_IDS],
+        kind,
+        domainPackId,
+        caseId: kind === 'domain' ? input.caseId : input.caseId,
+        expertIds: [...expertIds],
         createdAt: nowIso(),
         updatedAt: nowIso(),
       }
-      const newThreads = DEFAULT_PROJECT_EXPERT_IDS.map((eid) =>
-        emptyThread(id, eid),
-      )
+      const newThreads = expertIds.map((eid) => emptyThread(id, eid))
       setProjects((prev) => [project, ...prev])
       setThreads((prev) => [...newThreads, ...prev])
       setTimeline((prev) => [
@@ -356,7 +401,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
   const dispatchToExpert = useCallback(
     (input: {
       projectId: string
-      toExpertId: Exclude<ProjectExpertId, 'orchestrator'>
+      toExpertId: ProjectDispatchExpertId
       summary: string
     }) => {
       const project = projects.find((p) => p.id === input.projectId)
@@ -372,7 +417,8 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       }
       setDispatches((prev) => [...prev, d])
       const target = getProjectExpert(input.toExpertId)
-      appendMessage(input.projectId, 'orchestrator', {
+      const orchId = orchestratorIdForProject(project)
+      appendMessage(input.projectId, orchId, {
         role: 'assistant',
         content: `已分派给「${target.name}」：${summary}`,
         meta: { backend: 'mock', dispatchId: d.id },
@@ -404,7 +450,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
   const reportToProject = useCallback(
     (input: {
       projectId: string
-      fromExpertId: Exclude<ProjectExpertId, 'orchestrator'>
+      fromExpertId: ProjectDispatchExpertId
       summary?: string
     }) => {
       const def = getProjectExpert(input.fromExpertId)
@@ -421,7 +467,11 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
         content: `已回报总控/项目：${summary}`,
         meta: { backend: 'mock' },
       })
-      appendMessage(input.projectId, 'orchestrator', {
+      const project = projects.find((p) => p.id === input.projectId)
+      const orchId = project
+        ? orchestratorIdForProject(project)
+        : 'orchestrator'
+      appendMessage(input.projectId, orchId, {
         role: 'system',
         content: `📥 ${def.name} 回执：${summary}`,
         meta: { backend: 'mock' },
@@ -449,7 +499,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       )
       touchProject(input.projectId)
     },
-    [appendMessage, threads, touchProject],
+    [appendMessage, projects, threads, touchProject],
   )
 
   const bindSession = useCallback(
@@ -550,4 +600,4 @@ export function useProjectFolder() {
   return ctx
 }
 
-export { DEMO_PROJECT_ID }
+export { DEMO_PATENT_ID, DEMO_GENERAL_ID, DEMO_PATENT_ID as DEMO_PROJECT_ID }

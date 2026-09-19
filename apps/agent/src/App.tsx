@@ -31,6 +31,8 @@ export default function App() {
                 <Route path="harness" element={<AgentHarnessOverview />} />
                 <Route path="projects" element={<ProjectListPage />} />
                 <Route path="projects/:projectId" element={<ProjectWorkspacePage />} />
+                <Route path="projects/:projectId/bots/:botId" element={<ProjectWorkspacePage />} />
+                {/* legacy — redirects to /bots/:id inside workspace */}
                 <Route path="projects/:projectId/experts/:expertId" element={<ProjectWorkspacePage />} />
                 <Route path="skills" element={<Navigate to="/agent/agents" replace />} />
                 <Route path="tools" element={<Navigate to="/agent/agents" replace />} />

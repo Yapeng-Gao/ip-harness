@@ -20,28 +20,29 @@ npm run dev:agent
 
 | Path | 页面 |
 |------|------|
-| `/agent` | Home · 新建任务 |
-| `/agent/sessions` | 全部会话列表 |
+| `/agent` | **默认**通用单聊（Catalog 选 AgentDef / Composer） |
+| `/agent/sessions` | 通用历史会话（兼容；不抢主心智） |
 | `/agent/sessions/:id` | 会话工作区（Timeline + ConfirmBar + Composer） |
 | `/agent/agents` | Agent Catalog |
 | `/agent/harness` | 运行时说明 |
-| `/agent/projects` | **项目文件夹**列表 + 新建 |
-| `/agent/projects/:projectId` | 项目总控席（编排/分派）+ 侧栏专家 + 时间线 |
-| `/agent/projects/:projectId/experts/:expertId` | 专家一对一私聊（独立步骤条/工具卡/HITL） |
+| `/agent/projects` | 项目模式列表（general | domain）+ 新建 |
+| `/agent/projects/:projectId` | 项目总控席 + 侧栏 bot + 时间线 |
+| `/agent/projects/:projectId/bots/:botId` | 一对一 bot 聊（该 bot 剧本） |
+| `/agent/projects/:projectId/experts/:expertId` | 兼容深链 → 重定向到 `/bots/:id` |
 
 兼容重定向：`/` → `/agent`；`/ip-agent/*`、`/agents/*` → `/agent`。
 
-## 口播：项目文件夹（样机 · 无真 LLM）
+## 口播：入口收敛（样机 · 无真 LLM）
 
-规格：[docs/architecture/product-apps/agent-project-folder.md](../../docs/architecture/product-apps/agent-project-folder.md)
+规格：[docs/architecture/product-apps/agent-entry-modes.md](../../docs/architecture/product-apps/agent-entry-modes.md)
 
-1. 打开 `/agent/projects`（或 Home「项目文件夹」入口）→ 可见种子演示项目，或点「创建并打开总控」。
-2. 进入项目总控席 → 点「分派给检索 / 撰稿 / FTO」→ 项目时间线出现分派事件；对应专家私聊出现任务卡。
-3. 左侧点进**检索 / 撰稿 / FTO**专家 → 步骤条、工具卡、快捷动作、mock 剧本明显不同。
-4. 专家侧点「回报总控/项目」→ 时间线记回报；总控线程出现回执。
-5. 推进到 HITL 步骤 → ConfirmBar 绑定底层 `AgentSession`，确认走 `sessionHitlAction` → DomainCommand（试运行不写；FTO 默认不写案）。
+1. **通用单聊（默认）**：打开 `/agent` → Composer / pills / Catalog 开单会话；**不**强制建项目。sessions 只作历史，不抢主入口。
+2. **新建通用项目**：`/agent/projects` → 选「通用」→ 创建 → 侧栏总控 + 研究/写作/审查；**无**专利步骤条 / FTO / 权利要求 HITL。
+3. **新建专利项目**：同页选「领域包 · patent」→ 总控 + 检索/撰稿/FTO；保留步骤条与 ExpertHitlBridge。
+4. 列表/侧栏徽章区分「通用」「专利」；bot 深链用 `/bots/:botId`（`/experts/:id` 兼容重定向）。
+5. 专利逻辑不泄漏进通用：`expertsGeneral.ts` 与 `expertsPatent.ts` 分文件；general 的 `catalogAgentId=null`。
 
-### 三专家差异（摘要）
+### domain/patent 三专家差异（摘要）
 
 | 专家 | 工具条 | 快捷 | 剧本步骤 | Confirm / 命令候选 |
 |------|--------|------|----------|-------------------|
@@ -79,7 +80,7 @@ midInboxHref({ sessionId }) // 或 { itemId }
 
 - `src/pages/*` · Home / Sessions / Workspace / Catalog / Harness / **projects/**
 - `src/components/*` · Shell / Sidebar / session/* / **projects/**（HITL 桥接）
-- `src/projects/*` · ProjectFolderContext · 专家四件套定义（按 expertId 分剧本）
+- `src/projects/*` · ProjectFolderContext · `expertsGeneral.ts` / `expertsPatent.ts`（按 kind/pack 分剧本）
 - `src/lib/deepLinks.ts` · re-export `@shared/lib/deepLinks` + 本面专用
 - 共享 context / data / domain / utils 仍引用 `@shared/...`（根 `src/`，本包只读）
 

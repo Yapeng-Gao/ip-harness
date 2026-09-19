@@ -1,11 +1,21 @@
 import type { CommandName, HitlGateId } from '@ip/domain'
 
-/** Project-folder expert seat (Grok-bot form; own business logic). */
+/** Project kind — general folder vs domain pack (agent-entry-modes). */
+export type ProjectKind = 'general' | 'domain'
+
+/** First DomainPack; reserved packs may appear later. */
+export type DomainPackId = 'patent'
+
+/** Project-folder expert / bot seat (Grok-bot form; own business logic). */
 export type ProjectExpertId =
   | 'orchestrator'
   | 'expert-search'
   | 'expert-draft'
   | 'expert-fto'
+  | 'general-orchestrator'
+  | 'general-research'
+  | 'general-write'
+  | 'general-review'
 
 export type ProjectThreadKind = 'orchestrator' | 'expert'
 
@@ -105,10 +115,15 @@ export type ProjectTimelineEvent = {
   dispatchId?: string
 }
 
+export type ProjectDispatchExpertId = Exclude<
+  ProjectExpertId,
+  'orchestrator' | 'general-orchestrator'
+>
+
 export type ProjectDispatch = {
   id: string
   projectId: string
-  toExpertId: Exclude<ProjectExpertId, 'orchestrator'>
+  toExpertId: ProjectDispatchExpertId
   summary: string
   at: string
   status: 'open' | 'reported'
@@ -118,6 +133,9 @@ export type AgentProject = {
   id: string
   title: string
   summary: string
+  kind: ProjectKind
+  /** Required when kind === 'domain'; patent is the first pack. */
+  domainPackId?: DomainPackId
   caseId?: string
   expertIds: ProjectExpertId[]
   createdAt: string

@@ -4,8 +4,12 @@ import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import {
   expertAccentClass,
   getProjectExpert,
+  isOrchestratorExpert,
 } from '../../projects/experts'
-import type { ProjectExpertId } from '../../projects/types'
+import type {
+  ProjectDispatchExpertId,
+  ProjectExpertId,
+} from '../../projects/types'
 import { ExpertHitlBridge } from './ExpertHitlBridge'
 
 type Props = {
@@ -57,11 +61,11 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
     })
     setDraft('')
     // mock echo from expert script (not shared chat)
-    if (expertId === 'orchestrator') {
+    if (isOrchestratorExpert(expertId)) {
       appendMessage(projectId, expertId, {
         role: 'assistant',
         content:
-          '【总控·mock】收到。请用「分派给检索/撰稿/FTO」下发任务；我不会替专家跑领域剧本。backend=mock',
+          '【总控·mock】收到。请用下方「分派给…」快捷下发任务；我不会替专家跑领域剧本。backend=mock',
         meta: { backend: 'mock' },
       })
     } else {
@@ -79,15 +83,15 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
   const onShortcut = (id: string) => {
     const sc = expert.shortcuts.find((s) => s.id === id)
     if (!sc) return
-    if (sc.action === 'report' && expertId !== 'orchestrator') {
+    if (sc.action === 'report' && !isOrchestratorExpert(expertId)) {
       reportToProject({
         projectId,
-        fromExpertId: expertId,
+        fromExpertId: expertId as ProjectDispatchExpertId,
       })
       return
     }
-    if (sc.action === 'dispatch_hint' && sc.hint && expertId === 'orchestrator') {
-      const to = sc.hint as Exclude<ProjectExpertId, 'orchestrator'>
+    if (sc.action === 'dispatch_hint' && sc.hint && isOrchestratorExpert(expertId)) {
+      const to = sc.hint as ProjectDispatchExpertId
       dispatchToExpert({
         projectId,
         toExpertId: to,
@@ -220,7 +224,7 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
               {sc.label}
             </button>
           ))}
-          {expertId !== 'orchestrator' && (
+          {!isOrchestratorExpert(expertId) && (
             <button
               type="button"
               onClick={() => advanceStep(projectId, expertId)}
@@ -237,7 +241,7 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
             onKeyDown={onKey}
             rows={2}
             placeholder={
-              expertId === 'orchestrator'
+              isOrchestratorExpert(expertId)
                 ? '输入分派摘要，或点「分派给…」'
                 : '输入消息，或点快捷动作推进本专家剧本'
             }
