@@ -1,0 +1,68 @@
+{
+  "count": 9,
+  "cards": [
+    {
+      "h": 190,
+      "w": 376,
+      "textLen": 58,
+      "text": "调研检索 Agent Core 立项前调研 · 可用 立项前调研 启动 稍后关联 详情 · 工具 4 · 需确认 1",
+      "hasLongDisclaimer": false
+    },
+    {
+      "h": 190,
+      "w": 376,
+      "textLen": 56,
+      "text": "交底整理 Agent Core 立项决策 · 可用 发明交底 启动 稍后关联 详情 · 工具 4 · 需确认 1",
+      "hasLongDisclaimer": false
+    },
+    {
+      "h": 190,
+      "w": 376,
+      "textLen": 56,
+      "text": "立项评估 Agent Core 立项决策 · 可用 立项决策 启动 稍后关联 详情 · 工具 3 · 需确认 2",
+      "hasLongDisclaimer": false
+    },
+    {
+      "h": 190,
+      "w": 376,
+      "textLen": 58,
+      "text": "权利要求撰写 Agent Core 撰写申请 · 可用 撰写申请 启动 稍后关联 详情 · 工具 4 · 需确认 2",
+      "hasLongDisclaimer": false
+    },
+    {
+      "h": 190,
+      "w": 376,
+      "textLen": 57,
+      "text": "OA 答复 Agent Core 审查答复 · 可用 审查答复 启动 稍后关联 详情 · 工具 4 · 需确认 2",
+      "hasLongDisclaimer": false
+    },
+    {
+      "h": 190,
+      "w": 376,
+      "textLen": 57,
+      "text": "年费与维持 Agent Core 授权维持 · 可用 授权维持 启动 稍后关联 详情 · 工具 3 · 需确认 1",
+      "hasLongDisclaimer": false
+    },
+    {
+      "h": 226,
+      "w": 376,
+      "textLen": 108,
+      "text": "监控预警 Agent Assist 监控预警 · 可用 案件监控 辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭环 启动 稍后关联 详情 · 工具 3 · 需确认 1",
+      "hasLongDisclaimer": true
+    },
+    {
+      "h": 211,
+      "w": 376,
+      "textLen": 109,
+      "text": "转化条款 Agent Beta 运用转化 · 试用 运用转化 Beta·非采购闭环 · 无法务会签闸，批准≠合同 PDF/电子签 试用 · 非闭环 试用 · 稍后关联 · 非采购闭环 详情 · 工具 3 · 需确认 1",
+      "hasLongDisclaimer": true
+    },
+    {
+      "h": 211,
+      "w": 376,
+      "textLen": 111,
+      "text": "布局洞察 Agent Beta 立项前调研 · 试用 专利布局 Beta·非采购闭环 · 洞察矩阵/建案示意仍薄，勿当布局采购主路径 试用 · 非闭环 试用 · 稍后关联 · 非采购闭环 详情 · 工具 5 · 需确认 1",
+      "hasLongDisclaimer": true
+    }
+  ]
+}

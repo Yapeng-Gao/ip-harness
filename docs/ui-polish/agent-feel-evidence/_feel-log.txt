@@ -1,0 +1,38 @@
+SHOT 01-home.png
+PROBE home dockH=undefined timelineH=undefined tAll=10 smallFont=null tools=
+SHOT 01b-home-cta-hover.png
+SHOT 01c-home-cta-focus.png
+SHOT 02-sessions-list.png
+PROBE sessions dockH=undefined timelineH=undefined tAll=14 smallFont=null tools=
+SHOT 03-session-oa1.png
+PROBE session-oa1 dockH=157 timelineH=539 tAll=25 smallFont=10 tools=
+SHOT 03b-dock-closeup.png
+SHOT 03c-confirm-cta-focus.png
+SHOT 03d-composer-unfold.png
+PROBE session-composer-open dockH=157 timelineH=329 tAll=25 smallFont=10 tools=
+SHOT 04-projects-list.png
+PROBE projects dockH=undefined timelineH=undefined tAll=9 smallFont=null tools=
+SHOT 05-general-workspace.png
+PROBE general dockH=undefined timelineH=undefined tAll=9 smallFont=null tools=dispatch_task,summarize_timeline,open_expert_dm,GENERAL-ORCHESTRATOR
+general casebind open=true
+SHOT 05b-general-casebind-open.png
+PROBE general-casebind dockH=undefined timelineH=undefined tAll=10 smallFont=10 tools=dispatch_task,summarize_timeline,open_expert_dm,GENERAL-ORCHESTRATOR
+SHOT 05c-general-casebind-closed.png
+SHOT 05d-general-scroll-tools.png
+SHOT 06-patent-workspace.png
+PROBE patent dockH=undefined timelineH=undefined tAll=9 smallFont=null tools=dispatch_task,summarize_timeline,open_expert_dm
+patent casebind open=true
+SHOT 06b-patent-casebind-open.png
+PROBE patent-casebind dockH=undefined timelineH=undefined tAll=10 smallFont=10 tools=dispatch_task,summarize_timeline,open_expert_dm
+SHOT 06c-patent-casebind-closed.png
+SHOT 06d-patent-bot.png
+SHOT 07-catalog.png
+PROBE catalog dockH=undefined timelineH=undefined tAll=2 smallFont=9 tools=
+SHOT 07b-catalog-scrolled.png
+SHOT 08-harness.png
+PROBE harness dockH=undefined timelineH=undefined tAll=2 smallFont=null tools=
+SHOT 08b-harness-scrolled.png
+SHOT 09-session-1280.png
+PROBE session-1280 dockH=173 timelineH=424 tAll=25 smallFont=10 tools=
+SHOT 09b-patent-1280.png
+PROBE patent-1280 dockH=undefined timelineH=undefined tAll=9 smallFont=null tools=dispatch_task,summarize_timeline,open_expert_dm

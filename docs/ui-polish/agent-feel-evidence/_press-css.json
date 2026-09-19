@@ -1,0 +1,25 @@
+{
+  "text": "开始办理",
+  "cls": "btn-press focus-ring cta-work rounded-md px-4 py-1.5 text-sm font-medium",
+  "transformRest": "none",
+  "h": 40,
+  "w": 88,
+  "activeRules": [
+    {
+      "sel": ".btn-press",
+      "css": ".btn-press { transition: transform 0.12s var(--ease-interactive), background-color 0.15s ease, box-shadow 0.15s ease, bo"
+    },
+    {
+      "sel": ".btn-press:active:not(:disabled)",
+      "css": ".btn-press:active:not(:disabled) { transform: scale(0.96); }"
+    },
+    {
+      "sel": ".icon-btn:active:not(:disabled)",
+      "css": ".icon-btn:active:not(:disabled) { transform: scale(0.94); }"
+    },
+    {
+      "sel": ".ui-btn:active:not(:disabled)",
+      "css": ".ui-btn:active:not(:disabled) { transform: scale(0.96); }"
+    }
+  ]
+}
