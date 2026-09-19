@@ -14,6 +14,11 @@ type Props = {
   caseId?: string
   /** Visual weight: domain/patent prominent; general softer */
   prominence?: 'strong' | 'soft'
+  /**
+   * When unbound + true (default for prominence=strong / patent·domain):
+   * label warns writeback requires bind. General keeps soft copy.
+   */
+  writebackRequiresBind?: boolean
   onBind: (caseId: string, meta?: { title: string; created: boolean }) => void
   onUnbind?: () => void
 }
@@ -25,6 +30,7 @@ type Props = {
 export function CaseBindControls({
   caseId,
   prominence = 'strong',
+  writebackRequiresBind,
   onBind,
   onUnbind,
 }: Props) {
@@ -43,9 +49,13 @@ export function CaseBindControls({
   })()
 
   const soft = prominence === 'soft'
+  const mustBind =
+    writebackRequiresBind ?? prominence === 'strong'
   const boxCls = soft
     ? 'rounded-md border border-dashed border-slate-200 bg-slate-50/60 px-2.5 py-2'
-    : 'rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5'
+    : mustBind && bindState !== 'bound'
+      ? 'rounded-md border border-amber-300 bg-amber-50/80 px-3 py-2.5'
+      : 'rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5'
 
   const createAndBind = () => {
     const t = title.trim() || '样机新案'
@@ -81,7 +91,11 @@ export function CaseBindControls({
     <div className={boxCls} data-testid="case-bind-controls">
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-[11px] font-medium text-slate-700">
-          {bindState === 'bound' ? '已绑案件' : '案件（可选）'}
+          {bindState === 'bound'
+            ? '已绑案件'
+            : mustBind
+              ? '写回中台前须绑定'
+              : '案件（可选）'}
         </span>
         {boundTitle ? (
           <span
@@ -95,8 +109,13 @@ export function CaseBindControls({
             ) : null}
           </span>
         ) : (
-          <span className="text-[11px] text-slate-400">
-            可稍后创建或绑定案件
+          <span
+            className={`text-[11px] ${mustBind ? 'font-medium text-amber-900' : 'text-slate-400'}`}
+            data-testid="case-bind-hint"
+          >
+            {mustBind
+              ? '领域办理写回中台前须先绑定案件'
+              : '可稍后创建或绑定案件'}
           </span>
         )}
         <div className="ml-auto flex flex-wrap gap-1.5">

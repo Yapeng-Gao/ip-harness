@@ -126,9 +126,11 @@ export function AgentSessionWorkspace() {
   const [toastVisible, setToastVisible] = useState(false)
   /** Prefer deep-link after layout建案 etc. over Catalog workbenchPath */
   const [toastWbOverride, setToastWbOverride] = useState<string | null>(null)
+  const [caseBindGuide, setCaseBindGuide] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLTextAreaElement>(null)
   const caseSelectRef = useRef<HTMLSelectElement>(null)
+  const caseBindTopRef = useRef<HTMLDivElement>(null)
   const switchChipTimer = useRef<number | null>(null)
   const toastTimer = useRef<number | null>(null)
   const location = useLocation()
@@ -174,12 +176,25 @@ export function AgentSessionWorkspace() {
   }, [sess?.agentId, sess?.id])
 
   useEffect(() => {
-    const st = location.state as { focusComposer?: boolean } | null
+    const st = location.state as {
+      focusComposer?: boolean
+      focusCaseBind?: boolean
+    } | null
+    if (st?.focusCaseBind && !(sess?.caseId)) {
+      setCaseBindGuide(true)
+      const tid = window.setTimeout(() => {
+        caseBindTopRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        })
+      }, 80)
+      return () => window.clearTimeout(tid)
+    }
     if (st?.focusComposer && composerRef.current) {
       const tid = window.setTimeout(() => composerRef.current?.focus(), 50)
       return () => window.clearTimeout(tid)
     }
-  }, [sess?.id, location.state])
+  }, [sess?.id, sess?.caseId, location.state])
 
   /** Wave2 InboxDeepLink · ?focus=hitl / gate= → 滚到并高亮 ConfirmBar */
   useEffect(() => {
@@ -535,6 +550,35 @@ export function AgentSessionWorkspace() {
           </div>
         )}
 
+        {/* P1-AE-2: when HITL, case bind lives in top band — not beside ConfirmBar */}
+        {(hitlActive || caseBindGuide) && (
+          <div
+            ref={caseBindTopRef}
+            className="shrink-0 border-b border-slate-100 bg-white px-4 py-2"
+            data-testid="session-case-bind-top"
+          >
+            {caseBindGuide && !sess.caseId ? (
+              <p className="mb-1.5 text-[11px] text-sky-900" role="status">
+                开始办理后可在此绑定案件 · 无案确认不写回中台
+              </p>
+            ) : null}
+            <CaseBindControls
+              caseId={sess.caseId}
+              prominence="soft"
+              writebackRequiresBind={false}
+              onBind={(id) => {
+                setCasePick(id)
+                patchSession(sess.id, { caseId: id })
+                setCaseBindGuide(false)
+              }}
+              onUnbind={() => {
+                setCasePick('')
+                patchSession(sess.id, { caseId: undefined })
+              }}
+            />
+          </div>
+        )}
+
         <SessionTimeline
           steps={sess.steps}
           playing={playing}
@@ -542,106 +586,123 @@ export function AgentSessionWorkspace() {
           runMode={sessionRunMode(sess.id)}
         />
 
-        {(hitlActive ||
-          handoffStatus === 'authorized_to_file' ||
-          (handoffKey === 'maintain_annuity' && handoffStatus === 'approved')) && (
-          <div ref={confirmBarRef}>
-            <SessionConfirmBar
-            sessionId={sess.id}
-            agent={agent}
-            gates={gates}
-            clearedGates={clearedGates}
-            handoffStatus={handoffStatus}
-            handoffKey={handoffKey}
-            caseId={sess.caseId}
-            isEnterprise={isEnterprise}
-            role={role}
-            block={block}
-            gateDisabledReason={gateDisabledReason}
-            onGate={doGate}
-            onHitl={doHitl}
-            focusHitl={focusHitl}
-            focusGate={focusGate}
-            onPrimaryBlockerChange={setPrimaryBlocker}
-            runMode={sessionRunMode(sess.id)}
-            invoicePayable={
-              !!(c?.engagement?.invoices ?? []).some(
-                (i) =>
-                  i.status === '逾期' ||
-                  i.status === '已开票' ||
-                  i.status === '待开票',
-              )
-            }
-            onFileResponse={
-              sess.caseId &&
-              (handoffKey === 'prosecution_response' ||
-                handoffKey === 'draft_claims' ||
-                handoffKey === 'maintain_annuity')
-                ? (receiptNo, filedAt) => {
-                    void (async () => {
-                      const r = await dispatchCommand(
-                        {
-                          type: 'fileResponse',
-                          caseId: sess.caseId!,
-                          handoffKey: handoffKey,
-                          receiptNo,
-                          filedAt,
-                          note: '知产 Agent 递交归档（回执已确认）',
-                        },
-                        {
-                          actor: 'agent',
-                          agentId: resolvedAgentId,
-                          detail: 'file_oa_response → FileResponse',
-                        },
-                      )
-                      showToast(
-                        r.ok
-                          ? `已写入领域：${COMMAND_LABELS.fileResponse} · ${r.message}`
-                          : r.message,
-                        r.ok && !!sess.caseId,
-                      )
-                    })()
-                  }
-                : undefined
-            }
-            />
-          </div>
-        )}
+        {/* P1-AE-2: sticky ConfirmBar dock — single primary HITL CTA band */}
+        <div
+          className={
+            hitlActive
+              ? 'agent-hitl-dock sticky bottom-0 z-20 shrink-0'
+              : 'shrink-0'
+          }
+          data-testid="session-bottom-dock"
+        >
+          {(hitlActive ||
+            handoffStatus === 'authorized_to_file' ||
+            (handoffKey === 'maintain_annuity' &&
+              handoffStatus === 'approved')) && (
+            <div ref={confirmBarRef}>
+              <SessionConfirmBar
+                sessionId={sess.id}
+                agent={agent}
+                gates={gates}
+                clearedGates={clearedGates}
+                handoffStatus={handoffStatus}
+                handoffKey={handoffKey}
+                caseId={sess.caseId}
+                isEnterprise={isEnterprise}
+                role={role}
+                block={block}
+                gateDisabledReason={gateDisabledReason}
+                onGate={doGate}
+                onHitl={doHitl}
+                focusHitl={focusHitl}
+                focusGate={focusGate}
+                onPrimaryBlockerChange={setPrimaryBlocker}
+                runMode={sessionRunMode(sess.id)}
+                invoicePayable={
+                  !!(c?.engagement?.invoices ?? []).some(
+                    (i) =>
+                      i.status === '逾期' ||
+                      i.status === '已开票' ||
+                      i.status === '待开票',
+                  )
+                }
+                onFileResponse={
+                  sess.caseId &&
+                  (handoffKey === 'prosecution_response' ||
+                    handoffKey === 'draft_claims' ||
+                    handoffKey === 'maintain_annuity')
+                    ? (receiptNo, filedAt) => {
+                        void (async () => {
+                          const r = await dispatchCommand(
+                            {
+                              type: 'fileResponse',
+                              caseId: sess.caseId!,
+                              handoffKey: handoffKey,
+                              receiptNo,
+                              filedAt,
+                              note: '知产 Agent 递交归档（回执已确认）',
+                            },
+                            {
+                              actor: 'agent',
+                              agentId: resolvedAgentId,
+                              detail: 'file_oa_response → FileResponse',
+                            },
+                          )
+                          showToast(
+                            r.ok
+                              ? `已写入领域：${COMMAND_LABELS.fileResponse} · ${r.message}`
+                              : r.message,
+                            r.ok && !!sess.caseId,
+                          )
+                        })()
+                      }
+                    : undefined
+                }
+              />
+            </div>
+          )}
 
-        <SessionComposer
-          goal={goal}
-          onGoalChange={setGoal}
-          agentPick={agentPick}
-          onAgentPickRequest={(v) => requestAgentSwitch(v)}
-          casePick={casePick}
-          onCasePick={(v) => {
-            setCasePick(v)
-            patchSession(sess.id, { caseId: v || undefined })
-          }}
-          visibleCases={visibleCases}
-          composerRef={composerRef}
-          caseSelectRef={caseSelectRef}
-          onSubmit={submitComposer}
-          pendingAgentSwitch={pendingAgentSwitch}
-          onConfirmAgentSwitch={confirmPendingAgentSwitch}
-          onCancelAgentSwitch={() => setPendingAgentSwitch(null)}
-          hitlActive={hitlActive}
-          hitlDisableReason={primaryBlocker}
-          caseBindSlot={
+          <SessionComposer
+            goal={goal}
+            onGoalChange={setGoal}
+            agentPick={agentPick}
+            onAgentPickRequest={(v) => requestAgentSwitch(v)}
+            casePick={casePick}
+            onCasePick={(v) => {
+              setCasePick(v)
+              patchSession(sess.id, { caseId: v || undefined })
+            }}
+            visibleCases={visibleCases}
+            composerRef={composerRef}
+            caseSelectRef={caseSelectRef}
+            onSubmit={submitComposer}
+            pendingAgentSwitch={pendingAgentSwitch}
+            onConfirmAgentSwitch={confirmPendingAgentSwitch}
+            onCancelAgentSwitch={() => setPendingAgentSwitch(null)}
+            hitlActive={hitlActive}
+            hitlDisableReason={primaryBlocker}
+            caseBindSlot={
+              hitlActive || caseBindGuide
+                ? undefined
+                : (
             <CaseBindControls
               caseId={sess.caseId}
               prominence="soft"
+              writebackRequiresBind={false}
               onBind={(id) => {
                 setCasePick(id)
                 patchSession(sess.id, { caseId: id })
+                setCaseBindGuide(false)
               }}
               onUnbind={() => {
                 setCasePick('')
                 patchSession(sess.id, { caseId: undefined })
               }}
             />
-          }
-        />
+                  )
+            }
+          />
+        </div>
       </section>
 
       {rightOpen && (

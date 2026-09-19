@@ -14,6 +14,7 @@ import type { AgentDef } from '@shared/types'
 import { AgentTierBadge } from '../components/AgentTierBadge'
 import { getStageMeta } from '@shared/data/stages'
 import { agentSessionPath } from '../lib/deepLinks'
+import { CaseBindControls } from '../components/case/CaseBindControls'
 
 /** 知产 Agent 任务 chips — 仅 Core 主路径，非 Beta 一键当真闭环 */
 const PROMPT_PILLS: { label: string; agentId: string; goal: string }[] = [
@@ -131,7 +132,12 @@ export function AgentHome() {
       showCreateFailedToast()
       return
     }
-    navigate(agentSessionPath(s.id), { state: { focusComposer: true } })
+    navigate(agentSessionPath(s.id), {
+      state: {
+        focusComposer: true,
+        focusCaseBind: !caseId,
+      },
+    })
   }
 
   const startWithAgent = (a: AgentDef, promptGoal: string) => {
@@ -149,7 +155,12 @@ export function AgentHome() {
       showCreateFailedToast()
       return
     }
-    navigate(agentSessionPath(s.id), { state: { focusComposer: true } })
+    navigate(agentSessionPath(s.id), {
+      state: {
+        focusComposer: true,
+        focusCaseBind: !caseId,
+      },
+    })
   }
 
   const onPill = (pill: (typeof PROMPT_PILLS)[number]) => {
@@ -261,8 +272,9 @@ export function AgentHome() {
                 onClick={start}
                 data-testid="home-send"
                 className="btn-press focus-ring cta-work rounded-md px-4 py-1.5 text-sm font-medium"
+                data-primary-cta="home-start"
               >
-                {selectedAgent?.tier === 'beta' ? '试用' : '发送'}
+                {selectedAgent?.tier === 'beta' ? '试用' : '开始办理'}
               </button>
             </div>
           </div>
@@ -277,12 +289,29 @@ export function AgentHome() {
           ) : null}
         </div>
 
-        {/* Harness writeback cue */}
-        <p className="mt-2 text-center text-[11px] text-slate-400" role="status">
-          {caseId && selectedCase
-            ? `已关联「${selectedCase.title}」· 确认后写入作业中台`
-            : '可不选案新建 · 可稍后创建或绑定案件 · 无案确认不写回中台'}
-        </p>
+        {/* P1-AE-1: create/bind CTAs on Home when unbound */}
+        {!caseId ? (
+          <div className="mt-3" data-testid="home-case-bind">
+            <CaseBindControls
+              caseId={undefined}
+              prominence="soft"
+              writebackRequiresBind={false}
+              onBind={(id) => {
+                setPickerTouched(true)
+                setCaseId(id)
+              }}
+            />
+            <p className="mt-1.5 text-center text-[11px] text-slate-400" role="status">
+              也可先开始办理 · 随后在会话顶栏「创建并绑定 / 绑定已有」
+            </p>
+          </div>
+        ) : (
+          <p className="mt-2 text-center text-[11px] text-slate-400" role="status">
+            {selectedCase
+              ? `已关联「${selectedCase.title}」· 确认后写入作业中台`
+              : '已选案 · 确认后写入作业中台'}
+          </p>
+        )}
 
         {/* IP task chips — Core only */}
         <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -361,10 +390,11 @@ export function AgentHome() {
           )}
           {needsHumanCount > 0 && (
             <Link
-              to="/agent/sessions"
-              className="hover:text-slate-700 hover:underline"
+              to="/agent/sessions?filter=needs_human"
+              className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-medium text-amber-950 hover:bg-amber-100"
+              data-testid="home-needs-human-link"
             >
-              {needsHumanCount} 个会话待确认
+              待确认 · {needsHumanCount}
             </Link>
           )}
           <Link

@@ -4,3 +4,18 @@ body,
 #root {
   font-family: "Noto Sans CJK SC", "Noto Sans SC", "Noto Sans CJK", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
 }
+
+
+/* P1-AE-2 · sticky ConfirmBar dock (needs_human) */
+.agent-hitl-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  background: linear-gradient(180deg, transparent 0%, #fff 12%);
+  box-shadow: 0 -10px 28px rgba(15, 23, 42, 0.08);
+}
+.agent-hitl-dock [data-confirm-bar] {
+  /* keep ConfirmBar above composer within dock */
+  position: relative;
+  z-index: 1;
+}

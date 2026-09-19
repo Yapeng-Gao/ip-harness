@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Plus, Briefcase, Search, Pencil, Archive } from 'lucide-react'
 import { useAgents } from '@shared/context/AgentContext'
 import { matchSessionSearch } from '@shared/utils/sessionSearch'
@@ -25,6 +25,8 @@ export function AgentSessionsList() {
   } = useAgents()
   const { getCase, hasBlockingInvoiceForCase, role } = useApp()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const urlFilter = searchParams.get('filter')
   const [renamingId, setRenamingId] = useState<string | null>(null)
   const [renameDraft, setRenameDraft] = useState('')
   const [archiveToast, setArchiveToast] = useState<{ id: string; title: string } | null>(null)
@@ -55,11 +57,20 @@ export function AgentSessionsList() {
   const sorted = useMemo(() => {
     return [...visibleSessions]
       .filter((s) => {
+        if (urlFilter === 'needs_human') {
+          if (s.status !== 'needs_human' && !s.hitlPending) return false
+        } else if (urlFilter === 'running') {
+          if (s.status !== 'running' && s.status !== 'queued') return false
+        } else if (urlFilter === 'done') {
+          if (s.status !== 'done') return false
+        } else if (urlFilter === 'archived') {
+          if (!s.archived) return false
+        }
         const caseTitle = s.caseId ? (getCase(s.caseId)?.title ?? '') : ''
         return matchSessionSearch(s, sessionSearch, caseTitle)
       })
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-  }, [visibleSessions, sessionSearch, getCase])
+  }, [visibleSessions, sessionSearch, getCase, urlFilter])
 
   const newSession = () => {
     const s = createSession({ goal: '', agentId: 'auto', title: '新 IP 任务会话' })
@@ -81,7 +92,13 @@ export function AgentSessionsList() {
     <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-8">
       <PageHeader
         title="全部会话"
-        context="与左侧共用搜索；状态 / Agent 筛选请用左侧「筛选」"
+        context={
+          urlFilter === 'needs_human'
+            ? '筛选：待确认 · 与左侧同步'
+            : urlFilter
+              ? `筛选：${urlFilter} · 与左侧同步`
+              : '与左侧共用搜索；状态 / Agent 筛选请用左侧「筛选」'
+        }
         primary={{
           label: '新建任务会话',
           onClick: newSession,
