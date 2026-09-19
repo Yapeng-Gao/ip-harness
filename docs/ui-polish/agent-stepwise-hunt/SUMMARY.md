@@ -60,9 +60,10 @@
 
 ## SHA
 
+- Hunt 主提交：`94f2e22f4fa294ead0ef0e48a27f91f712b14a5b`
+- tip（本 SUMMARY 戳 SHA）：`c1df04176c815fd99957c361d47a9ddaab01d75a`
 
-
-`94f2e22f4fa294ead0ef0e48a27f91f712b14a5b`
+## 实现要点
 
 - 新 CasePack：`tools/e2e-hunt/src/casepacks/cp-agent-stepwise.ts`
 - Observer 自定义断言：`agent-s0-home` … `agent-s9-project-patent`（复用 `hitl-confirm-bar`）
