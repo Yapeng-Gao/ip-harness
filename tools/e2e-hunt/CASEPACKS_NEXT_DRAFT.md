@@ -23,6 +23,7 @@
 | `CP-search-api-flag` | search:5182 + api:5190 | 旗标 sqlite-fts | **已接线（分支 A）** | `dev:search-api` + `dev:search:api` |
 | `CP-search-api-fallback` | search:5182（:5190 宕） | 旗标开但 API 不可用 → mock + toast | **已接线（分支 B）** | `dev:search:api` + **停** :5190 |
 | `CP-agent-hitl` | agent:5175 | 进入办理 → HITL ConfirmBar 可见 | **已接线** | `npm run dev:agent` |
+| `CP-agent-stepwise` | agent:5175 | S0–S9 逐步走查 | **已接线** | `npm run dev:agent` |
 | `CP-figure-dual` | figure:5187 | 上下文 → mock 生成 → 画布编辑双闭环 | **已接线** | `npm run dev:figure` |
 
 字段对齐方案：Evidence Pack 本地 `artifacts/`；可选逐步 `agent_reasoning`（规则短路填 `rule:…`）；Finding 白名单见 `rules.ts`；schemaVersion 仍为 `1.0`。

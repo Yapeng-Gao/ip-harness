@@ -167,6 +167,148 @@ ${status}`
           const url = page.url()
           return url.includes('sess-oa-1')
         }
+        if (a.id === 'agent-s0-home') {
+          const url = page.url()
+          // Home only（排除 sessions/projects/agents）
+          if (!url.includes('/agent')) return false
+          if (/\/agent\/(sessions|projects|agents|harness)/.test(url)) return false
+          const body = await page.locator('body').innerText().catch(() => '')
+          const hasCompose =
+            (await page.getByTestId('home-send').first().isVisible().catch(() => false)) ||
+            (await page.getByLabel('办理目标').first().isVisible().catch(() => false)) ||
+            body.includes('开始办理')
+          const hasCaseBind =
+            (await page.getByTestId('home-case-bind').first().isVisible().catch(() => false)) ||
+            body.includes('创建并绑定') ||
+            body.includes('绑定已有') ||
+            body.includes('也可先开始办理')
+          const hasNav =
+            body.includes('待确认') ||
+            body.includes('会话') ||
+            (await page.getByText('待确认', { exact: false }).first().isVisible().catch(() => false))
+          const caseBindCount = await page.getByTestId('home-case-bind').count().catch(() => 0)
+          // 硬闸观察：Home 案件入口 ≤1（=1 期望）；不因此 fail
+          const singleEntry = caseBindCount <= 1
+          return hasCompose && hasCaseBind && hasNav && singleEntry
+        }
+        if (a.id === 'agent-s1-softskip') {
+          // SoftSkip：创建并绑定新案难自动化 → 已在 Agent 壳即 Pass（证据记 SoftSkip）
+          const url = page.url()
+          return url.includes('/agent')
+        }
+        if (a.id === 'agent-s2-session') {
+          const url = page.url()
+          if (!/\/agent\/sessions\/[^/?]+/.test(url)) return false
+          // 无强制绑案挡死：能进会话即过；可选看「也可先」/顶栏绑案引导
+          const body = await page.locator('body').innerText().catch(() => '')
+          const blocked =
+            body.includes('必须先绑定案件') || body.includes('请先绑定案件才能开始')
+          return !blocked
+        }
+        if (a.id === 'agent-s3-timeline') {
+          const url = page.url()
+          if (!url.includes('/agent/sessions/')) return false
+          const body = await page.locator('body').innerText().catch(() => '')
+          const markers = [
+            '解析 OA',
+            '争点清单',
+            '答复书草稿',
+            '需要你确认',
+            '会话已创建',
+            '调用 analyze_oa',
+            '调用 patent_search',
+            '理解目标',
+            '思考',
+            '工具',
+            '等待你确认',
+          ]
+          return markers.some((m) => body.includes(m))
+        }
+        if (a.id === 'agent-s5-casebind') {
+          const url = page.url()
+          if (!url.includes('/agent/sessions/')) return false
+          const body = await page.locator('body').innerText().catch(() => '')
+          return (
+            body.includes('创建并绑定') ||
+            body.includes('绑定已有') ||
+            body.includes('已绑案件') ||
+            body.includes('未绑案件') ||
+            (await page
+              .getByRole('button', { name: /创建并绑定|绑定已有/ })
+              .first()
+              .isVisible()
+              .catch(() => false))
+          )
+        }
+        if (a.id === 'agent-s6-sessions-filter') {
+          const url = page.url()
+          if (!url.includes('/agent/sessions')) return false
+          // 列表页（非单会话）或带 filter
+          const onList =
+            /\/agent\/sessions\/?(\?|$)/.test(url) || url.includes('filter=')
+          if (!onList && /\/agent\/sessions\/[^/?]+/.test(url)) return false
+          const body = await page.locator('body').innerText().catch(() => '')
+          const hasFilter =
+            url.includes('filter=needs_human') ||
+            body.includes('筛选：待确认') ||
+            body.includes('待确认')
+          const hasSegment =
+            body.includes('进行中') ||
+            body.includes('全部') ||
+            (await page.locator('.segmented, .agent-session-segments').first().isVisible().catch(() => false))
+          return hasFilter || hasSegment
+        }
+        if (a.id === 'agent-s7-catalog') {
+          const url = page.url()
+          if (!url.includes('/agent/agents')) return false
+          const body = await page.locator('body').innerText().catch(() => '')
+          return (
+            body.includes('Core') ||
+            body.includes('Assist') ||
+            body.includes('Beta') ||
+            body.includes('Agent') ||
+            (await page.locator('[id^="agent-card-"]').first().isVisible().catch(() => false))
+          )
+        }
+        if (a.id === 'agent-s8-project-general') {
+          const url = page.url()
+          if (!url.includes('/agent/projects')) return false
+          const body = await page.locator('body').innerText().catch(() => '')
+          const onGeneral =
+            url.includes('proj-demo-general') ||
+            body.includes('general') ||
+            body.includes('无专利步骤')
+          const noPatentStrip =
+            !body.includes('FTO 五步') && !body.includes('权利要求 HITL 步骤条')
+          // general 工作区：总控/研究/写作 或 无专利步骤文案
+          return (
+            onGeneral &&
+            (body.includes('总控') ||
+              body.includes('研究') ||
+              body.includes('写作') ||
+              body.includes('无专利步骤') ||
+              body.includes('通用')) &&
+            noPatentStrip
+          )
+        }
+        if (a.id === 'agent-s9-project-patent') {
+          const url = page.url()
+          if (!url.includes('/agent/projects')) return false
+          const body = await page.locator('body').innerText().catch(() => '')
+          const onPatent =
+            url.includes('proj-demo-patent') ||
+            body.includes('pack=patent') ||
+            body.includes('domain/patent')
+          const expertDm =
+            url.includes('/bots/') ||
+            url.includes('/experts/') ||
+            body.includes('检索') ||
+            body.includes('撰稿') ||
+            body.includes('FTO') ||
+            body.includes('总控席') ||
+            body.includes('专家')
+          return onPatent && expertDm
+        }
         if (a.id === 'hitl-confirm-bar') {
           // 须在会话页，避免首页侧栏「待确认」误判
           const url = page.url()

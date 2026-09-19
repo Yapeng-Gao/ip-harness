@@ -28,6 +28,7 @@ npm run hunt:basket-strategy-a  # CP-basket-strategy-a · :5182→:5183 · 策�
 npm run hunt:search-api-flag      # CP-search-api-flag · :5182+:5190 · sqlite-fts 分支 A
 npm run hunt:search-api-fallback  # CP-search-api-fallback · :5182 · 旗标开但 :5190 宕机回退 mock 分支 B
 npm run hunt:agent-hitl           # CP-agent-hitl · :5175 · HITL ConfirmBar
+npm run hunt:agent-stepwise      # CP-agent-stepwise · :5175 · S0–S9 逐步走查
 npm run hunt:figure-dual          # CP-figure-dual · :5187 · 生成+编辑双闭环
 
 # 或
@@ -50,6 +51,7 @@ npx tsx tools/e2e-hunt/src/cli.ts --case CP-search-api-fallback
 | `CP-search-api-flag` | search:5182 + api:5190 | 旗标 `backend: sqlite-fts` + 有命中（分支 A） | `hunt:search-api-flag` |
 | `CP-search-api-fallback` | search:5182（旗标开 · :5190 宕） | toast 回退 mock + `backend: mock`（分支 B） | `hunt:search-api-fallback` |
 | `CP-agent-hitl` | agent:5175 | 进入办理 → HITL ConfirmBar 可见 | `hunt:agent-hitl` |
+| `CP-agent-stepwise` | agent:5175 | S0–S9 逐步走查（Home→HITL→绑案→Inbox→Catalog→Projects） | `hunt:agent-stepwise` |
 | `CP-figure-dual` | figure:5187 | 上下文 → mock 生成 → 画布编辑（样机双闭环） | `hunt:figure-dual` |
 
 详见 `CASEPACKS_NEXT_DRAFT.md`（§8.2）。
