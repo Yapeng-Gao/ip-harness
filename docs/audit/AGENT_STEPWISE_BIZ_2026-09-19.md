@@ -119,8 +119,8 @@ sessions「通用历史」与无案 HITL 芯片禁用已在 `1b959d6` **收口**
 ### P2
 
 ~~1. 项目线程 ↔ sessions 未标签合流~~ — **已收**（`9598f6e` 视图层聚合；存储仍分 · 见 [合流复检](./AGENT_SESSIONS_THREADS_RECHECK_2026-09-19.md)）。
-2. **`pending_create` 死类型** — `types.ts` / `mockCase.ts` 有枚举，运行时未进入该态。
-3. **Home 副文案偏领域闭环** — 「专利检索 · OA · 交底 · 年费 · 确认后写入案件」对「通用单聊」略抢戏（Catalog 本身即领域 AgentDef，可忍）。
+~~2. `pending_create` 死类型~~ — **已收**（`8fa2180`）。
+~~3. Home 副文案偏领域闭环~~ — **已消**（`8fa2180` / `b8c58d3`）。
 ~~4. 无案 HITL 禁用态不够显性~~ — **已收**（`1b959d6`：`NO_CASE_GATE_REASON` + 芯片 disabled；FTO 口径确认除外）。
 
 **仍开 P2**：线程合流 · `pending_create` · Home 副文案（上列 1–3）。

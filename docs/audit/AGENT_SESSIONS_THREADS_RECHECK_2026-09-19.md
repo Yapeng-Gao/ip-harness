@@ -26,10 +26,10 @@
 | 原债（逐步业务审计） | 复检后 |
 |----------------------|--------|
 | P2 项目线程 ↔ sessions 未标签合流 | **已收**（`9598f6e`） |
-| P2 `pending_create` / Home 副文案 | **仍开**（本复检未点） |
+| P2 `pending_create` / Home 副文案 | **已消**（`8fa2180`；见 [自由度复检](./AGENT_IA_FREE_VS_FIXED_RECHECK_2026-09-19.md) 顺带轻扫） |
 | Won't 全宽黄条 | 不动 |
 
-**复检后（相对上轮 RECHECK）**：P0=0 · P1=0 · P2=2 · Won't=1
+**复检后（相对上轮 RECHECK）**：P0=0 · P1=0 · P2=2 · Won't=1 → 其后 `8fa2180`/`b8c58d3` 轻扫见 [自由度复检](./AGENT_IA_FREE_VS_FIXED_RECHECK_2026-09-19.md)，P2→0
 
 ## 毛刺（不升债）
 
