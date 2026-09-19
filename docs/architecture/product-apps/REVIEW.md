@@ -77,3 +77,20 @@
 1. `agent-project-folder` §路由仍写「`?project=` 或 `/projects/` 择一」——以 **entry-modes 路由表为准**；实现刀勿两套真相。  
 2. `DomainPackId` 类型示意可写成 `'patent' \| string` 预留，与正文 `future_*` 一致即可。
 
+## B席轻扫 · Agent 案绑定（对象 `fe64234` · 正文 `07befac`）
+
+| 项 | 值 |
+|----|-----|
+| 对象 | [agent-case-binding.md](./agent-case-binding.md)（入口回链 `fe64234`） |
+| 日期 | 2026-09-19 |
+| **结论** | **Pass** |
+
+| # | 尺子 | 结果 | 说明 |
+|---|------|------|------|
+| ① | 入口不强制案 | **过** | 新建会话/项目不强制 caseId；通用/general 可全程无案 |
+| ② | 内创建 / 绑定 | 过 | 区内「创建并绑定新案」+「绑定已有案」；patent 可空开 |
+| ③ | mock | 过 | mock caseId；可选 HITL 形状；禁真 case-core / 静默真建案 |
+| ④ | 中台权威不挡先聊 | 过 | 可不先 mid；权威列表仍 mid/case-core；Agent 只引用不另起影子案库 |
+
+与 entry-modes §6 / 验收「不强制 caseId」一致。
+

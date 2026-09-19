@@ -64,4 +64,8 @@ caseBindState: 'none' | 'bound' | 'pending_create'
 - [ ] general / 通用可全程无案  
 - [ ] patent 项目空开成功；区内可创建绑定或绑已有  
 - [ ] 无「必须先去中台」门禁文案  
-- [ ] 创建案路径诚实 mock；无真 case-core  
+- [ ] 创建案路径诚实 mock；无真 case-core
+
+## 评审
+
+- [product-apps/REVIEW.md](./REVIEW.md) · B席轻扫段（对象 `fe64234`）
