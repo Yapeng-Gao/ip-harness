@@ -408,3 +408,10 @@
 
 ---
 *UI 附段 S0–S9 · 只评不改 · 2026-09-19 ~12:02 CST*
+
+---
+
+## 附注 · Should 复测（`cdbd74f`）
+
+见 [`AGENT_STEPWISE_SHOULD_RECHECK.md`](./AGENT_STEPWISE_SHOULD_RECHECK.md)。  
+**结论**：SW-S0-1 / S5-1 / S6-1 / S6-2 / S7-1 全 **PASS** → Should 波 **Go**。
