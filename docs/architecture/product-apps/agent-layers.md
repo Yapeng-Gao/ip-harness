@@ -59,11 +59,17 @@
 
 | 专利 bot | 中台阶段/节点（示意） | 主工件 `HandoffArtifactKey` | 只读/提案工具（例） | 正式写候选（HITL 后） |
 |----------|----------------------|------------------------------|----------------------|------------------------|
-| **总控** `orchestrator` | 跨阶段编排 | — | 拆派/汇总事件 | **无**直接 handoff 写；转交专家提案 |
-| **检索** `expert-search` | `pre_research` 调研准备 | 可贡献 `research_report` 素材 | `commercial_patent_search` / `cluster_hits` / `patent_search`（`TOOL_TO_COMMAND` 多为 `null`） | 通常只读；绑定新颖性等仍提案 |
-| **撰稿** `expert-draft` | `pre_research`→`drafting`；交底 | `research_report` · `disclosure_pack` · `draft_claims` | `draft_research_report` · `structure_disclosure` · `draft_claims` · `saveDraft` 形状 | `submitResearch` · `submitHandoff` · `submitClaims` · `saveDraft`（按闸） |
-| **FTO** `expert-fto` | 决策/布局辅助（非独立 Stage 强制） | 可链 `layout_insight`；报告本身默认**不**当法律入库 | 特征/矩阵/风险 mock | **默认不写案**；若入库须单独命令+HITL，禁假装意见已批 |
-| **挖掘** `expert-mining`（±） | 立项前 | 可链 `intake_quote` / 洞察 | 发明点评分 mock | `createCaseFromInsight` 等须 HITL；送立项=事件占位亦可 |
+| **总控** `orchestrator` | 跨阶段编排 | — | 拆派/汇总 | **无**直接 handoff 写 |
+| **检索** `expert-search` | `pre_research` | `research_report` 素材 | 检索工具（多 `null`） | 通常只读 |
+| **挖掘** `expert-mining` | 立项前 / `decision` | `intake_quote` | 评分 mock | HITL 后建案/送立项 |
+| **交底** `expert-disclosure` | 交底 | **`disclosure_pack`** | 结构整理 | `submitHandoff` / `saveDraft` |
+| **撰稿** `expert-draft` | `drafting` | **`draft_claims`** | 起草形状 | `saveDraft` / `submitClaims` |
+| **附图** `expert-figure` | `drafting` 辅助 | 附件示意 | 清单 mock | 挂章事件 |
+| **FTO** `expert-fto` | 决策/布局辅助 | `layout_insight` | 五步 mock | **默认不写案** |
+| **递交** `expert-filing` | authorize→file | 齐套清单 | 形式检查 | 闸+HITL；禁真递交 |
+| **OA** `expert-oa` | `prosecution` | **`prosecution_response`** | OA 策略 | `saveDraft` / `submitHandoff` |
+
+完整剧本与验收见 **[agent-l3-patent.md](./agent-l3-patent.md)**。
 
 闸门键（勿另起）：`go_nogo` · `approve_strategy` · `authorize_file` · `pay_unlock` · `confirm_quote`。  
 阶段↔工件权威：`ARTIFACT_FOR_STAGE`（contracts）。

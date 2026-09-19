@@ -68,18 +68,22 @@
 
 ## 4. 项目模式 · 固定专家
 
-创建/打开项目时侧栏**仅**：
+创建/打开项目时侧栏**焊死全链路**（见 [agent-l3-patent](./agent-l3-patent.md)）：
 
 | id | 角色 |
 |----|------|
-| `orchestrator` | 总控（拆派本夹专家） |
+| `orchestrator` | 总控 |
 | `expert-search` | 检索 |
-| `expert-draft` | 撰稿/交底 |
+| `expert-mining` | 挖掘 |
+| `expert-disclosure` | 交底整理 |
+| `expert-draft` | 撰稿 |
+| `expert-figure` | 附图 |
 | `expert-fto` | FTO |
-| `expert-mining` | 挖掘（±；可配置缺省隐藏，仍属固定池） |
+| `expert-filing` | 递交/形式 |
+| `expert-oa` | OA答复 |
 
-- UI：**无**「新建专家」；设置里最多「显示/隐藏 mining」。  
-- 四件套见 [agent-project-folder](./agent-project-folder.md)；L3 中台对接见 [agent-l3-patent](./agent-l3-patent.md)。  
+- UI：**无**「新建专家」。  
+- 四件套见 [agent-project-folder](./agent-project-folder.md)。  
 - 角标：`项目 · 专家固定`。
 
 ## 5. 默认落地路由（并列入口）

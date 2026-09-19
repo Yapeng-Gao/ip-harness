@@ -42,11 +42,17 @@ ProjectFolder
 
 | 专家 id（示意） | 业务故事 | mock 状态机（须可点） | 写库候选（HITL 后） |
 |-----------------|----------|------------------------|---------------------|
-| `expert-search` | 检索 | query → hits → 工作篮 →（可选）送 FTO/挖掘占位 | 通常只读；无则 `null` |
-| `expert-draft` | 交底/撰稿 | 章节草稿 → 修订建议 → Confirm 提交 | `saveDraft` / `submitResearch` / `submitHandoff` 等（按闸） |
-| `expert-fto` | FTO | 特征 → 命中 → 矩阵 → 风险 → 报告 Confirm | **默认不写案**；报告草稿内存；禁假装法律入库 |
-| `expert-mining` | 挖掘 | 交底 → 发明点 → 评分 → 送立项占位 | 送出=事件；建案另走命令且须 HITL |
-| `orchestrator` | 总控 | 拆派卡片 → 等专家回执 → 汇总时间线 | **禁止**直接改 handoff；可提议「请专家 X 执行」 |
+| `orchestrator` | 总控 | 拆派 → 回执 → 汇总 | **禁止**直接改 handoff |
+| `expert-search` | 检索 | query → hits → 工作篮 | 通常只读 |
+| `expert-mining` | 挖掘 | 发明点 → 评分 → 送立项 | HITL 建案 |
+| `expert-disclosure` | 交底整理 | 技术点 → 交底结构 → Confirm | `disclosure_pack` |
+| `expert-draft` | 撰稿 | 权利要求/摘要 → Confirm | `draft_claims` |
+| `expert-figure` | 附图 | 示意图清单 → 挂章事件 | 附件示意 |
+| `expert-fto` | FTO | 五步 → 报告 Confirm | **默认不写案** |
+| `expert-filing` | 递交/形式 | 齐套清单 → Confirm | 闸+HITL；禁真递交 |
+| `expert-oa` | OA答复 | 策略要点 → Confirm | `prosecution_response` |
+
+全链路口径以 [agent-l3-patent](./agent-l3-patent.md) 为准。
 
 每专家会话 UI 须能看出**不同步骤条/工具卡**，不能只有聊天气泡差异。
 
