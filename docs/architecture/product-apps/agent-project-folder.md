@@ -3,14 +3,15 @@
 > **样机诚实**：形式可参考 **Grok Bot**（侧栏 bot 列表、一对一聊、总控编排），但 **每个专家 bot 必须有自己的业务逻辑**——不是同一套通用聊天换皮。今日无真 LLM、无真 case-core 写库。  
 > **落地目标**：5175 壳内「项目=文件夹」工作区；专家 = 版本化 `AgentDef` + **独立剧本/工具/闸**；总控席只拆派与汇总。  
 > **对齐**：[agent-entry-modes](./agent-entry-modes.md)（入口冻结）· [agent-surface](./agent-surface.md) · [agent-plugins](./agent-plugins.md) · [agent-tools-mcp](./agent-tools-mcp.md)。  
-> **范围**：本稿描述 **domain/patent 包** 与文件夹内专家/总控；**不是**唯一入口——通用单聊与 general 项目见 entry-modes。
+> **范围**：专家四件套 + 总控边界（**通用壳与项目夹共用**）。  
+> **入口改向**：通用 Agent **已是** Grok 多 bot+专利专家；项目模式 = 同壳上再挂夹。见 [agent-entry-modes](./agent-entry-modes.md)。
 
 ## 1. 心智模型（冻结）
 
 | 概念 | 含义 | 类比（形式 only） |
 |------|------|-------------------|
 | **项目（Project）** | 一个办案/课题容器 = **文件夹**；含成员专家、会话线程、只读 CaseContext 引用 | Grok 侧一个「工作区/文件夹」 |
-| **专家 Bot** | 侧栏列表中的一个专家；**一对一聊**；自有工具/剧本/护栏 | 侧栏一个 bot |
+| **专家 Bot** | 侧栏列表中的一个专家；**一对一聊**；自有工具/剧本/护栏；通用壳或项目夹皆可挂 | 侧栏一个 bot |
 | **总控席（Orchestrator）** | 同一项目下的编排 bot：拆派任务、收专家摘要、不替代领域逻辑 | 「总控」编排席 |
 
 ```text

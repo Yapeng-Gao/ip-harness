@@ -16,7 +16,7 @@
 | 工具与 MCP | [agent-tools-mcp.md](./agent-tools-mcp.md) | tools[] vs MCP；副作用→DomainCommand |
 | Agent 插件 | [agent-plugins.md](./agent-plugins.md) | AgentDef 插件；版本化 catalog；对齐 stage |
 | Agent 项目文件夹 IA | [agent-project-folder.md](./agent-project-folder.md) | 项目=文件夹；专家分剧本；总控只编排 |
-| Agent 入口模式 | [agent-entry-modes.md](./agent-entry-modes.md) | 通用单聊默认；项目 general/domain；DomainPack |
+| Agent 入口模式 | [agent-entry-modes.md](./agent-entry-modes.md) | **改向**：通用=Grok 多 bot+专利专家；项目=其上挂夹 |
 | Agent 案绑定 | [agent-case-binding.md](./agent-case-binding.md) | 先聊/先项目；案可后创建或绑定；不挡入口 |
 | Sessions×项目线程 | [agent-sessions-project-threads.md](./agent-sessions-project-threads.md) | 列表聚合展示；存储可分；标签筛选 |
 | 横切 | [cross-cutting.md](./cross-cutting.md) | 深链、contracts、禁壳直写库、Persona、e2e |
