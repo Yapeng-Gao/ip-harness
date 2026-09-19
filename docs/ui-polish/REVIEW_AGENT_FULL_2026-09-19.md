@@ -1,5 +1,8 @@
 # Agent 全壳 · UI / 布局 / UX 正式评估 · REVIEW_AGENT_FULL_2026-09-19
 
+> **复测关闸（2026-09-19 · HEAD `12d39f5`）**：见 `REVIEW_AGENT_FULL_RECHECK.md` → **Go**（P0-AF-1 + P1-AF-1…6 全部 PASS）。下文为原 No-Go 基线，保留不改。
+
+
 | 项 | 值 |
 |----|-----|
 | **评审方** | UI评估助手（只评不改 · 仅 docs/evidence） |

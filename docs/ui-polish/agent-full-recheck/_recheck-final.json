@@ -1,0 +1,40 @@
+{
+  "1280": {
+    "timelineH": 424,
+    "dockH": 173,
+    "dockPos": "sticky",
+    "asideW": 224,
+    "midW": 832,
+    "confirmRadius": "12px",
+    "dockRadius": "12px 12px 0px 0px",
+    "reasonCount": 1,
+    "bodyScroll": false,
+    "foldOpen": false,
+    "foldInDock": false,
+    "ctaText": "批准策略",
+    "statusChips": [
+      "待批准",
+      "待授权"
+    ],
+    "composerFoldSummary": "输入 / 切换 Agent（默认收起 · 确认完成前可不展开）"
+  },
+  "1440": {
+    "timelineH": 539,
+    "dockH": 157,
+    "dockPos": "sticky",
+    "asideW": 224,
+    "midW": 992,
+    "confirmRadius": "12px",
+    "dockRadius": "12px 12px 0px 0px",
+    "reasonCount": 1,
+    "bodyScroll": false,
+    "foldOpen": false,
+    "foldInDock": false,
+    "ctaText": "批准策略",
+    "statusChips": [
+      "待批准",
+      "待授权"
+    ],
+    "composerFoldSummary": "输入 / 切换 Agent（默认收起 · 确认完成前可不展开）"
+  }
+}
