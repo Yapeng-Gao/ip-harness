@@ -1,103 +1,111 @@
-# Agent 入口模式（IA 改向 · 2026-09-19）
+# Agent 入口模式（IA · 自由度冻结 · 2026-09-19）
 
-> **冻结（用户拍板 · 改向）**：  
-> 1) **通用 Agent** = **复刻 Grok Bot 形式** + **专利 Agent 侧栏**（多 bot、可单独聊、可总控）——**不是**「默认单聊 Composer」主心智。  
-> 2) **项目模式** = 在上述 Grok 壳上，再**设项目夹**并挂好 IP 专家。  
-> **样机诚实**：mock 剧本；写库 **HITL → DomainCommand**；禁真 LLM / 真 case-core。  
-> **对齐**：[agent-project-folder](./agent-project-folder.md) · [agent-case-binding](./agent-case-binding.md) · [agent-sessions-project-threads](./agent-sessions-project-threads.md) · [agent-surface](./agent-surface.md)。
+> **冻结（用户澄清 · 覆盖名单 widget）**：  
+> 1) **通用 Grok** = **自由**：用户可**自设 bot**；与每个 bot **一对一聊**；**bot 之间可通消息**（编排/转发）。  
+> 2) **项目模式** = 同壳，但 **IP 专家固定**（默认：`orchestrator` / `search` / `draft` / `fto` ± `mining`）——把专利专家「焊」进夹内各 bot，**不如通用自由**（不可随意增删改专家身份）。  
+> **样机诚实**：通用侧先 mock「新建 bot / bot 互通」形状；写库 **HITL → DomainCommand**；禁真 LLM / 真 case-core。  
+> **对齐**：[agent-project-folder](./agent-project-folder.md) · [agent-case-binding](./agent-case-binding.md) · [agent-sessions-project-threads](./agent-sessions-project-threads.md)。
 
 ## 1. 两种主模式（冻结）
 
-| 模式 | 壳形态 | 项目夹？ | 专利专家？ | 案 |
-|------|--------|----------|------------|-----|
-| **通用 Agent（默认）** | Grok：左 **bot 列表** + 中一对一聊 + 可选总控席 | **否**（无文件夹导航） | **是**：专利专家包直接挂在壳级侧栏 | 不强制；可后绑 |
-| **项目模式** | **同一套** Grok 壳 | **是**：先有/再建项目夹，专家挂在夹内 | **是**：夹内挂 IP 专家（同 Pack） | 可空开再绑 |
+| 模式 | 壳形态 | 自由度 | 项目夹 |
+|------|--------|--------|--------|
+| **通用 Grok（默认）** | 侧栏 bot 列表 + 一对一聊 + 互通 | **高**：自设 bot、改名/归档、bot↔bot 消息 | 无（或弱关联） |
+| **项目模式** | **同一套** Grok 壳 | **低**：IP 专家身份**固定**；不可当通用一样乱加专家 | **有**：夹内焊好专家 |
 
 ```text
-/agent                         → 通用 Agent（默认）：侧栏专利 bots + 总控 + 当前 bot 会话
-/agent/bots/:botId             → 与某专家一对一（通用壳）
-/agent/projects                → 项目列表（进入项目模式）
-/agent/projects/:id            → 项目夹：侧栏=该夹专家+总控
-/agent/projects/:id/bots/:id   → 项目内专家聊
-/agent/sessions                → 历史聚合（通用线程 + 项目线程）
-/agent/agents                  → Catalog 管理/说明（非默认干活入口）
+/agent                              → 通用 Grok（默认）
+/agent/bots/:botId                  → 与某 bot 一对一
+/agent/bots/new                     → 新建 bot（样机 mock）
+/agent/intercom 或会话内「转发」    → bot 互通（样机 mock）
+/agent/projects                     → 项目列表
+/agent/projects/:id                 → 项目夹（固定专家侧栏）
+/agent/projects/:id/bots/:expertId  → 项目内专家聊（身份只读）
+/agent/sessions                     → 历史聚合
 ```
 
-**废止心智**：默认落地 = 无侧栏的单 Composer、靠 Catalog 下拉换皮。
+**废止**：默认 = 无侧栏单 Composer；以及「通用壳侧栏焊死专利专家、与项目同自由度」的旧表述。
 
-## 2. 通用 vs 项目 · 差异表
+## 2. 自由 vs 固定（核心差异）
 
-| 维度 | 通用 Agent | 项目模式 |
-|------|------------|----------|
-| 默认打开 | `/agent` Grok 多 bot | 从「项目」进夹；不抢默认 |
-| 侧栏内容 | **壳级**专利专家 + 总控 | **该项目**成员专家 + 总控 |
-| 总控 | 有：拆派给壳级专家、汇总 | 有：拆派给**本夹**专家、汇总 |
-| 专家剧本 | 专利四件套（检索/撰稿/FTO/挖掘…） | 同 Pack；可按项目裁剪成员 |
-| 会话归属 | `source: general`（可带 expertId） | `source: project` + projectId |
-| 案 | 可选绑到「当前通用上下文」 | 可选绑到项目（见 case-binding） |
-| 协作边界 | 跨会话弱；无夹级归档 | 夹级时间线/成员/案引用 |
+| 维度 | 通用 Grok | 项目模式 |
+|------|-----------|----------|
+| 增删 bot | **可**：新建/归档自定义 bot | **不可**改专家花名册（固定 Pack 成员） |
+| 改身份/剧本 | 自定义 bot 可改展示名、短设定（样机） | 专家 `AgentDef`/四件套**只读引用**；禁用户改成别的领域 |
+| 一对一聊 | 每个 bot 可聊 | 每个固定专家可聊 |
+| bot 互通 | **有**：消息/转发/总控代派（mock） | 总控拆派**本夹**专家；专家间互通可选，但仍在固定名单内 |
+| 专利四件套 | **可选挂载**：用户可添加「检索/FTO…」类 bot（可从模板创建），非焊死唯一列表 | **焊死**：夹创建时带上默认专家名单 |
+| 案 | 不强制 | 可空开再绑 |
 
-## 3. 默认落地路由
+一句话：**通用 = 自由机器人工作区；项目 = 固定 IP 专家专班。**
 
-1. 打开 `apps/agent:5175` → **`/agent`** = Grok 壳 + **默认选中总控或检索专家**（实现择一，须可点换 bot）。  
-2. 顶栏/侧栏入口「项目」→ `/agent/projects`。  
-3. **不得**把「先建项目」做成唯一能聊专家的路径。
+## 3. 通用侧 · 样机形状（mock 即可）
 
-## 4. 默认专利专家名单（建议 · 可改）
+### 3.1 新建 bot
 
-> 用户未另选时，按此默认；Catalog/`AgentDef` 仍是权威定义源。
+| 字段（示意） | 说明 |
+|--------------|------|
+| `id` / `name` | 用户起名 |
+| `kind` | `custom` \| `template:<expert-search|…>`（从模板克隆剧本） |
+| `systemBrief` | 短设定（样机 textarea） |
 
-| 侧栏 id | 角色 | 说明 |
-|---------|------|------|
-| `orchestrator` | 总控席 | 只拆派+汇总；不替代领域剧本 |
-| `expert-search` | 检索 | search 故事状态机 |
-| `expert-draft` | 撰稿/交底 | 文档/交底剧本 |
-| `expert-fto` | FTO | 五步分析 |
-| `expert-mining` | 挖掘 | 交底→发明点（可选，样机可先灰显） |
+列表可混：用户 bot + 可选「从模板添加的专利能力 bot」。  
+**不**要求用户必须先有专利模板才能用通用壳。
 
-细则与四件套：[agent-project-folder](./agent-project-folder.md)。  
-**通用壳与项目夹共用同一套专家 id**；差别是「挂在壳级还是夹级」。
+### 3.2 bot 互通
 
-## 5. 与旧 sessions / Catalog
+| 能力 | 样机 |
+|------|------|
+| 转发 | 会话内「转发给 bot X」→ 在 X 线程出现一条引用消息（内存） |
+| 编排 | 总控类 bot（可用户自建或系统种子）发「请 @search 做…」→ 目标 bot 收件箱事件 |
+| 禁止 | 真 LLM 多 agent；跨项目乱传；绕过 HITL 写库 |
 
-| 旧概念 | 新关系 |
-|--------|--------|
-| 单聊 Composer 默认 | **降级**：可作为某 bot 会话区实现，不再是整壳主心智 |
-| `/agent/sessions` | 历史聚合仍有效（通用专家线程 + 项目线程）见 [sessions-project-threads](./agent-sessions-project-threads.md) |
-| `/agent/agents` Catalog | **管理/发现**面板；干活从侧栏 bot 点进 |
-| `AgentDef` / `AGENT_CATALOG` | 专家插件源不变；通用壳侧栏 = Pack 默认成员列表 |
-| 旧「general 项目=无专利步骤」 | **改向**：专利专家已在**通用壳**；项目夹用于**归档/绑案/裁剪成员**，不是「才出现专利 bot」的门槛 |
+事件形状示意：`{ fromBotId, toBotId, body, refThreadId?, at }`。
 
-## 6. DomainPack
+## 4. 项目模式 · 固定专家
 
-- **patent** 仍为首包，定义专家成员与剧本。  
-- 通用 Agent：壳启动即加载 patent 默认成员。  
-- 项目：创建项目时选择 Pack（默认 patent）并拷贝/引用成员列表。  
-- 预留其他 Pack：灰显 +「另立项」。
+创建/打开项目时侧栏**仅**：
 
-## 7. 案绑定（不变）
+| id | 角色 |
+|----|------|
+| `orchestrator` | 总控（拆派本夹专家） |
+| `expert-search` | 检索 |
+| `expert-draft` | 撰稿/交底 |
+| `expert-fto` | FTO |
+| `expert-mining` | 挖掘（±；可配置缺省隐藏，但仍属固定池，非用户乱加） |
 
-先聊/先项目；案不挡入口。见 [agent-case-binding](./agent-case-binding.md)。
+- UI：**无**「新建专家」；设置里最多「显示/隐藏 mining」，不能改成「营销 bot」。  
+- 四件套与状态机见 [agent-project-folder](./agent-project-folder.md)。  
+- 自由度文案建议角标：`项目 · 专家固定`。
 
-## 8. 写库与诚实
+## 5. 默认落地路由
 
-- 试运行不写；正式 HITL → DomainCommand。  
-- 横幅：`样机 · 无真 LLM · Grok 多专家壳`。
+1. `/agent` = 通用 Grok（自由 bot 列表；可含种子示例 bot）。  
+2. 「项目」→ 固定专家夹。  
+3. 单 Composer 若保留 → `/agent/compose` 降级入口。
 
-## 9. 验收
+## 6. sessions / Catalog
 
-- [ ] 默认 `/agent` 即见多 bot 侧栏（含总控+≥2 专利专家），可单独聊  
-- [ ] 非「仅 Catalog 下拉的单 Composer」主心智  
-- [ ] 可进入项目模式：设夹并挂专家；与通用壳形态一致  
-- [ ] sessions 聚合仍可用  
-- [ ] Catalog 不抢默认干活入口  
+| 概念 | 关系 |
+|------|------|
+| sessions | 聚合通用 bot 线程 + 项目专家线程（标签区分） |
+| Catalog | 模板/系统专家定义源；项目焊死引用；通用「从模板新建」也读此 |
+| 自定义 bot | 只存在于通用壳用户配置（样机内存）；**不**自动进入项目花名册 |
+
+## 7. 案绑定 / 写库
+
+- 案不挡入口：[agent-case-binding](./agent-case-binding.md)。  
+- 写库：HITL → DomainCommand；自定义 bot 默认可标「只读/无命令」直至挂模板。
+
+## 8. 验收
+
+- [ ] 通用：可 mock 新建 bot；可一对一；可 mock bot 互通/转发  
+- [ ] 项目：侧栏专家固定；无「新建专家」；角标或文案标明固定  
+- [ ] 通用 ≠ 项目自由度，UI 可感知  
+- [ ] 默认仍进通用 Grok，非强制先建项目  
 - [ ] 写库路径未放松  
 
-## 10. Owner
+## 9. Owner
 
 - 规格：架构设计  
-- 壳：Agent应用助手（`apps/agent`）
-
-## 评审
-
-- [product-apps/REVIEW.md](./REVIEW.md) · B席轻扫段（对象 `101e948` IA 改向）
+- 壳：Agent应用助手跟此落地  

@@ -4,7 +4,8 @@
 > **落地目标**：5175 壳内「项目=文件夹」工作区；专家 = 版本化 `AgentDef` + **独立剧本/工具/闸**；总控席只拆派与汇总。  
 > **对齐**：[agent-entry-modes](./agent-entry-modes.md)（入口冻结）· [agent-surface](./agent-surface.md) · [agent-plugins](./agent-plugins.md) · [agent-tools-mcp](./agent-tools-mcp.md)。  
 > **范围**：专家四件套 + 总控边界（**通用壳与项目夹共用**）。  
-> **入口改向**：通用 Agent **已是** Grok 多 bot+专利专家；项目模式 = 同壳上再挂夹。见 [agent-entry-modes](./agent-entry-modes.md)。
+> **入口**：见 [agent-entry-modes](./agent-entry-modes.md)。**项目模式专家固定**；通用侧可自设 bot。
+> **自由度**：本稿专家名单用于**项目模式（固定）**；通用 Grok 的自设 bot / 互通见 [agent-entry-modes](./agent-entry-modes.md)。
 
 ## 1. 心智模型（冻结）
 
@@ -23,7 +24,8 @@ ProjectFolder
   └── …（mining / landscape 等可挂）
 ```
 
-**禁止**：所有专家共用同一段「通用闲聊 script」，仅换头像/名称。
+**禁止**：所有专家共用同一段「通用闲聊 script」，仅换头像/名称。  
+**禁止（项目模式）**：用户随意增删改专家身份；固定名单见 entry-modes。
 
 ## 2. 每专家必须独立的四件套
 
