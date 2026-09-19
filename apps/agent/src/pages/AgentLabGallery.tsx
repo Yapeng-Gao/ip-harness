@@ -69,7 +69,7 @@ const CARDS: LabCard[] = [
     id: 'l3',
     version: 'V·L3 专利·中台',
     badge: '项目焊死',
-    blurb: '专利固定专家（检索/FTO/撰稿±挖掘/附图）· Confirm→DomainCommand 写库示意 · 勿污染 L1/L2。',
+    blurb: '专利全链路九席（含交底/递交/OA）· 演示全链路 · Confirm→DomainCommand · 勿污染 L1/L2。',
     href: '/agent/projects/proj-demo-patent',
     cta: '打开 L3 专利项目',
     icon: FolderKanban,

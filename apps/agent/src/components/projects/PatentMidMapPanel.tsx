@@ -95,7 +95,7 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
             className="px-1 text-[10px] text-slate-400"
             data-testid="patent-dc-writes-empty"
           >
-            尚未写入。走撰稿 Confirm 或点总控「演示 L3」。
+            尚未写入。走交底/撰稿/OA Confirm，或点总控「演示全链路」。
           </p>
         ) : (
           <ul className="space-y-1" data-testid="patent-dc-writes">

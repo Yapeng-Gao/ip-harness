@@ -88,6 +88,10 @@ export function expertAccentClass(accent: string): string {
       return 'bg-indigo-100 text-indigo-800 border-indigo-200'
     case 'rose':
       return 'bg-rose-100 text-rose-800 border-rose-200'
+    case 'orange':
+      return 'bg-orange-100 text-orange-900 border-orange-200'
+    case 'cyan':
+      return 'bg-cyan-100 text-cyan-900 border-cyan-200'
     default:
       return 'bg-slate-100 text-slate-700 border-slate-200'
   }

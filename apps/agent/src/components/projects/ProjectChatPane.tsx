@@ -43,6 +43,29 @@ const PROJECT_TOOL_LABELS: Record<string, string> = {
   authorize_file: '授权递交',
   confirm_quote: '确认报价',
   request_changes: '退回修改',
+  parse_tech_points: '解析技术点',
+  propose_intake: '提议立项',
+  gather_tech_points: '汇集技术点',
+  structure_disclosure: '整理交底结构',
+  outline_embodiments: '实施例提纲',
+  pack_disclosure: '打包交底',
+  draft_abstract: '起草摘要',
+  list_needed_figures: '示意图清单',
+  check_jurisdiction: '国别齐套',
+  filing_checklist: '递交清单',
+  formality_scan: '形式审查点',
+  propose_authorize_file: '授权递交提案',
+  parse_oa_notice: '解析审查意见',
+  oa_strategy: 'OA答复策略',
+  draft_amendments: '起草修改对照',
+  draft_oa_response: '起草OA答复',
+  extract_invention_points: '抽取发明点',
+  score_invention: '发明点评分',
+  gather_figure_context: '收集附图上下文',
+  mock_sketch: '生成草图占位',
+  attach_chapter_event: '挂章事件',
+  canvas_placeholder: '画布占位',
+  version_figure: '附图版本',
 }
 
 function projectToolLabel(id: string): string {
@@ -67,6 +90,8 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
     dispatchToExpert,
     reportToProject,
     runL3Demo,
+    runL3FullChain,
+    fullChainBusy,
   } = useProjectFolder()
   const project = getProject(projectId)
   const isPatentL3 =
@@ -170,14 +195,25 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
           </span>
           <span className="text-xs text-slate-500">{expert.specialty}</span>
           {isPatentL3 && isOrchestratorExpert(expertId) ? (
-            <button
-              type="button"
-              data-testid="l3-demo-btn"
-              className="btn-press focus-ring ml-auto rounded-full border border-violet-300 bg-violet-50 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800 hover:bg-violet-100"
-              onClick={() => runL3Demo(projectId)}
-            >
-              演示 L3
-            </button>
+            <div className="ml-auto flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                data-testid="l3-demo-btn"
+                className="btn-press focus-ring rounded-full border border-violet-300 bg-violet-50 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800 hover:bg-violet-100"
+                onClick={() => runL3Demo(projectId)}
+              >
+                演示 L3
+              </button>
+              <button
+                type="button"
+                data-testid="l3-fullchain-btn"
+                disabled={fullChainBusy}
+                className="btn-press focus-ring rounded-full border border-emerald-400 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-900 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() => runL3FullChain(projectId)}
+              >
+                {fullChainBusy ? '全链路进行中…' : '演示全链路'}
+              </button>
+            </div>
           ) : null}
         </div>
         <p className="mt-1 text-[11px] text-slate-500">{expert.description}</p>
