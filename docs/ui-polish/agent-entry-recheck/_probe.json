@@ -1,0 +1,279 @@
+{
+  "P0-AE-1": {
+    "primaryStartCount": 1,
+    "primaryStart": [
+      {
+        "text": "开始办理",
+        "cls": "btn-press focus-ring cta-work rounded-md px-4 py-1.5 text-sm font-medium",
+        "bg": "rgb(15, 23, 42)",
+        "color": "rgb(255, 255, 255)",
+        "fontWeight": "500",
+        "w": 88,
+        "h": 40,
+        "top": 403,
+        "left": 1043,
+        "inSidebar": false
+      }
+    ],
+    "ctaWork": [
+      {
+        "text": "开始办理",
+        "cls": "btn-press focus-ring cta-work rounded-md px-4 py-1.5 text-sm font-medium",
+        "bg": "rgb(15, 23, 42)",
+        "color": "rgb(255, 255, 255)",
+        "fontWeight": "500",
+        "w": 88,
+        "h": 40,
+        "top": 403,
+        "left": 1043,
+        "inSidebar": false
+      }
+    ],
+    "startCta": true,
+    "newSessionPrimary": false,
+    "moreMenu": true,
+    "shot": "AFTER-01-home.png",
+    "moreShot": "AFTER-01c-home-more.png",
+    "moreContains": {
+      "新建会话": true,
+      "项目": true
+    }
+  },
+  "P0-AE-2": {
+    "sidebarHasNeedsHumanList": false,
+    "sidebarSessionRows": 2,
+    "needsHumanChip": {
+      "text": "待确认 · 3",
+      "href": "/agent/sessions?filter=needs_human"
+    },
+    "shot": "AFTER-01-home.png",
+    "filterUrl": "http://127.0.0.1:5175/agent/sessions?filter=needs_human",
+    "sessionsProbe": {
+      "url": "http://127.0.0.1:5175/agent/sessions?filter=needs_human",
+      "hasFilter": true,
+      "bodyHas待确认": true
+    },
+    "homeSide": {
+      "sideText": "开始\nAgent\n会话\n更多\n\n首屏主路径：主区输入后点「开始办理」开工。\n\n待确认 · 3\n项目模式（次级）",
+      "visibleSessLinks": [],
+      "hasChip": true,
+      "chipText": "待确认 · 3"
+    }
+  },
+  "P1-AE-1": {
+    "hasCreateBind": true,
+    "hasBindExisting": true,
+    "optionalCase": true,
+    "shot": "AFTER-01b-home-case-bind.png"
+  },
+  "P1-AE-2": {
+    "sessionProbe": {
+      "stickyEls": [
+        {
+          "cls": "agent-hitl-dock sticky bottom-0 z-20 shrink-0",
+          "pos": "sticky",
+          "top": "auto",
+          "bottom": "0px",
+          "y": 517,
+          "bottomY": 900,
+          "h": 383,
+          "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 批准策略 授权递交 批准策略 授权递交 退回 在运营 Inbox 中查看 逐步 请先选争点类型"
+        }
+      ],
+      "dockInfo": {
+        "cls": "agent-hitl-dock sticky bottom-0 z-20 shrink-0",
+        "pos": "sticky",
+        "top": "auto",
+        "bottom": "0px",
+        "y": 517,
+        "bottomY": 900,
+        "h": 383,
+        "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 批准策略 授权递交 批准策略 授权递交 退回 在运营 Inbox 中查看 逐步 请先选争点类型并填策略要点 还有 3 条 补充项 · 陈述/争点 · Full-check 自"
+      },
+      "confirmText": [
+        {
+          "text": "待确认3",
+          "cls": "segmented-item btn-press focus-ring flex-1 tabular",
+          "disabled": false
+        },
+        {
+          "text": "一通创造性答复 · 边缘调度 OA 答复 Agent · 待你确认 待企业确认",
+          "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+          "disabled": false
+        },
+        {
+          "text": "边缘侧布局空白点洞察 布局洞察 Agent · 待你确认 待企业确认",
+          "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+          "disabled": false
+        },
+        {
+          "text": "无人机竞品 · 监控告警 监控预警 Agent · 待你确认 待企业确认",
+          "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+          "disabled": false
+        },
+        {
+          "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 批准策略 授权递交 批准策略 授权递交 退回 在运营 ",
+          "cls": "agent-hitl-dock sticky bottom-0 z-20 shrink-0",
+          "disabled": false
+        },
+        {
+          "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 批准策略 授权递交 批准策略 授权递交 退回 在运营 ",
+          "cls": "confirm-hitl shrink-0 border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 sm:py-4",
+          "disabled": false
+        },
+        {
+          "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 批准策略 授权递交 批准策略 授权递交 退回 在运营 ",
+          "cls": "confirm-hitl-inner",
+          "disabled": false
+        },
+        {
+          "text": "批准策略 授权递交 退回 在运营 Inbox 中查看 逐步",
+          "cls": "confirm-hitl-actions",
+          "disabled": false
+        },
+        {
+          "text": "批准策略",
+          "cls": "agent-confirm-cta-wrap",
+          "disabled": false
+        },
+        {
+          "text": "批准策略",
+          "cls": "ui-btn ui-btn-sm btn-press focus-ring agent-confirm-cta ui-btn-success",
+          "disabled": true
+        },
+        {
+          "text": "请先选争点类型并填策略要点 还有 3 条",
+          "cls": "agent-confirm-blockers mt-1.5",
+          "disabled": false
+        },
+        {
+          "text": "请先选争点类型并填策略要点",
+          "cls": "agent-confirm-reason",
+          "disabled": false
+        },
+        {
+          "text": "确认完成后再办理 请先选争点类型并填策略要点",
+          "cls": "agent-confirm-cta-wrap ml-auto",
+          "disabled": false
+        },
+        {
+          "text": "确认完成后再办理",
+          "cls": "ui-btn ui-btn-sm ui-btn-primary agent-confirm-cta",
+          "disabled": true
+        },
+        {
+          "text": "请先选争点类型并填策略要点",
+          "cls": "agent-confirm-reason",
+          "disabled": false
+        }
+      ],
+      "hasDisabledReason": true,
+      "caseBindPos": {
+        "y": -57,
+        "text": "IP Apps\n作业中台\n办理台\n知产 Agent\n运维\nIAM\n跳到主要内容\nIP\n知产 Agent\n代理所租户 · "
+      },
+      "vh": 900,
+      "bodyHasHitlDock": true
+    },
+    "afterScroll": {
+      "pos": "sticky",
+      "y": 517,
+      "bottomY": 900,
+      "vh": 900,
+      "cls": "agent-hitl-dock sticky bottom-0 z-20 shrink-0"
+    },
+    "shot": "AFTER-03-session-confirm.png",
+    "layout": {
+      "dock": {
+        "y": 517,
+        "bottom": 900,
+        "h": 383,
+        "pos": "sticky",
+        "cls": "agent-hitl-dock sticky bottom-0 z-20 shrink-0"
+      },
+      "confirm": {
+        "y": 517,
+        "bottom": 690,
+        "h": 173,
+        "pos": "relative",
+        "cls": "confirm-hitl shrink-0 border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 sm:py-4"
+      },
+      "reason": "请先选争点类型并填策略要点",
+      "caseBind": {
+        "y": 113,
+        "bottom": 171,
+        "h": 58,
+        "pos": "static",
+        "cls": "shrink-0 border-b border-slate-100 bg-white px-4 py-2"
+      },
+      "bindBtn": {
+        "y": 130,
+        "bottom": 153,
+        "h": 23,
+        "pos": "static",
+        "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11",
+        "text": "创建并绑定新案"
+      },
+      "primaryCtAs": [
+        {
+          "text": "批准策略",
+          "disabled": true,
+          "cls": "ui-btn ui-btn-sm btn-press focus-ring agent-confirm-cta ui-b"
+        },
+        {
+          "text": "授权递交",
+          "disabled": true,
+          "cls": "ui-btn ui-btn-sm btn-press focus-ring  ui-btn-ghost"
+        },
+        {
+          "text": "退回",
+          "disabled": false,
+          "cls": "ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring"
+        },
+        {
+          "text": "确认完成后再办理",
+          "disabled": true,
+          "cls": "ui-btn ui-btn-sm ui-btn-primary agent-confirm-cta"
+        }
+      ]
+    }
+  },
+  "P1-AE-3": {
+    "url": "http://127.0.0.1:5175/agent/projects/proj-demo-patent",
+    "hasMustBind": true,
+    "hasOptional": true,
+    "hasCreateBind": true,
+    "hasBindExisting": true,
+    "isPatent": true,
+    "isGeneral": true,
+    "snippet": "IP Apps\n作业中台\n办理台\n知产 Agent\n运维\nIAM\n跳到主要内容\nIP\n知产 Agent\n代理所租户 · 德恒知产\n代理所\n作业中台\n知产 Agent\n项目模式\n项目\n课题协作 · 通用演示\n通用\n边缘调度模组 · 专利演示\n专利\n总控席\n检索专家\n撰稿专家\nFTO 专家\n样机 · 无真 LLM · 专家分剧本\n样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 专利 · pack=patent · 未绑案件\n写回中台前须绑定\n领域办理写回中台前须先绑定案件\n创建并绑定新案\n绑定已有案\n总控席\n编排 · 分派 · 汇总\n样机 · 无真 LLM · 专家分剧本\n\n只拆派任务与汇总专家回执；禁止直接改 handoff / 写案。深链可打开各专家私聊。\n\n1收目标\n2拆派\n3等回执\n4汇总\n工具卡 · ORCHESTRATOR\ndispatch_task\nsummarize_timeline\nopen_expert_dm\n样机 · 无真 LLM · 专家分剧本 · backend=mock\n【总控·mock】已记下项目目标。请用下方「分派给…」把任务交给检索 / 撰稿 / FTO；我不会替专家跑领域剧本。\n2026/9/19 01:43:16\n分派给检索\n分派给撰稿\n分派给 FTO\n发送\n\n护栏：禁止直接改 handoff · 禁止一键写库 · 分派≠替专家执行领域逻辑\n\n项目时间线\n创建\n2026/9/19 01:43:16\n专利演示项目已种子\ndomainPack=patent · 总控 + 检索/撰稿/FTO",
+    "shot": "AFTER-05-patent-bind.png",
+    "projectLinks": [
+      {
+        "href": "/agent/projects/proj-demo-general",
+        "text": "课题协作 · 通用演示 通用 general：总控 + 研究/写作/审查（无专利步骤） bot 3 · 含总控席"
+      },
+      {
+        "href": "/agent/projects/proj-demo-patent",
+        "text": "边缘调度模组 · 专利演示 专利 domain/patent：总控 + 检索/撰稿/FTO bot 3 · 含总控席 · pack=patent"
+      }
+    ],
+    "generalSoft": {
+      "url": "http://127.0.0.1:5175/agent/projects/proj-demo-general",
+      "hasMustBind": false,
+      "hasOptionalSoft": true,
+      "hasCreateBind": true
+    },
+    "hasOptionalSoft": false,
+    "hasPatentSteps": true,
+    "bindSnippets": [
+      "样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 专利 · pack=patent · 未绑案件 写回中台前须绑定 领域办理写回中台前须先绑定案件 创建并绑定新案 绑定已有案",
+      "写回中台前须绑定 领域办理写回中台前须先绑定案件 创建并绑定新案 绑定已有案",
+      "写回中台前须绑定 领域办理写回中台前须先绑定案件 创建并绑定新案 绑定已有案",
+      "写回中台前须绑定",
+      "领域办理写回中台前须先绑定案件",
+      "创建并绑定新案 绑定已有案",
+      "创建并绑定新案"
+    ]
+  }
+}

@@ -242,3 +242,9 @@
 ---
 
 *只文档与证据；未改 apps/contracts；未 git commit/push；未启 Cloud Agent。*
+
+---
+
+## 复评附注（2026-09-19）
+
+短复评见 **`REVIEW_AGENT_ENTRY_RECHECK.md`** · HEAD `3fc2827` · 点名 **P0-AE-1/2 · P1-AE-1/2/3 全 PASS** → **Go**。证据：`docs/ui-polish/agent-entry-recheck/`。
