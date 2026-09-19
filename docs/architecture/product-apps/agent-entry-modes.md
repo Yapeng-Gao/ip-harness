@@ -4,6 +4,7 @@
 > 1) **通用 Grok** = **自由**：用户可**自设 bot**；与每个 bot **一对一聊**；**bot 之间可通消息**（编排/转发）。  
 > 2) **项目模式** = 同壳，但 **IP 专家固定**（默认：`orchestrator` / `search` / `draft` / `fto` ± `mining`）——把专利专家「焊」进夹内各 bot，**不如通用自由**（不可随意增删改专家身份）。  
 > **样机诚实**：通用侧先 mock「新建 bot / bot 互通」形状；写库 **HITL → DomainCommand**；禁真 LLM / 真 case-core。  
+> **本波优先**：[agent-grok-replica](./agent-grok-replica.md)（通用壳视觉复刻）。  
 > **对齐**：[agent-project-folder](./agent-project-folder.md) · [agent-case-binding](./agent-case-binding.md) · [agent-sessions-project-threads](./agent-sessions-project-threads.md)。
 
 ## 1. 两种主模式（冻结）
