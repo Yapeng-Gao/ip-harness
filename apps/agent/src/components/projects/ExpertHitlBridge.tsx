@@ -12,6 +12,18 @@ import type { HitlGateId } from '@shared/types'
 import type { ProjectExpertDef, ProjectThread } from '../../projects/types'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 
+const ACTION_LABEL: Record<string, string> = {
+  approve_strategy: '批准策略',
+  authorize_file: '授权递交',
+  confirm_quote: '确认报价',
+  request_changes: '退回修改',
+  approve: '批准',
+}
+function projectToolLabelSafe(action: string): string {
+  return ACTION_LABEL[action] ?? action.replace(/_/g, '·')
+}
+
+
 type Props = {
   projectId: string
   expert: ProjectExpertDef
@@ -56,7 +68,7 @@ export function ExpertHitlBridge({
     }
     setEnsuring(true)
     const sess = createSession({
-      goal: `${expert.name} · 项目 HITL：${expert.specialty}`,
+      goal: `${expert.name} · 项目确认：${expert.specialty}`,
       agentId: catalogId,
       caseId: caseId || undefined,
       title: `项目闸 · ${expert.name}`,
@@ -70,7 +82,7 @@ export function ExpertHitlBridge({
       bindSession(projectId, expert.id, sess.id)
       appendMessage(projectId, expert.id, {
         role: 'system',
-        content: `已绑定底层会话 ${sess.id}（HITL Confirm → DomainCommand，backend=mock）`,
+        content: `已接入确认条（会话 ${sess.id}）`,
         meta: { backend: 'mock' },
       })
     }
@@ -186,7 +198,7 @@ export function ExpertHitlBridge({
         setThreadHitl(projectId, expert.id, false)
         appendMessage(projectId, expert.id, {
           role: 'system',
-          content: `HITL ${action} → ${r.message}`,
+          content: `已确认 · ${projectToolLabelSafe(action)} → ${r.message}`,
           meta: { backend: 'mock' },
         })
       }
@@ -210,8 +222,8 @@ export function ExpertHitlBridge({
       <div className="flex items-center justify-between gap-2 border-t border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
         <span>
           {expert.role === 'orchestrator'
-            ? '总控席无 HITL 写库闸（只能拆派/汇总）。'
-            : '弱确认 · 未绑专利 catalog · 不写 DomainCommand（通用 bot）。'}
+            ? '总控席无写库确认闸（只能拆派/汇总）。'
+            : '弱确认 · 未绑专利目录 · 本席不写案件库（通用协作）。'}
         </span>
         {expert.role !== 'orchestrator' ? (
           <button
@@ -221,7 +233,7 @@ export function ExpertHitlBridge({
               setThreadHitl(projectId, expert.id, false)
               appendMessage(projectId, expert.id, {
                 role: 'system',
-                content: '已本地弱确认（无 catalog · 未写库）。backend=mock',
+                content: '已本地弱确认（未写库）。',
                 meta: { backend: 'mock' },
               })
               setToast('弱确认完成（未写库）')
@@ -237,7 +249,7 @@ export function ExpertHitlBridge({
   if (!sess) {
     return (
       <div className="border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-        正在绑定底层 AgentSession 以接入 Confirm → DomainCommand…
+        正在接入确认条…
       </div>
     )
   }
@@ -250,7 +262,7 @@ export function ExpertHitlBridge({
         </div>
       )}
       <div className="px-2 py-1 text-[10px] text-slate-400">
-        写库路径：Confirm → sessionHitlAction → DomainCommand · 试运行不写 · 无真 LLM
+        确认后写入案件 · 试运行不写
       </div>
       <SessionConfirmBar
         sessionId={sess.id}

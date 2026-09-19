@@ -39,10 +39,16 @@ const PROJECT_TOOL_LABELS: Record<string, string> = {
   lint_consistency: '一致性检查',
   risk_checklist: '风险清单',
   suggest_fix: '修改建议',
+  approve_strategy: '批准策略',
+  authorize_file: '授权递交',
+  confirm_quote: '确认报价',
+  request_changes: '退回修改',
 }
 
 function projectToolLabel(id: string): string {
-  return PROJECT_TOOL_LABELS[id] ?? id.replace(/_/g, ' ')
+  if (PROJECT_TOOL_LABELS[id]) return PROJECT_TOOL_LABELS[id]
+  // never show snake_case to end users
+  return id.replace(/_/g, '·')
 }
 
 type Props = {
@@ -102,7 +108,7 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
       appendMessage(projectId, expertId, {
         role: 'assistant',
         content:
-          '【总控·mock】收到。请用下方「分派给…」快捷下发任务；我不会替专家跑领域剧本。backend=mock',
+          '【总控】收到。请用下方「分派给…」快捷下发任务；我不会替专家跑领域剧本。',
         meta: { backend: 'mock' },
       })
     } else {
@@ -184,7 +190,7 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
                 >
                   {i < stepIndex ? '✓' : i + 1}
                   {s.label}
-                  {s.triggersHitl ? ' · HITL' : ''}
+                  {s.triggersHitl ? ' · 待确认' : ''}
                 </button>
                 {i < steps.length - 1 && (
                   <ChevronRight
@@ -211,8 +217,11 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
           <span>工具卡</span>
           <details className="font-normal normal-case tracking-normal">
             <summary className="btn-press focus-ring cursor-pointer rounded px-1 text-[10px] text-slate-400 hover:text-slate-600">
-              高级 · {expert.id}
+              高级说明
             </summary>
+            <p className="mt-1 max-w-sm text-[11px] font-normal normal-case text-slate-500">
+              本席能力以中文名称展示；内部标识仅供调试。
+            </p>
           </details>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -220,8 +229,8 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
             <button
               key={t.name}
               type="button"
-              title={t.name}
-              aria-label={`${projectToolLabel(t.name)}（${t.name}）`}
+              title={projectToolLabel(t.name)}
+              aria-label={projectToolLabel(t.name)}
               aria-pressed={t.active}
               className={`btn-press focus-ring hit-40 inline-flex max-w-[16rem] flex-col items-start justify-center rounded-md border px-2.5 text-left text-xs ${
                 t.active
@@ -256,8 +265,8 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
             }`}
           >
             {m.meta?.toolName && (
-              <div className="mb-0.5 text-[10px] font-semibold uppercase text-sky-700">
-                tool · {m.meta.toolName}
+              <div className="mb-0.5 text-[10px] font-semibold text-sky-700">
+                工具 · {projectToolLabel(String(m.meta.toolName))}
               </div>
             )}
             <div className="whitespace-pre-wrap">{m.content}</div>
@@ -281,7 +290,7 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
               key={sc.id}
               type="button"
               onClick={() => onShortcut(sc.id)}
-              className="btn-press focus-ring rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-white"
+              className="project-dispatch-pill btn-press focus-ring rounded-full border border-slate-200 bg-slate-50 font-medium text-slate-700 hover:bg-white"
             >
               {sc.label}
             </button>
@@ -290,7 +299,8 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
             <button
               type="button"
               onClick={() => advanceStep(projectId, expertId)}
-              className="btn-press focus-ring rounded-full border border-slate-900 bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white"
+              className="project-dispatch-pill btn-press focus-ring rounded-full border border-slate-900 bg-slate-900 font-medium text-white"
+              data-testid="expert-advance-cta"
             >
               推进一步
             </button>
@@ -313,7 +323,11 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
           <button
             type="button"
             onClick={sendUser}
-            className="btn-press focus-ring hit-40 inline-flex items-center gap-1 rounded-md bg-slate-900 px-3 py-2 text-xs font-medium text-white"
+            className={
+              isOrchestratorExpert(expertId)
+                ? 'btn-press focus-ring hit-40 inline-flex items-center gap-1 rounded-md bg-slate-900 px-3 py-2 text-xs font-medium text-white'
+                : 'btn-press focus-ring hit-40 inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50'
+            }
           >
             <Send className="h-3.5 w-3.5" aria-hidden />
             发送

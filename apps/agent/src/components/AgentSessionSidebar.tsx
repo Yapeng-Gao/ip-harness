@@ -60,6 +60,9 @@ export function AgentSessionSidebar() {
     loc.pathname.startsWith('/agent/agents') ||
     loc.pathname.startsWith('/agent/harness')
   const collapseInbox = isHome || isCatalogOrHarness
+  /** SS-M-S6-1 · on sessions list, main pane owns search + new CTA */
+  const isSessionsList =
+    loc.pathname === '/agent/sessions' || loc.pathname === '/agent/sessions/'
   const [overflowOpen, setOverflowOpen] = useState(false)
   const overflowRef = useRef<HTMLDivElement>(null)
   const [renamingId, setRenamingId] = useState<string | null>(null)
@@ -77,7 +80,7 @@ export function AgentSessionSidebar() {
   const showCreateFailedToast = (msg?: string) => {
     setCreateToast(
       msg ??
-        '当前 Persona 不能新建会话，请切换为企业 IP / 代理所',
+        '当前角色不能新建会话，请切换为企业 IP / 代理所',
     )
     if (createToastTimer.current) window.clearTimeout(createToastTimer.current)
     createToastTimer.current = window.setTimeout(() => setCreateToast(null), 4500)
@@ -323,6 +326,7 @@ export function AgentSessionSidebar() {
             </button>
             {overflowOpen && (
               <div className="menu-enter absolute left-0 right-0 top-full z-30 mt-0.5 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+                {!isSessionsList ? (
                 <button
                   type="button"
                   onClick={() => {
@@ -334,6 +338,7 @@ export function AgentSessionSidebar() {
                 >
                   <Plus className="h-3.5 w-3.5 text-slate-400" /> 新建会话
                 </button>
+                ) : null}
                 <Link
                   to="/agent/projects"
                   onClick={() => setOverflowOpen(false)}
@@ -356,7 +361,7 @@ export function AgentSessionSidebar() {
         </nav>
 
         {/* P0-AE-1: no navy primary「新建」competing with Home 发送 */}
-        {!collapseInbox && (
+        {!collapseInbox && !isSessionsList && (
           <div className="border-b border-slate-100 px-2.5 py-1.5">
             <button
               type="button"
@@ -502,6 +507,7 @@ export function AgentSessionSidebar() {
           通用单聊历史 · 非项目文件夹
         </p>
 
+        {!isSessionsList ? (
         <div className="px-2 pb-1.5">
           <label className="sr-only" htmlFor="agent-session-search">
             搜索会话
@@ -521,6 +527,7 @@ export function AgentSessionSidebar() {
             />
           </div>
         </div>
+        ) : null}
 
         <div
           className="segmented agent-session-segments mx-2 mb-1.5 w-[calc(100%-1rem)]"

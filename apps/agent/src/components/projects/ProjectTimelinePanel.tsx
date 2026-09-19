@@ -1,19 +1,23 @@
 import { Link } from 'react-router-dom'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
-import { getProjectExpert, isOrchestratorExpert } from '../../projects/experts'
+import {
+  getProjectExpert,
+  isOrchestratorExpert,
+} from '../../projects/experts'
+import type { ProjectExpertId } from '../../projects/types'
 
-type Props = { projectId: string }
+type Props = { projectId: string; currentExpertId?: ProjectExpertId }
 
 const KIND_LABEL: Record<string, string> = {
   project_created: '创建',
   dispatch: '分派',
   expert_report: '回报',
   step: '步骤',
-  hitl: 'HITL',
+  hitl: '待确认',
   system: '系统',
 }
 
-export function ProjectTimelinePanel({ projectId }: Props) {
+export function ProjectTimelinePanel({ projectId, currentExpertId }: Props) {
   const { getTimeline, getDispatches, getProject } = useProjectFolder()
   const events = getTimeline(projectId)
   const dispatches = getDispatches(projectId)
@@ -71,19 +75,31 @@ export function ProjectTimelinePanel({ projectId }: Props) {
           >
             <div className="text-[11px] font-semibold text-slate-700">下一步</div>
             <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500">
-              在总控用「分派给…」把任务交给专家，时间线会留下分派记录。
+              {currentExpertId && !isOrchestratorExpert(currentExpertId)
+                ? '用中栏「推进一步」继续本席剧本；需要换席时再回总控分派。'
+                : '在中栏用「分派给…」把任务交给专家，时间线会留下分派记录。'}
             </p>
             <div className="mt-2 flex flex-col gap-1">
-              {orchId && (
+              {orchId && currentExpertId !== orchId && (
                 <Link
                   to={`/agent/projects/${projectId}`}
-                  className="btn-press focus-ring hit-40 inline-flex items-center justify-center rounded-md border border-slate-900 bg-slate-900 px-2 text-xs font-medium text-white"
+                  className="btn-press focus-ring hit-40 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 hover:bg-slate-50"
                   data-testid="project-timeline-cta-orch"
                 >
-                  打开总控分派
+                  回总控分派
                 </Link>
               )}
-              {dispatchTargets.map((eid) => (
+              {orchId && currentExpertId === orchId && (
+                <p
+                  className="text-[11px] text-slate-400"
+                  data-testid="project-timeline-cta-orch"
+                >
+                  ← 请用中栏「分派给…」快捷
+                </p>
+              )}
+              {dispatchTargets
+                .filter((eid) => eid !== currentExpertId)
+                .map((eid) => (
                 <Link
                   key={eid}
                   to={`/agent/projects/${projectId}/bots/${eid}`}

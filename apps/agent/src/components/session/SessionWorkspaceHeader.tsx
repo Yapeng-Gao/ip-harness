@@ -159,7 +159,7 @@ export function SessionWorkspaceHeader({
                     </button>
                   )}
                   <p className="border-t border-slate-100 px-3 py-1.5 text-xs text-slate-400">
-                    主路径：底部「启动」→ 确认条逐步 HITL
+                    主路径：底部「启动」→ 确认条逐步确认
                   </p>
                 </div>
               )}
@@ -200,35 +200,36 @@ export function SessionWorkspaceHeader({
 
       {activeBanner === 'route' && suggested && (
         suggested.requiresTierConfirm ? (
-        <div className="mt-2 flex flex-wrap items-center gap-2 border-l-4 border-l-amber-500 border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-950">
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-md border border-amber-200/80 bg-amber-50/50 px-3 py-2 text-xs text-amber-950">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-700" aria-hidden />
           <span className="min-w-0 flex-1">
-            <span className="font-semibold">当前改荐 Core 办理</span>
-            <span className="mt-0.5 block leading-snug">
-              未确认前按「调研检索」走主闭环。原匹配「{suggested.agent.name}」为 Beta·非采购闭环。
-              点确认后才切换；否则保持 Core。
+            <span className="font-medium">已匹配建议：主路径办理</span>
+            <span className="mt-0.5 block leading-snug text-amber-900/80">
+              未确认前按「调研检索」走主闭环。原匹配「{suggested.agent.name}」为试用能力。
+              点确认后才切换；否则保持主路径。
             </span>
-            <span className="mt-0.5 block text-amber-800/80">{suggested.reason}</span>
+            <span className="mt-0.5 block text-amber-800/70">{suggested.reason}</span>
           </span>
           <button
             type="button"
             onClick={onSwitchSuggested}
-            className="btn-press focus-ring ml-auto shrink-0 rounded-md bg-amber-800 px-2.5 py-1 text-xs font-medium text-white hover:bg-amber-700"
+            className="btn-press focus-ring ml-auto shrink-0 rounded-md px-2 py-1 text-xs font-medium text-amber-900 underline-offset-2 hover:underline"
           >
-            确认试用 Beta
+            确认试用
           </button>
         </div>
         ) : (
-        <div className="mt-2 flex flex-wrap items-center gap-2 border-l-4 border-l-slate-700 border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800">
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-md border border-slate-200/80 bg-slate-50/70 px-3 py-2 text-xs text-slate-700" data-testid="session-match-hint">
           <span className="min-w-0 flex-1">
-            <span className="font-medium">Auto 已按 Core 匹配：{suggested.agent.name}</span>
+            <span className="font-medium text-slate-800">已匹配：{suggested.agent.name}</span>
             <span className="text-slate-500">（{suggested.agent.specialty}）</span>
             <span className="mt-0.5 block text-slate-500">{suggested.reason}</span>
           </span>
           <button
             type="button"
             onClick={onSwitchSuggested}
-            className="btn-press focus-ring ml-auto shrink-0 rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-800"
+            className="btn-press focus-ring ml-auto shrink-0 rounded-md px-2 py-1 text-xs font-medium text-slate-600 underline-offset-2 hover:bg-slate-100 hover:text-slate-900 hover:underline"
+            data-testid="session-match-switch"
           >
             切换到该 Agent
           </button>

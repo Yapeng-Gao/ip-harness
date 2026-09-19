@@ -54,7 +54,7 @@ export function CaseBindControls({
   const boxCls = soft
     ? 'rounded-md border border-dashed border-slate-200 bg-slate-50/60 px-2.5 py-2'
     : mustBind && bindState !== 'bound'
-      ? 'rounded-md border border-amber-300 bg-amber-50/80 px-3 py-2.5'
+      ? 'rounded-md border border-dashed border-slate-200 bg-transparent px-2 py-1.5'
       : 'rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5'
 
   const createAndBind = () => {
@@ -94,7 +94,7 @@ export function CaseBindControls({
           {bindState === 'bound'
             ? '已绑案件'
             : mustBind
-              ? '写入案件前须绑定'
+              ? '请先绑定案件'
               : '案件（可选）'}
         </span>
         {boundTitle ? (
@@ -110,11 +110,11 @@ export function CaseBindControls({
           </span>
         ) : (
           <span
-            className={`text-[11px] ${mustBind ? 'font-medium text-amber-900' : 'text-slate-400'}`}
+            className={`text-[11px] ${mustBind ? 'font-medium text-slate-600' : 'text-slate-400'}`}
             data-testid="case-bind-hint"
           >
             {mustBind
-              ? '领域办理写入案件前须先绑定案件'
+              ? '写入前请先绑定案件'
               : '可稍后创建或绑定案件'}
           </span>
         )}

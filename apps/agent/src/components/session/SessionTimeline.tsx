@@ -245,8 +245,24 @@ export function SessionTimeline({
   bottomRef,
   runMode = null,
 }: Props) {
+  /* SS-M-S2-1 · hollow when empty or only seed system rows */
+  const hollow =
+    !playing &&
+    (steps.length === 0 || steps.every((s) => s.kind === 'system'))
   return (
     <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-4 py-5 lg:px-6" data-testid="session-timeline-scroller">
+      {hollow ? (
+        <div
+          className="mx-auto max-w-md px-2 py-8 text-center"
+          data-testid="session-timeline-empty"
+          role="status"
+        >
+          <p className="text-sm font-medium text-slate-700">还没有办理轨迹</p>
+          <p className="mt-2 text-xs leading-relaxed text-slate-500">
+            下一步：在底部确认目标后点「启动」，系统会按步骤推进并在需要时请你确认。
+          </p>
+        </div>
+      ) : null}
       {steps.map((step, i) => (
         <StepBubble
           key={step.id}

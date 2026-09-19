@@ -36,7 +36,7 @@ export function AgentSessionsList() {
   const createToastTimer = useRef<number | null>(null)
 
   const showCreateFailedToast = () => {
-    setCreateToast('当前 Persona 不能新建会话，请切换为企业 IP / 代理所')
+    setCreateToast('当前角色不能新建会话，请切换为企业 IP / 代理所')
     if (createToastTimer.current) window.clearTimeout(createToastTimer.current)
     createToastTimer.current = window.setTimeout(() => setCreateToast(null), 4500)
   }
@@ -92,13 +92,13 @@ export function AgentSessionsList() {
 
   const listTitle =
     urlFilter === 'needs_human'
-      ? '待确认 · 通用历史'
+      ? '待确认会话'
       : urlFilter === 'running'
-        ? '进行中 · 通用历史'
+        ? '进行中会话'
         : urlFilter === 'done'
-          ? '已完成 · 通用历史'
+          ? '已完成会话'
           : urlFilter === 'archived'
-            ? '已归档 · 通用历史'
+            ? '已归档会话'
             : '通用历史'
 
   return (
@@ -113,7 +113,7 @@ export function AgentSessionsList() {
               : '通用单聊历史（非项目文件夹）· 与左侧共用搜索'
         }
         primary={{
-          label: '新建任务会话',
+          label: '新建会话',
           onClick: newSession,
           icon: <Plus className="h-4 w-4" aria-hidden />,
         }}
@@ -128,8 +128,9 @@ export function AgentSessionsList() {
               type="search"
               value={sessionSearch}
               onChange={(e) => setSessionSearch(e.target.value)}
-              placeholder="搜索标题 / 目标 / 案件（与左侧同步）"
+              placeholder="搜索标题 / 目标 / 案件"
               aria-label="搜索会话"
+              data-testid="sessions-main-search"
               className="focus-ring w-full rounded border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-sm text-slate-800 placeholder:text-slate-400"
             />
           </div>
@@ -157,7 +158,7 @@ export function AgentSessionsList() {
                 : '这里是通用单聊历史，与项目文件夹分开。新建会话启动，或从左侧打开已有会话。'
             }
             primary={{
-              label: '新建任务会话',
+              label: '新建会话',
               onClick: newSession,
               icon: <Plus className="h-4 w-4" aria-hidden />,
             }}

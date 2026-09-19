@@ -105,7 +105,7 @@ function buildDemo(): {
       projectId: patent.id,
       kind: 'project_created',
       title: '专利演示项目已种子',
-      detail: 'domainPack=patent · 总控 + 检索/撰稿/FTO',
+      detail: '专利领域 · 总控 + 检索/撰稿/FTO',
       at: stamp(),
     },
     {

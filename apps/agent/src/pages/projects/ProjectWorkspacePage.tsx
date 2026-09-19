@@ -67,9 +67,11 @@ export function ProjectWorkspacePage() {
               {badge.label}
             </span>
             {project.domainPackId ? (
-              <span>pack={project.domainPackId}</span>
+              <span>
+                {project.domainPackId === 'patent' ? '专利领域' : project.domainPackId}
+              </span>
             ) : null}
-            <span>{project.caseId ? `case=${project.caseId}` : '未绑案件'}</span>
+            <span>{project.caseId ? '已绑案件' : '未绑案件'}</span>
           </div>
           <CaseBindControls
             caseId={project.caseId}
@@ -95,7 +97,7 @@ export function ProjectWorkspacePage() {
             expertId={resolved}
             caseId={project.caseId}
           />
-          <ProjectTimelinePanel projectId={projectId} />
+          <ProjectTimelinePanel projectId={projectId} currentExpertId={resolved} />
         </div>
       </div>
     </div>

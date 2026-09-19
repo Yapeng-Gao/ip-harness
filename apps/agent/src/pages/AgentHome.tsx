@@ -76,7 +76,7 @@ export function AgentHome() {
   const createToastTimer = useRef<number | null>(null)
 
   const showCreateFailedToast = () => {
-    setCreateToast('当前 Persona 不能新建会话，请切换为企业 IP / 代理所')
+    setCreateToast('当前角色不能新建会话，请切换为企业 IP / 代理所')
     if (createToastTimer.current) window.clearTimeout(createToastTimer.current)
     createToastTimer.current = window.setTimeout(() => setCreateToast(null), 4500)
   }
@@ -184,18 +184,15 @@ export function AgentHome() {
           <p className="mt-1.5 text-pretty text-sm text-slate-600">
             专利检索 · OA · 交底 · 年费 · 确认后写入案件
           </p>
-          <p className="mt-1 text-[11px] text-slate-400">
-            Core 主闭环 · Assist 辅办 · Beta 非采购闭环
-          </p>
-          <p className="mt-3 text-[11px] text-slate-400">
-            默认通用单聊 ·{' '}
+          <p className="mt-1.5 text-[12px] text-slate-400">
+            主闭环优先 ·{' '}
             <Link
               to="/agent/projects"
               className="text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
             >
               项目模式
             </Link>
-            （次级 · general / domain）
+            （次级）
           </p>
         </div>
 
@@ -280,26 +277,35 @@ export function AgentHome() {
           ) : null}
         </div>
 
-        {/* IP task chips — Core only */}
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
-          {PROMPT_PILLS.map((pill) => {
-            const a = AGENT_CATALOG.find((x) => x.id === pill.agentId)
-            return (
-              <button
-                key={pill.agentId}
-                type="button"
-                onClick={() => onPill(pill)}
-                className="btn-press focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 shadow-[var(--shadow-rest)] hover:border-slate-300 hover:bg-slate-50"
-              >
-                {a ? <AgentTierBadge tier={a.tier} /> : null}
-                {pill.label}
-              </button>
-            )
-          })}
-        </div>
+        {/* SS-M-S0-1 · Core pills folded — not a full row under compose */}
+        <details className="group mt-4" data-testid="home-common-fold">
+          <summary className="flex cursor-pointer list-none items-center justify-center gap-1.5 rounded-md px-1 py-1.5 text-[12px] text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
+            <span className="font-medium text-slate-600">常用</span>
+            <span className="text-slate-400">· 快捷任务</span>
+            <span className="text-slate-400 transition group-open:rotate-180" aria-hidden>
+              ▾
+            </span>
+          </summary>
+          <div className="mt-2 flex flex-wrap justify-center gap-2" data-testid="home-common-pills">
+            {PROMPT_PILLS.map((pill) => {
+              const a = AGENT_CATALOG.find((x) => x.id === pill.agentId)
+              return (
+                <button
+                  key={pill.agentId}
+                  type="button"
+                  onClick={() => onPill(pill)}
+                  className="btn-press focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 shadow-[var(--shadow-rest)] hover:border-slate-300 hover:bg-slate-50"
+                >
+                  {a ? <AgentTierBadge tier={a.tier} /> : null}
+                  {pill.label}
+                </button>
+              )
+            })}
+          </div>
+        </details>
 
         {/* SW-S0-1 · recommend demoted — compose + primary CTA first */}
-        <details className="group mt-6" data-testid="home-recommend-fold">
+        <details className="group mt-4" data-testid="home-recommend-fold">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-md px-1 py-1.5 text-[12px] text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
             <span className="font-medium text-slate-600">
               推荐 Agent

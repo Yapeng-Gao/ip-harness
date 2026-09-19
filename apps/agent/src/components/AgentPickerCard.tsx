@@ -152,15 +152,16 @@ export function AgentPickerCard({
         </details>
       )}
 
-            <div className="mt-auto flex flex-col gap-1 pt-2.5">
+            <div className="mt-auto flex flex-col pt-2.5">
         <button
           type="button"
           onClick={onStart}
           className={
             isBeta
-              ? 'ui-btn ui-btn-sm btn-press focus-ring w-full border border-amber-300 bg-amber-50 text-amber-950 hover:bg-amber-100'
-              : 'ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full'
+              ? 'ui-btn agent-picker-start btn-press focus-ring w-full border border-amber-300 bg-amber-50 text-amber-950 hover:bg-amber-100'
+              : 'ui-btn agent-picker-start ui-btn-primary btn-press focus-ring w-full'
           }
+          data-testid="agent-picker-start"
           aria-label={
             caseHint
               ? `${isBeta ? '试用' : '启动'} ${a.name}（带案 ${caseHint.title}）`
@@ -171,7 +172,7 @@ export function AgentPickerCard({
         </button>
         {caseHint ? (
           <span
-            className="agent-picker-card__hint truncate"
+            className="agent-picker-card__hint agent-picker-card__hint--away truncate"
             data-tone={caseHint.mismatch ? 'warn' : undefined}
             title={caseHint.title}
           >
@@ -179,8 +180,11 @@ export function AgentPickerCard({
             {caseHint.mismatch ? ' · 阶段与 Agent 可能错配' : ''}
           </span>
         ) : showDetails && !resolvedStart.includes('稍后关联') ? (
-          <span className="agent-picker-card__hint" role="note">
-            {isBeta ? '试用 · 稍后关联 · 非采购闭环' : '稍后关联'}
+          <span
+            className="agent-picker-card__hint agent-picker-card__hint--away text-center text-[12px] text-slate-400"
+            role="note"
+          >
+            {isBeta ? '试用 · 可稍后关联案件' : '可稍后关联案件'}
           </span>
         ) : null}
       </div>

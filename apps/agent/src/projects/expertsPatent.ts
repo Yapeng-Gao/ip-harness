@@ -50,7 +50,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'dispatch',
         label: '拆派',
         script:
-          '【总控·mock】拆派卡片已就绪。点快捷动作即可写入专家私聊与项目时间线。backend=mock',
+          '【总控】拆派卡片已就绪。点快捷动作即可写入专家私聊与项目时间线。',
       },
       {
         id: 'await',
@@ -62,7 +62,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'summarize',
         label: '汇总',
         script:
-          '【总控·mock】已汇总各专家回执到项目时间线。写库仍须对应专家 HITL Confirm → DomainCommand。',
+          '【总控】已汇总各专家回执到项目时间线。写库仍须对应专家确认后再写入。',
       },
     ],
     hitlGates: [],
@@ -88,7 +88,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
     role: 'expert',
     specialty: '现有技术检索 · 工作篮',
     description:
-      '对齐 agent-research：布尔检索 → 命中 → 工作篮；通常只读，策略确认可走 approve_strategy。',
+      '按检索主路径：构造检索式 → 查看命中 → 放入工作篮；通常只读，策略确认走「批准策略」。',
     tools: [
       'commercial_patent_search',
       'cluster_hits',
@@ -106,7 +106,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'query',
         label: '检索式',
         script:
-          '【检索·mock】已扩展关键词：边缘调度 / 负载预测 / 能耗约束。下一步调用 commercial_patent_search。backend=mock',
+          '【检索】已扩展关键词：边缘调度 / 负载预测 / 能耗约束。下一步进行商业专利检索。',
         tool: {
           name: 'commercial_patent_search',
           preview: 'query=(边缘计算 OR edge) AND (调度) AND (负载预测) · limit=20',
@@ -116,7 +116,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'hits',
         label: '命中',
         script:
-          '【检索·mock】命中 12 件。Top3：CN114882901A（0.86）· US20230123456A1（0.81）· CN115001234A（0.77）。可核验 pubNo+url。',
+          '【检索】命中 12 件。Top3：CN114882901A（0.86）· US20230123456A1（0.81）· CN115001234A（0.77）。可核验公开号与链接。',
         tool: {
           name: 'cluster_hits',
           preview: 'clusters=3 · labels=[调度,能耗,负载预测]',
@@ -126,7 +126,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'basket',
         label: '工作篮',
         script:
-          '【检索·mock】已将 Top5 放入工作篮（只读样机）。可选送 FTO/挖掘占位，不写案。',
+          '【检索】已将 Top5 放入工作篮（只读样机）。可选送 FTO/挖掘占位，不写案。',
         tool: {
           name: 'bind_novelty',
           preview: 'basket=5 · novelty_gap=能耗约束动态阈值',
@@ -136,7 +136,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'strategy',
         label: '策略确认',
         script:
-          '【检索·mock】请确认检索策略是否批准（HITL approve_strategy）。本专家默认只读；无 case 时不假装入库。',
+          '【检索】请确认是否批准检索策略。本专家默认只读；未绑案时不写入案件。',
         triggersHitl: true,
         hitlGate: 'approve_strategy',
       },
@@ -151,7 +151,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
       {
         command: 'submitResearch',
         label: '可选·提交调研',
-        note: '仅 HITL Confirm 后 · actor=agent',
+        note: '仅确认后 · 以 Agent 身份',
       },
     ],
     guardrails: [
@@ -169,7 +169,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
     role: 'expert',
     specialty: '交底/权利要求 · 递交闸',
     description:
-      '对齐 agent-claims：章节草稿 → 修订 → Confirm（approve_strategy + authorize_file）。',
+      '按撰稿主路径：章节草稿 → 修订 → 确认（批准策略 + 授权递交）。',
     tools: [
       'draft_claims',
       'expand_dependent',
@@ -187,7 +187,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'chapter',
         label: '章节草稿',
         script:
-          '【撰稿·mock】已起草独权 1 条 + 从权 3 条骨架；说明书支持点已标注。backend=mock',
+          '【撰稿】已起草独权 1 条 + 从权 3 条骨架；说明书支持点已标注。',
         tool: {
           name: 'draft_claims',
           preview: 'independent=1 · dependent=3 · support_check=pending',
@@ -197,7 +197,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'revise',
         label: '修订建议',
         script:
-          '【撰稿·mock】建议缩限「动态阈值」特征表述，并补实施例对照表。已生成修订建议卡。',
+          '【撰稿】建议缩限「动态阈值」特征表述，并补实施例对照表。已生成修订建议卡。',
         tool: {
           name: 'check_support',
           preview: 'support_gaps=2 · country=CN/US',
@@ -207,7 +207,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'confirm',
         label: '策略批准',
         script:
-          '【撰稿·mock】权利要求策略待你批准（approve_strategy）。批准后仍须 authorize_file 才可递交意图。',
+          '【撰稿】权利要求策略待你批准。批准后仍须「授权递交」才可递交意图。',
         triggersHitl: true,
         hitlGate: 'approve_strategy',
       },
@@ -215,7 +215,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'authorize',
         label: '授权递交',
         script:
-          '【撰稿·mock】策略已过；现请求授权递交（authorize_file）。Full-check 样机清单须勾选。',
+          '【撰稿】策略已过；现请求授权递交。递交前齐套检查清单须勾选。',
         triggersHitl: true,
         hitlGate: 'authorize_file',
         tool: {
@@ -229,17 +229,17 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
       {
         command: 'saveDraft',
         label: '保存草稿',
-        note: 'HITL 后 · 不跳闸',
+        note: '确认后 · 不跳闸',
       },
       {
         command: 'submitHandoff',
         label: '提交交接',
-        note: 'approve_strategy 后候选',
+        note: '批准策略后候选',
       },
     ],
     guardrails: [
       '交底未批准禁用批准/授权',
-      '授权前 Full-check',
+      '授权前齐套检查',
       '输出非律师意见',
     ],
     catalogAgentId: 'agent-claims',
@@ -271,7 +271,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'features',
         label: '特征',
         script:
-          '【FTO·mock】已抽取产品特征 6 项（边缘节点 · 调度策略 · 能耗阈值…）。聚焦自由实施风险，非新颖性结论。backend=mock',
+          '【FTO】已抽取产品特征 6 项（边缘节点 · 调度策略 · 能耗阈值…）。聚焦自由实施风险，非新颖性结论。',
         tool: {
           name: 'extract_fto_features',
           preview: 'features=6 · product_scope=边缘调度模组',
@@ -311,7 +311,7 @@ export const PATENT_EXPERTS: Record<PatentExpertId, ProjectExpertDef> = {
         id: 'report',
         label: '报告确认',
         script:
-          '【FTO·mock】FTO 报告草稿在内存。请 Confirm approve_strategy 仅确认报告口径；默认不写案、禁假装法律入库。',
+          '【FTO】FTO 报告草稿在内存。请确认报告口径（批准策略）；默认不写案、不假装法律入库。',
         triggersHitl: true,
         hitlGate: 'approve_strategy',
         tool: {
