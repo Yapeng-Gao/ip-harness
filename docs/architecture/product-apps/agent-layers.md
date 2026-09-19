@@ -51,7 +51,7 @@
 | [agent-entry-modes](./agent-entry-modes.md) | 自由度附录；服从「先 L1」 |
 | 项目夹 | L2/L3 组织手段，非并列产品 |
 
-## 4. L3 专节 · 专利 bot → 中台节点映射
+## 5. L3 专节 · 专利 bot → 中台节点映射
 
 > 产出对接 = 提案/工件形状对齐 handoff + 正式写走 DomainCommand；样机可 mock 到 Confirm。  
 > 中台权威：案态/handoff 以 mid + contracts 为准；Agent 不另起案库。
@@ -75,13 +75,13 @@
 | 深链 mid 案详 / workbench 阶段 | Agent 内第二套 handoff 状态机权威 |
 | 工作篮/种子 Hit 对齐 search | 检索结果自动改案态 |
 
-## 5. 现网已有 vs 缺口（更新）
+## 6. 现网已有 vs 缺口（更新）
 
 1. **已有**：曾按 Grok 复刻把 `/agent` 做成多 bot 主屏（偏 L2）；HITL/Command 形状在。  
 2. **缺口（本刀）**：**L1 单助手默认主路径**未钉——需把冷启动改回 ChatGPT 形，团队改为显式升级。  
 3. **缺口（后刀）**：L3→中台端到端闭环仍弱；先不做大拆 L3。
 
-## 6. 本刀实现令（Agent）
+## 7. 本刀实现令（Agent）
 
 | 做 | 不做 |
 |----|------|
@@ -89,13 +89,13 @@
 | 团队模式 = **显式升级入口**（保留 Grok 布局） | 本波大拆 L3 / 项目花活 |
 | 维持 HITL 纪律 | 真 LLM / case-core |
 
-## 7. 验收
+## 8. 验收
 
 - [ ] 文档类比为 Kimi·ChatGPT / Grok团队 / 专利bot；顺序 1→2→3  
 - [ ] 废止「默认 L2」  
 - [ ] Agent 落地：冷启动 L1；团队显式进  
 
-## 8. Owner
+## 9. Owner
 
 - 规格：架构设计  
 - 壳：Agent应用助手 · **先做 L1**  
