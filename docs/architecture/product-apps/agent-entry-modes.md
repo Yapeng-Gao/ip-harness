@@ -87,13 +87,18 @@ type AgentProject = {
 
 切换 Pack ≠ 换壳端口；仍在 `apps/agent:5175`。
 
-## 6. 写库与诚实
+## 6. 案与入口（摘要）
+
+**先聊 / 先项目；案不挡入口。** 细则见 **[agent-case-binding.md](./agent-case-binding.md)**。  
+中台案库仍是案权威列表，但不要求先去中台再建聊。
+
+## 7. 写库与诚实
 
 - 全模式：试运行不写；正式 **HITL → DomainCommand**。  
 - `backend: 'mock'`（或剧本名）；禁真 LLM、禁本波真 case-core。  
 - 横幅建议：`样机 · 无真 LLM · 通用/项目分入口`。
 
-## 7. 验收
+## 8. 验收
 
 - [ ] 默认进通用单聊，不强制建项目  
 - [ ] 可建 general 项目：多 bot+总控，无专利步骤  
@@ -102,11 +107,11 @@ type AgentProject = {
 - [ ] 写库路径未放松  
 - [ ] 新建会话/项目不强制 caseId；patent 可空开再绑  
 
-## 8. Owner
+## 9. Owner
 
 - 规格：架构设计（本稿）  
 - 壳：Agent应用助手并行改 `apps/agent`
 
-## 评审
+## 10. 评审
 
 - [product-apps/REVIEW.md](./REVIEW.md) · B席轻扫段（对象 `4cf2e47`）
