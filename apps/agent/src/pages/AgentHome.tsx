@@ -95,10 +95,6 @@ export function AgentHome() {
     ? visibleSessions.find((s) => s.id === lastSessionId)
     : undefined
 
-  const selectedCase = caseId
-    ? visibleCases.find((c) => c.id === caseId)
-    : undefined
-
   const recommendCards = useMemo(
     () =>
       HOME_RECOMMEND_IDS.map((id) => AGENT_CATALOG.find((a) => a.id === id)).filter(
@@ -216,25 +212,6 @@ export function AgentHome() {
           />
           <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-3 pb-3 pt-2">
             <label className="flex min-w-0 items-center gap-1.5">
-              <span className="shrink-0 text-[11px] text-slate-400">关联案件（可选）</span>
-              <select
-                value={caseId}
-                onChange={(e) => {
-                  setPickerTouched(true)
-                  setCaseId(e.target.value)
-                }}
-                className={selectCls}
-                aria-label="关联案件"
-              >
-                <option value="">可稍后创建或绑定案件</option>
-                {visibleCases.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex min-w-0 items-center gap-1.5">
               <span className="shrink-0 text-[11px] text-slate-400">Agent</span>
               <select
                 value={agentId}
@@ -281,29 +258,27 @@ export function AgentHome() {
           ) : null}
         </div>
 
-        {/* P1-AE-1: create/bind CTAs on Home when unbound */}
-        {!caseId ? (
-          <div className="mt-3" data-testid="home-case-bind">
-            <CaseBindControls
-              caseId={undefined}
-              prominence="soft"
-              writebackRequiresBind={false}
-              onBind={(id) => {
-                setPickerTouched(true)
-                setCaseId(id)
-              }}
-            />
+        {/* P0: single case entry — CaseBindControls only (no compose twin select) */}
+        <div className="mt-3" data-testid="home-case-bind">
+          <CaseBindControls
+            caseId={caseId || undefined}
+            prominence="soft"
+            writebackRequiresBind={false}
+            onBind={(id) => {
+              setPickerTouched(true)
+              setCaseId(id)
+            }}
+            onUnbind={() => {
+              setPickerTouched(true)
+              setCaseId('')
+            }}
+          />
+          {!caseId ? (
             <p className="mt-1.5 text-center text-[11px] text-slate-400" role="status">
               也可先开始办理 · 随后在会话顶栏「创建并绑定 / 绑定已有」
             </p>
-          </div>
-        ) : (
-          <p className="mt-2 text-center text-[11px] text-slate-400" role="status">
-            {selectedCase
-              ? `已关联「${selectedCase.title}」· 确认后写入案件`
-              : '已选案 · 确认后写入案件'}
-          </p>
-        )}
+          ) : null}
+        </div>
 
         {/* IP task chips — Core only */}
         <div className="mt-5 flex flex-wrap justify-center gap-2">
