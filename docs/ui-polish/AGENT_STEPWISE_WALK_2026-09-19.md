@@ -159,3 +159,28 @@
 - `docs/ui-polish/agent-stepwise-e2e/S1-case-bound.png` · `S1-meta.json`
 - `docs/ui-polish/agent-stepwise-e2e/S2-session.png` · `S2-meta.json`
 - 本报告 `docs/ui-polish/AGENT_STEPWISE_WALK_2026-09-19.md`
+
+
+---
+
+## S0 · Live verify append
+
+| 维 | 级 | 结论 |
+|----|----|------|
+| **业务逻辑** | **Pass** | 通用 Home 案件为可选，不阻断开工；S0 业务入口可用。 |
+| **页面逻辑** | **Pass** | URL=`/agent`；竖导航存在，主 CTA 仅「开始办理」。 |
+| **业务表现** | Ok | 通用 Home 案件路径保持可选，未制造强制绑案。 |
+| **页面表现** | Ok | Home 信息架构清晰，竖导航与 compose 主区可见。 |
+| **UX** | Ok | 无 BillingHold 干扰；compose 不展示「关联案件」 select，开工路径直接。 |
+| **UI** | Should | 推荐 chips 可进一步加密，提升首屏可扫描的推荐密度。 |
+
+### Live hard gates
+
+- **Pass**：无 BillingHold banner。
+- **Pass**：`a[href*=5173]` 数量为 `0`。
+- **Pass**：compose 无「关联案件」 select。
+- **Pass**：CaseBind 共两个按钮，其中一个为 block 按钮。
+
+**S0 总结：Pass。**
+
+**证据截图**：`shot-call_efhXWNRP...`、`shot-call_hwnJ00pZ...`
