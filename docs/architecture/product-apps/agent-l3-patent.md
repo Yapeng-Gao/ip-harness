@@ -5,7 +5,7 @@
 > **勿污染** L1 `/agent` 与 L2 `/agent/team`。  
 > **用户口径**：Agent 终端**不可跳中台**——映射表 + Confirm→DomainCommand 示意即可，**勿要求可点 mid 深链**。  
 > **样机诚实**：禁真 LLM / 真 case-core。  
-> **对齐**：[agent-layers](./agent-layers.md) · [agent-project-folder](./agent-project-folder.md) · contracts `ARTIFACT_FOR_STAGE`。
+> **对齐**：[agent-layers](./agent-layers.md) · [agent-project-folder](./agent-project-folder.md) · [project-cross-surface](./project-cross-surface.md) · contracts `ARTIFACT_FOR_STAGE`。
 
 ## 1. 入口边界（独立 · 并列）
 

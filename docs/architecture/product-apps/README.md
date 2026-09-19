@@ -22,6 +22,7 @@
 | L2 团队互通 | [agent-l2-team.md](./agent-l2-team.md) | bot 自发消息；协作任务样机；仅 /agent/team |
 | L3 专利 bot | [agent-l3-patent.md](./agent-l3-patent.md) | 固定专家；产出↔中台；仅项目模式 |
 | Agent 案绑定 | [agent-case-binding.md](./agent-case-binding.md) | 先聊/先项目；案可后创建或绑定；不挡入口 |
+| 跨面项目串接 | [project-cross-surface.md](./project-cross-surface.md) | 建项目串 mid/workbench/Agent/IAM；禁专家中截 |
 | Sessions×项目线程 | [agent-sessions-project-threads.md](./agent-sessions-project-threads.md) | 列表聚合展示；存储可分；标签筛选 |
 | 横切 | [cross-cutting.md](./cross-cutting.md) | 深链、contracts、禁壳直写库、Persona、e2e |
 
