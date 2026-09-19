@@ -21,14 +21,14 @@
 
 | 级 | 债 |
 |----|-----|
-| **P2** | 项目线程 ↔ sessions 未标签合流 |
+| **P2** | ~~项目线程 ↔ sessions 未标签合流~~ → **已收**（`9598f6e` · 见 [合流复检](./AGENT_SESSIONS_THREADS_RECHECK_2026-09-19.md)） |
 | **P2** | `pending_create` 死类型 |
 | **P2** | Home 副文案偏领域闭环 |
 | **Won't** | 全宽「样机 · 无真 LLM」琥珀黄条（禁恢复） |
 
 ## 计数（复检后）
 
-P0=0 · P1=0 · P2=3 · Won't=1
+P0=0 · P1=0 · P2=2（pending_create / Home 副文案；线程合流已收）· Won't=1
 
 ## 方法
 
