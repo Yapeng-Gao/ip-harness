@@ -7,7 +7,7 @@
 | Path | 行为 |
 |------|------|
 | `/agent/lab` | 原型卡片网格（主入口） |
-| `/agent/gallery` | 重定向 → `/agent/lab` |
+| `/agent/gallery` | **真跳转** → `/agent/lab`（`RedirectToAgentLab` replace，地址栏应变） |
 
 侧栏「更多」→ 原型展廊；Grok 壳顶角「展廊」同链。
 
@@ -33,3 +33,4 @@
 - [ ] `/agent/lab` 六卡可点进活口
 - [ ] `/agent` 仍是 Grok（侧栏 bot + 主聊）
 - [ ] `npm run typecheck -w @ip/agent` 通过
+- [ ] `/agent/gallery` 打开后地址栏变为 `/agent/lab`

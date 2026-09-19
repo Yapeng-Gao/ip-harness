@@ -15,6 +15,7 @@ import { GeneralBotNewPage } from './pages/GeneralBotNewPage'
 import { ProjectListPage } from './pages/projects/ProjectListPage'
 import { ProjectWorkspacePage } from './pages/projects/ProjectWorkspacePage'
 import { AgentLabGallery } from './pages/AgentLabGallery'
+import { RedirectToAgentLab } from './pages/RedirectToAgentLab'
 
 export default function App() {
   return (
@@ -36,7 +37,7 @@ export default function App() {
                 <Route path="agents" element={<AgentCatalogPage />} />
                 <Route path="harness" element={<AgentHarnessOverview />} />
                 <Route path="lab" element={<AgentLabGallery />} />
-                <Route path="gallery" element={<Navigate to="/agent/lab" replace />} />
+                <Route path="gallery" element={<RedirectToAgentLab />} />
                 <Route path="projects" element={<ProjectListPage />} />
                 <Route path="projects/:projectId" element={<ProjectWorkspacePage />} />
                 <Route path="projects/:projectId/bots/:botId" element={<ProjectWorkspacePage />} />
