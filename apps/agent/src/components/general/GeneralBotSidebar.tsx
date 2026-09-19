@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Bot, Plus, FolderKanban, History, LayoutGrid, MoreHorizontal, PenLine, Sparkles, MessageSquare } from 'lucide-react'
 import { useGeneralBots } from '../../projects/GeneralBotsContext'
 import { expertAccentClass } from '../../projects/experts'
-import { freeBotPath } from '../../projects/generalBots'
+import { BOT_SEED_ORCHESTRATOR, freeBotPath } from '../../projects/generalBots'
 
 /**
  * Narrow Grok-like bot rail: avatar + name + 新建对话. Secondary under「更多」.
@@ -12,8 +12,12 @@ import { freeBotPath } from '../../projects/generalBots'
 export function GeneralBotSidebar() {
   const { botId } = useParams<{ botId?: string }>()
   const loc = useLocation()
-  const { activeBots } = useGeneralBots()
-  const active = botId ?? activeBots[0]?.id
+  const { activeBots, getBot } = useGeneralBots()
+  // Match GeneralGrokShell: /agent/team without :botId defaults to 总控
+  const active =
+    botId ??
+    getBot(BOT_SEED_ORCHESTRATOR)?.id ??
+    activeBots[0]?.id
   const [moreOpen, setMoreOpen] = useState(false)
   const moreRef = useRef<HTMLDivElement>(null)
 

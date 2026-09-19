@@ -10,12 +10,15 @@ import {
   GENERAL_SHELL_ID,
   isGeneralShellId,
 } from '../projects/generalShell'
-import { freeBotPath } from '../projects/generalBots'
+import {
+  BOT_SEED_ORCHESTRATOR,
+  freeBotPath,
+} from '../projects/generalBots'
 
 /**
  * L2 team mode — Grok Bot replica: narrow bot rail + message stream + sticky composer.
  * Entry: /agent/team (explicit upgrade from L1) or /agent/bots/:id.
- * Spec: agent-grok-replica.md · agent-layers.md (24a6d8f)
+ * Spec: agent-grok-replica.md · agent-layers.md (L2 bot→bot collab)
  * Case bind / honesty default-hidden (opt-in via chrome toggle). No project deepen.
  */
 export function GeneralGrokShell() {
@@ -33,8 +36,9 @@ export function GeneralGrokShell() {
     )
   }
 
-  const defaultId = activeBots[0]?.id
-  // /agent/team (no :botId) stays put and shows default bot — no force-redirect to /bots/:id
+  // Prefer 总控 on /agent/team so collab loop is one click away
+  const defaultId =
+    getBot(BOT_SEED_ORCHESTRATOR)?.id ?? activeBots[0]?.id
 
   if (botId === 'new') {
     return <Navigate to="/agent/bots/new" replace />
@@ -104,7 +108,7 @@ export function GeneralGrokShell() {
               className="text-[11px] leading-snug text-slate-400"
               data-testid="general-honesty-weak"
             >
-              样机 · 无真 LLM · L2 团队多 bot · 写库须 HITL
+              样机 · 无真 LLM · L2 团队 bot→bot 协作 · 写库须 HITL
             </p>
             <div data-testid="general-case-bind-slot">
               <CaseBindControls
@@ -133,7 +137,11 @@ export function GeneralGrokShell() {
           </div>
         )}
         {resolved ? (
-          <GeneralBotChatPane botId={resolved} />
+          <GeneralBotChatPane
+            botId={resolved}
+            showForward
+            showCollabLoop
+          />
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 text-sm text-slate-500">
             <p className="text-[15px] text-slate-600">还没有 bot</p>

@@ -1,29 +1,72 @@
 import { useMemo, useState, type KeyboardEvent } from 'react'
-import { Send, Forward } from 'lucide-react'
+import { Send, Forward, GitBranch } from 'lucide-react'
 import { useGeneralBots } from '../../projects/GeneralBotsContext'
 import { expertAccentClass } from '../../projects/experts'
+import {
+  BOT_SEED_DRAFT,
+  BOT_SEED_ORCHESTRATOR,
+  BOT_SEED_SEARCH,
+  collabKindLabel,
+  isCollabMessage,
+  type CollabKind,
+  type FreeBotMessage,
+} from '../../projects/generalBots'
 
 type Props = {
   botId: string
   /** L2 team intercom; hide on L1 single-assistant shell */
   showForward?: boolean
+  /** L2 only: clickable collab task demo (agent-l2-team.md) */
+  showCollabLoop?: boolean
+}
+
+function collabDirectionLabel(m: FreeBotMessage): string | null {
+  const from = m.meta?.fromBotName
+  const to = m.meta?.toBotName
+  if (from && to) return `${from} → ${to}`
+  if (m.meta?.forwardFrom && from) return `← ${from}`
+  if (m.meta?.forwardTo && to) return `→ ${to}`
+  return null
+}
+
+function collabTestId(m: FreeBotMessage): string | undefined {
+  const kind = m.meta?.collabKind
+  const isReq = kind === 'dispatch' || kind === 'request'
+  const isRes = kind === 'receipt' || kind === 'result'
+  if (isReq && m.meta?.forwardTo) return 'general-bot-collab-dispatch-sent'
+  if (isReq && m.meta?.forwardFrom) return 'general-bot-collab-dispatch-recv'
+  if (isRes && m.meta?.forwardTo) return 'general-bot-collab-receipt-sent'
+  if (isRes && m.meta?.forwardFrom) return 'general-bot-collab-receipt-recv'
+  if (kind === 'complete') return 'general-bot-collab-complete'
+  if (m.meta?.forwardFrom) return 'general-bot-forward-recv'
+  if (m.meta?.forwardTo) return 'general-bot-forward-sent'
+  return undefined
 }
 
 /**
- * 1:1 stream + sticky composer. Optical user/assistant bubbles; no tip walls.
- * Spec: agent-grok-replica.md (L2) / agent-layers L1 reuses without forward.
+ * 1:1 stream + sticky composer.
+ * L1: showForward=false, no collab CTA.
+ * L2: bot→bot labels +「演示协作任务」(agent-l2-team.md).
  */
-export function GeneralBotChatPane({ botId, showForward = true }: Props) {
+export function GeneralBotChatPane({
+  botId,
+  showForward = true,
+  showCollabLoop = false,
+}: Props) {
   const {
     getBot,
     getMessages,
     appendMessage,
     mockReply,
     forwardToBot,
+    runCollabLoop,
+    collabRunBusy,
+    getLatestTask,
     activeBots,
   } = useGeneralBots()
   const bot = getBot(botId)
   const messages = getMessages(botId)
+  const latestTask = getLatestTask()
   const [draft, setDraft] = useState('')
   const [forwardOpen, setForwardOpen] = useState(false)
   const [forwardTarget, setForwardTarget] = useState('')
@@ -32,6 +75,15 @@ export function GeneralBotChatPane({ botId, showForward = true }: Props) {
     () => activeBots.filter((b) => b.id !== botId),
     [activeBots, botId],
   )
+
+  const canRunLoop =
+    showCollabLoop &&
+    botId === BOT_SEED_ORCHESTRATOR &&
+    Boolean(
+      getBot(BOT_SEED_ORCHESTRATOR) &&
+        getBot(BOT_SEED_SEARCH) &&
+        getBot(BOT_SEED_DRAFT),
+    )
 
   if (!bot) {
     return (
@@ -46,6 +98,15 @@ export function GeneralBotChatPane({ botId, showForward = true }: Props) {
     if (!text) return
     appendMessage(botId, { role: 'user', content: text })
     setDraft('')
+    // Orchestrator: user asking for 检索+摘要 can also kick the mock task
+    if (
+      showCollabLoop &&
+      botId === BOT_SEED_ORCHESTRATOR &&
+      /检索|摘要|协作/.test(text)
+    ) {
+      runCollabLoop({ goal: text })
+      return
+    }
     mockReply(botId, text)
   }
 
@@ -68,8 +129,23 @@ export function GeneralBotChatPane({ botId, showForward = true }: Props) {
     setForwardOpen(false)
   }
 
-  const visible = messages.filter((m) => m.role !== 'system')
+  const doCollabLoop = () => {
+    runCollabLoop({
+      orchestratorId: BOT_SEED_ORCHESTRATOR,
+      searchId: BOT_SEED_SEARCH,
+      draftId: BOT_SEED_DRAFT,
+    })
+  }
+
+  const visible = messages.filter(
+    (m) => m.role !== 'system' || isCollabMessage(m),
+  )
   const canSend = draft.trim().length > 0
+  const showTaskCard =
+    showCollabLoop &&
+    botId === BOT_SEED_ORCHESTRATOR &&
+    latestTask &&
+    (collabRunBusy || latestTask.status === 'done' || latestTask.status === 'running')
 
   return (
     <div
@@ -78,7 +154,7 @@ export function GeneralBotChatPane({ botId, showForward = true }: Props) {
       data-bot-id={botId}
     >
       <header className="shrink-0 border-b border-slate-100/90 px-5 py-3">
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
           <span
             className={`flex h-8 w-8 items-center justify-center rounded-full border text-[11px] font-semibold ${expertAccentClass(bot.accent)}`}
             aria-hidden
@@ -88,34 +164,98 @@ export function GeneralBotChatPane({ botId, showForward = true }: Props) {
           <h1 className="truncate text-[15px] font-semibold tracking-tight text-slate-900 text-balance">
             {bot.name}
           </h1>
+          {canRunLoop && (
+            <button
+              type="button"
+              onClick={doCollabLoop}
+              disabled={collabRunBusy}
+              className="btn-press focus-ring ml-auto inline-flex min-h-8 items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-[12px] font-semibold text-indigo-800 hover:bg-indigo-100 disabled:opacity-50"
+              data-testid="general-bot-collab-loop"
+              title="编排 → 检索 → 撰稿 → 汇总（样机自发，无用户转发）"
+            >
+              <GitBranch className="h-3.5 w-3.5" aria-hidden />
+              {collabRunBusy ? '协作中…' : '演示协作任务'}
+            </button>
+          )}
         </div>
+        {showTaskCard && latestTask && (
+          <div
+            className="mt-2.5 rounded-[var(--radius-md)] border border-indigo-200/80 bg-indigo-50/60 px-3 py-2"
+            data-testid="general-bot-collab-task-card"
+            data-task-status={latestTask.status}
+          >
+            <div className="flex items-center gap-2 text-[12px]">
+              <span className="font-semibold text-indigo-900">协作任务</span>
+              <span
+                className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                  latestTask.status === 'done'
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-amber-100 text-amber-900'
+                }`}
+                data-testid="general-bot-collab-task-status"
+              >
+                {latestTask.status}
+              </span>
+            </div>
+            <p className="mt-0.5 text-[12px] text-indigo-800/90">{latestTask.goal}</p>
+            <ul className="mt-1.5 space-y-0.5">
+              {latestTask.steps.map((s) => (
+                <li
+                  key={s.id}
+                  className={`text-[11px] ${s.done ? 'text-indigo-700' : 'text-slate-400'}`}
+                  data-step-done={s.done ? '1' : '0'}
+                >
+                  {s.done ? '✓' : '·'} {s.label}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </header>
 
       <div className="general-grok-messages min-h-0 flex-1 space-y-3.5 overflow-y-auto px-5 py-5">
         {visible.length === 0 && (
           <p className="py-12 text-center text-[14px] leading-relaxed text-slate-400">
             开始和 {bot.name} 聊天
+            {canRunLoop ? ' · 或点「演示协作任务」看 bot→bot 自发' : ''}
           </p>
         )}
         {visible.map((m) => {
           const isUser = m.role === 'user'
+          const collab = isCollabMessage(m)
+          const dir = collabDirectionLabel(m)
+          const kind = m.meta?.collabKind as CollabKind | undefined
           return (
             <div
               key={m.id}
               className={`general-grok-bubble max-w-[min(36rem,85%)] px-4 py-2.5 text-[15px] leading-[1.55] text-pretty ${
                 isUser
                   ? 'general-grok-bubble--user ml-auto'
-                  : 'general-grok-bubble--assistant mr-auto'
+                  : collab
+                    ? 'general-grok-bubble--collab mr-auto'
+                    : 'general-grok-bubble--assistant mr-auto'
               }`}
               data-role={m.role}
-              data-testid={
-                m.meta?.forwardFrom
-                  ? 'general-bot-forward-recv'
-                  : m.meta?.forwardTo
-                    ? 'general-bot-forward-sent'
-                    : undefined
-              }
+              data-collab-kind={kind}
+              data-spontaneous={m.meta?.spontaneous ? '1' : undefined}
+              data-testid={collabTestId(m)}
             >
+              {collab && (
+                <div
+                  className="mb-1.5 flex flex-wrap items-center gap-1.5"
+                  data-testid="general-bot-collab-label"
+                >
+                  <span className="rounded-full bg-indigo-100/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-800">
+                    {collabKindLabel(kind)}
+                    {m.meta?.spontaneous ? ' · 自发' : ''}
+                  </span>
+                  {dir && (
+                    <span className="text-[11px] font-medium text-indigo-700/90">
+                      {dir}
+                    </span>
+                  )}
+                </div>
+              )}
               <div className="whitespace-pre-wrap">{m.content}</div>
             </div>
           )
@@ -163,20 +303,19 @@ export function GeneralBotChatPane({ botId, showForward = true }: Props) {
             </button>
           </div>
         )}
-        {/* Concentric shell: outer 16 + pad 6 ≈ inner 10 */}
         <div className="general-grok-composer-shell flex items-end gap-2 rounded-2xl border border-slate-200 bg-[#f5f5f7] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
           {showForward && (
-          <button
-            type="button"
-            onClick={() => setForwardOpen((v) => !v)}
-            disabled={others.length === 0}
-            className="btn-press focus-ring mb-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-white hover:text-slate-700 disabled:opacity-30"
-            aria-label="转发给 bot"
-            data-testid="general-bot-forward-open"
-            title="转发"
-          >
-            <Forward className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-          </button>
+            <button
+              type="button"
+              onClick={() => setForwardOpen((v) => !v)}
+              disabled={others.length === 0}
+              className="btn-press focus-ring mb-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-white hover:text-slate-700 disabled:opacity-30"
+              aria-label="转发给 bot"
+              data-testid="general-bot-forward-open"
+              title="转发（用户手动 · 次级）"
+            >
+              <Forward className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+            </button>
           )}
           <textarea
             value={draft}
