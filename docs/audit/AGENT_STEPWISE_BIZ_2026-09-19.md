@@ -4,6 +4,7 @@
 > **日期**：2026-09-19（CST / Asia/Shanghai）  
 > **性质**：只评、不派工；**不改**产品码。  
 > **范围**：冻结步 **S0–S9**（入口 · 通用单聊/sessions · 案绑定 · 轨迹 · HITL · 顶栏绑案 · 列表筛选 · Catalog · 项目 general · domain/patent）。对齐 `docs/ui-polish/AGENT_STEPWISE_WALK_PLAN_2026-09-19.md`（业务审计视角，静态源码+规格；未强制浏览器点通）。
+> **复检**：2026-09-19 · SHA `1b959d6` · P1 通用历史 + P2-S4 无案闸 → **已收** · [`AGENT_STEPWISE_BIZ_RECHECK_2026-09-19.md`](./AGENT_STEPWISE_BIZ_RECHECK_2026-09-19.md)
 
 ## 总判
 
@@ -11,7 +12,7 @@
 
 **呈现债纠偏**：规格 `agent-entry-modes` §7 曾建议壳级「样机 · 无真 LLM」横幅；总控/用户已否决「顶栏全宽样机·无真 LLM 琥珀黄条」（与产品闸冲突，且 `AgentShell` 已卸 `BillingHold` 全宽黄条）。该缺口 **已 Won't**——诚实可用侧栏弱字或 docs；**禁**建议恢复全宽 amber / BillingHold 式黄条。S0 不再因缺横幅标半立。
 
-sessions 列表仍叫「全部会话」，未钉死「通用历史」心智（**P1 保留**）；项目线程与 sessions **两套真相**尚未标签合流（**P2**）。S0–S9 **无 P0** 级静默真写/强绑案；**不做**真 LLM、真 case-core、恢复全宽黄条。
+sessions「通用历史」与无案 HITL 芯片禁用已在 `1b959d6` **收口**（见 [复检短记](./AGENT_STEPWISE_BIZ_RECHECK_2026-09-19.md)）。项目线程与 sessions **两套真相**尚未标签合流（**P2 保留**）。S0–S9 **无 P0**；**不做**真 LLM、真 case-core、恢复全宽黄条。
 
 ## 对照规格（方法备忘）
 
@@ -36,12 +37,12 @@ sessions 列表仍叫「全部会话」，未钉死「通用历史」心智（**
 | 步 | 业务故事 | 屏上 | 代码证据 | 判 | 级 |
 |----|----------|------|----------|----|-----|
 | **S0** · 进壳默认入口 | 打开 :5175 / `/agent` = **通用单聊**；不强制建项目；案可选空；样机诚实（mock / 无真 LLM） | `/`→`/agent` 居中 Composer+Chip+Catalog；文案「默认通用单聊 · 项目模式（次级）」；案区 soft「可稍后创建或绑定」；**壳顶无**全宽「无真 LLM」黄条（产品闸） | `App.tsx` `/`→`/agent` index=`AgentHome`；`AgentHome.tsx` 无 `resolvePreferredCaseId`、默认 `caseId=''`；`CaseBindControls` soft；`AgentShell.tsx` 注释卸 BillingHold 全宽黄条 | **立得住** | —（呈现债已 **Won't**） |
-| **S1** · 通用单聊 / sessions 兼容 | Composer+Catalog；sessions=通用历史；不与项目抢主心智；无案 banner/闸诚实；试运行不写库 | 侧栏主链：开始 / Agent / **会话**；「项目（次级）」藏「更多」；会话顶栏 `no_case`：「无案也可继续聊 · 确认后不会写入案件」；「预览一下」→ Timeline「预览不写库」 | `AgentSessionSidebar.tsx` nav；`SessionWorkspaceHeader.tsx` `activeBanner==='no_case'`；`playMockSession` 默认/`dry-run` 文案「不写入业务台账」；`SessionTimeline.tsx` `toolWriteTag`；`AgentSessionsList.tsx` 标题仍「全部会话」（未写「通用历史」） | **半立** | **P1**（列表心智）/ **P2**（项目线程未入 sessions 标签） |
+| **S1** · 通用单聊 / sessions 兼容 | Composer+Catalog；sessions=通用历史；不与项目抢主心智；无案 banner/闸诚实；试运行不写库 | 侧栏主链：开始 / Agent / **会话**；「项目（次级）」藏「更多」；会话顶栏 `no_case`：「无案也可继续聊 · 确认后不会写入案件」；「预览一下」→ Timeline「预览不写库」 | `AgentSessionSidebar.tsx` nav；`SessionWorkspaceHeader.tsx` `activeBanner==='no_case'`；`playMockSession` 默认/`dry-run` 文案「不写入业务台账」；`SessionTimeline.tsx` `toolWriteTag`；`AgentSessionsList.tsx` 钉「通用历史」（`1b959d6`） | **立得住** | —（原 P1 已收；线程合流仍 **P2**） |
 | **S2** · 案绑定 | 通用可一直无案；项目区「创建并绑定 / 绑已有」；mock caseId；禁静默真建案；与 mid 关系诚实 | Home/会话 soft；项目顶栏 domain **strong**「写入案件前须绑定」、general soft；创建确认钮「生成 mock 案并绑定」+ 琥珀说明「不进真 case-core / 中台库」；已绑 mock 标「· 样机」；列表新建案可选「可稍后…」 | `CaseBindControls.tsx` + `lib/mockCase.ts` `newMockCaseId`；`addCase` 本地种子 summary 写明非 case-core；`ProjectListPage.tsx` / `ProjectWorkspacePage.tsx` `patchProject`；`ProjectFolderContext` 演示项目 `caseBindState:'none'`；时间线「样机绑定 · 非真 case-core」；**无**「必须先去中台」门禁文案 | **立得住** | —（仅 P2 毛刺） |
 | **S3** · 会话轨迹 / mock 推进 | 用户开聊后轨迹与回复可见；mock 剧本逐步推进；预览≠写库 | 工作区 Timeline 逐步追加 system/tool/artifact；「预览」/「正式办理」态可见；工具卡标「预览不写库」或写库标签 | `playMockSession`（`AgentContext`）按 `AGENT_SCRIPTS[agentId]` 定时推进 `scriptIndex`；`SessionTimeline` `toolWriteTag`；`AgentSessionWorkspace` 调 `mode:'dry-run'\|'formal'` | **立得住** | — |
-| **S4** · HITL ConfirmBar / 写库闸 | ConfirmBar 可见可点；gate→`dispatchCommand(actor:'agent')`；试运行 vs 正式；无案诚实不写；DomainCommand 唯一写库 | ConfirmBar 闸芯片 + 命令链预览；正式默认逐步写入；无案顶栏 hint「确认后不会写入案件」；pay_unlock 无案直接拒 | `SessionConfirmBar` + `sessionGates.gateToAction` / `previewHitlCommandChain`；`sessionHitlAction`：`if (sess.caseId)` 才跑命令链、`actor:'agent'`；`mode==='formal' && caseId` 才准备领域写入；无案 `pay_unlock`→「请先关联案件…」 | **立得住** | **P2**（无案时多数闸仍可点清 `clearedGates`，禁用态不够显性——靠横幅+跳过写库） |
+| **S4** · HITL ConfirmBar / 写库闸 | ConfirmBar 可见可点；gate→`dispatchCommand(actor:'agent')`；试运行 vs 正式；无案诚实不写；DomainCommand 唯一写库 | ConfirmBar 闸芯片 + 命令链预览；正式默认逐步写入；无案顶栏 hint「确认后不会写入案件」；pay_unlock 无案直接拒 | `SessionConfirmBar` + `sessionGates.gateToAction` / `previewHitlCommandChain`；`sessionHitlAction`：`if (sess.caseId)` 才跑命令链、`actor:'agent'`；`mode==='formal' && caseId` 才准备领域写入；无案 `pay_unlock`→「请先关联案件…」 | **立得住** | —（原 P2-S4 已收 · `1b959d6`） |
 | **S5** · 会话顶栏绑案 · 先聊后案 | 可先聊；区内再绑；不挡入口 | `no_case` 顶栏 hint +「绑定已有案」；Composer / HITL 区 soft `CaseBindControls`；开始办理可 `focusCaseBind` | `SessionWorkspaceHeader` `data-testid=session-no-case-hint`；`AgentSessionWorkspace` 顶区/Composer `caseBindSlot` + `CaseBindControls` soft；`patchSession({caseId})` | **立得住** | — |
-| **S6** · 会话列表 + 待确认筛选 | 列表可按全部/待确认/进行中筛；与侧栏同步 | 侧栏 `segmented`：全部 / 待确认 / 进行中；`?filter=needs_human\|running`；列表页随 URL 过滤，标题仍「全部会话」 | `AgentSessionSidebar` segmented + counts；`AgentSessionsList` `urlFilter` 分支 | **半立** | 功能立；心智仍归 **P1**（标题未钉「通用历史」） |
+| **S6** · 会话列表 + 待确认筛选 | 列表可按全部/待确认/进行中筛；与侧栏同步 | 侧栏 `segmented`：全部 / 待确认 / 进行中；`?filter=needs_human\|running`；列表页随 URL 过滤，H1「通用历史」等（`1b959d6`） | `AgentSessionSidebar` / `AgentSessionsList` | **立得住** | —（原 P1 已收） |
 | **S7** · Catalog 选 Agent | `/agent/agents` 选 AgentDef 开通用会话；不强制案 | Catalog 按 tier 分组；点开建会话；案仅显式 picker/URL，无 auto prefer | `App.tsx` `path=agents`→`AgentCatalogPage`；`skills`/`tools`→重定向；`startWith`→`createSession`；注释钉 case-binding | **立得住** | — |
 | **S8** · 项目 general | 通用项目：多 bot+总控；**无**专利步骤条 / FTO / 权利要求 HITL 泄漏 | 新建「通用（无专利步骤）」；主区 `通用项目 · 无专利步骤条`；侧栏研究/写作/审查+总控 | `ProjectListPage` kind=general；`expertsGeneral.ts`（`catalogAgentId=null`）；`ProjectChatPane` `data-testid=general-no-patent-steps`（无 `domain-step-bar`）；`ExpertHitlBridge` 无 catalog→弱确认不写 DomainCommand | **立得住** | — |
 | **S9** · domain/patent + 专家私聊 | 总控/专家分剧本；专利步骤可区分；总控禁一键写库 | domain/patent 有步骤条；检索/撰稿/FTO 快捷与剧本不同；总控仅分派；HITL 桥脚注「无真 LLM」 | `expertsPatent.ts` 与 general **分文件**；`orchestrator` `domainCommandCandidates.command=null` + guardrail「禁止一键写库」；`ExpertHitlBridge` 绑底层 session→Confirm→DomainCommand；FTO 默认不写案 | **立得住** | — |
@@ -113,14 +114,16 @@ sessions 列表仍叫「全部会话」，未钉死「通用历史」心智（**
 
 ### P1
 
-1. **sessions 列表心智未钉「通用历史」** — `AgentSessionsList` PageHeader「全部会话」；侧栏「会话」与「项目（次级）」并存时，列表页自身未复述兼容定位（规格 `agent-entry-modes` §4）。S6 筛选功能立住，心智债仍在此条。
+（空）— 原「通用历史」文案债 **已收**（`1b959d6`）。详见 [复检](./AGENT_STEPWISE_BIZ_RECHECK_2026-09-19.md)。
 
 ### P2
 
-1. **项目线程 ↔ sessions 未标签合流** — 规格允许过滤；现两套存储（`AgentContext` sessions vs `ProjectFolderContext` threads）。
+1. **项目线程 ↔ sessions 未标签合流** — 规格允许过滤；现两套存储（`AgentContext` sessions vs `ProjectFolderContext` threads）。**仍开**。
 2. **`pending_create` 死类型** — `types.ts` / `mockCase.ts` 有枚举，运行时未进入该态。
 3. **Home 副文案偏领域闭环** — 「专利检索 · OA · 交底 · 年费 · 确认后写入案件」对「通用单聊」略抢戏（Catalog 本身即领域 AgentDef，可忍）。
-4. **无案 HITL 禁用态不够显性** — 多数闸仍可点并清 `clearedGates`；写库靠 `if (sess.caseId)` 跳过；仅 `pay_unlock` 硬拒。诚实有，芯片「禁用」字面弱。
+~~4. 无案 HITL 禁用态不够显性~~ — **已收**（`1b959d6`：`NO_CASE_GATE_REASON` + 芯片 disabled；FTO 口径确认除外）。
+
+**仍开 P2**：线程合流 · `pending_create` · Home 副文案（上列 1–3）。
 
 ### Won't（与产品闸冲突）
 
