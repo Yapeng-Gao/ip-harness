@@ -1,0 +1,42 @@
+{
+  "id": "S0",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent",
+  "assertions": [
+    "url=http://localhost:5175/agent",
+    "no mid deep-link (origin=5175)",
+    "竖导航 agent-side-nav 可见",
+    "待确认 chip 可见",
+    "compose + 开始办理 可见",
+    "Home 案件入口数量=1",
+    "无 BillingHold 全宽黄条 (data-billing-hold-banner=0)"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "agent-side-nav": {
+      "x": 0,
+      "y": 48,
+      "width": 223,
+      "height": 179
+    },
+    "home-send": {
+      "x": 963,
+      "y": 250.625,
+      "width": 88,
+      "height": 40
+    },
+    "home-case-bind": {
+      "x": 440,
+      "y": 315.625,
+      "width": 624,
+      "height": 80.5
+    },
+    "home-sidebar-compact": {
+      "x": 0,
+      "y": 227,
+      "width": 223,
+      "height": 493
+    }
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S0-home.png"
+}

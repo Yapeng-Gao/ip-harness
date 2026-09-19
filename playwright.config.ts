@@ -41,6 +41,12 @@ export default defineConfig({
       grep: /L0-AG/,
     },
     {
+      name: 'agent-stepwise',
+      use: { ...chrome, baseURL: 'http://localhost:5175' },
+      testMatch: /agent-stepwise-s0-s2\.spec\.ts/,
+      timeout: 90_000,
+    },
+    {
       name: 'ops',
       use: { ...chrome, baseURL: 'http://localhost:5176' },
       testMatch: /l0-smoke\.spec\.ts/,
