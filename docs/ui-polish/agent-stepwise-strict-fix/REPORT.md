@@ -6,6 +6,7 @@
 | **基线评** | `docs/ui-polish/REVIEW_AGENT_STEPWISE_STRICT_2026-09-19.md`（`41beb03`） |
 | **范围** | `apps/agent/**` + 共享 `src/index.css` / `apps/agent/src/agent.css` |
 | **typecheck** | `@ip/agent` **green** |
+| **SHA** | `b0a0a00` |
 | **硬闸** | 保持：无 mid CTA · 无 BillingHold 全宽 · Home case entry=1 · ART/ATT · filter URL |
 | **逻辑** | 无 HITL/DomainCommand **逻辑**变更 · 仅呈现/文案/布局 |
 | **Cloud Agent** | 未使用 |
@@ -59,7 +60,7 @@
 
 ## SHA
 
-见 git commit（本报告随 commit 写入后回填）。
+`b0a0a00382c0cea186ba699980b6303d14bf7c60`（`dev`）
 
 ---
 *AGENT_STEPWISE_STRICT fix · 2026-09-19 13:18 CST*
