@@ -53,7 +53,7 @@ function emptyThread(
       {
         id: uid('msg'),
         role: 'system',
-        content: `样机 · 无真 LLM · 专家分剧本 · backend=mock\n${intro}`,
+        content: `项目协作 · 总控编排\n${intro}`,
         at: stamp(),
         meta: { backend: 'mock', stepId: def.steps[0]?.id },
       },

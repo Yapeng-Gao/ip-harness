@@ -127,7 +127,7 @@ export function ProjectFolderSidebar() {
       </div>
 
       <div className="border-t border-slate-100 px-2.5 py-2 text-[10px] leading-relaxed text-slate-400">
-        样机 · 无真 LLM · 专家分剧本
+        项目次级入口 · 总控编排
       </div>
     </aside>
   )

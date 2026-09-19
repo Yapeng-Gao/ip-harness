@@ -15,7 +15,6 @@ import {
 import { HANDOFF_LABELS } from '@shared/data/handoff'
 import { DOCKET_STATUS_LABEL, toolCatalogLabel } from '@shared/data/sessions'
 import { workbenchHref } from './sessionGates'
-import { midHref } from '../../lib/deepLinks'
 import { driveDuplicatesArtifactTitle } from '@shared/utils/productDisplay'
 import {
   buildCaseContextFromSession,
@@ -107,10 +106,7 @@ export function SessionContextPanel({
           </div>
           {caseData ? (
             <div>
-              <a
-                href={midHref(`/cases/${caseData.id}?from=agent`)}
-                className="block py-1 hover:bg-slate-50/80"
-              >
+              <div className="py-1">
                 <div className="text-xs font-medium text-slate-900">{caseData.title}</div>
                 <div className="mt-0.5 text-xs text-slate-500">
                   {caseData.caseNo} · 风险 {caseData.risk} · {caseData.progress}%
@@ -118,8 +114,7 @@ export function SessionContextPanel({
                     ? ` · 交接 ${HANDOFF_LABELS[handoffStatus]}`
                     : ''}
                 </div>
-                <div className="mt-1 text-xs text-slate-700">在作业中台打开 →</div>
-              </a>
+              </div>
               {wb && (
                 <a
                   href={wb}

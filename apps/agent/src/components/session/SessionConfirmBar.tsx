@@ -20,7 +20,7 @@ import {
 import { previewHitlCommandChain } from './sessionGates'
 import { HandoffChip } from '@shared/components/HandoffChip'
 import { Link } from 'react-router-dom'
-import { midBillingHref, midInboxHref, workbenchHref } from '../../lib/deepLinks'
+import { workbenchHref } from '../../lib/deepLinks'
 import {
   getHitlStepwisePref,
   setHitlStepwisePref,
@@ -645,15 +645,6 @@ export function SessionConfirmBar({
               撰写台
             </a>
           )}
-          {sessionId && (
-            <a
-              href={midInboxHref({ sessionId })}
-              className="btn-press focus-ring hit-expand inline-flex min-h-10 items-center rounded px-2 text-xs text-slate-500 hover:text-slate-700"
-              title="在运营 Dashboard Inbox 中查看本条待确认"
-            >
-              在运营 Inbox 中查看
-            </a>
-          )}
           {isWatch && caseId && (
             <a
               href={workbenchHref(`/workbench/watch/${caseId}`)}
@@ -737,9 +728,7 @@ export function SessionConfirmBar({
           ) : null}
           {annuityNoInvoice && caseId ? (
             <p className="mt-1 text-[11px] text-slate-500">
-              <a href={midBillingHref('cases')} className="underline hover:text-slate-700">
-                打开费用中心
-              </a>
+              存在欠票时请先处理费用后再确认
             </p>
           ) : null}
         </div>

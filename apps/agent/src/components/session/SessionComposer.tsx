@@ -145,7 +145,7 @@ export function SessionComposer({
         </div>
       </div>
       <p className="mx-auto mt-1.5 max-w-3xl text-center text-[11px] text-slate-400">
-        办理结果会写回业务台账（演示）
+        办理结果确认后写入案件（演示）
       </p>
     </div>
   )

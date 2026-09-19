@@ -31,7 +31,7 @@ import {
   sortGatesForRole,
   workbenchHref,
 } from '../components/session/sessionGates'
-import { midHref, workbenchHref as workbenchAbsHref } from '../lib/deepLinks'
+import { workbenchHref as workbenchAbsHref } from '../lib/deepLinks'
 import { CaseBindControls } from '../components/case/CaseBindControls'
 
 type OutletCtx = { rightOpen: boolean }
@@ -436,9 +436,6 @@ export function AgentSessionWorkspace() {
     (!!msg && msg.includes('中台已更新') && !!sess.caseId)
   const wbPath = sess.caseId ? workbenchHref(agent?.workbenchPath, sess.caseId) : null
   const toastWbPath = toastWbOverride ?? wbPath
-  const toastCaseId =
-    toastWbOverride?.match(/\/workbench\/research\/([^/?#]+)/)?.[1] ??
-    sess.caseId
 
   // P1-6: max one status banner — failed > no_case > route suggestion
   // Idle confirm chips stay in ConfirmBar only (not topbar when not hitlActive stacking)
@@ -506,15 +503,7 @@ export function AgentSessionWorkspace() {
           <div className="toast-enter pointer-events-none fixed bottom-6 right-6 z-50 max-w-sm">
             {domainSynced && (sess.caseId || toastWbOverride) ? (
               <div className="pointer-events-auto flex flex-wrap items-center gap-2 border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-950 shadow-lg">
-                <span className="min-w-0 flex-1 font-medium">中台案件已同步更新</span>
-                {toastCaseId && (
-                <a
-                  href={midHref(`/cases/${toastCaseId}?from=agent`)}
-                  className="btn-press focus-ring shrink-0 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-emerald-500"
-                >
-                  打开案件
-                </a>
-                )}
+                <span className="min-w-0 flex-1 font-medium">案件已同步更新</span>
                 {toastWbPath && (
                   <a
                     href={workbenchAbsHref(toastWbPath)}
@@ -559,7 +548,7 @@ export function AgentSessionWorkspace() {
           >
             {caseBindGuide && !sess.caseId ? (
               <p className="mb-1.5 text-[11px] text-sky-900" role="status">
-                开始办理后可在此绑定案件 · 无案确认不写回中台
+                开始办理后可在此绑定案件 · 无案确认不会写入案件
               </p>
             ) : null}
             <CaseBindControls

@@ -186,7 +186,7 @@ export function AgentHome() {
             知产 Agent
           </h1>
           <p className="mt-1.5 text-pretty text-sm text-slate-600">
-            专利检索 · OA · 交底 · 年费 · 写回中台
+            专利检索 · OA · 交底 · 年费 · 确认后写入案件
           </p>
           <p className="mt-1 text-[11px] text-slate-400">
             Core 主闭环 · Assist 辅办 · Beta 非采购闭环
@@ -255,8 +255,8 @@ export function AgentHome() {
             ) : null}
             <div className="ml-auto flex items-center gap-2">
               {caseId ? (
-                <span className="hidden text-[10px] text-slate-400 sm:inline" title="确认后写入作业中台">
-                  确认后写入作业中台
+                <span className="hidden text-[10px] text-slate-400 sm:inline" title="确认后写入案件">
+                  确认后写入案件
                 </span>
               ) : null}
               <button
@@ -300,8 +300,8 @@ export function AgentHome() {
         ) : (
           <p className="mt-2 text-center text-[11px] text-slate-400" role="status">
             {selectedCase
-              ? `已关联「${selectedCase.title}」· 确认后写入作业中台`
-              : '已选案 · 确认后写入作业中台'}
+              ? `已关联「${selectedCase.title}」· 确认后写入案件`
+              : '已选案 · 确认后写入案件'}
           </p>
         )}
 

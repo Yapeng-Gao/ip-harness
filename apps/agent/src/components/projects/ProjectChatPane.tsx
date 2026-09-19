@@ -159,9 +159,6 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
             {expert.name}
           </span>
           <span className="text-xs text-slate-500">{expert.specialty}</span>
-          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-800">
-            样机 · 无真 LLM · 专家分剧本
-          </span>
         </div>
         <p className="mt-1 text-[11px] text-slate-500">{expert.description}</p>
 

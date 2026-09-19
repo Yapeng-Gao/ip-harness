@@ -94,7 +94,7 @@ export function CaseBindControls({
           {bindState === 'bound'
             ? '已绑案件'
             : mustBind
-              ? '写回中台前须绑定'
+              ? '写入案件前须绑定'
               : '案件（可选）'}
         </span>
         {boundTitle ? (
@@ -114,7 +114,7 @@ export function CaseBindControls({
             data-testid="case-bind-hint"
           >
             {mustBind
-              ? '领域办理写回中台前须先绑定案件'
+              ? '领域办理写入案件前须先绑定案件'
               : '可稍后创建或绑定案件'}
           </span>
         )}

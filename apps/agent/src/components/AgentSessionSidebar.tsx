@@ -20,9 +20,8 @@ import { getAgent, AGENT_CATALOG, AGENT_TIER_LABEL } from '@shared/data/agents'
 import {
   sessionBizBadges,
   BIZ_BADGE_CLASS,
-  isConfirmRoleBadge,
 } from './session/sessionGates'
-import { agentSessionPath, midInboxHref } from '../lib/deepLinks'
+import { agentSessionPath } from '../lib/deepLinks'
 import { agentRunStatusLabel } from '../lib/statusLabels'
 
 const STATUS_DOT: Record<string, string> = {
@@ -713,20 +712,6 @@ export function AgentSessionSidebar() {
                                   }}
                                 >
                                   <Archive className="h-3 w-3" /> 取消归档
-                                </button>
-                              )}
-                              {badges.some(isConfirmRoleBadge) && (
-                                <button
-                                  type="button"
-                                  className="focus-ring flex min-h-10 w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
-                                  onClick={() => {
-                                    setRowMenuId(null)
-                                    window.location.href = midInboxHref({
-                                      sessionId: s.id,
-                                    })
-                                  }}
-                                >
-                                  在运营 Inbox 打开
                                 </button>
                               )}
                             </div>

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Plus, Briefcase, Search, Pencil, Archive } from 'lucide-react'
+import { Plus, Search, Pencil, Archive } from 'lucide-react'
 import { useAgents } from '@shared/context/AgentContext'
 import { matchSessionSearch } from '@shared/utils/sessionSearch'
 import { useApp } from '@shared/context/AppContext'
@@ -9,9 +9,8 @@ import { PageHeader, EmptyState } from '@shared/components/PageHeader'
 import {
   sessionBizBadges,
   BIZ_BADGE_CLASS,
-  isConfirmRoleBadge,
 } from '../components/session/sessionGates'
-import { agentSessionPath, midHref, midInboxHref, workbenchHref } from '../lib/deepLinks'
+import { agentSessionPath, workbenchHref } from '../lib/deepLinks'
 import { agentRunStatusLabel } from '../lib/statusLabels'
 
 export function AgentSessionsList() {
@@ -106,13 +105,6 @@ export function AgentSessionsList() {
           onClick: newSession,
           icon: <Plus className="h-4 w-4" aria-hidden />,
         }}
-        secondary={{
-          label: '回中台案件库',
-          onClick: () => {
-            window.location.href = midHref('/cases')
-          },
-          icon: <Briefcase className="h-4 w-4" aria-hidden />,
-        }}
       >
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <div className="relative min-w-[200px] flex-1">
@@ -147,7 +139,7 @@ export function AgentSessionsList() {
         {sorted.length === 0 ? (
           <EmptyState
             title="暂无任务会话"
-            description="新建会话启动，或返回中台案件库继续人工流程。"
+            description="新建会话启动，或从左侧打开已有会话。"
             primary={{
               label: '新建任务会话',
               onClick: newSession,
@@ -266,23 +258,9 @@ export function AgentSessionsList() {
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-600">
                       {c ? (
-                        <span className="inline-flex max-w-full items-center gap-1.5">
-                          <span className="min-w-0 truncate text-slate-600">
-                            {c.caseNo ? `${c.caseNo} · ` : ''}
-                            {c.title}
-                          </span>
-                          <button
-                            type="button"
-                            className="btn-press focus-ring shrink-0 rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                            title="打开中台案详"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              e.preventDefault()
-                              window.location.href = midHref(`/cases/${c.id}`)
-                            }}
-                          >
-                            案详
-                          </button>
+                        <span className="min-w-0 truncate text-slate-600">
+                          {c.caseNo ? `${c.caseNo} · ` : ''}
+                          {c.title}
                         </span>
                       ) : (
                         '—'
@@ -300,22 +278,6 @@ export function AgentSessionsList() {
                               {b}
                             </span>
                           ))}
-                          {badges.some(isConfirmRoleBadge) && (
-                            <a
-                              href={midInboxHref({ sessionId: s.id })}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                e.preventDefault()
-                                window.location.href = midInboxHref({
-                                  sessionId: s.id,
-                                })
-                              }}
-                              className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring hit-40 !min-h-10 px-2.5 text-[11px]"
-                              title="在运营 Inbox 中查看"
-                            >
-                              在运营 Inbox 打开
-                            </a>
-                          )}
                         </div>
                       )}
                     </td>

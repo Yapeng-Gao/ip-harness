@@ -61,15 +61,15 @@ export function ProjectWorkspacePage() {
     <div className="flex min-h-0 flex-1">
       <ProjectFolderSidebar />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <div className="shrink-0 space-y-2 border-b border-amber-200 bg-amber-50 px-3 py-2">
-          <div className="text-[11px] text-amber-950">
-            样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand
-            {' · '}
+        <div className="shrink-0 space-y-2 border-b border-slate-200 bg-white px-3 py-2">
+          <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
             <span className={`rounded border px-1 py-px ${badge.className}`}>
               {badge.label}
             </span>
-            {project.domainPackId ? ` · pack=${project.domainPackId}` : ''}
-            {project.caseId ? ` · case=${project.caseId}` : ' · 未绑案件'}
+            {project.domainPackId ? (
+              <span>pack={project.domainPackId}</span>
+            ) : null}
+            <span>{project.caseId ? `case=${project.caseId}` : '未绑案件'}</span>
           </div>
           <CaseBindControls
             caseId={project.caseId}

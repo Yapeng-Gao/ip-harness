@@ -29,7 +29,7 @@ const HARNESS_CORE = [
   { id: 'orchestrator', label: '编排', desc: '编排思考 / 工具 / 确认' },
   { id: 'tools', label: '工具', desc: '可插拔办理工具（见目录详情）' },
   { id: 'hitl', label: '请你确认', desc: '按 Agent 差异化确认步骤' },
-  { id: 'command', label: '业务写入', desc: '与中台共用命令入口，确认后写回' },
+  { id: 'command', label: '业务写入', desc: '确认后写入案件 · 与领域命令同源' },
 ]
 
 export function AgentHarnessOverview() {
@@ -99,7 +99,7 @@ export function AgentHarnessOverview() {
         title="运行时"
         context={
           caseId
-            ? '选 Agent 建会话 · 将带上所选案件，确认后写回中台。平台分层：Core 主闭环 / Assist 辅办 / Beta 非采购闭环。'
+            ? '选 Agent 建会话 · 将带上所选案件，确认后写入案件。平台分层：Core 主闭环 / Assist 辅办 / Beta 非采购闭环。'
             : '选 Agent 建会话 · 未选案则稍后关联。平台分层纪律：勿把 Assist/Beta 卖成 Core。'
         }
         primary={{

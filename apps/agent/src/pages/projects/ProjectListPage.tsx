@@ -32,11 +32,6 @@ export function ProjectListPage() {
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
-      <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-950">
-        <strong>样机 · 无真 LLM · 专家分剧本</strong>
-        （项目次级入口 · general 无专利步骤 · domain/patent 挂 DomainPack）
-      </div>
-
       <div className="mx-auto w-full max-w-2xl px-4 py-8">
         <h1 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
           <FolderKanban className="h-5 w-5" aria-hidden />

@@ -1,9 +1,7 @@
-import { midHref } from '../../lib/deepLinks'
 import {
   Play,
   Square,
   RotateCcw,
-  FolderOpen,
   AlertTriangle,
   MoreHorizontal,
 } from 'lucide-react'
@@ -48,7 +46,7 @@ export function SessionWorkspaceHeader({
   sess,
   subtitleLabel,
   caseTitle,
-  caseId,
+  caseId: _caseId,
   playing,
   hitlActive,
   moreOpen,
@@ -116,24 +114,6 @@ export function SessionWorkspaceHeader({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {caseId ? (
-            <a
-              href={midHref(`/cases/${caseId}?from=agent`)}
-              className="btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-[var(--shadow-rest)] hover:bg-slate-50"
-              aria-label="回中台案件"
-            >
-              <FolderOpen className="h-3.5 w-3.5" aria-hidden /> 回中台
-            </a>
-          ) : (
-            <a
-              href={midHref('/cases')}
-              className="btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200/90 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-[var(--shadow-rest)] hover:bg-slate-50"
-              aria-label="回中台案件库"
-            >
-              <FolderOpen className="h-3.5 w-3.5" aria-hidden /> 回中台
-            </a>
-          )}
-
           {!playing && !hitlActive && (
             <div className="relative" data-more-menu>
               <button
@@ -226,7 +206,7 @@ export function SessionWorkspaceHeader({
         >
           <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-slate-500" aria-hidden />
           <span className="min-w-0 flex-1">
-            可稍后创建或绑定案件 · 无案也可继续聊 · 确认后不会写回中台
+            可稍后创建或绑定案件 · 无案也可继续聊 · 确认后不会写入案件
           </span>
           <button
             type="button"
