@@ -1,0 +1,2032 @@
+{
+  "meta": {
+    "head": "58f04f9",
+    "viewport": "1440x900",
+    "base": "http://127.0.0.1:5175",
+    "date": "2026-09-19",
+    "tz": "Asia/Shanghai"
+  },
+  "pages": {
+    "home": {
+      "path": "/agent",
+      "measure": {
+        "vh": 900,
+        "vw": 1440,
+        "bodyScroll": false,
+        "overflow": {
+          "html": "hidden/hidden",
+          "body": "hidden/hidden",
+          "root": "hidden/hidden"
+        },
+        "nestedScrollers": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "testid": "",
+            "cls": "flex flex-1 items-center justify-center overflow-y-auto",
+            "sh": 880,
+            "ch": 852,
+            "h": 852
+          }
+        ],
+        "nestedScrollerCount": 1,
+        "hitOffenders": [
+          {
+            "text": "开始",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 55,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "Agent",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 56,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "会话",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 55,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "更多",
+            "tag": "BUTTON",
+            "testid": "agent-side-more",
+            "h": 28,
+            "w": 52,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex h-full flex-col items-cen"
+          },
+          {
+            "text": "Core\n检索现有技术 · 可专利性",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 209,
+            "minDim": 32,
+            "cls": "btn-press focus-ring inline-flex min-h-8 items-center gap-1."
+          },
+          {
+            "text": "Core\n拆 OA · 起草答复",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 167,
+            "minDim": 32,
+            "cls": "btn-press focus-ring inline-flex min-h-8 items-center gap-1."
+          },
+          {
+            "text": "Core\n立项评估 · 报价",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 161,
+            "minDim": 32,
+            "cls": "btn-press focus-ring inline-flex min-h-8 items-center gap-1."
+          },
+          {
+            "text": "Core\n整理发明交底包",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 155,
+            "minDim": 32,
+            "cls": "btn-press focus-ring inline-flex min-h-8 items-center gap-1."
+          },
+          {
+            "text": "Core\n核对年费 · 解锁付款",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 185,
+            "minDim": 32,
+            "cls": "btn-press focus-ring inline-flex min-h-8 items-center gap-1."
+          },
+          {
+            "text": "Core\n梳理权利要求与期限",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 179,
+            "minDim": 32,
+            "cls": "btn-press focus-ring inline-flex min-h-8 items-center gap-1."
+          }
+        ],
+        "hitOffenderCount": 10,
+        "hitOkSample": [
+          {
+            "text": "代理所租户 · 德恒知产",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 183,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "代理所",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 94,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "作业中台",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "知产 Agent",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "开始办理",
+            "tag": "BUTTON",
+            "testid": "home-send",
+            "h": 40,
+            "w": 88,
+            "minDim": 40,
+            "cls": "btn-press focus-ring cta-work rounded-md px-4 py-1.5 text-sm"
+          },
+          {
+            "text": "创建并绑定新案",
+            "tag": "BUTTON",
+            "testid": "case-create-bind",
+            "h": 40,
+            "w": 122,
+            "minDim": 40,
+            "cls": "btn-press focus-ring case-bind-btn hit-40 inline-flex items-"
+          },
+          {
+            "text": "绑定已有案",
+            "tag": "BUTTON",
+            "testid": "case-bind-existing",
+            "h": 40,
+            "w": 98,
+            "minDim": 40,
+            "cls": "btn-press focus-ring case-bind-btn hit-40 inline-flex items-"
+          },
+          {
+            "text": "调研检索 Agent\nCore\n调研 · 立项前调研",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 59,
+            "w": 308,
+            "minDim": 59,
+            "cls": "btn-press focus-ring flex w-full flex-col items-start rounde"
+          }
+        ],
+        "fontOffenders": [],
+        "fontOffenderCount": 0,
+        "dockH": null,
+        "dockTop": null,
+        "timelineH": null,
+        "transitionAllExact": 94,
+        "transitionSamples": [
+          {
+            "tag": "DIV",
+            "cls": "flex flex-1 items-center justify-center overflow-y-auto",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "w-full max-w-2xl px-6 py-10",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "text-center",
+            "testid": ""
+          },
+          {
+            "tag": "H1",
+            "cls": "text-balance text-[22px] font-semibold tracking-tight text-slate-900",
+            "testid": ""
+          },
+          {
+            "tag": "P",
+            "cls": "mt-1.5 text-pretty text-sm text-slate-600",
+            "testid": ""
+          },
+          {
+            "tag": "P",
+            "cls": "mt-1 text-[11px] text-slate-400",
+            "testid": ""
+          },
+          {
+            "tag": "P",
+            "cls": "mt-3 text-[11px] text-slate-400",
+            "testid": ""
+          },
+          {
+            "tag": "A",
+            "cls": "text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "mt-6 rounded-[var(--radius-xl)] border border-slate-200/90 bg-white sh",
+            "testid": ""
+          },
+          {
+            "tag": "TEXTAREA",
+            "cls": "focus-ring w-full resize-none bg-transparent px-4 pt-4 text-sm leading",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "flex flex-wrap items-center gap-2 border-t border-slate-100 px-3 pb-3 ",
+            "testid": ""
+          },
+          {
+            "tag": "LABEL",
+            "cls": "flex min-w-0 items-center gap-1.5",
+            "testid": ""
+          }
+        ],
+        "url": "http://127.0.0.1:5175/agent",
+        "title": "IP Harness · 知产 Agent"
+      },
+      "consoleCount": 11,
+      "png": "01-home.png"
+    },
+    "session_oa1": {
+      "path": "/agent/sessions/sess-oa-1",
+      "measure": {
+        "vh": 900,
+        "vw": 1440,
+        "bodyScroll": false,
+        "overflow": {
+          "html": "hidden/hidden",
+          "body": "hidden/hidden",
+          "root": "hidden/hidden"
+        },
+        "nestedScrollers": [
+          {
+            "tag": "TEXTAREA",
+            "id": "",
+            "testid": "",
+            "cls": "agent-artifact-editor focus-ring",
+            "sh": 262,
+            "ch": 206,
+            "h": 207
+          }
+        ],
+        "nestedScrollerCount": 1,
+        "hitOffenders": [
+          {
+            "text": "开始",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 55,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "Agent",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 56,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "会话",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 55,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "更多",
+            "tag": "BUTTON",
+            "testid": "agent-side-more",
+            "h": 28,
+            "w": 52,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex h-full flex-col items-cen"
+          },
+          {
+            "text": "新建会话",
+            "tag": "BUTTON",
+            "testid": "sidebar-new-session",
+            "h": 27,
+            "w": 203,
+            "minDim": 27,
+            "cls": "btn-press focus-ring flex w-full items-center justify-center"
+          },
+          {
+            "text": "筛选",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 21,
+            "w": 30,
+            "minDim": 21,
+            "cls": "btn-press focus-ring rounded px-1 py-0.5 text-[11px] text-sl"
+          },
+          {
+            "text": "全部4",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 98,
+            "minDim": 32,
+            "cls": "segmented-item btn-press focus-ring flex-1 tabular"
+          },
+          {
+            "text": "待确认3",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 98,
+            "minDim": 32,
+            "cls": "segmented-item btn-press focus-ring flex-1 tabular"
+          },
+          {
+            "text": "Inbox",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 14,
+            "w": 31,
+            "minDim": 14,
+            "cls": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:te"
+          },
+          {
+            "text": "Inbox",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 14,
+            "w": 31,
+            "minDim": 14,
+            "cls": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:te"
+          },
+          {
+            "text": "Inbox",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 14,
+            "w": 31,
+            "minDim": 14,
+            "cls": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:te"
+          },
+          {
+            "text": "调用 ·\nOA 争点分析",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 20,
+            "w": 137,
+            "minDim": 20,
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded "
+          },
+          {
+            "text": "调用 ·\nOA 争点分析",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 20,
+            "w": 137,
+            "minDim": 20,
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded "
+          },
+          {
+            "text": "调用 ·\n修改建议",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 20,
+            "w": 119,
+            "minDim": 20,
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded "
+          },
+          {
+            "text": "授权递交",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 36,
+            "w": 72,
+            "minDim": 36,
+            "cls": "ui-btn ui-btn-sm btn-press focus-ring  ui-btn-ghost"
+          },
+          {
+            "text": "退回",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 36,
+            "w": 66,
+            "minDim": 36,
+            "cls": "ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring"
+          },
+          {
+            "text": "",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 23,
+            "w": 62,
+            "minDim": 23,
+            "cls": "btn-press focus-ring rounded border border-slate-300 bg-whit"
+          },
+          {
+            "text": "期限\n2",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 37,
+            "w": 223,
+            "minDim": 37,
+            "cls": "agent-aside-meta-summary"
+          },
+          {
+            "text": "产物\n1",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 37,
+            "w": 223,
+            "minDim": 37,
+            "cls": "agent-aside-meta-summary"
+          },
+          {
+            "text": "",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 28,
+            "w": 95,
+            "minDim": 28,
+            "cls": "agent-artifact-tab btn-press focus-ring"
+          },
+          {
+            "text": "",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 29,
+            "w": 197,
+            "minDim": 29,
+            "cls": "cursor-pointer px-2.5 py-1.5 text-[11px] text-slate-500 hove"
+          },
+          {
+            "text": "办理记录",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 37,
+            "w": 223,
+            "minDim": 37,
+            "cls": "cursor-pointer px-3 py-2.5 text-[11px] font-medium text-slat"
+          },
+          {
+            "text": "高级 · 能力与架构",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 37,
+            "w": 223,
+            "minDim": 37,
+            "cls": "cursor-pointer px-3 py-2.5 text-[11px] font-medium text-slat"
+          }
+        ],
+        "hitOffenderCount": 23,
+        "hitOkSample": [
+          {
+            "text": "代理所租户 · 德恒知产",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 183,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "代理所",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 94,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "作业中台",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "知产 Agent",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "上下文\n2",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 100,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 hidden items-center gap-1.5 roun"
+          },
+          {
+            "text": "一通创造性答复 · 边缘调度\nOA 答复 Agent · 待你确认\n待企业确认",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 72,
+            "w": 166,
+            "minDim": 72,
+            "cls": "agent-rail-row__link min-w-0 flex-1 text-left"
+          },
+          {
+            "text": "边缘侧布局空白点洞察\n布局洞察 Agent · 待你确认\n待企业确认",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 72,
+            "w": 166,
+            "minDim": 72,
+            "cls": "agent-rail-row__link min-w-0 flex-1 text-left"
+          },
+          {
+            "text": "无人机竞品 · 监控告警\n监控预警 Agent · 待你确认\n待企业确认",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 72,
+            "w": 166,
+            "minDim": 72,
+            "cls": "agent-rail-row__link min-w-0 flex-1 text-left"
+          }
+        ],
+        "fontOffenders": [
+          {
+            "text": "新建会话",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring flex w-full items-center justify-center",
+            "h": 27
+          },
+          {
+            "text": "筛选",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring rounded px-1 py-0.5 text-[11px] text-sl",
+            "h": 21
+          },
+          {
+            "text": "Inbox",
+            "fs": 9,
+            "tag": "BUTTON",
+            "cls": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:te",
+            "h": 14
+          },
+          {
+            "text": "Inbox",
+            "fs": 9,
+            "tag": "BUTTON",
+            "cls": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:te",
+            "h": 14
+          },
+          {
+            "text": "Inbox",
+            "fs": 9,
+            "tag": "BUTTON",
+            "cls": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:te",
+            "h": 14
+          }
+        ],
+        "fontOffenderCount": 5,
+        "dockH": 190,
+        "dockTop": 669,
+        "timelineH": 481,
+        "transitionAllExact": 89,
+        "transitionSamples": [
+          {
+            "tag": "DIV",
+            "cls": "flex min-h-0 flex-1",
+            "testid": ""
+          },
+          {
+            "tag": "SECTION",
+            "cls": "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-surface-50",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "shrink-0 border-b border-slate-200/80 bg-white/95 px-4 py-3 backdrop-b",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "flex flex-wrap items-center justify-between gap-2",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "min-w-0",
+            "testid": ""
+          },
+          {
+            "tag": "H1",
+            "cls": "group flex items-center gap-1.5 truncate text-[15px] font-semibold tra",
+            "testid": ""
+          },
+          {
+            "tag": "SPAN",
+            "cls": "truncate",
+            "testid": ""
+          },
+          {
+            "tag": "P",
+            "cls": "truncate text-xs text-slate-500",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "flex flex-wrap gap-2",
+            "testid": ""
+          },
+          {
+            "tag": "svg",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "shrink-0 border-b border-slate-100 bg-white px-4 py-2",
+            "testid": "session-case-bind-top"
+          }
+        ],
+        "url": "http://127.0.0.1:5175/agent/sessions/sess-oa-1",
+        "title": "IP Harness · 知产 Agent"
+      },
+      "consoleCount": 11,
+      "png": "02-session-oa1.png"
+    },
+    "proj_general": {
+      "path": "/agent/projects/proj-demo-general",
+      "measure": {
+        "vh": 900,
+        "vw": 1440,
+        "bodyScroll": false,
+        "overflow": {
+          "html": "hidden/hidden",
+          "body": "hidden/hidden",
+          "root": "hidden/hidden"
+        },
+        "nestedScrollers": [],
+        "nestedScrollerCount": 0,
+        "hitOffenders": [
+          {
+            "text": "课题协作 · 通用演示\n通用",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 28,
+            "w": 207,
+            "minDim": 28,
+            "cls": "focus-ring flex w-full items-center gap-1 truncate rounded-m"
+          },
+          {
+            "text": "边缘调度模组 · 专利演示\n专利",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 28,
+            "w": 207,
+            "minDim": 28,
+            "cls": "focus-ring flex w-full items-center gap-1 truncate rounded-m"
+          },
+          {
+            "text": "高级 · general-orchestrator",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 15,
+            "w": 149,
+            "minDim": 15,
+            "cls": "btn-press focus-ring cursor-pointer rounded px-1 text-[10px]"
+          },
+          {
+            "text": "分派给研究",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 27,
+            "w": 77,
+            "minDim": 27,
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg"
+          },
+          {
+            "text": "分派给写作",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 27,
+            "w": 77,
+            "minDim": 27,
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg"
+          },
+          {
+            "text": "分派给审查",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 27,
+            "w": 77,
+            "minDim": 27,
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg"
+          }
+        ],
+        "hitOffenderCount": 6,
+        "hitOkSample": [
+          {
+            "text": "代理所租户 · 德恒知产",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 183,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "代理所",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 94,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "作业中台",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "知产 Agent",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "创建并绑定新案",
+            "tag": "BUTTON",
+            "testid": "case-create-bind",
+            "h": 40,
+            "w": 122,
+            "minDim": 40,
+            "cls": "btn-press focus-ring case-bind-btn hit-40 inline-flex items-"
+          },
+          {
+            "text": "绑定已有案",
+            "tag": "BUTTON",
+            "testid": "case-bind-existing",
+            "h": 40,
+            "w": 98,
+            "minDim": 40,
+            "cls": "btn-press focus-ring case-bind-btn hit-40 inline-flex items-"
+          },
+          {
+            "text": "分派任务",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 70,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 inline-flex max-w-[16rem] flex-c"
+          },
+          {
+            "text": "汇总时间线",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 82,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 inline-flex max-w-[16rem] flex-c"
+          }
+        ],
+        "fontOffenders": [
+          {
+            "text": "高级 · general-orchestrator",
+            "fs": 10,
+            "tag": "SUMMARY",
+            "cls": "btn-press focus-ring cursor-pointer rounded px-1 text-[10px]",
+            "h": 15
+          },
+          {
+            "text": "分派给研究",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg",
+            "h": 27
+          },
+          {
+            "text": "分派给写作",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg",
+            "h": 27
+          },
+          {
+            "text": "分派给审查",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg",
+            "h": 27
+          }
+        ],
+        "fontOffenderCount": 4,
+        "dockH": null,
+        "dockTop": null,
+        "timelineH": null,
+        "transitionAllExact": 98,
+        "transitionSamples": [
+          {
+            "tag": "DIV",
+            "cls": "flex min-h-0 flex-1",
+            "testid": ""
+          },
+          {
+            "tag": "ASIDE",
+            "cls": "flex w-[min(14rem,42vw)] min-w-[11rem] max-w-[15rem] shrink-0 flex-col",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "border-b border-slate-100 px-2.5 py-2",
+            "testid": ""
+          },
+          {
+            "tag": "svg",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "min-h-0 flex-1 overflow-y-auto px-2 py-2",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-4",
+            "testid": ""
+          },
+          {
+            "tag": "UL",
+            "cls": "space-y-0.5",
+            "testid": ""
+          },
+          {
+            "tag": "LI",
+            "cls": "space-y-0.5",
+            "testid": ""
+          }
+        ],
+        "url": "http://127.0.0.1:5175/agent/projects/proj-demo-general",
+        "title": "IP Harness · 知产 Agent"
+      },
+      "consoleCount": 11,
+      "png": "04-proj-general.png"
+    },
+    "proj_patent": {
+      "path": "/agent/projects/proj-demo-patent",
+      "measure": {
+        "vh": 900,
+        "vw": 1440,
+        "bodyScroll": false,
+        "overflow": {
+          "html": "hidden/hidden",
+          "body": "hidden/hidden",
+          "root": "hidden/hidden"
+        },
+        "nestedScrollers": [],
+        "nestedScrollerCount": 0,
+        "hitOffenders": [
+          {
+            "text": "课题协作 · 通用演示\n通用",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 28,
+            "w": 207,
+            "minDim": 28,
+            "cls": "focus-ring flex w-full items-center gap-1 truncate rounded-m"
+          },
+          {
+            "text": "边缘调度模组 · 专利演示\n专利",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 28,
+            "w": 207,
+            "minDim": 28,
+            "cls": "focus-ring flex w-full items-center gap-1 truncate rounded-m"
+          },
+          {
+            "text": "1收目标",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 23,
+            "w": 57,
+            "minDim": 23,
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded-"
+          },
+          {
+            "text": "2拆派",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 23,
+            "w": 46,
+            "minDim": 23,
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded-"
+          },
+          {
+            "text": "3等回执",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 23,
+            "w": 57,
+            "minDim": 23,
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded-"
+          },
+          {
+            "text": "4汇总",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 23,
+            "w": 46,
+            "minDim": 23,
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded-"
+          },
+          {
+            "text": "高级 · orchestrator",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 15,
+            "w": 111,
+            "minDim": 15,
+            "cls": "btn-press focus-ring cursor-pointer rounded px-1 text-[10px]"
+          },
+          {
+            "text": "分派给检索",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 27,
+            "w": 77,
+            "minDim": 27,
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg"
+          },
+          {
+            "text": "分派给撰稿",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 27,
+            "w": 77,
+            "minDim": 27,
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg"
+          },
+          {
+            "text": "分派给 FTO",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 27,
+            "w": 78,
+            "minDim": 27,
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg"
+          }
+        ],
+        "hitOffenderCount": 10,
+        "hitOkSample": [
+          {
+            "text": "代理所租户 · 德恒知产",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 183,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "代理所",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 94,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "作业中台",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "知产 Agent",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "创建并绑定新案",
+            "tag": "BUTTON",
+            "testid": "case-create-bind",
+            "h": 40,
+            "w": 122,
+            "minDim": 40,
+            "cls": "btn-press focus-ring case-bind-btn hit-40 inline-flex items-"
+          },
+          {
+            "text": "绑定已有案",
+            "tag": "BUTTON",
+            "testid": "case-bind-existing",
+            "h": 40,
+            "w": 98,
+            "minDim": 40,
+            "cls": "btn-press focus-ring case-bind-btn hit-40 inline-flex items-"
+          },
+          {
+            "text": "分派任务",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 70,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 inline-flex max-w-[16rem] flex-c"
+          },
+          {
+            "text": "汇总时间线",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 82,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 inline-flex max-w-[16rem] flex-c"
+          }
+        ],
+        "fontOffenders": [
+          {
+            "text": "1收目标",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded-",
+            "h": 23
+          },
+          {
+            "text": "2拆派",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded-",
+            "h": 23
+          },
+          {
+            "text": "3等回执",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded-",
+            "h": 23
+          },
+          {
+            "text": "4汇总",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring inline-flex items-center gap-1 rounded-",
+            "h": 23
+          },
+          {
+            "text": "高级 · orchestrator",
+            "fs": 10,
+            "tag": "SUMMARY",
+            "cls": "btn-press focus-ring cursor-pointer rounded px-1 text-[10px]",
+            "h": 15
+          },
+          {
+            "text": "分派给检索",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg",
+            "h": 27
+          },
+          {
+            "text": "分派给撰稿",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg",
+            "h": 27
+          },
+          {
+            "text": "分派给 FTO",
+            "fs": 11,
+            "tag": "BUTTON",
+            "cls": "btn-press focus-ring rounded-full border border-slate-200 bg",
+            "h": 27
+          }
+        ],
+        "fontOffenderCount": 8,
+        "dockH": null,
+        "dockTop": null,
+        "timelineH": null,
+        "transitionAllExact": 108,
+        "transitionSamples": [
+          {
+            "tag": "DIV",
+            "cls": "flex min-h-0 flex-1",
+            "testid": ""
+          },
+          {
+            "tag": "ASIDE",
+            "cls": "flex w-[min(14rem,42vw)] min-w-[11rem] max-w-[15rem] shrink-0 flex-col",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "border-b border-slate-100 px-2.5 py-2",
+            "testid": ""
+          },
+          {
+            "tag": "svg",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "min-h-0 flex-1 overflow-y-auto px-2 py-2",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-4",
+            "testid": ""
+          },
+          {
+            "tag": "UL",
+            "cls": "space-y-0.5",
+            "testid": ""
+          },
+          {
+            "tag": "LI",
+            "cls": "space-y-0.5",
+            "testid": ""
+          }
+        ],
+        "url": "http://127.0.0.1:5175/agent/projects/proj-demo-patent",
+        "title": "IP Harness · 知产 Agent"
+      },
+      "consoleCount": 11,
+      "png": "05-proj-patent.png"
+    },
+    "catalog": {
+      "path": "/agent/agents",
+      "measure": {
+        "vh": 900,
+        "vw": 1440,
+        "bodyScroll": false,
+        "overflow": {
+          "html": "hidden/hidden",
+          "body": "hidden/hidden",
+          "root": "hidden/hidden"
+        },
+        "nestedScrollers": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "testid": "",
+            "cls": "flex-1 overflow-y-auto px-6 py-8 lg:px-8",
+            "sh": 1246,
+            "ch": 852,
+            "h": 852
+          }
+        ],
+        "nestedScrollerCount": 1,
+        "hitOffenders": [
+          {
+            "text": "开始",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 54,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "Agent",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 58,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "会话",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 54,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "更多",
+            "tag": "BUTTON",
+            "testid": "agent-side-more",
+            "h": 28,
+            "w": 52,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex h-full flex-col items-cen"
+          },
+          {
+            "text": "运行说明",
+            "tag": "A",
+            "testid": "",
+            "h": 20,
+            "w": 56,
+            "minDim": 20,
+            "cls": "ui-link-weak"
+          },
+          {
+            "text": "全部",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 48,
+            "minDim": 32,
+            "cls": "segmented-item"
+          },
+          {
+            "text": "Core",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 50,
+            "minDim": 32,
+            "cls": "segmented-item"
+          },
+          {
+            "text": "Assist",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 56,
+            "minDim": 32,
+            "cls": "segmented-item"
+          },
+          {
+            "text": "Beta",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 49,
+            "minDim": 32,
+            "cls": "segmented-item"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 342,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full"
+          },
+          {
+            "text": "详情 · 工具 4 · 需确认 1",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 18,
+            "w": 342,
+            "minDim": 18,
+            "cls": "agent-picker-card__details-summary"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 342,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full"
+          },
+          {
+            "text": "详情 · 工具 4 · 需确认 1",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 18,
+            "w": 342,
+            "minDim": 18,
+            "cls": "agent-picker-card__details-summary"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 342,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full"
+          },
+          {
+            "text": "详情 · 工具 3 · 需确认 2",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 18,
+            "w": 342,
+            "minDim": 18,
+            "cls": "agent-picker-card__details-summary"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 342,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full"
+          },
+          {
+            "text": "详情 · 工具 4 · 需确认 2",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 18,
+            "w": 342,
+            "minDim": 18,
+            "cls": "agent-picker-card__details-summary"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 342,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full"
+          },
+          {
+            "text": "详情 · 工具 4 · 需确认 2",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 18,
+            "w": 342,
+            "minDim": 18,
+            "cls": "agent-picker-card__details-summary"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 342,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full"
+          },
+          {
+            "text": "详情 · 工具 3 · 需确认 1",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 18,
+            "w": 342,
+            "minDim": 18,
+            "cls": "agent-picker-card__details-summary"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 342,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring w-full"
+          }
+        ],
+        "hitOffenderCount": 22,
+        "hitOkSample": [
+          {
+            "text": "代理所租户 · 德恒知产",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 183,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "代理所",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 94,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "作业中台",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "知产 Agent",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭",
+            "tag": "SUMMARY",
+            "testid": "",
+            "h": 41,
+            "w": 342,
+            "minDim": 41,
+            "cls": "agent-picker-card__tier-note-summary"
+          }
+        ],
+        "fontOffenders": [],
+        "fontOffenderCount": 0,
+        "dockH": null,
+        "dockTop": null,
+        "timelineH": null,
+        "transitionAllExact": 369,
+        "transitionSamples": [
+          {
+            "tag": "DIV",
+            "cls": "flex-1 overflow-y-auto px-6 py-8 lg:px-8",
+            "testid": ""
+          },
+          {
+            "tag": "HEADER",
+            "cls": "mb-5 max-w-5xl",
+            "testid": ""
+          },
+          {
+            "tag": "H1",
+            "cls": "text-[22px] font-semibold tracking-tight text-slate-900",
+            "testid": ""
+          },
+          {
+            "tag": "P",
+            "cls": "mt-1 text-sm text-slate-500",
+            "testid": ""
+          },
+          {
+            "tag": "P",
+            "cls": "mt-1.5 text-[11px] leading-snug text-slate-400",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "mt-3 flex flex-wrap items-center gap-2",
+            "testid": ""
+          },
+          {
+            "tag": "OPTION",
+            "cls": "",
+            "testid": ""
+          },
+          {
+            "tag": "OPTION",
+            "cls": "",
+            "testid": ""
+          },
+          {
+            "tag": "OPTION",
+            "cls": "",
+            "testid": ""
+          },
+          {
+            "tag": "OPTION",
+            "cls": "",
+            "testid": ""
+          },
+          {
+            "tag": "OPTION",
+            "cls": "",
+            "testid": ""
+          },
+          {
+            "tag": "SPAN",
+            "cls": "text-[11px] text-slate-400",
+            "testid": ""
+          }
+        ],
+        "url": "http://127.0.0.1:5175/agent/agents",
+        "title": "IP Harness · 知产 Agent"
+      },
+      "consoleCount": 11,
+      "png": "06-catalog.png"
+    },
+    "harness": {
+      "path": "/agent/harness",
+      "measure": {
+        "vh": 900,
+        "vw": 1440,
+        "bodyScroll": false,
+        "overflow": {
+          "html": "hidden/hidden",
+          "body": "hidden/hidden",
+          "root": "hidden/hidden"
+        },
+        "nestedScrollers": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "testid": "",
+            "cls": "flex-1 overflow-y-auto px-6 py-6 lg:px-8",
+            "sh": 1394,
+            "ch": 852,
+            "h": 852
+          }
+        ],
+        "nestedScrollerCount": 1,
+        "hitOffenders": [
+          {
+            "text": "开始",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 55,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "Agent",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 56,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "会话",
+            "tag": "A",
+            "testid": "",
+            "h": 28,
+            "w": 55,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex flex-1 flex-col items-cen"
+          },
+          {
+            "text": "更多",
+            "tag": "BUTTON",
+            "testid": "agent-side-more",
+            "h": 28,
+            "w": 52,
+            "minDim": 28,
+            "cls": "btn-press focus-ring relative flex h-full flex-col items-cen"
+          },
+          {
+            "text": "调研检索 Agent\nCore\n调研 · 可用 · 批准策略",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 37,
+            "w": 806,
+            "minDim": 37,
+            "cls": "btn-press focus-ring min-w-0 flex-1 rounded-md text-left"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 48,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
+          },
+          {
+            "text": "交底整理 Agent\nCore\n决策 · 可用 · 批准策略",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 37,
+            "w": 806,
+            "minDim": 37,
+            "cls": "btn-press focus-ring min-w-0 flex-1 rounded-md text-left"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 48,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
+          },
+          {
+            "text": "立项评估 Agent\nCore\n决策 · 可用 · 立项决定 / 确认报价",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 37,
+            "w": 806,
+            "minDim": 37,
+            "cls": "btn-press focus-ring min-w-0 flex-1 rounded-md text-left"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 48,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
+          },
+          {
+            "text": "权利要求撰写 Agent\nCore\n撰写 · 可用 · 批准策略 / 授权递交",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 37,
+            "w": 806,
+            "minDim": 37,
+            "cls": "btn-press focus-ring min-w-0 flex-1 rounded-md text-left"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 48,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
+          },
+          {
+            "text": "OA 答复 Agent\nCore\n答复 · 可用 · 批准策略 / 授权递交",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 37,
+            "w": 806,
+            "minDim": 37,
+            "cls": "btn-press focus-ring min-w-0 flex-1 rounded-md text-left"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 48,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
+          },
+          {
+            "text": "年费与维持 Agent\nCore\n维持 · 可用 · 付款解锁",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 37,
+            "w": 806,
+            "minDim": 37,
+            "cls": "btn-press focus-ring min-w-0 flex-1 rounded-md text-left"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 48,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
+          },
+          {
+            "text": "转化条款 Agent\nBeta\n转化 · 试用 · 批准策略 · Beta·非采购闭环",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 37,
+            "w": 751,
+            "minDim": 37,
+            "cls": "btn-press focus-ring min-w-0 flex-1 rounded-md text-left"
+          },
+          {
+            "text": "试用 · 非闭环",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 103,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm btn-press focus-ring border border-amber-30"
+          },
+          {
+            "text": "监控预警 Agent\nAssist\n监控 · 可用 · 批准策略 · 辅助薄层：告警处置与 cl",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 37,
+            "w": 806,
+            "minDim": 37,
+            "cls": "btn-press focus-ring min-w-0 flex-1 rounded-md text-left"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 32,
+            "w": 48,
+            "minDim": 32,
+            "cls": "ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
+          }
+        ],
+        "hitOffenderCount": 20,
+        "hitOkSample": [
+          {
+            "text": "代理所租户 · 德恒知产",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 183,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "代理所",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 94,
+            "minDim": 40,
+            "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounde"
+          },
+          {
+            "text": "作业中台",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "知产 Agent",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 79,
+            "minDim": 40,
+            "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)"
+          },
+          {
+            "text": "Agent",
+            "tag": "A",
+            "testid": "",
+            "h": 40,
+            "w": 69,
+            "minDim": 40,
+            "cls": "ui-btn ui-btn-secondary btn-press focus-ring"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 80,
+            "minDim": 40,
+            "cls": "ui-btn ui-btn-primary btn-press cta-work focus-ring"
+          },
+          {
+            "text": "启动",
+            "tag": "BUTTON",
+            "testid": "",
+            "h": 40,
+            "w": 72,
+            "minDim": 40,
+            "cls": "btn-press focus-ring cta-work inline-flex items-center gap-1"
+          }
+        ],
+        "fontOffenders": [],
+        "fontOffenderCount": 0,
+        "dockH": null,
+        "dockTop": null,
+        "timelineH": null,
+        "transitionAllExact": 129,
+        "transitionSamples": [
+          {
+            "tag": "DIV",
+            "cls": "flex-1 overflow-y-auto px-6 py-6 lg:px-8",
+            "testid": ""
+          },
+          {
+            "tag": "HEADER",
+            "cls": "mb-6 ",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "flex flex-wrap items-start justify-between gap-4",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "min-w-0",
+            "testid": ""
+          },
+          {
+            "tag": "H1",
+            "cls": "text-balance text-[22px] font-semibold tracking-tight text-slate-900",
+            "testid": ""
+          },
+          {
+            "tag": "P",
+            "cls": "mt-1 text-pretty text-sm text-slate-500",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "flex flex-wrap items-center gap-2",
+            "testid": ""
+          },
+          {
+            "tag": "svg",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]",
+            "testid": ""
+          },
+          {
+            "tag": "DIV",
+            "cls": "mb-3 flex flex-wrap items-center gap-2",
+            "testid": ""
+          },
+          {
+            "tag": "OPTION",
+            "cls": "",
+            "testid": ""
+          }
+        ],
+        "url": "http://127.0.0.1:5175/agent/harness",
+        "title": "IP Harness · 知产 Agent"
+      },
+      "consoleCount": 11,
+      "png": "07-harness.png"
+    }
+  },
+  "console": {
+    "totalEvents": 66,
+    "unique": 7,
+    "errorUnique": 0,
+    "nonWhitelistErrors": [],
+    "nonWhitelistCount": 0,
+    "whitelistErrors": [],
+    "sampleAll": [
+      {
+        "type": "debug",
+        "text": "[vite] connecting...",
+        "loc": "http://127.0.0.1:5175/@vite/client",
+        "count": 6
+      },
+      {
+        "type": "debug",
+        "text": "[vite] connected.",
+        "loc": "http://127.0.0.1:5175/@vite/client",
+        "count": 6
+      },
+      {
+        "type": "info",
+        "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+        "loc": "http://127.0.0.1:5175/node_modules/.vite/deps/react-dom_client.js?v=c8b0d43a",
+        "count": 6
+      },
+      {
+        "type": "info",
+        "text": "[ip-harness] 写路径优先 @ip/api → api-mock:5180（样机）；失败 fallback 内存",
+        "loc": "http://127.0.0.1:5175/@fs/workspace/ip-harness/packages/app-state/src/AppContext.tsx?t=1789779741232",
+        "count": 12
+      },
+      {
+        "type": "info",
+        "text": "[ip-harness] 读路径优先 @ip/api → api-mock:5180（样机）；失败 fallback 内存 seed；按 id 叠加瘦字段",
+        "loc": "http://127.0.0.1:5175/@fs/workspace/ip-harness/packages/app-state/src/AppContext.tsx?t=1789779741232",
+        "count": 12
+      },
+      {
+        "type": "info",
+        "text": "[ip-harness] 读路径已 merge CaseSummary × 5（仅覆盖已有 seed id）",
+        "loc": "http://127.0.0.1:5175/@fs/workspace/ip-harness/packages/app-state/src/AppContext.tsx?t=1789779741232",
+        "count": 12
+      },
+      {
+        "type": "info",
+        "text": "[ip-harness] 读路径 apiMockInbox ← 3 条（样机·调试用）",
+        "loc": "http://127.0.0.1:5175/@fs/workspace/ip-harness/packages/app-state/src/AppContext.tsx?t=1789779741232",
+        "count": 12
+      }
+    ]
+  },
+  "summary": {
+    "dockH": 190,
+    "timelineH": 481,
+    "bodyScroll_session": false,
+    "nestedScrollers_session": 1,
+    "transitionAllExact_session": 89,
+    "hitOffenders_by_page": {
+      "home": 10,
+      "session_oa1": 23,
+      "proj_general": 6,
+      "proj_patent": 10,
+      "catalog": 22,
+      "harness": 20
+    },
+    "fontOffenders_by_page": {
+      "home": 0,
+      "session_oa1": 5,
+      "proj_general": 4,
+      "proj_patent": 8,
+      "catalog": 0,
+      "harness": 0
+    },
+    "bodyScroll_by_page": {
+      "home": false,
+      "session_oa1": false,
+      "proj_general": false,
+      "proj_patent": false,
+      "catalog": false,
+      "harness": false
+    },
+    "transitionAll_by_page": {
+      "home": 94,
+      "session_oa1": 89,
+      "proj_general": 98,
+      "proj_patent": 108,
+      "catalog": 369,
+      "harness": 129
+    },
+    "consoleNonWhitelist": 0
+  }
+}
