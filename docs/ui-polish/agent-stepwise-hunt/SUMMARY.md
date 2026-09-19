@@ -62,7 +62,7 @@
 
 
 
-## 实现要点
+`94f2e22f4fa294ead0ef0e48a27f91f712b14a5b`
 
 - 新 CasePack：`tools/e2e-hunt/src/casepacks/cp-agent-stepwise.ts`
 - Observer 自定义断言：`agent-s0-home` … `agent-s9-project-patent`（复用 `hitl-confirm-bar`）
