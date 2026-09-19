@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
+import { Settings2 } from 'lucide-react'
 import { GeneralBotSidebar } from '../components/general/GeneralBotSidebar'
 import { GeneralBotChatPane } from '../components/general/GeneralBotChatPane'
 import { CaseBindControls } from '../components/case/CaseBindControls'
@@ -11,14 +13,15 @@ import {
 import { freeBotPath } from '../projects/generalBots'
 
 /**
- * Default /agent — free Grok bot list (not welded patent seats).
- * Case bind once (chat-top strip); honesty = weak text, not full-width chrome.
- * Project HITL path unchanged. Spec cec9d79.
+ * Default /agent — Grok Bot replica: narrow bot rail + message stream + sticky composer.
+ * Spec: docs/architecture/product-apps/agent-grok-replica.md (9ba1d42)
+ * Case bind / honesty default-hidden (opt-in via chrome toggle). No project deepen.
  */
 export function GeneralGrokShell() {
   const { botId } = useParams<{ botId?: string }>()
   const { getProject, patchProject } = useProjectFolder()
   const { activeBots, getBot } = useGeneralBots()
+  const [chromeOpen, setChromeOpen] = useState(false)
 
   const project = getProject(GENERAL_SHELL_ID)
   if (!project || !isGeneralShellId(project.id)) {
@@ -52,44 +55,58 @@ export function GeneralGrokShell() {
   return (
     <div className="flex min-h-0 flex-1" data-testid="general-grok-shell">
       <GeneralBotSidebar />
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        {/* Honesty: weak inline text — not full-width badge strip / no BillingHold */}
-        <p
-          className="shrink-0 border-b border-slate-100 bg-white px-3 py-1 text-[10px] leading-snug text-slate-400"
-          data-testid="general-honesty-weak"
-        >
-          样机 · 无真 LLM · 自由 bot
-          <span className="mx-1.5 text-slate-300">·</span>
-          通用 ≠ 项目固定专家
-          <span className="mx-1.5 text-slate-300">·</span>
-          {project.caseId ? '已绑案件' : '未绑案件 · 可后绑'}
-        </p>
-        {/* Sole CaseBind mount on general shell (≤1 / viewport) */}
-        <div
-          className="shrink-0 border-b border-slate-100 bg-white px-3 py-1.5"
-          data-testid="general-case-bind-slot"
-        >
-          <CaseBindControls
-            caseId={project.caseId}
-            prominence="soft"
-            writebackRequiresBind={false}
-            onCreateStart={() =>
-              patchProject(GENERAL_SHELL_ID, { caseBindState: 'pending_create' })
-            }
-            onBind={(id) =>
-              patchProject(GENERAL_SHELL_ID, {
-                caseId: id,
-                caseBindState: 'bound',
-              })
-            }
-            onUnbind={() =>
-              patchProject(GENERAL_SHELL_ID, {
-                caseId: undefined,
-                caseBindState: 'none',
-              })
-            }
-          />
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
+        {/* Ultra-thin chrome: settings toggle only — no honesty wall / case strip by default */}
+        <div className="flex shrink-0 items-center justify-end gap-2 px-2 py-0.5">
+          <button
+            type="button"
+            onClick={() => setChromeOpen((v) => !v)}
+            className="focus-ring inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+            aria-expanded={chromeOpen}
+            aria-label="样机与绑案"
+            data-testid="general-chrome-toggle"
+          >
+            <Settings2 className="h-3 w-3" aria-hidden />
+            {chromeOpen ? '收起' : '…'}
+          </button>
         </div>
+        {chromeOpen && (
+          <div
+            className="shrink-0 space-y-1.5 border-b border-slate-100 bg-slate-50/50 px-3 py-2"
+            data-testid="general-chrome-panel"
+          >
+            <p
+              className="text-[10px] leading-snug text-slate-400"
+              data-testid="general-honesty-weak"
+            >
+              样机 · 无真 LLM · 自由 bot · 写库须 HITL
+            </p>
+            <div data-testid="general-case-bind-slot">
+              <CaseBindControls
+                caseId={project.caseId}
+                prominence="soft"
+                writebackRequiresBind={false}
+                onCreateStart={() =>
+                  patchProject(GENERAL_SHELL_ID, {
+                    caseBindState: 'pending_create',
+                  })
+                }
+                onBind={(id) =>
+                  patchProject(GENERAL_SHELL_ID, {
+                    caseId: id,
+                    caseBindState: 'bound',
+                  })
+                }
+                onUnbind={() =>
+                  patchProject(GENERAL_SHELL_ID, {
+                    caseId: undefined,
+                    caseBindState: 'none',
+                  })
+                }
+              />
+            </div>
+          </div>
+        )}
         {resolved ? (
           <GeneralBotChatPane botId={resolved} />
         ) : (

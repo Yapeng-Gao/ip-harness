@@ -28,14 +28,11 @@ function uid(prefix: string): string {
 }
 
 function introMessage(bot: FreeBot): FreeBotMessage {
-  const readonly = !bot.catalogAgentId
-    ? '\n（样机 · 只读/无 DomainCommand）'
-    : '\n（模板能力 · 写库仍须 HITL→DomainCommand）'
   return {
     id: uid('msg'),
     botId: bot.id,
     role: 'system',
-    content: `通用 Grok · 一对一\n${bot.name}\n${bot.systemBrief}${readonly}`,
+    content: bot.name,
     at: stamp(),
     meta: { backend: 'mock' },
   }
@@ -126,13 +123,9 @@ export function GeneralBotsProvider({ children }: { children: ReactNode }) {
     (botId: string, userText: string) => {
       const bot = bots.find((b) => b.id === botId)
       if (!bot) return
-      const hint =
-        bot.kind === 'custom'
-          ? '【自定义 bot】已收到。样机回声：'
-          : `【${templateMeta(bot.kind).label}】已收到。样机回声：`
       appendMessage(botId, {
         role: 'assistant',
-        content: `${hint}\n「${userText.slice(0, 120)}${userText.length > 120 ? '…' : ''}」\n设定：${bot.systemBrief.slice(0, 80)}`,
+        content: userText.length > 200 ? `${userText.slice(0, 200)}…` : userText,
       })
     },
     [appendMessage, bots],

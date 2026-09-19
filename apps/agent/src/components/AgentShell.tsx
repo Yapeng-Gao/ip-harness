@@ -99,18 +99,28 @@ export function AgentShell() {
         跳到主要内容
       </a>
 
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-3 shadow-[var(--shadow-rest)] backdrop-blur lg:px-4">
+      <header
+        className={`flex h-12 shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-3 backdrop-blur lg:px-4 ${
+          inGrokShell ? '' : 'shadow-[var(--shadow-rest)]'
+        }`}
+        data-grok-chrome={inGrokShell ? '1' : '0'}
+      >
         <div className="flex items-center gap-2">
           <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[10px] font-semibold">
             IP
           </div>
-          <div className="text-sm font-semibold tracking-tight text-slate-900">知产 Agent</div>
+          <div className="text-sm font-semibold tracking-tight text-slate-900">
+            {inGrokShell ? 'Grok' : '知产 Agent'}
+          </div>
         </div>
 
-        <div className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
-
-        <AgentWorkspaceMenu variant="topbar" />
-        <PersonaSwitcher variant="topbar" />
+        {!inGrokShell && (
+          <>
+            <div className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
+            <AgentWorkspaceMenu variant="topbar" />
+            <PersonaSwitcher variant="topbar" />
+          </>
+        )}
 
         {inSession && (
           <div
@@ -125,7 +135,9 @@ export function AgentShell() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
-          <ProductSwitcher current="agent" size="md" className="hidden sm:grid" />
+          {!inGrokShell && (
+            <ProductSwitcher current="agent" size="md" className="hidden sm:grid" />
+          )}
           {inSession && (
             <button
               type="button"

@@ -2,13 +2,12 @@ import { useMemo, useState, type KeyboardEvent } from 'react'
 import { Send, Forward } from 'lucide-react'
 import { useGeneralBots } from '../../projects/GeneralBotsContext'
 import { expertAccentClass } from '../../projects/experts'
-import { kindLabel } from '../../projects/generalBots'
 
 type Props = { botId: string }
 
 /**
- * Free-bot 1:1 chat + mock forward. Custom = 只读；不走 DomainCommand.
- * Project HITL (5226b33) stays on ProjectChatPane / ExpertHitlBridge.
+ * Grok-like 1:1 stream + sticky composer. No badge/honesty walls.
+ * Spec: agent-grok-replica.md — forward stays secondary.
  */
 export function GeneralBotChatPane({ botId }: Props) {
   const {
@@ -65,45 +64,41 @@ export function GeneralBotChatPane({ botId }: Props) {
     setForwardOpen(false)
   }
 
+  const visible = messages.filter((m) => m.role !== 'system')
+
   return (
     <div
       className="flex min-h-0 min-w-0 flex-1 flex-col"
       data-testid="general-bot-chat"
       data-bot-id={botId}
     >
-      <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-2">
-        <div className="flex flex-wrap items-center gap-2">
+      <header className="shrink-0 border-b border-slate-100 px-4 py-2.5">
+        <div className="flex items-center gap-2">
           <span
-            className={`rounded border px-2 py-0.5 text-xs font-semibold ${expertAccentClass(bot.accent)}`}
+            className={`flex h-7 w-7 items-center justify-center rounded-full border text-[10px] ${expertAccentClass(bot.accent)}`}
+            aria-hidden
           >
+            {bot.name.slice(0, 1)}
+          </span>
+          <h1 className="truncate text-sm font-semibold text-slate-900">
             {bot.name}
-          </span>
-          <span className="rounded border border-emerald-200 bg-emerald-50 px-1.5 py-px text-[10px] text-emerald-800">
-            自由 · {kindLabel(bot.kind)}
-          </span>
-          {!bot.catalogAgentId ? (
-            <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-px text-[10px] text-slate-500">
-              只读 · 无写库
-            </span>
-          ) : (
-            <span className="rounded border border-amber-200 bg-amber-50 px-1.5 py-px text-[10px] text-amber-900">
-              模板 · 写库须 HITL
-            </span>
-          )}
+          </h1>
         </div>
-        <p className="mt-1 text-[11px] text-slate-500">{bot.systemBrief}</p>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-2">
-        {messages.map((m) => (
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+        {visible.length === 0 && (
+          <p className="py-8 text-center text-sm text-slate-400">
+            开始和 {bot.name} 聊天
+          </p>
+        )}
+        {visible.map((m) => (
           <div
             key={m.id}
-            className={`max-w-[90%] rounded-lg px-3 py-2 text-sm leading-relaxed ${
+            className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
               m.role === 'user'
                 ? 'ml-auto bg-slate-900 text-white'
-                : m.role === 'system'
-                  ? 'border border-slate-200 bg-slate-50 text-xs text-slate-600'
-                  : 'border border-slate-200 bg-white text-slate-800'
+                : 'border border-slate-100 bg-slate-50 text-slate-800'
             }`}
             data-testid={
               m.meta?.forwardFrom
@@ -114,12 +109,11 @@ export function GeneralBotChatPane({ botId }: Props) {
             }
           >
             <div className="whitespace-pre-wrap">{m.content}</div>
-            <div className="mt-1 text-[10px] opacity-60">{m.at}</div>
           </div>
         ))}
       </div>
 
-      <div className="sticky bottom-0 z-10 shrink-0 border-t border-slate-200 bg-white px-3 py-2 shadow-[0_-6px_16px_rgba(15,23,42,0.04)]">
+      <div className="sticky bottom-0 z-10 shrink-0 border-t border-slate-200 bg-white px-3 py-2.5 shadow-[0_-6px_16px_rgba(15,23,42,0.04)]">
         {forwardOpen && (
           <div
             className="mb-2 flex flex-wrap items-center gap-2 rounded-md border border-sky-200 bg-sky-50/80 px-2 py-1.5"
@@ -146,7 +140,7 @@ export function GeneralBotChatPane({ botId }: Props) {
               className="btn-press focus-ring hit-40 rounded-md bg-sky-700 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-40"
               data-testid="general-bot-forward-confirm"
             >
-              确认转发
+              确认
             </button>
             <button
               type="button"
@@ -157,42 +151,38 @@ export function GeneralBotChatPane({ botId }: Props) {
             </button>
           </div>
         )}
-        <div className="mb-1.5 flex flex-wrap gap-1">
+        <div className="flex items-end gap-2">
           <button
             type="button"
             onClick={() => setForwardOpen((v) => !v)}
             disabled={others.length === 0}
-            className="btn-press focus-ring inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-white disabled:opacity-40"
+            className="btn-press focus-ring mb-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30"
+            aria-label="转发给 bot"
             data-testid="general-bot-forward-open"
+            title="转发"
           >
-            <Forward className="h-3 w-3" aria-hidden />
-            转发给 bot…
+            <Forward className="h-3.5 w-3.5" aria-hidden />
           </button>
-        </div>
-        <div className="flex items-end gap-2">
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKey}
-            rows={2}
-            placeholder="一对一消息 · Enter 发送 · 可转发"
-            className="focus-ring min-h-[2.5rem] flex-1 resize-none rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm"
+            rows={1}
+            placeholder="发消息…"
+            className="focus-ring max-h-32 min-h-[2.5rem] flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm"
             aria-label="消息"
             data-testid="general-bot-composer"
           />
           <button
             type="button"
             onClick={sendUser}
-            className="btn-press focus-ring hit-40 inline-flex items-center gap-1 rounded-md bg-slate-900 px-3 py-2 text-xs font-medium text-white"
+            className="btn-press focus-ring hit-40 inline-flex h-9 items-center gap-1 rounded-full bg-slate-900 px-3.5 text-xs font-medium text-white"
             data-testid="general-bot-send"
           >
             <Send className="h-3.5 w-3.5" aria-hidden />
             发送
           </button>
         </div>
-        <p className="mt-1 text-[10px] text-slate-400">
-          护栏：样机无真 LLM · 自定义默认无写库 · 项目 HITL 路径未改
-        </p>
       </div>
     </div>
   )
