@@ -280,4 +280,8 @@
 
 ---
 
+## 复测附注（2026-09-19 ~10:27 CST）
+
+短复测见 **`REVIEW_AGENT_FEEL_RECHECK.md`** · HEAD `bb6f4d2` / 产品 `e431083` · **feel Go**（Must 3/3 · Should 7/7 PASS；Could 仍开仅注）。未重开 ENTRY/FULL P0/P1；未改产品代码。
+
 *只文档与证据；未改 apps/contracts；未 git commit/push；未启 Cloud Agent。*

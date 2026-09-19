@@ -1,0 +1,257 @@
+{
+  "headNote": "live recheck",
+  "viewport": "1440x900",
+  "checks": {
+    "patent": {
+      "found": [
+        {
+          "lab": "分派任务",
+          "tag": "BUTTON",
+          "text": "分派任务",
+          "h": 40,
+          "title": "dispatch_task",
+          "aria": "分派任务（dispatch_task）"
+        },
+        {
+          "lab": "汇总时间线",
+          "tag": "BUTTON",
+          "text": "汇总时间线",
+          "h": 40,
+          "title": "summarize_timeline",
+          "aria": "汇总时间线（summarize_timeline）"
+        },
+        {
+          "lab": "打开专家私信",
+          "tag": "BUTTON",
+          "text": "打开专家私信",
+          "h": 40,
+          "title": "open_expert_dm",
+          "aria": "打开专家私信（open_expert_dm）"
+        }
+      ],
+      "engPrimary": [],
+      "composerTop": 774,
+      "composerH": 127,
+      "vh": 900,
+      "timeline": {
+        "hasNext": true,
+        "hasCta": true,
+        "text": "下一步在总控用「分派给…」把任务交给专家，时间线会留下分派记录。打开总控分派去检索专家去撰稿专家去FTO 专家"
+      },
+      "bots": [
+        {
+          "t": "项目模式",
+          "h": 40
+        },
+        {
+          "t": "总控席",
+          "h": 40
+        },
+        {
+          "t": "检索专家",
+          "h": 40
+        },
+        {
+          "t": "撰稿专家",
+          "h": 40
+        },
+        {
+          "t": "FTO 专家",
+          "h": 40
+        }
+      ],
+      "binds": [
+        {
+          "t": "创建并绑定新案",
+          "h": 40
+        },
+        {
+          "t": "绑定已有案",
+          "h": 40
+        }
+      ],
+      "surf": [
+        {
+          "t": "作业中台",
+          "top": -18,
+          "left": 1341,
+          "w": 79,
+          "h": 40,
+          "tag": "BUTTON",
+          "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m",
+          "visible": true
+        },
+        {
+          "t": "知产 Agent",
+          "top": 26,
+          "left": 1341,
+          "w": 79,
+          "h": 40,
+          "tag": "BUTTON",
+          "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m",
+          "visible": true
+        }
+      ]
+    },
+    "general": {
+      "found": [
+        {
+          "lab": "分派任务",
+          "h": 40,
+          "title": "dispatch_task",
+          "tag": "BUTTON"
+        },
+        {
+          "lab": "汇总时间线",
+          "h": 40,
+          "title": "summarize_timeline",
+          "tag": "BUTTON"
+        },
+        {
+          "lab": "打开专家私信",
+          "h": 40,
+          "title": "open_expert_dm",
+          "tag": "BUTTON"
+        }
+      ],
+      "engPrimary": [],
+      "composerTop": 774,
+      "vh": 900
+    },
+    "session": {
+      "chips": [
+        {
+          "t": "待批准",
+          "text": "待批准",
+          "fs": 12,
+          "h": 16,
+          "cls": "inline-flex items-center gap-0.5 text-xs text-slate-400",
+          "tag": "SPAN"
+        },
+        {
+          "t": "待授权",
+          "text": "待授权",
+          "fs": 12,
+          "h": 16,
+          "cls": "inline-flex items-center gap-0.5 text-xs text-slate-400",
+          "tag": "SPAN"
+        },
+        {
+          "t": "逐步",
+          "text": "逐步",
+          "fs": 12,
+          "h": 40,
+          "cls": "inline-flex min-h-10 items-center gap-1.5 px-1 text-xs text-",
+          "tag": "LABEL"
+        }
+      ],
+      "more": {
+        "h": 40,
+        "t": "还有 3 条"
+      },
+      "cta": {
+        "h": 40,
+        "t": "批准策略"
+      },
+      "fold": {
+        "h": 40,
+        "t": "输入 / 切换 Agent（默认收起 · 确认完成前可不展开）"
+      },
+      "transitionAll": 0,
+      "transitionSamples": [],
+      "surfExact": [
+        {
+          "t": "作业中台",
+          "top": -18,
+          "left": 1233,
+          "visible": true,
+          "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m",
+          "inSegmented": false
+        },
+        {
+          "t": "知产 Agent",
+          "top": 26,
+          "left": 1233,
+          "visible": true,
+          "cls": "btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m",
+          "inSegmented": false
+        }
+      ],
+      "asideOpacity": "0.92",
+      "asideFilter": "saturate(0.92)",
+      "formLinkH": 40
+    },
+    "catalog": [
+      {
+        "h": 35,
+        "clamp": "2",
+        "textLen": 49,
+        "t": "辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭环",
+        "cls": "agent-picker-card__tier-note"
+      },
+      {
+        "h": 35,
+        "clamp": "2",
+        "textLen": 33,
+        "t": "Beta·非采购闭环 · 无法务会签闸，批准≠合同 PDF/电子签",
+        "cls": "agent-picker-card__tier-note"
+      },
+      {
+        "h": 35,
+        "clamp": "2",
+        "textLen": 34,
+        "t": "Beta·非采购闭环 · 洞察矩阵/建案示意仍薄，勿当布局采购主路径",
+        "cls": "agent-picker-card__tier-note"
+      }
+    ]
+  },
+  "verdicts": {
+    "AFE-M-1": {
+      "status": "PASS",
+      "detail": "patent chips=[{\"lab\":\"分派任务\",\"h\":40,\"tag\":\"BUTTON\",\"title\":\"dispatch_task\"},{\"lab\":\"汇总时间线\",\"h\":40,\"tag\":\"BUTTON\",\"title\":\"summarize_timeline\"},{\"lab\":\"打开专家私信\",\"h\":40,\"tag\":\"BUTTON\",\"title\":\"open_expert_dm\"}]; engPrimary=[]; general=[{\"lab\":\"分派任务\",\"h\":40,\"title\":\"dispatch_task\",\"tag\":\"BUTTON\"},{\"lab\":\"汇总时间线\",\"h\":40,\"title\":\"summarize_timeline\",\"tag\":\"BUTTON\"},{\"lab\":\"打开专家私信\",\"h\":40,\"title\":\"open_expert_dm\",\"tag\":\"BUTTON\"}]; eng=[]; composerTop=774",
+      "generalOk": true
+    },
+    "AFE-M-2": {
+      "status": "PASS",
+      "detail": "composerTop=774 @ vh=900 (target ≲780)",
+      "generalTop": 774
+    },
+    "AFE-S-4": {
+      "status": "PASS",
+      "detail": "timeline={\"hasNext\":true,\"hasCta\":true,\"text\":\"下一步在总控用「分派给…」把任务交给专家，时间线会留下分派记录。打开总控分派去检索专家去撰稿专家去FTO 专家\"}"
+    },
+    "AFE-S-5": {
+      "status": "PASS",
+      "detail": "bots=[{\"t\":\"项目模式\",\"h\":40},{\"t\":\"总控席\",\"h\":40},{\"t\":\"检索专家\",\"h\":40},{\"t\":\"撰稿专家\",\"h\":40},{\"t\":\"FTO 专家\",\"h\":40}]; binds=[{\"t\":\"创建并绑定新案\",\"h\":40},{\"t\":\"绑定已有案\",\"h\":40}]"
+    },
+    "AFE-M-3": {
+      "status": "PASS",
+      "detail": "chips=[{\"t\":\"待批准\",\"fs\":12,\"h\":16},{\"t\":\"待授权\",\"fs\":12,\"h\":16},{\"t\":\"逐步\",\"fs\":12,\"h\":40}]; more.h=40; cta.h=40; fold.h=40 (hits from primary recheck)"
+    },
+    "AFE-S-1": {
+      "status": "PASS",
+      "detail": "transitionAllExact in dock/confirm/rail=0; samples=[]"
+    },
+    "AFE-S-3": {
+      "status": "PASS",
+      "detail": "surf=[{\"t\":\"作业中台\",\"top\":-18,\"left\":1233,\"visible\":true,\"cls\":\"btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m\",\"inSegmented\":false},{\"t\":\"知产 Agent\",\"top\":26,\"left\":1233,\"visible\":true,\"cls\":\"btn-press focus-ring rounded-[calc(var(--radius-md)-0.25rem)] text-center font-m\",\"inSegmented\":false}]; midTopSegmented=0; hasBanlitai=false"
+    },
+    "AFE-S-6": {
+      "status": "PASS",
+      "detail": "cta.h=40; fold.h=40"
+    },
+    "AFE-S-7": {
+      "status": "PASS",
+      "detail": "formLinkH=40; asideOpacity=0.92"
+    },
+    "AFE-S-2": {
+      "status": "PASS",
+      "detail": "tier-notes=[{\"h\":35,\"clamp\":\"2\",\"textLen\":49,\"t\":\"辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭环\",\"cls\":\"agent-picker-card__tier-note\"},{\"h\":35,\"clamp\":\"2\",\"textLen\":33,\"t\":\"Beta·非采购闭环 · 无法务会签闸，批准≠合同 PDF/电子签\",\"cls\":\"agent-picker-card__tier-note\"},{\"h\":35,\"clamp\":\"2\",\"textLen\":34,\"t\":\"Beta·非采购闭环 · 洞察矩阵/建案示意仍薄，勿当布局采购主路径\",\"cls\":\"agent-picker-card__tier-note\"}]; clampedCount=3"
+    }
+  },
+  "summary": {
+    "mustPass": true,
+    "shouldFails": [],
+    "feelVerdict": "feel Go"
+  }
+}
