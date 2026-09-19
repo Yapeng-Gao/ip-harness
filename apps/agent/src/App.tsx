@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider } from '@shared/context/AppContext'
 import { AgentProvider } from '@shared/context/AgentContext'
 import { ProductProvider } from '@shared/context/ProductContext'
-import { AppSurfaceLinks } from '@shared/components/AppSurfaceLinks'
 import { AgentShell } from './components/AgentShell'
 import { AgentHome } from './pages/AgentHome'
 import { AgentSessionWorkspace } from './pages/AgentSessionWorkspace'
@@ -20,7 +19,6 @@ export default function App() {
         <ProductProvider>
           <ProjectFolderProvider>
           <BrowserRouter>
-            <AppSurfaceLinks current="agent" />
             <Routes>
               <Route path="/" element={<Navigate to="/agent" replace />} />
               <Route path="/agent" element={<AgentShell />}>

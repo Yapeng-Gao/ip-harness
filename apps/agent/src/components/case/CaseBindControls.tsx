@@ -88,7 +88,7 @@ export function CaseBindControls({
   }
 
   return (
-    <div className={boxCls} data-testid="case-bind-controls">
+    <div className={`case-bind-controls ${boxCls}`} data-testid="case-bind-controls">
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-[11px] font-medium text-slate-700">
           {bindState === 'bound'
@@ -123,7 +123,7 @@ export function CaseBindControls({
             <button
               type="button"
               onClick={onUnbind}
-              className="btn-press focus-ring rounded border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-600"
+              className="btn-press focus-ring case-bind-btn hit-40 rounded border border-slate-200 bg-white px-2.5 text-xs text-slate-600"
               data-testid="case-unbind"
             >
               解除绑定
@@ -132,7 +132,7 @@ export function CaseBindControls({
           <button
             type="button"
             onClick={() => setMode(mode === 'create' ? 'idle' : 'create')}
-            className={`btn-press focus-ring inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium ${
+            className={`btn-press focus-ring case-bind-btn hit-40 inline-flex items-center gap-1 rounded px-2.5 text-xs font-medium ${
               soft
                 ? 'border border-slate-200 bg-white text-slate-700'
                 : 'border border-sky-300 bg-white text-sky-900'
@@ -146,7 +146,7 @@ export function CaseBindControls({
           <button
             type="button"
             onClick={() => setMode(mode === 'bind' ? 'idle' : 'bind')}
-            className={`btn-press focus-ring inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium ${
+            className={`btn-press focus-ring case-bind-btn hit-40 inline-flex items-center gap-1 rounded px-2.5 text-xs font-medium ${
               soft
                 ? 'border border-slate-200 bg-white text-slate-700'
                 : 'border border-sky-300 bg-white text-sky-900'
@@ -176,7 +176,7 @@ export function CaseBindControls({
           <button
             type="button"
             onClick={createAndBind}
-            className="btn-press focus-ring rounded bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white"
+            className="btn-press focus-ring case-bind-btn hit-40 rounded bg-slate-900 px-3 text-xs font-medium text-white"
             data-testid="case-create-confirm"
           >
             生成 mock 案并绑定
@@ -210,7 +210,7 @@ export function CaseBindControls({
             type="button"
             disabled={!pick}
             onClick={bindExisting}
-            className="btn-press focus-ring rounded bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white disabled:opacity-40"
+            className="btn-press focus-ring case-bind-btn hit-40 rounded bg-slate-900 px-3 text-xs font-medium text-white disabled:opacity-40"
             data-testid="case-bind-confirm"
           >
             绑定

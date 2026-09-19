@@ -126,19 +126,33 @@ export function AgentPickerCard({
       <p className="agent-picker-card__blurb">{blurb}</p>
 
       {(isBeta || a.tier === 'assist') && (
-        <p
-          className="agent-picker-card__tier-note"
+        <details
+          className="agent-picker-card__tier-note-details"
           data-tier={a.tier}
-          role="note"
         >
-          {isBeta ? BETA_HONEST_COPY : agentTierNote(a)}
-          {isBeta && a.tierNote && a.tierNote !== BETA_HONEST_COPY
-            ? ` · ${a.tierNote.replace(/^Beta·非采购闭环[：:]?\s*/, '')}`
-            : null}
-        </p>
+          <summary className="agent-picker-card__tier-note-summary">
+            <span
+              className="agent-picker-card__tier-note"
+              data-tier={a.tier}
+              role="note"
+            >
+              {isBeta ? BETA_HONEST_COPY : agentTierNote(a)}
+              {isBeta && a.tierNote && a.tierNote !== BETA_HONEST_COPY
+                ? ` · ${a.tierNote.replace(/^Beta·非采购闭环[：:]?\s*/, '')}`
+                : null}
+            </span>
+            <span className="agent-picker-card__tier-note-more">详情</span>
+          </summary>
+          <p className="agent-picker-card__tier-note-full text-xs leading-relaxed text-slate-600">
+            {isBeta ? BETA_HONEST_COPY : agentTierNote(a)}
+            {isBeta && a.tierNote && a.tierNote !== BETA_HONEST_COPY
+              ? ` · ${a.tierNote.replace(/^Beta·非采购闭环[：:]?\s*/, '')}`
+              : null}
+          </p>
+        </details>
       )}
 
-      <div className="mt-auto flex flex-col gap-1 pt-2.5">
+            <div className="mt-auto flex flex-col gap-1 pt-2.5">
         <button
           type="button"
           onClick={onStart}

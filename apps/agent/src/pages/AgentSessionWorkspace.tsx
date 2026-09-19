@@ -659,7 +659,7 @@ export function AgentSessionWorkspace() {
               className="agent-hitl-composer-fold shrink-0 border-t border-slate-200/90 bg-white"
               data-testid="session-composer-fold"
             >
-              <summary className="btn-press focus-ring cursor-pointer select-none px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 lg:px-5">
+              <summary className="btn-press focus-ring hit-expand flex min-h-10 cursor-pointer select-none items-center px-4 text-xs font-medium text-slate-600 hover:bg-slate-50 lg:px-5">
                 输入 / 切换 Agent（默认收起 · 确认完成前可不展开）
               </summary>
           <SessionComposer

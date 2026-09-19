@@ -1,0 +1,284 @@
+{
+  "checks": {
+    "AFE-M-1": {
+      "found": [
+        {
+          "lab": "分派任务",
+          "tag": "BUTTON",
+          "text": "分派任务",
+          "h": 40,
+          "top": 264,
+          "title": "dispatch_task",
+          "aria": "分派任务（dispatch_task）"
+        },
+        {
+          "lab": "汇总时间线",
+          "tag": "BUTTON",
+          "text": "汇总时间线",
+          "h": 40,
+          "top": 264,
+          "title": "summarize_timeline",
+          "aria": "汇总时间线（summarize_timeline）"
+        },
+        {
+          "lab": "打开专家私信",
+          "tag": "BUTTON",
+          "text": "打开专家私信",
+          "h": 40,
+          "top": 264,
+          "title": "open_expert_dm",
+          "aria": "打开专家私信（open_expert_dm）"
+        }
+      ],
+      "composerTop": 774,
+      "composerH": 127,
+      "vh": 900,
+      "englishPrimaryVisible": []
+    },
+    "AFE-M-2": {
+      "composerTop": 774,
+      "vh": 900,
+      "pass": true
+    },
+    "AFE-M-1-general": [
+      {
+        "lab": "分派任务",
+        "h": 40,
+        "title": "dispatch_task"
+      },
+      {
+        "lab": "汇总时间线",
+        "h": 40,
+        "title": "summarize_timeline"
+      },
+      {
+        "lab": "打开专家私信",
+        "h": 40,
+        "title": "open_expert_dm"
+      }
+    ],
+    "AFE-M-3": {
+      "chips": [
+        {
+          "t": "待批准",
+          "fs": 12,
+          "h": 16
+        },
+        {
+          "t": "待授权",
+          "fs": 12,
+          "h": 16
+        },
+        {
+          "t": "逐步",
+          "fs": 12,
+          "h": 40
+        }
+      ],
+      "more": {
+        "h": 40,
+        "t": "还有 3 条"
+      },
+      "cta": {
+        "h": 40,
+        "t": "批准策略"
+      },
+      "fold": {
+        "h": 40,
+        "t": "输入 / 切换 Agent（默认收起 · 确认完成前可不展开）"
+      },
+      "dual": [
+        {
+          "t": "作业中台",
+          "top": -18,
+          "left": 1233,
+          "tag": "BUTTON",
+          "cls": "btn-press focus-ring rounded-[calc(var(--radius-"
+        },
+        {
+          "t": "知产 Agent",
+          "top": 26,
+          "left": 1233,
+          "tag": "BUTTON",
+          "cls": "btn-press focus-ring rounded-[calc(var(--radius-"
+        },
+        {
+          "t": "一种边缘计算节点调度方法CN2024103289",
+          "top": 209,
+          "left": 1231,
+          "tag": "A",
+          "cls": "block py-1 hover:bg-slate-50/80"
+        }
+      ],
+      "transitionAll": 50,
+      "transitionSamples": [
+        {
+          "tag": "DIV",
+          "cls": "flex items-start gap-2",
+          "tp": "all"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full",
+          "tp": "all"
+        },
+        {
+          "tag": "DIV",
+          "cls": "min-w-0 flex-1",
+          "tp": "all"
+        },
+        {
+          "tag": "DIV",
+          "cls": "agent-rail-title truncate",
+          "tp": "all"
+        },
+        {
+          "tag": "DIV",
+          "cls": "agent-rail-sub truncate",
+          "tp": "all"
+        },
+        {
+          "tag": "DIV",
+          "cls": "mt-0.5 flex flex-wrap gap-0.5",
+          "tp": "all"
+        }
+      ]
+    },
+    "AFE-S-3": {
+      "dualCount": 3,
+      "dual": [
+        {
+          "t": "作业中台",
+          "top": -18,
+          "left": 1233,
+          "tag": "BUTTON",
+          "cls": "btn-press focus-ring rounded-[calc(var(--radius-"
+        },
+        {
+          "t": "知产 Agent",
+          "top": 26,
+          "left": 1233,
+          "tag": "BUTTON",
+          "cls": "btn-press focus-ring rounded-[calc(var(--radius-"
+        },
+        {
+          "t": "一种边缘计算节点调度方法CN2024103289",
+          "top": 209,
+          "left": 1231,
+          "tag": "A",
+          "cls": "block py-1 hover:bg-slate-50/80"
+        }
+      ]
+    },
+    "AFE-S-1": {
+      "transitionAll": 50,
+      "samples": [
+        {
+          "tag": "DIV",
+          "cls": "flex items-start gap-2",
+          "tp": "all"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full",
+          "tp": "all"
+        },
+        {
+          "tag": "DIV",
+          "cls": "min-w-0 flex-1",
+          "tp": "all"
+        },
+        {
+          "tag": "DIV",
+          "cls": "agent-rail-title truncate",
+          "tp": "all"
+        },
+        {
+          "tag": "DIV",
+          "cls": "agent-rail-sub truncate",
+          "tp": "all"
+        },
+        {
+          "tag": "DIV",
+          "cls": "mt-0.5 flex flex-wrap gap-0.5",
+          "tp": "all"
+        }
+      ]
+    },
+    "AFE-S-2": [
+      {
+        "h": 41,
+        "clamp": "none",
+        "textLen": 100,
+        "t": "辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭环详情辅助薄层：告警处置与 claim_chart 草稿；诉讼维",
+        "cls": "agent-picker-card__tier-note-details"
+      },
+      {
+        "h": 41,
+        "clamp": "none",
+        "textLen": 51,
+        "t": "辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭环详情",
+        "cls": "agent-picker-card__tier-note-summary"
+      },
+      {
+        "h": 35,
+        "clamp": "2",
+        "textLen": 49,
+        "t": "辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭环",
+        "cls": "agent-picker-card__tier-note"
+      },
+      {
+        "h": 33,
+        "clamp": "none",
+        "textLen": 2,
+        "t": "详情",
+        "cls": "agent-picker-card__tier-note-more"
+      },
+      {
+        "h": 0,
+        "clamp": "none",
+        "textLen": 49,
+        "t": "辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭环",
+        "cls": "agent-picker-card__tier-note-full text-xs leading-relaxed te"
+      },
+      {
+        "h": 41,
+        "clamp": "none",
+        "textLen": 68,
+        "t": "Beta·非采购闭环 · 无法务会签闸，批准≠合同 PDF/电子签详情Beta·非采购闭环 · 无法务会签闸，批准≠合同 PDF/电子签",
+        "cls": "agent-picker-card__tier-note-details"
+      }
+    ],
+    "AFE-S-4": {
+      "hasNext": true,
+      "hasCta": true,
+      "text": "下一步在总控用「分派给…」把任务交给专家，时间线会留下分派记录。打开总控分派去检索专家去撰稿专家去FTO 专家"
+    },
+    "AFE-S-5": {
+      "bots": [
+        {
+          "t": "项目模式",
+          "h": 40
+        },
+        {
+          "t": "总控席",
+          "h": 40
+        },
+        {
+          "t": "检索专家",
+          "h": 40
+        }
+      ],
+      "binds": [
+        {
+          "t": "创建并绑定新案",
+          "h": 40
+        },
+        {
+          "t": "绑定已有案",
+          "h": 40
+        }
+      ]
+    }
+  }
+}

@@ -1320,6 +1320,22 @@ p {
   font-weight: 500;
   color: #9a3412;
 }
+
+/* AFE-M-3 / S-6 · Confirm hit + caption floor (agent) */
+.agent-confirm-more {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.25rem;
+  font-size: var(--font-size-caption);
+}
+.ui-btn.agent-confirm-cta {
+  min-height: 2.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
 .ui-btn.agent-confirm-cta:disabled {
   opacity: 1;
   cursor: not-allowed;

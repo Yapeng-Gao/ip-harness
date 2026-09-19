@@ -83,7 +83,7 @@ export function SessionContextPanel({
   const driveHidden = caseDriveItems.length - driveVisible.length
 
   return (
-    <aside className="agent-aside hidden w-56 shrink-0 flex-col lg:flex 2xl:w-72">
+    <aside className="agent-aside agent-aside--demoted hidden w-56 shrink-0 flex-col lg:flex 2xl:w-72">
       <div className="agent-aside-head">上下文</div>
       <div className="flex-1 overflow-y-auto">
         {agent && (
@@ -123,7 +123,7 @@ export function SessionContextPanel({
               {wb && (
                 <a
                   href={wb}
-                  className="mt-1 inline-block text-xs text-slate-600 hover:underline"
+                  className="agent-aside-form-link btn-press focus-ring hit-40 mt-1 inline-flex items-center text-xs text-slate-600 hover:underline"
                 >
                   打开对应表单工作台
                 </a>

@@ -28,3 +28,194 @@ body,
 .agent-hitl-composer-fold > summary::-webkit-details-marker {
   display: none;
 }
+
+
+/* —— AGENT_FEEL 2026-09-19 · AFE-M/S —— */
+
+/* AFE-M-2 · project mid density + sticky composer comfort */
+.project-tool-band {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+.project-chat-messages {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.project-chat-composer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+/* AFE-M-3 / S-6 · Confirm readable + ≥40 hits */
+.confirm-hitl .agent-confirm-cta,
+.confirm-hitl .ui-btn.agent-confirm-cta {
+  min-height: 2.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: var(--font-size-caption); /* ≥12 */
+}
+.confirm-hitl .ui-btn-sm {
+  min-height: 2.25rem; /* ≥36 */
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+.agent-confirm-more {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.35rem;
+  font-size: var(--font-size-caption);
+}
+.agent-confirm-more::after {
+  content: '';
+  position: absolute;
+  inset: 50%;
+  width: max(100%, 2.5rem);
+  height: max(100%, 2.5rem);
+  transform: translate(-50%, -50%);
+}
+.agent-hitl-composer-fold > summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+}
+.agent-hitl-composer-fold > summary::after {
+  content: '';
+  position: absolute;
+  inset: 50%;
+  width: max(100%, 2.5rem);
+  height: max(100%, 2.5rem);
+  transform: translate(-50%, -50%);
+}
+
+/* AFE-S-1 · never transition: all on dock / confirm / rail / chip */
+.agent-hitl-dock,
+.confirm-hitl,
+.confirm-hitl *,
+.agent-rail-row,
+.agent-rail-row__link,
+.agent-session-sidebar a,
+.agent-session-sidebar button,
+.project-tool-band button,
+.hit-40,
+.hit-expand,
+.btn-press {
+  transition-property: transform, opacity, background-color, border-color, box-shadow, color, filter !important;
+}
+
+/* AFE-S-2 · Catalog Assist/Beta disclaimer clamp */
+.agent-picker-card__tier-note {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: var(--font-size-caption); /* 12 */
+  line-height: 1.4;
+}
+.agent-picker-card__tier-note-details > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: var(--font-size-caption);
+  color: #0369a1;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+}
+.agent-picker-card__tier-note-details > summary::-webkit-details-marker {
+  display: none;
+}
+.agent-picker-card__tier-note-details[open] .agent-picker-card__tier-note {
+  -webkit-line-clamp: unset;
+  display: block;
+  overflow: visible;
+}
+
+/* AFE-S-5 · chrome hits */
+.project-bot-link,
+.case-bind-controls button,
+.agent-aside-form-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+}
+.project-bot-link::after,
+.case-bind-controls button::after,
+.agent-aside-form-link::after {
+  content: '';
+  position: absolute;
+  inset: 50%;
+  width: max(100%, 2.5rem);
+  height: max(100%, 2.5rem);
+  transform: translate(-50%, -50%);
+}
+
+/* AFE-S-7 · demote right aside vs Confirm */
+.agent-aside {
+  opacity: 0.92;
+  filter: saturate(0.92);
+}
+.agent-aside-meta-summary {
+  color: #94a3b8 !important;
+  font-weight: 500;
+}
+.agent-aside-kicker {
+  color: #94a3b8 !important;
+  letter-spacing: 0.04em;
+}
+
+/* aliases matching AgentPickerCard BEM */
+.agent-picker-card__tier-note {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: var(--font-size-caption);
+  line-height: 1.45;
+  text-align: left;
+}
+.agent-picker-card__tier-note-details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+.agent-picker-card__tier-note-details > summary::-webkit-details-marker { display: none; }
+.agent-picker-card__tier-note-more {
+  margin-left: 0.35rem;
+  font-size: 0.6875rem;
+  color: #0369a1;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.agent-picker-card__tier-note-details[open] .agent-picker-card__tier-note {
+  -webkit-line-clamp: unset;
+  display: block;
+  overflow: visible;
+}
+.agent-picker-card__tier-note-details[open] .agent-picker-card__tier-note-more {
+  display: none;
+}
+.agent-picker-card__tier-note-details:not([open]) .agent-picker-card__tier-note-full {
+  display: none;
+}
+
+/* AFE-S-1 · hard kill transition-property:all on session chrome */
+.agent-hitl-dock,
+.agent-hitl-dock *,
+.confirm-hitl,
+.confirm-hitl *,
+.agent-rail-row,
+.agent-rail-row *,
+.agent-session-sidebar,
+.agent-session-sidebar *,
+.agent-aside,
+.agent-aside *,
+.project-tool-band,
+.project-tool-band *,
+.project-chat-composer,
+.project-chat-composer * {
+  transition-property: transform, opacity, background-color, border-color, color, box-shadow, filter, outline-color !important;
+}

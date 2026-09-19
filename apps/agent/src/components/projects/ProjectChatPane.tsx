@@ -12,6 +12,39 @@ import type {
 } from '../../projects/types'
 import { ExpertHitlBridge } from './ExpertHitlBridge'
 
+/** AFE-M-1 · human labels for project tool chips (API id → title / 高级) */
+const PROJECT_TOOL_LABELS: Record<string, string> = {
+  dispatch_task: '分派任务',
+  summarize_timeline: '汇总时间线',
+  open_expert_dm: '打开专家私信',
+  commercial_patent_search: '商业专利检索',
+  cluster_hits: '聚类命中',
+  draft_research_report: '起草调研报告',
+  bind_novelty: '绑定新颖性点',
+  draft_claims: '起草权利要求',
+  expand_dependent: '扩展从属权项',
+  check_support: '检查支持',
+  country_strategy: '国别策略',
+  extract_fto_features: '抽取 FTO 特征',
+  fto_hit_scan: 'FTO 命中扫描',
+  build_risk_matrix: '构建风险矩阵',
+  draft_fto_risk_card: '起草风险卡片',
+  draft_fto_report: '起草 FTO 报告',
+  web_skim: '资料速览',
+  note_cluster: '要点聚类',
+  outline_brief: '选题提纲',
+  draft_outline: '起草大纲',
+  expand_section: '扩写章节',
+  polish_tone: '润色语气',
+  lint_consistency: '一致性检查',
+  risk_checklist: '风险清单',
+  suggest_fix: '修改建议',
+}
+
+function projectToolLabel(id: string): string {
+  return PROJECT_TOOL_LABELS[id] ?? id.replace(/_/g, ' ')
+}
+
 type Props = {
   projectId: string
   expertId: ProjectExpertId
@@ -116,7 +149,7 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       <header
-        className="shrink-0 border-b border-slate-200 bg-white px-4 py-2.5"
+        className="project-chat-header shrink-0 border-b border-slate-200 bg-white px-4 py-1.5"
         data-testid={`project-chat-${expertId}`}
       >
         <div className="flex flex-wrap items-center gap-2">
@@ -175,34 +208,43 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
         )}
       </header>
 
-      {/* Tool cards */}
-      <div className="shrink-0 border-b border-slate-100 bg-slate-50/80 px-3 py-2">
-        <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-          工具卡 · {expert.id}
+      {/* Tool cards · AFE-M-1 Chinese primary + button hit ≥40 */}
+      <div className="project-tool-band shrink-0 border-b border-slate-100 bg-slate-50/80 px-3 py-1.5">
+        <div className="mb-1 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+          <span>工具卡</span>
+          <details className="font-normal normal-case tracking-normal">
+            <summary className="btn-press focus-ring cursor-pointer rounded px-1 text-[10px] text-slate-400 hover:text-slate-600">
+              高级 · {expert.id}
+            </summary>
+          </details>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {toolCards.map((t) => (
-            <div
+            <button
               key={t.name}
-              className={`max-w-[14rem] rounded-md border px-2 py-1 text-[11px] ${
+              type="button"
+              title={t.name}
+              aria-label={`${projectToolLabel(t.name)}（${t.name}）`}
+              aria-pressed={t.active}
+              className={`btn-press focus-ring hit-40 inline-flex max-w-[16rem] flex-col items-start justify-center rounded-md border px-2.5 text-left text-xs ${
                 t.active
                   ? 'border-sky-300 bg-sky-50 text-sky-900'
-                  : 'border-slate-200 bg-white text-slate-600'
+                  : 'border-slate-200 bg-white text-slate-700 hover:bg-white'
               }`}
             >
-              <div className="font-medium">{t.name}</div>
+              <span className="font-medium leading-tight">{projectToolLabel(t.name)}</span>
               {t.preview && (
-                <div className="mt-0.5 truncate text-[10px] text-slate-500">
+                <span className="mt-0.5 max-w-full truncate text-[10px] font-normal text-slate-500">
                   {t.preview}
-                </div>
+                </span>
               )}
-            </div>
+            </button>
           ))}
         </div>
       </div>
 
       {/* Messages */}
-      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-3">
+      <div className="project-chat-messages min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-2">
         {thread.messages.map((m) => (
           <div
             key={m.id}
@@ -234,8 +276,8 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
         caseId={caseId}
       />
 
-      {/* Shortcuts + composer */}
-      <div className="shrink-0 border-t border-slate-200 bg-white px-3 py-2">
+      {/* Shortcuts + composer · AFE-M-2 sticky comfort */}
+      <div className="project-chat-composer sticky bottom-0 z-10 shrink-0 border-t border-slate-200 bg-white px-3 py-2 shadow-[0_-6px_16px_rgba(15,23,42,0.04)]">
         <div className="mb-1.5 flex flex-wrap gap-1">
           {expert.shortcuts.map((sc) => (
             <button

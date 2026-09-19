@@ -36,7 +36,7 @@ export function ProjectFolderSidebar() {
       <div className="border-b border-slate-100 px-2.5 py-2">
         <Link
           to="/agent/projects"
-          className="focus-ring flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="project-bot-link focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
         >
           <FolderKanban className="h-3.5 w-3.5" aria-hidden />
           项目模式
@@ -97,7 +97,7 @@ export function ProjectFolderSidebar() {
                           <Link
                             to={to}
                             data-testid={`project-bot-${eid}`}
-                            className={`focus-ring flex items-center gap-1.5 rounded-md px-1.5 py-1 text-[11px] ${
+                            className={`project-bot-link focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs ${
                               active
                                 ? 'bg-accent-soft font-semibold text-accent-muted'
                                 : 'text-slate-600 hover:bg-slate-50'

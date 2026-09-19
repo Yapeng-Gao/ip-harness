@@ -486,7 +486,7 @@ export function SessionConfirmBar({
                 return (
                   <span
                     key={g}
-                    className={`inline-flex items-center gap-0.5 text-[10px] ${
+                    className={`inline-flex items-center gap-0.5 text-xs ${
                       done
                         ? 'text-emerald-600'
                         : focused
@@ -640,7 +640,7 @@ export function SessionConfirmBar({
           {handoffKey === 'draft_claims' && caseId && (
             <a
               href={workbenchHref(`/workbench/draft/${caseId}`)}
-              className="btn-press focus-ring rounded px-1.5 py-1 text-[11px] text-slate-400 hover:text-slate-700"
+              className="btn-press focus-ring hit-expand inline-flex min-h-10 items-center rounded px-2 text-xs text-slate-500 hover:text-slate-700"
             >
               撰写台
             </a>
@@ -648,7 +648,7 @@ export function SessionConfirmBar({
           {sessionId && (
             <a
               href={midInboxHref({ sessionId })}
-              className="btn-press focus-ring rounded px-1.5 py-1 text-[11px] text-slate-400 hover:text-slate-700"
+              className="btn-press focus-ring hit-expand inline-flex min-h-10 items-center rounded px-2 text-xs text-slate-500 hover:text-slate-700"
               title="在运营 Dashboard Inbox 中查看本条待确认"
             >
               在运营 Inbox 中查看
@@ -657,7 +657,7 @@ export function SessionConfirmBar({
           {isWatch && caseId && (
             <a
               href={workbenchHref(`/workbench/watch/${caseId}`)}
-              className="btn-press focus-ring rounded px-1.5 py-1 text-[11px] text-slate-400 hover:text-slate-700"
+              className="btn-press focus-ring hit-expand inline-flex min-h-10 items-center rounded px-2 text-xs text-slate-500 hover:text-slate-700"
             >
               监控台
             </a>
@@ -665,14 +665,14 @@ export function SessionConfirmBar({
           {isMonetize && caseId && (
             <a
               href={workbenchHref(`/workbench/monetize/${caseId}`)}
-              className="btn-press focus-ring rounded px-1.5 py-1 text-[11px] text-slate-400 hover:text-slate-700"
+              className="btn-press focus-ring hit-expand inline-flex min-h-10 items-center rounded px-2 text-xs text-slate-500 hover:text-slate-700"
             >
               转化台
             </a>
           )}
           {isMonetize && caseId && (
             <span
-              className="inline-flex items-center rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 ring-1 ring-slate-200"
+              className="inline-flex items-center rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200"
               title="法务审阅状态 · 非合同签署 · 点补充项可改"
             >
               {legalChip}
@@ -680,7 +680,7 @@ export function SessionConfirmBar({
           )}
 
           <label
-            className="inline-flex items-center gap-1 text-[10px] text-slate-400"
+            className="inline-flex min-h-10 items-center gap-1.5 px-1 text-xs text-slate-500"
             title={runMode === 'dry-run' ? '预览默认可关' : '正式默认开'}
           >
             <input
@@ -718,7 +718,7 @@ export function SessionConfirmBar({
             <div className="mt-1">
               <button
                 type="button"
-                className="agent-confirm-more btn-press focus-ring"
+                className="agent-confirm-more btn-press focus-ring hit-expand"
                 aria-expanded={reasonsOpen}
                 onClick={() => setReasonsOpen((v) => !v)}
               >
@@ -764,7 +764,7 @@ export function SessionConfirmBar({
           className="confirm-hitl-sheet agent-confirm-sheet"
           open={autoOpenSheet || undefined}
         >
-          <summary className="flex cursor-pointer list-none items-center gap-1.5 px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
+          <summary className="hit-expand flex min-h-10 cursor-pointer list-none items-center gap-1.5 px-2.5 py-2 text-xs text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
             <ChevronDown className="h-3 w-3 shrink-0 opacity-60 open:rotate-180" aria-hidden />
             <span>
               {autoOpenSheet ? '需补齐后确认' : '补充项'}
