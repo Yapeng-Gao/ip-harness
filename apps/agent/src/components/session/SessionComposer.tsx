@@ -19,6 +19,8 @@ type Props = {
   hitlActive?: boolean
   /** R-P1-3 · 仅复述 Confirm 主因 */
   hitlDisableReason?: string | null
+  /** Optional case bind toolbar (create/bind) above composer */
+  caseBindSlot?: React.ReactNode
 }
 
 export function SessionComposer({
@@ -37,9 +39,13 @@ export function SessionComposer({
   onCancelAgentSwitch,
   hitlActive = false,
   hitlDisableReason = null,
+  caseBindSlot,
 }: Props) {
   return (
     <div className="shrink-0 border-t border-slate-200/90 bg-white px-4 py-3.5 shadow-[0_-4px_16px_rgba(15,23,42,0.04)] lg:px-5 lg:py-4">
+      {caseBindSlot ? (
+        <div className="mx-auto mb-2 max-w-3xl">{caseBindSlot}</div>
+      ) : null}
       {pendingAgentSwitch && (
         <div className="mx-auto mb-2 flex max-w-3xl flex-wrap items-center gap-2 border-l-4 border-l-amber-500 bg-amber-50/60 px-3 py-2 text-xs text-slate-800">
           <span className="min-w-0 flex-1">换人后要重新确认，继续？</span>
@@ -91,7 +97,7 @@ export function SessionComposer({
             className="ui-input ui-input-sm focus-ring max-w-[180px] truncate w-auto"
             aria-label="关联案件"
           >
-            <option value="">案件 · 未关联</option>
+            <option value="">可稍后创建或绑定案件</option>
             {visibleCases.map((cs) => (
               <option key={cs.id} value={cs.id}>
                 {cs.title}

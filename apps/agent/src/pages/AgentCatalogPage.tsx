@@ -14,7 +14,6 @@ import {
 import { AgentPickerCard } from '../components/AgentPickerCard'
 import { AgentTierBadge } from '../components/AgentTierBadge'
 import type { AgentTier, StageId } from '@shared/types'
-import { resolvePreferredCaseId } from '@shared/utils/lastVisited'
 import { agentSessionPath } from '../lib/deepLinks'
 
 export function AgentCatalogPage() {
@@ -28,7 +27,7 @@ export function AgentCatalogPage() {
   const [q, setQ] = useState('')
   const [highlight, setHighlight] = useState<string | null>(null)
   const [caseId, setCaseId] = useState('')
-  const [pickerTouched, setPickerTouched] = useState(false)
+  const [, setPickerTouched] = useState(false)
 
   useEffect(() => {
     const fromQuery = params.get('agent') || params.get('highlight')
@@ -59,15 +58,8 @@ export function AgentCatalogPage() {
     }
   }, [params])
 
-  const visibleIds = visibleCases.map((c) => c.id)
-  const visibleMeta = visibleCases.map((c) => ({ id: c.id, stage: c.stage }))
-  const explicitCase =
-    params.get('case') || (pickerTouched ? caseId : null)
-  const preferredFor = (stage: StageId) =>
-    resolvePreferredCaseId(visibleIds, explicitCase, {
-      stage,
-      visible: visibleMeta,
-    })
+  // agent-case-binding: only explicit picker / URL — no auto prefer
+  const chosenCaseId = caseId || params.get('case') || ''
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase()
@@ -89,7 +81,7 @@ export function AgentCatalogPage() {
   }, [filtered])
 
   const startWith = (a: (typeof agents)[number]) => {
-    const chosen = preferredFor(a.stage)
+    const chosen = chosenCaseId
     const chosenCase = visibleCases.find((c) => c.id === chosen)
     // Fix W · 阶段错配二次确认，不只 amber
     if (chosenCase && chosenCase.stage !== a.stage) {
@@ -119,7 +111,7 @@ export function AgentCatalogPage() {
       <header className="mb-5 max-w-5xl">
         <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">Agent</h1>
         <p className="mt-1 text-sm text-slate-500">
-          选 Agent 开会话 · 有最近案时默认带上 ·{' '}
+          选 Agent 开会话 · 案可选，可稍后创建或绑定 ·{' '}
           <Link to="/agent/harness" className="ui-link-weak">
             运行说明
           </Link>
@@ -136,9 +128,9 @@ export function AgentCatalogPage() {
               setCaseId(e.target.value)
             }}
             className="ui-input ui-input-sm focus-ring max-w-[220px] truncate"
-            aria-label="覆盖关联案件，空则按 Agent 阶段优选"
+            aria-label="关联案件（可选）"
           >
-            <option value="">自动（按 Agent 阶段）</option>
+            <option value="">可稍后创建或绑定案件</option>
             {visibleCases.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.title} · {getStageMeta(c.stage).shortName}
@@ -147,8 +139,8 @@ export function AgentCatalogPage() {
           </select>
           <span className="text-[11px] text-slate-400">
             {caseId
-              ? '已覆盖：所有 Agent 将带上所选案件'
-              : '未覆盖 · 启动按该 Agent 阶段优选最近案'}
+              ? '已选：新建会话将带上所选案件'
+              : '可不选 · 无案也可开会话'}
           </span>
         </div>
         <div className="mt-2.5 flex flex-wrap items-center gap-2">
@@ -254,7 +246,7 @@ export function AgentCatalogPage() {
               </div>
               <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {list.map((a) => {
-                  const chosenId = preferredFor(a.stage)
+                  const chosenId = chosenCaseId
                   const chosen = visibleCases.find((c) => c.id === chosenId)
                   const mismatch = !!chosen && chosen.stage !== a.stage
                   return (

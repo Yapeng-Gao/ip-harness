@@ -32,6 +32,7 @@ import {
   workbenchHref,
 } from '../components/session/sessionGates'
 import { midHref, workbenchHref as workbenchAbsHref } from '../lib/deepLinks'
+import { CaseBindControls } from '../components/case/CaseBindControls'
 
 type OutletCtx = { rightOpen: boolean }
 
@@ -626,6 +627,20 @@ export function AgentSessionWorkspace() {
           onCancelAgentSwitch={() => setPendingAgentSwitch(null)}
           hitlActive={hitlActive}
           hitlDisableReason={primaryBlocker}
+          caseBindSlot={
+            <CaseBindControls
+              caseId={sess.caseId}
+              prominence="soft"
+              onBind={(id) => {
+                setCasePick(id)
+                patchSession(sess.id, { caseId: id })
+              }}
+              onUnbind={() => {
+                setCasePick('')
+                patchSession(sess.id, { caseId: undefined })
+              }}
+            />
+          }
         />
       </section>
 

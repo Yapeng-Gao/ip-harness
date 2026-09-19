@@ -60,11 +60,11 @@ caseBindState: 'none' | 'bound' | 'pending_create'
 
 ## 6. 验收
 
-- [ ] 新建会话/项目无 caseId 也能进  
-- [ ] general / 通用可全程无案  
-- [ ] patent 项目空开成功；区内可创建绑定或绑已有  
-- [ ] 无「必须先去中台」门禁文案  
-- [ ] 创建案路径诚实 mock；无真 case-core
+- [x] 新建会话/项目无 caseId 也能进  
+- [x] general / 通用可全程无案  
+- [x] patent 项目空开成功；区内可创建绑定或绑已有  
+- [x] 无「必须先去中台」门禁文案  
+- [x] 创建案路径诚实 mock；无真 case-core
 
 ## 评审
 

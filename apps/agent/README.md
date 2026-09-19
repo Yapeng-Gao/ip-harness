@@ -32,6 +32,16 @@ npm run dev:agent
 
 兼容重定向：`/` → `/agent`；`/ip-agent/*`、`/agents/*` → `/agent`。
 
+## 口播：案绑定（先聊/先项目，案不挡入口）
+
+规格：[docs/architecture/product-apps/agent-case-binding.md](../../docs/architecture/product-apps/agent-case-binding.md)
+
+1. **无案建项目**：`/agent/projects` → 不选案 → 创建 general 或 domain/patent → 进夹。
+2. **区内创建并绑定**：工作区顶栏「创建并绑定新案」→ 输入标题 → 生成 `mock-case-<ts>`（本地 `addCase` 种子，非真 case-core）→ 再继续聊。
+3. **或绑定已有**：同栏「绑定已有案」下拉 `visibleCases`。
+4. Home `/agent`「新对话」默认不自动填案（勿 `resolvePreferredCaseId`）；文案「可稍后创建或绑定案件」。
+5. general **无**专利步骤条；patent **有**；侧栏总控/专家进对应主区。
+
 ## 口播：入口收敛（样机 · 无真 LLM）
 
 规格：[docs/architecture/product-apps/agent-entry-modes.md](../../docs/architecture/product-apps/agent-entry-modes.md)

@@ -19,6 +19,7 @@ import type {
   ProjectDispatch,
   ProjectDispatchExpertId,
   ProjectExpertId,
+  CaseBindState,
   ProjectKind,
   ProjectThread,
   ProjectTimelineEvent,
@@ -79,6 +80,7 @@ function buildDemo(): {
     summary: 'domain/patent：总控 + 检索/撰稿/FTO',
     kind: 'domain',
     domainPackId: 'patent',
+    caseBindState: 'none',
     expertIds: [...patentIds],
     createdAt: nowIso(),
     updatedAt: nowIso(),
@@ -88,6 +90,7 @@ function buildDemo(): {
     title: '课题协作 · 通用演示',
     summary: 'general：总控 + 研究/写作/审查（无专利步骤）',
     kind: 'general',
+    caseBindState: 'none',
     expertIds: [...generalIds],
     createdAt: nowIso(),
     updatedAt: nowIso(),
@@ -175,6 +178,10 @@ type ProjectFolderContextValue = {
     expertId: ProjectExpertId,
     patch: Partial<Pick<ProjectThread, 'boundSessionId' | 'pendingHitl' | 'pendingGate' | 'stepIndex'>>,
   ) => void
+  patchProject: (
+    projectId: string,
+    patch: Partial<Pick<AgentProject, 'caseId' | 'caseBindState' | 'title' | 'summary'>>,
+  ) => void
 }
 
 const ProjectFolderContext = createContext<ProjectFolderContextValue | null>(
@@ -258,13 +265,15 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       const domainPackId =
         kind === 'domain' ? (input.domainPackId ?? 'patent') : undefined
       const expertIds = expertIdsForKind(kind, domainPackId)
+      const caseId = input.caseId || undefined
       const project: AgentProject = {
         id,
         title: input.title.trim() || '未命名项目',
         summary: input.summary?.trim() || '',
         kind,
         domainPackId,
-        caseId: kind === 'domain' ? input.caseId : input.caseId,
+        caseId,
+        caseBindState: caseId ? 'bound' : 'none',
         expertIds: [...expertIds],
         createdAt: nowIso(),
         updatedAt: nowIso(),
@@ -550,6 +559,47 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     [updateThread],
   )
 
+  const patchProject = useCallback(
+    (
+      projectId: string,
+      patch: Partial<Pick<AgentProject, 'caseId' | 'caseBindState' | 'title' | 'summary'>>,
+    ) => {
+      setProjects((prev) =>
+        prev.map((p) => {
+          if (p.id !== projectId) return p
+          const next = { ...p, ...patch, updatedAt: nowIso() }
+          if ('caseId' in patch) {
+            const cid = patch.caseId
+            next.caseBindState = (
+              patch.caseBindState ??
+              (cid ? 'bound' : 'none')
+            ) as CaseBindState
+            if (!cid) next.caseId = undefined
+          }
+          return next
+        }),
+      )
+      setTimeline((prev) => [
+        ...prev,
+        {
+          id: uid('tl'),
+          projectId,
+          kind: 'system',
+          title: patch.caseId
+            ? `已绑定案件 ${patch.caseId}`
+            : 'caseId' in patch
+              ? '已解除案件绑定'
+              : '项目已更新',
+          detail: patch.caseId
+            ? '样机绑定 · 非真 case-core'
+            : '',
+          at: stamp(),
+        },
+      ])
+    },
+    [],
+  )
+
   const value = useMemo<ProjectFolderContextValue>(
     () => ({
       projects,
@@ -566,6 +616,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       bindSession,
       setThreadHitl,
       patchThread,
+      patchProject,
     }),
     [
       projects,
@@ -582,6 +633,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       bindSession,
       setThreadHitl,
       patchThread,
+      patchProject,
     ],
   )
 

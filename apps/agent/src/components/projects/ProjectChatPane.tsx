@@ -20,6 +20,7 @@ type Props = {
 
 export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
   const {
+    getProject,
     getThread,
     appendMessage,
     advanceStep,
@@ -27,8 +28,11 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
     dispatchToExpert,
     reportToProject,
   } = useProjectFolder()
+  const project = getProject(projectId)
   const expert = getProjectExpert(expertId)
   const thread = getThread(projectId, expertId)
+  const showDomainSteps =
+    project?.kind === 'domain' || project?.domainPackId === 'patent'
   const [draft, setDraft] = useState('')
 
   const steps = expert.steps
@@ -111,7 +115,10 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-      <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-2.5">
+      <header
+        className="shrink-0 border-b border-slate-200 bg-white px-4 py-2.5"
+        data-testid={`project-chat-${expertId}`}
+      >
         <div className="flex flex-wrap items-center gap-2">
           <span
             className={`rounded border px-2 py-0.5 text-xs font-semibold ${expertAccentClass(expert.accent)}`}
@@ -125,31 +132,47 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
         </div>
         <p className="mt-1 text-[11px] text-slate-500">{expert.description}</p>
 
-        {/* Domain step bar — must differ per expert */}
-        <ol className="mt-2 flex flex-wrap gap-1" aria-label="领域步骤条">
-          {steps.map((s, i) => (
-            <li key={s.id}>
-              <button
-                type="button"
-                onClick={() => jumpToStep(projectId, expertId, s.id)}
-                className={`btn-press focus-ring inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] ${
-                  i === stepIndex
-                    ? 'border-slate-900 bg-slate-900 text-white'
-                    : i < stepIndex
-                      ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
-                      : 'border-slate-200 bg-white text-slate-600'
-                }`}
-              >
-                {i < stepIndex ? '✓' : i + 1}
-                {s.label}
-                {s.triggersHitl ? ' · HITL' : ''}
-              </button>
-              {i < steps.length - 1 && (
-                <ChevronRight className="mx-0.5 inline h-3 w-3 text-slate-300" aria-hidden />
-              )}
-            </li>
-          ))}
-        </ol>
+        {/* Domain step bar — patent/domain only; general has no patent steps */}
+        {showDomainSteps ? (
+          <ol
+            className="mt-2 flex flex-wrap gap-1"
+            aria-label="领域步骤条"
+            data-testid="domain-step-bar"
+          >
+            {steps.map((s, i) => (
+              <li key={s.id}>
+                <button
+                  type="button"
+                  onClick={() => jumpToStep(projectId, expertId, s.id)}
+                  className={`btn-press focus-ring inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] ${
+                    i === stepIndex
+                      ? 'border-slate-900 bg-slate-900 text-white'
+                      : i < stepIndex
+                        ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
+                        : 'border-slate-200 bg-white text-slate-600'
+                  }`}
+                >
+                  {i < stepIndex ? '✓' : i + 1}
+                  {s.label}
+                  {s.triggersHitl ? ' · HITL' : ''}
+                </button>
+                {i < steps.length - 1 && (
+                  <ChevronRight
+                    className="mx-0.5 inline h-3 w-3 text-slate-300"
+                    aria-hidden
+                  />
+                )}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p
+            className="mt-2 text-[11px] text-slate-400"
+            data-testid="general-no-patent-steps"
+          >
+            通用项目 · 无专利步骤条（协作剧本仍可推进）
+          </p>
+        )}
       </header>
 
       {/* Tool cards */}

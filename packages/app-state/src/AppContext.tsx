@@ -1798,7 +1798,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addCase = useCallback(
     (partial: Partial<PatentCase> & Pick<PatentCase, 'title' | 'stage'>): PatentCase => {
       const meta = getStageMeta(partial.stage)
-      const id = `c-${Date.now()}`
+      // Allow agent mock seed ids (mock-case-*); default keeps prior c-<ts>
+      const id = partial.id?.trim() || `c-${Date.now()}`
       const checklist: ChecklistItem[] = meta.defaultChecklist.map((item) => ({
         ...item,
         done: false,

@@ -129,6 +129,9 @@ export type ProjectDispatch = {
   status: 'open' | 'reported'
 }
 
+/** Spec: agent-case-binding.md */
+export type CaseBindState = 'none' | 'bound' | 'pending_create'
+
 export type AgentProject = {
   id: string
   title: string
@@ -137,6 +140,8 @@ export type AgentProject = {
   /** Required when kind === 'domain'; patent is the first pack. */
   domainPackId?: DomainPackId
   caseId?: string
+  /** none = 未绑；bound = 已绑；pending_create = 创建中（UI） */
+  caseBindState?: CaseBindState
   expertIds: ProjectExpertId[]
   createdAt: string
   updatedAt: string

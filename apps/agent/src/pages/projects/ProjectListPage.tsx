@@ -22,7 +22,7 @@ export function ProjectListPage() {
       summary: summary.trim(),
       kind,
       domainPackId: kind === 'domain' ? domainPackId : undefined,
-      caseId: kind === 'domain' ? caseId || undefined : undefined,
+      caseId: caseId || undefined,
     })
     setTitle('')
     setSummary('')
@@ -94,45 +94,50 @@ export function ProjectListPage() {
             </div>
           </fieldset>
           {kind === 'domain' ? (
-            <div className="mb-3 space-y-2">
-              <label className="flex items-center gap-2 text-xs text-slate-500">
-                DomainPack
-                <select
-                  value={domainPackId}
-                  onChange={(e) => setDomainPackId(e.target.value as DomainPackId)}
-                  className="focus-ring rounded border border-slate-200 bg-slate-50 px-2 py-1"
-                >
-                  <option value="patent">patent（专利）</option>
-                </select>
-              </label>
-              <label className="flex items-center gap-2 text-xs text-slate-500">
-                关联案件（可选）
-                <select
-                  value={caseId}
-                  onChange={(e) => setCaseId(e.target.value)}
-                  className="focus-ring rounded border border-slate-200 bg-slate-50 px-2 py-1"
-                >
-                  <option value="">不绑定</option>
-                  {visibleCases.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.title}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
+            <label className="mb-2 flex items-center gap-2 text-xs text-slate-500">
+              DomainPack
+              <select
+                value={domainPackId}
+                onChange={(e) => setDomainPackId(e.target.value as DomainPackId)}
+                className="focus-ring rounded border border-slate-200 bg-slate-50 px-2 py-1"
+              >
+                <option value="patent">patent（专利）</option>
+              </select>
+            </label>
           ) : (
-            <p className="mb-3 text-[11px] text-slate-400">
-              通用项目默认不绑案、无专利步骤条 / FTO / 权利要求 HITL。
+            <p className="mb-2 text-[11px] text-slate-400">
+              通用项目无专利步骤条 / FTO / 权利要求 HITL。
             </p>
           )}
+          <label className="mb-1 flex items-center gap-2 text-xs text-slate-500">
+            关联案件（可选）
+            <select
+              value={caseId}
+              onChange={(e) => setCaseId(e.target.value)}
+              className="focus-ring rounded border border-slate-200 bg-slate-50 px-2 py-1"
+              aria-label="关联案件（可选）"
+              data-testid="project-create-case"
+            >
+              <option value="">可稍后创建或绑定案件</option>
+              {visibleCases.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="mb-3 text-[11px] text-slate-400">
+            不强制选案 · 进工作区后再「创建并绑定」或「绑定已有案」
+          </p>
           <button
             type="button"
             onClick={onCreate}
+            data-testid="project-create-submit"
             className="btn-press focus-ring rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white"
           >
             创建并打开总控
           </button>
+
         </div>
 
         <ul className="mt-6 space-y-2">

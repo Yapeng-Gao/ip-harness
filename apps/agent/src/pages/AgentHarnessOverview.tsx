@@ -15,8 +15,6 @@ import { getStageMeta } from '@shared/data/stages'
 import { PageHeader } from '@shared/components/PageHeader'
 import { useAgents } from '@shared/context/AgentContext'
 import { useApp } from '@shared/context/AppContext'
-import { resolvePreferredCaseId } from '@shared/utils/lastVisited'
-import type { StageId } from '@shared/types'
 import { agentSessionPath } from '../lib/deepLinks'
 
 const STATUS_LABEL: Record<string, string> = {
@@ -40,7 +38,7 @@ export function AgentHarnessOverview() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const [caseId, setCaseId] = useState('')
-  const [pickerTouched, setPickerTouched] = useState(false)
+  const [, setPickerTouched] = useState(false)
 
   useEffect(() => {
     const url = params.get('case')
@@ -49,23 +47,15 @@ export function AgentHarnessOverview() {
     }
   }, [params, visibleCases])
 
-  const visibleIds = visibleCases.map((c) => c.id)
-  const visibleMeta = visibleCases.map((c) => ({ id: c.id, stage: c.stage }))
-  const explicitCase =
-    params.get('case') || (pickerTouched ? caseId : null)
-  const preferredFor = (stage?: StageId) =>
-    resolvePreferredCaseId(visibleIds, explicitCase, {
-      stage,
-      visible: visibleMeta,
-    })
+  // agent-case-binding: no auto prefer
+  const chosenCaseId = caseId || params.get('case') || ''
 
   const newSession = () => {
-    const chosen = preferredFor()
     const s = createSession({
       goal: '',
       agentId: 'auto',
       title: '新 IP 任务会话',
-      caseId: chosen || undefined,
+      caseId: chosenCaseId || undefined,
     })
     if (!s) return
     navigate(agentSessionPath(s.id), { state: { focusComposer: true } })
@@ -73,7 +63,7 @@ export function AgentHarnessOverview() {
 
   const startWith = (agentId: string) => {
     const a = getAgent(agentId)
-    const chosen = preferredFor(a?.stage)
+    const chosen = chosenCaseId
     const chosenCase = visibleCases.find((c) => c.id === chosen)
     // Fix W · 阶段错配二次确认，不只 amber
     if (a && chosenCase && chosenCase.stage !== a.stage) {
@@ -131,7 +121,7 @@ export function AgentHarnessOverview() {
             setCaseId(e.target.value)
           }}
           className="ui-input ui-input-sm focus-ring max-w-[240px] truncate"
-          aria-label="覆盖关联案件，空则按 Agent 阶段优选"
+          aria-label="关联案件（可选）"
         >
           <option value="">自动（按 Agent 阶段）</option>
           {visibleCases.map((c) => (
@@ -142,8 +132,8 @@ export function AgentHarnessOverview() {
         </select>
         <span className="text-[11px] text-slate-400">
           {caseId
-            ? '已覆盖：所有 Agent 将带上所选案件'
-            : '未覆盖 · 启动按该 Agent 阶段优选最近案'}
+            ? '已选：新建会话将带上所选案件'
+            : '可不选 · 无案也可开会话'}
         </span>
       </div>
 
@@ -207,7 +197,7 @@ export function AgentHarnessOverview() {
                   </div>
                 </button>
                 {(() => {
-                  const chosenId = preferredFor(a.stage)
+                  const chosenId = chosenCaseId
                   const chosen = visibleCases.find((c) => c.id === chosenId)
                   const mismatch = !!chosen && chosen.stage !== a.stage
                   return (

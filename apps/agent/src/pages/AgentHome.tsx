@@ -9,7 +9,7 @@ import {
   confirmNonCoreTier,
   defaultSessionGoal,
 } from '@shared/data/agents'
-import { getLastAgentSessionId, resolvePreferredCaseId } from '@shared/utils/lastVisited'
+import { getLastAgentSessionId } from '@shared/utils/lastVisited'
 import type { AgentDef } from '@shared/types'
 import { AgentTierBadge } from '../components/AgentTierBadge'
 import { getStageMeta } from '@shared/data/stages'
@@ -80,12 +80,13 @@ export function AgentHome() {
     createToastTimer.current = window.setTimeout(() => setCreateToast(null), 4500)
   }
 
+  // agent-case-binding: default empty — no resolvePreferredCaseId auto-fill
   useEffect(() => {
     if (pickerTouched) return
     const fromUrl = params.get('case')
-    const visibleIds = visibleCases.map((c) => c.id)
-    const preferred = resolvePreferredCaseId(visibleIds, fromUrl)
-    setCaseId(preferred)
+    if (fromUrl && visibleCases.some((c) => c.id === fromUrl)) {
+      setCaseId(fromUrl)
+    }
   }, [params, visibleCases, pickerTouched])
 
   const lastSessionId = getLastAgentSessionId()
@@ -212,7 +213,7 @@ export function AgentHome() {
           />
           <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-3 pb-3 pt-2">
             <label className="flex min-w-0 items-center gap-1.5">
-              <span className="shrink-0 text-[11px] text-slate-400">关联案件</span>
+              <span className="shrink-0 text-[11px] text-slate-400">关联案件（可选）</span>
               <select
                 value={caseId}
                 onChange={(e) => {
@@ -222,7 +223,7 @@ export function AgentHome() {
                 className={selectCls}
                 aria-label="关联案件"
               >
-                <option value="">{caseId ? '稍后关联' : '可选'}</option>
+                <option value="">可稍后创建或绑定案件</option>
                 {visibleCases.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.title}
@@ -258,6 +259,7 @@ export function AgentHome() {
               <button
                 type="button"
                 onClick={start}
+                data-testid="home-send"
                 className="btn-press focus-ring cta-work rounded-md px-4 py-1.5 text-sm font-medium"
               >
                 {selectedAgent?.tier === 'beta' ? '试用' : '发送'}
@@ -279,7 +281,7 @@ export function AgentHome() {
         <p className="mt-2 text-center text-[11px] text-slate-400" role="status">
           {caseId && selectedCase
             ? `已关联「${selectedCase.title}」· 确认后写入作业中台`
-            : '未关联案件时确认不会写回中台'}
+            : '可不选案新建 · 可稍后创建或绑定案件 · 无案确认不写回中台'}
         </p>
 
         {/* IP task chips — Core only */}
