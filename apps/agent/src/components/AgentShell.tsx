@@ -87,11 +87,14 @@ export function AgentShell() {
 
   const inSession = loc.pathname.startsWith('/agent/sessions/')
   const inProjects = loc.pathname.startsWith('/agent/projects')
-  /** Grok multi-bot shell owns its left rail — hide mail-like session inbox */
-  const inGrokShell =
-    loc.pathname === '/agent' ||
-    loc.pathname === '/agent/' ||
+  /** L1 single-assistant or L2 Grok team — own chrome; hide mail-like session inbox */
+  const inL1Shell =
+    loc.pathname === '/agent' || loc.pathname === '/agent/'
+  const inL2Shell =
+    loc.pathname === '/agent/team' ||
+    loc.pathname.startsWith('/agent/team/') ||
     loc.pathname.startsWith('/agent/bots/')
+  const inGrokShell = inL1Shell || inL2Shell
 
   return (
     <div className="app-shell-bg flex h-full flex-col overflow-hidden">
@@ -110,7 +113,7 @@ export function AgentShell() {
             IP
           </div>
           <div className="text-sm font-semibold tracking-tight text-slate-900">
-            {inGrokShell ? 'Grok' : '知产 Agent'}
+            {inL2Shell ? '团队 · Grok' : inL1Shell ? '知产助手' : '知产 Agent'}
           </div>
         </div>
 

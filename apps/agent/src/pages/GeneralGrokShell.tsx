@@ -13,8 +13,9 @@ import {
 import { freeBotPath } from '../projects/generalBots'
 
 /**
- * Default /agent — Grok Bot replica: narrow bot rail + message stream + sticky composer.
- * Spec: docs/architecture/product-apps/agent-grok-replica.md (9ba1d42)
+ * L2 team mode — Grok Bot replica: narrow bot rail + message stream + sticky composer.
+ * Entry: /agent/team (explicit upgrade from L1) or /agent/bots/:id.
+ * Spec: agent-grok-replica.md · agent-layers.md (24a6d8f)
  * Case bind / honesty default-hidden (opt-in via chrome toggle). No project deepen.
  */
 export function GeneralGrokShell() {
@@ -33,9 +34,7 @@ export function GeneralGrokShell() {
   }
 
   const defaultId = activeBots[0]?.id
-  if (!botId && defaultId) {
-    return <Navigate to={freeBotPath(defaultId)} replace />
-  }
+  // /agent/team (no :botId) stays put and shows default bot — no force-redirect to /bots/:id
 
   if (botId === 'new') {
     return <Navigate to="/agent/bots/new" replace />
@@ -53,11 +52,26 @@ export function GeneralGrokShell() {
   const resolved = botId ?? defaultId
 
   return (
-    <div className="flex min-h-0 flex-1" data-testid="general-grok-shell">
+    <div className="flex min-h-0 flex-1" data-testid="general-grok-shell" data-layer="l2">
       <GeneralBotSidebar />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
-        {/* Ultra-thin chrome: settings toggle only — no honesty wall / case strip by default */}
-        <div className="flex shrink-0 items-center justify-end gap-2 px-3 py-1">
+        {/* Ultra-thin chrome: L2 badge + back to L1 + lab + settings */}
+        <div className="flex shrink-0 items-center gap-2 px-3 py-1">
+          <span
+            className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 ring-1 ring-indigo-200/80"
+            data-testid="agent-l2-badge"
+          >
+            L2 · 团队
+          </span>
+          <Link
+            to="/agent"
+            className="btn-press focus-ring inline-flex min-h-8 items-center rounded-[var(--radius-sm)] px-2 py-1 text-[11px] text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+            data-testid="agent-l2-to-l1"
+            title="回到 L1 单助手"
+          >
+            ← 单助手
+          </Link>
+          <div className="ml-auto flex items-center gap-2">
           <Link
             to="/agent/lab"
             className="btn-press focus-ring inline-flex min-h-8 items-center gap-1 rounded-[var(--radius-sm)] px-2 py-1 text-[11px] text-slate-400 hover:bg-slate-50 hover:text-slate-600"
@@ -79,6 +93,7 @@ export function GeneralGrokShell() {
             <Settings2 className="h-3.5 w-3.5" aria-hidden />
             {chromeOpen ? '收起' : '…'}
           </button>
+          </div>
         </div>
         {chromeOpen && (
           <div
@@ -89,7 +104,7 @@ export function GeneralGrokShell() {
               className="text-[11px] leading-snug text-slate-400"
               data-testid="general-honesty-weak"
             >
-              样机 · 无真 LLM · 自由 bot · 写库须 HITL
+              样机 · 无真 LLM · L2 团队多 bot · 写库须 HITL
             </p>
             <div data-testid="general-case-bind-slot">
               <CaseBindControls

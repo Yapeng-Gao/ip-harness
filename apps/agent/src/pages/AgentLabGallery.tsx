@@ -24,12 +24,20 @@ type LabCard = {
 
 const CARDS: LabCard[] = [
   {
-    id: 'grok',
-    version: 'V·Grok 复刻',
+    id: 'l1',
+    version: 'V·L1 单助手',
     badge: '当前默认',
-    blurb: '自由 bot 侧栏 + 主聊，对齐 Grok Bot 心智。',
+    blurb: 'ChatGPT/Kimi 形：一助手一聊 + 底栏输入；团队为显式升级。',
     href: '/agent',
-    cta: '打开默认壳',
+    cta: '打开 L1',
+    icon: PenLine,
+  },
+  {
+    id: 'grok',
+    version: 'V·L2 团队 · Grok',
+    blurb: '多 bot 侧栏 + 主聊 + 转发；从 L1「团队模式」进入。',
+    href: '/agent/team',
+    cta: '打开团队',
     icon: Bot,
   },
   {
@@ -77,8 +85,8 @@ const CARDS: LabCard[] = [
 ]
 
 /**
- * Prototype gallery — browse historical / alternate Agent shells without
- * changing the default `/agent` = Grok replica.
+ * Prototype gallery — browse historical / alternate Agent shells.
+ * Default `/agent` = L1 single assistant (agent-layers 24a6d8f).
  */
 export function AgentLabGallery() {
   return (
@@ -99,14 +107,21 @@ export function AgentLabGallery() {
               Agent 原型展廊
             </h1>
             <p className="mt-1 text-sm leading-relaxed text-slate-600">
-              各代活口原型一览。默认入口仍是{' '}
+              各代活口原型一览。默认入口是{' '}
               <Link
                 to="/agent"
                 className="font-medium text-slate-800 underline-offset-2 hover:underline"
               >
-                /agent · Grok 复刻
+                /agent · L1 单助手
               </Link>
-              ；此处仅作样机导航，不改主心智。
+              ；团队模式在{' '}
+              <Link
+                to="/agent/team"
+                className="font-medium text-slate-800 underline-offset-2 hover:underline"
+              >
+                /agent/team
+              </Link>
+              。
             </p>
           </div>
         </div>

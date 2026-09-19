@@ -1,6 +1,6 @@
 import { Link, useParams, useLocation } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import { Bot, Plus, FolderKanban, History, LayoutGrid, MoreHorizontal, PenLine, Sparkles } from 'lucide-react'
+import { Bot, Plus, FolderKanban, History, LayoutGrid, MoreHorizontal, PenLine, Sparkles, MessageSquare } from 'lucide-react'
 import { useGeneralBots } from '../../projects/GeneralBotsContext'
 import { expertAccentClass } from '../../projects/experts'
 import { freeBotPath } from '../../projects/generalBots'
@@ -107,6 +107,15 @@ export function GeneralBotSidebar() {
             className="menu-enter absolute bottom-full left-0 right-0 z-30 mb-1 overflow-hidden rounded-[var(--radius-md)] border border-slate-200 bg-white shadow-md"
             data-testid="general-side-more-menu"
           >
+            <Link
+              to="/agent"
+              onClick={() => setMoreOpen(false)}
+              className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50"
+              data-testid="general-more-l1"
+            >
+              <MessageSquare className="h-3.5 w-3.5 text-slate-400" aria-hidden />
+              单助手（L1）
+            </Link>
             <Link
               to="/agent/lab"
               onClick={() => setMoreOpen(false)}

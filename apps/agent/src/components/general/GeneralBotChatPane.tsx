@@ -3,13 +3,17 @@ import { Send, Forward } from 'lucide-react'
 import { useGeneralBots } from '../../projects/GeneralBotsContext'
 import { expertAccentClass } from '../../projects/experts'
 
-type Props = { botId: string }
+type Props = {
+  botId: string
+  /** L2 team intercom; hide on L1 single-assistant shell */
+  showForward?: boolean
+}
 
 /**
- * Grok-like 1:1 stream + sticky composer. Optical user/assistant bubbles; no tip walls.
- * Spec: agent-grok-replica.md — forward stays secondary.
+ * 1:1 stream + sticky composer. Optical user/assistant bubbles; no tip walls.
+ * Spec: agent-grok-replica.md (L2) / agent-layers L1 reuses without forward.
  */
-export function GeneralBotChatPane({ botId }: Props) {
+export function GeneralBotChatPane({ botId, showForward = true }: Props) {
   const {
     getBot,
     getMessages,
@@ -122,7 +126,7 @@ export function GeneralBotChatPane({ botId }: Props) {
         className="general-grok-composer sticky bottom-0 z-10 shrink-0 border-t border-slate-200/80 bg-white/95 px-4 pb-3.5 pt-3 backdrop-blur-sm"
         data-testid="general-bot-composer-bar"
       >
-        {forwardOpen && (
+        {showForward && forwardOpen && (
           <div
             className="mb-2.5 flex flex-wrap items-center gap-2 rounded-[var(--radius-md)] border border-sky-200 bg-sky-50/80 px-2.5 py-2"
             data-testid="general-bot-forward-panel"
@@ -161,6 +165,7 @@ export function GeneralBotChatPane({ botId }: Props) {
         )}
         {/* Concentric shell: outer 16 + pad 6 ≈ inner 10 */}
         <div className="general-grok-composer-shell flex items-end gap-2 rounded-2xl border border-slate-200 bg-[#f5f5f7] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+          {showForward && (
           <button
             type="button"
             onClick={() => setForwardOpen((v) => !v)}
@@ -172,6 +177,7 @@ export function GeneralBotChatPane({ botId }: Props) {
           >
             <Forward className="h-4 w-4" strokeWidth={1.75} aria-hidden />
           </button>
+          )}
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}

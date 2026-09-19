@@ -14,7 +14,7 @@ import { useGeneralBots } from '../projects/GeneralBotsContext'
 
 /**
  * Legacy / compat Composer — demoted secondary entry at /agent/compose.
- * Default landing is GeneralGrokShell (Grok multi-bot). Spec §5.
+ * Default landing is AgentL1Shell (L1 single assistant). Spec agent-layers.
  */
 export function AgentHome() {
   const { createSession, visibleSessions } = useAgents()
@@ -89,11 +89,19 @@ export function AgentHome() {
             <Link
               to="/agent"
               className="font-medium text-slate-800 underline-offset-2 hover:underline"
-              data-testid="compose-back-to-grok"
+              data-testid="compose-back-to-l1"
             >
-              通用 Grok（自由 bot）
+              L1 单助手
             </Link>
-            ：侧栏选 bot 一对一 · 可新建 / 转发。
+            ；需要多 bot 再进{' '}
+            <Link
+              to="/agent/team"
+              className="font-medium text-slate-800 underline-offset-2 hover:underline"
+              data-testid="compose-back-to-team"
+            >
+              团队模式
+            </Link>
+            。
           </p>
         </div>
 

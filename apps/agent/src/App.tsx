@@ -4,6 +4,7 @@ import { AgentProvider } from '@shared/context/AgentContext'
 import { ProductProvider } from '@shared/context/ProductContext'
 import { AgentShell } from './components/AgentShell'
 import { AgentHome } from './pages/AgentHome'
+import { AgentL1Shell } from './pages/AgentL1Shell'
 import { GeneralGrokShell } from './pages/GeneralGrokShell'
 import { AgentSessionWorkspace } from './pages/AgentSessionWorkspace'
 import { AgentSessionsList } from './pages/AgentSessionsList'
@@ -28,7 +29,8 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/agent" replace />} />
               <Route path="/agent" element={<AgentShell />}>
-                <Route index element={<GeneralGrokShell />} />
+                <Route index element={<AgentL1Shell />} />
+                <Route path="team" element={<GeneralGrokShell />} />
                 <Route path="bots/new" element={<GeneralBotNewPage />} />
                 <Route path="bots/:botId" element={<GeneralGrokShell />} />
                 <Route path="compose" element={<AgentHome />} />
