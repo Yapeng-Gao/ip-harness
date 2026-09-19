@@ -1,0 +1,771 @@
+{
+  "headHint": "ui-deep-S6-S9",
+  "base": "http://127.0.0.1:5175",
+  "startedAt": "2026-09-19T04:01:34.378Z",
+  "steps": {
+    "S6": {
+      "all": {
+        "url": "http://127.0.0.1:5175/agent/sessions",
+        "hasGroup": true,
+        "groupLabel": "会话状态筛选",
+        "buttons": [
+          {
+            "text": "全部 · 4",
+            "pressed": "true",
+            "disabled": false,
+            "box": {
+              "w": 65,
+              "h": 32,
+              "x": 11,
+              "y": 342
+            },
+            "cs": {
+              "fontSize": "11px",
+              "fontWeight": "500",
+              "radius": "8px",
+              "bg": "rgb(255, 255, 255)",
+              "color": "rgb(15, 23, 42)",
+              "border": "0px solid rgb(15, 23, 42)"
+            }
+          },
+          {
+            "text": "待确认 · 3",
+            "pressed": "false",
+            "disabled": false,
+            "box": {
+              "w": 66,
+              "h": 32,
+              "x": 78,
+              "y": 342
+            },
+            "cs": {
+              "fontSize": "11px",
+              "fontWeight": "500",
+              "radius": "8px",
+              "bg": "rgba(0, 0, 0, 0)",
+              "color": "rgba(60, 60, 67, 0.6)",
+              "border": "0px solid rgba(60, 60, 67, 0.6)"
+            }
+          },
+          {
+            "text": "进行中 · 0",
+            "pressed": "false",
+            "disabled": false,
+            "box": {
+              "w": 66,
+              "h": 32,
+              "x": 146,
+              "y": 342
+            },
+            "cs": {
+              "fontSize": "11px",
+              "fontWeight": "500",
+              "radius": "8px",
+              "bg": "rgba(0, 0, 0, 0)",
+              "color": "rgba(60, 60, 67, 0.6)",
+              "border": "0px solid rgba(60, 60, 67, 0.6)"
+            }
+          }
+        ],
+        "counts": {
+          "all": "全部 · 4",
+          "needs": "待确认 · 3",
+          "running": "进行中 · 0"
+        },
+        "rowCount": 0,
+        "rows": [],
+        "urlHasFilter": false,
+        "heightConsistent": true,
+        "segmentGapPx": 2,
+        "sideNav": true
+      },
+      "needs": {
+        "url": "http://127.0.0.1:5175/agent/sessions",
+        "filterParam": null,
+        "pressedText": "待确认 · 3",
+        "buttons": [
+          {
+            "text": "全部 · 4",
+            "pressed": "false"
+          },
+          {
+            "text": "待确认 · 3",
+            "pressed": "true"
+          },
+          {
+            "text": "进行中 · 0",
+            "pressed": "false"
+          }
+        ],
+        "rowCount": 0,
+        "rows": []
+      },
+      "running": {
+        "url": "http://127.0.0.1:5175/agent/sessions",
+        "filter": null,
+        "pressed": [
+          "进行中 · 0"
+        ]
+      },
+      "a11y": {
+        "ok": true,
+        "role": "group",
+        "allHavePressed": true,
+        "singlePressed": true,
+        "minH": 32,
+        "minW": 65,
+        "tabularSample": [
+          "tabular-nums",
+          "tabular-nums",
+          "tabular-nums"
+        ],
+        "btnCount": 3
+      },
+      "ui": {
+        "url": "http://127.0.0.1:5175/agent/sessions",
+        "title": "IP Harness · 知产 Agent",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "sideNav": {
+          "tag": "nav",
+          "w": 223,
+          "h": 179,
+          "top": 48,
+          "left": 0,
+          "fontSize": "15px",
+          "fontWeight": "400",
+          "radius": "0px",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(15, 23, 42)",
+          "display": "flex",
+          "ariaPressed": null,
+          "ariaLabel": "办理导航",
+          "role": null,
+          "testid": "agent-side-nav",
+          "text": "开始 Agent 会话 更多"
+        },
+        "main": {
+          "tag": "main",
+          "w": 1216,
+          "h": 852,
+          "top": 48,
+          "left": 224,
+          "fontSize": "15px",
+          "fontWeight": "400",
+          "radius": "0px",
+          "bg": "rgb(245, 245, 247)",
+          "color": "rgb(15, 23, 42)",
+          "display": "flex",
+          "ariaPressed": null,
+          "ariaLabel": null,
+          "role": null,
+          "testid": null,
+          "text": "全部会话 与左侧共用搜索；状态 / Agent 筛选请用左侧「筛选」 新建任务会话 已归档 标题 Agent 案件 状态 更新 操作 一通创造性答复 · 边缘调度 针对一通创造性争点生成答复策略与修改对照，等待你确认。 OA 答复 Agen"
+        },
+        "noLabelIconBtns": [],
+        "focusableCount": 40,
+        "outlineNoneSample": 40,
+        "headings": [
+          {
+            "level": "H1",
+            "text": "全部会话"
+          }
+        ]
+      },
+      "gates": {
+        "midDeep": [],
+        "midCta": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "shell5173Count": 0,
+        "origin": "http://127.0.0.1:5175"
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S6/S6-sessions-all.png",
+        "docs/ui-polish/agent-stepwise-ui/S6/S6-segmented-closeup.png",
+        "docs/ui-polish/agent-stepwise-ui/S6/S6-sessions-needs.png",
+        "docs/ui-polish/agent-stepwise-ui/S6/S6-sessions-running.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true,
+        "hardOk": true
+      }
+    },
+    "S7": {
+      "probe": {
+        "url": "http://127.0.0.1:5175/agent/agents",
+        "headings": [
+          {
+            "level": "H1",
+            "text": "Agent",
+            "box": {
+              "w": 1024,
+              "h": 33,
+              "top": 80
+            }
+          },
+          {
+            "level": "H2",
+            "text": "Core 主办理闭环",
+            "box": {
+              "w": 111,
+              "h": 20,
+              "top": 273
+            }
+          },
+          {
+            "level": "H3",
+            "text": "调研检索 Agent",
+            "box": {
+              "w": 96,
+              "h": 20,
+              "top": 318
+            }
+          },
+          {
+            "level": "H3",
+            "text": "交底整理 Agent",
+            "box": {
+              "w": 96,
+              "h": 20,
+              "top": 318
+            }
+          },
+          {
+            "level": "H3",
+            "text": "立项评估 Agent",
+            "box": {
+              "w": 96,
+              "h": 20,
+              "top": 318
+            }
+          },
+          {
+            "level": "H3",
+            "text": "权利要求撰写 Agent",
+            "box": {
+              "w": 123,
+              "h": 20,
+              "top": 523
+            }
+          },
+          {
+            "level": "H3",
+            "text": "OA 答复 Agent",
+            "box": {
+              "w": 90,
+              "h": 20,
+              "top": 523
+            }
+          },
+          {
+            "level": "H3",
+            "text": "年费与维持 Agent",
+            "box": {
+              "w": 109,
+              "h": 20,
+              "top": 523
+            }
+          },
+          {
+            "level": "H2",
+            "text": "Assist 辅助薄层",
+            "box": {
+              "w": 104,
+              "h": 20,
+              "top": 725
+            }
+          },
+          {
+            "level": "H3",
+            "text": "监控预警 Agent",
+            "box": {
+              "w": 96,
+              "h": 20,
+              "top": 770
+            }
+          },
+          {
+            "level": "H2",
+            "text": "Beta Beta·非采购闭环",
+            "box": {
+              "w": 151,
+              "h": 20,
+              "top": 1013
+            }
+          },
+          {
+            "level": "H3",
+            "text": "转化条款 Agent",
+            "box": {
+              "w": 96,
+              "h": 20,
+              "top": 1058
+            }
+          },
+          {
+            "level": "H3",
+            "text": "布局洞察 Agent",
+            "box": {
+              "w": 96,
+              "h": 20,
+              "top": 1058
+            }
+          }
+        ],
+        "found": [
+          "调研检索",
+          "立项评估",
+          "交底",
+          "权利要求",
+          "OA",
+          "年费",
+          "监控",
+          "转化",
+          "布局"
+        ],
+        "missing": [],
+        "cardCount": 10,
+        "cards": [
+          {
+            "tag": "article",
+            "href": null,
+            "text": "调研检索 Agent Core 立项前调研 · 可用 立项前调研 启动 稍后关联 详情 · 工具 4待确认 1",
+            "w": 376,
+            "h": 193,
+            "radius": "16px",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "tag": "article",
+            "href": null,
+            "text": "交底整理 Agent Core 立项决策 · 可用 发明交底 启动 稍后关联 详情 · 工具 4待确认 1",
+            "w": 376,
+            "h": 193,
+            "radius": "16px",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "tag": "article",
+            "href": null,
+            "text": "立项评估 Agent Core 立项决策 · 可用 立项决策 启动 稍后关联 详情 · 工具 3待确认 2",
+            "w": 376,
+            "h": 193,
+            "radius": "16px",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "tag": "article",
+            "href": null,
+            "text": "权利要求撰写 Agent Core 撰写申请 · 可用 撰写申请 启动 稍后关联 详情 · 工具 4待确认 2",
+            "w": 376,
+            "h": 193,
+            "radius": "16px",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "tag": "article",
+            "href": null,
+            "text": "OA 答复 Agent Core 审查答复 · 可用 审查答复 启动 稍后关联 详情 · 工具 4待确认 2",
+            "w": 376,
+            "h": 193,
+            "radius": "16px",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "tag": "article",
+            "href": null,
+            "text": "年费与维持 Agent Core 授权维持 · 可用 授权维持 启动 稍后关联 详情 · 工具 3待确认 1",
+            "w": 376,
+            "h": 193,
+            "radius": "16px",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "tag": "article",
+            "href": null,
+            "text": "监控预警 Agent Assist 监控预警 · 可用 案件监控 辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭环 详情 启动 稍后关联 详情 · 工",
+            "w": 376,
+            "h": 234,
+            "radius": "16px",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "tag": "article",
+            "href": null,
+            "text": "转化条款 Agent Beta 运用转化 · 试用 运用转化 Beta·非采购闭环 · 无法务会签闸，批准≠合同 PDF/电子签 详情 试用 · 非闭环 试用 · 稍后关联 · 非采购闭环 详情 · ",
+            "w": 376,
+            "h": 234,
+            "radius": "16px",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "tag": "article",
+            "href": null,
+            "text": "布局洞察 Agent Beta 立项前调研 · 试用 专利布局 Beta·非采购闭环 · 洞察矩阵/建案示意仍薄，勿当布局采购主路径 详情 试用 · 非闭环 试用 · 稍后关联 · 非采购闭环 详情 ",
+            "w": 376,
+            "h": 234,
+            "radius": "16px",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "tag": "details",
+            "href": null,
+            "text": "Beta·非采购闭环 · 洞察矩阵/建案示意仍薄，勿当布局采购主路径 详情",
+            "w": 342,
+            "h": 41,
+            "radius": "0px",
+            "bg": "rgba(0, 0, 0, 0)"
+          }
+        ],
+        "widthSpread": 34,
+        "radiiSample": [
+          "16px",
+          "16px",
+          "16px",
+          "16px",
+          "16px"
+        ],
+        "pageTitle": "Agent"
+      },
+      "ui": {
+        "url": "http://127.0.0.1:5175/agent/agents",
+        "title": "IP Harness · 知产 Agent",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "sideNav": {
+          "tag": "nav",
+          "w": 223,
+          "h": 179,
+          "top": 48,
+          "left": 0,
+          "fontSize": "15px",
+          "fontWeight": "400",
+          "radius": "0px",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(15, 23, 42)",
+          "display": "flex",
+          "ariaPressed": null,
+          "ariaLabel": "办理导航",
+          "role": null,
+          "testid": "agent-side-nav",
+          "text": "开始 Agent 会话 更多"
+        },
+        "main": {
+          "tag": "main",
+          "w": 1216,
+          "h": 852,
+          "top": 48,
+          "left": 224,
+          "fontSize": "15px",
+          "fontWeight": "400",
+          "radius": "0px",
+          "bg": "rgb(245, 245, 247)",
+          "color": "rgb(15, 23, 42)",
+          "display": "flex",
+          "ariaPressed": null,
+          "ariaLabel": null,
+          "role": null,
+          "testid": null,
+          "text": "Agent 选 Agent 开会话 · 案可选，可稍后创建或绑定 · 运行说明 平台分层纪律：Core 主办理闭环 · Assist 辅助薄层 · Beta 非采购闭环 — 勿把 Assist/Beta 卖成 Core。 可稍后创建或绑定案"
+        },
+        "noLabelIconBtns": [],
+        "focusableCount": 32,
+        "outlineNoneSample": 32,
+        "headings": [
+          {
+            "level": "H1",
+            "text": "Agent"
+          },
+          {
+            "level": "H2",
+            "text": "Core 主办理闭环"
+          },
+          {
+            "level": "H3",
+            "text": "调研检索 Agent"
+          },
+          {
+            "level": "H3",
+            "text": "交底整理 Agent"
+          },
+          {
+            "level": "H3",
+            "text": "立项评估 Agent"
+          },
+          {
+            "level": "H3",
+            "text": "权利要求撰写 Agent"
+          },
+          {
+            "level": "H3",
+            "text": "OA 答复 Agent"
+          },
+          {
+            "level": "H3",
+            "text": "年费与维持 Agent"
+          },
+          {
+            "level": "H2",
+            "text": "Assist 辅助薄层"
+          },
+          {
+            "level": "H3",
+            "text": "监控预警 Agent"
+          },
+          {
+            "level": "H2",
+            "text": "Beta Beta·非采购闭环"
+          },
+          {
+            "level": "H3",
+            "text": "转化条款 Agent"
+          },
+          {
+            "level": "H3",
+            "text": "布局洞察 Agent"
+          }
+        ]
+      },
+      "gates": {
+        "midDeep": [],
+        "midCta": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "shell5173Count": 0,
+        "origin": "http://127.0.0.1:5175"
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S7/S7-catalog.png",
+        "docs/ui-polish/agent-stepwise-ui/S7/S7-catalog-viewport.png",
+        "docs/ui-polish/agent-stepwise-ui/S7/S7-catalog-hover.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true,
+        "hardOk": true
+      }
+    },
+    "S8": {
+      "form": {
+        "url": "http://127.0.0.1:5175/agent/projects",
+        "radios": [
+          {
+            "name": "kind",
+            "value": "",
+            "label": "通用（无专利步骤）",
+            "checked": true
+          },
+          {
+            "name": "kind",
+            "value": "",
+            "label": "领域包",
+            "checked": false
+          }
+        ],
+        "hint": true,
+        "heading": "项目模式"
+      },
+      "probe": {
+        "url": "http://127.0.0.1:5175/agent/projects/proj-1789790501614-86yo6",
+        "hasNoPatent": true,
+        "noPatentText": "通用项目 · 无专利步骤条（协作剧本仍可推进）",
+        "domainStepBar": false,
+        "hasOrch": true,
+        "ftoIshInMain": false,
+        "bots": [
+          {
+            "id": "project-bot-general-orchestrator",
+            "text": "总控"
+          },
+          {
+            "id": "project-bot-general-research",
+            "text": "研究"
+          },
+          {
+            "id": "project-bot-general-write",
+            "text": "写作"
+          },
+          {
+            "id": "project-bot-general-review",
+            "text": "审查"
+          }
+        ],
+        "orchBox": {
+          "w": 992,
+          "h": 80,
+          "top": 152
+        }
+      },
+      "ui": {
+        "url": "http://127.0.0.1:5175/agent/projects/proj-1789790501614-86yo6",
+        "title": "IP Harness · 知产 Agent",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "sideNav": null,
+        "main": {
+          "tag": "main",
+          "w": 1440,
+          "h": 852,
+          "top": 48,
+          "left": 0,
+          "fontSize": "15px",
+          "fontWeight": "400",
+          "radius": "0px",
+          "bg": "rgb(245, 245, 247)",
+          "color": "rgb(15, 23, 42)",
+          "display": "flex",
+          "ariaPressed": null,
+          "ariaLabel": null,
+          "role": null,
+          "testid": null,
+          "text": "项目模式 项目 UI走查 general S8 1789790501506 通用 总控 研究 写作 审查 课题协作 · 通用演示 通用 边缘调度模组 · 专利演示 专利 项目次级入口 · 总控编排 通用 未绑案件 案件（可选） 可稍后创建或"
+        },
+        "noLabelIconBtns": [],
+        "focusableCount": 28,
+        "outlineNoneSample": 28,
+        "headings": []
+      },
+      "gates": {
+        "midDeep": [],
+        "midCta": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "shell5173Count": 0,
+        "origin": "http://127.0.0.1:5175"
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S8/S8-projects-list.png",
+        "docs/ui-polish/agent-stepwise-ui/S8/S8-create-general-form.png",
+        "docs/ui-polish/agent-stepwise-ui/S8/S8-general-project.png",
+        "docs/ui-polish/agent-stepwise-ui/S8/S8-no-patent-badge.png",
+        "docs/ui-polish/agent-stepwise-ui/S8/S8-orch-closeup.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true,
+        "hardOk": true
+      }
+    },
+    "S9": {
+      "orch": {
+        "url": "http://127.0.0.1:5175/agent/projects/proj-1789790504211-8mnzd",
+        "hasOrch": true,
+        "hasStepBar": true,
+        "hasNoPatent": false,
+        "stepText": "1收目标 2拆派 3等回执 4汇总",
+        "steps": [
+          "1收目标",
+          "1收目标",
+          "2拆派",
+          "2拆派",
+          "3等回执",
+          "3等回执",
+          "4汇总",
+          "4汇总"
+        ],
+        "orchSnippet": "总控席 编排 · 分派 · 汇总 只拆派任务与汇总专家回执；禁止直接改 handoff / 写案。深链可打开各专家私聊。 1收目标 2拆派 3等回执 4汇总",
+        "orchHasMock": true,
+        "bots": [
+          {
+            "id": "project-bot-orchestrator",
+            "text": "总控席",
+            "h": 40,
+            "selected": "page"
+          },
+          {
+            "id": "project-bot-expert-search",
+            "text": "检索专家",
+            "h": 40,
+            "selected": null
+          },
+          {
+            "id": "project-bot-expert-draft",
+            "text": "撰稿专家",
+            "h": 40,
+            "selected": null
+          },
+          {
+            "id": "project-bot-expert-fto",
+            "text": "FTO 专家",
+            "h": 40,
+            "selected": null
+          }
+        ]
+      },
+      "expert": {
+        "url": "http://127.0.0.1:5175/agent/projects/proj-1789790504211-8mnzd/bots/expert-search",
+        "expertId": "expert-search",
+        "hasChat": true,
+        "hasStepBar": true,
+        "headerSnippet": "检索专家 现有技术检索 · 工作篮 对齐 agent-research：布尔检索 → 命中 → 工作篮；通常只读，策略确认可走 approve_strategy。 1检索式 2命中 3工作篮 4策略确认 · HITL",
+        "bodySnippet": "项目模式 项目 UI走查 patent S9 1789790504116 专利 总控席 检索专家 撰稿专家 FTO 专家 课题协作 · 通用演示 通用 边缘调度模组 · 专利演示 专利 项目次级入口 · 总控编排 专利 pack=patent 未绑案件 写入案件前须绑定 领域办理写入案件前须先绑定案件 创建并绑定新案 绑定已有案 检索专家 现有技术检索 · 工作篮 对齐 agent-research：布尔检索 → 命中 → 工作篮；通常只读，策略确认可走 approve_strategy。 1检索式 2命中 3工作篮 4策略确认 · HITL 工具卡 高级 · expert-search 商业",
+        "looksLikeExpert": true,
+        "notOrchestratorCopy": true
+      },
+      "expertId": "expert-search",
+      "projectId": "proj-1789790504211-8mnzd",
+      "ui": {
+        "url": "http://127.0.0.1:5175/agent/projects/proj-1789790504211-8mnzd/bots/expert-search",
+        "title": "IP Harness · 知产 Agent",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "sideNav": null,
+        "main": {
+          "tag": "main",
+          "w": 1440,
+          "h": 852,
+          "top": 48,
+          "left": 0,
+          "fontSize": "15px",
+          "fontWeight": "400",
+          "radius": "0px",
+          "bg": "rgb(245, 245, 247)",
+          "color": "rgb(15, 23, 42)",
+          "display": "flex",
+          "ariaPressed": null,
+          "ariaLabel": null,
+          "role": null,
+          "testid": null,
+          "text": "项目模式 项目 UI走查 patent S9 1789790504116 专利 总控席 检索专家 撰稿专家 FTO 专家 课题协作 · 通用演示 通用 边缘调度模组 · 专利演示 专利 项目次级入口 · 总控编排 专利 pack=paten"
+        },
+        "noLabelIconBtns": [],
+        "focusableCount": 35,
+        "outlineNoneSample": 35,
+        "headings": []
+      },
+      "gates": {
+        "midDeep": [],
+        "midCta": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "shell5173Count": 0,
+        "origin": "http://127.0.0.1:5175"
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S9/S9-create-patent-form.png",
+        "docs/ui-polish/agent-stepwise-ui/S9/S9-patent-orchestrator.png",
+        "docs/ui-polish/agent-stepwise-ui/S9/S9-domain-step-bar.png",
+        "docs/ui-polish/agent-stepwise-ui/S9/S9-patent-expert.png",
+        "docs/ui-polish/agent-stepwise-ui/S9/S9-expert-chat-closeup.png",
+        "docs/ui-polish/agent-stepwise-ui/S9/S9-bot-sidebar.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true,
+        "hardOk": true
+      }
+    }
+  },
+  "consoleErrors": [],
+  "finishedAt": "2026-09-19T04:01:46.241Z"
+}

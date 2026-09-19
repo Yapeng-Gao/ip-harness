@@ -1,0 +1,103 @@
+{
+  "form": {
+    "url": "http://127.0.0.1:5175/agent/projects",
+    "radios": [
+      {
+        "name": "kind",
+        "value": "",
+        "label": "通用（无专利步骤）",
+        "checked": true
+      },
+      {
+        "name": "kind",
+        "value": "",
+        "label": "领域包",
+        "checked": false
+      }
+    ],
+    "hint": true,
+    "heading": "项目模式"
+  },
+  "probe": {
+    "url": "http://127.0.0.1:5175/agent/projects/proj-1789790501614-86yo6",
+    "hasNoPatent": true,
+    "noPatentText": "通用项目 · 无专利步骤条（协作剧本仍可推进）",
+    "domainStepBar": false,
+    "hasOrch": true,
+    "ftoIshInMain": false,
+    "bots": [
+      {
+        "id": "project-bot-general-orchestrator",
+        "text": "总控"
+      },
+      {
+        "id": "project-bot-general-research",
+        "text": "研究"
+      },
+      {
+        "id": "project-bot-general-write",
+        "text": "写作"
+      },
+      {
+        "id": "project-bot-general-review",
+        "text": "审查"
+      }
+    ],
+    "orchBox": {
+      "w": 992,
+      "h": 80,
+      "top": 152
+    }
+  },
+  "ui": {
+    "url": "http://127.0.0.1:5175/agent/projects/proj-1789790501614-86yo6",
+    "title": "IP Harness · 知产 Agent",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "sideNav": null,
+    "main": {
+      "tag": "main",
+      "w": 1440,
+      "h": 852,
+      "top": 48,
+      "left": 0,
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "radius": "0px",
+      "bg": "rgb(245, 245, 247)",
+      "color": "rgb(15, 23, 42)",
+      "display": "flex",
+      "ariaPressed": null,
+      "ariaLabel": null,
+      "role": null,
+      "testid": null,
+      "text": "项目模式 项目 UI走查 general S8 1789790501506 通用 总控 研究 写作 审查 课题协作 · 通用演示 通用 边缘调度模组 · 专利演示 专利 项目次级入口 · 总控编排 通用 未绑案件 案件（可选） 可稍后创建或"
+    },
+    "noLabelIconBtns": [],
+    "focusableCount": 28,
+    "outlineNoneSample": 28,
+    "headings": []
+  },
+  "gates": {
+    "midDeep": [],
+    "midCta": [],
+    "billingBanner": null,
+    "amberFullWidth": [],
+    "shell5173Count": 0,
+    "origin": "http://127.0.0.1:5175"
+  },
+  "evidence": [
+    "docs/ui-polish/agent-stepwise-ui/S8/S8-projects-list.png",
+    "docs/ui-polish/agent-stepwise-ui/S8/S8-create-general-form.png",
+    "docs/ui-polish/agent-stepwise-ui/S8/S8-general-project.png",
+    "docs/ui-polish/agent-stepwise-ui/S8/S8-no-patent-badge.png",
+    "docs/ui-polish/agent-stepwise-ui/S8/S8-orch-closeup.png"
+  ],
+  "checks": {
+    "bizLogic": true,
+    "pageLogic": true,
+    "hardOk": true
+  }
+}

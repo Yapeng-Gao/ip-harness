@@ -1,0 +1,191 @@
+{
+  "all": {
+    "url": "http://127.0.0.1:5175/agent/sessions",
+    "hasGroup": true,
+    "groupLabel": "会话状态筛选",
+    "buttons": [
+      {
+        "text": "全部 · 4",
+        "pressed": "true",
+        "disabled": false,
+        "box": {
+          "w": 65,
+          "h": 32,
+          "x": 11,
+          "y": 342
+        },
+        "cs": {
+          "fontSize": "11px",
+          "fontWeight": "500",
+          "radius": "8px",
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(15, 23, 42)",
+          "border": "0px solid rgb(15, 23, 42)"
+        }
+      },
+      {
+        "text": "待确认 · 3",
+        "pressed": "false",
+        "disabled": false,
+        "box": {
+          "w": 66,
+          "h": 32,
+          "x": 78,
+          "y": 342
+        },
+        "cs": {
+          "fontSize": "11px",
+          "fontWeight": "500",
+          "radius": "8px",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgba(60, 60, 67, 0.6)",
+          "border": "0px solid rgba(60, 60, 67, 0.6)"
+        }
+      },
+      {
+        "text": "进行中 · 0",
+        "pressed": "false",
+        "disabled": false,
+        "box": {
+          "w": 66,
+          "h": 32,
+          "x": 146,
+          "y": 342
+        },
+        "cs": {
+          "fontSize": "11px",
+          "fontWeight": "500",
+          "radius": "8px",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgba(60, 60, 67, 0.6)",
+          "border": "0px solid rgba(60, 60, 67, 0.6)"
+        }
+      }
+    ],
+    "counts": {
+      "all": "全部 · 4",
+      "needs": "待确认 · 3",
+      "running": "进行中 · 0"
+    },
+    "rowCount": 0,
+    "rows": [],
+    "urlHasFilter": false,
+    "heightConsistent": true,
+    "segmentGapPx": 2,
+    "sideNav": true
+  },
+  "needs": {
+    "url": "http://127.0.0.1:5175/agent/sessions",
+    "filterParam": null,
+    "pressedText": "待确认 · 3",
+    "buttons": [
+      {
+        "text": "全部 · 4",
+        "pressed": "false"
+      },
+      {
+        "text": "待确认 · 3",
+        "pressed": "true"
+      },
+      {
+        "text": "进行中 · 0",
+        "pressed": "false"
+      }
+    ],
+    "rowCount": 0,
+    "rows": []
+  },
+  "running": {
+    "url": "http://127.0.0.1:5175/agent/sessions",
+    "filter": null,
+    "pressed": [
+      "进行中 · 0"
+    ]
+  },
+  "a11y": {
+    "ok": true,
+    "role": "group",
+    "allHavePressed": true,
+    "singlePressed": true,
+    "minH": 32,
+    "minW": 65,
+    "tabularSample": [
+      "tabular-nums",
+      "tabular-nums",
+      "tabular-nums"
+    ],
+    "btnCount": 3
+  },
+  "ui": {
+    "url": "http://127.0.0.1:5175/agent/sessions",
+    "title": "IP Harness · 知产 Agent",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "sideNav": {
+      "tag": "nav",
+      "w": 223,
+      "h": 179,
+      "top": 48,
+      "left": 0,
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "display": "flex",
+      "ariaPressed": null,
+      "ariaLabel": "办理导航",
+      "role": null,
+      "testid": "agent-side-nav",
+      "text": "开始 Agent 会话 更多"
+    },
+    "main": {
+      "tag": "main",
+      "w": 1216,
+      "h": 852,
+      "top": 48,
+      "left": 224,
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "radius": "0px",
+      "bg": "rgb(245, 245, 247)",
+      "color": "rgb(15, 23, 42)",
+      "display": "flex",
+      "ariaPressed": null,
+      "ariaLabel": null,
+      "role": null,
+      "testid": null,
+      "text": "全部会话 与左侧共用搜索；状态 / Agent 筛选请用左侧「筛选」 新建任务会话 已归档 标题 Agent 案件 状态 更新 操作 一通创造性答复 · 边缘调度 针对一通创造性争点生成答复策略与修改对照，等待你确认。 OA 答复 Agen"
+    },
+    "noLabelIconBtns": [],
+    "focusableCount": 40,
+    "outlineNoneSample": 40,
+    "headings": [
+      {
+        "level": "H1",
+        "text": "全部会话"
+      }
+    ]
+  },
+  "gates": {
+    "midDeep": [],
+    "midCta": [],
+    "billingBanner": null,
+    "amberFullWidth": [],
+    "shell5173Count": 0,
+    "origin": "http://127.0.0.1:5175"
+  },
+  "evidence": [
+    "docs/ui-polish/agent-stepwise-ui/S6/S6-sessions-all.png",
+    "docs/ui-polish/agent-stepwise-ui/S6/S6-segmented-closeup.png",
+    "docs/ui-polish/agent-stepwise-ui/S6/S6-sessions-needs.png",
+    "docs/ui-polish/agent-stepwise-ui/S6/S6-sessions-running.png"
+  ],
+  "checks": {
+    "bizLogic": true,
+    "pageLogic": true,
+    "hardOk": true
+  }
+}

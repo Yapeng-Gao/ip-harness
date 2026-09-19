@@ -1,0 +1,111 @@
+{
+  "orch": {
+    "url": "http://127.0.0.1:5175/agent/projects/proj-1789790504211-8mnzd",
+    "hasOrch": true,
+    "hasStepBar": true,
+    "hasNoPatent": false,
+    "stepText": "1收目标 2拆派 3等回执 4汇总",
+    "steps": [
+      "1收目标",
+      "1收目标",
+      "2拆派",
+      "2拆派",
+      "3等回执",
+      "3等回执",
+      "4汇总",
+      "4汇总"
+    ],
+    "orchSnippet": "总控席 编排 · 分派 · 汇总 只拆派任务与汇总专家回执；禁止直接改 handoff / 写案。深链可打开各专家私聊。 1收目标 2拆派 3等回执 4汇总",
+    "orchHasMock": true,
+    "bots": [
+      {
+        "id": "project-bot-orchestrator",
+        "text": "总控席",
+        "h": 40,
+        "selected": "page"
+      },
+      {
+        "id": "project-bot-expert-search",
+        "text": "检索专家",
+        "h": 40,
+        "selected": null
+      },
+      {
+        "id": "project-bot-expert-draft",
+        "text": "撰稿专家",
+        "h": 40,
+        "selected": null
+      },
+      {
+        "id": "project-bot-expert-fto",
+        "text": "FTO 专家",
+        "h": 40,
+        "selected": null
+      }
+    ]
+  },
+  "expert": {
+    "url": "http://127.0.0.1:5175/agent/projects/proj-1789790504211-8mnzd/bots/expert-search",
+    "expertId": "expert-search",
+    "hasChat": true,
+    "hasStepBar": true,
+    "headerSnippet": "检索专家 现有技术检索 · 工作篮 对齐 agent-research：布尔检索 → 命中 → 工作篮；通常只读，策略确认可走 approve_strategy。 1检索式 2命中 3工作篮 4策略确认 · HITL",
+    "bodySnippet": "项目模式 项目 UI走查 patent S9 1789790504116 专利 总控席 检索专家 撰稿专家 FTO 专家 课题协作 · 通用演示 通用 边缘调度模组 · 专利演示 专利 项目次级入口 · 总控编排 专利 pack=patent 未绑案件 写入案件前须绑定 领域办理写入案件前须先绑定案件 创建并绑定新案 绑定已有案 检索专家 现有技术检索 · 工作篮 对齐 agent-research：布尔检索 → 命中 → 工作篮；通常只读，策略确认可走 approve_strategy。 1检索式 2命中 3工作篮 4策略确认 · HITL 工具卡 高级 · expert-search 商业",
+    "looksLikeExpert": true,
+    "notOrchestratorCopy": true
+  },
+  "expertId": "expert-search",
+  "projectId": "proj-1789790504211-8mnzd",
+  "ui": {
+    "url": "http://127.0.0.1:5175/agent/projects/proj-1789790504211-8mnzd/bots/expert-search",
+    "title": "IP Harness · 知产 Agent",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "sideNav": null,
+    "main": {
+      "tag": "main",
+      "w": 1440,
+      "h": 852,
+      "top": 48,
+      "left": 0,
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "radius": "0px",
+      "bg": "rgb(245, 245, 247)",
+      "color": "rgb(15, 23, 42)",
+      "display": "flex",
+      "ariaPressed": null,
+      "ariaLabel": null,
+      "role": null,
+      "testid": null,
+      "text": "项目模式 项目 UI走查 patent S9 1789790504116 专利 总控席 检索专家 撰稿专家 FTO 专家 课题协作 · 通用演示 通用 边缘调度模组 · 专利演示 专利 项目次级入口 · 总控编排 专利 pack=paten"
+    },
+    "noLabelIconBtns": [],
+    "focusableCount": 35,
+    "outlineNoneSample": 35,
+    "headings": []
+  },
+  "gates": {
+    "midDeep": [],
+    "midCta": [],
+    "billingBanner": null,
+    "amberFullWidth": [],
+    "shell5173Count": 0,
+    "origin": "http://127.0.0.1:5175"
+  },
+  "evidence": [
+    "docs/ui-polish/agent-stepwise-ui/S9/S9-create-patent-form.png",
+    "docs/ui-polish/agent-stepwise-ui/S9/S9-patent-orchestrator.png",
+    "docs/ui-polish/agent-stepwise-ui/S9/S9-domain-step-bar.png",
+    "docs/ui-polish/agent-stepwise-ui/S9/S9-patent-expert.png",
+    "docs/ui-polish/agent-stepwise-ui/S9/S9-expert-chat-closeup.png",
+    "docs/ui-polish/agent-stepwise-ui/S9/S9-bot-sidebar.png"
+  ],
+  "checks": {
+    "bizLogic": true,
+    "pageLogic": true,
+    "hardOk": true
+  }
+}
