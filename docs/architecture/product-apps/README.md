@@ -22,6 +22,7 @@
 | L2 团队互通 | [agent-l2-team.md](./agent-l2-team.md) | bot 自发消息；协作任务样机；仅 /agent/team |
 | L3 专利 bot | [agent-l3-patent.md](./agent-l3-patent.md) | 固定专家；产出↔中台；仅项目模式 |
 | **专利 Agent 壳重做** | [agent-patent-shell.md](./agent-patent-shell.md) | **主规格**：Catalog 默认；单聊/组队/群聊；双文件过程可见 |
+| 专利席花名册副本 | [patent-drill-ref/](./patent-drill-ref/) | SEAT_ROSTER / OWNER 矩阵 / PROCESS_VISIBILITY |
 | Agent 案绑定 | [agent-case-binding.md](./agent-case-binding.md) | 先聊/先项目；案可后创建或绑定；不挡入口 |
 | 跨面项目串接 | [project-cross-surface.md](./project-cross-surface.md) | 建项目串 mid/workbench/Agent/IAM；禁专家中截 |
 | Sessions×项目线程 | [agent-sessions-project-threads.md](./agent-sessions-project-threads.md) | 列表聚合展示；存储可分；标签筛选 |

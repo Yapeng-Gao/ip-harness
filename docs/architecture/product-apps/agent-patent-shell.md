@@ -4,6 +4,7 @@
 > 参考专利全链路 bot：**任用效果**、**双文件**（成果 + 过程可见）、席间 **loop/互通**；补上「过程可见」。  
 > **样机诚实**：假数据/假文件树；Confirm→DomainCommand 示意；禁真 LLM / 真 case-core / 可点跳 mid。  
 > **对齐**：[agent-l3-patent](./agent-l3-patent.md) · [project-cross-surface](./project-cross-surface.md) · [agent-l2-team](./agent-l2-team.md) · STAGE_MODULES。  
+> **花名册权威材料**（已入库副本）：[SEAT_ROSTER](./patent-drill-ref/SEAT_ROSTER_FOR_PROTOTYPE.md) · [OWNER 矩阵](./patent-drill-ref/OWNER_DELIVERABLE_MATRIX.md) · [过程可见](./patent-drill-ref/PROCESS_VISIBILITY.md)。  
 > **关系**：本文 = **专利产品壳 IA 主规格**；旧 L1 默认 / 自由 L2 主路径 → **降级或旁路**（见 §1）。
 
 ## 1. 默认入口 = 专利 Catalog
@@ -36,10 +37,11 @@ A/B/C 可切换，但 **共享同一 `projectId` / 案目录**（有项目时）
 ### Loop（样机）
 
 ```text
-总控派 research → [result]+双文件
-  → 自发派 intake（吃上游成果路径）
-  → go_nogo Confirm 闸
-  → disclosure → draft → …（可截短演示）
+（可选）landscape∥inspire∥competitor → mining → layout
+总控派 research → 双文件（成果+worklog）
+  → intake（吃 01–06）→ go_nogo Confirm
+  → disclosure → draft → figure∥fto → filing(authorize→file)
+  → 仅总控派 oa
 用户随时可：暂停 loop / 改派 / 打开某席单聊
 ```
 
@@ -78,33 +80,77 @@ cases/<caseOrProject>/
   06_research_report.md + …   # 编号可按所内规范微调，但必须双文件成对
 ```
 
-样机可用内存/虚拟 FS；**不要求**真 docx，但总控验收心智 = 双文件齐。
+样机可用内存/虚拟 FS；**不要求**真 docx，但总控验收心智 = 双文件齐（缺 worklog = 不合格，对齐 PROCESS_VISIBILITY）。
 
-## 4. 席位（对齐专利全链路角色）
+### 3.1 过程可见硬规则（并入 PROCESS_VISIBILITY）
 
-| Catalog id | 展示名 | 主成果文件（示意） | handoff / 闸（已有 contracts） | 辅？ |
-|------------|--------|-------------------|-------------------------------|------|
-| `orchestrator` | 专利全链路总控 | 编排时间线 | 不写 handoff | |
-| `expert-research` | 检索员（查新暨三性） | `06_research_report.md` | `research_report` | |
-| `expert-intake` | 立项决策 | `07_intake_quote.md` | `intake_quote` + **`go_nogo`** | |
-| `expert-disclosure` | 交底整理 | `08_disclosure_pack.md` | `disclosure_pack` | |
-| `expert-draft` | 撰写代理师 | `09_draft_claims.md` | `draft_claims` | |
-| `expert-figure` | 制图对接 | `10_figure_list.md` | **无**独立 key（辅席） | ✓ |
-| `expert-fto` | FTO律师 | `11_fto_memo.md` | **无**独立 key（辅席；≠三性） | ✓ |
-| `expert-filing` | 递交流程员 | `12_filing_checklist.md` | authorize/file 闸示意 | |
-| `expert-oa` | OA答复代理师 | `13_prosecution_response.md` | `prosecution_response` | |
+| 规则 | 说明 |
+|------|------|
+| 交卷 = 成果 + 过程 | 缺 `NN_*_worklog.md` → 总控打回，不派下家 |
+| worklog 最低章 | 收到什么 / 目标 / **步骤时间线** / **关键取舍≥2** / 证据 / 卡点 / 交给下家 |
+| 聊天 | 摘要须指到 worklog 步骤编号；禁止只有「已落盘」 |
+| 多轮 | 追加不覆盖；R 轮可用 `…_R2_worklog.md` |
+| 案级 | 可选 `00_case_worklog.md`（分派/验收/闸门时间线） |
 
-可选 Catalog 扩展（非默认焊死）：产业全景等——**另席**，不挡主链路。  
-缺口（工作台有、默认 Catalog 暂无）：maintain / monetize / watch / layout——见 [agent-l3-patent §4](./agent-l3-patent.md)。
+步骤条 UI ↔ worklog「步骤时间线」同行号；成果面板 ↔ `NN_*.md`；过程面板 ↔ worklog（**默认打开过程 Tab 或双栏并显**）。
 
-每席仍四件套：工具 · 剧本 · DomainCommand 候选 · 护栏。写库须 HITL。
+## 4. 席位花名册（并入 SEAT_ROSTER · 全表）
+
+示意流（花名册）：`全景∥激发∥竞品 → 挖掘 → 布局 → 查新 → 立项(Go) → 交底 → 撰写 → 制图∥FTO → 递交(authorize→file) → OA（未 file 不派）`。
+
+| Catalog id | 展示名 | 成果键 → 文件 | worklog | contracts / 闸 | Catalog 默认勾 |
+|------------|--------|---------------|---------|----------------|----------------|
+| `orchestrator` | 专利全链路总控 | `case_state` / 时间线 | `00_case_worklog.md` | 不写 handoff；验收双文件 | ✓ 必选 |
+| `expert-landscape` | 产业全景 | `landscape_report` → `01_…` | `01_…_worklog` | 提案键（**勿写死 packages**） | 立项前簇 · 可选 |
+| `expert-inspire` | 创新激发 | `inspire_brief` → `02_…` | 同键 worklog | 提案键 | 可选 |
+| `expert-competitor` | 竞品监控 | `competitor_watch` → `03_…` | 同键 | 提案键 | 可选 |
+| `expert-mining` | 专利挖掘 | `mining_pack` → `04_…` | 同键 | 提案键（≠旧「立项」） | 可选 |
+| `expert-layout` | 专利布局 | `layout_plan` → `05_…` | 同键 | 可对齐 `layout_insight` 心智；提案键 | 可选 |
+| `expert-research` | 检索员（查新暨三性） | `research_report` → `06_…` | 同键 | **`research_report`** | ✓ 主链 |
+| `expert-intake` | 立项决策 | `intake_quote` → `07_…` | 同键 | **`intake_quote` + `go_nogo`** | ✓ 主链 |
+| `expert-disclosure` | 交底整理 | `disclosure_pack` → `08_…` | 同键 | **`disclosure_pack`** | ✓ 主链 |
+| `expert-draft` | 撰写代理师 | `draft_claims` → `09_…` | 同键 | **`draft_claims`** | ✓ 主链 |
+| `expert-figure` | 制图对接 | `figure_list` → `10_…` | 同键 | **无**独立 handoff key（辅） | ✓ 建议 |
+| `expert-fto` | FTO律师 | `fto_memo` → `11_…` | 同键 | **无**独立 key（辅；≠三性） | ✓ 建议 |
+| `expert-filing` | 递交流程员 | `filing_checklist` → `12_…` | 同键 | authorize→file 闸 | ✓ 主链 |
+| `expert-oa` | OA答复代理师 | `prosecution_response` → `13_…` | 同键 | **`prosecution_response`**；**仅已 file** | ✓ 主链 |
+
+上游/下游以 [SEAT_ROSTER](./patent-drill-ref/SEAT_ROSTER_FOR_PROTOTYPE.md) 为准。  
+Owner / 过程要点 / 产出标题以 [OWNER 矩阵](./patent-drill-ref/OWNER_DELIVERABLE_MATRIX.md) 为准。  
+`01–05` 产出键为**演练/样机约定**；写入 `@ip/contracts` 须另开刀，本壳只认文件名与 Catalog id。
+
+并行：制图 ∥ FTO（权要确认后）。OA **禁**未 file 直派；递交回执后**仅总控**派 OA。
+
+工作台 maintain/monetize/watch 仍见 [agent-l3-patent §4](./agent-l3-patent.md) 缺口（本花名册暂未列席）。
+
+每席四件套：工具 · 剧本 · DomainCommand 候选 · 护栏。写库须 HITL。
+
+### 4.1 Owner 摘要（并入矩阵）
+
+| 席 | Owner（对谁负责） | 任务一句话 |
+|----|-------------------|------------|
+| 产业全景 | 战略/IP 决策 | 赛道全景支撑是否立项 |
+| 创新激发 | 发明人/研发 | 收敛可专利方向 |
+| 竞品监控 | IP/法务 | 对手威胁分级 |
+| 专利挖掘 | IP/研发 | 拆可申请提案 |
+| 专利布局 | IP 决策 | 主从案与保护网 |
+| 检索员 | 合伙人/撰写 | 查新+三性意见书 |
+| 立项决策 | 客户/IP 负责人 | Go/范围（报价附属） |
+| 交底整理 | 撰写代理师 | 可实施交底书 |
+| 撰写代理师 | 客户/质检 | 特征→权要+说明书（R1–R5） |
+| 制图对接 | 撰写/递交 | 附图任务与冻图号 |
+| FTO律师 | 业务/法务 | 自由实施+claim chart≥2 |
+| 递交流程员 | 代理师/总控 | 齐套→authorize→file |
+| OA答复 | 客户/发明人 | OA 策略与陈述 |
+| 总控 | 用户/平台 | 分派、双文件验收、闸门、迭代 |
 
 ## 5. Catalog 组队
 
 - Catalog 页：勾选席位 →「组成专班并建项目」  
-- 默认勾选主链路（总控+调研+立项+交底+撰写+递交+OA）；附图/FTO 默认勾可选  
+- **默认勾选**：总控 + 主链（查新→立项→交底→撰写→递交→OA）+ 建议勾制图/FTO  
+- **立项前簇**（全景/激发/竞品/挖掘/布局）：Catalog 可选，默认可不勾；勾选后可并行于查新前  
 - 组队后进入模式 B；可一键开模式 C room  
-- **不可**把席改成无关身份（专利壳固定角色）
+- **不可**把席改成无关身份；**不可**无项目冷启动截入 OA
 
 ## 6. 与旧规格关系
 
@@ -120,9 +166,11 @@ cases/<caseOrProject>/
 - [ ] `/agent` 冷启动 = 专利 Catalog（非通用单助手墙）  
 - [ ] 三种交互均可进入；C 有 bot 自发 loop（mock）  
 - [ ] 每席：步骤条 + 成果面板 + worklog 面板（过程默认可见）  
-- [ ] 席名对齐全链路角色；双文件成对出现在案目录示意  
-- [ ] 从建项目/组队起；禁专家截入  
-- [ ] 不污染「通用沙盒」以外的中台跳转；无真 LLM/case-core  
+- [ ] 席名/文件键对齐 SEAT_ROSTER（含 01–13 + 总控）  
+- [ ] 双文件成对；worklog 含步骤表+关键取舍；缺过程不可「交卷」  
+- [ ] Owner 标签可见（矩阵）  
+- [ ] 从建项目/组队起；禁专家截入；OA 仅 file 后  
+- [ ] 无真 LLM/case-core；01–05 不假装已写入 contracts  
 
 ## 8. Owner
 
