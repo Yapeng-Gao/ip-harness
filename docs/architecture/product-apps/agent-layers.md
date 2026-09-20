@@ -1,3 +1,4 @@
+> **专利产品壳**以 [agent-patent-shell.md](./agent-patent-shell.md) 为准（Catalog 默认；L1/自由 L2 降级）。
 # Agent 能力三层叠法（L1→L2→L3）
 
 > **冻结（用户再钉 · 顺序必须 1→2→3）**：  

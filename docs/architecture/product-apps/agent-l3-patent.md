@@ -4,6 +4,7 @@
 > **入口**：仅 `/agent/projects`（顶栏「专利项目」）；从**创建项目**起；**禁止专家截入**。  
 > **勿污染** L1 / L2。Agent **不可跳中台**验收。  
 > **样机诚实**：禁真 LLM / 真 case-core；**勿臆造**写入 `packages/contracts`。  
+> **壳 IA 主文**：[agent-patent-shell](./agent-patent-shell.md)。  
 > **对齐**：[project-cross-surface](./project-cross-surface.md) · [workbench STAGE_MODULES](../../apps/workbench/src/stages/index.ts) · `ARTIFACT_FOR_STAGE` · [agent-case-binding](./agent-case-binding.md)。
 
 ## 1. 入口（禁止截入）
