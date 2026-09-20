@@ -201,3 +201,13 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 **风险**：旧 id `expert-search`/`expert-mining` 须靠别名迁移；实现勿把 FTO 写成 `layout_insight`。
 
+## B席轻扫 · 专利 Agent 壳重做（`fe03389`）
+
+| 结论 | **Pass** |
+|------|----------|
+| 默认入口 | 过：冷启动=专利 Catalog；L1/自由 L2 降级旁路，旧 layers/entry-modes 对本壳让位 |
+| A/B/C + 双文件 | 过：单聊/组队/群聊共享 projectId；成果+worklog 过程可见；禁专家截入；OA 仅 file 后 |
+| 诚实边界 | 过：假 FS；Confirm→DomainCommand 示意；01–05 提案键不假装已入 contracts；禁真 LLM/case-core |
+
+**风险**：花名册席位多（含立项前簇），全链演示偏重——实现须截短主链；与 `agent-l3-patent`/SEAT_ROSTER 改键须三方同步；figure/fto 仍无独立 handoff key，勿臆造 packages 字段。
+
