@@ -9,12 +9,19 @@ import {
   GENERAL_PROJECT_EXPERT_IDS,
 } from './expertsGeneral'
 import {
+  PATENT_CATALOG_IDS,
   PATENT_EXPERTS,
   PATENT_PROJECT_EXPERT_IDS,
 } from './expertsPatent'
 
+/** Resolve legacy aliases → canonical Catalog id */
+export function resolveExpertId(id: string): ProjectExpertId {
+  if (id === 'expert-search') return 'expert-research'
+  return id as ProjectExpertId
+}
+
 /** Unified registry — general + DomainPack sources (separate files). */
-export const PROJECT_EXPERTS: Record<ProjectExpertId, ProjectExpertDef> = {
+export const PROJECT_EXPERTS: Record<string, ProjectExpertDef> = {
   ...PATENT_EXPERTS,
   ...GENERAL_EXPERTS,
 }
@@ -41,7 +48,8 @@ export function expertIdsForProject(project: {
 }
 
 export function getProjectExpert(id: ProjectExpertId): ProjectExpertDef {
-  return PROJECT_EXPERTS[id]
+  const resolved = resolveExpertId(id)
+  return PROJECT_EXPERTS[resolved] ?? PROJECT_EXPERTS[id]!
 }
 
 export function isOrchestratorExpert(id: ProjectExpertId): boolean {
@@ -92,14 +100,31 @@ export function expertAccentClass(accent: string): string {
       return 'bg-orange-100 text-orange-900 border-orange-200'
     case 'cyan':
       return 'bg-cyan-100 text-cyan-900 border-cyan-200'
+    case 'teal':
+      return 'bg-teal-100 text-teal-900 border-teal-200'
+    case 'fuchsia':
+      return 'bg-fuchsia-100 text-fuchsia-900 border-fuchsia-200'
+    case 'red':
+      return 'bg-red-100 text-red-900 border-red-200'
+    case 'lime':
+      return 'bg-lime-100 text-lime-900 border-lime-200'
+    case 'stone':
+      return 'bg-stone-100 text-stone-800 border-stone-200'
     default:
       return 'bg-slate-100 text-slate-700 border-slate-200'
   }
 }
+
+/** Cold-start blocked seats (禁专家截入) */
+export const COLD_START_BLOCKED: ProjectExpertId[] = [
+  'expert-oa',
+  'expert-filing',
+]
 
 export {
   GENERAL_EXPERTS,
   GENERAL_PROJECT_EXPERT_IDS,
   PATENT_EXPERTS,
   PATENT_PROJECT_EXPERT_IDS,
+  PATENT_CATALOG_IDS,
 }

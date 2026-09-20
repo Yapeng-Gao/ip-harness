@@ -31,6 +31,7 @@ import type {
   ProjectKind,
   ProjectThread,
   ProjectTimelineEvent,
+  RoomMessage,
 } from './types'
 
 function nowIso(): string {
@@ -88,7 +89,7 @@ function buildDemo(): {
   const patent: AgentProject = {
     id: DEMO_PATENT_ID,
     title: '边缘调度模组 · 专利演示',
-    summary: '专利全链路：检索→挖掘→交底→撰稿→附图→FTO→递交→OA',
+    summary: '专利全链路：查新→立项→交底→撰写→制图→FTO→递交→OA',
     kind: 'domain',
     domainPackId: 'patent',
     caseBindState: 'none',
@@ -156,7 +157,20 @@ type ProjectFolderContextValue = {
     kind: ProjectKind
     domainPackId?: DomainPackId
     caseId?: string
+    expertIds?: ProjectExpertId[]
   }) => AgentProject
+  roomMessages: RoomMessage[]
+  appendRoomMessage: (
+    input: Omit<RoomMessage, 'id' | 'at'> & { at?: string },
+  ) => void
+  clearRoomMessages: (projectId: string) => void
+  runPatentRoomLoop: (projectId: string) => void
+  pauseRoomLoop: () => void
+  roomLoopBusy: boolean
+  markArtifactSubmitted: (
+    projectId: string,
+    expertId: ProjectExpertId,
+  ) => void
   getProject: (id: string) => AgentProject | undefined
   getThread: (
     projectId: string,
@@ -231,11 +245,17 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
   const [domainCommandWrites, setDomainCommandWrites] = useState<DomainCommandWriteLog[]>([])
   const [fullChainBusy, setFullChainBusy] = useState(false)
   const fullChainTimersRef = useRef<number[]>([])
+  const [roomMessages, setRoomMessages] = useState<RoomMessage[]>([])
+  const [roomLoopBusy, setRoomLoopBusy] = useState(false)
+  const roomLoopTimersRef = useRef<number[]>([])
+
 
   useEffect(() => {
     return () => {
       for (const id of fullChainTimersRef.current) window.clearTimeout(id)
       fullChainTimersRef.current = []
+      for (const id of roomLoopTimersRef.current) window.clearTimeout(id)
+      roomLoopTimersRef.current = []
     }
   }, [])
 
@@ -304,12 +324,16 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       kind: ProjectKind
       domainPackId?: DomainPackId
       caseId?: string
+      expertIds?: ProjectExpertId[]
     }) => {
       const id = uid('proj')
       const kind = input.kind
       const domainPackId =
         kind === 'domain' ? (input.domainPackId ?? 'patent') : undefined
-      const expertIds = expertIdsForKind(kind, domainPackId)
+      const expertIds =
+        input.expertIds && input.expertIds.length > 0
+          ? input.expertIds
+          : expertIdsForKind(kind, domainPackId)
       const caseId = input.caseId || undefined
       const project: AgentProject = {
         id,
@@ -687,7 +711,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
         toExpertId: 'expert-draft',
         summary: 'L3 演示：请生成权利要求草稿并提请 Confirm 写库示意',
       })
-      jumpToStep(projectId, 'expert-draft', 'chapter')
+      jumpToStep(projectId, 'expert-draft', 'claims')
       jumpToStep(projectId, 'expert-draft', 'confirm')
       appendMessage(projectId, orchId, {
         role: 'system',
@@ -706,16 +730,16 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     stepId?: string
   }[] = [
     {
-      id: 'expert-search',
-      summary: '全链路：请跑检索式并入工作篮',
-      receipt: '检索回执：命中 12 · Top5 已入篮（mock）',
+      id: 'expert-research',
+      summary: '全链路：请跑检索式并出三性意见',
+      receipt: '检索回执：命中 12 · 06_research_report + worklog（mock）',
       stepId: 'basket',
     },
     {
-      id: 'expert-mining',
-      summary: '全链路：请出 2～3 可申报方向并评分',
-      receipt: '挖掘回执：3 方向 · 评分就绪 · 立项占位（mock）',
-      stepId: 'score',
+      id: 'expert-intake',
+      summary: '全链路：请吃上游并 go_nogo',
+      receipt: '立项回执：Go · 07_intake_quote + worklog（mock）',
+      stepId: 'quote',
     },
     {
       id: 'expert-disclosure',
@@ -795,7 +819,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       appendMessage(projectId, orchId, {
         role: 'assistant',
         content:
-          '【演示全链路 · running】将依次分派：检索 → 挖掘 → 交底 → 撰稿 → 附图 → FTO → 递交 → OA（mock 延迟 · 无真 LLM）。',
+          '【演示全链路 · running】将依次分派：查新 → 立项 → 交底 → 撰写 → 制图 → FTO → 递交 → OA（mock 延迟 · 无真 LLM）。',
         meta: { backend: 'mock' },
       })
       setTimeline((prev) => [
@@ -870,7 +894,180 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     ],
   )
 
-  const patchProject = useCallback(
+
+  const appendRoomMessage = useCallback(
+    (input: Omit<RoomMessage, 'id' | 'at'> & { at?: string }) => {
+      setRoomMessages((prev) => [
+        ...prev,
+        {
+          id: uid('room'),
+          at: input.at ?? stamp(),
+          projectId: input.projectId,
+          fromExpertId: input.fromExpertId,
+          toExpertId: input.toExpertId,
+          body: input.body,
+          kind: input.kind,
+          spontaneous: input.spontaneous,
+        },
+      ])
+    },
+    [],
+  )
+
+  const clearRoomMessages = useCallback((projectId: string) => {
+    setRoomMessages((prev) => prev.filter((m) => m.projectId !== projectId))
+  }, [])
+
+  const pauseRoomLoop = useCallback(() => {
+    for (const id of roomLoopTimersRef.current) window.clearTimeout(id)
+    roomLoopTimersRef.current = []
+    setRoomLoopBusy(false)
+  }, [])
+
+  const markArtifactSubmitted = useCallback(
+    (projectId: string, expertId: ProjectExpertId) => {
+      updateThread(projectId, expertId, (t) => ({
+        ...t,
+        artifactSubmitted: true,
+        updatedAt: nowIso(),
+      }))
+    },
+    [updateThread],
+  )
+
+  const ROOM_LOOP: {
+    id: ProjectDispatchExpertId
+    request: string
+    result: string
+  }[] = [
+    {
+      id: 'expert-research',
+      request: '请出查新+三性意见书（双文件）',
+      result: '已交 06_research_report.md + worklog（步骤表+关键取舍）',
+    },
+    {
+      id: 'expert-intake',
+      request: '请吃 01–06 并 go_nogo',
+      result: 'Go · 07_intake_quote.md + worklog',
+    },
+    {
+      id: 'expert-disclosure',
+      request: '请整理可实施交底',
+      result: '08_disclosure_pack.md + worklog 已齐',
+    },
+    {
+      id: 'expert-draft',
+      request: '请出权要+说明书',
+      result: '09_draft_claims.md + worklog 已齐',
+    },
+    {
+      id: 'expert-figure',
+      request: '请冻图号清单',
+      result: '10_figure_list.md + worklog（并行 FTO）',
+    },
+    {
+      id: 'expert-fto',
+      request: '请出 FTO memo + claim chart',
+      result: '11_fto_memo.md + worklog',
+    },
+    {
+      id: 'expert-filing',
+      request: '请齐套并走 authorize→file 闸（示意）',
+      result: '12_filing_checklist.md · file 示意完成 · 请总控派 OA',
+    },
+    {
+      id: 'expert-oa',
+      request: '已 file：请出 OA 答复策略',
+      result: '13_prosecution_response.md + worklog',
+    },
+  ]
+
+  const runPatentRoomLoop = useCallback(
+    (projectId: string) => {
+      const project = projects.find((p) => p.id === projectId)
+      if (!project || project.domainPackId !== 'patent') return
+      if (roomLoopBusy) return
+      for (const id of roomLoopTimersRef.current) window.clearTimeout(id)
+      roomLoopTimersRef.current = []
+      setRoomLoopBusy(true)
+
+      const team = new Set(project.expertIds)
+      const chain = ROOM_LOOP.filter((s) => team.has(s.id))
+      const orchId = orchestratorIdForProject(project)
+
+      appendRoomMessage({
+        projectId,
+        fromExpertId: orchId,
+        toExpertId: 'all',
+        body: '【loop】开始主链自发分派（mock · 无真 LLM）。缺 worklog 不派下家。',
+        kind: 'note',
+        spontaneous: true,
+      })
+
+      const STEP = 500
+      chain.forEach((seat, i) => {
+        const tReq = window.setTimeout(() => {
+          appendRoomMessage({
+            projectId,
+            fromExpertId: orchId,
+            toExpertId: seat.id,
+            body: seat.request,
+            kind: 'request',
+            spontaneous: true,
+          })
+          setTimeline((prev) => [
+            ...prev,
+            {
+              id: uid('tl'),
+              projectId,
+              kind: 'room_loop',
+              title: `loop 分派 · ${getProjectExpert(seat.id).name}`,
+              detail: seat.request,
+              at: stamp(),
+              expertId: seat.id,
+            },
+          ])
+        }, STEP * (i * 2 + 1))
+        roomLoopTimersRef.current.push(tReq)
+
+        const tRes = window.setTimeout(() => {
+          appendRoomMessage({
+            projectId,
+            fromExpertId: seat.id,
+            toExpertId: orchId,
+            body: `${seat.result}\n过程见对应 worklog。`,
+            kind: 'result',
+            spontaneous: true,
+          })
+          markArtifactSubmitted(projectId, seat.id)
+        }, STEP * (i * 2 + 2))
+        roomLoopTimersRef.current.push(tRes)
+      })
+
+      const doneAt = STEP * (chain.length * 2 + 1)
+      const tDone = window.setTimeout(() => {
+        appendRoomMessage({
+          projectId,
+          fromExpertId: orchId,
+          toExpertId: 'all',
+          body: '【loop · done】主链回执已齐。可打开各席看步骤条 + 双文件；OA 仅 file 后。',
+          kind: 'note',
+          spontaneous: true,
+        })
+        setRoomLoopBusy(false)
+      }, doneAt)
+      roomLoopTimersRef.current.push(tDone)
+    },
+    [
+      projects,
+      roomLoopBusy,
+      appendRoomMessage,
+      markArtifactSubmitted,
+    ],
+  )
+
+
+    const patchProject = useCallback(
     (
       projectId: string,
       patch: Partial<Pick<AgentProject, 'caseId' | 'caseBindState' | 'title' | 'summary'>>,
@@ -945,6 +1142,13 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       runL3Demo,
       runL3FullChain,
       fullChainBusy,
+      roomMessages,
+      appendRoomMessage,
+      clearRoomMessages,
+      runPatentRoomLoop,
+      pauseRoomLoop,
+      roomLoopBusy,
+      markArtifactSubmitted,
     }),
     [
       projects,
@@ -970,6 +1174,13 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       runL3Demo,
       runL3FullChain,
       fullChainBusy,
+      roomMessages,
+      appendRoomMessage,
+      clearRoomMessages,
+      runPatentRoomLoop,
+      pauseRoomLoop,
+      roomLoopBusy,
+      markArtifactSubmitted,
     ],
   )
 

@@ -6,12 +6,21 @@ export type ProjectKind = 'general' | 'domain'
 /** First DomainPack; reserved packs may appear later. */
 export type DomainPackId = 'patent'
 
-/** Project-folder expert / bot seat (Grok-bot form; own business logic). */
+/**
+ * Patent Catalog ids · agent-patent-shell §4 (25475b4) + SEAT_ROSTER.
+ * Legacy: expert-search → resolve to expert-research.
+ */
 export type ProjectExpertId =
   | 'orchestrator'
-  | 'expert-disclosure'
-  | 'expert-search'
+  | 'expert-landscape'
+  | 'expert-inspire'
+  | 'expert-competitor'
   | 'expert-mining'
+  | 'expert-layout'
+  | 'expert-research'
+  | 'expert-search' // legacy alias (resolve → expert-research)
+  | 'expert-intake'
+  | 'expert-disclosure'
   | 'expert-draft'
   | 'expert-figure'
   | 'expert-fto'
@@ -32,11 +41,11 @@ export type TimelineEventKind =
   | 'hitl'
   | 'domain_command'
   | 'system'
+  | 'room_loop'
 
 export type ChatRole = 'user' | 'assistant' | 'system' | 'tool'
 
 export type DomainCommandCandidate = {
-  /** DomainCommand.type — null = 只读专家，无写库候选 */
   command: CommandName | null
   label: string
   note: string
@@ -45,11 +54,8 @@ export type DomainCommandCandidate = {
 export type ExpertStepDef = {
   id: string
   label: string
-  /** Mock reply when advancing to / completing this step */
   script: string
-  /** Optional tool shown on this step */
   tool?: { name: string; preview: string }
-  /** When true, advancing here opens HITL ConfirmBar */
   triggersHitl?: boolean
   hitlGate?: HitlGateId
 }
@@ -57,7 +63,6 @@ export type ExpertStepDef = {
 export type ExpertShortcut = {
   id: string
   label: string
-  /** Jump to step id or append script line */
   action: 'advance' | 'jump' | 'report' | 'dispatch_hint'
   stepId?: string
   hint?: string
@@ -69,16 +74,20 @@ export type ProjectExpertDef = {
   role: 'orchestrator' | 'expert'
   specialty: string
   description: string
-  /** Tools shown on toolbar (must differ per expert) */
   tools: string[]
   shortcuts: ExpertShortcut[]
   steps: ExpertStepDef[]
   hitlGates: HitlGateId[]
   domainCommandCandidates: DomainCommandCandidate[]
   guardrails: string[]
-  /** Bind underlying AgentSession to this catalog agent for real HITL→DomainCommand */
   catalogAgentId: string | null
   accent: string
+  /** Catalog: pre = 立项前簇 · core = 主链 · assist = 辅 · orch */
+  catalogGroup?: 'pre' | 'core' | 'assist' | 'orch'
+  /** Default checked in Catalog teaming */
+  defaultTeam?: boolean
+  /** Owner label from OWNER matrix */
+  ownerLabel?: string
 }
 
 export type ProjectChatMessage = {
@@ -91,6 +100,8 @@ export type ProjectChatMessage = {
     stepId?: string
     dispatchId?: string
     backend?: 'mock'
+    spontaneous?: boolean
+    fromExpertId?: ProjectExpertId
   }
 }
 
@@ -101,13 +112,12 @@ export type ProjectThread = {
   kind: ProjectThreadKind
   title: string
   messages: ProjectChatMessage[]
-  /** Index into expert.steps — current position in domain state machine */
   stepIndex: number
-  /** Bound AgentSession id for HITL Confirm → DomainCommand */
   boundSessionId?: string
   pendingHitl?: boolean
   pendingGate?: HitlGateId
   updatedAt: string
+  artifactSubmitted?: boolean
 }
 
 export type ProjectTimelineEvent = {
@@ -135,7 +145,6 @@ export type ProjectDispatch = {
   status: 'open' | 'reported'
 }
 
-/** Spec: agent-case-binding.md */
 export type CaseBindState = 'none' | 'bound' | 'pending_create'
 
 export type AgentProject = {
@@ -143,17 +152,14 @@ export type AgentProject = {
   title: string
   summary: string
   kind: ProjectKind
-  /** Required when kind === 'domain'; patent is the first pack. */
   domainPackId?: DomainPackId
   caseId?: string
-  /** none = 未绑；bound = 已绑；pending_create = 创建并绑定短瞬（UI loading） */
   caseBindState?: CaseBindState
   expertIds: ProjectExpertId[]
   createdAt: string
   updatedAt: string
 }
 
-/** L3 prototype: Confirm → DomainCommand write indication (in-memory only). */
 export type DomainCommandWriteLog = {
   id: string
   projectId: string
@@ -163,4 +169,15 @@ export type DomainCommandWriteLog = {
   at: string
   midCaseHref?: string
   note: string
+}
+
+export type RoomMessage = {
+  id: string
+  projectId: string
+  fromExpertId: ProjectExpertId | 'user'
+  toExpertId?: ProjectExpertId | 'all'
+  body: string
+  kind: 'request' | 'result' | 'note' | 'user'
+  at: string
+  spontaneous?: boolean
 }

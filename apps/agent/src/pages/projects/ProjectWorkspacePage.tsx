@@ -1,13 +1,16 @@
-import { Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import { ProjectFolderSidebar } from '../../components/projects/ProjectFolderSidebar'
 import { ProjectChatPane } from '../../components/projects/ProjectChatPane'
 import { ProjectTimelinePanel } from '../../components/projects/ProjectTimelinePanel'
+import { SeatDualFilePanel } from '../../components/patent/SeatDualFilePanel'
 import type { ProjectExpertId } from '../../projects/types'
 import {
   PROJECT_EXPERTS,
+  getProjectExpert,
   orchestratorIdForProject,
   projectKindBadge,
+  resolveExpertId,
 } from '../../projects/experts'
 import { CaseBindControls } from '../../components/case/CaseBindControls'
 import { PatentMidMapPanel } from '../../components/projects/PatentMidMapPanel'
@@ -33,33 +36,34 @@ export function ProjectWorkspacePage() {
     )
   }
 
-  // Single source of truth: prefer /bots/:botId; legacy /experts/:expertId still works.
   const seatParam = botId ?? expertId
   const orchId = orchestratorIdForProject(project)
+  const resolvedRaw =
+    seatParam && (seatParam in PROJECT_EXPERTS || seatParam === 'expert-search')
+      ? resolveExpertId(seatParam)
+      : orchId
 
-  // Legacy experts URL → canonical bots URL (one truth)
-  if (expertId && !botId && expertId in PROJECT_EXPERTS && !isOrchParam(expertId, orchId)) {
+  if (expertId && !botId && expertId in PROJECT_EXPERTS) {
     return (
       <Navigate
-        to={`/agent/projects/${projectId}/bots/${expertId}`}
+        to={`/agent/projects/${projectId}/bots/${resolveExpertId(expertId)}`}
         replace
       />
     )
   }
 
-  const resolved: ProjectExpertId =
-    seatParam && seatParam in PROJECT_EXPERTS
-      ? (seatParam as ProjectExpertId)
-      : orchId
-
-  if (seatParam && !(seatParam in PROJECT_EXPERTS)) {
+  if (seatParam && !(resolveExpertId(seatParam) in PROJECT_EXPERTS) && seatParam !== 'expert-search') {
     return <Navigate to={`/agent/projects/${projectId}`} replace />
   }
 
+  const resolved = resolvedRaw as ProjectExpertId
   const badge = projectKindBadge(project)
+  const isPatent =
+    project.kind === 'domain' || project.domainPackId === 'patent'
+  const def = getProjectExpert(resolved)
 
   return (
-    <div className="flex min-h-0 flex-1">
+    <div className="flex min-h-0 flex-1" data-testid="patent-project-workspace">
       <ProjectFolderSidebar />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <div className="shrink-0 space-y-2 border-b border-slate-200 bg-white px-3 py-2">
@@ -70,31 +74,39 @@ export function ProjectWorkspacePage() {
             >
               项目 · 专家固定
             </span>
-            {(project.kind === 'domain' || project.domainPackId === 'patent') && (
+            {isPatent && (
               <span
                 className="rounded border border-violet-300 bg-violet-50 px-1.5 py-px font-semibold text-violet-800"
                 data-testid="project-l3-badge"
               >
-                L3 · 专利中台
+                专利壳 · 双文件
               </span>
             )}
             <span className={`rounded border px-1 py-px ${badge.className}`}>
               {badge.label}
             </span>
-            {project.domainPackId ? (
-              <span>
-                {project.domainPackId === 'patent' ? '专利领域' : project.domainPackId}
+            {def.ownerLabel && (
+              <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-px">
+                Owner · {def.ownerLabel}
               </span>
-            ) : null}
+            )}
             <span>{project.caseId ? '已绑案件' : '未绑案件'}</span>
+            {isPatent && (
+              <Link
+                to={`/agent/projects/${projectId}/room`}
+                className="ml-auto rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-900"
+                data-testid="open-patent-room"
+              >
+                开群聊 room
+              </Link>
+            )}
+            <Link to="/agent" className="text-slate-400 underline">
+              Catalog
+            </Link>
           </div>
           <CaseBindControls
             caseId={project.caseId}
-            prominence={
-              project.kind === 'domain' || project.domainPackId === 'patent'
-                ? 'strong'
-                : 'soft'
-            }
+            prominence={isPatent ? 'strong' : 'soft'}
             onCreateStart={() =>
               patchProject(projectId, { caseBindState: 'pending_create' })
             }
@@ -115,20 +127,22 @@ export function ProjectWorkspacePage() {
             expertId={resolved}
             caseId={project.caseId}
           />
-          <ProjectTimelinePanel projectId={projectId} currentExpertId={resolved} />
-          {(project.kind === 'domain' || project.domainPackId === 'patent') && (
-            <PatentMidMapPanel
-              projectId={projectId}
-              expertId={resolved}
-              caseId={project.caseId}
-            />
+          {isPatent ? (
+            <SeatDualFilePanel expertId={resolved} projectId={projectId} />
+          ) : (
+            <ProjectTimelinePanel projectId={projectId} currentExpertId={resolved} />
+          )}
+          {isPatent && (
+            <div className="hidden xl:flex">
+              <PatentMidMapPanel
+                projectId={projectId}
+                expertId={resolved}
+                caseId={project.caseId}
+              />
+            </div>
           )}
         </div>
       </div>
     </div>
   )
-}
-
-function isOrchParam(id: string, orchId: ProjectExpertId): boolean {
-  return id === orchId
 }

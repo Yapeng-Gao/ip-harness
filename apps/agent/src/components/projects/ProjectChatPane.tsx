@@ -17,6 +17,7 @@ const PROJECT_TOOL_LABELS: Record<string, string> = {
   dispatch_task: '分派任务',
   summarize_timeline: '汇总时间线',
   open_expert_dm: '打开专家私信',
+  accept_dual_file: '验收双文件',
   commercial_patent_search: '商业专利检索',
   cluster_hits: '聚类命中',
   draft_research_report: '起草调研报告',
@@ -194,6 +195,11 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
             {expert.name}
           </span>
           <span className="text-xs text-slate-500">{expert.specialty}</span>
+          {expert.ownerLabel ? (
+            <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-px text-[10px] text-slate-500">
+              Owner · {expert.ownerLabel}
+            </span>
+          ) : null}
           {isPatentL3 && isOrchestratorExpert(expertId) ? (
             <div className="ml-auto flex flex-wrap items-center gap-1.5">
               <button

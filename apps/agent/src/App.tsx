@@ -17,7 +17,14 @@ import { ProjectListPage } from './pages/projects/ProjectListPage'
 import { ProjectWorkspacePage } from './pages/projects/ProjectWorkspacePage'
 import { AgentLabGallery } from './pages/AgentLabGallery'
 import { RedirectToAgentLab } from './pages/RedirectToAgentLab'
+import { PatentCatalogPage } from './pages/patent/PatentCatalogPage'
+import { PatentSeatPage } from './pages/patent/PatentSeatPage'
+import { PatentRoomPage } from './pages/patent/PatentRoomPage'
 
+/**
+ * Patent shell default (agent-patent-shell 25475b4):
+ * /agent = Catalog; L1/L2 demoted to /agent/sandbox and /agent/team.
+ */
 export default function App() {
   return (
     <AppProvider>
@@ -29,7 +36,9 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/agent" replace />} />
               <Route path="/agent" element={<AgentShell />}>
-                <Route index element={<AgentL1Shell />} />
+                <Route index element={<PatentCatalogPage />} />
+                <Route path="seats/:seatId" element={<PatentSeatPage />} />
+                <Route path="sandbox" element={<AgentL1Shell />} />
                 <Route path="team" element={<GeneralGrokShell />} />
                 <Route path="bots/new" element={<GeneralBotNewPage />} />
                 <Route path="bots/:botId" element={<GeneralGrokShell />} />
@@ -43,10 +52,10 @@ export default function App() {
                 <Route path="projects" element={<ProjectListPage />} />
                 <Route path="projects/:projectId" element={<ProjectWorkspacePage />} />
                 <Route path="projects/:projectId/bots/:botId" element={<ProjectWorkspacePage />} />
-                {/* legacy — redirects to /bots/:id inside workspace */}
+                <Route path="projects/:projectId/room" element={<PatentRoomPage />} />
                 <Route path="projects/:projectId/experts/:expertId" element={<ProjectWorkspacePage />} />
-                <Route path="skills" element={<Navigate to="/agent/agents" replace />} />
-                <Route path="tools" element={<Navigate to="/agent/agents" replace />} />
+                <Route path="skills" element={<Navigate to="/agent" replace />} />
+                <Route path="tools" element={<Navigate to="/agent" replace />} />
               </Route>
               <Route path="/ip-agent/*" element={<Navigate to="/agent" replace />} />
               <Route path="/agents" element={<Navigate to="/agent" replace />} />

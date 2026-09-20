@@ -88,13 +88,20 @@ export function AgentShell() {
   const inSession = loc.pathname.startsWith('/agent/sessions/')
   const inProjects = loc.pathname.startsWith('/agent/projects')
   /** L1 single-assistant or L2 Grok team — own chrome; hide mail-like session inbox */
-  const inL1Shell =
-    loc.pathname === '/agent' || loc.pathname === '/agent/'
+  const inPatentCatalog =
+    loc.pathname === '/agent' ||
+    loc.pathname === '/agent/' ||
+    loc.pathname.startsWith('/agent/seats/')
+  const inSandbox =
+    loc.pathname === '/agent/sandbox' || loc.pathname.startsWith('/agent/sandbox/')
   const inL2Shell =
     loc.pathname === '/agent/team' ||
     loc.pathname.startsWith('/agent/team/') ||
     loc.pathname.startsWith('/agent/bots/')
-  const inGrokShell = inL1Shell || inL2Shell
+  const inPatentProject =
+    loc.pathname.startsWith('/agent/projects')
+  const inGrokShell = inSandbox || inL2Shell
+  const inPatentShell = inPatentCatalog || inPatentProject
 
   return (
     <div className="app-shell-bg flex h-full flex-col overflow-hidden">
@@ -113,7 +120,13 @@ export function AgentShell() {
             IP
           </div>
           <div className="text-sm font-semibold tracking-tight text-slate-900">
-            {inL2Shell ? '团队 · Grok' : inL1Shell ? '知产助手' : '知产 Agent'}
+            {inL2Shell
+              ? '团队 · 通用旁路'
+              : inSandbox
+                ? '通用沙盒'
+                : inPatentShell
+                  ? '专利 Agent'
+                  : '知产 Agent'}
           </div>
         </div>
 

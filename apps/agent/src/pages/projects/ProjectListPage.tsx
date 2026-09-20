@@ -38,11 +38,15 @@ export function ProjectListPage() {
           项目模式
         </h1>
         <p className="mt-1 text-sm text-slate-600">
-          在 Grok 多专家壳上设项目夹并挂 IP 专家。默认入口是{' '}
+          专利专班项目夹。默认入口是{' '}
           <Link to="/agent" className="underline">
-            /agent 通用壳
+            /agent 专利 Catalog
           </Link>
-          （壳级专利 bot，无需先建夹）。
+          （可组队建项目）。通用沙盒见{' '}
+          <Link to="/agent/sandbox" className="underline">
+            /agent/sandbox
+          </Link>
+          。
         </p>
 
         <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
