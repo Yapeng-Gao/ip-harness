@@ -15,6 +15,9 @@ import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { CommandName } from '@ip/domain'
 import { primaryHandoffKeyForExpert } from '../../projects/patentMidMap'
 import { PACK_DEMO_PROJECT_ID } from '../../projects/pack/patentHitlWalk'
+import { Link } from 'react-router-dom'
+import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { confirmKindForSeat } from '../../business/businessSeats'
 
 const ACTION_LABEL: Record<string, string> = {
   approve_strategy: '批准策略',
@@ -50,6 +53,21 @@ export function ExpertHitlBridge({
     useAgents()
   const { workspace, role, getHandoff, hasBlockingInvoiceForCase, dispatchCommand } = useApp()
   const { bindSession, setThreadHitl, appendMessage, recordDomainCommandWrite } = useProjectFolder()
+  const {
+    isBusinessCase,
+    prepareConfirm,
+    confirmItem,
+    returnItem,
+    getPendingConfirms,
+  } = useBusinessCases()
+  const bizCase = isBusinessCase(projectId)
+  const effectiveCaseId = caseId || (bizCase ? projectId : undefined)
+  const bizPending = bizCase
+    ? getPendingConfirms(projectId).find((c) => {
+        const kind = confirmKindForSeat(expert.id)
+        return kind != null && c.kind === kind && c.status === 'pending'
+      })
+    : undefined
   const [toast, setToast] = useState<string | null>(null)
   const [ensuring, setEnsuring] = useState(false)
 
@@ -58,6 +76,18 @@ export function ExpertHitlBridge({
   const isEnterprise = workspace.kind === 'enterprise'
 
   const needHitl = !!thread.pendingHitl && expert.hitlGates.length > 0
+
+  // 业务案：席交付过检 → 写入本案待确认（同一 store）
+  useEffect(() => {
+    if (!needHitl || !bizCase) return
+    const kind = confirmKindForSeat(expert.id)
+    if (!kind) return
+    const existing = getPendingConfirms(projectId).find(
+      (c) => c.kind === kind && c.status === 'pending',
+    )
+    if (existing) return
+    prepareConfirm(projectId, kind)
+  }, [needHitl, bizCase, expert.id, projectId, getPendingConfirms, prepareConfirm])
 
   useEffect(() => {
     if (!needHitl || !catalogId || ensuring) return
@@ -75,7 +105,7 @@ export function ExpertHitlBridge({
     const sess = createSession({
       goal: `${expert.name} · 项目确认：${expert.specialty}`,
       agentId: catalogId,
-      caseId: caseId || undefined,
+      caseId: effectiveCaseId || undefined,
       title: `项目闸 · ${expert.name}`,
       confirmedNonCoreTier: true,
     })
@@ -106,7 +136,7 @@ export function ExpertHitlBridge({
     expert.id,
     expert.name,
     expert.specialty,
-    caseId,
+    effectiveCaseId,
     appendMessage,
   ])
 
@@ -128,7 +158,7 @@ export function ExpertHitlBridge({
   const clearedGates = sess?.clearedHitlGates ?? []
   const handoffKey = agent?.handoffKey
   const handoffStatus =
-    caseId && handoffKey ? getHandoff(caseId, handoffKey) : undefined
+    effectiveCaseId && handoffKey ? getHandoff(effectiveCaseId, handoffKey) : undefined
 
   const block = useMemo(() => {
     if (expert.id === 'expert-fto') {
@@ -138,17 +168,17 @@ export function ExpertHitlBridge({
           'FTO 报告默认不写案；Confirm 仅确认口径（非法律入库）',
       }
     }
-    if (!caseId) {
+    if (!effectiveCaseId) {
       return {
         blocked: true,
         reason: NO_CASE_GATE_REASON,
       }
     }
     // 演示 mock 案不做发票硬挡（避免「能点进确认卡却交不了」）
-    if (caseId === 'case-mock-pack-hf') {
+    if (effectiveCaseId === 'case-mock-pack-hf') {
       return { blocked: false }
     }
-    const inv = hasBlockingInvoiceForCase(caseId)
+    const inv = hasBlockingInvoiceForCase(effectiveCaseId)
     if (inv?.blocked) {
       return {
         blocked: true,
@@ -156,7 +186,7 @@ export function ExpertHitlBridge({
       }
     }
     return { blocked: false }
-  }, [expert.id, caseId, hasBlockingInvoiceForCase])
+  }, [expert.id, effectiveCaseId, hasBlockingInvoiceForCase])
 
   const memoryOnly =
     expert.domainCommandCandidates.length > 0 &&
@@ -170,13 +200,13 @@ export function ExpertHitlBridge({
         return '演示不可提交：本席未开放该确认项'
       }
       // P0 HITL：无案仅禁须案闸；approve_strategy / go_nogo 可点清
-      if (!caseId && gateRequiresCase(g)) return NO_CASE_GATE_REASON
+      if (!effectiveCaseId && gateRequiresCase(g)) return NO_CASE_GATE_REASON
       if (g === 'authorize_file' && role !== 'enterprise') {
         return '仅企业可授权递交'
       }
       return null
     },
-    [memoryOnly, expert.hitlGates, role, caseId],
+    [memoryOnly, expert.hitlGates, role, effectiveCaseId],
   )
 
   const runHitl = useCallback(
@@ -186,7 +216,7 @@ export function ExpertHitlBridge({
         return
       }
       const isDemoPack =
-        projectId === PACK_DEMO_PROJECT_ID || caseId === 'case-mock-pack-hf'
+        projectId === PACK_DEMO_PROJECT_ID || effectiveCaseId === 'case-mock-pack-hf'
 
       const finishMemoryConfirm = (detail: string) => {
         const gate = thread.pendingGate ?? expert.hitlGates[0]
@@ -220,7 +250,7 @@ export function ExpertHitlBridge({
           return
         }
         finishMemoryConfirm(
-          expert.id === 'expert-fto' && !caseId
+          expert.id === 'expert-fto' && !effectiveCaseId
             ? '本机草稿 · 未写入案件 · 非法律意见'
             : '样机内存 · 非真缴费/签约',
         )
@@ -242,7 +272,7 @@ export function ExpertHitlBridge({
       const recordL3Write = (reason: string) => {
         if (!writeCand?.command) return
         const cmd = writeCand.command as CommandName
-        const effectiveCaseId = caseId || 'case-mock-l3'
+        const writeCaseId = effectiveCaseId || 'case-mock-l3'
         // Per-seat handoff key (audit 8049acd): disclosure→disclosure_pack, draft→draft_claims,
         // oa→prosecution_response; filing has null — never hard-bind claims.
         const seatKey = primaryHandoffKeyForExpert(expert.id)
@@ -258,7 +288,7 @@ export function ExpertHitlBridge({
             : cmd === 'saveDraft' || cmd === 'submitHandoff' || cmd === 'submitClaims'
               ? {
                   type: cmd,
-                  caseId: effectiveCaseId,
+                  caseId: writeCaseId,
                   ...(seatKey ? { handoffKey: seatKey } : {}),
                   note: seatKey
                     ? `L3 Confirm → ${cmd} · ${seatKey}`
@@ -267,7 +297,7 @@ export function ExpertHitlBridge({
                 }
               : {
                     type: cmd,
-                    caseId: effectiveCaseId,
+                    caseId: writeCaseId,
                     ...(seatKey && cmd === 'submitResearch' ? { handoffKey: seatKey } : {}),
                     note: `L3 Confirm → ${cmd} 写库示意`,
                     actor: 'agent',
@@ -277,14 +307,14 @@ export function ExpertHitlBridge({
           expertId: expert.id,
           command: cmd,
           payload,
-          note: `${writeCand.label} · ${reason} · 中台节点示意案 ${effectiveCaseId}`,
+          note: `${writeCand.label} · ${reason} · 中台节点示意案 ${writeCaseId}`,
         })
         void dispatchCommand(payload as never).catch(() => {
           /* local log already recorded */
         })
         appendMessage(projectId, expert.id, {
           role: 'system',
-          content: `写库示意 · DomainCommand.${cmd} → mid ${effectiveCaseId} · ${reason}`,
+          content: `写库示意 · DomainCommand.${cmd} → mid ${writeCaseId} · ${reason}`,
           meta: { backend: 'mock' },
         })
         setToast(`DomainCommand.${cmd} 已记入 L3 写库示意`)
@@ -297,6 +327,15 @@ export function ExpertHitlBridge({
           content: `已确认 · ${projectToolLabelSafe(action)} → ${r.message}`,
           meta: { backend: 'mock' },
         })
+        if (bizCase) {
+          const kind = confirmKindForSeat(expert.id)
+          const pending = kind
+            ? getPendingConfirms(projectId).find(
+                (c) => c.kind === kind && c.status === 'pending',
+              )
+            : undefined
+          if (pending) confirmItem(pending.id)
+        }
         recordL3Write(`HITL ${action} · 样机内存（非真 case-core）`)
       } else if (
         isDemoPack &&
@@ -314,7 +353,7 @@ export function ExpertHitlBridge({
     [
       sess,
       expert.id,
-      caseId,
+      effectiveCaseId,
       sessionHitlAction,
       setThreadHitl,
       projectId,
@@ -326,6 +365,9 @@ export function ExpertHitlBridge({
       memoryOnly,
       thread.pendingGate,
       patchSession,
+      bizCase,
+      getPendingConfirms,
+      confirmItem,
     ],
   )
 
@@ -376,8 +418,60 @@ export function ExpertHitlBridge({
           {toast}
         </div>
       )}
+      {bizCase && (
+        <div
+          className="border-b border-amber-100 bg-amber-50/80 px-3 py-2 text-[11px] text-amber-950"
+          data-testid="expert-biz-confirm-weld"
+        >
+          <div className="font-semibold">本案待确认（同源 store · 非平行宇宙）</div>
+          {bizPending ? (
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <Link
+                to={`/agent/pending/${bizPending.id}`}
+                className="underline"
+                data-testid="expert-biz-pending-link"
+              >
+                {bizPending.title}
+              </Link>
+              <button
+                type="button"
+                className="btn-press focus-ring rounded border border-amber-400 bg-white px-2 py-0.5 text-[10px] font-semibold"
+                data-testid="expert-biz-confirm"
+                onClick={() => {
+                  confirmItem(bizPending.id)
+                  setThreadHitl(projectId, expert.id, false)
+                  setToast('已确认 · 业务进度已更新')
+                }}
+              >
+                确认
+              </button>
+              <button
+                type="button"
+                className="btn-press focus-ring rounded border border-slate-300 bg-white px-2 py-0.5 text-[10px]"
+                data-testid="expert-biz-return"
+                onClick={() => {
+                  returnItem(bizPending.id, '请按意见修改')
+                  setToast('已退回 · 请按意见修改')
+                }}
+              >
+                退回
+              </button>
+              <Link
+                to={`/agent/cases/${projectId}?seat=${expert.id}`}
+                className="text-[10px] text-slate-500 underline"
+              >
+                回案子工作台
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-1 text-slate-600">交付后将写入待我确认…</div>
+          )}
+        </div>
+      )}
       <div className="px-2 py-1 text-[10px] text-slate-400">
-        确认后写入案件 · 试运行不写
+        {bizCase
+          ? '业务案：确认/退回走待我确认 store；下方为专家台示意闸'
+          : '确认后写入案件 · 试运行不写'}
       </div>
       <SessionConfirmBar
         sessionId={sess.id}
@@ -386,7 +480,7 @@ export function ExpertHitlBridge({
         clearedGates={clearedGates}
         handoffStatus={handoffStatus}
         handoffKey={handoffKey}
-        caseId={caseId}
+        caseId={effectiveCaseId}
         isEnterprise={isEnterprise}
         role={role}
         block={block}

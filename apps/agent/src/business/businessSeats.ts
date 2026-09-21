@@ -204,3 +204,66 @@ export const CONFIRM_META: Record<
 export function businessSeatLabel(id: string): string {
   return BUSINESS_SEAT_LABEL[id] ?? id
 }
+
+/** Seat → 业务待确认 kind（附图等无闸席返回 null） */
+export const SEAT_CONFIRM_KIND: Partial<
+  Record<ProjectExpertId, BusinessConfirmKind>
+> = {
+  'expert-research': 'research_ready',
+  'expert-intake': 'go_nogo',
+  'expert-disclosure': 'disclosure_ready',
+  'expert-draft': 'claims_ready',
+  'expert-filing': 'file_authorize',
+  'expert-oa': 'oa_strategy',
+  'expert-layout': 'layout_adjust',
+}
+
+export function confirmKindForSeat(
+  seatId: ProjectExpertId,
+): BusinessConfirmKind | null {
+  return SEAT_CONFIRM_KIND[seatId] ?? null
+}
+
+/** 本案可见席：默认 7 + 已加更多（不含助手） */
+export function seatsForCase(opts: {
+  expertIds?: ProjectExpertId[]
+  moreSeatIds?: ProjectExpertId[]
+}): ProjectExpertId[] {
+  const more = opts.moreSeatIds ?? []
+  const fromExperts = (opts.expertIds ?? []).filter(
+    (id) =>
+      id !== BUSINESS_ASSISTANT_ID &&
+      !BUSINESS_DEFAULT_SEAT_IDS.includes(id) &&
+      !more.includes(id),
+  )
+  const seen = new Set<ProjectExpertId>()
+  const out: ProjectExpertId[] = []
+  for (const id of [
+    ...BUSINESS_DEFAULT_SEAT_IDS,
+    ...more,
+    ...fromExperts,
+  ]) {
+    if (seen.has(id)) continue
+    seen.add(id)
+    out.push(id)
+  }
+  return out
+}
+
+/** 当前阶段高亮席（进度同源） */
+export function currentSeatForProgress(opts: {
+  stageId: BusinessStageId
+  doneSeatIds: ProjectExpertId[]
+  moreSeatIds?: ProjectExpertId[]
+}): ProjectExpertId {
+  const stage = BUSINESS_STAGES.find((s) => s.id === opts.stageId)
+  if (stage) {
+    for (const sid of stage.seatIds) {
+      if (!opts.doneSeatIds.includes(sid)) return sid
+    }
+  }
+  if (opts.moreSeatIds?.includes('expert-layout')) {
+    if (!opts.doneSeatIds.includes('expert-layout')) return 'expert-layout'
+  }
+  return stage?.seatIds[0] ?? BUSINESS_DEFAULT_SEAT_IDS[0]!
+}

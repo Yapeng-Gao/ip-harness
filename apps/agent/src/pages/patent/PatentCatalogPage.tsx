@@ -18,6 +18,8 @@ import {
   PACK_DEMO_PROJECT_ID,
   packHitlSeatProgress,
 } from '../../projects/pack/patentHitlWalk'
+import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { businessSeatLabel } from '../../business/businessSeats'
 
 const GROUP_LABEL: Record<string, string> = {
   orch: '案子助手（静默）',
@@ -53,6 +55,8 @@ const PACK16 = new Set<ProjectExpertId>([
 export function PatentCatalogPage() {
   const navigate = useNavigate()
   const { createProject, getThread } = useProjectFolder()
+  const { cases: bizCases, getPendingConfirms } = useBusinessCases()
+  const [bizCaseId, setBizCaseId] = useState(bizCases[0]?.id ?? '')
   const [title, setTitle] = useState('边缘调度模组 · 专利专班')
   const [selected, setSelected] = useState<Set<ProjectExpertId>>(() => {
     const init = new Set<ProjectExpertId>()
@@ -119,6 +123,21 @@ export function PatentCatalogPage() {
     navigate(`/agent/seats/${id}`)
   }
 
+  /** Catalog 进同一业务案席位（同 projectId · 不丢待确认） */
+  const openBizSeat = (seatId: ProjectExpertId) => {
+    const id = bizCaseId || bizCases[0]?.id
+    if (!id) {
+      window.alert('暂无业务案 · 请先在「我的案子」新建')
+      return
+    }
+    if (COLD_START_BLOCKED.includes(seatId)) {
+      window.alert('递交/审查答复须案子进度解锁，请从案子工作台推进。')
+      navigate(`/agent/cases/${id}?seat=${seatId}`)
+      return
+    }
+    navigate(`/agent/projects/${id}/bots/${seatId}`)
+  }
+
   return (
     <div
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
@@ -178,6 +197,49 @@ export function PatentCatalogPage() {
           />
           <PackHitlWalkBar />
           <PackLoopsPanel />
+        </div>
+
+        <div
+          className="mt-4 flex flex-wrap items-end gap-2 rounded-xl border border-emerald-200 bg-emerald-50/50 p-3 shadow-sm"
+          data-testid="catalog-biz-case-weld"
+        >
+          <label className="min-w-[12rem] flex-1 text-xs text-emerald-950">
+            进同一业务案（禁平行宇宙）
+            <select
+              value={bizCaseId}
+              onChange={(e) => setBizCaseId(e.target.value)}
+              className="focus-ring mt-1 w-full rounded-md border border-emerald-200 bg-white px-3 py-2 text-sm"
+              data-testid="catalog-biz-case-select"
+            >
+              {bizCases.length === 0 && (
+                <option value="">暂无业务案</option>
+              )}
+              {bizCases.map((c) => {
+                const n = getPendingConfirms(c.id).length
+                return (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
+                    {n > 0 ? ` · ${n} 待确认` : ''}
+                  </option>
+                )
+              })}
+            </select>
+          </label>
+          <button
+            type="button"
+            disabled={!bizCaseId && bizCases.length === 0}
+            onClick={() => {
+              const id = bizCaseId || bizCases[0]?.id
+              if (id) navigate(`/agent/cases/${id}`)
+            }}
+            className="btn-press focus-ring rounded-md border border-emerald-300 bg-white px-3 py-2 text-xs font-semibold text-emerald-900 disabled:opacity-40"
+            data-testid="catalog-open-biz-case"
+          >
+            打开案子工作台
+          </button>
+          <p className="w-full text-[10px] text-emerald-800/80">
+            点席「进本案」→ 同 projectId 席位；待确认不丢。下方「组成专班」仍会新建演示项目。
+          </p>
         </div>
 
         <div className="mt-4 flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
@@ -303,6 +365,20 @@ export function PatentCatalogPage() {
                               data-testid={`patent-seat-dm-${id}`}
                             >
                               {blocked ? '须建项目' : '单聊'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openBizSeat(id)}
+                              disabled={bizCases.length === 0 || isOrchestratorExpert(id)}
+                              className="btn-press focus-ring rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-900 disabled:cursor-not-allowed disabled:opacity-40"
+                              data-testid={`patent-seat-biz-${id}`}
+                              title={
+                                bizCaseId
+                                  ? `进 ${bizCaseId} · ${businessSeatLabel(id)}`
+                                  : '选业务案后进本案席'
+                              }
+                            >
+                              进本案
                             </button>
                           </div>
                         </div>

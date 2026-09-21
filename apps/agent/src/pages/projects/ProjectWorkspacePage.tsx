@@ -19,6 +19,9 @@ import { PackHitlWalkBar } from '../../components/patent/PackHitlWalkBar'
 import { packHitlSeatProgress } from '../../projects/pack/patentHitlWalk'
 import { SeatValidatorPanel } from '../../components/patent/SeatValidatorPanel'
 import { hasMockValidator } from '../../projects/pack/patentValidator'
+import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { CaseProcessPanel } from '../../components/business/CaseProcessPanel'
+import { businessSeatLabel } from '../../business/businessSeats'
 
 export function ProjectWorkspacePage() {
   const { projectId, botId, expertId } = useParams<{
@@ -27,6 +30,7 @@ export function ProjectWorkspacePage() {
     expertId?: string
   }>()
   const { getProject, patchProject, getThread } = useProjectFolder()
+  const { isBusinessCase, getPendingConfirms } = useBusinessCases()
 
   if (!projectId) return <Navigate to="/agent/projects" replace />
   const project = getProject(projectId)
@@ -66,6 +70,10 @@ export function ProjectWorkspacePage() {
   const isPatent =
     project.kind === 'domain' || project.domainPackId === 'patent'
   const def = getProjectExpert(resolved)
+  const bizCase = isBusinessCase(projectId)
+  const bizPendingCount = bizCase ? getPendingConfirms(projectId).length : 0
+  // 业务案：案 id = projectId，Confirm 同源；勿另开平行宇宙
+  const chatCaseId = bizCase ? projectId : project.caseId
 
   return (
     <div className="flex min-h-0 flex-1" data-testid="patent-project-workspace">
@@ -109,22 +117,44 @@ export function ProjectWorkspacePage() {
               Catalog
             </Link>
           </div>
-          <CaseBindControls
-            caseId={project.caseId}
-            prominence={isPatent ? 'strong' : 'soft'}
-            onCreateStart={() =>
-              patchProject(projectId, { caseBindState: 'pending_create' })
-            }
-            onBind={(id) =>
-              patchProject(projectId, { caseId: id, caseBindState: 'bound' })
-            }
-            onUnbind={() =>
-              patchProject(projectId, {
-                caseId: undefined,
-                caseBindState: 'none',
-              })
-            }
-          />
+          {bizCase ? (
+            <div
+              className="flex flex-wrap items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50/80 px-2.5 py-1.5 text-[11px] text-emerald-950"
+              data-testid="project-biz-case-weld"
+            >
+              <span className="font-semibold">
+                业务案 · 同 id={projectId}
+              </span>
+              <span>待确认 {bizPendingCount}</span>
+              <span>
+                当前席 {businessSeatLabel(resolved)}
+              </span>
+              <Link
+                to={`/agent/cases/${projectId}?seat=${resolved}`}
+                className="ml-auto font-medium underline"
+                data-testid="project-back-biz-case"
+              >
+                回案子工作台
+              </Link>
+            </div>
+          ) : (
+            <CaseBindControls
+              caseId={project.caseId}
+              prominence={isPatent ? 'strong' : 'soft'}
+              onCreateStart={() =>
+                patchProject(projectId, { caseBindState: 'pending_create' })
+              }
+              onBind={(id) =>
+                patchProject(projectId, { caseId: id, caseBindState: 'bound' })
+              }
+              onUnbind={() =>
+                patchProject(projectId, {
+                  caseId: undefined,
+                  caseBindState: 'none',
+                })
+              }
+            />
+          )}
         </div>
         {isPatent && (
           <div className="shrink-0 space-y-2 border-b border-slate-100 bg-slate-50/60 px-3 py-2">
@@ -143,10 +173,17 @@ export function ProjectWorkspacePage() {
           <ProjectChatPane
             projectId={projectId}
             expertId={resolved}
-            caseId={project.caseId}
+            caseId={chatCaseId}
           />
           {isPatent ? (
-            <SeatDualFilePanel expertId={resolved} projectId={projectId} />
+            <div className="flex min-h-0 shrink-0 flex-col">
+              <SeatDualFilePanel expertId={resolved} projectId={projectId} />
+              {bizCase && (
+                <div className="hidden max-h-56 w-[min(20rem,36vw)] overflow-y-auto border-l border-slate-200 lg:block">
+                  <CaseProcessPanel caseId={projectId} showDemos />
+                </div>
+              )}
+            </div>
           ) : (
             <ProjectTimelinePanel projectId={projectId} currentExpertId={resolved} />
           )}
@@ -155,7 +192,7 @@ export function ProjectWorkspacePage() {
               <PatentMidMapPanel
                 projectId={projectId}
                 expertId={resolved}
-                caseId={project.caseId}
+                caseId={chatCaseId}
               />
             </div>
           )}

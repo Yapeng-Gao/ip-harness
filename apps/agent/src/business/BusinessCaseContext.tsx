@@ -14,10 +14,12 @@ import {
   BUSINESS_STAGES,
   CONFIRM_KIND_LABEL,
   CONFIRM_META,
+  confirmKindForSeat,
   type BusinessConfirmKind,
   type BusinessStageId,
   businessSeatLabel,
 } from './businessSeats'
+import { getProjectExpert } from '../projects/experts'
 import {
   SELF_HEAL_MAX,
   disclosureAskLines,
@@ -331,6 +333,19 @@ type BusinessCaseContextValue = {
   }
   lastReturnHint: string | null
   clearReturnHint: () => void
+  /** 本案是否业务焊接案（id 即 projectId） */
+  isBusinessCase: (id: string) => boolean
+  /**
+   * 推进一步：ProjectFolder 席步骤 + 交付过检后写入本案待确认（同一 store）
+   */
+  advanceSeatWork: (
+    caseId: string,
+    seatId: ProjectExpertId,
+  ) => {
+    stepLabel: string
+    delivered: boolean
+    confirm?: BusinessConfirmItem
+  }
 }
 
 const BusinessCaseContext = createContext<BusinessCaseContextValue | null>(null)
@@ -469,7 +484,15 @@ function seedProgressMap(): Record<string, CaseProgress> {
 }
 
 export function BusinessCaseProvider({ children }: { children: ReactNode }) {
-  const { createProject, getProject, folderProjects } = useProjectFolder()
+  const {
+    createProject,
+    getProject,
+    folderProjects,
+    patchProject,
+    advanceStep,
+    getThread,
+    markArtifactSubmitted,
+  } = useProjectFolder()
   const initial = useMemo(() => buildInitialBusinessState(), [])
   const [progressById, setProgressById] =
     useState<Record<string, CaseProgress>>(initial.progressById)
@@ -489,22 +512,27 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     setProcessLogs((prev) => [...entries, ...prev].slice(0, 200))
   }, [])
 
-  // 确保 ProjectFolder 有对应案子（刷新 / 热更后回填）
+  // 确保 ProjectFolder 有对应案子（刷新 / 热更后回填）· 一案子一 projectId
   useEffect(() => {
     for (const m of caseMeta) {
-      if (!getProject(m.id)) {
+      const existing = getProject(m.id)
+      if (!existing) {
         createProject({
           id: m.id,
           title: m.title,
           summary: m.summary,
           kind: 'domain',
           domainPackId: 'patent',
+          caseId: m.id,
           expertIds:
             m.expertIds.length > 0 ? m.expertIds : BUSINESS_DEFAULT_TEAM_IDS,
         })
+      } else if (existing.caseId !== m.id || existing.caseBindState !== 'bound') {
+        // Catalog / 专家台进同一案：绑案 = projectId，禁平行宇宙
+        patchProject(m.id, { caseId: m.id, caseBindState: 'bound' })
       }
     }
-  }, [caseMeta, createProject, getProject])
+  }, [caseMeta, createProject, getProject, patchProject])
 
   // 同标签刷新可恢复：案子列表 · 进度 · 待确认（含 confirmed / returned）
   useEffect(() => {
@@ -583,6 +611,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         ...BUSINESS_DEFAULT_TEAM_IDS,
         ...more.filter((id) => !BUSINESS_DEFAULT_TEAM_IDS.includes(id)),
       ]
+      // 一案子一 projectId：案 id = Catalog/ProjectFolder id；caseId 自绑
       const p = createProject({
         title: input.title.trim() || '未命名案子',
         summary: input.summary?.trim() || '业务向导新建',
@@ -590,6 +619,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         domainPackId: 'patent',
         expertIds,
       })
+      patchProject(p.id, { caseId: p.id, caseBindState: 'bound' })
       const stageId: BusinessStageId = input.skipPrepare ? 'intake' : 'prepare'
       setProgressById((prev) => ({
         ...prev,
@@ -621,7 +651,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       })
       return p
     },
-    [createProject],
+    [createProject, patchProject],
   )
 
   const advanceStage = useCallback((caseId: string) => {
@@ -1123,6 +1153,47 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     [runLoopDemo],
   )
 
+  const isBusinessCase = useCallback(
+    (id: string) => caseIds.includes(id) || caseMeta.some((m) => m.id === id),
+    [caseIds, caseMeta],
+  )
+
+  const advanceSeatWork = useCallback(
+    (caseId: string, seatId: ProjectExpertId) => {
+      const def = getProjectExpert(seatId)
+      const thread = getThread(caseId, seatId)
+      const cur = thread?.stepIndex ?? 0
+      const next = Math.min(cur + 1, Math.max(def.steps.length - 1, 0))
+      advanceStep(caseId, seatId)
+      const step = def.steps[next] ?? def.steps[cur]
+      const stepLabel = step?.label ?? def.name
+      if (!step?.triggersHitl) {
+        return { stepLabel, delivered: false }
+      }
+      markArtifactSubmitted(caseId, seatId)
+      const kind = confirmKindForSeat(seatId)
+      if (!kind) {
+        return { stepLabel, delivered: true }
+      }
+      const prog = progressById[caseId] ?? emptyProgress(caseId)
+      if (kind === 'oa_strategy' && !prog.filed) {
+        return { stepLabel, delivered: true }
+      }
+      const confirm = prepareConfirm(caseId, kind)
+      if (confirm.id.startsWith('bcf-blocked')) {
+        return { stepLabel, delivered: true }
+      }
+      return { stepLabel, delivered: true, confirm }
+    },
+    [
+      advanceStep,
+      getThread,
+      markArtifactSubmitted,
+      prepareConfirm,
+      progressById,
+    ],
+  )
+
   const stageLabel = useCallback(
     (id: BusinessStageId) =>
       BUSINESS_STAGES.find((s) => s.id === id)?.title ?? id,
@@ -1170,6 +1241,8 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       primaryCta,
       lastReturnHint,
       clearReturnHint,
+      isBusinessCase,
+      advanceSeatWork,
     }),
     [
       cases,
@@ -1189,6 +1262,8 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       primaryCta,
       lastReturnHint,
       clearReturnHint,
+      isBusinessCase,
+      advanceSeatWork,
     ],
   )
 
