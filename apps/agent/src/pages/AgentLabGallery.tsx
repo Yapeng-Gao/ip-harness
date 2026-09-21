@@ -8,6 +8,7 @@ import {
   PenLine,
   ArrowRight,
   Sparkles,
+  Briefcase,
 } from 'lucide-react'
 import { agentSessionPath } from '../lib/deepLinks'
 
@@ -22,72 +23,67 @@ type LabCard = {
   secondary?: { label: string; href: string }
 }
 
+/** 五幕导航 · agent-depth-reliability / pairing playbook（对齐业务冷启动） */
 const CARDS: LabCard[] = [
   {
-    id: 'l1',
-    version: 'V·L1 单助手',
-    badge: '当前默认',
-    blurb: 'ChatGPT/Kimi 形：一助手一聊 + 底栏输入；团队为显式升级。',
+    id: 'biz',
+    version: '幕 1 · 业务主线',
+    badge: '默认冷启动',
+    blurb: '开新活 → 席 bot（查新等已加深）→ 待我确认。对外演示主干。',
     href: '/agent',
-    cta: '打开 L1',
-    icon: PenLine,
+    cta: '打开我的案子',
+    icon: Briefcase,
   },
   {
-    id: 'grok',
-    version: 'V·L2 团队 · Grok',
-    blurb: '多 bot 侧栏 + 主聊 + 转发；从 L1「团队模式」进入。',
+    id: 'warmup',
+    version: '幕 0 · 能力预演',
+    blurb: 'Solo 单助手 + Team 多 bot 互传；非专利默认，可跳过。',
+    href: '/agent/sandbox',
+    cta: '打开沙盒',
+    icon: PenLine,
+    secondary: { label: '团队', href: '/agent/team' },
+  },
+  {
+    id: 'catalog',
+    version: '幕 2 · 专家工作台',
+    blurb: '默认 7 / 更多 / 全表；加席写回同一案。',
+    href: '/agent/catalog',
+    cta: '打开 Catalog',
+    icon: LayoutGrid,
+  },
+  {
+    id: 'l3',
+    version: '幕 3 · 项目 / 群聊',
+    blurb: '同一专家脑 + mid 映射 / room；壳差不是脑差。',
+    href: '/agent/projects/proj-demo-patent',
+    cta: '打开示范项目',
+    icon: FolderKanban,
+    secondary: { label: '项目列表', href: '/agent/projects' },
+  },
+  {
+    id: 'hitl',
+    version: '幕 4 · 确认铁律',
+    blurb: '待确认或经典 HITL 会话：确认后才写库示意。',
+    href: '/agent/pending',
+    cta: '待我确认',
+    icon: History,
+    secondary: {
+      label: 'HITL 样机',
+      href: agentSessionPath('sess-oa-1', { focus: 'hitl' }),
+    },
+  },
+  {
+    id: 'team',
+    version: '历史 · L2 团队',
+    blurb: 'Grok 形多 bot；深度不在此层。',
     href: '/agent/team',
     cta: '打开团队',
     icon: Bot,
   },
   {
-    id: 'compose',
-    version: 'V·旧 Composer',
-    blurb: '单聊开始办理 — 兼容入口，非主心智。',
-    href: '/agent/compose',
-    cta: '进入 Composer',
-    icon: PenLine,
-  },
-  {
-    id: 'catalog',
-    version: 'V·Catalog',
-    blurb: 'Agent 目录：按阶段 / 档位挑选专家。',
-    href: '/agent/agents',
-    cta: '打开 Catalog',
-    icon: LayoutGrid,
-  },
-  {
-    id: 'sessions-hitl',
-    version: 'V·会话+HITL',
-    blurb: '会话列表与请你确认闸；深链直达 OA 样机闸口。',
-    href: agentSessionPath('sess-oa-1', { focus: 'hitl' }),
-    cta: '打开 HITL 样机',
-    icon: History,
-    secondary: { label: '会话列表', href: '/agent/sessions' },
-  },
-  {
-    id: 'l3',
-    version: 'V·L3 专利·中台',
-    badge: '项目焊死',
-    blurb: '专利全链路九席（含交底/递交/OA）· 演示全链路 · Confirm→DomainCommand · 勿污染 L1/L2。',
-    href: '/agent/projects/proj-demo-patent',
-    cta: '打开 L3 专利项目',
-    icon: FolderKanban,
-    secondary: { label: '项目列表', href: '/agent/projects' },
-  },
-  {
-    id: 'projects',
-    version: 'V·项目·固定专家',
-    blurb: '项目夹 + 固定专家轨；种子专利包可直接进。',
-    href: '/agent/projects/proj-demo-patent',
-    cta: '打开专利示范项',
-    icon: FolderKanban,
-    secondary: { label: '项目列表', href: '/agent/projects' },
-  },
-  {
     id: 'harness',
-    version: 'V·Harness 说明',
-    blurb: '编排 / 工具 / HITL / 业务写入 — 架构鸟瞰。',
+    version: '说明 · Harness',
+    blurb: '编排 / 工具 / HITL / 写入 — 纸面架构鸟瞰。',
     href: '/agent/harness',
     cta: '打开说明',
     icon: Library,
@@ -95,8 +91,7 @@ const CARDS: LabCard[] = [
 ]
 
 /**
- * Prototype gallery — browse historical / alternate Agent shells.
- * Default `/agent` = L1 single assistant (agent-layers 24a6d8f).
+ * Prototype gallery — 五幕导航 + 历史壳（非冷启动）。
  */
 export function AgentLabGallery() {
   return (
@@ -117,21 +112,14 @@ export function AgentLabGallery() {
               Agent 原型展廊
             </h1>
             <p className="mt-1 text-sm leading-relaxed text-slate-600">
-              各代活口原型一览。默认入口是{' '}
+              冷启动是{' '}
               <Link
                 to="/agent"
                 className="font-medium text-slate-800 underline-offset-2 hover:underline"
               >
-                /agent · L1 单助手
+                /agent · 我的案子（业务模式）
               </Link>
-              ；团队模式在{' '}
-              <Link
-                to="/agent/team"
-                className="font-medium text-slate-800 underline-offset-2 hover:underline"
-              >
-                /agent/team
-              </Link>
-              。
+              ；下表按演示五幕排列，勿再把 L1 当作默认。
             </p>
           </div>
         </div>
