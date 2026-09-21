@@ -198,13 +198,19 @@ export function BusinessCaseNewPage() {
                       )
                     })}
                   </div>
-                  <p className="text-[11px] text-slate-400">即将推出</p>
-                  <div className="flex flex-wrap gap-1.5">
+                  <p className="text-[11px] text-slate-400">
+                    即将推出 · 布局/维权灰显（≠ FTO）
+                  </p>
+                  <div
+                    className="flex flex-wrap gap-1.5"
+                    data-testid="business-phase-seats"
+                  >
                     {BUSINESS_PHASE_SEAT_IDS.map((id) => (
                       <span
                         key={id}
                         className="cursor-not-allowed rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] text-slate-400"
                         title="即将推出"
+                        data-testid={`business-phase-seat-${id}`}
                       >
                         {businessSeatLabel(id)}
                       </span>

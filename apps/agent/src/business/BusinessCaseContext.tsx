@@ -23,6 +23,8 @@ import {
   disclosureAskLines,
   figureFeedbackLog,
   hitlReturnLog,
+  intakeLowScoreLog,
+  layoutFlywheelScript,
   oaBlockerEscalateLog,
   oaRoundArriveLog,
   oaStrategyPrepScript,
@@ -46,11 +48,14 @@ export type LoopDemoKey =
   | 'draft_escalate'
   | 'figure_feedback'
   | 'research_pessimistic'
+  | 'intake_low_score'
   | 'oa_inventive'
   | 'oa_clarity'
   | 'oa_round2'
   | 'oa_blocker'
   | 'oa_strategy_reject'
+  | 'layout_flywheel'
+  | 'layout_flywheel_biz'
 
 function nowIso(): string {
   return new Date().toISOString()
@@ -97,7 +102,19 @@ export const BUSINESS_SEED_IDS = {
   B: 'case-biz-sensor-pack',
   /** Knife2 · 已递交 · 审查答复样机 */
   C: 'case-biz-oa-filed',
+  /** Knife3 · 启用布局 · F9→F3 飞轮样机 */
+  D: 'case-biz-layout-flywheel',
 } as const
+
+/** 案子是否启用布局席（业务面才出「请确认布局调整」） */
+export function caseHasLayoutEnabled(
+  prog: Pick<CaseProgress, 'moreSeatIds'> | undefined,
+  expertIds?: ProjectExpertId[],
+): boolean {
+  if (prog?.moreSeatIds?.includes('expert-layout')) return true
+  if (expertIds?.includes('expert-layout')) return true
+  return false
+}
 
 /** P0 · 业务案子 / 进度 / 待确认 localStorage，同标签刷新可恢复 */
 const BUSINESS_LS_KEY = 'ip-harness-agent-business-v1'
@@ -138,6 +155,12 @@ function seedCaseMeta(): BusinessCaseMeta[] {
       summary: '业务样机 · 已递交 · 第 1 通审查答复',
       expertIds: [...BUSINESS_DEFAULT_TEAM_IDS],
     },
+    {
+      id: BUSINESS_SEED_IDS.D,
+      title: '空白点补局 · 飞轮样机',
+      summary: '业务样机 · 已启用布局 · 布局漏洞回流待拍板',
+      expertIds: [...BUSINESS_DEFAULT_TEAM_IDS, 'expert-layout'],
+    },
   ]
 }
 
@@ -171,11 +194,13 @@ function persistBusiness(data: PersistedBusiness): void {
 function seedProcessLogs(): ProcessLogEntry[] {
   // Knife1：传感校准套件交底追问 + 查新自修复
   // Knife2：已递交案子第 1 通到达 + 创造性分类 + 补充检索汇入
+  // Knife3：F9→F3 飞轮故事线 + 查新不乐观/立项低分灰回流
   return [
     ...disclosureAskLines(BUSINESS_SEED_IDS.B, 2),
     ...selfHealScript(BUSINESS_SEED_IDS.B, 'expert-research', 2),
     oaRoundArriveLog(BUSINESS_SEED_IDS.C, 1),
     ...oaStrategyPrepScript(BUSINESS_SEED_IDS.C, 'inventive', 1),
+    ...layoutFlywheelScript(BUSINESS_SEED_IDS.D),
   ]
 }
 
@@ -190,6 +215,7 @@ function buildInitialBusinessState(): {
     BUSINESS_SEED_IDS.A,
     BUSINESS_SEED_IDS.B,
     BUSINESS_SEED_IDS.C,
+    BUSINESS_SEED_IDS.D,
   ]
   const seedProg = seedProgressMap()
   const seedConf = seedConfirms()
@@ -290,7 +316,7 @@ type BusinessCaseContextValue = {
   confirmItem: (confirmId: string) => void
   /** 退回：人话提示 + 该项回到待确认；写环边过程 */
   returnItem: (confirmId: string, note?: string) => void
-  /** Knife1/2 演示：内循环 / 环边 / OA N 通 / blocker */
+  /** Knife1/2/3 演示：内循环 / 环边 / OA N 通 / F9→F3 飞轮 */
   runLoopDemo: (
     caseId: string,
     demo: LoopDemoKey,
@@ -368,6 +394,21 @@ function seedConfirms(): BusinessConfirmItem[] {
       createdAt: stamp(),
       status: 'pending',
     },
+    {
+      id: 'bcf-seed-layout-adjust',
+      caseId: BUSINESS_SEED_IDS.D,
+      kind: 'layout_adjust',
+      title: CONFIRM_KIND_LABEL.layout_adjust,
+      summary:
+        '维权监测发现布局漏洞 · 布局策略师已出补局建议 · 请确认布局调整。',
+      resultPreview:
+        '【成果】补局建议：加从属覆盖空白点 IPC；调整引用链；布局方案 v2（样机）。',
+      processPreview:
+        '【办理过程】监测事件 → 布局漏洞报告 → F9→F3 回流信封 → 布局待拍板（≠ FTO）。',
+      preparedBy: '布局',
+      createdAt: stamp(),
+      status: 'pending',
+    },
   ]
 }
 
@@ -412,6 +453,16 @@ function seedProgressMap(): Record<string, CaseProgress> {
         'expert-filing',
       ],
       moreSeatIds: [],
+      updatedAt: nowIso(),
+    },
+    [BUSINESS_SEED_IDS.D]: {
+      caseId: BUSINESS_SEED_IDS.D,
+      stageId: 'prepare',
+      completedStages: [],
+      filed: false,
+      oaRound: 0,
+      doneSeatIds: [],
+      moreSeatIds: ['expert-layout'],
       updatedAt: nowIso(),
     },
   }
@@ -607,6 +658,27 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         appendLogs(selfHealScript(caseId, 'expert-research', 2))
       } else if (kind === 'claims_ready') {
         appendLogs(selfHealScript(caseId, 'expert-draft', 2))
+      } else if (kind === 'layout_adjust') {
+        const metaCase = caseMeta.find((m) => m.id === caseId)
+        if (!caseHasLayoutEnabled(prog, metaCase?.expertIds)) {
+          appendLogs(layoutFlywheelScript(caseId))
+          const blocked: BusinessConfirmItem = {
+            id: uid('bcf-blocked'),
+            caseId,
+            kind,
+            title: CONFIRM_KIND_LABEL[kind],
+            summary: '未启用布局 · 仅专家台可见飞轮故事线',
+            resultPreview: '【成果】—',
+            processPreview:
+              '【办理过程】布局席未启用 · 过程已写入专家台，业务面不出待确认。',
+            preparedBy: '布局',
+            createdAt: stamp(),
+            status: 'pending',
+          }
+          // 不入业务收件箱
+          return blocked
+        }
+        appendLogs(layoutFlywheelScript(caseId))
       } else if (kind === 'oa_strategy') {
         if (!prog.filed) {
           const blocked: BusinessConfirmItem = {
@@ -635,7 +707,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
               ? '交底缺项追问已齐 · '
               : kind === 'oa_strategy'
                 ? `第 ${Math.max(prog.oaRound || 1, 1)} 通 · 理由分类与子任务已汇入 · `
-                : ''
+                : kind === 'layout_adjust'
+                  ? '布局漏洞回流信封已达 · '
+                  : ''
       const roundLabel =
         kind === 'oa_strategy'
           ? `第 ${Math.max(prog.oaRound || 1, 1)} 通 · `
@@ -648,11 +722,15 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         summary:
           kind === 'oa_strategy'
             ? `${roundLabel}${businessSeatLabel(meta.seatId)}已准备好，请确认答复策略。`
-            : `${businessSeatLabel(meta.seatId)}已准备好，请确认。`,
+            : kind === 'layout_adjust'
+              ? '请确认布局调整 · 补局建议已就绪。'
+              : `${businessSeatLabel(meta.seatId)}已准备好，请确认。`,
         resultPreview:
           kind === 'oa_strategy'
             ? `【成果】第 ${Math.max(prog.oaRound || 1, 1)} 通三策略并列（限缩 / 陈述 / 补实验·样机）。`
-            : `【成果】${CONFIRM_KIND_LABEL[kind]}草稿已生成（样机）。`,
+            : kind === 'layout_adjust'
+              ? '【成果】布局方案 v(n+1) · 补空白点 · 引用链已校（样机）。'
+              : `【成果】${CONFIRM_KIND_LABEL[kind]}草稿已生成（样机）。`,
         processPreview: `【办理过程】${healHint}${meta.preparedBy}席完成检查，待你确认。`,
         preparedBy: meta.preparedBy,
         createdAt: stamp(),
@@ -678,7 +756,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       })
       return item
     },
-    [appendLogs, progressById],
+    [appendLogs, progressById, caseMeta],
   )
 
   const confirmItem = useCallback(
@@ -727,6 +805,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       } else if (target.kind === 'oa_strategy') {
         stageId = 'oa'
         oaRound = Math.max(cur.oaRound || 1, 1)
+      } else if (target.kind === 'layout_adjust') {
+        stageId = 'prepare'
+        if (!completedStages.includes('prepare')) completedStages.push('prepare')
       }
 
       setProgressById((pprev) => ({
@@ -770,7 +851,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
             ? `请再查一轮 · ${noteText}`
             : target.kind === 'oa_strategy'
               ? `答复策略已驳回 · 请重做 · ${noteText}`
-              : `请按意见修改 · ${noteText}`,
+              : target.kind === 'layout_adjust'
+                ? `请按意见调整布局 · ${noteText}`
+                : `请按意见修改 · ${noteText}`,
         )
         // 进度：该席从 done 撤回，阶段回到确认所在
         setProgressById((pprev) => {
@@ -851,6 +934,68 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       }
       if (demo === 'research_pessimistic') {
         appendLogs([researchPessimisticLog(caseId)])
+        return
+      }
+      if (demo === 'intake_low_score') {
+        appendLogs([intakeLowScoreLog(caseId)])
+        return
+      }
+      if (demo === 'layout_flywheel' || demo === 'layout_flywheel_biz') {
+        const forceBiz = demo === 'layout_flywheel_biz'
+        appendLogs(layoutFlywheelScript(caseId))
+        const prog = progressById[caseId] ?? emptyProgress(caseId)
+        const metaCase = caseMeta.find((m) => m.id === caseId)
+        const enableBiz =
+          forceBiz || caseHasLayoutEnabled(prog, metaCase?.expertIds)
+        if (forceBiz) {
+          setProgressById((prev) => {
+            const cur = prev[caseId] ?? emptyProgress(caseId)
+            const more: ProjectExpertId[] = cur.moreSeatIds.includes(
+              'expert-layout',
+            )
+              ? cur.moreSeatIds
+              : [...cur.moreSeatIds, 'expert-layout']
+            return {
+              ...prev,
+              [caseId]: { ...cur, moreSeatIds: more, updatedAt: nowIso() },
+            }
+          })
+          setCaseMeta((prev) =>
+            prev.map((m) =>
+              m.id === caseId && !m.expertIds.includes('expert-layout')
+                ? { ...m, expertIds: [...m.expertIds, 'expert-layout'] }
+                : m,
+            ),
+          )
+        }
+        if (enableBiz) {
+          const item: BusinessConfirmItem = {
+            id: uid('bcf'),
+            caseId,
+            kind: 'layout_adjust',
+            title: CONFIRM_KIND_LABEL.layout_adjust,
+            summary:
+              '维权监测发现布局漏洞 · 布局策略师已出补局建议 · 请确认布局调整。',
+            resultPreview:
+              '【成果】补局建议：加从属覆盖空白点 · 布局方案 v(n+1)（样机）。',
+            processPreview:
+              '【办理过程】监测 → 布局漏洞报告 → F9→F3 回流 → 布局待拍板。',
+            preparedBy: '布局',
+            createdAt: stamp(),
+            status: 'pending',
+          }
+          setConfirms((prev) => [
+            item,
+            ...prev.filter(
+              (c) =>
+                !(
+                  c.caseId === caseId &&
+                  c.kind === 'layout_adjust' &&
+                  c.status === 'pending'
+                ),
+            ),
+          ])
+        }
         return
       }
       if (demo === 'oa_inventive') {
@@ -964,7 +1109,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         appendLogs(oaStrategyPrepScript(caseId, 'clarity', nextRound))
       }
     },
-    [appendLogs, progressById, confirms],
+    [appendLogs, progressById, confirms, caseMeta],
   )
 
   const arriveNextOaRound = useCallback(

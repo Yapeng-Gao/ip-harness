@@ -111,14 +111,20 @@ export function PendingConfirmDetailPage() {
   const onReturn = () => {
     const note =
       returnNote.trim() ||
-      (item.kind === 'oa_strategy' ? '策略方向不对 · 请重做' : '请按意见修改')
+      (item.kind === 'oa_strategy'
+        ? '策略方向不对 · 请重做'
+        : item.kind === 'layout_adjust'
+          ? '布局方向需再调'
+          : '请按意见修改')
     returnItem(item.id, note)
     setDoneMsg(
       item.kind === 'research_ready'
         ? `已退回 · 请再查一轮（${note}）· 该项已回待确认`
         : item.kind === 'oa_strategy'
           ? `策略已驳回 · 请重做（${note}）· 该项已回待确认`
-          : `已退回 · 请按意见修改（${note}）· 该项已回待确认`,
+          : item.kind === 'layout_adjust'
+            ? `已退回 · 请按意见调整布局（${note}）· 该项已回待确认`
+            : `已退回 · 请按意见修改（${note}）· 该项已回待确认`,
     )
     window.setTimeout(() => {
       navigate(`/agent/cases/${item.caseId}`)
@@ -185,14 +191,18 @@ export function PendingConfirmDetailPage() {
                   returnNote ||
                   (item.kind === 'oa_strategy'
                     ? '策略方向不对 · 请重做'
-                    : '请按意见修改')
+                    : item.kind === 'layout_adjust'
+                      ? '布局方向需再调'
+                      : '请按意见修改')
                 }
                 onChange={(e) => setReturnNote(e.target.value)}
                 className="focus-ring mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-xs text-slate-800"
                 placeholder={
                   item.kind === 'oa_strategy'
                     ? '策略方向不对 · 请重做'
-                    : '请按意见修改'
+                    : item.kind === 'layout_adjust'
+                      ? '布局方向需再调'
+                      : '请按意见修改'
                 }
                 data-testid="pending-return-note"
               />
@@ -204,7 +214,7 @@ export function PendingConfirmDetailPage() {
                 className="btn-press focus-ring rounded-md bg-amber-600 px-4 py-2 text-xs font-semibold text-white"
                 data-testid="pending-confirm-submit"
               >
-                {item.kind === 'oa_strategy' ? '确认答复策略' : '确认'}
+                {item.title}
               </button>
               <button
                 type="button"
@@ -212,7 +222,11 @@ export function PendingConfirmDetailPage() {
                 className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700"
                 data-testid="pending-confirm-return"
               >
-                {item.kind === 'oa_strategy' ? '驳回策略' : '退回修改'}
+                {item.kind === 'oa_strategy'
+                  ? '驳回策略'
+                  : item.kind === 'layout_adjust'
+                    ? '退回调整布局'
+                    : '退回修改'}
               </button>
             </div>
           </div>

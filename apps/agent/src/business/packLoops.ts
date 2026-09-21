@@ -1,6 +1,7 @@
 /**
- * Knife1 · F5 内循环 + 跨席环边；Knife2 · F6 OA N 通外循环（样机 mock · 无真沙箱）
- * 权威：patent-pack-design §5.5 · agent-pack-loops-roadmap Knife1/2
+ * Knife1 · F5 内循环 + 跨席环边；Knife2 · F6 OA N 通；Knife3 · F9→F3 飞轮（样机 mock）
+ * 权威：patent-pack-design §5.3 / §5.5 · agent-pack-loops-roadmap Knife1–3
+ * ≠ FTO：维权席 = expert-enforcement，勿用 expert-fto
  */
 import type { ProjectExpertId } from '../projects/types'
 import type { BusinessConfirmKind } from './businessSeats'
@@ -32,6 +33,7 @@ export type ProcessLogKind =
   | 'hitl_return'
   | 'figure_feedback'
   | 'research_pessimistic'
+  | 'intake_low_score'
   | 'escalate'
   | 'advance'
   | 'oa_classify'
@@ -39,6 +41,10 @@ export type ProcessLogKind =
   | 'oa_round'
   | 'oa_submit'
   | 'oa_blocker'
+  | 'monitor_event'
+  | 'layout_gap'
+  | 'layout_flywheel'
+  | 'layout_pending'
 
 export type ProcessLogEntry = {
   id: string
@@ -184,11 +190,15 @@ export function hitlReturnLog(
             ? 'expert-intake'
             : kind === 'file_authorize'
               ? 'expert-filing'
-              : 'expert-oa'
+              : kind === 'layout_adjust'
+                ? 'expert-layout'
+                : 'expert-oa'
   const human =
     kind === 'research_ready'
       ? '请再查一轮'
-      : '请按意见修改'
+      : kind === 'layout_adjust'
+        ? '请按意见调整布局'
+        : '请按意见修改'
   return {
     id: processLogId('hitl'),
     caseId,
@@ -222,10 +232,92 @@ export function researchPessimisticLog(caseId: string): ProcessLogEntry {
     kind: 'research_pessimistic',
     seatId: 'expert-research',
     message: '查新不乐观 · 建议换方向或调布局（示意）',
-    detail: '回流布局/产业全景 · 本刀仅灰示意',
+    detail: 'HITL④ 不乐观回流 F2/F3 · 灰入口（可与飞轮串联）',
     muted: true,
   }
 }
+
+/** 立项低分回流 F4→F2（灰示意 · 可与 Knife1 灰入口复用） */
+export function intakeLowScoreLog(caseId: string): ProcessLogEntry {
+  return {
+    id: processLogId('low'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'intake_low_score',
+    seatId: 'expert-intake',
+    message: '立项评分偏低 · 建议放弃或换方向（示意）',
+    detail: 'F4→F2 低分回流 · 灰入口（评分<50 mock）',
+    muted: true,
+  }
+}
+
+/** 维权/监测事件（mock · 无真爬虫） */
+export function monitorEventLog(caseId: string): ProcessLogEntry {
+  return {
+    id: processLogId('mon'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'monitor_event',
+    seatId: 'expert-enforcement',
+    message: '监测事件 · 竞品进入空白点（mock）',
+    detail: '无效维权顾问 · 无真爬虫 · ≠ FTO（expert-fto）',
+  }
+}
+
+/** 布局漏洞报告（feedback 信封载荷） */
+export function layoutGapReportLog(caseId: string): ProcessLogEntry {
+  return {
+    id: processLogId('gap'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'layout_gap',
+    seatId: 'expert-enforcement',
+    message: '布局漏洞报告已生成',
+    detail: '全面覆盖比对 · 稳定性初筛 · feedback 信封载荷（mock）',
+  }
+}
+
+/** F9→F3 回流信封到达布局策略师 */
+export function layoutFlywheelLog(caseId: string): ProcessLogEntry {
+  return {
+    id: processLogId('fly'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'layout_flywheel',
+    seatId: 'expert-layout',
+    message: '布局漏洞回流 · 信封已达布局策略师',
+    detail: 'F9→F3 飞轮 · expert-enforcement → expert-layout（≠ expert-fto）',
+  }
+}
+
+/** 布局待拍板（HITL①） */
+export function layoutPendingLog(caseId: string): ProcessLogEntry {
+  return {
+    id: processLogId('lay'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'layout_pending',
+    seatId: 'expert-layout',
+    message: '布局待拍板 · 请确认布局调整',
+    detail: 'HITL① 布局方案 v(n+1) · 补局建议已就绪',
+  }
+}
+
+/**
+ * F9→F3 飞轮故事线：监测 → 漏洞报告 → 回流信封 → 布局待拍板
+ * 串联灰入口：查新不乐观 + 立项低分
+ */
+export function layoutFlywheelScript(caseId: string): ProcessLogEntry[] {
+  return [
+    monitorEventLog(caseId),
+    layoutGapReportLog(caseId),
+    layoutFlywheelLog(caseId),
+    layoutPendingLog(caseId),
+    researchPessimisticLog(caseId),
+    intakeLowScoreLog(caseId),
+  ]
+}
+
 
 
 export function oaClassifyLog(

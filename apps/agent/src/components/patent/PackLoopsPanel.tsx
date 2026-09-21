@@ -10,17 +10,21 @@ import {
 } from '../../business/packLoops'
 
 /**
- * 专家工作台 · F5/F6 环边样机面板（Knife1 + Knife2）
+ * 专家工作台 · F5/F6/F9→F3 环边样机面板（Knife1–3）
  * F5：重试 n/3 · 附图退回 · 需人工接手
  * F6：N 通计数 · 策略驳回 · 超范围 0 次自修复
+ * F9→F3：布局漏洞回流 → 布局待拍板（≠ FTO）
  */
 export function PackLoopsPanel() {
   const caseIdF5 = BUSINESS_SEED_IDS.B
   const caseIdF6 = BUSINESS_SEED_IDS.C
+  const caseIdF9 = BUSINESS_SEED_IDS.D
   const { getCase, getProgress, runLoopDemo } = useBusinessCases()
   const c5 = getCase(caseIdF5)
   const c6 = getCase(caseIdF6)
+  const c9 = getCase(caseIdF9)
   const p6 = getProgress(caseIdF6)
+  const p9 = getProgress(caseIdF9)
 
   return (
     <div className="space-y-3" data-testid="pack-loops-panel">
@@ -147,6 +151,75 @@ export function PackLoopsPanel() {
           </button>
         </div>
         <CaseProcessPanel caseId={caseIdF6} showDemos />
+      </div>
+
+      <div
+        className="rounded-xl border border-teal-200 bg-teal-50/40 p-3 shadow-sm"
+        data-testid="pack-loops-f9"
+      >
+        <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <h2 className="text-xs font-semibold text-teal-950">
+              F9→F3 飞轮 · 布局漏洞回流
+            </h2>
+            <p className="mt-0.5 text-[11px] text-teal-900/80">
+              维权/监测 mock → 布局漏洞报告 feedback → 布局策略师（F3）·
+              串联查新不乐观 / 立项低分灰回流 · 无真爬虫 ·{' '}
+              <span className="font-semibold">≠ FTO（expert-fto）</span>
+            </p>
+            <p
+              className="mt-1 text-[11px] font-semibold text-teal-950"
+              data-testid="pack-loops-layout-status"
+            >
+              样机案子：
+              {p9.moreSeatIds.includes('expert-layout')
+                ? '已启用布局 · 业务面可出「请确认布局调整」'
+                : '未启用布局 · 仅专家台故事线'}
+            </p>
+          </div>
+          <Link
+            to={`/agent/cases/${caseIdF9}`}
+            className="rounded-full border border-teal-300 bg-white px-2.5 py-0.5 text-[11px] font-medium text-teal-950"
+            data-testid="pack-loops-open-layout-case"
+          >
+            打开飞轮案子 · {c9?.title ?? '空白点补局'}
+          </Link>
+        </div>
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            onClick={() => runLoopDemo(caseIdF9, 'layout_flywheel')}
+            className="btn-press focus-ring rounded-full border border-teal-400 bg-teal-100 px-2 py-0.5 text-[10px] font-semibold text-teal-950"
+            data-testid="pack-loops-flywheel-demo"
+          >
+            布局漏洞回流→布局待拍板
+          </button>
+          <button
+            type="button"
+            onClick={() => runLoopDemo(caseIdF5, 'layout_flywheel')}
+            className="btn-press focus-ring rounded-full border border-slate-300 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-700"
+            data-testid="pack-loops-flywheel-expert-only"
+          >
+            未启用布局·仅专家台
+          </button>
+          <button
+            type="button"
+            onClick={() => runLoopDemo(caseIdF9, 'research_pessimistic')}
+            className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-500"
+            data-testid="pack-loops-pessimistic"
+          >
+            查新不乐观(灰)
+          </button>
+          <button
+            type="button"
+            onClick={() => runLoopDemo(caseIdF9, 'intake_low_score')}
+            className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-500"
+            data-testid="pack-loops-low-score"
+          >
+            立项低分回流(灰)
+          </button>
+        </div>
+        <CaseProcessPanel caseId={caseIdF9} showDemos />
       </div>
     </div>
   )

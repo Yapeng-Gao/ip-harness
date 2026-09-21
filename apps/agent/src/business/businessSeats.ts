@@ -49,18 +49,21 @@ export const BUSINESS_DEFAULT_TEAM_IDS: ProjectExpertId[] = [
   ...BUSINESS_DEFAULT_SEAT_IDS,
 ]
 
-/** 「更多专家」折叠（立项前簇 + FTO） */
+/** 「更多专家」折叠（立项前簇 + FTO 辅席；布局/维权灰显见 PHASE） */
 export const BUSINESS_MORE_SEAT_IDS: ProjectExpertId[] = [
   'expert-landscape',
   'expert-inspire',
   'expert-competitor',
   'expert-mining',
-  'expert-layout',
   'expert-fto',
 ]
 
-/** Phase 灰显「即将推出」 */
+/**
+ * Phase 灰显「即将推出」
+ * Knife3：布局 + 维权灰显（≠ 把 expert-fto 当成维权席）
+ */
 export const BUSINESS_PHASE_SEAT_IDS: ProjectExpertId[] = [
+  'expert-layout',
   'expert-annuity',
   'expert-valuation',
   'expert-monetize',
@@ -144,6 +147,7 @@ export type BusinessConfirmKind =
   | 'claims_ready'
   | 'file_authorize'
   | 'oa_strategy'
+  | 'layout_adjust'
 
 export const CONFIRM_KIND_LABEL: Record<BusinessConfirmKind, string> = {
   research_ready: '确认查新结论',
@@ -152,6 +156,7 @@ export const CONFIRM_KIND_LABEL: Record<BusinessConfirmKind, string> = {
   claims_ready: '确认权利要求',
   file_authorize: '确认递交',
   oa_strategy: '确认答复策略',
+  layout_adjust: '请确认布局调整',
 }
 
 /** Map confirm → stage + seat for progress同源 */
@@ -188,6 +193,11 @@ export const CONFIRM_META: Record<
     stageId: 'oa',
     seatId: 'expert-oa',
     preparedBy: '审查答复',
+  },
+  layout_adjust: {
+    stageId: 'prepare',
+    seatId: 'expert-layout',
+    preparedBy: '布局',
   },
 }
 

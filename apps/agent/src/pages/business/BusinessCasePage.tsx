@@ -135,7 +135,16 @@ export function BusinessCasePage() {
               {prog.filed && prog.stageId === 'oa' && (prog.oaRound ?? 0) > 0
                 ? ` · 第 ${prog.oaRound} 通`
                 : ''}
+              {prog.moreSeatIds.includes('expert-layout') ? ' · 已启用布局' : ''}
             </p>
+            {prog.moreSeatIds.includes('expert-layout') && (
+              <p
+                className="mt-1 text-[11px] font-medium text-teal-800"
+                data-testid="business-layout-enabled-badge"
+              >
+                布局席已启用 · 飞轮待确认可上业务面（≠ FTO）
+              </p>
+            )}
           </div>
           <button
             type="button"
