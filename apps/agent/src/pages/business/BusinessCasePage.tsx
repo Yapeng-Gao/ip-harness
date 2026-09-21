@@ -182,6 +182,10 @@ export function BusinessCasePage() {
           onAdvanced={(confirmId) => {
             if (confirmId) navigate(`/agent/pending/${confirmId}`)
           }}
+          onSwitchSeat={(next) => {
+            setPickedSeat(next)
+            navigate(`/agent/cases/${caseId}?seat=${next}`, { replace: true })
+          }}
         />
         <p className="mt-4 text-center text-[11px] text-slate-400">
           演示环境：进度与确认为样机闭环，非真递交局端。· 案=项目同一 id

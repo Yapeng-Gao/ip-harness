@@ -4,7 +4,7 @@
  * ≠ FTO：维权席 = expert-enforcement，勿用 expert-fto
  */
 import type { ProjectExpertId } from '../projects/types'
-import type { BusinessConfirmKind } from './businessSeats'
+import { businessSeatLabel, type BusinessConfirmKind } from './businessSeats'
 
 /** 自修复上限（查新覆盖度 / 撰写四类校验） */
 export const SELF_HEAL_MAX = 3
@@ -32,6 +32,7 @@ export type ProcessLogKind =
   | 'draft_heal'
   | 'hitl_return'
   | 'figure_feedback'
+  | 'seat_feedback'
   | 'research_pessimistic'
   | 'intake_low_score'
   | 'escalate'
@@ -220,6 +221,24 @@ export function figureFeedbackLog(caseId: string): ProcessLogEntry {
     seatId: 'expert-figure',
     message: '附图退回撰写改术语',
     detail: '图注与权项术语不一致 · 跨席 feedback',
+  }
+}
+
+/** 任意下游 → 上游 feedback 信封（业务面人话） */
+export function seatFeedbackLog(
+  caseId: string,
+  fromSeat: ProjectExpertId,
+  toSeat: ProjectExpertId,
+  reason: string,
+): ProcessLogEntry {
+  return {
+    id: processLogId('fb'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'seat_feedback',
+    seatId: fromSeat,
+    message: `请「${businessSeatLabel(toSeat)}」调整 · 跨席 feedback`,
+    detail: `来自「${businessSeatLabel(fromSeat)}」· ${reason.slice(0, 100)}`,
   }
 }
 

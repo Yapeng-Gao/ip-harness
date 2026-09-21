@@ -26,6 +26,7 @@ function LogRow({
           log.kind === 'monitor_event'
         ? 'border-teal-200 bg-teal-50 text-teal-950'
         : log.kind === 'figure_feedback' ||
+            log.kind === 'seat_feedback' ||
             log.kind === 'hitl_return' ||
             log.kind === 'oa_round'
           ? 'border-amber-200 bg-amber-50 text-amber-950'

@@ -21,6 +21,7 @@ import {
 } from './businessSeats'
 import { getProjectExpert } from '../projects/experts'
 import {
+  seatFeedbackLog,
   SELF_HEAL_MAX,
   disclosureAskLines,
   figureFeedbackLog,
@@ -38,6 +39,18 @@ import {
   type OaReasonClass,
   type ProcessLogEntry,
 } from './packLoops'
+import {
+  downstreamResumeScript,
+  feedbackNeedsMoreSeat,
+  feedbackToolName,
+  upstreamAdjustScript,
+} from './seatFeedback'
+import {
+  loopActionsForSeat,
+  resolveLoopDemo,
+  seatLoopChatScript,
+  type SeatLoopActionId,
+} from './seatLoops'
 
 export type { ProcessLogEntry } from './packLoops'
 export { SELF_HEAL_MAX, DISCLOSURE_ASK_MAX, OA_BLOCKER_SELF_HEAL_MAX } from './packLoops'
@@ -161,7 +174,7 @@ function seedCaseMeta(): BusinessCaseMeta[] {
       id: BUSINESS_SEED_IDS.D,
       title: '空白点补局 · 飞轮样机',
       summary: '业务样机 · 已启用布局 · 布局漏洞回流待拍板',
-      expertIds: [...BUSINESS_DEFAULT_TEAM_IDS, 'expert-layout'],
+      expertIds: [...BUSINESS_DEFAULT_TEAM_IDS, 'expert-layout', 'expert-enforcement'],
     },
   ]
 }
@@ -348,6 +361,42 @@ type BusinessCaseContextValue = {
     /** 本步写入的办理过程日志 id（供 UI 闪行） */
     processLogId?: string
   }
+  /**
+   * 回退到已走过的步：清本席 pending、撤回 done、成果收短、会话重放该步
+   */
+  rewindSeatWork: (
+    caseId: string,
+    seatId: ProjectExpertId,
+    targetIndex: number,
+  ) => {
+    ok: boolean
+    stepLabel?: string
+    reason?: string
+    processLogId?: string
+  }
+  /**
+   * 跨席 feedback：请上游 bot 调整 → v2 回传 → 下游接着做（不倒下游进度）
+   */
+  requestUpstreamFeedback: (
+    caseId: string,
+    fromSeat: ProjectExpertId,
+    toSeat: ProjectExpertId,
+    reason: string,
+  ) => {
+    ok: boolean
+    reason?: string
+    processLogId?: string
+    switchToSeat?: ProjectExpertId
+  }
+  /**
+   * 席内 loop：自修复 / OA N 通 / HITL 驳回（可聊可点，写过程 + 会话）
+   */
+  runSeatLoop: (
+    caseId: string,
+    seatId: ProjectExpertId,
+    actionId: SeatLoopActionId,
+    note?: string,
+  ) => { ok: boolean; reason?: string }
 }
 
 const BusinessCaseContext = createContext<BusinessCaseContextValue | null>(null)
@@ -479,7 +528,7 @@ function seedProgressMap(): Record<string, CaseProgress> {
       filed: false,
       oaRound: 0,
       doneSeatIds: [],
-      moreSeatIds: ['expert-layout'],
+      moreSeatIds: ['expert-layout', 'expert-enforcement'],
       updatedAt: nowIso(),
     },
   }
@@ -492,7 +541,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     folderProjects,
     patchProject,
     advanceStep,
+    rewindToStep,
     getThread,
+    appendMessage,
     markArtifactSubmitted,
   } = useProjectFolder()
   const initial = useMemo(() => buildInitialBusinessState(), [])
@@ -1172,7 +1223,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const seatName = businessSeatLabel(seatId)
       const logId = processLogId('adv')
       const toolBit = step?.tool
-        ? `${step.tool.name} → ${step.tool.preview}`
+        ? `${step.tool.preview}`
         : '本步产出片段已写入成果'
       appendLogs([
         {
@@ -1212,6 +1263,301 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       prepareConfirm,
       progressById,
       appendLogs,
+    ],
+  )
+
+  const rewindSeatWork = useCallback(
+    (caseId: string, seatId: ProjectExpertId, targetIndex: number) => {
+      const r = rewindToStep(caseId, seatId, targetIndex)
+      if (!r.ok) {
+        return { ok: false as const, reason: r.reason }
+      }
+      const kind = confirmKindForSeat(seatId)
+      const seatName = businessSeatLabel(seatId)
+      const clearedPending = kind
+        ? confirms.filter(
+            (c) =>
+              c.caseId === caseId &&
+              c.kind === kind &&
+              c.status === 'pending',
+          ).length
+        : 0
+      if (kind && clearedPending > 0) {
+        setConfirms((prev) =>
+          prev.map((c) =>
+            c.caseId === caseId &&
+            c.kind === kind &&
+            c.status === 'pending'
+              ? {
+                  ...c,
+                  status: 'returned' as const,
+                  returnNote: `席内回退到「${r.stepLabel}」· 待确认已取消`,
+                }
+              : c,
+          ),
+        )
+      }
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        if (!cur.doneSeatIds.includes(seatId)) return prev
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            doneSeatIds: cur.doneSeatIds.filter((id) => id !== seatId),
+            updatedAt: nowIso(),
+          },
+        }
+      })
+      const logId = processLogId('rew')
+      appendLogs([
+        {
+          id: logId,
+          caseId,
+          at: processLogStamp(),
+          kind: 'advance',
+          seatId,
+          message: `${seatName} · 回退到第 ${r.stepIndex + 1} 步「${r.stepLabel}」`,
+          detail:
+            clearedPending > 0
+              ? `其后产出视为草稿 · 已取消本席 ${clearedPending} 项待确认`
+              : '其后产出视为草稿 · 可改完再推进',
+        },
+      ])
+      return {
+        ok: true as const,
+        stepLabel: r.stepLabel,
+        processLogId: logId,
+      }
+    },
+    [appendLogs, confirms, rewindToStep],
+  )
+
+  const requestUpstreamFeedback = useCallback(
+    (
+      caseId: string,
+      fromSeat: ProjectExpertId,
+      toSeat: ProjectExpertId,
+      reason: string,
+    ) => {
+      if (fromSeat === toSeat) {
+        return { ok: false as const, reason: 'same_seat' }
+      }
+      const fromName = businessSeatLabel(fromSeat)
+      const toName = businessSeatLabel(toSeat)
+      const note = reason.trim() || '请按下游意见调整一版'
+      const log = seatFeedbackLog(caseId, fromSeat, toSeat, note)
+      appendLogs([log])
+
+      // 飞轮 / 回流目标席：挂到更多专家，避免点了切不过去
+      if (feedbackNeedsMoreSeat(toSeat)) {
+        setProgressById((prev) => {
+          const cur = prev[caseId] ?? emptyProgress(caseId)
+          const more = cur.moreSeatIds.includes(toSeat)
+            ? cur.moreSeatIds
+            : [...cur.moreSeatIds, toSeat]
+          return {
+            ...prev,
+            [caseId]: { ...cur, moreSeatIds: more, updatedAt: nowIso() },
+          }
+        })
+        setCaseMeta((prev) =>
+          prev.map((m) => {
+            if (m.id !== caseId) return m
+            if (m.expertIds.includes(toSeat)) return m
+            return { ...m, expertIds: [...m.expertIds, toSeat] }
+          }),
+        )
+      }
+
+      // 上游：撤回 done + 取消其 pending（便于再改）
+      const toKind = confirmKindForSeat(toSeat)
+      if (toKind) {
+        setConfirms((prev) =>
+          prev.map((c) =>
+            c.caseId === caseId &&
+            c.kind === toKind &&
+            c.status === 'pending'
+              ? {
+                  ...c,
+                  status: 'returned' as const,
+                  returnNote: `跨席 feedback · ${fromName} 请调整`,
+                }
+              : c,
+          ),
+        )
+      }
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        if (!cur.doneSeatIds.includes(toSeat)) return prev
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            doneSeatIds: cur.doneSeatIds.filter((id) => id !== toSeat),
+            updatedAt: nowIso(),
+          },
+        }
+      })
+
+      appendMessage(caseId, fromSeat, {
+        role: 'assistant',
+        content: `【${fromName}】已向「${toName}」发出反馈信封（样机）· **请对方调整，不是把本案拨回上一步**。\n\n反馈：${note}`,
+        meta: { backend: 'mock', stepId: 'feedback_out' },
+      })
+      appendMessage(caseId, toSeat, {
+        role: 'system',
+        content: `📩 【跨席 feedback】来自「${fromName}」\n${note}\n\n正在按反馈改一版…`,
+        meta: { backend: 'mock', stepId: 'feedback_in' },
+      })
+
+      // 上游出 v2
+      window.setTimeout(() => {
+        appendMessage(caseId, toSeat, {
+          role: 'assistant',
+          content: upstreamAdjustScript(toSeat, fromSeat, note),
+          meta: { backend: 'mock', stepId: 'feedback_v2' },
+        })
+        appendMessage(caseId, toSeat, {
+          role: 'tool',
+          content: `${toName} v2 · 已回传「${fromName}」`,
+          meta: {
+            backend: 'mock',
+            toolName: feedbackToolName(toSeat),
+            stepId: 'feedback_v2',
+          },
+        })
+        // v2 回传后重新挂待确认（R1/R3：done 须经确认，不软写 doneSeatIds）
+        if (toKind) {
+          prepareConfirm(caseId, toKind)
+        }
+        appendLogs([
+          {
+            id: processLogId('fbv'),
+            caseId,
+            at: processLogStamp(),
+            kind: 'seat_feedback',
+            seatId: toSeat,
+            message: `「${toName}」v2 已回传「${fromName}」`,
+            detail: toKind
+              ? '外循环 feedback · 下游不倒进度 · 上游 v2 待确认后计入 done'
+              : '外循环 feedback · 下游不倒进度 · 基于新产物续写',
+          },
+        ])
+      }, 700)
+
+      // 下游接着做
+      window.setTimeout(() => {
+        appendMessage(caseId, fromSeat, {
+          role: 'assistant',
+          content: downstreamResumeScript(fromSeat, toSeat),
+          meta: { backend: 'mock', stepId: 'feedback_resume' },
+        })
+      }, 1400)
+
+      setLastReturnHint(
+        `已请「${toName}」调整 · 改完会回传「${fromName}」接着做`,
+      )
+      return {
+        ok: true as const,
+        processLogId: log.id,
+        switchToSeat: toSeat,
+      }
+    },
+    [appendLogs, appendMessage, prepareConfirm],
+  )
+
+  const runSeatLoop = useCallback(
+    (
+      caseId: string,
+      seatId: ProjectExpertId,
+      actionId: SeatLoopActionId,
+      note?: string,
+    ) => {
+      const prog = progressById[caseId] ?? emptyProgress(caseId)
+      const kind = confirmKindForSeat(seatId)
+      const hasPending = !!(
+        kind &&
+        confirms.some(
+          (c) =>
+            c.caseId === caseId && c.kind === kind && c.status === 'pending',
+        )
+      )
+      const allowed = loopActionsForSeat(seatId, {
+        hasPending,
+        filed: prog.filed,
+      })
+      const action = allowed.find((a) => a.id === actionId)
+      if (!action) {
+        return { ok: false as const, reason: 'unavailable' }
+      }
+
+      const seatName = businessSeatLabel(seatId)
+
+      if (actionId === 'hitl_reject') {
+        const pending = confirms.find(
+          (c) =>
+            c.caseId === caseId &&
+            kind &&
+            c.kind === kind &&
+            c.status === 'pending',
+        )
+        const noteText = (note?.trim() || '请按意见修改').trim()
+        if (pending) {
+          returnItem(pending.id, noteText)
+        } else if (seatId === 'expert-oa') {
+          runLoopDemo(caseId, 'oa_strategy_reject')
+        } else {
+          appendLogs([
+            hitlReturnLog(
+              caseId,
+              kind ?? 'disclosure_ready',
+              noteText,
+            ),
+          ])
+          setLastReturnHint(`已驳回 · ${noteText}`)
+        }
+        const chat = seatLoopChatScript(seatId, 'hitl_reject', noteText)
+        chat.lines.forEach((line, i) => {
+          window.setTimeout(() => {
+            appendMessage(caseId, seatId, {
+              role: 'assistant',
+              content: line.startsWith('【') ? line : `【${seatName}】${line}`,
+              meta: { backend: 'mock', stepId: 'hitl_reject' },
+            })
+          }, chat.delayMs[i] ?? i * 400)
+        })
+        return { ok: true as const }
+      }
+
+      const demo = resolveLoopDemo(seatId, action)
+      if (demo === 'research_escalate') {
+        appendLogs(
+          selfHealScript(caseId, 'expert-research', SELF_HEAL_MAX + 1),
+        )
+      } else if (demo) {
+        runLoopDemo(caseId, demo)
+      }
+
+      const chat = seatLoopChatScript(seatId, actionId, note)
+      chat.lines.forEach((line, i) => {
+        window.setTimeout(() => {
+          appendMessage(caseId, seatId, {
+            role: 'assistant',
+            content: line,
+            meta: { backend: 'mock', stepId: `loop_${actionId}` },
+          })
+        }, chat.delayMs[i] ?? i * 400)
+      })
+      return { ok: true as const }
+    },
+    [
+      appendLogs,
+      appendMessage,
+      confirms,
+      progressById,
+      returnItem,
+      runLoopDemo,
     ],
   )
 
@@ -1264,6 +1610,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       clearReturnHint,
       isBusinessCase,
       advanceSeatWork,
+      rewindSeatWork,
+      requestUpstreamFeedback,
+      runSeatLoop,
     }),
     [
       cases,
@@ -1285,6 +1634,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       clearReturnHint,
       isBusinessCase,
       advanceSeatWork,
+      rewindSeatWork,
+      requestUpstreamFeedback,
+      runSeatLoop,
     ],
   )
 

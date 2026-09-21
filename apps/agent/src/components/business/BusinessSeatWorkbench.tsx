@@ -22,6 +22,16 @@ import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import { deliverableForExpert } from '../../projects/patentDeliverables'
 import type { ProjectExpertId } from '../../projects/types'
 import { CaseProcessPanel } from './CaseProcessPanel'
+import {
+  feedbackEdgesFrom,
+  parseUpstreamFeedbackIntent,
+} from '../../business/seatFeedback'
+import {
+  loopActionsForSeat,
+  parseSeatLoopIntent,
+} from '../../business/seatLoops'
+import { SeatMarkdownBody } from './SeatMarkdownBody'
+import { humanizeToolBubble, parseRewindIntent } from '../../lib/stepChatFormat'
 
 /** 业务面默认藏工程文件名 / disclosure_pack 等（详情可展） */
 function sanitizeBizBlurb(raw: string): string {
@@ -42,6 +52,8 @@ type Props = {
   /** 案顶单一主 CTA 触发干活/交卷（刀2） */
   workNonce?: number
   onAdvanced?: (confirmId?: string) => void
+  /** 跨席 feedback 后切到上游席 */
+  onSwitchSeat?: (seatId: ProjectExpertId) => void
 }
 
 /**
@@ -55,8 +67,16 @@ export function BusinessSeatWorkbench({
   seatId,
   workNonce = 0,
   onAdvanced,
+  onSwitchSeat,
 }: Props) {
-  const { advanceSeatWork, getPendingConfirms, getProgress } = useBusinessCases()
+  const {
+    advanceSeatWork,
+    rewindSeatWork,
+    requestUpstreamFeedback,
+    runSeatLoop,
+    getPendingConfirms,
+    getProgress,
+  } = useBusinessCases()
   const { getThread, appendMessage } = useProjectFolder()
   const def = getProjectExpert(seatId)
   const thread = getThread(caseId, seatId)
@@ -64,6 +84,21 @@ export function BusinessSeatWorkbench({
   const prog = getProgress(caseId)
   const dual = deliverableForExpert(seatId)
   const seatLabel = businessSeatLabel(seatId)
+  /** 本案任一 pending：会话 chip 藏/降灰，顶栏「去确认」独占主视线 */
+  const pendingList = useMemo(
+    () => getPendingConfirms(caseId),
+    [caseId, getPendingConfirms],
+  )
+  const caseHasPending = pendingList.length > 0
+  const pendingHint = useMemo(() => {
+    if (!caseHasPending) return ''
+    const titles = pendingList
+      .map((p) => p.title || CONFIRM_KIND_LABEL[p.kind] || '待确认项')
+      .slice(0, 2)
+      .join('、')
+    const more = pendingList.length > 2 ? ` 等 ${pendingList.length} 项` : ''
+    return `${seatLabel}已就绪。本案有待确认「${titles}${more}」· 确认后本席才能继续推进。请先点顶栏「去确认」。`
+  }, [caseHasPending, pendingList, seatLabel])
   const [panel, setPanel] = useState<'chat' | 'artifact' | 'worklog'>('chat')
   const [draft, setDraft] = useState('')
   const [flashBody, setFlashBody] = useState(false)
@@ -71,7 +106,7 @@ export function BusinessSeatWorkbench({
   const [busy, setBusy] = useState(false)
   const [showFileNames, setShowFileNames] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
-  const bodyRef = useRef<HTMLPreElement>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const lastWorkNonce = useRef(0)
   const runAdvanceRef = useRef<(userLine?: string) => void>(() => {})
@@ -92,12 +127,6 @@ export function BusinessSeatWorkbench({
     if (!kind) return []
     return getPendingConfirms(caseId).filter((c) => c.kind === kind)
   }, [caseId, seatId, getPendingConfirms])
-
-  /** 本案任一 pending：会话 chip 藏/降灰，顶栏「去确认」独占主视线 */
-  const caseHasPending = useMemo(
-    () => getPendingConfirms(caseId).length > 0,
-    [caseId, getPendingConfirms],
-  )
 
   const oaLocked = seatId === 'expert-oa' && !prog.filed
   const submitted = !!thread?.artifactSubmitted
@@ -195,10 +224,102 @@ export function BusinessSeatWorkbench({
     )
   }, [workNonce, caseId, seatId, getThread])
 
+  const feedbackEdges = useMemo(() => feedbackEdgesFrom(seatId), [seatId])
+  const loopActions = useMemo(
+    () =>
+      loopActionsForSeat(seatId, {
+        hasPending: pendingForSeat.length > 0,
+        filed: prog.filed,
+      }),
+    [seatId, pendingForSeat.length, prog.filed],
+  )
+
+  const runUpstreamFeedback = (toSeat: ProjectExpertId, reason: string) => {
+    if (oaLocked || busy) return
+    setBusy(true)
+    window.setTimeout(() => {
+      const r = requestUpstreamFeedback(caseId, seatId, toSeat, reason)
+      setBusy(false)
+      setPanel('chat')
+      if (r.ok && r.switchToSeat && onSwitchSeat) {
+        window.setTimeout(() => onSwitchSeat(r.switchToSeat!), 450)
+      }
+    }, 200)
+  }
+
+  const runLoopAction = (
+    actionId: Parameters<typeof runSeatLoop>[2],
+    note?: string,
+  ) => {
+    if (busy) return
+    if (oaLocked && seatId === 'expert-oa') {
+      /* OA 锁在未递交；filed 动作已在 loopActions 过滤 */
+    }
+    if (oaLocked && !prog.filed) return
+    setBusy(true)
+    window.setTimeout(() => {
+      runSeatLoop(caseId, seatId, actionId, note)
+      setFlashLogId(null)
+      setPanel('chat')
+      setBusy(false)
+    }, 180)
+  }
+
   const sendUser = () => {
     const text = draft.trim()
     if (!text || oaLocked || busy) return
     setDraft('')
+    const rewind = parseRewindIntent(text, def.steps)
+    if (rewind) {
+      setBusy(true)
+      appendMessage(caseId, seatId, {
+        role: 'user',
+        content: text,
+        meta: { backend: 'mock' },
+      })
+      window.setTimeout(() => {
+        const r = rewindSeatWork(caseId, seatId, rewind.stepIndex)
+        if (!r.ok) {
+          appendMessage(caseId, seatId, {
+            role: 'assistant',
+            content:
+              r.reason === 'forward'
+                ? `【${seatLabel}】还没走到第 ${rewind.stepIndex + 1} 步，只能回到已经做过的步骤。`
+                : `【${seatLabel}】没法回到那一步，请点上方步骤条里已完成的步骤。`,
+            meta: { backend: 'mock' },
+          })
+        } else {
+          setFlashBody(true)
+          if (r.processLogId) setFlashLogId(r.processLogId)
+          setPanel('chat')
+        }
+        setBusy(false)
+      }, 220)
+      return
+    }
+    const fb = parseUpstreamFeedbackIntent(text, seatId)
+    if (fb) {
+      appendMessage(caseId, seatId, {
+        role: 'user',
+        content: text,
+        meta: { backend: 'mock' },
+      })
+      runUpstreamFeedback(fb.toSeat, fb.reason)
+      return
+    }
+    const loop = parseSeatLoopIntent(text, seatId, {
+      hasPending: pendingForSeat.length > 0,
+      filed: prog.filed,
+    })
+    if (loop) {
+      appendMessage(caseId, seatId, {
+        role: 'user',
+        content: text,
+        meta: { backend: 'mock' },
+      })
+      runLoopAction(loop.id, text)
+      return
+    }
     const deliverIntent =
       /交卷|确认|打包|提交|完成/.test(text) || btnLabel === '交卷待确认'
     runAdvance(
@@ -209,6 +330,20 @@ export function BusinessSeatWorkbench({
     )
   }
 
+  const onRewindStep = (targetIndex: number) => {
+    if (oaLocked || busy || targetIndex > stepIndex) return
+    setBusy(true)
+    window.setTimeout(() => {
+      const r = rewindSeatWork(caseId, seatId, targetIndex)
+      if (r.ok) {
+        setFlashBody(true)
+        if (r.processLogId) setFlashLogId(r.processLogId)
+        setPanel('chat')
+      }
+      setBusy(false)
+    }, 180)
+  }
+
   const onKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault()
@@ -216,10 +351,17 @@ export function BusinessSeatWorkbench({
     }
   }
 
-  const displayContent = (role: string, content: string) => {
+  /** 席启动 system 气泡可换成锁/就绪提示；feedback / rewind 等须保留原文（D4） */
+  const displayContent = (role: string, content: string, stepId?: string) => {
     if (role === 'system') {
+      const keepReal =
+        stepId === 'feedback_in' ||
+        content.includes('跨席 feedback') ||
+        content.includes('已回到第') ||
+        content.startsWith('📩')
+      if (keepReal) return content
       return caseHasPending
-        ? `${seatLabel}已就绪。本案有待确认 · 请先点顶栏「去确认」。`
+        ? pendingHint
         : `${seatLabel}已就绪。跟我聊，或点右上「让它干活」；交卷后会写入待我确认。`
     }
     return content
@@ -279,32 +421,44 @@ export function BusinessSeatWorkbench({
         </p>
       )}
 
-      {/* 刀3：席内步骤 pill 只读 */}
+      {/* 已完成 / 当前步可点回退；未到达不可点 */}
       <ol
         className="mb-3 flex flex-wrap gap-1.5"
         data-testid="business-seat-steps"
-        aria-label="本席步骤进度（只读）"
-        title="只读进度 · 不可点切"
+        aria-label="本席步骤进度（可回退已走步骤）"
+        title="点已完成的步骤可回到该步修改"
       >
         {def.steps.map((s, i) => {
           const done = i < stepIndex
           const current = i === stepIndex
+          const canRewind = (done || current) && !oaLocked && !busy
           return (
-            <li
-              key={s.id}
-              className={`pointer-events-none cursor-default select-none rounded-full border px-2.5 py-1 text-[10px] font-medium ${
-                done
-                  ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                  : current
-                    ? 'border-slate-800 bg-slate-900 text-white'
-                    : 'border-slate-200 bg-white text-slate-500'
-              }`}
-              data-testid={`business-seat-step-${s.id}`}
-              data-current={current ? '1' : '0'}
-              aria-current={current ? 'step' : undefined}
-            >
-              {i + 1}. {s.label}
-              {s.triggersHitl ? ' · 待交' : ''}
+            <li key={s.id}>
+              <button
+                type="button"
+                disabled={!canRewind}
+                onClick={() => onRewindStep(i)}
+                className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                  done
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:border-emerald-400 hover:bg-emerald-100'
+                    : current
+                      ? 'border-slate-800 bg-slate-900 text-white hover:bg-slate-800'
+                      : 'cursor-default border-slate-200 bg-white text-slate-500 opacity-70'
+                } ${canRewind ? 'cursor-pointer' : ''}`}
+                data-testid={`business-seat-step-${s.id}`}
+                data-current={current ? '1' : '0'}
+                aria-current={current ? 'step' : undefined}
+                title={
+                  canRewind
+                    ? current
+                      ? `重跑第 ${i + 1} 步「${s.label}」`
+                      : `回到第 ${i + 1} 步「${s.label}」修改`
+                    : '尚未到达'
+                }
+              >
+                {i + 1}. {s.label}
+                {s.triggersHitl ? ' · 待交' : ''}
+              </button>
             </li>
           )
         })}
@@ -342,15 +496,17 @@ export function BusinessSeatWorkbench({
       >
         {(
           [
-            ['chat', '会话'],
-            ['artifact', '成果'],
-            ['worklog', '办理过程'],
+            ['chat', '会话', '跟人 ↔ 本席 bot 对话；点「让它干活」推进剧本'],
+            ['artifact', '成果', '本席交付件（意见书/权要等），随步骤变长，可扫读'],
+            ['worklog', '办理过程', '本席怎么做的：步骤日志 + 本案过程事件'],
           ] as const
-        ).map(([id, label]) => (
+        ).map(([id, label, tip]) => (
           <button
             key={id}
             type="button"
             role="tab"
+            title={tip}
+            aria-label={`${label}：${tip}`}
             aria-selected={panel === id}
             onClick={() => setPanel(id)}
             className={`rounded-md px-2.5 py-1.5 text-[11px] font-semibold ${
@@ -395,18 +551,23 @@ export function BusinessSeatWorkbench({
             {messages.length === 0 ? (
               <p className="text-[12px] text-slate-500">
                 {caseHasPending
-                  ? `${seatLabel}已就绪。本案有待确认 · 请先点顶栏「去确认」。`
+                  ? pendingHint
                   : `${seatLabel}已就绪。跟我聊，或点右上「让它干活」。`}
               </p>
             ) : (
-              messages.map((m) => (
+              messages.map((m) => {
+                const toolUi =
+                  m.role === 'tool'
+                    ? humanizeToolBubble(m.content, m.meta?.toolName)
+                    : null
+                return (
                 <div
                   key={m.id}
                   className={`max-w-[92%] rounded-lg px-2.5 py-1.5 text-[12px] leading-relaxed ${
                     m.role === 'user'
                       ? 'ml-auto bg-slate-900 text-white'
                       : m.role === 'tool'
-                        ? 'border border-slate-200 bg-slate-50 font-mono text-[10px] text-slate-600'
+                        ? 'border border-slate-200 bg-slate-50 text-slate-700'
                         : m.role === 'system'
                           ? 'bg-slate-50 text-slate-500'
                           : 'bg-violet-50 text-slate-900'
@@ -419,16 +580,30 @@ export function BusinessSeatWorkbench({
                       {seatLabel}
                     </div>
                   ) : null}
-                  {m.role === 'tool' ? (
-                    <div className="mb-0.5 text-[9px] font-semibold text-slate-400">
-                      工具（样机）
+                  {toolUi ? (
+                    <div className="mb-0.5 text-[9px] font-semibold text-slate-500">
+                      本步产出 · {toolUi.title}
                     </div>
                   ) : null}
-                  <div className="whitespace-pre-wrap">
-                    {displayContent(m.role, m.content)}
-                  </div>
+                  {m.role === 'assistant' ? (
+                    <SeatMarkdownBody
+                      className="max-h-64 p-0"
+                      data-testid="business-seat-msg-md"
+                    >
+                      {displayContent(m.role, m.content, m.meta?.stepId)}
+                    </SeatMarkdownBody>
+                  ) : toolUi ? (
+                    <p className="text-[12px] leading-relaxed text-slate-700">
+                      {toolUi.body}
+                    </p>
+                  ) : (
+                    <div className="whitespace-pre-wrap">
+                      {displayContent(m.role, m.content, m.meta?.stepId)}
+                    </div>
+                  )}
                 </div>
-              ))
+                )
+              })
             )}
             {busy ? (
               <p
@@ -462,14 +637,82 @@ export function BusinessSeatWorkbench({
                 >
                   交卷请确认
                 </button>
+                {feedbackEdges.map((edge) => (
+                  <button
+                    key={`${edge.from}-${edge.to}`}
+                    type="button"
+                    className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-950 hover:bg-violet-100"
+                    data-testid={`business-seat-chip-feedback-${edge.to}`}
+                    disabled={oaLocked || busy}
+                    title={`请「上游」调整一版，再基于新产物继续（不回退本席进度）`}
+                    onClick={() =>
+                      runUpstreamFeedback(edge.to, edge.defaultReason)
+                    }
+                  >
+                    {edge.chip}
+                  </button>
+                ))}
+                {loopActions.map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                      a.id === 'hitl_reject' || a.id === 'heal_escalate' || a.id === 'oa_blocker'
+                        ? 'border-rose-200 bg-rose-50 text-rose-950 hover:bg-rose-100'
+                        : 'border-teal-200 bg-teal-50 text-teal-950 hover:bg-teal-100'
+                    }`}
+                    data-testid={`business-seat-chip-loop-${a.id}`}
+                    disabled={busy || (oaLocked && a.needsFiled)}
+                    title="席内环边 · 写过程 + 会话（样机）"
+                    onClick={() => runLoopAction(a.id)}
+                  >
+                    {a.chip}
+                  </button>
+                ))}
               </div>
             ) : (
-              <p
-                className="mb-1.5 text-[10px] text-amber-800/80"
-                data-testid="business-seat-chips-deferred"
-              >
-                待确认中 · 请用顶栏「去确认」
-              </p>
+              <div className="mb-1.5 space-y-1">
+                <p
+                  className="text-[10px] text-amber-800/80"
+                  data-testid="business-seat-chips-deferred"
+                >
+                  待确认中 · {pendingList[0]?.title || CONFIRM_KIND_LABEL[pendingList[0]?.kind!] || '请用顶栏「去确认」'} · 确认后继续
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {feedbackEdges.map((edge) => (
+                    <button
+                      key={`${edge.from}-${edge.to}`}
+                      type="button"
+                      className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-950 hover:bg-violet-100"
+                      data-testid={`business-seat-chip-feedback-${edge.to}`}
+                      disabled={oaLocked || busy}
+                      onClick={() =>
+                        runUpstreamFeedback(edge.to, edge.defaultReason)
+                      }
+                    >
+                      {edge.chip}
+                    </button>
+                  ))}
+                  {loopActions.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                        a.id === 'hitl_reject' ||
+                        a.id === 'heal_escalate' ||
+                        a.id === 'oa_blocker'
+                          ? 'border-rose-200 bg-rose-50 text-rose-950 hover:bg-rose-100'
+                          : 'border-teal-200 bg-teal-50 text-teal-950 hover:bg-teal-100'
+                      }`}
+                      data-testid={`business-seat-chip-loop-${a.id}`}
+                      disabled={busy}
+                      onClick={() => runLoopAction(a.id)}
+                    >
+                      {a.chip}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
             <div className="flex gap-2">
               <textarea
@@ -477,7 +720,7 @@ export function BusinessSeatWorkbench({
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={onKey}
                 rows={1}
-                placeholder={`跟「${seatLabel}」说…（Enter 发送）`}
+                placeholder={`跟「${seatLabel}」说…（环边/回退/feedback 均可）`}
                 className="focus-ring min-h-[2.25rem] flex-1 resize-none rounded-lg border border-slate-200 px-2.5 py-1.5 text-[12px] text-slate-800 placeholder:text-slate-400"
                 data-testid="business-seat-composer"
                 disabled={oaLocked || busy}
@@ -512,11 +755,9 @@ export function BusinessSeatWorkbench({
               ) : null}
             </div>
             {dual ? (
-              <pre
-                ref={bodyRef}
-                className={`max-h-72 overflow-y-auto whitespace-pre-wrap p-3 font-mono text-[10px] leading-relaxed text-slate-700 transition-colors duration-500 ${
-                  flashBody ? 'bg-amber-50 ring-2 ring-amber-200 ring-inset' : ''
-                }`}
+              <SeatMarkdownBody
+                bodyRef={bodyRef}
+                flash={flashBody}
                 data-testid={
                   panel === 'artifact'
                     ? 'business-dual-artifact-body'
@@ -525,7 +766,7 @@ export function BusinessSeatWorkbench({
                 data-step-index={stepIndex}
               >
                 {panel === 'artifact' ? artifactBody : worklogBody}
-              </pre>
+              </SeatMarkdownBody>
             ) : (
               <p className="p-3 text-xs text-slate-400">本席暂无双文件约定</p>
             )}
