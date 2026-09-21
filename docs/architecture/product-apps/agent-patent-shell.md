@@ -1,5 +1,5 @@
 > **变更摘要（2026-09-21 · 业务模式）**：业务默认入口见 [agent-business-mode](./agent-business-mode.md)（`/agent`=我的案子）。**本文降为专家工作台 / Catalog 规格**（建议路由 `/agent/catalog`）；双文件与席位仍有效。
-> **变更摘要（2026-09-21 · B席）**：与 [agent-layers](./agent-layers.md) **双产品冷启动**对齐——本文件管**专利产品** `/agent`→Catalog；通用沙盒 L1 为旁路。禁 mining→intake 别名。
+> **变更摘要（2026-09-21 · B席）**：双产品路径历史注；**现**业务入口见 business-mode。禁 mining→intake 别名。
 > **变更摘要（2026-09-21）**：本文 Catalog 花名册 = 专利 Domain Pack 的 **子集/过渡**；完整 **16 席 · F1–F9 · HITL×8** 见 [../domain-packs/patent-pack-design.md](../domain-packs/patent-pack-design.md)。目标态：规则层裁判 + Handoff 信封 + Pack HITL。端用户**仍禁** mid 可点深链。平台 [../agent-platform.md](../agent-platform.md)。
 # 专利 Agent 壳重做（仅专利 · 过程可见）
 
@@ -8,7 +8,7 @@
 > **样机诚实**：假数据/假文件树；Confirm→DomainCommand 示意；禁真 LLM / 真 case-core / 可点跳 mid。  
 > **对齐**：[agent-l3-patent](./agent-l3-patent.md) · [project-cross-surface](./project-cross-surface.md) · [agent-l2-team](./agent-l2-team.md) · STAGE_MODULES。  
 > **花名册权威材料**（已入库副本）：[SEAT_ROSTER](./patent-drill-ref/SEAT_ROSTER_FOR_PROTOTYPE.md) · [OWNER 矩阵](./patent-drill-ref/OWNER_DELIVERABLE_MATRIX.md) · [过程可见](./patent-drill-ref/PROCESS_VISIBILITY.md)。  
-> **关系**：本文 = **专利产品壳 IA 主规格**；旧 L1 默认 / 自由 L2 主路径 → **降级或旁路**（见 §1）。
+> **关系**：本文 = **专家工作台 / 双文件 / 组队**规格（`/agent/catalog`）。**业务冷启动主规格** = [agent-business-mode](./agent-business-mode.md)。旧 L1/自由 L2 → 沙盒旁路。
 
 ## 1. 入口（专家工作台 · 非业务冷启动）
 

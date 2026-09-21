@@ -1,6 +1,5 @@
-> **变更摘要（2026-09-21）**：叠名 **Solo=L1 / Team=L2 / Domain=L3**。专利产品路径 = **Domain Pack** + [agent-patent-shell](./agent-patent-shell.md)（Catalog 冷启动）；通用 L1 默认对专利壳降级见壳文。平台 [../agent-platform.md](../agent-platform.md)。
-> **专利壳主规格**：[agent-patent-shell.md](./agent-patent-shell.md)（本文通用/自由口径对专利冷启动**降级**）。
-> **叠层主心智**：[agent-layers.md](./agent-layers.md)。**双产品冷启动（勿互斥）**：通用沙盒=`/agent`→**L1 Solo**；专利产品=`/agent`→**Catalog**（[agent-patent-shell](./agent-patent-shell.md)）。L2/L3 顶栏并列。
+> **变更摘要（2026-09-21 · 业务模式）**：专利业务冷启动 = [agent-business-mode](./agent-business-mode.md)（我的案子）；Catalog→`/agent/catalog`。
+> **叠层主心智**：[agent-layers.md](./agent-layers.md)。**双产品**：沙盒=`/agent/sandbox`→L1；业务=`/agent`→我的案子。L2/L3 顶栏并列。
 # Agent 入口模式（IA · 并列入口钉 · 2026-09-19）
 
 > **冻结（入口钉）**：  
@@ -17,10 +16,12 @@
 |------|------|------|------|
 | **L1 单助手（通用沙盒默认）** | `/agent`（沙盒面） | （主） | 一助手 + composer |
 | **L2 团队（独立）** | `/agent/team`、`/agent/bots/*` | 「团队」 | 多 bot + 自发互通 |
-| **L3 专利项目（独立）** | `/agent/projects…`；产品默认时 `/agent`→Catalog | 「专利项目」 | 焊死 IP 专家 + 中台映射示意 |
+| **L3 / 业务案子** | `/agent`→我的案子；`/agent/cases/:id` 或 projects | 「我的案子」 | 向导+7 专家席；专家台另见 catalog |
 
 ```text
-/agent                              → 通用沙盒=L1；专利产品部署=Catalog（二选一/分流）
+/agent                              → 专利业务=我的案子
+/agent/sandbox                      → 通用沙盒=L1
+/agent/catalog                      → 专家工作台
 /agent/team                         → L2 团队主壳（多 bot）
 /agent/bots/:botId                  → L2 一对一（仅团队域）
 /agent/bots/new                     → L2 新建 bot（样机 mock）
@@ -90,10 +91,10 @@
 
 ## 5. 默认落地路由（并列入口）
 
-1. **通用沙盒**：`/agent` = **L1 Solo**。  
-2. **专利产品**：`/agent` = **Catalog**（shell）；顶栏「专利项目」→ `/agent/projects`。  
-3. 顶栏「团队」→ `/agent/team`（**L2 独立**）。  
-4. 两路径**不互斥**——部署分流或显式 `/agent/sandbox`。
+1. **专利业务**：`/agent` = **我的案子**（business-mode）。  
+2. **通用沙盒**：`/agent/sandbox` = **L1 Solo**。  
+3. **专家工作台**：`/agent/catalog`。  
+4. 顶栏「团队」→ `/agent/team`（L2）。
 
 ## 6. sessions / Catalog
 
@@ -110,7 +111,7 @@
 
 ## 8. 验收
 
-- [ ] **双产品冷启动**写清（通用=L1 / 专利=Catalog）  
+- [ ] **双产品冷启动**写清（沙盒=L1 / 业务=我的案子）  
 - [ ] 顶栏可直接进 **L2** 与 **L3**（并列，互不埋）  
 - [ ] 多 bot / 互通仅 L2 路由；L3 专家焊死且无「新建专家」  
 - [ ] 写库路径未放松  

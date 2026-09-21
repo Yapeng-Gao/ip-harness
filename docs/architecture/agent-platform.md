@@ -23,7 +23,7 @@
 |------------------|----------|----------|
 | **L1** `/agent`（通用默认） | **Solo** | 单助手对话 |
 | **L2** `/agent/team` | **Team** | 多 bot 自由协作 |
-| **L3** `/agent/projects` · 专利壳 Catalog | **Domain** | 预编排专家专班 |
+| **L3** `/agent` 我的案子 · `/agent/catalog` 专家台 | **Domain** | 业务收敛 + 预编排专家 |
 
 **铁律**：Team 与 Domain **共用同一套多 bot 运行时**；差异仅在「分工由领队现场决定」vs「分工提前固化为 SOP」。**入口可并列**（顶栏直达），勿写成 Domain 只能从 Team 升。
 
@@ -113,7 +113,8 @@ L0 平台层：模型网关 / 检索 / 画原型 / 代码执行 / 浏览器 / Sk
 | 现仓文档 | 关系 |
 |----------|------|
 | [agent-layers](./product-apps/agent-layers.md) | L1/L2/L3 入口钉；叠 Solo/Team/Domain |
-| [agent-patent-shell](./product-apps/agent-patent-shell.md) | 专利产品冷启动 = Catalog；Domain Pack 目标态 |
+| [agent-business-mode](./product-apps/agent-business-mode.md) | 专利业务冷启动 = 我的案子 |
+| [agent-patent-shell](./product-apps/agent-patent-shell.md) | 专家工作台 `/agent/catalog`；Domain Pack 子集 UI |
 | [agent-l3-patent](./product-apps/agent-l3-patent.md) | 当前 Catalog / 中台映射为 Pack **子集/过渡** |
 | [agent-platform-gap](./product-apps/agent-platform-gap.md) | 样机 ↔ 目标差距表；**样机本轮未动** |
 | [enterprise/agent-runtime-options](./enterprise/agent-runtime-options.md) | 企业 Agent 选型（C 混合 · DSH/Codex）互补 |
