@@ -1,3 +1,5 @@
+> **变更摘要（2026-09-21 · 深度与可靠）**：[agent-depth-reliability](./agent-depth-reliability.md) = **原型定稿** · 共享深度层 · 查新→三席 · 真沙箱 Out of scope。  
+> **变更摘要（2026-09-21 · AgentOS v1.1 归档）**：目标全景快照 → [../incoming/AgentOS-design-docs-v1.1/](../incoming/AgentOS-design-docs-v1.1/)。
 > **变更摘要（2026-09-21 · 案页三刀）**：[agent-biz-case-ia](./agent-biz-case-ia.md) = 两栏 / 单一主 CTA / 单一进度。
 > **变更摘要（2026-09-21 · 席=bot）**：[agent-seat-as-bot](./agent-seat-as-bot.md) = 案内席独立会话 / 交卷 HITL。  
 > **变更摘要（2026-09-21 · 环边三刀）**：[agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md) = Pack 内/外循环样机派工。  
@@ -29,6 +31,7 @@
 | **业务模式** | [agent-business-mode.md](./agent-business-mode.md) | **业务冷启动**：我的案子+向导+待确认；Catalog 降级 |
 | **席=独立 bot** | [agent-seat-as-bot.md](./agent-seat-as-bot.md) | 点席=人↔席会话；交卷→本案 HITL；与旧推进关系 |
 | **业务案页 IA 三刀** | [agent-biz-case-ia.md](./agent-biz-case-ia.md) | 两栏 · 藏工程词+单一主 CTA · 单一进度 |
+| **深度与可靠优化** | [agent-depth-reliability.md](./agent-depth-reliability.md) | **原型定稿**：共享专家脑 · 查新样板 · 三席打透 · 真沙箱出局 |
 | **Pack 环边三刀** | [agent-pack-loops-roadmap.md](./agent-pack-loops-roadmap.md) | F5 内循环+跨席 · F6 OA N通 · F9→F3；样机无真沙箱 |
 | 专利 Agent 壳（专家台） | [agent-patent-shell.md](./agent-patent-shell.md) | 专家工作台/双文件；路由 `/agent/catalog` |
 | **平台差距表** | [agent-platform-gap.md](./agent-platform-gap.md) | 样机 ↔ Solo/Team/Domain+Pack 目标；**样机本轮未动** |

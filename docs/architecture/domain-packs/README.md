@@ -10,7 +10,9 @@
 |----|------|------|
 | 专利 Pack · 设计 | [patent-pack-design.md](./patent-pack-design.md) | F1–F9 · 16 席 · **内/外循环** · Loop 总索引 · HITL×8 · Handoff · egress |
 | 专利 Pack · 实现蓝图 | [patent-pack-impl.md](./patent-pack-impl.md) | BotRuntime / FlowEngine / validator / YAML 装配 · 四原型 · 排期 |
-| 讨论源稿 | [../incoming/](../incoming/) | 未删；文首指针指向正式稿 |
+| 讨论源稿 / 定稿快照 | [../incoming/](../incoming/README.md) | 含 **AgentOS v1.1** 整包；文首指针指向正式稿 |
+| AgentOS · UI 线框（快照） | [../incoming/AgentOS-design-docs-v1.1/agent-platform-ui-wireframes.md](../incoming/AgentOS-design-docs-v1.1/agent-platform-ui-wireframes.md) | 尚未升格正式篇；对照 product-apps / `apps/agent` |
+| AgentOS · 专家资产台账（快照） | [../incoming/AgentOS-design-docs-v1.1/bot-expert-assets.md](../incoming/AgentOS-design-docs-v1.1/bot-expert-assets.md) | 16 bot × 四资产；叠 [agent-depth-reliability](../product-apps/agent-depth-reliability.md) |
 
 ## 与产品面
 

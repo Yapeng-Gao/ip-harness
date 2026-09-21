@@ -1,6 +1,6 @@
 # Pack 环边样机 · 三刀路线图
 
-> **冻结（2026-09-21）**：**只 docs**；本页供派工。**不做真沙箱** / 真 harness / 真 validator 接线。  
+> **冻结（2026-09-21）**：docs + 业务席 **跨席 feedback + 席内 loop（自修复/OA N通/HITL驳回）可聊可点**；**不做真沙箱** / 真 harness / 真 validator 接线。  
 > **权威设计**：[patent-pack-design](../domain-packs/patent-pack-design.md) §0.2 · §5（内/外循环 · Loop 总索引 · F5/F6）。  
 > **实现蓝图**：[patent-pack-impl](../domain-packs/patent-pack-impl.md) §1.1。  
 > **业务壳**：[agent-business-mode](./agent-business-mode.md) — 业务面**不暴露** Pack 黑话；环边用人话（退回修改 / 再查一轮 / 下一通审查意见）。环边过程在 **Catalog·专家台 / 过程面板**可见。  
