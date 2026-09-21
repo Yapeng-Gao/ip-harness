@@ -57,3 +57,7 @@ docs/ui-polish/agent-pack-hf/*.png
 - [x] 16 席名单；FTO≠维权 · mining≠intake；无 mid 深链
 - [x] Solo/Team 可达
 - [x] `npm run typecheck -w @ip/agent` 通过
+
+## 后续 Nits
+
+见 `AGENT_PACK_NITS.md`（Confirm 真闭环 + 总览与演示条对齐）。

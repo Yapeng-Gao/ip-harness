@@ -47,7 +47,7 @@ export function PackHitlWalkBar({ compact }: Props) {
     const fail = mockValidate(seatId, 1)
     appendMessage(PACK_DEMO_PROJECT_ID, seatId, {
       role: 'system',
-      content: `【演示】validator Issue×${fail.issues.length} → 自修复…`,
+      content: `【演示】样机校验未过×${fail.issues.length} → 自修复…`,
       meta: { backend: 'mock' },
     })
     const pass = mockValidate(seatId, 2)
@@ -56,7 +56,7 @@ export function PackHitlWalkBar({ compact }: Props) {
       setThreadHitl(PACK_DEMO_PROJECT_ID, seatId, true, pack.gate)
       appendMessage(PACK_DEMO_PROJECT_ID, seatId, {
         role: 'system',
-        content: `【演示】validator Pass → 解锁 HITL（${label} / ${pack.gate}）· 可 Confirm`,
+        content: `【演示】样机校验通过 → 已到确认点（${label} / ${pack.gate}）· 可确认`,
         meta: { backend: 'mock' },
       })
     }
@@ -126,7 +126,7 @@ export function PackHitlWalkBar({ compact }: Props) {
         <span className="text-[10px] text-slate-500">{MAIN_CHAIN_STORY}</span>
         {readyCount > 0 && (
           <span className="rounded bg-amber-100 px-1.5 text-[9px] font-semibold text-amber-900">
-            已解锁 {readyCount}/6
+            已到 {readyCount}/6
           </span>
         )}
       </div>

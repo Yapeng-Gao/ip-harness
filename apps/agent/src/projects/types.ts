@@ -124,6 +124,8 @@ export type ProjectThread = {
   boundSessionId?: string
   pendingHitl?: boolean
   pendingGate?: HitlGateId
+  /** Confirm succeeded (memory) — overview shows 已确认 */
+  hitlCleared?: boolean
   updatedAt: string
   artifactSubmitted?: boolean
 }

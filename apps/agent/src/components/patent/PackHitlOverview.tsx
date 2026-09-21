@@ -31,11 +31,11 @@ const STATUS_UI: Record<
     className: 'border-slate-200 bg-slate-50 text-slate-500',
   },
   ready: {
-    label: '待 Confirm',
+    label: '待确认',
     className: 'border-amber-300 bg-amber-50 text-amber-900',
   },
   cleared: {
-    label: '已过',
+    label: '已确认',
     className: 'border-emerald-300 bg-emerald-50 text-emerald-900',
   },
   phase_locked: {
@@ -71,7 +71,7 @@ export function PackHitlOverview({
           Pack HITL×8
         </h2>
         <span className="text-[10px] text-slate-400">
-          过检才进审批 · ⑦⑧ 后置可跑
+          通过校验再确认 · ⑦⑧ 后置也能跑
         </span>
       </div>
       <ol

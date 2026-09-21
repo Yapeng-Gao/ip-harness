@@ -16,6 +16,7 @@ import { CaseBindControls } from '../../components/case/CaseBindControls'
 import { PatentMidMapPanel } from '../../components/projects/PatentMidMapPanel'
 import { PackHitlOverview } from '../../components/patent/PackHitlOverview'
 import { PackHitlWalkBar } from '../../components/patent/PackHitlWalkBar'
+import { packHitlSeatProgress } from '../../projects/pack/patentHitlWalk'
 import { SeatValidatorPanel } from '../../components/patent/SeatValidatorPanel'
 import { hasMockValidator } from '../../projects/pack/patentValidator'
 
@@ -25,7 +26,7 @@ export function ProjectWorkspacePage() {
     botId?: string
     expertId?: string
   }>()
-  const { getProject, patchProject } = useProjectFolder()
+  const { getProject, patchProject, getThread } = useProjectFolder()
 
   if (!projectId) return <Navigate to="/agent/projects" replace />
   const project = getProject(projectId)
@@ -127,7 +128,11 @@ export function ProjectWorkspacePage() {
         </div>
         {isPatent && (
           <div className="shrink-0 space-y-2 border-b border-slate-100 bg-slate-50/60 px-3 py-2">
-            <PackHitlOverview compact projectId={projectId} />
+            <PackHitlOverview
+              compact
+              projectId={projectId}
+              {...packHitlSeatProgress(getThread, projectId)}
+            />
             <PackHitlWalkBar compact />
             {hasMockValidator(resolved) && (
               <SeatValidatorPanel expertId={resolved} projectId={projectId} />

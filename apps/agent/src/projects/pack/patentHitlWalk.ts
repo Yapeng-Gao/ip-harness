@@ -45,4 +45,22 @@ export const PACK_HITL_PHASE_SEATS: {
 export const PACK_DEMO_PROJECT_ID = 'proj-demo-patent'
 
 export const MAIN_CHAIN_STORY =
-  '检索→立项→交底→撰写→…→OA 示意（HITL①–⑥ · validator 失败→自修复→Pass→Confirm）'
+  '检索→立项→交底→撰写→…→OA（①–⑥：校验未过→自动修好→通过→待确认）'
+
+/** Derive overview ready/cleared from demo/project threads (keep in sync with walk bar). */
+export function packHitlSeatProgress(
+  getThread: (
+    projectId: string,
+    expertId: ProjectExpertId,
+  ) => import('../types').ProjectThread | undefined,
+  projectId: string = PACK_DEMO_PROJECT_ID,
+): { readySeatIds: ProjectExpertId[]; clearedSeatIds: ProjectExpertId[] } {
+  const readySeatIds: ProjectExpertId[] = []
+  const clearedSeatIds: ProjectExpertId[] = []
+  for (const g of PACK_HITL8) {
+    const th = getThread(projectId, g.seatId)
+    if (th?.pendingHitl) readySeatIds.push(g.seatId)
+    else if (th?.hitlCleared) clearedSeatIds.push(g.seatId)
+  }
+  return { readySeatIds, clearedSeatIds }
+}

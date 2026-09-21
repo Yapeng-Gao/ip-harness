@@ -603,7 +603,9 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       updateThread(projectId, expertId, (t) => ({
         ...t,
         pendingHitl: pending,
-        pendingGate: gate,
+        pendingGate: pending ? gate : undefined,
+        // pending true → 待确认；pending false after unlock → 已确认
+        hitlCleared: pending ? false : true,
         updatedAt: nowIso(),
       }))
     },

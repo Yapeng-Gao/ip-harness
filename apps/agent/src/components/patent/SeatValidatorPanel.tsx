@@ -24,7 +24,7 @@ type Props = {
 }
 
 /**
- * Mock validator + self-heal + handoff envelope (no real harness).
+ * 样机校验 + self-heal + handoff envelope (no real harness).
  */
 export function SeatValidatorPanel({
   expertId,
@@ -64,14 +64,14 @@ export function SeatValidatorPanel({
         setThreadHitl(projectId, expertId, true, packHitl.gate)
         appendMessage(projectId, expertId, {
           role: 'system',
-          content: `【validator Pass】spec=${r.specName} · attempt=${r.attempt} → 已解锁 HITL（${packHitl.label} / ${packHitl.gate}）`,
+          content: `【样机校验通过】spec=${r.specName} · attempt=${r.attempt} → 已到确认点（${packHitl.label} / ${packHitl.gate}）`,
           meta: { backend: 'mock' },
         })
       }
     } else if (projectId) {
       appendMessage(projectId, expertId, {
         role: 'system',
-        content: `【validator Issue×${r.issues.length}】请自修复重跑（mock · 无真 harness）`,
+        content: `【样机校验问题×${r.issues.length}】请自动修好再跑（样机示意）`,
         meta: { backend: 'mock' },
       })
     }
@@ -112,7 +112,7 @@ export function SeatValidatorPanel({
         className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-2 py-1.5 text-[10px] text-slate-400"
         data-testid="seat-validator-na"
       >
-        本席暂无 mock validator 示意（非主链演示席）
+        本席暂无样机校验（非主链演示席）
       </div>
     )
   }
@@ -124,7 +124,7 @@ export function SeatValidatorPanel({
     >
       <div className="flex flex-wrap items-center gap-1.5">
         <span className="text-[11px] font-semibold text-slate-800">
-          Mock validator
+          样机校验
         </span>
         <span className="rounded bg-slate-100 px-1 text-[9px] text-slate-500">
           无真沙箱
@@ -159,7 +159,7 @@ export function SeatValidatorPanel({
           data-testid="validator-self-heal"
         >
           <RefreshCw className="h-3 w-3" aria-hidden />
-          自修复重跑
+          自动修好再跑
         </button>
         <button
           type="button"

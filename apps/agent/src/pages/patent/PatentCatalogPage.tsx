@@ -13,6 +13,10 @@ import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { ProjectExpertId } from '../../projects/types'
 import { PackHitlOverview } from '../../components/patent/PackHitlOverview'
 import { PackHitlWalkBar } from '../../components/patent/PackHitlWalkBar'
+import {
+  PACK_DEMO_PROJECT_ID,
+  packHitlSeatProgress,
+} from '../../projects/pack/patentHitlWalk'
 
 const GROUP_LABEL: Record<string, string> = {
   orch: '总控',
@@ -47,7 +51,7 @@ const PACK16 = new Set<ProjectExpertId>([
  */
 export function PatentCatalogPage() {
   const navigate = useNavigate()
-  const { createProject } = useProjectFolder()
+  const { createProject, getThread } = useProjectFolder()
   const [title, setTitle] = useState('边缘调度模组 · 专利专班')
   const [selected, setSelected] = useState<Set<ProjectExpertId>>(() => {
     const init = new Set<ProjectExpertId>()
@@ -126,7 +130,7 @@ export function PatentCatalogPage() {
               专利专家 Catalog
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              Pack 16 席对齐 · mock validator · HITL×8 · 过程可见（成果 +
+              16 个专家席 · 样机校验 · 人工确认×8 · 过程可见（成果 +
               worklog）
             </p>
             <p
@@ -162,7 +166,10 @@ export function PatentCatalogPage() {
         </div>
 
         <div className="mt-4 space-y-3">
-          <PackHitlOverview />
+          <PackHitlOverview
+            projectId={PACK_DEMO_PROJECT_ID}
+            {...packHitlSeatProgress(getThread, PACK_DEMO_PROJECT_ID)}
+          />
           <PackHitlWalkBar />
         </div>
 

@@ -14,11 +14,13 @@ import type { ProjectExpertDef, ProjectThread } from '../../projects/types'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { CommandName } from '@ip/domain'
 import { primaryHandoffKeyForExpert } from '../../projects/patentMidMap'
+import { PACK_DEMO_PROJECT_ID } from '../../projects/pack/patentHitlWalk'
 
 const ACTION_LABEL: Record<string, string> = {
   approve_strategy: '批准策略',
   authorize_file: '授权递交',
   confirm_quote: '确认报价',
+  pay_unlock: '付款解锁',
   request_changes: '退回修改',
   approve: '批准',
 }
@@ -142,21 +144,30 @@ export function ExpertHitlBridge({
         reason: NO_CASE_GATE_REASON,
       }
     }
-    if (hasBlockingInvoiceForCase(caseId)) {
-      return { blocked: true, reason: '存在阻塞发票，授权类闸可能不可用' }
+    // 演示 mock 案不做发票硬挡（避免「能点进确认卡却交不了」）
+    if (caseId === 'case-mock-pack-hf') {
+      return { blocked: false }
+    }
+    const inv = hasBlockingInvoiceForCase(caseId)
+    if (inv?.blocked) {
+      return {
+        blocked: true,
+        reason: '还有未结清的费用，付款或签字确认暂时不能提交',
+      }
     }
     return { blocked: false }
   }, [expert.id, caseId, hasBlockingInvoiceForCase])
 
+  const memoryOnly =
+    expert.domainCommandCandidates.length > 0 &&
+    expert.domainCommandCandidates.every((c) => c.command === null)
+
   const gateDisabledReason = useCallback(
     (g: HitlGateId): string | null => {
-      if (expert.domainCommandCandidates.every((c) => c.command === null)) {
-        if (expert.id === 'expert-fto') {
-          // FTO 无案可确认口径（不写库）；其它闸仍禁
-          return g === 'approve_strategy'
-            ? null
-            : 'FTO 样机仅开放策略确认口径'
-        }
+      // 样机仅内存确认的席（年费/转化/FTO 等）：只开放本席 hitlGates，禁「看起来能点其实点不动」
+      if (memoryOnly) {
+        if (expert.hitlGates.includes(g)) return null
+        return '演示不可提交：本席未开放该确认项'
       }
       // P0 HITL：无案仅禁须案闸；approve_strategy / go_nogo 可点清
       if (!caseId && gateRequiresCase(g)) return NO_CASE_GATE_REASON
@@ -165,7 +176,7 @@ export function ExpertHitlBridge({
       }
       return null
     },
-    [expert.domainCommandCandidates, expert.id, role, caseId],
+    [memoryOnly, expert.hitlGates, role, caseId],
   )
 
   const runHitl = useCallback(
@@ -174,22 +185,48 @@ export function ExpertHitlBridge({
         setToast('尚未绑定底层会话')
         return
       }
-      // FTO: confirm口径 only — still call sessionHitlAction if case-bound; else local ack
-      if (
-        expert.id === 'expert-fto' &&
-        !caseId &&
-        (action === 'approve_strategy' || action === 'approve')
-      ) {
+      const isDemoPack =
+        projectId === PACK_DEMO_PROJECT_ID || caseId === 'case-mock-pack-hf'
+
+      const finishMemoryConfirm = (detail: string) => {
+        const gate = thread.pendingGate ?? expert.hitlGates[0]
+        if (gate) {
+          patchSession(sess.id, {
+            clearedHitlGates: Array.from(
+              new Set([...(sess.clearedHitlGates ?? []), gate]),
+            ),
+            hitlPending: false,
+            status: 'done',
+          })
+        } else {
+          patchSession(sess.id, { hitlPending: false, status: 'done' })
+        }
         setThreadHitl(projectId, expert.id, false)
         appendMessage(projectId, expert.id, {
           role: 'system',
-          content:
-            '已确认自由实施报告口径（本机草稿 · 未写入案件 · 非法律意见）。',
+          content: `已确认 · ${projectToolLabelSafe(action)}（${detail}）`,
           meta: { backend: 'mock' },
         })
-        setToast('自由实施口径已确认（未写库）')
+        setToast(`已确认（演示·内存）· ${projectToolLabelSafe(action)}`)
+      }
+
+      // 内存-only 席（年费⑦ / 转化⑧ / FTO…）：演示路径直接内存→已确认，不走发票/写库硬闸
+      if (memoryOnly) {
+        const allowed =
+          expert.hitlGates.some((g) => gateToAction(g) === action) ||
+          (expert.id === 'expert-fto' && action === 'approve_strategy')
+        if (!allowed) {
+          setToast('演示不可提交：本席未开放该确认项')
+          return
+        }
+        finishMemoryConfirm(
+          expert.id === 'expert-fto' && !caseId
+            ? '本机草稿 · 未写入案件 · 非法律意见'
+            : '样机内存 · 非真缴费/签约',
+        )
         return
       }
+
       const r = await sessionHitlAction(
         sess.id,
         action,
@@ -261,6 +298,12 @@ export function ExpertHitlBridge({
           meta: { backend: 'mock' },
         })
         recordL3Write(`HITL ${action} · 样机内存（非真 case-core）`)
+      } else if (
+        isDemoPack &&
+        (action === 'pay_unlock' || action === 'confirm_quote')
+      ) {
+        // 演示项目⑦⑧：正式闸（无票等）失败时仍内存确认，避免假闭环
+        finishMemoryConfirm(`正式闸未过（${r.message}）· 演示已内存确认`)
       } else if (writeCand?.command) {
         // Formal gate may block (e.g. disclosure not ready); still surface L3 write shape.
         recordL3Write(
@@ -277,8 +320,12 @@ export function ExpertHitlBridge({
       projectId,
       appendMessage,
       expert.domainCommandCandidates,
+      expert.hitlGates,
       recordDomainCommandWrite,
       dispatchCommand,
+      memoryOnly,
+      thread.pendingGate,
+      patchSession,
     ],
   )
 

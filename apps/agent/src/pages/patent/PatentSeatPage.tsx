@@ -9,6 +9,7 @@ import { ProjectChatPane } from '../../components/projects/ProjectChatPane'
 import { SeatDualFilePanel } from '../../components/patent/SeatDualFilePanel'
 import { SeatValidatorPanel } from '../../components/patent/SeatValidatorPanel'
 import { PackHitlOverview } from '../../components/patent/PackHitlOverview'
+import { packHitlSeatProgress } from '../../projects/pack/patentHitlWalk'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { ProjectExpertId } from '../../projects/types'
 import { PATENT_EXPERTS } from '../../projects/expertsPatent'
@@ -35,8 +36,6 @@ export function PatentSeatPage() {
     [validSeat, seatId],
   )
   const project = getProject(SHELL_DM_PROJECT)
-  const thread =
-    validSeat && seatId ? getThread(SHELL_DM_PROJECT, seatId) : undefined
 
   useEffect(() => {
     if (!validSeat || !seatId || !def || !project) return
@@ -92,7 +91,7 @@ export function PatentSeatPage() {
     )
   }
 
-  const ready = thread?.pendingHitl ? [seatId] : []
+  const hitlProgress = packHitlSeatProgress(getThread, SHELL_DM_PROJECT)
 
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="patent-seat-dm">
@@ -126,7 +125,8 @@ export function PatentSeatPage() {
         <PackHitlOverview
           compact
           projectId={SHELL_DM_PROJECT}
-          readySeatIds={ready}
+          readySeatIds={hitlProgress.readySeatIds}
+          clearedSeatIds={hitlProgress.clearedSeatIds}
         />
         <div className="mt-2">
           <SeatValidatorPanel
