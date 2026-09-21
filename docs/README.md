@@ -4,7 +4,7 @@
 
 | 文档 | 说明 |
 |------|------|
-| [../README.md](../README.md) | 仓简介 · 端口 · 快速开始 |
+| [../README.md](../README.md) | 仓简介 · **16 apps / 5 packages** · 端口对齐 `APP_PORTS` · 快速开始 |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | 分支 · PR · 自检 |
 | [TEAM_CHARTER.md](./TEAM_CHARTER.md) | 助手 Owner · 协作制 |
 
