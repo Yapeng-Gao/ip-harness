@@ -45,8 +45,9 @@ type Props = {
 }
 
 /**
- * 席工作面（席=独立 bot · 7 席同构 · 案页三刀）：
- * 会话主 · 成果/过程次 tab（默认藏工程文件名）· 交卷 HITL
+ * 席工作面（席=独立 bot · 7 席同构 · 案页三刀 + nits）：
+ * 会话主 · 成果/过程次 tab（办理过程勿常驻会话下）· 交卷 HITL
+ * 本案 pending → 藏会话干活/交卷 chip，顶栏「去确认」独占
  * 推进 → advanceSeatWork；顶栏唯一主 CTA 经 workNonce 触发
  */
 export function BusinessSeatWorkbench({
@@ -91,6 +92,12 @@ export function BusinessSeatWorkbench({
     if (!kind) return []
     return getPendingConfirms(caseId).filter((c) => c.kind === kind)
   }, [caseId, seatId, getPendingConfirms])
+
+  /** 本案任一 pending：会话 chip 藏/降灰，顶栏「去确认」独占主视线 */
+  const caseHasPending = useMemo(
+    () => getPendingConfirms(caseId).length > 0,
+    [caseId, getPendingConfirms],
+  )
 
   const oaLocked = seatId === 'expert-oa' && !prog.filed
   const submitted = !!thread?.artifactSubmitted
@@ -211,7 +218,9 @@ export function BusinessSeatWorkbench({
 
   const displayContent = (role: string, content: string) => {
     if (role === 'system') {
-      return `${seatLabel}已就绪。跟我聊，或点右上「让它干活」；交卷后会写入待我确认。`
+      return caseHasPending
+        ? `${seatLabel}已就绪。本案有待确认 · 请先点顶栏「去确认」。`
+        : `${seatLabel}已就绪。跟我聊，或点右上「让它干活」；交卷后会写入待我确认。`
     }
     return content
   }
@@ -385,7 +394,9 @@ export function BusinessSeatWorkbench({
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3">
             {messages.length === 0 ? (
               <p className="text-[12px] text-slate-500">
-                {seatLabel}已就绪。跟我聊，或点右上「让它干活」。
+                {caseHasPending
+                  ? `${seatLabel}已就绪。本案有待确认 · 请先点顶栏「去确认」。`
+                  : `${seatLabel}已就绪。跟我聊，或点右上「让它干活」。`}
               </p>
             ) : (
               messages.map((m) => (
@@ -430,26 +441,36 @@ export function BusinessSeatWorkbench({
             <div ref={chatEndRef} />
           </div>
           <div className="shrink-0 border-t border-slate-100 px-2 py-2">
-            <div className="mb-1.5 flex flex-wrap gap-1">
-              <button
-                type="button"
-                className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-700 hover:bg-slate-50"
-                data-testid="business-seat-chip-work"
-                disabled={oaLocked || busy}
-                onClick={() => runAdvance('请按剧本干下一步')}
+            {/* 本案 pending：藏 chip，顶栏「去确认」独占；无 pending 才露干活/交卷 */}
+            {!caseHasPending ? (
+              <div className="mb-1.5 flex flex-wrap gap-1" data-testid="business-seat-chips">
+                <button
+                  type="button"
+                  className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-700 hover:bg-slate-50"
+                  data-testid="business-seat-chip-work"
+                  disabled={oaLocked || busy}
+                  onClick={() => runAdvance('请按剧本干下一步')}
+                >
+                  让它干活
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100"
+                  data-testid="business-seat-chip-deliver"
+                  disabled={oaLocked || busy}
+                  onClick={() => runAdvance('请交卷，我来确认')}
+                >
+                  交卷请确认
+                </button>
+              </div>
+            ) : (
+              <p
+                className="mb-1.5 text-[10px] text-amber-800/80"
+                data-testid="business-seat-chips-deferred"
               >
-                让它干活
-              </button>
-              <button
-                type="button"
-                className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100"
-                data-testid="business-seat-chip-deliver"
-                disabled={oaLocked || busy}
-                onClick={() => runAdvance('请交卷，我来确认')}
-              >
-                交卷请确认
-              </button>
-            </div>
+                待确认中 · 请用顶栏「去确认」
+              </p>
+            )}
             <div className="flex gap-2">
               <textarea
                 value={draft}
@@ -474,40 +495,49 @@ export function BusinessSeatWorkbench({
           </div>
         </section>
       ) : (
-        <section
-          className="mb-3 rounded-xl border border-slate-200 bg-white shadow-sm"
-          data-testid="business-seat-dual-file"
-        >
-          <div className="border-b border-slate-100 px-3 py-2 text-[10px] font-semibold text-slate-400">
-            {panel === 'artifact' ? '成果' : '办理过程'}
-            {showFileNames && dual ? (
-              <span
-                className="ml-2 font-mono font-normal text-slate-300"
-                data-testid="business-seat-eng-filename"
+        <div className="mb-3 space-y-3" data-testid="business-seat-side-panel">
+          <section
+            className="rounded-xl border border-slate-200 bg-white shadow-sm"
+            data-testid="business-seat-dual-file"
+          >
+            <div className="border-b border-slate-100 px-3 py-2 text-[10px] font-semibold text-slate-400">
+              {panel === 'artifact' ? '成果' : '办理过程'}
+              {showFileNames && dual ? (
+                <span
+                  className="ml-2 font-mono font-normal text-slate-300"
+                  data-testid="business-seat-eng-filename"
+                >
+                  {panel === 'artifact' ? dual.artifactFile : dual.worklogFile}
+                </span>
+              ) : null}
+            </div>
+            {dual ? (
+              <pre
+                ref={bodyRef}
+                className={`max-h-72 overflow-y-auto whitespace-pre-wrap p-3 font-mono text-[10px] leading-relaxed text-slate-700 transition-colors duration-500 ${
+                  flashBody ? 'bg-amber-50 ring-2 ring-amber-200 ring-inset' : ''
+                }`}
+                data-testid={
+                  panel === 'artifact'
+                    ? 'business-dual-artifact-body'
+                    : 'business-dual-worklog-body'
+                }
+                data-step-index={stepIndex}
               >
-                {panel === 'artifact' ? dual.artifactFile : dual.worklogFile}
-              </span>
-            ) : null}
-          </div>
-          {dual ? (
-            <pre
-              ref={bodyRef}
-              className={`max-h-72 overflow-y-auto whitespace-pre-wrap p-3 font-mono text-[10px] leading-relaxed text-slate-700 transition-colors duration-500 ${
-                flashBody ? 'bg-amber-50 ring-2 ring-amber-200 ring-inset' : ''
-              }`}
-              data-testid={
-                panel === 'artifact'
-                  ? 'business-dual-artifact-body'
-                  : 'business-dual-worklog-body'
-              }
-              data-step-index={stepIndex}
-            >
-              {panel === 'artifact' ? artifactBody : worklogBody}
-            </pre>
-          ) : (
-            <p className="p-3 text-xs text-slate-400">本席暂无双文件约定</p>
-          )}
-        </section>
+                {panel === 'artifact' ? artifactBody : worklogBody}
+              </pre>
+            ) : (
+              <p className="p-3 text-xs text-slate-400">本席暂无双文件约定</p>
+            )}
+          </section>
+          {/* 办理过程：只在次 tab，勿常驻会话下方 */}
+          {panel === 'worklog' ? (
+            <CaseProcessPanel
+              caseId={caseId}
+              highlightLogId={flashLogId ?? undefined}
+            />
+          ) : null}
+        </div>
       )}
 
       <div className="mb-3 hidden" aria-hidden>
@@ -533,13 +563,6 @@ export function BusinessSeatWorkbench({
                 : '请按剧本干下一步',
             )
           }
-        />
-      </div>
-
-      <div className="min-h-0">
-        <CaseProcessPanel
-          caseId={caseId}
-          highlightLogId={flashLogId ?? undefined}
         />
       </div>
     </div>

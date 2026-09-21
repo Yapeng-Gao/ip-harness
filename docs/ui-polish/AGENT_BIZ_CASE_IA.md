@@ -26,6 +26,8 @@
 | 进度 | 顶栏阶段极简一行；席步骤 pill 只读；无第二套可点主链 |
 | 7 席 | 同构 `BusinessSeatWorkbench` 会话壳不变 |
 
+**Nits（叠 `7df0c17`/`6aaf049`）**：本案 pending 时会话内「让它干活/交卷请确认」chip 藏起，顶栏「去确认」独占；「办理过程」`CaseProcessPanel` 仅次 tab，勿常驻会话下方。截图 `07-nit-pending-chips-deferred.png` · `08-nit-process-in-tab.png`。
+
 ## 截图
 
 `docs/ui-polish/agent-biz-case-ia/`
@@ -40,6 +42,8 @@
 | `04-knife3-readonly-steps.png` | 席步骤 pill 只读 · 无阶段 pill 墙/中轨 |
 | `05-home-intact.png` | 开聊首页未回退 |
 | `06-research-isomorphic.png` | 查新席同构会话壳 |
+| `07-nit-pending-chips-deferred.png` | pending：无会话 chip · 顶栏去确认 |
+| `08-nit-process-in-tab.png` | 办理过程仅次 tab · 会话下无常驻块 |
 
 ## 验收
 
