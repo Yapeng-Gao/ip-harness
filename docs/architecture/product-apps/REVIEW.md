@@ -211,3 +211,27 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 **风险**：花名册席位多（含立项前簇），全链演示偏重——实现须截短主链；与 `agent-l3-patent`/SEAT_ROSTER 改键须三方同步；figure/fto 仍无独立 handoff key，勿臆造 packages 字段。
 
+## B席轻扫 · Agent 平台正式稿 + 专利 Domain Pack（`6ba58ae`）
+
+**扫范围**：`agent-platform.md` · `domain-packs/patent-pack-{design,impl}.md` · `agent-platform-gap.md` · 补丁口径 `agent-layers` / `agent-l3-patent` / `agent-patent-shell`（仅 docs，无 apps）。
+
+| 结论 | **Go-with-nits** |
+|------|------------------|
+| Solo/Team/Domain ↔ L1/L2/L3 | 过：平台 §1 叠名；Team/Domain **同多 bot runtime**，入口/SOP 不同（非产品偷换） |
+| 16 席 / HITL×8 / 五层裁判 / Handoff | 过：Pack 矩阵列全；F7–F9 Phase 仍入表；Catalog=子集过渡写清 |
+| `expert-fto` ≠ 无效维权顾问 | 过：pack-design §2 钉死；勿合并 id |
+| 端用户禁 mid 深链 | 过：pack / l3 / shell / gap 一致不放松 |
+| gap 顺序 docs→mock validator→真沙箱 | 过（轻黄）：顺序可验收；P0 清单宜内联 gap，勿只靠 incoming §14 |
+| 样机诚实 | 过：禁真 LLM/case-core/真沙箱本轮；本 commit 仅 docs |
+
+### Nits（须消后再开样机/平台刀）
+
+1. **`/agent` 冷启动双钉**：`agent-layers` 正文/验收仍钉「冷启动=L1」；`agent-patent-shell` 钉「`/agent`→专利 Catalog」。须写成显式双产品路径（或改 layers 验收）。
+2. **`expert-mining`→`expert-intake` 别名**（l3 §2）与 Pack/shell「mining=挖掘≠立项」硬拧——删或改写。
+3. **layers §5 FTO→`layout_insight`**：与 l3「勿把 FTO 写成 `layout_insight`」冲突；布局键留给 layout。
+4. **F9「无效维权」→ STAGE `watch`**：职责相邻、语义不等同；另提案键或注明暂借。
+5. **HITL×8 ↔ 壳闸门对照表**缺页（至少 ②↔`go_nogo`，⑤/⑥↔权项/OA Confirm）。
+6. **gap P0**：把启停限额、pause/resume、dsh headless 锁版、期限表核对、合规定档等可勾选项内联进 gap。
+
+**冲突扫描**：shell/Pack 主路径齐；layers 冷启动与 FTO 残钉、l3 mining 别名 = 三处硬拧。Team≡Domain 仅 runtime 共用——不判偷换。
+
