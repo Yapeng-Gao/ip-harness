@@ -1,5 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { FileText, ScrollText } from 'lucide-react'
+import {
+  buildProgressiveArtifact,
+  buildProgressiveWorklog,
+} from '../../business/seatStepBodies'
+import { SeatMarkdownBody } from '../business/SeatMarkdownBody'
+import { getProjectExpert } from '../../projects/experts'
 import { deliverableForExpert } from '../../projects/patentDeliverables'
 import type { ProjectExpertId } from '../../projects/types'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
@@ -14,6 +20,7 @@ type Props = {
 /**
  * Dual-file panels: 成果 NN_*.md + 过程 NN_*_worklog.md
  * Spec: agent-patent-shell §3 / PROCESS_VISIBILITY
+ * 有 projectId 时与业务面同一 progressive（agent-depth-reliability）
  */
 export function SeatDualFilePanel({
   expertId,
@@ -21,12 +28,30 @@ export function SeatDualFilePanel({
   defaultTab = 'both',
 }: Props) {
   const d = deliverableForExpert(expertId)
+  const def = getProjectExpert(expertId)
   const { getThread } = useProjectFolder()
-  const submitted =
-    projectId && getThread(projectId, expertId)?.artifactSubmitted
+  const thread = projectId ? getThread(projectId, expertId) : undefined
+  const submitted = !!thread?.artifactSubmitted
+  const stepIndex = thread?.stepIndex ?? 0
   const [tab, setTab] = useState<'artifact' | 'worklog'>(
     defaultTab === 'artifact' ? 'artifact' : 'worklog',
   )
+
+  const artifactBody = useMemo(() => {
+    if (!d) return ''
+    if (projectId && def.steps.length > 0) {
+      return buildProgressiveArtifact(d, def.steps, stepIndex)
+    }
+    return d.sampleArtifact
+  }, [d, def.steps, projectId, stepIndex])
+
+  const worklogBody = useMemo(() => {
+    if (!d) return ''
+    if (projectId && def.steps.length > 0) {
+      return buildProgressiveWorklog(d, def.steps, stepIndex)
+    }
+    return d.sampleWorklog
+  }, [d, def.steps, projectId, stepIndex])
 
   if (!d) {
     return (
@@ -81,27 +106,27 @@ export function SeatDualFilePanel({
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <PanelBlock
             title={d.worklogFile}
-            body={d.sampleWorklog}
+            body={worklogBody}
             testId="dual-worklog-body"
             accent="amber"
           />
           <PanelBlock
             title={d.artifactFile}
-            body={d.sampleArtifact}
+            body={artifactBody}
             testId="dual-artifact-body"
             accent="sky"
           />
         </div>
       ) : (
-        <div className="min-h-0 flex-1 overflow-y-auto p-2">
-          <pre
-            className="whitespace-pre-wrap rounded-md border border-slate-100 bg-slate-50 p-2 font-mono text-[10px] leading-relaxed text-slate-700"
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <SeatMarkdownBody
+            className="h-full max-h-none rounded-none border-0 p-2"
             data-testid={
               tab === 'worklog' ? 'dual-worklog-body' : 'dual-artifact-body'
             }
           >
-            {tab === 'worklog' ? d.sampleWorklog : d.sampleArtifact}
-          </pre>
+            {tab === 'worklog' ? worklogBody : artifactBody}
+          </SeatMarkdownBody>
         </div>
       )}
 
@@ -132,12 +157,12 @@ function PanelBlock({
       >
         {title}
       </div>
-      <pre
-        className="min-h-0 flex-1 overflow-y-auto whitespace-pre-wrap p-2 font-mono text-[10px] leading-relaxed text-slate-700"
+      <SeatMarkdownBody
+        className="min-h-0 max-h-none flex-1 p-2"
         data-testid={testId}
       >
         {body}
-      </pre>
+      </SeatMarkdownBody>
     </div>
   )
 }
