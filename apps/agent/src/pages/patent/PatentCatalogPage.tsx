@@ -12,13 +12,14 @@ import { deliverableForExpert } from '../../projects/patentDeliverables'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { ProjectExpertId } from '../../projects/types'
 import { PackHitlOverview } from '../../components/patent/PackHitlOverview'
+import { PackHitlWalkBar } from '../../components/patent/PackHitlWalkBar'
 
 const GROUP_LABEL: Record<string, string> = {
   orch: '总控',
   pre: '立项前簇（可选）',
   core: '主链路',
   assist: '辅席（建议勾 · FTO≠维权）',
-  phase: 'F7–F9 Phase（灰显 · 可点进空态）',
+  phase: 'F7–F9 后置业务（可跑 · Phase 标签）',
 }
 
 /** Pack 16 业务席（不含总控 / 不含 FTO 辅席） */
@@ -73,8 +74,6 @@ export function PatentCatalogPage() {
 
   const toggle = (id: ProjectExpertId) => {
     if (isOrchestratorExpert(id)) return
-    const def = getProjectExpert(id)
-    if (def.phase) return // Phase: 名单可见，默认不入队（可点空态）
     setSelected((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
@@ -162,8 +161,9 @@ export function PatentCatalogPage() {
           </div>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 space-y-3">
           <PackHitlOverview />
+          <PackHitlWalkBar />
         </div>
 
         <div className="mt-4 flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
@@ -203,7 +203,7 @@ export function PatentCatalogPage() {
           </Link>
         </div>
         <p className="mt-2 text-[11px] text-slate-400">
-          已选 {teamIds.length} 席（总控必选）· Phase 默认可点空态不入队 ·
+          已选 {teamIds.length} 席（总控必选）· 后置席可勾选入队 ·
           禁冷启动截入递交/OA · 端用户禁 mid 深链
         </p>
       </header>
@@ -227,7 +227,7 @@ export function PatentCatalogPage() {
                       key={id}
                       className={`rounded-xl border p-3 shadow-sm ${
                         phase
-                          ? 'border-dashed border-slate-300 bg-slate-50/80 opacity-80'
+                          ? 'border-dashed border-slate-300 bg-slate-50/90'
                           : 'border-slate-200 bg-white'
                       }`}
                       data-testid={`patent-catalog-seat-${id}`}
@@ -241,7 +241,7 @@ export function PatentCatalogPage() {
                           className="focus-ring mt-0.5 shrink-0 text-slate-700"
                           aria-pressed={checked}
                           aria-label={checked ? '取消勾选' : '勾选'}
-                          disabled={isOrchestratorExpert(id) || phase}
+                          disabled={isOrchestratorExpert(id)}
                         >
                           {checked ? (
                             <CheckSquare className="h-4 w-4 text-slate-900" />
@@ -288,11 +288,7 @@ export function PatentCatalogPage() {
                               className="btn-press focus-ring rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
                               data-testid={`patent-seat-dm-${id}`}
                             >
-                              {blocked
-                                ? '须建项目'
-                                : phase
-                                  ? '空态说明'
-                                  : '单聊'}
+                              {blocked ? '须建项目' : '单聊'}
                             </button>
                           </div>
                         </div>

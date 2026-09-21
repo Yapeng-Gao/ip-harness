@@ -92,9 +92,9 @@ export type ProjectExpertDef = {
   defaultTeam?: boolean
   /** Owner label from OWNER matrix */
   ownerLabel?: string
-  /** F7–F9 Phase seat — gray + empty-state */
+  /** F7–F9 后置业务标签（可跑样机，非灰显死胡同） */
   phase?: boolean
-  /** Empty-state copy when phase / not ready */
+  /** 后置说明文案 */
   emptyStateNote?: string
 }
 

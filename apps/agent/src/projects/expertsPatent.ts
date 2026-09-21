@@ -1309,134 +1309,188 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "年费管家",
     "role": "expert",
     "specialty": "年费/放弃 · maintain_annuity",
-    "description": "F7 授权后管理 · 期限+滞纳金表联动价值分级。【HITL⑦】年费/放弃。Phase 席。",
+    "description": "F7 授权后管理 · 期限+滞纳金表联动价值分级。【HITL⑦】年费/放弃。后置业务可跑样机（非灰显死胡同）。",
     "tools": ["list_annuity_due", "compute_surcharge", "propose_pay_or_abandon"],
     "shortcuts": [
       {"id": "due", "label": "到期清单", "action": "jump", "stepId": "due"},
-      {"id": "decide", "label": "缴费/放弃", "action": "jump", "stepId": "decide"}
+      {"id": "grade", "label": "价值联动", "action": "jump", "stepId": "grade"},
+      {"id": "decide", "label": "缴费/放弃", "action": "jump", "stepId": "decide"},
+      {"id": "report-orch", "label": "回报总控", "action": "report"}
     ],
     "steps": [
       {
         "id": "due",
         "label": "到期台账",
-        "script": "【年费】Phase 空态：期限表尚未接线。样机仅示意 HITL⑦。",
-        "tool": {"name": "list_annuity_due", "preview": "phase=true"}
+        "script": "【年费】到期清单：CN114882901B 第 3 年 · 截止 2026-11-30 · 官费 ¥2,000（假数据）。过程见 worklog §3。",
+        "tool": {"name": "list_annuity_due", "preview": "due=1 · window=90d"}
+      },
+      {
+        "id": "grade",
+        "label": "价值联动",
+        "script": "【年费】联动价值评估：核心案建议缴；外围案可议放弃。滞纳金表 mock。",
+        "tool": {"name": "compute_surcharge", "preview": "grace=6m · surcharge=tier2"}
       },
       {
         "id": "decide",
         "label": "缴费/放弃闸",
-        "script": "【年费】待价值评估联动后开放 Confirm（pay_unlock 心智）。",
+        "script": "【年费】14_maintain_annuity + worklog 待 Confirm（HITL⑦ · pay_unlock 心智 · 禁真缴费）。",
+        "tool": {"name": "propose_pay_or_abandon", "preview": "recommend=pay · hitl=⑦"},
         "triggersHitl": true,
         "hitlGate": "pay_unlock"
       }
     ],
     "hitlGates": ["pay_unlock"],
     "domainCommandCandidates": [
-      {"command": null, "label": "Phase · 不写库", "note": "maintain_annuity 心智 · 未接线"}
+      {"command": null, "label": "样机示意 · 不写真缴费", "note": "maintain_annuity 心智 · 内存 Confirm"}
     ],
-    "guardrails": ["Phase 空态", "禁真缴费"],
+    "guardrails": ["后置业务可跑", "禁真缴费", "未 Confirm 不写库"],
     "catalogAgentId": "agent-annuity",
     "accent": "yellow",
     "catalogGroup": "phase",
     "defaultTeam": false,
     "ownerLabel": "IP 运营",
     "phase": true,
-    "emptyStateNote": "F7 年费管家为 Phase 席：期限/滞纳金表与真沙箱未接线。名单已对齐 Pack；可点进本空态说明。HITL⑦ 在总览可见但灰显，待后续刀。"
+    "emptyStateNote": "F7 年费管家为后置业务席：样机可跑完全程（步骤+双文件+validator+HITL⑦ Confirm），无真沙箱/真缴费。"
   },
   "expert-valuation": {
     "id": "expert-valuation",
     "name": "价值评估师",
     "role": "expert",
     "specialty": "核心/外围/放弃 · valuation",
-    "description": "F7 价值评分：引用/同族/许可/产品映射。联动年费建议。Phase 席。",
+    "description": "F7 价值评分：引用/同族/许可/产品映射。联动年费建议。后置业务可跑样机。",
     "tools": ["score_portfolio", "grade_core_periphery", "draft_valuation_card"],
     "shortcuts": [
-      {"id": "score", "label": "评分卡", "action": "jump", "stepId": "score"}
+      {"id": "evidence", "label": "抽证据", "action": "jump", "stepId": "evidence"},
+      {"id": "score", "label": "评分卡", "action": "jump", "stepId": "score"},
+      {"id": "grade", "label": "分级建议", "action": "jump", "stepId": "grade"},
+      {"id": "report-orch", "label": "回报总控", "action": "report"}
     ],
     "steps": [
       {
+        "id": "evidence",
+        "label": "抽证据",
+        "script": "【价值】已抽：引用 12 · 同族 3 · 许可线索 1 · 产品映射 2（mock）。",
+        "tool": {"name": "score_portfolio", "preview": "cite=12 · family=3"}
+      },
+      {
         "id": "score",
         "label": "评分卡",
-        "script": "【价值】Phase 空态：公式工具未接线。产出键提案 valuation_card（不写 packages）。",
-        "tool": {"name": "draft_valuation_card", "preview": "phase=true"}
+        "script": "【价值】综合分 78 · 商业 0.72 · 可执行 0.81。产出键提案 valuation_card（不写 packages）。",
+        "tool": {"name": "draft_valuation_card", "preview": "score=78 · proposal=valuation_card"}
+      },
+      {
+        "id": "grade",
+        "label": "分级建议",
+        "script": "【价值】15_valuation_card + worklog：核心保留 / 外围观察 / 1 件建议放弃 → 交年费管家。",
+        "tool": {"name": "grade_core_periphery", "preview": "core=1 · periphery=2 · abandon=1"}
       }
     ],
     "hitlGates": [],
     "domainCommandCandidates": [
-      {"command": null, "label": "Phase · 提案键", "note": "不写 packages"}
+      {"command": null, "label": "提案键 · 不写 packages", "note": "valuation_card · 服务 HITL⑦"}
     ],
-    "guardrails": ["Phase 空态", "联动年费仅建议"],
+    "guardrails": ["后置业务可跑", "联动年费仅建议", "提案键勿写 packages"],
     "catalogAgentId": null,
     "accent": "purple",
     "catalogGroup": "phase",
     "defaultTeam": false,
     "ownerLabel": "IP 决策",
     "phase": true,
-    "emptyStateNote": "F7 价值评估师为 Phase 席：评分类公式工具未装配。名单已齐；点进见本空态。无独立 HITL（服务 HITL⑦）。"
+    "emptyStateNote": "F7 价值评估师为后置业务席：样机可跑评分剧本与双文件；无独立 HITL（服务 HITL⑦）。"
   },
   "expert-monetize": {
     "id": "expert-monetize",
     "name": "转化顾问",
     "role": "expert",
     "specialty": "许可/转让 · monetize_terms",
-    "description": "F8 转化变现 · 估值与合同必备条款。【HITL⑧】交易签约。Phase 席。",
+    "description": "F8 转化变现 · 估值与合同必备条款。【HITL⑧】交易签约。后置业务可跑样机。",
     "tools": ["estimate_deal", "draft_term_sheet", "validate_contract_clauses"],
     "shortcuts": [
-      {"id": "terms", "label": "条款草案", "action": "jump", "stepId": "terms"}
+      {"id": "value", "label": "估值区间", "action": "jump", "stepId": "value"},
+      {"id": "terms", "label": "条款草案", "action": "jump", "stepId": "terms"},
+      {"id": "validate", "label": "条款校验", "action": "jump", "stepId": "validate"},
+      {"id": "report-orch", "label": "回报总控", "action": "report"}
     ],
     "steps": [
       {
+        "id": "value",
+        "label": "估值区间",
+        "script": "【转化】许可估值区间 ¥80–120 万（mock 公式 · 非真报价）。",
+        "tool": {"name": "estimate_deal", "preview": "low=80w · high=120w"}
+      },
+      {
         "id": "terms",
         "label": "条款草案",
-        "script": "【转化】Phase 空态：合同 validator 未接线。HITL⑧ 总览可见。",
-        "tool": {"name": "draft_term_sheet", "preview": "phase=true"},
+        "script": "【转化】Term sheet：独占区域 / 里程碑款 / 审计权 · 必备条款骨架。",
+        "tool": {"name": "draft_term_sheet", "preview": "exclusive=CN · milestones=3"}
+      },
+      {
+        "id": "validate",
+        "label": "签约闸",
+        "script": "【转化】16_monetize_terms + worklog 待 Confirm（HITL⑧ · confirm_quote 心智 · 禁真签约）。",
+        "tool": {"name": "validate_contract_clauses", "preview": "clauses=ok · hitl=⑧"},
         "triggersHitl": true,
         "hitlGate": "confirm_quote"
       }
     ],
     "hitlGates": ["confirm_quote"],
     "domainCommandCandidates": [
-      {"command": null, "label": "Phase · monetize_terms 心智", "note": "未写库"}
+      {"command": null, "label": "样机示意 · 不写真签约", "note": "monetize_terms 心智 · 内存 Confirm"}
     ],
-    "guardrails": ["Phase 空态", "禁真签约"],
+    "guardrails": ["后置业务可跑", "禁真签约", "未 Confirm 不写库"],
     "catalogAgentId": "agent-monetize",
     "accent": "emerald",
     "catalogGroup": "phase",
     "defaultTeam": false,
     "ownerLabel": "商务/IP",
     "phase": true,
-    "emptyStateNote": "F8 转化顾问为 Phase 席：估值公式与合同条款 validator 未接线。名单已对齐 Pack；HITL⑧ 灰显可在总览查看。"
+    "emptyStateNote": "F8 转化顾问为后置业务席：样机可跑估值→条款→HITL⑧ Confirm；无真签约。"
   },
   "expert-enforcement": {
     "id": "expert-enforcement",
     "name": "无效维权顾问",
     "role": "expert",
     "specialty": "无效/维权 · enforcement_brief",
-    "description": "F9 维权防御 · 全面覆盖比对；飞轮回流 F3。≠ FTO（expert-fto）；≠ watch 监测预警。Phase 席。",
+    "description": "F9 维权防御 · 全面覆盖比对；飞轮回流 F3。≠ FTO（expert-fto）；≠ watch。后置业务可跑样机。",
     "tools": ["claim_chart_compare", "stability_score", "draft_enforcement_brief"],
     "shortcuts": [
-      {"id": "compare", "label": "比对表", "action": "jump", "stepId": "compare"}
+      {"id": "map", "label": "特征映射", "action": "jump", "stepId": "map"},
+      {"id": "compare", "label": "覆盖比对", "action": "jump", "stepId": "compare"},
+      {"id": "flywheel", "label": "回流 F3", "action": "jump", "stepId": "flywheel"},
+      {"id": "report-orch", "label": "回报总控", "action": "report"}
     ],
     "steps": [
       {
+        "id": "map",
+        "label": "特征映射",
+        "script": "【维权】权要特征 6 项已映射到被控产品（mock）。≠ FTO 自由实施分析。",
+        "tool": {"name": "claim_chart_compare", "preview": "features=6 · ≠fto"}
+      },
+      {
         "id": "compare",
         "label": "覆盖比对",
-        "script": "【维权】Phase 空态：比对器未接线。提案键 enforcement_brief（不写 packages）。≠ expert-fto。",
-        "tool": {"name": "draft_enforcement_brief", "preview": "phase=true · ≠fto"}
+        "script": "【维权】全面覆盖 4/6 · 稳定性 0.64 · 建议补强从权。提案键 enforcement_brief。",
+        "tool": {"name": "stability_score", "preview": "cover=4/6 · stability=0.64"}
+      },
+      {
+        "id": "flywheel",
+        "label": "回流布局",
+        "script": "【维权】17_enforcement_brief + worklog：漏洞信封 → 回流 F3 布局策略师（飞轮）。勿借 watch_alert。",
+        "tool": {"name": "draft_enforcement_brief", "preview": "flywheel→expert-layout · ≠watch"}
       }
     ],
     "hitlGates": [],
     "domainCommandCandidates": [
-      {"command": null, "label": "Phase · 提案键", "note": "enforcement_brief · 勿借用 watch_alert"}
+      {"command": null, "label": "提案键 · 不写 packages", "note": "enforcement_brief · ≠fto · ≠watch_alert"}
     ],
-    "guardrails": ["≠ expert-fto", "≠ STAGE watch", "Phase 空态"],
+    "guardrails": ["≠ expert-fto", "≠ STAGE watch", "后置业务可跑"],
     "catalogAgentId": null,
     "accent": "zinc",
     "catalogGroup": "phase",
     "defaultTeam": false,
     "ownerLabel": "法务/诉讼",
     "phase": true,
-    "emptyStateNote": "F9 无效维权顾问为 Phase 席：全面覆盖比对器未接线。id 独立于 expert-fto（FTO 辅席保留）。勿借用 watch_alert。点进本空态说明。"
+    "emptyStateNote": "F9 无效维权顾问为后置业务席：样机可跑比对+回流信封；id 独立于 expert-fto。"
   },
 
   "expert-search": {

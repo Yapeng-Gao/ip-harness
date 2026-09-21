@@ -14,11 +14,9 @@ type Props = {
 
 function statusFor(
   seatId: ProjectExpertId,
-  phase: boolean | undefined,
   cleared: Set<string>,
   ready: Set<string>,
 ): PackHitlStatus {
-  if (phase) return 'phase_locked'
   if (cleared.has(seatId)) return 'cleared'
   if (ready.has(seatId)) return 'ready'
   return 'pending'
@@ -30,7 +28,7 @@ const STATUS_UI: Record<
 > = {
   pending: {
     label: '未到',
-    className: 'border-slate-200 bg-slate-50 text-slate-400',
+    className: 'border-slate-200 bg-slate-50 text-slate-500',
   },
   ready: {
     label: '待 Confirm',
@@ -41,13 +39,14 @@ const STATUS_UI: Record<
     className: 'border-emerald-300 bg-emerald-50 text-emerald-900',
   },
   phase_locked: {
-    label: 'Phase',
-    className: 'border-slate-200 bg-slate-100 text-slate-400 opacity-70',
+    label: '后置',
+    className: 'border-slate-200 bg-slate-100 text-slate-500',
   },
 }
 
 /**
  * HITL×8 overview — patent-pack-design §1
+ * ⑦⑧ keep Phase badge but are runnable (not gray dead-ends).
  */
 export function PackHitlOverview({
   clearedSeatIds = [],
@@ -72,7 +71,7 @@ export function PackHitlOverview({
           Pack HITL×8
         </h2>
         <span className="text-[10px] text-slate-400">
-          过检才进审批 · Phase 灰显
+          过检才进审批 · ⑦⑧ 后置可跑
         </span>
       </div>
       <ol
@@ -83,26 +82,30 @@ export function PackHitlOverview({
         }
       >
         {PACK_HITL8.map((g) => {
-          const st = statusFor(g.seatId, g.phase, cleared, ready)
+          const st = statusFor(g.seatId, cleared, ready)
           const ui = STATUS_UI[st]
           const def = getProjectExpert(g.seatId)
           const href = projectId
             ? `/agent/projects/${projectId}/bots/${g.seatId}`
             : `/agent/seats/${g.seatId}`
-          const locked = st === 'phase_locked' || st === 'pending'
           return (
             <li key={g.n}>
               <Link
                 to={href}
                 className={`block rounded-md border px-2 py-1.5 transition hover:ring-1 hover:ring-violet-300 ${ui.className}`}
                 data-testid={`pack-hitl-${g.n}`}
-                aria-disabled={locked && g.phase ? true : undefined}
+                data-phase={g.phase ? 'true' : 'false'}
               >
                 <div className="flex items-center justify-between gap-1">
                   <span className="text-[10px] font-bold">
                     {['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'][g.n - 1]}
                   </span>
-                  <span className="text-[9px] uppercase tracking-wide">
+                  <span className="flex items-center gap-1 text-[9px] uppercase tracking-wide">
+                    {g.phase ? (
+                      <span className="rounded bg-slate-200/80 px-1 normal-case text-slate-600">
+                        后置
+                      </span>
+                    ) : null}
                     {ui.label}
                   </span>
                 </div>

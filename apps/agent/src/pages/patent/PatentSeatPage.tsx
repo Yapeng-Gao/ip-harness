@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import {
   COLD_START_BLOCKED,
@@ -16,14 +17,58 @@ const SHELL_DM_PROJECT = 'proj-demo-patent'
 
 /**
  * Mode A · 单聊 /agent/seats/:seatId
- * Phase seats → empty-state; others → chat + dual-file + mock validator.
+ * F7–F9 keep Phase badge but run full seat chrome (not empty-state dead-end).
  */
 export function PatentSeatPage() {
   const { seatId: raw } = useParams<{ seatId: string }>()
-  const { getProject, getThread } = useProjectFolder()
-  if (!raw) return <Navigate to="/agent" replace />
+  const { getProject, getThread, appendMessage, patchProject } =
+    useProjectFolder()
 
-  const seatId = resolveExpertId(raw) as ProjectExpertId
+  const seatId = raw ? (resolveExpertId(raw) as ProjectExpertId) : null
+  const validSeat =
+    !!seatId &&
+    (seatId in PATENT_EXPERTS || seatId === 'expert-search') &&
+    !COLD_START_BLOCKED.includes(seatId)
+
+  const def = useMemo(
+    () => (validSeat && seatId ? getProjectExpert(seatId) : null),
+    [validSeat, seatId],
+  )
+  const project = getProject(SHELL_DM_PROJECT)
+  const thread =
+    validSeat && seatId ? getThread(SHELL_DM_PROJECT, seatId) : undefined
+
+  useEffect(() => {
+    if (!validSeat || !seatId || !def || !project) return
+    if (!getThread(SHELL_DM_PROJECT, seatId)) {
+      appendMessage(SHELL_DM_PROJECT, seatId, {
+        role: 'system',
+        content: `【单聊就绪】${def.name} · 步骤条/剧本/双文件/validator 可跑（样机内存${def.phase ? ' · 后置业务' : ''}）`,
+        meta: { backend: 'mock' },
+      })
+    }
+    if (
+      def.phase &&
+      (def.hitlGates.includes('pay_unlock') ||
+        def.hitlGates.includes('confirm_quote')) &&
+      !project.caseId
+    ) {
+      patchProject(SHELL_DM_PROJECT, {
+        caseId: 'case-mock-pack-hf',
+        caseBindState: 'bound',
+      })
+    }
+  }, [
+    validSeat,
+    seatId,
+    def,
+    project,
+    getThread,
+    appendMessage,
+    patchProject,
+  ])
+
+  if (!raw || !seatId) return <Navigate to="/agent" replace />
   if (!(seatId in PATENT_EXPERTS) && seatId !== 'expert-search') {
     return <Navigate to="/agent" replace />
   }
@@ -37,49 +82,8 @@ export function PatentSeatPage() {
       </div>
     )
   }
+  if (!def) return <Navigate to="/agent" replace />
 
-  const def = getProjectExpert(seatId)
-
-  if (def.phase) {
-    return (
-      <div
-        className="flex min-h-0 flex-1 flex-col"
-        data-testid="patent-seat-phase-empty"
-      >
-        <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-500">
-          <Link to="/agent" className="underline">
-            Catalog
-          </Link>
-          <span>·</span>
-          <span>Phase 空态 · {def.name}</span>
-          <span className="rounded bg-slate-200 px-1.5 py-px font-semibold text-slate-600">
-            Phase
-          </span>
-        </div>
-        <div className="mx-auto max-w-xl flex-1 space-y-4 p-6">
-          <h1 className="text-lg font-semibold text-slate-900">{def.name}</h1>
-          <p className="text-sm leading-relaxed text-slate-600">
-            {def.emptyStateNote ??
-              '本席为 Pack Phase 席：名单已对齐，运行时未接线。'}
-          </p>
-          <ul className="list-disc space-y-1 pl-5 text-xs text-slate-500">
-            <li>id：{seatId}（mining≠intake · FTO≠enforcement）</li>
-            <li>无真沙箱 / OpenSandbox / harness</li>
-            <li>HITL×8 总览可见；本席对应闸灰显</li>
-          </ul>
-          <PackHitlOverview compact />
-          <Link
-            to="/agent"
-            className="inline-block rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
-          >
-            回 Catalog
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
-  const project = getProject(SHELL_DM_PROJECT)
   if (!project) {
     return (
       <div className="flex flex-1 items-center justify-center text-sm text-slate-500">
@@ -88,7 +92,6 @@ export function PatentSeatPage() {
     )
   }
 
-  const thread = getThread(SHELL_DM_PROJECT, seatId)
   const ready = thread?.pendingHitl ? [seatId] : []
 
   return (
@@ -99,6 +102,14 @@ export function PatentSeatPage() {
         </Link>
         <span>·</span>
         <span>单聊 · {def.name}</span>
+        {def.phase && (
+          <span
+            className="rounded bg-slate-200 px-1.5 py-px font-semibold text-slate-600"
+            data-testid="seat-phase-badge"
+          >
+            后置业务
+          </span>
+        )}
         {def.ownerLabel && (
           <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-px">
             Owner · {def.ownerLabel}

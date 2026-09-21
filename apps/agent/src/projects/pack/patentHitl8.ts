@@ -65,7 +65,7 @@ export const PACK_HITL8: PackHitlGate[] = [
     seatId: 'expert-annuity',
     gate: 'pay_unlock',
     phase: true,
-    note: 'F7 Phase · maintain_annuity 心智',
+    note: 'F7 后置可跑 · maintain_annuity 心智',
   },
   {
     n: 8,
@@ -73,7 +73,7 @@ export const PACK_HITL8: PackHitlGate[] = [
     seatId: 'expert-monetize',
     gate: 'confirm_quote',
     phase: true,
-    note: 'F8 Phase · monetize_terms 心智',
+    note: 'F8 后置可跑 · monetize_terms 心智',
   },
 ]
 

@@ -14,6 +14,7 @@ import {
   isOrchestratorExpert,
   orchestratorIdForProject,
 } from './experts'
+import { PATENT_CATALOG_IDS } from './expertsPatent'
 import {
   GENERAL_SHELL_ID,
   buildGeneralShellProject,
@@ -84,12 +85,13 @@ function buildDemo(): {
   dispatches: ProjectDispatch[]
 } {
   const shell = buildGeneralShellProject(nowIso())
-  const patentIds = expertIdsForKind('domain', 'patent')
+  // Pack HF: seed 16 seats + orch + FTO assist (all catalog) so DM/后置席有线程
+  const patentIds = [...PATENT_CATALOG_IDS]
   const generalIds = expertIdsForKind('general')
   const patent: AgentProject = {
     id: DEMO_PATENT_ID,
     title: '边缘调度模组 · 专利演示',
-    summary: '专利全链路：查新→立项→交底→撰写→制图→FTO→递交→OA',
+    summary: 'Pack 16+总控：主链 HITL①–⑥ + 后置 F7–F9 可跑样机',
     kind: 'domain',
     domainPackId: 'patent',
     caseBindState: 'none',
@@ -125,7 +127,7 @@ function buildDemo(): {
       projectId: patent.id,
       kind: 'project_created',
       title: '专利演示项目已种子',
-      detail: '专利全链路 · 九席焊死（含交底/递交/OA）',
+      detail: 'Pack 16 席+总控种子（含后置 F7–F9 可跑）',
       at: stamp(),
     },
     {

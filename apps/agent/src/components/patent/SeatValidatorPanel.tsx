@@ -32,7 +32,7 @@ export function SeatValidatorPanel({
   onPass,
   onHandoffAppend,
 }: Props) {
-  const { setThreadHitl, appendMessage, getThread } = useProjectFolder()
+  const { setThreadHitl, appendMessage, getThread, getProject, patchProject } = useProjectFolder()
   const [attempt, setAttempt] = useState(0)
   const [result, setResult] = useState<ValidatorResult | null>(null)
   const [envelope, setEnvelope] = useState<HandoffEnvelope | null>(null)
@@ -49,6 +49,18 @@ export function SeatValidatorPanel({
     if (r.pass) {
       onPass?.(r)
       if (projectId && packHitl) {
+        const proj = getProject(projectId)
+        if (
+          !proj?.caseId &&
+          (packHitl.gate === 'pay_unlock' ||
+            packHitl.gate === 'confirm_quote' ||
+            packHitl.gate === 'go_nogo')
+        ) {
+          patchProject(projectId, {
+            caseId: 'case-mock-pack-hf',
+            caseBindState: 'bound',
+          })
+        }
         setThreadHitl(projectId, expertId, true, packHitl.gate)
         appendMessage(projectId, expertId, {
           role: 'system',

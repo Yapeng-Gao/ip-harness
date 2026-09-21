@@ -51,6 +51,46 @@ const REQUIRED_CHAPTERS: Partial<
     spec: 'ideation',
     chapters: ['七问', '提案', '特征'],
   },
+  'expert-annuity': {
+    spec: 'maintain_annuity',
+    chapters: ['到期', '滞纳金', '缴费'],
+  },
+  'expert-valuation': {
+    spec: 'valuation_card',
+    chapters: ['证据', '评分', '分级'],
+  },
+  'expert-monetize': {
+    spec: 'monetize_terms',
+    chapters: ['估值', '条款', '校验'],
+  },
+  'expert-enforcement': {
+    spec: 'enforcement_brief',
+    chapters: ['映射', '覆盖', '回流'],
+  },
+  'expert-filing': {
+    spec: 'filing_checklist',
+    chapters: ['齐套', '形式', '闸'],
+  },
+  'expert-figure': {
+    spec: 'figure_list',
+    chapters: ['图号', '规范', '冻图'],
+  },
+  'expert-landscape': {
+    spec: 'landscape_report',
+    chapters: ['赛道', '空白', '结论'],
+  },
+  'expert-competitor': {
+    spec: 'competitor_watch',
+    chapters: ['对手', '威胁', '预警'],
+  },
+  'expert-inspire': {
+    spec: 'inspire_brief',
+    chapters: ['方向', '评分', '收敛'],
+  },
+  'expert-fto': {
+    spec: 'fto_memo',
+    chapters: ['特征', '障碍', '矩阵'],
+  },
 }
 
 /**

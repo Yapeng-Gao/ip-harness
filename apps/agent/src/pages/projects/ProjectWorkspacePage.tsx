@@ -15,6 +15,7 @@ import {
 import { CaseBindControls } from '../../components/case/CaseBindControls'
 import { PatentMidMapPanel } from '../../components/projects/PatentMidMapPanel'
 import { PackHitlOverview } from '../../components/patent/PackHitlOverview'
+import { PackHitlWalkBar } from '../../components/patent/PackHitlWalkBar'
 import { SeatValidatorPanel } from '../../components/patent/SeatValidatorPanel'
 import { hasMockValidator } from '../../projects/pack/patentValidator'
 
@@ -127,6 +128,7 @@ export function ProjectWorkspacePage() {
         {isPatent && (
           <div className="shrink-0 space-y-2 border-b border-slate-100 bg-slate-50/60 px-3 py-2">
             <PackHitlOverview compact projectId={projectId} />
+            <PackHitlWalkBar compact />
             {hasMockValidator(resolved) && (
               <SeatValidatorPanel expertId={resolved} projectId={projectId} />
             )}

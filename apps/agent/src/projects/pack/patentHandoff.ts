@@ -65,6 +65,34 @@ const CHAIN: {
     step: '递交 file → OA',
     acceptance: '仅总控在 file 后派 OA',
   },
+  {
+    from: 'expert-valuation',
+    to: 'expert-annuity',
+    flow: 'F7 授权后',
+    step: '价值 → 年费',
+    acceptance: '分级建议可支撑缴费/放弃',
+  },
+  {
+    from: 'expert-annuity',
+    to: 'expert-monetize',
+    flow: 'F7→F8',
+    step: '年费台账 → 转化',
+    acceptance: '组合价值可见后方可谈许可',
+  },
+  {
+    from: 'expert-monetize',
+    to: 'expert-enforcement',
+    flow: 'F8→F9',
+    step: '转化 → 维权备选',
+    acceptance: '交易边界清晰；维权独立席',
+  },
+  {
+    from: 'expert-enforcement',
+    to: 'expert-layout',
+    flow: 'F9→F3 飞轮',
+    step: '维权漏洞 → 布局',
+    acceptance: '回流信封到达布局策略师',
+  },
 ]
 
 let seq = 0
