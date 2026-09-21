@@ -1,7 +1,8 @@
 /**
  * 席双文件正文随 stepIndex 递增：每步追加「做了什么 / 产出片段」
- * 业务面工作台用；禁静态 sample 假推进感。
+ * 业务面 + L3 共用；禁静态 sample 假推进感。
  */
+import { projectToolLabel } from '../lib/stepChatFormat'
 import type { PatentDeliverable } from '../projects/patentDeliverables'
 import type { ExpertStepDef } from '../projects/types'
 
@@ -31,8 +32,13 @@ export function buildProgressiveArtifact(
       `### ${i + 1}. ${s.label}${s.triggersHitl ? ' · 待确认交卷' : ''}`,
     )
     lines.push(`本步做了什么：${s.script}`)
+    if (s.structuredBody) {
+      lines.push('')
+      lines.push(s.structuredBody.trimEnd())
+    }
     if (s.tool) {
-      lines.push(`产出片段：\`${s.tool.name}\` → ${s.tool.preview}`)
+      lines.push('')
+      lines.push(`产出片段：${projectToolLabel(s.tool.name)} · ${s.tool.preview}`)
     }
   }
   return lines.join('\n')
@@ -49,7 +55,8 @@ export function buildProgressiveWorklog(
     .map((s, i) => {
       const out = s.tool ? s.tool.preview : '—'
       const hitl = s.triggersHitl ? '待确认' : '完成'
-      return `| ${i + 1} | ${s.label} | ${s.script.slice(0, 48)} | ${out} | ${hitl} |`
+      const brief = s.script.slice(0, 48)
+      return `| ${i + 1} | ${s.label} | ${brief} | ${out} | ${hitl} |`
     })
     .join('\n')
   const extras: string[] = [
@@ -65,8 +72,12 @@ export function buildProgressiveWorklog(
     extras.push('')
     extras.push(`### 日志 · ${i + 1}. ${s.label}`)
     extras.push(`- 做了什么：${s.script}`)
+    if (s.structuredBody) {
+      extras.push('- 结构化产出：')
+      extras.push(s.structuredBody.trimEnd())
+    }
     if (s.tool) {
-      extras.push(`- 产出：${s.tool.name} · ${s.tool.preview}`)
+      extras.push(`- 产出：${projectToolLabel(s.tool.name)} · ${s.tool.preview}`)
     }
     if (s.triggersHitl) {
       extras.push('- 闸口：已交卷 · 待我确认')

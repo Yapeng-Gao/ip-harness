@@ -11,69 +11,12 @@ import type {
   ProjectExpertId,
 } from '../../projects/types'
 import { ExpertHitlBridge } from './ExpertHitlBridge'
-
-/** AFE-M-1 · human labels for project tool chips (API id → title / 高级) */
-const PROJECT_TOOL_LABELS: Record<string, string> = {
-  dispatch_task: '分派任务',
-  summarize_timeline: '汇总时间线',
-  open_expert_dm: '打开专家私信',
-  accept_dual_file: '验收双文件',
-  commercial_patent_search: '商业专利检索',
-  cluster_hits: '聚类命中',
-  draft_research_report: '起草调研报告',
-  bind_novelty: '绑定新颖性点',
-  draft_claims: '起草权利要求',
-  expand_dependent: '扩展从属权项',
-  check_support: '检查支持',
-  country_strategy: '国别策略',
-  extract_fto_features: '抽取 FTO 特征',
-  fto_hit_scan: 'FTO 命中扫描',
-  build_risk_matrix: '构建风险矩阵',
-  draft_fto_risk_card: '起草风险卡片',
-  draft_fto_report: '起草 FTO 报告',
-  web_skim: '资料速览',
-  note_cluster: '要点聚类',
-  outline_brief: '选题提纲',
-  draft_outline: '起草大纲',
-  expand_section: '扩写章节',
-  polish_tone: '润色语气',
-  lint_consistency: '一致性检查',
-  risk_checklist: '风险清单',
-  suggest_fix: '修改建议',
-  approve_strategy: '批准策略',
-  authorize_file: '授权递交',
-  confirm_quote: '确认报价',
-  request_changes: '退回修改',
-  parse_tech_points: '解析技术点',
-  propose_intake: '提议立项',
-  gather_tech_points: '汇集技术点',
-  structure_disclosure: '整理交底结构',
-  outline_embodiments: '实施例提纲',
-  pack_disclosure: '打包交底',
-  draft_abstract: '起草摘要',
-  list_needed_figures: '示意图清单',
-  check_jurisdiction: '国别齐套',
-  filing_checklist: '递交清单',
-  formality_scan: '形式审查点',
-  propose_authorize_file: '授权递交提案',
-  parse_oa_notice: '解析审查意见',
-  oa_strategy: 'OA答复策略',
-  draft_amendments: '起草修改对照',
-  draft_oa_response: '起草OA答复',
-  extract_invention_points: '抽取发明点',
-  score_invention: '发明点评分',
-  gather_figure_context: '收集附图上下文',
-  mock_sketch: '生成草图占位',
-  attach_chapter_event: '挂章事件',
-  canvas_placeholder: '画布占位',
-  version_figure: '附图版本',
-}
-
-function projectToolLabel(id: string): string {
-  if (PROJECT_TOOL_LABELS[id]) return PROJECT_TOOL_LABELS[id]
-  // never show snake_case to end users
-  return id.replace(/_/g, '·')
-}
+import { SeatMarkdownBody } from '../business/SeatMarkdownBody'
+import {
+  humanizeToolBubble,
+  parseRewindIntent,
+  projectToolLabel,
+} from '../../lib/stepChatFormat'
 
 type Props = {
   projectId: string
@@ -87,6 +30,7 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
     getThread,
     appendMessage,
     advanceStep,
+    rewindToStep,
     jumpToStep,
     dispatchToExpert,
     reportToProject,
@@ -133,7 +77,6 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
       meta: { backend: 'mock' },
     })
     setDraft('')
-    // mock echo from expert script (not shared chat)
     if (isOrchestratorExpert(expertId)) {
       appendMessage(projectId, expertId, {
         role: 'assistant',
@@ -141,9 +84,24 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
           '【总控】收到。请用下方「分派给…」快捷下发任务；我不会替专家跑领域剧本。',
         meta: { backend: 'mock' },
       })
-    } else {
-      advanceStep(projectId, expertId)
+      return
     }
+    const rewind = parseRewindIntent(text, steps)
+    if (rewind) {
+      const r = rewindToStep(projectId, expertId, rewind.stepIndex)
+      if (!r.ok) {
+        appendMessage(projectId, expertId, {
+          role: 'assistant',
+          content:
+            r.reason === 'forward'
+              ? `还没走到第 ${rewind.stepIndex + 1} 步，只能回到已经做过的步骤。`
+              : '没法回到那一步，请点上方已完成的步骤。',
+          meta: { backend: 'mock' },
+        })
+      }
+      return
+    }
+    advanceStep(projectId, expertId)
   }
 
   const onKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -235,14 +193,25 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
               <li key={s.id}>
                 <button
                   type="button"
-                  onClick={() => jumpToStep(projectId, expertId, s.id)}
+                  disabled={i > stepIndex}
+                  onClick={() => {
+                    if (i > stepIndex) return
+                    rewindToStep(projectId, expertId, i)
+                  }}
                   className={`btn-press focus-ring inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] ${
                     i === stepIndex
                       ? 'border-slate-900 bg-slate-900 text-white'
                       : i < stepIndex
-                        ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
-                        : 'border-slate-200 bg-white text-slate-600'
+                        ? 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                        : 'cursor-default border-slate-200 bg-white text-slate-400 opacity-70'
                   }`}
+                  title={
+                    i > stepIndex
+                      ? '尚未到达'
+                      : i === stepIndex
+                        ? `重跑「${s.label}」`
+                        : `回到「${s.label}」修改`
+                  }
                 >
                   {i < stepIndex ? '✓' : i + 1}
                   {s.label}
@@ -307,28 +276,42 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
 
       {/* Messages */}
       <div className="project-chat-messages min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-2">
-        {thread.messages.map((m) => (
+        {thread.messages.map((m) => {
+          const toolUi =
+            m.role === 'tool'
+              ? humanizeToolBubble(m.content, m.meta?.toolName)
+              : null
+          return (
           <div
             key={m.id}
             className={`max-w-[90%] rounded-lg px-3 py-2 text-sm leading-relaxed ${
               m.role === 'user'
                 ? 'ml-auto bg-slate-900 text-white'
                 : m.role === 'tool'
-                  ? 'border border-sky-200 bg-sky-50 font-mono text-[11px] text-sky-950'
+                  ? 'border border-sky-200 bg-sky-50 text-sky-950'
                   : m.role === 'system'
                     ? 'border border-slate-200 bg-slate-50 text-xs text-slate-600'
                     : 'border border-slate-200 bg-white text-slate-800'
             }`}
           >
-            {m.meta?.toolName && (
+            {toolUi ? (
               <div className="mb-0.5 text-[10px] font-semibold text-sky-700">
-                工具 · {projectToolLabel(String(m.meta.toolName))}
+                本步产出 · {toolUi.title}
               </div>
+            ) : null}
+            {m.role === 'assistant' ? (
+              <SeatMarkdownBody className="max-h-72 p-0 text-[13px]">
+                {m.content}
+              </SeatMarkdownBody>
+            ) : toolUi ? (
+              <p className="text-[13px] leading-relaxed">{toolUi.body}</p>
+            ) : (
+              <div className="whitespace-pre-wrap">{m.content}</div>
             )}
-            <div className="whitespace-pre-wrap">{m.content}</div>
             <div className="mt-1 text-[10px] opacity-60">{m.at}</div>
           </div>
-        ))}
+          )
+        })}
       </div>
 
       <ExpertHitlBridge

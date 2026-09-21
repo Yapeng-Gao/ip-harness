@@ -16,6 +16,10 @@ import {
 } from './experts'
 import { PATENT_CATALOG_IDS } from './expertsPatent'
 import {
+  formatStepAssistantContent,
+  formatStepToolContent,
+} from '../lib/stepChatFormat'
+import {
   GENERAL_SHELL_ID,
   buildGeneralShellProject,
   isGeneralShellId,
@@ -188,6 +192,15 @@ type ProjectFolderContextValue = {
     msg: Omit<ProjectChatMessage, 'id' | 'at'> & { at?: string },
   ) => void
   advanceStep: (projectId: string, expertId: ProjectExpertId) => void
+  /**
+   * 回退到已走过的步骤（含当前步重跑）。不可跳到未到达的步。
+   * 清 pendingHitl / artifactSubmitted，追加说明气泡并重放该步产出。
+   */
+  rewindToStep: (
+    projectId: string,
+    expertId: ProjectExpertId,
+    targetIndex: number,
+  ) => { ok: true; stepLabel: string; stepIndex: number } | { ok: false; reason: string }
   jumpToStep: (
     projectId: string,
     expertId: ProjectExpertId,
@@ -412,7 +425,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
           {
             id: uid('msg'),
             role: 'assistant',
-            content: step.script,
+            content: formatStepAssistantContent(step),
             at: stamp(),
             meta: { backend: 'mock', stepId: step.id },
           },
@@ -421,7 +434,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
           msgs.push({
             id: uid('msg'),
             role: 'tool',
-            content: `${step.tool.name}\n${step.tool.preview}`,
+            content: formatStepToolContent(step),
             at: stamp(),
             meta: {
               backend: 'mock',
@@ -473,11 +486,73 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     [pushStepMessages, threads],
   )
 
+  const rewindToStep = useCallback(
+    (
+      projectId: string,
+      expertId: ProjectExpertId,
+      targetIndex: number,
+    ):
+      | { ok: true; stepLabel: string; stepIndex: number }
+      | { ok: false; reason: string } => {
+      const def = getProjectExpert(expertId)
+      if (
+        !Number.isInteger(targetIndex) ||
+        targetIndex < 0 ||
+        targetIndex >= def.steps.length
+      ) {
+        return { ok: false, reason: 'invalid' }
+      }
+      const t = threads.find(
+        (x) => x.projectId === projectId && x.expertId === expertId,
+      )
+      const cur = t?.stepIndex ?? 0
+      if (targetIndex > cur) {
+        return { ok: false, reason: 'forward' }
+      }
+      const step = def.steps[targetIndex]!
+      updateThread(projectId, expertId, (th) => ({
+        ...th,
+        stepIndex: targetIndex,
+        pendingHitl: false,
+        pendingGate: undefined,
+        artifactSubmitted: false,
+        updatedAt: nowIso(),
+        messages: [
+          ...th.messages,
+          {
+            id: uid('msg'),
+            role: 'system',
+            content: `已回到第 ${targetIndex + 1} 步「${step.label}」· 该步之后的产出视为草稿，可改完再往下推进。`,
+            at: stamp(),
+            meta: { backend: 'mock', stepId: step.id },
+          },
+        ],
+      }))
+      setTimeline((prev) => [
+        ...prev,
+        {
+          id: uid('tl'),
+          projectId,
+          kind: 'step',
+          title: `${def.name} · 回退到「${step.label}」`,
+          detail: `从第 ${cur + 1} 步 → 第 ${targetIndex + 1} 步`,
+          at: stamp(),
+          expertId,
+        },
+      ])
+      // 重放该步助理/产出（在 system 说明之后）
+      pushStepMessages(projectId, expertId, targetIndex)
+      return { ok: true, stepLabel: step.label, stepIndex: targetIndex }
+    },
+    [pushStepMessages, threads, updateThread],
+  )
+
   const jumpToStep = useCallback(
     (projectId: string, expertId: ProjectExpertId, stepId: string) => {
       const def = getProjectExpert(expertId)
       const idx = def.steps.findIndex((s) => s.id === stepId)
       if (idx < 0) return
+      // 演示/脚本可任意跳；人点步骤条请用 rewindToStep（只许回退）
       pushStepMessages(projectId, expertId, idx)
     },
     [pushStepMessages],
@@ -1138,6 +1213,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       getDispatches,
       appendMessage,
       advanceStep,
+      rewindToStep,
       jumpToStep,
       dispatchToExpert,
       reportToProject,
@@ -1170,6 +1246,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       getDispatches,
       appendMessage,
       advanceStep,
+      rewindToStep,
       jumpToStep,
       dispatchToExpert,
       reportToProject,

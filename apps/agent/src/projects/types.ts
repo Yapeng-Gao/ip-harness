@@ -60,6 +60,8 @@ export type ExpertStepDef = {
   label: string
   script: string
   tool?: { name: string; preview: string }
+  /** 可扫读结构化片段（表/列表）· 进 progressive 双文件；会话仍用 script */
+  structuredBody?: string
   triggersHitl?: boolean
   hitlGate?: HitlGateId
 }
