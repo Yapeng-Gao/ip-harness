@@ -55,3 +55,6 @@
 见 [AGENT_SEAT_BOT_C.md](./AGENT_SEAT_BOT_C.md) · 截图 `agent-seat-bot-c/`。  
 默认 7 席同构 `BusinessSeatWorkbench`；群聊由占位升为 `/agent/cases/:caseId/room` 最小可进 + 多席互喊示意。
 
+## 案页三刀 IA（接续）
+
+壳布局收敛（两栏 · 单一主 CTA · 单一进度）见 [AGENT_BIZ_CASE_IA.md](./AGENT_BIZ_CASE_IA.md) · 权威 [agent-biz-case-ia.md](../architecture/product-apps/agent-biz-case-ia.md)。席=bot 口径不回退。

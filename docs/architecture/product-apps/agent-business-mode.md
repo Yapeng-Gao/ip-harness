@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21 · 案页三刀 IA）**：案内两栏 / 单一主 CTA / 单一进度 → [agent-biz-case-ia](./agent-biz-case-ia.md)。
 > **变更摘要（2026-09-21 · 席=bot）**：案子点席 = 独立席 bot 会话；详见 [agent-seat-as-bot](./agent-seat-as-bot.md)。叠开聊首页，不回退。
 > **变更摘要（2026-09-21 · 首页 IA）**：冷启动对齐 ChatGPT/Kimi/Grok——**主区=开新活空态**，**案子历史在侧栏**；禁止整页案子列表当首页。
 # 业务模式（Domain 收敛壳 · 先规格再样机）
@@ -5,7 +6,7 @@
 > **冻结（2026-09-21 · 总控开令）**：**先规格再样机**；本轮 **只 docs**，禁改 `apps/**`。  
 > **定位**：专利 **业务用户**主路径——「我的案子 + 该我批的确认」。是 **Domain Pack 的壳收敛**，不推翻 Pack 16 席 / HITL×8 权威。  
 > **消 4 痛**：认知负担 · Catalog 超市 · 样机泄漏 · Solo/Team/租户/总控噪音。  
-> **对齐**：[patent-pack-design](../domain-packs/patent-pack-design.md)（权威 · 含内/外循环）· [agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md)（环边样机三刀）· [agent-patent-shell](./agent-patent-shell.md)（专家/双文件）· [agent-seat-as-bot](./agent-seat-as-bot.md)（席=独立 bot 会话）· [agent-layers](./agent-layers.md)（双产品）· [agent-platform-gap](./agent-platform-gap.md)。  
+> **对齐**：[patent-pack-design](../domain-packs/patent-pack-design.md)（权威 · 含内/外循环）· [agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md)（环边样机三刀）· [agent-patent-shell](./agent-patent-shell.md)（专家/双文件）· [agent-seat-as-bot](./agent-seat-as-bot.md)（席=独立 bot 会话）· [agent-biz-case-ia](./agent-biz-case-ia.md)（案页三刀 IA）· [agent-layers](./agent-layers.md)（双产品）· [agent-platform-gap](./agent-platform-gap.md)。  
 > **样机诚实**：无真 LLM / 真 case-core / 真沙箱；进度与 Confirm **必须同源真闭环**（禁假阻塞、禁状态分叉）；端用户 **禁 mid 可点深链**。
 
 ---
@@ -110,7 +111,7 @@
 | **交卷** | → 本案「待我确认」；**确认后**主链进度才前进 |
 | **群聊** | 本案 L2 感入口与单席并存（可占位） |
 
-与旧「推进一步」：复用同一 `advanceSeatWork` / HITL store；推进降为会话内动作或次级快捷。权威规格：**[agent-seat-as-bot](./agent-seat-as-bot.md)**。
+与旧「推进一步」：复用同一 `advanceSeatWork` / HITL store；推进降为会话内动作或次级快捷。权威规格：**[agent-seat-as-bot](./agent-seat-as-bot.md)**。案页壳布局三刀（两栏 · 单一主 CTA · 单一进度）：**[agent-biz-case-ia](./agent-biz-case-ia.md)**。
 
 ---
 
@@ -194,6 +195,7 @@ Pack 16 + HITL×8     = 领域权威（不变）
 agent-patent-shell   = 专家/双文件/组队能力（降为「专家工作台」）
 agent-business-mode  = 业务收敛壳（本文 · /agent 默认）
 agent-seat-as-bot    = 案内席 = 独立 bot 会话（点席/交卷/HITL）
+agent-biz-case-ia    = 案内页两栏 / 单一主 CTA / 单一进度
 Solo/Team            = 通用沙盒旁路
 ```
 

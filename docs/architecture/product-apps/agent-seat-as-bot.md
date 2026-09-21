@@ -1,11 +1,12 @@
+> **变更摘要（2026-09-21 · 案页三刀）**：壳布局收敛见 [agent-biz-case-ia](./agent-biz-case-ia.md)；本文席=bot 口径不回退。
 > **变更摘要（2026-09-21 · 席=独立 bot）**：点子席 = **人↔席 bot 独立会话**（非主链 tab）；席工作面 = 会话主 + 成果/办理过程双文件；交卷 → 本案 HITL；确认后主链才前进。叠焊接/`faa7bd2` 推进 UX，**不回退**开聊首页。
 # 席 = 独立 bot 会话（业务案工作台 IA）
 
 > **冻结（2026-09-21）**：产品口径已钉；样机可连续做交底席样板。  
 > **范围**：`apps/agent` 业务案面；禁 Cloud；禁 mid/packages。  
 > **叠前序勿回退**：[agent-business-mode](./agent-business-mode.md) 开聊首页 · 席列表焊接 · [`faa7bd2`](../../ui-polish/AGENT_ADVANCE_UX.md) 双文件随步。  
-> **对齐**：[agent-business-mode](./agent-business-mode.md)（冷启动/7 席/待确认）· [agent-patent-shell](./agent-patent-shell.md)（双文件 `NN_*.md`）· [agent-l2-team](./agent-l2-team.md)（群聊感）· [agent-layers](./agent-layers.md)。  
-> **短记**：[AGENT_SEAT_AS_BOT](../../ui-polish/AGENT_SEAT_AS_BOT.md)。
+> **对齐**：[agent-business-mode](./agent-business-mode.md)（冷启动/7 席/待确认）· [agent-biz-case-ia](./agent-biz-case-ia.md)（案页三刀 IA）· [agent-patent-shell](./agent-patent-shell.md)（双文件 `NN_*.md`）· [agent-l2-team](./agent-l2-team.md)（群聊感）· [agent-layers](./agent-layers.md)。  
+> **短记**：[AGENT_SEAT_AS_BOT](../../ui-polish/AGENT_SEAT_AS_BOT.md) · 案页三刀：[AGENT_BIZ_CASE_IA](../../ui-polish/AGENT_BIZ_CASE_IA.md)。
 
 ---
 
@@ -120,4 +121,4 @@
 
 ## 8. Owner
 
-规格：架构 · 样机：Agent 应用（交底席样板见 ui-polish）· 互链 [agent-business-mode](./agent-business-mode.md)
+规格：架构 · 样机：Agent 应用（交底席样板见 ui-polish）· 互链 [agent-business-mode](./agent-business-mode.md) · [agent-biz-case-ia](./agent-biz-case-ia.md)
