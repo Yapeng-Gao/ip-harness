@@ -1,6 +1,7 @@
 # Agent 沙箱平台架构（正式稿）
 
 > **正式规格**（2026-09-21）。讨论纪要源稿：[incoming/agent-sandbox-platform-design.md](./incoming/agent-sandbox-platform-design.md)。  
+> **AgentOS v1.1 定稿快照（目标全景）**：[incoming/AgentOS-design-docs-v1.1/](./incoming/AgentOS-design-docs-v1.1/)（含平台 / Pack / 实现 / 线框 / 专家资产台账）。  
 > **产品面叠层**：[product-apps/agent-layers.md](./product-apps/agent-layers.md)（L1/L2/L3 入口决策不变；叠 Solo/Team/Domain 命名）。  
 > **专利 Domain Pack**：[domain-packs/patent-pack-design.md](./domain-packs/patent-pack-design.md) · [impl](./domain-packs/patent-pack-impl.md)。  
 > **样机诚实**：今日 `apps/agent` 为 Vite 壳 + mock 剧本；**无**真实沙箱、**无** Engine Driver、**无** dsh/Codex harness 接线。本文件描述目标平台，不等于已交付。
