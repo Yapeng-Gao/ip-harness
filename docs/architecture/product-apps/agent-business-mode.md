@@ -1,10 +1,11 @@
+> **变更摘要（2026-09-21 · 席=bot）**：案子点席 = 独立席 bot 会话；详见 [agent-seat-as-bot](./agent-seat-as-bot.md)。叠开聊首页，不回退。
 > **变更摘要（2026-09-21 · 首页 IA）**：冷启动对齐 ChatGPT/Kimi/Grok——**主区=开新活空态**，**案子历史在侧栏**；禁止整页案子列表当首页。
 # 业务模式（Domain 收敛壳 · 先规格再样机）
 
 > **冻结（2026-09-21 · 总控开令）**：**先规格再样机**；本轮 **只 docs**，禁改 `apps/**`。  
 > **定位**：专利 **业务用户**主路径——「我的案子 + 该我批的确认」。是 **Domain Pack 的壳收敛**，不推翻 Pack 16 席 / HITL×8 权威。  
 > **消 4 痛**：认知负担 · Catalog 超市 · 样机泄漏 · Solo/Team/租户/总控噪音。  
-> **对齐**：[patent-pack-design](../domain-packs/patent-pack-design.md)（权威 · 含内/外循环）· [agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md)（环边样机三刀）· [agent-patent-shell](./agent-patent-shell.md)（专家/双文件）· [agent-layers](./agent-layers.md)（双产品）· [agent-platform-gap](./agent-platform-gap.md)。  
+> **对齐**：[patent-pack-design](../domain-packs/patent-pack-design.md)（权威 · 含内/外循环）· [agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md)（环边样机三刀）· [agent-patent-shell](./agent-patent-shell.md)（专家/双文件）· [agent-seat-as-bot](./agent-seat-as-bot.md)（席=独立 bot 会话）· [agent-layers](./agent-layers.md)（双产品）· [agent-platform-gap](./agent-platform-gap.md)。  
 > **样机诚实**：无真 LLM / 真 case-core / 真沙箱；进度与 Confirm **必须同源真闭环**（禁假阻塞、禁状态分叉）；端用户 **禁 mid 可点深链**。
 
 ---
@@ -97,6 +98,22 @@
 
 ---
 
+## 2.1 案子工作台 · 席 = 独立 bot（钉死）
+
+进 `/agent/cases/:id` 后：**侧栏席列表**；**点席 = 该席独立会话**（人 ↔ 席 bot），不是切主链阶段 tab。
+
+| 席工作面 | 说明 |
+|----------|------|
+| **会话（主）** | 跟本席 bot 聊；脚本回合 mock；体感「它在干活/交卷」 |
+| **成果** | `NN_*.md` |
+| **办理过程** | `NN_*_worklog.md` |
+| **交卷** | → 本案「待我确认」；**确认后**主链进度才前进 |
+| **群聊** | 本案 L2 感入口与单席并存（可占位） |
+
+与旧「推进一步」：复用同一 `advanceSeatWork` / HITL store；推进降为会话内动作或次级快捷。权威规格：**[agent-seat-as-bot](./agent-seat-as-bot.md)**。
+
+---
+
 ## 3. 案子向导（主路径）
 
 **主 CTA**（首页空态）：`开一个新案子` → 向导（3～5 段）→ 进入案子工作台。  
@@ -176,6 +193,7 @@
 Pack 16 + HITL×8     = 领域权威（不变）
 agent-patent-shell   = 专家/双文件/组队能力（降为「专家工作台」）
 agent-business-mode  = 业务收敛壳（本文 · /agent 默认）
+agent-seat-as-bot    = 案内席 = 独立 bot 会话（点席/交卷/HITL）
 Solo/Team            = 通用沙盒旁路
 ```
 
@@ -185,7 +203,8 @@ Solo/Team            = 通用沙盒旁路
 
 ## 9. 验收（规格页）
 
-- [ ] `/agent` = **开新活空态**（非整页列表）；历史在**侧栏**；Catalog 在 `/agent/catalog`  
+- [ ] `/agent` = **开新活空态**（非整页列表）；历史在**侧栏**；Catalog 在 `/agent/catalog`
+- [ ] 案内点席 = 独立席 bot 会话（见 [agent-seat-as-bot](./agent-seat-as-bot.md)）；交卷→本案 HITL  
 - [ ] 默认 **恰好 7** 业务专家席 + 静默案子助手（不计）；「更多专家」折叠；有 Pack 16 对照  
 - [ ] 向导 3–5 段 + HITL 映射 + 主人话 CTA  
 - [ ] 「待我确认」信息架构完整  
