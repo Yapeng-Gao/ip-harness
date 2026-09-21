@@ -277,3 +277,23 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 | 六项复核 | 冷启动双钉 / mining≠intake / FTO≠layout / F9≠watch / HITL×8 / gap P0 —— **无回退、无新黄** |
 | 禁 apps | 本 tip 仅 docs |
 
+## B席轻扫 · 业务模式收敛壳（`2395e4c`）
+
+**扫范围**：`agent-business-mode.md` + layers/shell 顶注（仅 docs）。
+
+| 结论 | **条件Pass（Go-with-nits）** |
+|------|------------------------------|
+| `/agent`=我的案子 · Catalog 降级 | 过：业务冷启动钉死；`/agent/catalog`=专家工作台；shell §1 让位 |
+| 默认席 ⊂ Pack | 过：research/intake/disclosure/draft/figure/filing/oa + orchestrator 均在 Pack 矩阵；16 席对照收敛≠删 |
+| 向导 ↔ HITL×8 | 过：5 段映射 ①–⑥；⑦⑧ Phase；authorize/file 单列确认 |
+| 与 L1–L3 / Pack | 过：§8 层次清晰——Pack 权威 · shell=专家台 · business=业务收敛 · Solo/Team=沙盒 |
+| 样机纪律 | 过：Confirm 同源闭环；禁 mid；禁专家截入；禁 apps；诚实一句 |
+
+### 黄项（须消，不挡冻业务规格正文）
+
+1. **兄弟文 Catalog 冷启动残钉**：`agent-layers` 顶注/§文首仍写「专利冷启动=Catalog」且验收 checklist 未改「我的案子」；`agent-entry-modes` / `agent-platform.md` 索引行 / `agent-platform-gap`「专利=Catalog」未跟刀——与本文及 layers §3 表打架。
+2. **shell 关系句**：顶注已降为专家工作台，正文「关系」仍写「专利产品壳 IA **主规格**」——改「专家工作台规格」或「业务默认见 business-mode」。
+3. **席数口径轻黄**：「主链 7 席（含系统编排）」表为 #0–7 共 8 行，验收写「≤7 业务席」——钉死「业务露出 7 专家 + 隐式案子助手」以免实现数错。
+
+样机仍冻（另开令）。
+
