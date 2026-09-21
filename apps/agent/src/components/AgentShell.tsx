@@ -13,11 +13,14 @@ import { PersonaSwitcher } from '@shared/components/PersonaSwitcher'
 import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { AgentSessionSidebar } from './AgentSessionSidebar'
 import { PersonaRouteGate } from '@shared/components/PersonaRouteGate'
+import { PendingConfirmBell } from './business/PendingConfirmBell'
+import { useAgentDebug } from '../business/useAgentDebug'
 
 export function AgentShell() {
   const { workspace, getCase, getHandoff } = useApp()
   const { getSession } = useAgents()
   const loc = useLocation()
+  const debug = useAgentDebug()
   const [rightOpen, setRightOpen] = useState(false)
   /** P1-C · pending-confirm 首次进入自动展开上下文一次（视觉，不改 HITL） */
   const autoExpandedFor = useRef<string | null>(null)
@@ -87,10 +90,14 @@ export function AgentShell() {
 
   const inSession = loc.pathname.startsWith('/agent/sessions/')
   const inProjects = loc.pathname.startsWith('/agent/projects')
-  /** L1 single-assistant or L2 Grok team — own chrome; hide mail-like session inbox */
-  const inPatentCatalog =
+  const inBusiness =
     loc.pathname === '/agent' ||
     loc.pathname === '/agent/' ||
+    loc.pathname.startsWith('/agent/cases') ||
+    loc.pathname.startsWith('/agent/pending')
+  const inCatalog =
+    loc.pathname === '/agent/catalog' ||
+    loc.pathname.startsWith('/agent/catalog/') ||
     loc.pathname.startsWith('/agent/seats/')
   const inSandbox =
     loc.pathname === '/agent/sandbox' || loc.pathname.startsWith('/agent/sandbox/')
@@ -98,10 +105,11 @@ export function AgentShell() {
     loc.pathname === '/agent/team' ||
     loc.pathname.startsWith('/agent/team/') ||
     loc.pathname.startsWith('/agent/bots/')
-  const inPatentProject =
-    loc.pathname.startsWith('/agent/projects')
+  const inPatentProject = loc.pathname.startsWith('/agent/projects')
   const inGrokShell = inSandbox || inL2Shell
-  const inPatentShell = inPatentCatalog || inPatentProject
+  const inPatentShell = inCatalog || inPatentProject || inBusiness
+  /** 业务面默认隐藏租户/Persona；?debug=1 显示 */
+  const showTenantChrome = debug || inGrokShell || inCatalog
 
   return (
     <div className="app-shell-bg flex h-full flex-col overflow-hidden">
@@ -114,6 +122,7 @@ export function AgentShell() {
           inGrokShell ? '' : 'shadow-[var(--shadow-rest)]'
         }`}
         data-grok-chrome={inGrokShell ? '1' : '0'}
+        data-business-mode={inBusiness ? '1' : '0'}
       >
         <div className="flex items-center gap-2">
           <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[10px] font-semibold">
@@ -121,16 +130,20 @@ export function AgentShell() {
           </div>
           <div className="text-sm font-semibold tracking-tight text-slate-900">
             {inL2Shell
-              ? '团队 · 通用旁路'
+              ? '团队 · 旁路'
               : inSandbox
                 ? '通用沙盒'
-                : inPatentShell
-                  ? '专利 Agent'
-                  : '知产 Agent'}
+                : inCatalog
+                  ? '专家工作台'
+                  : inBusiness
+                    ? '我的案子'
+                    : inPatentShell
+                      ? '专利 Agent'
+                      : '知产 Agent'}
           </div>
         </div>
 
-        {!inGrokShell && (
+        {!inGrokShell && showTenantChrome && (
           <>
             <div className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
             <AgentWorkspaceMenu variant="topbar" />
@@ -151,7 +164,8 @@ export function AgentShell() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
-          {!inGrokShell && (
+          {(inBusiness || inCatalog || inPatentProject) && <PendingConfirmBell />}
+          {!inGrokShell && showTenantChrome && (
             <ProductSwitcher current="agent" size="md" className="hidden sm:grid" />
           )}
           {inSession && (
@@ -182,10 +196,10 @@ export function AgentShell() {
         </div>
       </header>
 
-      {/* P0: AgentBillingHoldBanner unmounted from shell chrome — no full-width amber on Home/Sessions/Projects */}
-
       <div className="flex min-h-0 flex-1">
-        {!inProjects && !inGrokShell && <AgentSessionSidebar />}
+        {!inProjects && !inGrokShell && !inBusiness && !inCatalog && (
+          <AgentSessionSidebar />
+        )}
 
         <main
           id="agent-main"

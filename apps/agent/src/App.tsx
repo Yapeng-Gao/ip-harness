@@ -12,6 +12,7 @@ import { AgentCatalogPage } from './pages/AgentCatalogPage'
 import { AgentHarnessOverview } from './pages/AgentHarnessOverview'
 import { ProjectFolderProvider } from './projects/ProjectFolderContext'
 import { GeneralBotsProvider } from './projects/GeneralBotsContext'
+import { BusinessCaseProvider } from './business/BusinessCaseContext'
 import { GeneralBotNewPage } from './pages/GeneralBotNewPage'
 import { ProjectListPage } from './pages/projects/ProjectListPage'
 import { ProjectWorkspacePage } from './pages/projects/ProjectWorkspacePage'
@@ -20,10 +21,18 @@ import { RedirectToAgentLab } from './pages/RedirectToAgentLab'
 import { PatentCatalogPage } from './pages/patent/PatentCatalogPage'
 import { PatentSeatPage } from './pages/patent/PatentSeatPage'
 import { PatentRoomPage } from './pages/patent/PatentRoomPage'
+import { BusinessCasesPage } from './pages/business/BusinessCasesPage'
+import { BusinessCaseNewPage } from './pages/business/BusinessCaseNewPage'
+import { BusinessCasePage } from './pages/business/BusinessCasePage'
+import {
+  PendingConfirmDetailPage,
+  PendingConfirmInboxPage,
+} from './pages/business/PendingConfirmPage'
 
 /**
- * Patent shell default (agent-patent-shell 25475b4):
- * /agent = Catalog; L1/L2 demoted to /agent/sandbox and /agent/team.
+ * Business mode (agent-business-mode c3fffe4):
+ * /agent = 我的案子；Catalog → /agent/catalog。
+ * Solo/Team 旁路保留。
  */
 export default function App() {
   return (
@@ -32,11 +41,19 @@ export default function App() {
         <ProductProvider>
           <ProjectFolderProvider>
           <GeneralBotsProvider>
+          <BusinessCaseProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Navigate to="/agent" replace />} />
               <Route path="/agent" element={<AgentShell />}>
-                <Route index element={<PatentCatalogPage />} />
+                <Route index element={<BusinessCasesPage />} />
+                <Route path="cases/new" element={<BusinessCaseNewPage />} />
+                <Route path="cases/:caseId" element={<BusinessCasePage />} />
+                <Route path="pending" element={<PendingConfirmInboxPage />} />
+                <Route path="pending/:confirmId" element={<PendingConfirmDetailPage />} />
+                <Route path="catalog" element={<PatentCatalogPage />} />
+                {/* 旧深链：冷启动曾是 Catalog */}
+                <Route path="experts" element={<Navigate to="/agent/catalog" replace />} />
                 <Route path="seats/:seatId" element={<PatentSeatPage />} />
                 <Route path="sandbox" element={<AgentL1Shell />} />
                 <Route path="team" element={<GeneralGrokShell />} />
@@ -62,6 +79,7 @@ export default function App() {
               <Route path="/agents/*" element={<Navigate to="/agent" replace />} />
             </Routes>
           </BrowserRouter>
+          </BusinessCaseProvider>
           </GeneralBotsProvider>
           </ProjectFolderProvider>
         </ProductProvider>

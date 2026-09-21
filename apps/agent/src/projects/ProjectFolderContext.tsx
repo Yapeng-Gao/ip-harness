@@ -160,6 +160,8 @@ type ProjectFolderContextValue = {
     domainPackId?: DomainPackId
     caseId?: string
     expertIds?: ProjectExpertId[]
+    /** optional stable id (business-mode seeds) */
+    id?: string
   }) => AgentProject
   roomMessages: RoomMessage[]
   appendRoomMessage: (
@@ -327,8 +329,11 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       domainPackId?: DomainPackId
       caseId?: string
       expertIds?: ProjectExpertId[]
+      id?: string
     }) => {
-      const id = uid('proj')
+      const id = input.id?.trim() || uid('proj')
+      const existing = projects.find((p) => p.id === id)
+      if (existing) return existing
       const kind = input.kind
       const domainPackId =
         kind === 'domain' ? (input.domainPackId ?? 'patent') : undefined
@@ -365,7 +370,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       ])
       return project
     },
-    [],
+    [projects],
   )
 
   const appendMessage = useCallback(

@@ -19,11 +19,11 @@ import {
 } from '../../projects/pack/patentHitlWalk'
 
 const GROUP_LABEL: Record<string, string> = {
-  orch: '总控',
+  orch: '案子助手（静默）',
   pre: '立项前簇（可选）',
   core: '主链路',
   assist: '辅席（建议勾 · FTO≠维权）',
-  phase: 'F7–F9 后置业务（可跑 · Phase 标签）',
+  phase: '后置业务（即将推出 / 可演示）',
 }
 
 /** Pack 16 业务席（不含总控 / 不含 FTO 辅席） */
@@ -47,7 +47,7 @@ const PACK16 = new Set<ProjectExpertId>([
 ])
 
 /**
- * Default /agent cold start — patent Catalog with Pack 16 + HITL×8.
+ * 专家工作台 · /agent/catalog（原 Catalog；非业务冷启动）
  */
 export function PatentCatalogPage() {
   const navigate = useNavigate()
@@ -96,7 +96,7 @@ export function PatentCatalogPage() {
   const onCreateTeam = (openRoom?: boolean) => {
     const p = createProject({
       title: title.trim() || '专利专班',
-      summary: `Catalog 组队 · ${teamIds.length} 席 · Pack16=${pack16Count}`,
+      summary: `专家工作台组队 · ${teamIds.length} 席 · 演示16=${pack16Count}`,
       kind: 'domain',
       domainPackId: 'patent',
       expertIds: teamIds,
@@ -111,7 +111,7 @@ export function PatentCatalogPage() {
   const openSeat = (id: ProjectExpertId) => {
     if (COLD_START_BLOCKED.includes(id)) {
       window.alert(
-        '禁止专家截入：递交/OA 须从建项目起，并由总控在 file 后派发。请先组成专班。',
+        '请先组成专班：递交与审查答复须从建项目起，由案子助手在递交完成后派发。',
       )
       return
     }
@@ -127,18 +127,16 @@ export function PatentCatalogPage() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">
-              专利专家 Catalog
+              专家工作台
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              16 个专家席 · 样机校验 · 人工确认×8 · 过程可见（成果 +
-              worklog）
+              16 个专家席 · 样机校验 · 待确认×8 · 成果 + 办理过程
             </p>
             <p
               className="mt-1 text-[11px] font-medium text-violet-700"
               data-testid="pack16-count"
             >
-              业务席名单 {pack16Count}/16（含 Phase）· mining≠intake ·
-              FTO≠无效维权
+              演示席 {pack16Count}/16 · 业务默认请回「我的案子」
             </p>
           </div>
           <div className="flex flex-wrap gap-2 text-[11px]">
@@ -153,14 +151,21 @@ export function PatentCatalogPage() {
               className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-slate-500"
               data-testid="patent-to-sandbox"
             >
-              通用沙盒 Solo（旁路）
+              通用沙盒（旁路）
             </Link>
             <Link
               to="/agent/team"
               className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-slate-500"
               data-testid="patent-to-team"
             >
-              Team（旁路）
+              团队旁路
+            </Link>
+            <Link
+              to="/agent"
+              className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 font-medium text-emerald-900"
+              data-testid="catalog-back-cases"
+            >
+              我的案子
             </Link>
           </div>
         </div>
@@ -210,8 +215,8 @@ export function PatentCatalogPage() {
           </Link>
         </div>
         <p className="mt-2 text-[11px] text-slate-400">
-          已选 {teamIds.length} 席（总控必选）· 后置席可勾选入队 ·
-          禁冷启动截入递交/OA · 端用户禁 mid 深链
+          已选 {teamIds.length} 席（案子助手必选）· 后置席可勾选入队 ·
+          禁冷启动截入递交/审查答复
         </p>
       </header>
 
