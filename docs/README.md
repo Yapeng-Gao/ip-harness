@@ -4,7 +4,7 @@
 
 | 文档 | 说明 |
 |------|------|
-| [../README.md](../README.md) | 仓简介 · 端口 · 快速开始 |
+| [../README.md](../README.md) | 仓简介 · **16 apps / 5 packages** · 端口对齐 `APP_PORTS` · 快速开始 |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | 分支 · PR · 自检 |
 | [TEAM_CHARTER.md](./TEAM_CHARTER.md) | 助手 Owner · 协作制 |
 
@@ -13,6 +13,10 @@
 | 文档 | 说明 |
 |------|------|
 | [architecture/README.md](./architecture/README.md) | 架构目录索引 · 已知裂缝表 |
+| [**PROTOTYPE_MASTER_PLAN.md**](./PROTOTYPE_MASTER_PLAN.md) | **原型总方案执行表**（已有/在建/待建 · 波次 · 端口） |
+| [**SCHEME_WAVE.md**](./SCHEME_WAVE.md) | **方案波**（停原型 · 检索数据面 · 模型训练） |
+| [architecture/e2e-hunt/](./architecture/e2e-hunt/README.md) | **e2e 猎虫 Harness**（通用层 + Adapter；≠ L0/L1） |
+| [**DEMO_PLAYBOOK.md**](./DEMO_PLAYBOOK.md) | **原型演示剧本**（search→篮→FTO · 策略 A） |
 | [architecture/codebase.md](./architecture/codebase.md) | **代码架构 / 目录地图 / 分层** |
 | [architecture/data-flow.md](./architecture/data-flow.md) | 多壳读写数据流 |
 | [architecture/data-model.md](./architecture/data-model.md) | 数据模型与包归属 |
@@ -21,6 +25,8 @@
 | [architecture/enterprise/README.md](./architecture/enterprise/README.md) | 企业级后端 + Agent 平台（C 混合 / DSH 和或 Codex + 自有闸；见 [agent-runtime-options](./architecture/enterprise/agent-runtime-options.md)） |
 | [architecture/dev-spec/README.md](./architecture/dev-spec/README.md) | **开发前规格包**（照文档开 PR：拓扑 / 落地表 / 冻 URL / 构建 / ADR） |
 | [architecture/product-apps/README.md](./architecture/product-apps/README.md) | **产品面规格**（五壳对照 · workbench 节点是否拆 app · Agent/工具/插件 · 横切） |
+| [architecture/ai-infra/README.md](./architecture/ai-infra/README.md) | **AI Infra**（≠ ops：训推基建 · 建议壳 :5179） |
+| [architecture/ai-data/README.md](./architecture/ai-data/README.md) | **AI Data**（≠ ops/ai-infra：数据 Pipeline · 建议壳 :5181） |
 | [architecture/ops-observability.md](./architecture/ops-observability.md) | 运维可观测（样机） |
 | [architecture/repos-and-vcs.md](./architecture/repos-and-vcs.md) | 单仓→多仓策略 |
 

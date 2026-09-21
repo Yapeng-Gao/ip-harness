@@ -21,19 +21,23 @@
 
 ## 本地
 
+完整项目清单、端口（对齐 `APP_PORTS`）与全部 `dev:*` 见根 [`README.md`](./README.md)。
+
 ```bash
 git clone git@github.com:Yapeng-Gao/ip-harness.git
 cd ip-harness
 git checkout dev
 npm install
 npm run dev:mid          # :5173
-# 需要联调时再开
+# 推荐联调
 npm run dev:workbench    # :5174
 npm run dev:agent        # :5175
-npm run dev:ops          # :5176
-npm run dev:iam          # :5177
-npm run dev:api          # :5180
+# 可选
+npm run dev:api          # :5180 api-mock
+# 其余并行样机：dev:doc-harness / ai-infra / ai-data / search / fto / mining / inspire / landscape / figure / search-api
 ```
+
+端口权威源：[`packages/contracts/src/ports.ts`](./packages/contracts/src/ports.ts)。
 
 ## 提交前自检
 
