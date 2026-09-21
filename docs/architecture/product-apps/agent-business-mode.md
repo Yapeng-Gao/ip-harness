@@ -3,7 +3,7 @@
 > **冻结（2026-09-21 · 总控开令）**：**先规格再样机**；本轮 **只 docs**，禁改 `apps/**`。  
 > **定位**：专利 **业务用户**主路径——「我的案子 + 该我批的确认」。是 **Domain Pack 的壳收敛**，不推翻 Pack 16 席 / HITL×8 权威。  
 > **消 4 痛**：认知负担 · Catalog 超市 · 样机泄漏 · Solo/Team/租户/总控噪音。  
-> **对齐**：[patent-pack-design](../domain-packs/patent-pack-design.md)（权威）· [agent-patent-shell](./agent-patent-shell.md)（专家/双文件）· [agent-layers](./agent-layers.md)（双产品）· [agent-platform-gap](./agent-platform-gap.md)。  
+> **对齐**：[patent-pack-design](../domain-packs/patent-pack-design.md)（权威 · 含内/外循环）· [agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md)（环边样机三刀）· [agent-patent-shell](./agent-patent-shell.md)（专家/双文件）· [agent-layers](./agent-layers.md)（双产品）· [agent-platform-gap](./agent-platform-gap.md)。  
 > **样机诚实**：无真 LLM / 真 case-core / 真沙箱；进度与 Confirm **必须同源真闭环**（禁假阻塞、禁状态分叉）；端用户 **禁 mid 可点深链**。
 
 ---
@@ -141,7 +141,7 @@
 3. **禁专家截入**：未立项完成不得进递交/OA；OA 仅「已递交」后。  
 4. **禁 mid 可点深链**给业务用户。  
 5. **样机诚实一句**（页脚或关于）：「演示环境：进度与确认为样机闭环，非真递交局端。」  
-6. 双文件心智可保留在专家工作台；业务默认先看**成果**，过程折叠。
+6. 双文件心智可保留在专家工作台；业务默认先看**成果**，过程折叠。Pack **环边**（退回修改/再查一轮/下一通）业务用人话；专家台可见过程——见 [agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md)。
 
 ---
 

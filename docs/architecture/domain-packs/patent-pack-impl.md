@@ -1,7 +1,7 @@
 # 专利 Domain Pack · 实现蓝图（正式稿）
 
-> **正式规格**（2026-09-21）。源稿：[../incoming/patent-domain-pack-impl.md](../incoming/patent-domain-pack-impl.md)。  
-> 设计规格：[patent-pack-design.md](./patent-pack-design.md)。平台：[../agent-platform.md](../agent-platform.md)。  
+> **正式规格**（2026-09-21 · 补内/外循环表达）。源稿：[../incoming/patent-domain-pack-impl.md](../incoming/patent-domain-pack-impl.md)。  
+> 设计规格：[patent-pack-design.md](./patent-pack-design.md)（含 Loop 总索引）。环边样机：[agent-pack-loops-roadmap](../product-apps/agent-pack-loops-roadmap.md)。平台：[../agent-platform.md](../agent-platform.md)。  
 > **本轮纪律**：**无**在 `packages/**` / `apps/**` 落地真代码；本文为装配蓝图与排期，供评审与后续施工。  
 > **样机诚实**：今日 Vite 样机用 mock 剧本，**无** BotRuntime / FlowEngine / 真 validator。
 
@@ -47,6 +47,34 @@ patent-pack/                    # 未来可落 packages/ 或独立 pack 仓；�
 | `driver.release` | finally 销毁 |
 
 Driver 来自平台层（lease/stream/collect/release/pause/resume），见 [agent-platform](../agent-platform.md)。
+
+---
+
+## 1.1 内循环 vs 外循环（BotRuntime / FlowEngine 表达）
+
+> **蓝图 only**；本轮不在 `packages/**` 落真代码。与 [patent-pack-design §0.2 / §5.4](./patent-pack-design.md) 对齐。
+
+| 概念 | 谁表达 | 机制（契约级） | 退出 |
+|------|--------|----------------|------|
+| **内循环** | **BotRuntime** | 同一 bot · 同一 lease：`max_steps` turn budget + `validate` → Issue 注入 → 原地重跑（`max_retries`，典型 ≤3）；追问类用消息循环（如交底 ≤5） | 过检 → `Handoff.deliver`；超限 → `escalate`（不静默重跑） |
+| **外循环** | **FlowEngine** | 跨 bot / 跨步骤 / 跨 Run 的图边 | 见下表各边 |
+
+**外循环边（FlowEngine）**：
+
+| 边 | 触发 | 表达 | 备注 |
+|----|------|------|------|
+| HITL 驳回 | `hitl_rejected` + 批注 | pause→注入批注→**重跑同一步**（attempts++） | 人工控制上限 |
+| feedback 退回 | 下游 `type: feedback` 信封 | 退回指定上游 step；可换沙箱新 lease | 如附图→撰写术语差集 |
+| 查新不乐观回流 | HITL④ 不乐观 | 新信封 / 跳转 F2 或 F3（换方向/调布局） | 跨 Flow |
+| OA **N 通** | 新通知书到达 | **新 Run** 或同 Flow 计数器 `oa_pass++` 回到理由分类节点 | 法定程序结束于授权/驳回 |
+| 超范围 blocker | 不得超范围检查失败 | **`max_retries=0`** → 直接 escalate | 红线，禁止自修复当内循环用 |
+| F9→F3 飞轮 | 维权/无效事件 | feedback 信封 → 布局策略师；可跨年度 | Phase 可后落 |
+| 全局熔断 | `iterations≥8` / token / deadline | Suspended → 人工兜底 | **禁静默重跑**（递交有副作用） |
+
+**一句话**：内循环 = BotRuntime 的 turn + validator retry；外循环 = FlowEngine 的 Handoff feedback 边 / 新 Run / HITL reject 回边 / N-pass 计数 / F9→F3 信封。
+
+样机三刀（mock，无真沙箱）：[agent-pack-loops-roadmap](../product-apps/agent-pack-loops-roadmap.md)。
+
 
 ---
 

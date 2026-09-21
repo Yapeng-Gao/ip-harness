@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21 · 环边三刀）**：[agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md) = Pack 内/外循环样机派工。  
 > **变更摘要（2026-09-21 · 业务模式）**：[agent-business-mode](./agent-business-mode.md) = 专利业务冷启动（我的案子）。  
 > **变更摘要（2026-09-21）**：索引补 **agent-platform** · **domain-packs** · **agent-platform-gap**；Solo/Team/Domain 叠名见 [agent-layers](./agent-layers.md)。
 # 产品面规格（product-apps）
@@ -24,6 +25,7 @@
 | L2 团队互通 | [agent-l2-team.md](./agent-l2-team.md) | bot 自发消息；协作任务样机；仅 /agent/team |
 | L3 专利 bot | [agent-l3-patent.md](./agent-l3-patent.md) | 固定专家；产出↔中台；仅项目模式 |
 | **业务模式** | [agent-business-mode.md](./agent-business-mode.md) | **业务冷启动**：我的案子+向导+待确认；Catalog 降级 |
+| **Pack 环边三刀** | [agent-pack-loops-roadmap.md](./agent-pack-loops-roadmap.md) | F5 内循环+跨席 · F6 OA N通 · F9→F3；样机无真沙箱 |
 | 专利 Agent 壳（专家台） | [agent-patent-shell.md](./agent-patent-shell.md) | 专家工作台/双文件；路由 `/agent/catalog` |
 | **平台差距表** | [agent-platform-gap.md](./agent-platform-gap.md) | 样机 ↔ Solo/Team/Domain+Pack 目标；**样机本轮未动** |
 | 专利席花名册副本 | [patent-drill-ref/](./patent-drill-ref/) | SEAT_ROSTER / OWNER 矩阵 / PROCESS_VISIBILITY |

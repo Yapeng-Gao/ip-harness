@@ -1,7 +1,7 @@
 # Agent 平台 · 样机 ↔ 目标规格差距
 
 > **冻结（2026-09-21）**：本轮 **只冻文档**；**样机未动**（`apps/agent` / 相关 packages **零改**）。  
-> **业务壳**：[agent-business-mode](./agent-business-mode.md)（文档已开；样机另令）。  
+> **业务壳**：[agent-business-mode](./agent-business-mode.md)（文档已开；样机另令）。**环边三刀**：[agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md)（F5/F6/飞轮 · 无真沙箱）。  
 > 目标规格：[../agent-platform.md](../agent-platform.md) · [../domain-packs/](../domain-packs/) · 壳 IA [agent-patent-shell](./agent-patent-shell.md)。  
 > 用途：评审差距与下一刀前置条件；**不是**本轮实现清单。
 
@@ -40,10 +40,11 @@
 ## 3. 建议下一刀顺序
 
 ```text
-1. 文档评审通过（本轮产出）
-2. 样机内 mock validator（仍无真沙箱：对双文件/产物做 schema 检查示意）
-3. 真沙箱 + Driver POC（OpenSandbox 开发线；假设验证清单回填）
-4. Pack 主链节点接线（查新→立项→交底→撰写…）；F7–F9 Phase
+1. 文档评审通过（本轮产出 · 含内/外循环正式稿）
+2. 环边样机三刀（见 agent-pack-loops-roadmap；仍无真沙箱）
+3. 样机内 mock validator（对双文件/产物做 schema 检查示意）
+4. 真沙箱 + Driver POC（OpenSandbox 开发线；假设验证清单回填）
+5. Pack 主链节点接线（查新→立项→交底→撰写…）；F7–F9 Phase
 ```
 
 **前置条件（再动样机 / 平台代码前）**：

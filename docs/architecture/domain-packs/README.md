@@ -8,7 +8,7 @@
 
 | 篇 | 路径 | 内容 |
 |----|------|------|
-| 专利 Pack · 设计 | [patent-pack-design.md](./patent-pack-design.md) | F1–F9 · 16 席 · 五层逻辑 · HITL×8 · Handoff · egress |
+| 专利 Pack · 设计 | [patent-pack-design.md](./patent-pack-design.md) | F1–F9 · 16 席 · **内/外循环** · Loop 总索引 · HITL×8 · Handoff · egress |
 | 专利 Pack · 实现蓝图 | [patent-pack-impl.md](./patent-pack-impl.md) | BotRuntime / FlowEngine / validator / YAML 装配 · 四原型 · 排期 |
 | 讨论源稿 | [../incoming/](../incoming/) | 未删；文首指针指向正式稿 |
 
@@ -17,6 +17,8 @@
 | 产品面 | 关系 |
 |--------|------|
 | [agent-patent-shell](../product-apps/agent-patent-shell.md) | 专利壳 IA；当前 Catalog 为 Pack **子集/过渡** |
+| [agent-business-mode](../product-apps/agent-business-mode.md) | 业务冷启动（我的案子）；环边用人话，不暴露 Pack 黑话 |
+| [agent-pack-loops-roadmap](../product-apps/agent-pack-loops-roadmap.md) | **环边三刀**：F5 内循环+跨席 · F6 N通 · F9→F3（样机无真沙箱） |
 | [agent-l3-patent](../product-apps/agent-l3-patent.md) | 中台 STAGE / HandoffArtifactKey 映射 |
 | [agent-platform-gap](../product-apps/agent-platform-gap.md) | 样机 ↔ Pack 目标差距 |
 
