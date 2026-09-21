@@ -3,6 +3,91 @@
  * Shell-local paths — not packages/contracts keys (except known handoffs).
  */
 import type { ProjectExpertId } from './types'
+import {
+  RESEARCH_SAMPLE_ARTIFACT,
+  RESEARCH_SAMPLE_WORKLOG_CHOICES,
+  RESEARCH_SAMPLE_WORKLOG_STEPS,
+} from './pack/researchDepth'
+import {
+  INTAKE_SAMPLE_ARTIFACT,
+  INTAKE_SAMPLE_WORKLOG_CHOICES,
+  INTAKE_SAMPLE_WORKLOG_STEPS,
+} from './pack/intakeDepth'
+import {
+  DRAFT_SAMPLE_ARTIFACT,
+  DRAFT_SAMPLE_WORKLOG_CHOICES,
+  DRAFT_SAMPLE_WORKLOG_STEPS,
+} from './pack/draftDepth'
+import {
+  DISCLOSURE_SAMPLE_ARTIFACT,
+  DISCLOSURE_SAMPLE_WORKLOG_CHOICES,
+  DISCLOSURE_SAMPLE_WORKLOG_STEPS,
+} from './pack/disclosureDepth'
+import {
+  FIGURE_SAMPLE_ARTIFACT,
+  FIGURE_SAMPLE_WORKLOG_CHOICES,
+  FIGURE_SAMPLE_WORKLOG_STEPS,
+} from './pack/figureDepth'
+import {
+  FILING_SAMPLE_ARTIFACT,
+  FILING_SAMPLE_WORKLOG_CHOICES,
+  FILING_SAMPLE_WORKLOG_STEPS,
+} from './pack/filingDepth'
+import {
+  OA_SAMPLE_ARTIFACT,
+  OA_SAMPLE_WORKLOG_CHOICES,
+  OA_SAMPLE_WORKLOG_STEPS,
+} from './pack/oaDepth'
+import {
+  LANDSCAPE_SAMPLE_ARTIFACT,
+  LANDSCAPE_SAMPLE_WORKLOG_CHOICES,
+  LANDSCAPE_SAMPLE_WORKLOG_STEPS,
+} from './pack/landscapeDepth'
+import {
+  INSPIRE_SAMPLE_ARTIFACT,
+  INSPIRE_SAMPLE_WORKLOG_CHOICES,
+  INSPIRE_SAMPLE_WORKLOG_STEPS,
+} from './pack/inspireDepth'
+import {
+  COMPETITOR_SAMPLE_ARTIFACT,
+  COMPETITOR_SAMPLE_WORKLOG_CHOICES,
+  COMPETITOR_SAMPLE_WORKLOG_STEPS,
+} from './pack/competitorDepth'
+import {
+  MINING_SAMPLE_ARTIFACT,
+  MINING_SAMPLE_WORKLOG_CHOICES,
+  MINING_SAMPLE_WORKLOG_STEPS,
+} from './pack/miningDepth'
+import {
+  LAYOUT_SAMPLE_ARTIFACT,
+  LAYOUT_SAMPLE_WORKLOG_CHOICES,
+  LAYOUT_SAMPLE_WORKLOG_STEPS,
+} from './pack/layoutDepth'
+import {
+  FTO_SAMPLE_ARTIFACT,
+  FTO_SAMPLE_WORKLOG_CHOICES,
+  FTO_SAMPLE_WORKLOG_STEPS,
+} from './pack/ftoDepth'
+import {
+  ANNUITY_SAMPLE_ARTIFACT,
+  ANNUITY_SAMPLE_WORKLOG_CHOICES,
+  ANNUITY_SAMPLE_WORKLOG_STEPS,
+} from './pack/annuityDepth'
+import {
+  VALUATION_SAMPLE_ARTIFACT,
+  VALUATION_SAMPLE_WORKLOG_CHOICES,
+  VALUATION_SAMPLE_WORKLOG_STEPS,
+} from './pack/valuationDepth'
+import {
+  MONETIZE_SAMPLE_ARTIFACT,
+  MONETIZE_SAMPLE_WORKLOG_CHOICES,
+  MONETIZE_SAMPLE_WORKLOG_STEPS,
+} from './pack/monetizeDepth'
+import {
+  ENFORCEMENT_SAMPLE_ARTIFACT,
+  ENFORCEMENT_SAMPLE_WORKLOG_CHOICES,
+  ENFORCEMENT_SAMPLE_WORKLOG_STEPS,
+} from './pack/enforcementDepth'
 
 export type PatentDeliverable = {
   expertId: ProjectExpertId
@@ -24,13 +109,16 @@ const base = (
   title: string,
   steps: string,
   choices: string,
+  sampleArtifact?: string,
 ): PatentDeliverable => ({
   expertId,
   artifactKey,
   nn,
   artifactFile: `${nn}_${artifactKey}.md`,
   worklogFile: `${nn}_${artifactKey}_worklog.md`,
-  sampleArtifact: `# ${title}\n\n> 样机成果 · 非真案卷\n\n## 摘要\n边缘调度模组相关产出占位。\n\n## 正文\n（假数据）关键结论与交付结构见本席剧本步骤。\n`,
+  sampleArtifact:
+    sampleArtifact ??
+    `# ${title}\n\n> 样机成果 · 非真案卷\n\n## 摘要\n边缘调度模组相关产出占位。\n\n## 正文\n（假数据）关键结论与交付结构见本席剧本步骤。\n`,
   sampleWorklog: `# 工作过程 · ${title} · ${artifactKey}\n\n| 案号 | 版本 | HITL |\n|------|------|------|\n| mock-demo | v0 | 样机 |\n\n## 1. 收到什么\n- 上游：主题/分派摘要（mock）\n\n## 2. 目标与成功标准\n- 交齐成果 + 本 worklog\n\n## 3. 步骤时间线\n${steps}\n\n## 4. 关键取舍\n${choices}\n\n## 5. 证据与材料\n- 样机摘录 · 可核验占位\n\n## 6. 卡点与求助\n- 无（演示）\n\n## 7. 交给下家什么\n- 过程见 \`${nn}_${artifactKey}_worklog.md\`\n`,
 })
 
@@ -49,136 +137,153 @@ export const PATENT_DELIVERABLES: Record<string, PatentDeliverable> = {
     '01',
     'landscape_report',
     '产业全景',
-    '| 1 | 定赛道 | 主题 | 边界清楚 | — |\n| 2 | 画全景 | 公开情报 | 支撑立项 | — |',
-    '| 宽赛道 | 窄赛道 | 窄 | 可执行 |',
+    LANDSCAPE_SAMPLE_WORKLOG_STEPS,
+    LANDSCAPE_SAMPLE_WORKLOG_CHOICES,
+    LANDSCAPE_SAMPLE_ARTIFACT,
   ),
   'expert-inspire': base(
     'expert-inspire',
     '02',
     'inspire_brief',
     '创新激发',
-    '| 1 | 吃全景 | 01 | 方向池 | — |\n| 2 | 收敛 | 可专利性 | 2～3 方向 | — |',
-    '| 发散多点 | 收敛 3 | 收敛 | 可挖 |',
+    INSPIRE_SAMPLE_WORKLOG_STEPS,
+    INSPIRE_SAMPLE_WORKLOG_CHOICES,
+    INSPIRE_SAMPLE_ARTIFACT,
   ),
   'expert-competitor': base(
     'expert-competitor',
     '03',
     'competitor_watch',
     '竞品监控',
-    '| 1 | 名单 | 全景 | Top 对手 | — |\n| 2 | 威胁分级 | 公开专利 | 高/中/低 | — |',
-    '| 全覆盖 | 聚焦威胁 | 聚焦 | 可转挖 |',
+    COMPETITOR_SAMPLE_WORKLOG_STEPS,
+    COMPETITOR_SAMPLE_WORKLOG_CHOICES,
+    COMPETITOR_SAMPLE_ARTIFACT,
   ),
   'expert-mining': base(
     'expert-mining',
     '04',
     'mining_pack',
     '专利挖掘',
-    '| 1 | 收上游 | 01–03 | 技术点 | — |\n| 2 | 拆提案 | 特征 | mining_pack | — |',
-    '| 单提案 | 多提案 | 2～3 | 可布局 |',
+    MINING_SAMPLE_WORKLOG_STEPS,
+    MINING_SAMPLE_WORKLOG_CHOICES,
+    MINING_SAMPLE_ARTIFACT,
   ),
   'expert-layout': base(
     'expert-layout',
     '05',
     'layout_plan',
     '专利布局',
-    '| 1 | 吃挖掘 | 04 | 主从案 | — |\n| 2 | 保护网 | 国别/族 | layout_plan | — |',
-    '| 单案 | 主从网 | 主从 | 可查新 |',
+    LAYOUT_SAMPLE_WORKLOG_STEPS,
+    LAYOUT_SAMPLE_WORKLOG_CHOICES,
+    LAYOUT_SAMPLE_ARTIFACT,
   ),
   'expert-research': base(
     'expert-research',
     '06',
     'research_report',
     '检索员（查新暨三性）',
-    '| 1 | 检索式 | 挖掘/布局 | 式子 | — |\n| 2 | 命中筛选 | DB | TopN | — |\n| 3 | 三性意见 | 对比 | research_report | — |',
-    '| 宽式 | 缩限 | 缩限 | 可立项 |',
+    RESEARCH_SAMPLE_WORKLOG_STEPS,
+    RESEARCH_SAMPLE_WORKLOG_CHOICES,
+    RESEARCH_SAMPLE_ARTIFACT,
   ),
   'expert-intake': base(
     'expert-intake',
     '07',
     'intake_quote',
     '立项决策',
-    '| 1 | 吃 01–06 | 上游 | Go 论据 | — |\n| 2 | go_nogo | HITL | 范围 | — |',
-    '| No-Go | Go | Go（演示） | 可交底 |',
+    INTAKE_SAMPLE_WORKLOG_STEPS,
+    INTAKE_SAMPLE_WORKLOG_CHOICES,
+    INTAKE_SAMPLE_ARTIFACT,
   ),
   'expert-disclosure': base(
     'expert-disclosure',
     '08',
     'disclosure_pack',
     '交底整理',
-    '| 1 | 收技术点 | 立项+查新 | 要点 | — |\n| 2 | 结构 | 背景/方案 | disclosure_pack | — |',
-    '| 发明人口述原样 | 结构化 | 结构化 | 可撰写 |',
+    DISCLOSURE_SAMPLE_WORKLOG_STEPS,
+    DISCLOSURE_SAMPLE_WORKLOG_CHOICES,
+    DISCLOSURE_SAMPLE_ARTIFACT,
   ),
   'expert-draft': base(
     'expert-draft',
     '09',
     'draft_claims',
     '撰写代理师',
-    '| 1 | 特征表 | 交底 | 必要集 | — |\n| 2 | 权要+说明书 | 规划 | draft_claims | — |',
-    '| 宽独权 | 缩限 | 缩限 | 可制图/FTO |',
+    DRAFT_SAMPLE_WORKLOG_STEPS,
+    DRAFT_SAMPLE_WORKLOG_CHOICES,
+    DRAFT_SAMPLE_ARTIFACT,
   ),
   'expert-figure': base(
     'expert-figure',
     '10',
     'figure_list',
     '制图对接',
-    '| 1 | 图号需求 | 撰写 | 清单 | — |\n| 2 | 冻图号 | 核对 | figure_list | — |',
-    '| 先画后号 | 先号后冻 | 先号 | 可递交 |',
+    FIGURE_SAMPLE_WORKLOG_STEPS,
+    FIGURE_SAMPLE_WORKLOG_CHOICES,
+    FIGURE_SAMPLE_ARTIFACT,
   ),
   'expert-fto': base(
     'expert-fto',
     '11',
     'fto_memo',
     'FTO律师',
-    '| 1 | 特征 | 撰写 | claim chart | — |\n| 2 | blocker | 障碍专利 | fto_memo | — |',
-    '| 放行 | blocker | 分级 | 递交闸 |',
+    FTO_SAMPLE_WORKLOG_STEPS,
+    FTO_SAMPLE_WORKLOG_CHOICES,
+    FTO_SAMPLE_ARTIFACT,
   ),
   'expert-filing': base(
     'expert-filing',
     '12',
     'filing_checklist',
     '递交流程员',
-    '| 1 | 齐套 | 撰写+图+FTO | checklist | — |\n| 2 | authorize→file | HITL | 示意 | — |',
-    '| 缺件强推 | 齐套后闸 | 齐套 | 仅总控派 OA |',
+    FILING_SAMPLE_WORKLOG_STEPS,
+    FILING_SAMPLE_WORKLOG_CHOICES,
+    FILING_SAMPLE_ARTIFACT,
   ),
   'expert-oa': base(
     'expert-oa',
     '13',
     'prosecution_response',
     'OA答复代理师',
-    '| 1 | 拆通知书 | 已 file | 争点 | — |\n| 2 | 策略+陈述 | 备选 | prosecution_response | — |',
-    '| 纯争辩 | 争辩+修改 | 组合 | 可迭代 |',
+    OA_SAMPLE_WORKLOG_STEPS,
+    OA_SAMPLE_WORKLOG_CHOICES,
+    OA_SAMPLE_ARTIFACT,
   ),
   'expert-annuity': base(
     'expert-annuity',
     '14',
     'maintain_annuity',
     '年费管家',
-    '| 1 | 到期台账 | 授权后 | 清单 | — |\n| 2 | 价值联动 | 评分卡 | 建议 | — |\n| 3 | 缴费/放弃 | HITL⑦ | Confirm | — |',
-    '| 强缴 | 价值联动 | 联动 | 禁真缴费 |',
+    ANNUITY_SAMPLE_WORKLOG_STEPS,
+    ANNUITY_SAMPLE_WORKLOG_CHOICES,
+    ANNUITY_SAMPLE_ARTIFACT,
   ),
   'expert-valuation': base(
     'expert-valuation',
     '15',
     'valuation_card',
     '价值评估师',
-    '| 1 | 抽证据 | 案卷 | 评分输入 | — |\n| 2 | 评分卡 | 公式 | 综合分 | — |\n| 3 | 分级 | 核心/外围/放弃 | 交年费 | — |',
-    '| 拍脑袋 | 公式工具 | 公式 | 提案键 |',
+    VALUATION_SAMPLE_WORKLOG_STEPS,
+    VALUATION_SAMPLE_WORKLOG_CHOICES,
+    VALUATION_SAMPLE_ARTIFACT,
   ),
   'expert-monetize': base(
     'expert-monetize',
     '16',
     'monetize_terms',
     '转化顾问',
-    '| 1 | 估值 | 组合 | 区间 | — |\n| 2 | 条款 | term sheet | 草案 | — |\n| 3 | 校验 | HITL⑧ | Confirm | — |',
-    '| 口头意向 | 必备条款齐 | 齐 | 禁真签约 |',
+    MONETIZE_SAMPLE_WORKLOG_STEPS,
+    MONETIZE_SAMPLE_WORKLOG_CHOICES,
+    MONETIZE_SAMPLE_ARTIFACT,
   ),
   'expert-enforcement': base(
     'expert-enforcement',
     '17',
     'enforcement_brief',
     '无效维权顾问',
-    '| 1 | 特征映射 | 权要 | 比对表 | — |\n| 2 | 覆盖比对 | 稳定性 | 简报 | — |\n| 3 | 回流 F3 | 漏洞 | 信封 | — |',
-    '| 合并 FTO | 独立席 | 独立 | ≠fto |',
+    ENFORCEMENT_SAMPLE_WORKLOG_STEPS,
+    ENFORCEMENT_SAMPLE_WORKLOG_CHOICES,
+    ENFORCEMENT_SAMPLE_ARTIFACT,
   ),
 }
 

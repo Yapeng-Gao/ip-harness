@@ -1,8 +1,77 @@
 import type { ProjectExpertDef, ProjectExpertId } from './types'
+import {
+  RESEARCH_DEPTH_SHORTCUTS,
+  RESEARCH_DEPTH_STEPS,
+} from './pack/researchDepth'
+import {
+  INTAKE_DEPTH_SHORTCUTS,
+  INTAKE_DEPTH_STEPS,
+} from './pack/intakeDepth'
+import {
+  DRAFT_DEPTH_SHORTCUTS,
+  DRAFT_DEPTH_STEPS,
+} from './pack/draftDepth'
+import {
+  DISCLOSURE_DEPTH_SHORTCUTS,
+  DISCLOSURE_DEPTH_STEPS,
+} from './pack/disclosureDepth'
+import {
+  FIGURE_DEPTH_SHORTCUTS,
+  FIGURE_DEPTH_STEPS,
+} from './pack/figureDepth'
+import {
+  FILING_DEPTH_SHORTCUTS,
+  FILING_DEPTH_STEPS,
+} from './pack/filingDepth'
+import {
+  OA_DEPTH_SHORTCUTS,
+  OA_DEPTH_STEPS,
+} from './pack/oaDepth'
+import {
+  LANDSCAPE_DEPTH_SHORTCUTS,
+  LANDSCAPE_DEPTH_STEPS,
+} from './pack/landscapeDepth'
+import {
+  INSPIRE_DEPTH_SHORTCUTS,
+  INSPIRE_DEPTH_STEPS,
+} from './pack/inspireDepth'
+import {
+  COMPETITOR_DEPTH_SHORTCUTS,
+  COMPETITOR_DEPTH_STEPS,
+} from './pack/competitorDepth'
+import {
+  MINING_DEPTH_SHORTCUTS,
+  MINING_DEPTH_STEPS,
+} from './pack/miningDepth'
+import {
+  LAYOUT_DEPTH_SHORTCUTS,
+  LAYOUT_DEPTH_STEPS,
+} from './pack/layoutDepth'
+import {
+  FTO_DEPTH_SHORTCUTS,
+  FTO_DEPTH_STEPS,
+} from './pack/ftoDepth'
+import {
+  ANNUITY_DEPTH_SHORTCUTS,
+  ANNUITY_DEPTH_STEPS,
+} from './pack/annuityDepth'
+import {
+  VALUATION_DEPTH_SHORTCUTS,
+  VALUATION_DEPTH_STEPS,
+} from './pack/valuationDepth'
+import {
+  MONETIZE_DEPTH_SHORTCUTS,
+  MONETIZE_DEPTH_STEPS,
+} from './pack/monetizeDepth'
+import {
+  ENFORCEMENT_DEPTH_SHORTCUTS,
+  ENFORCEMENT_DEPTH_STEPS,
+} from './pack/enforcementDepth'
 
 /**
  * Patent DomainPack · agent-patent-shell §4 (25475b4) + SEAT_ROSTER.
  * Do NOT import into general / L1 / L2.
+ * 深度层：pack/*Depth.ts（agent-depth-reliability）
  */
 
 export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
@@ -120,56 +189,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "segment_market",
       "draft_landscape_report"
     ],
-    "shortcuts": [
-      {
-        "id": "map",
-        "label": "画全景",
-        "action": "jump",
-        "stepId": "map"
-      },
-      {
-        "id": "report",
-        "label": "出报告",
-        "action": "jump",
-        "stepId": "report"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "scope",
-        "label": "定赛道",
-        "script": "【全景】已定赛道边界：边缘计算调度。",
-        "tool": {
-          "name": "map_landscape",
-          "preview": "theme=边缘调度"
-        }
-      },
-      {
-        "id": "map",
-        "label": "全景图",
-        "script": "【全景】假全景：玩家分层 · 技术轨迹 · 政策。",
-        "tool": {
-          "name": "segment_market",
-          "preview": "segments=4"
-        }
-      },
-      {
-        "id": "report",
-        "label": "报告确认",
-        "script": "【全景】01_landscape_report 待确认。过程见 worklog。",
-        "tool": {
-          "name": "draft_landscape_report",
-          "preview": "file=01_landscape_report.md"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": LANDSCAPE_DEPTH_SHORTCUTS,
+    "steps": LANDSCAPE_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -201,56 +222,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "score_patentability",
       "draft_inspire_brief"
     ],
-    "shortcuts": [
-      {
-        "id": "pool",
-        "label": "方向池",
-        "action": "jump",
-        "stepId": "pool"
-      },
-      {
-        "id": "brief",
-        "label": "出 brief",
-        "action": "jump",
-        "stepId": "brief"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "pool",
-        "label": "方向池",
-        "script": "【激发】方向池 8→收敛 3。",
-        "tool": {
-          "name": "brainstorm_directions",
-          "preview": "pool=8→3"
-        }
-      },
-      {
-        "id": "score",
-        "label": "可专利性",
-        "script": "【激发】评分占位。",
-        "tool": {
-          "name": "score_patentability",
-          "preview": "top=负载预测调度"
-        }
-      },
-      {
-        "id": "brief",
-        "label": "brief确认",
-        "script": "【激发】02_inspire_brief 待确认。",
-        "tool": {
-          "name": "draft_inspire_brief",
-          "preview": "file=02_inspire_brief.md"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": INSPIRE_DEPTH_SHORTCUTS,
+    "steps": INSPIRE_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -281,56 +254,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "grade_threat",
       "draft_competitor_watch"
     ],
-    "shortcuts": [
-      {
-        "id": "list",
-        "label": "对手名单",
-        "action": "jump",
-        "stepId": "list"
-      },
-      {
-        "id": "grade",
-        "label": "威胁分级",
-        "action": "jump",
-        "stepId": "grade"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "list",
-        "label": "名单",
-        "script": "【竞品】Top 对手 5 家。",
-        "tool": {
-          "name": "list_competitors",
-          "preview": "n=5"
-        }
-      },
-      {
-        "id": "grade",
-        "label": "分级",
-        "script": "【竞品】威胁：2 高 / 2 中 / 1 低。",
-        "tool": {
-          "name": "grade_threat",
-          "preview": "high=2"
-        }
-      },
-      {
-        "id": "pack",
-        "label": "报告确认",
-        "script": "【竞品】03_competitor_watch 待确认。",
-        "tool": {
-          "name": "draft_competitor_watch",
-          "preview": "file=03_competitor_watch.md"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": COMPETITOR_DEPTH_SHORTCUTS,
+    "steps": COMPETITOR_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -362,65 +287,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "score_invention",
       "pack_mining"
     ],
-    "shortcuts": [
-      {
-        "id": "tech",
-        "label": "收技术点",
-        "action": "jump",
-        "stepId": "tech"
-      },
-      {
-        "id": "pack",
-        "label": "打包提案",
-        "action": "jump",
-        "stepId": "pack"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "tech",
-        "label": "技术点",
-        "script": "【挖掘】边缘调度 · 动态频率 · 能耗约束。",
-        "tool": {
-          "name": "parse_tech_points",
-          "preview": "points=3"
-        }
-      },
-      {
-        "id": "directions",
-        "label": "可申报提案",
-        "script": "【挖掘】提案 3 条骨架。",
-        "tool": {
-          "name": "extract_invention_points",
-          "preview": "candidates=3"
-        }
-      },
-      {
-        "id": "score",
-        "label": "评分",
-        "script": "【挖掘】新颖性 0.78 · 可专利性 0.71。",
-        "tool": {
-          "name": "score_invention",
-          "preview": "novelty=0.78"
-        }
-      },
-      {
-        "id": "pack",
-        "label": "提案确认",
-        "script": "【挖掘】04_mining_pack 待确认。≠立项 Go。",
-        "tool": {
-          "name": "pack_mining",
-          "preview": "file=04_mining_pack.md"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": MINING_DEPTH_SHORTCUTS,
+    "steps": MINING_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -452,56 +320,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "map_protection_net",
       "draft_layout_plan"
     ],
-    "shortcuts": [
-      {
-        "id": "family",
-        "label": "主从案",
-        "action": "jump",
-        "stepId": "family"
-      },
-      {
-        "id": "plan",
-        "label": "出布局",
-        "action": "jump",
-        "stepId": "plan"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "family",
-        "label": "主从案",
-        "script": "【布局】主案 1 + 从案 2。",
-        "tool": {
-          "name": "plan_family",
-          "preview": "main=1 · child=2"
-        }
-      },
-      {
-        "id": "net",
-        "label": "保护网",
-        "script": "【布局】特征×族成员矩阵。",
-        "tool": {
-          "name": "map_protection_net",
-          "preview": "cells=12"
-        }
-      },
-      {
-        "id": "plan",
-        "label": "布局确认",
-        "script": "【布局】05_layout_plan 待确认。",
-        "tool": {
-          "name": "draft_layout_plan",
-          "preview": "file=05_layout_plan.md"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": LAYOUT_DEPTH_SHORTCUTS,
+    "steps": LAYOUT_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -533,71 +353,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "draft_research_report",
       "bind_novelty"
     ],
-    "shortcuts": [
-      {
-        "id": "run-query",
-        "label": "跑检索式",
-        "action": "jump",
-        "stepId": "query"
-      },
-      {
-        "id": "open-hits",
-        "label": "看命中",
-        "action": "jump",
-        "stepId": "hits"
-      },
-      {
-        "id": "basket",
-        "label": "入工作篮",
-        "action": "jump",
-        "stepId": "basket"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "query",
-        "label": "检索式",
-        "script": "【检索】关键词：边缘调度 / 负载预测 / 能耗约束。过程见 worklog §3。",
-        "tool": {
-          "name": "commercial_patent_search",
-          "preview": "query=(边缘 OR edge) AND 调度 · limit=20"
-        }
-      },
-      {
-        "id": "hits",
-        "label": "命中筛选",
-        "script": "【检索】命中 12。Top3：CN114882901A · US20230123456A1 · CN115001234A。",
-        "tool": {
-          "name": "cluster_hits",
-          "preview": "clusters=3"
-        }
-      },
-      {
-        "id": "basket",
-        "label": "工作篮/三性",
-        "script": "【检索】Top5 入篮；三性意见草稿：X/Y/A 占位。",
-        "tool": {
-          "name": "bind_novelty",
-          "preview": "basket=5"
-        }
-      },
-      {
-        "id": "strategy",
-        "label": "报告确认",
-        "script": "【检索】06_research_report + worklog 待确认。",
-        "tool": {
-          "name": "draft_research_report",
-          "preview": "handoff=research_report"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": RESEARCH_DEPTH_SHORTCUTS,
+    "steps": RESEARCH_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -632,59 +389,13 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "description": "Go/范围（报价附属）。吃 01–06。产出 07_intake_quote + worklog。须 go_nogo HITL。",
     "tools": [
       "ingest_upstream",
+      "extract_evidence",
+      "scoring_formula",
       "draft_intake_quote",
       "propose_go_nogo"
     ],
-    "shortcuts": [
-      {
-        "id": "ingest",
-        "label": "吃上游",
-        "action": "jump",
-        "stepId": "ingest"
-      },
-      {
-        "id": "quote",
-        "label": "范围/报价",
-        "action": "jump",
-        "stepId": "quote"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "ingest",
-        "label": "吃上游",
-        "script": "【立项】已吃查新/挖掘等上游要点。",
-        "tool": {
-          "name": "ingest_upstream",
-          "preview": "sources=01–06"
-        }
-      },
-      {
-        "id": "quote",
-        "label": "范围草案",
-        "script": "【立项】范围：CN 发明先申 · 报价档占位。",
-        "tool": {
-          "name": "draft_intake_quote",
-          "preview": "handoff=intake_quote"
-        }
-      },
-      {
-        "id": "go",
-        "label": "Go/No-Go",
-        "script": "【立项】请 go_nogo。Go 后方可派交底。",
-        "tool": {
-          "name": "propose_go_nogo",
-          "preview": "gate=go_nogo"
-        },
-        "triggersHitl": true,
-        "hitlGate": "go_nogo"
-      }
-    ],
+    "shortcuts": INTAKE_DEPTH_SHORTCUTS,
+    "steps": INTAKE_DEPTH_STEPS,
     "hitlGates": [
       "go_nogo"
     ],
@@ -717,76 +428,15 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "specialty": "可实施交底 · disclosure_pack",
     "description": "可实施交底书。产出 08_disclosure_pack + worklog。≠撰写权要。",
     "tools": [
+      "read_intake_conditions",
       "gather_tech_points",
+      "ask_inventor",
       "structure_disclosure",
       "outline_embodiments",
       "pack_disclosure"
     ],
-    "shortcuts": [
-      {
-        "id": "tech",
-        "label": "收技术点",
-        "action": "jump",
-        "stepId": "tech"
-      },
-      {
-        "id": "structure",
-        "label": "交底结构",
-        "action": "jump",
-        "stepId": "structure"
-      },
-      {
-        "id": "pack",
-        "label": "打包交底",
-        "action": "jump",
-        "stepId": "pack"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "tech",
-        "label": "技术点",
-        "script": "【交底】汇集：边缘节点调度 · 负载预测 · 能耗约束。",
-        "tool": {
-          "name": "gather_tech_points",
-          "preview": "points=3"
-        }
-      },
-      {
-        "id": "structure",
-        "label": "交底结构",
-        "script": "【交底】背景→方案→效果→实施例提纲。",
-        "tool": {
-          "name": "structure_disclosure",
-          "preview": "handoff=disclosure_pack"
-        }
-      },
-      {
-        "id": "embodiments",
-        "label": "实施例",
-        "script": "【交底】例1 单节点；例2 热迁移。",
-        "tool": {
-          "name": "outline_embodiments",
-          "preview": "embodiments=2"
-        }
-      },
-      {
-        "id": "pack",
-        "label": "交底确认",
-        "script": "【交底】08_disclosure_pack + worklog 待确认。",
-        "tool": {
-          "name": "pack_disclosure",
-          "preview": "file=08_disclosure_pack.md"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": DISCLOSURE_DEPTH_SHORTCUTS,
+    "steps": DISCLOSURE_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -819,72 +469,15 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "specialty": "权要+说明书 · draft_claims",
     "description": "特征→规划→权要+说明书。产出 09_draft_claims + worklog。",
     "tools": [
+      "build_feature_table",
+      "plan_claim_tree",
       "draft_claims",
-      "expand_dependent",
-      "check_support",
-      "draft_abstract"
+      "draft_specification_outline",
+      "claim_validator",
+      "submit_draft_for_hitl"
     ],
-    "shortcuts": [
-      {
-        "id": "draft-ch",
-        "label": "生成权项",
-        "action": "jump",
-        "stepId": "claims"
-      },
-      {
-        "id": "revise",
-        "label": "修订建议",
-        "action": "jump",
-        "stepId": "revise"
-      },
-      {
-        "id": "confirm-sub",
-        "label": "提请确认",
-        "action": "jump",
-        "stepId": "confirm"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "claims",
-        "label": "权利要求",
-        "script": "【撰写】独权 1 + 从权 3 骨架。过程见 worklog。",
-        "tool": {
-          "name": "draft_claims",
-          "preview": "handoff=draft_claims"
-        }
-      },
-      {
-        "id": "abstract",
-        "label": "摘要",
-        "script": "【撰写】假摘要已出。",
-        "tool": {
-          "name": "draft_abstract",
-          "preview": "words≈120"
-        }
-      },
-      {
-        "id": "revise",
-        "label": "修订建议",
-        "script": "【撰写】缩限「动态频率」；补实施例对照。",
-        "tool": {
-          "name": "check_support",
-          "preview": "support_gaps=2"
-        }
-      },
-      {
-        "id": "confirm",
-        "label": "策略批准",
-        "script": "【撰写】09_draft_claims + worklog 待批准。",
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": DRAFT_DEPTH_SHORTCUTS,
+    "steps": DRAFT_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -925,73 +518,11 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "gather_figure_context",
       "list_needed_figures",
       "mock_sketch",
+      "ocr_term_check",
       "attach_chapter_event"
     ],
-    "shortcuts": [
-      {
-        "id": "context",
-        "label": "收上下文",
-        "action": "jump",
-        "stepId": "context"
-      },
-      {
-        "id": "list",
-        "label": "示意图清单",
-        "action": "jump",
-        "stepId": "list"
-      },
-      {
-        "id": "attach",
-        "label": "冻图号",
-        "action": "jump",
-        "stepId": "attach"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "context",
-        "label": "上下文",
-        "script": "【制图】图号需求：系统架构 · 调度时序 · 能耗曲线。",
-        "tool": {
-          "name": "gather_figure_context",
-          "preview": "linked=draft_claims"
-        }
-      },
-      {
-        "id": "list",
-        "label": "清单",
-        "script": "【制图】图1 框图 · 图2 流程 · 图3 曲线。",
-        "tool": {
-          "name": "list_needed_figures",
-          "preview": "figures=3"
-        }
-      },
-      {
-        "id": "sketch",
-        "label": "草图占位",
-        "script": "【制图】fig-mock-01 SVG 占位。",
-        "tool": {
-          "name": "mock_sketch",
-          "preview": "assetId=fig-mock-01"
-        }
-      },
-      {
-        "id": "attach",
-        "label": "冻图号确认",
-        "script": "【制图】10_figure_list 冻图号待确认。",
-        "tool": {
-          "name": "attach_chapter_event",
-          "preview": "file=10_figure_list.md"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": FIGURE_DEPTH_SHORTCUTS,
+    "steps": FIGURE_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -1024,65 +555,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "build_risk_matrix",
       "draft_fto_report"
     ],
-    "shortcuts": [
-      {
-        "id": "features",
-        "label": "抽特征",
-        "action": "jump",
-        "stepId": "features"
-      },
-      {
-        "id": "matrix",
-        "label": "风险矩阵",
-        "action": "jump",
-        "stepId": "matrix"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "features",
-        "label": "特征",
-        "script": "【FTO】产品特征 6 项。聚焦自由实施，非新颖性。",
-        "tool": {
-          "name": "extract_fto_features",
-          "preview": "features=6"
-        }
-      },
-      {
-        "id": "hits",
-        "label": "障碍专利",
-        "script": "【FTO】障碍候选 4；高相关 CN114882901A。",
-        "tool": {
-          "name": "fto_hit_scan",
-          "preview": "obstacle=4"
-        }
-      },
-      {
-        "id": "matrix",
-        "label": "矩阵",
-        "script": "【FTO】2 红 / 1 黄 / 3 绿；claim chart≥2。",
-        "tool": {
-          "name": "build_risk_matrix",
-          "preview": "red=2"
-        }
-      },
-      {
-        "id": "report",
-        "label": "备忘确认",
-        "script": "【FTO】11_fto_memo 待确认；默认不写案。",
-        "tool": {
-          "name": "draft_fto_report",
-          "preview": "file=11_fto_memo.md"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": FTO_DEPTH_SHORTCUTS,
+    "steps": FTO_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -1113,67 +587,11 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "check_jurisdiction",
       "filing_checklist",
       "formality_scan",
+      "deadline_hint",
       "propose_authorize_file"
     ],
-    "shortcuts": [
-      {
-        "id": "country",
-        "label": "国别齐套",
-        "action": "jump",
-        "stepId": "jurisdiction"
-      },
-      {
-        "id": "checklist",
-        "label": "递交清单",
-        "action": "jump",
-        "stepId": "checklist"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "jurisdiction",
-        "label": "国别",
-        "script": "【递交】CN 发明先递 · US provisional 占位。",
-        "tool": {
-          "name": "check_jurisdiction",
-          "preview": "CN=first-file"
-        }
-      },
-      {
-        "id": "checklist",
-        "label": "齐套",
-        "script": "【递交】齐套 4/5（附图待挂）。",
-        "tool": {
-          "name": "filing_checklist",
-          "preview": "ready=4/5"
-        }
-      },
-      {
-        "id": "formality",
-        "label": "形式点",
-        "script": "【递交】形式点 2（warn）。",
-        "tool": {
-          "name": "formality_scan",
-          "preview": "issues=2"
-        }
-      },
-      {
-        "id": "authorize",
-        "label": "授权递交",
-        "script": "【递交】authorize→file 闸示意；禁真递交。",
-        "tool": {
-          "name": "propose_authorize_file",
-          "preview": "gate=authorize_file · real=false"
-        },
-        "triggersHitl": true,
-        "hitlGate": "authorize_file"
-      }
-    ],
+    "shortcuts": FILING_DEPTH_SHORTCUTS,
+    "steps": FILING_DEPTH_STEPS,
     "hitlGates": [
       "authorize_file"
     ],
@@ -1208,75 +626,14 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "description": "OA 策略与陈述。产出 13_prosecution_response + worklog。仅已 file 后由总控派。",
     "tools": [
       "parse_oa_notice",
+      "oa_reason_classifier",
       "oa_strategy",
       "draft_amendments",
-      "draft_oa_response"
+      "draft_oa_response",
+      "submit_oa_for_hitl"
     ],
-    "shortcuts": [
-      {
-        "id": "notice",
-        "label": "读审查意见",
-        "action": "jump",
-        "stepId": "notice"
-      },
-      {
-        "id": "strategy",
-        "label": "答复策略",
-        "action": "jump",
-        "stepId": "strategy"
-      },
-      {
-        "id": "draft",
-        "label": "起草答复",
-        "action": "jump",
-        "stepId": "draft"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "notice",
-        "label": "审查意见",
-        "script": "【OA】假一通：权1 创造性；权3 不清楚。",
-        "tool": {
-          "name": "parse_oa_notice",
-          "preview": "type=一通"
-        }
-      },
-      {
-        "id": "strategy",
-        "label": "答复策略",
-        "script": "【OA】争辩+修改+证据提纲。",
-        "tool": {
-          "name": "oa_strategy",
-          "preview": "argue+amend"
-        }
-      },
-      {
-        "id": "draft",
-        "label": "答复草稿",
-        "script": "【OA】假答复草稿 · prosecution_response。",
-        "tool": {
-          "name": "draft_oa_response",
-          "preview": "handoff=prosecution_response"
-        }
-      },
-      {
-        "id": "confirm",
-        "label": "答复确认",
-        "script": "【OA】13_prosecution_response + worklog 待确认。",
-        "tool": {
-          "name": "draft_amendments",
-          "preview": "real_file=false"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
+    "shortcuts": OA_DEPTH_SHORTCUTS,
+    "steps": OA_DEPTH_STEPS,
     "hitlGates": [
       "approve_strategy"
     ],
@@ -1311,34 +668,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "specialty": "年费/放弃 · maintain_annuity",
     "description": "F7 授权后管理 · 期限+滞纳金表联动价值分级。【HITL⑦】年费/放弃。后置业务可跑样机（非灰显死胡同）。",
     "tools": ["list_annuity_due", "compute_surcharge", "propose_pay_or_abandon"],
-    "shortcuts": [
-      {"id": "due", "label": "到期清单", "action": "jump", "stepId": "due"},
-      {"id": "grade", "label": "价值联动", "action": "jump", "stepId": "grade"},
-      {"id": "decide", "label": "缴费/放弃", "action": "jump", "stepId": "decide"},
-      {"id": "report-orch", "label": "回报总控", "action": "report"}
-    ],
-    "steps": [
-      {
-        "id": "due",
-        "label": "到期台账",
-        "script": "【年费】到期清单：CN114882901B 第 3 年 · 截止 2026-11-30 · 官费 ¥2,000（假数据）。过程见 worklog §3。",
-        "tool": {"name": "list_annuity_due", "preview": "due=1 · window=90d"}
-      },
-      {
-        "id": "grade",
-        "label": "价值联动",
-        "script": "【年费】联动价值评估：核心案建议缴；外围案可议放弃。滞纳金表 mock。",
-        "tool": {"name": "compute_surcharge", "preview": "grace=6m · surcharge=tier2"}
-      },
-      {
-        "id": "decide",
-        "label": "缴费/放弃闸",
-        "script": "【年费】14_maintain_annuity + worklog 待 Confirm（HITL⑦ · pay_unlock 心智 · 禁真缴费）。",
-        "tool": {"name": "propose_pay_or_abandon", "preview": "recommend=pay · hitl=⑦"},
-        "triggersHitl": true,
-        "hitlGate": "pay_unlock"
-      }
-    ],
+    "shortcuts": ANNUITY_DEPTH_SHORTCUTS,
+    "steps": ANNUITY_DEPTH_STEPS,
     "hitlGates": ["pay_unlock"],
     "domainCommandCandidates": [
       {"command": null, "label": "样机示意 · 不写真缴费", "note": "maintain_annuity 心智 · 内存 Confirm"}
@@ -1359,32 +690,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "specialty": "核心/外围/放弃 · valuation",
     "description": "F7 价值评分：引用/同族/许可/产品映射。联动年费建议。后置业务可跑样机。",
     "tools": ["score_portfolio", "grade_core_periphery", "draft_valuation_card"],
-    "shortcuts": [
-      {"id": "evidence", "label": "抽证据", "action": "jump", "stepId": "evidence"},
-      {"id": "score", "label": "评分卡", "action": "jump", "stepId": "score"},
-      {"id": "grade", "label": "分级建议", "action": "jump", "stepId": "grade"},
-      {"id": "report-orch", "label": "回报总控", "action": "report"}
-    ],
-    "steps": [
-      {
-        "id": "evidence",
-        "label": "抽证据",
-        "script": "【价值】已抽：引用 12 · 同族 3 · 许可线索 1 · 产品映射 2（mock）。",
-        "tool": {"name": "score_portfolio", "preview": "cite=12 · family=3"}
-      },
-      {
-        "id": "score",
-        "label": "评分卡",
-        "script": "【价值】综合分 78 · 商业 0.72 · 可执行 0.81。产出键提案 valuation_card（不写 packages）。",
-        "tool": {"name": "draft_valuation_card", "preview": "score=78 · proposal=valuation_card"}
-      },
-      {
-        "id": "grade",
-        "label": "分级建议",
-        "script": "【价值】15_valuation_card + worklog：核心保留 / 外围观察 / 1 件建议放弃 → 交年费管家。",
-        "tool": {"name": "grade_core_periphery", "preview": "core=1 · periphery=2 · abandon=1"}
-      }
-    ],
+    "shortcuts": VALUATION_DEPTH_SHORTCUTS,
+    "steps": VALUATION_DEPTH_STEPS,
     "hitlGates": [],
     "domainCommandCandidates": [
       {"command": null, "label": "提案键 · 不写 packages", "note": "valuation_card · 服务 HITL⑦"}
@@ -1405,34 +712,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "specialty": "许可/转让 · monetize_terms",
     "description": "F8 转化变现 · 估值与合同必备条款。【HITL⑧】交易签约。后置业务可跑样机。",
     "tools": ["estimate_deal", "draft_term_sheet", "validate_contract_clauses"],
-    "shortcuts": [
-      {"id": "value", "label": "估值区间", "action": "jump", "stepId": "value"},
-      {"id": "terms", "label": "条款草案", "action": "jump", "stepId": "terms"},
-      {"id": "validate", "label": "条款校验", "action": "jump", "stepId": "validate"},
-      {"id": "report-orch", "label": "回报总控", "action": "report"}
-    ],
-    "steps": [
-      {
-        "id": "value",
-        "label": "估值区间",
-        "script": "【转化】许可估值区间 ¥80–120 万（mock 公式 · 非真报价）。",
-        "tool": {"name": "estimate_deal", "preview": "low=80w · high=120w"}
-      },
-      {
-        "id": "terms",
-        "label": "条款草案",
-        "script": "【转化】Term sheet：独占区域 / 里程碑款 / 审计权 · 必备条款骨架。",
-        "tool": {"name": "draft_term_sheet", "preview": "exclusive=CN · milestones=3"}
-      },
-      {
-        "id": "validate",
-        "label": "签约闸",
-        "script": "【转化】16_monetize_terms + worklog 待 Confirm（HITL⑧ · confirm_quote 心智 · 禁真签约）。",
-        "tool": {"name": "validate_contract_clauses", "preview": "clauses=ok · hitl=⑧"},
-        "triggersHitl": true,
-        "hitlGate": "confirm_quote"
-      }
-    ],
+    "shortcuts": MONETIZE_DEPTH_SHORTCUTS,
+    "steps": MONETIZE_DEPTH_STEPS,
     "hitlGates": ["confirm_quote"],
     "domainCommandCandidates": [
       {"command": null, "label": "样机示意 · 不写真签约", "note": "monetize_terms 心智 · 内存 Confirm"}
@@ -1453,32 +734,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "specialty": "无效/维权 · enforcement_brief",
     "description": "F9 维权防御 · 全面覆盖比对；飞轮回流 F3。≠ FTO（expert-fto）；≠ watch。后置业务可跑样机。",
     "tools": ["claim_chart_compare", "stability_score", "draft_enforcement_brief"],
-    "shortcuts": [
-      {"id": "map", "label": "特征映射", "action": "jump", "stepId": "map"},
-      {"id": "compare", "label": "覆盖比对", "action": "jump", "stepId": "compare"},
-      {"id": "flywheel", "label": "回流 F3", "action": "jump", "stepId": "flywheel"},
-      {"id": "report-orch", "label": "回报总控", "action": "report"}
-    ],
-    "steps": [
-      {
-        "id": "map",
-        "label": "特征映射",
-        "script": "【维权】权要特征 6 项已映射到被控产品（mock）。≠ FTO 自由实施分析。",
-        "tool": {"name": "claim_chart_compare", "preview": "features=6 · ≠fto"}
-      },
-      {
-        "id": "compare",
-        "label": "覆盖比对",
-        "script": "【维权】全面覆盖 4/6 · 稳定性 0.64 · 建议补强从权。提案键 enforcement_brief。",
-        "tool": {"name": "stability_score", "preview": "cover=4/6 · stability=0.64"}
-      },
-      {
-        "id": "flywheel",
-        "label": "回流布局",
-        "script": "【维权】17_enforcement_brief + worklog：漏洞信封 → 回流 F3 布局策略师（飞轮）。勿借 watch_alert。",
-        "tool": {"name": "draft_enforcement_brief", "preview": "flywheel→expert-layout · ≠watch"}
-      }
-    ],
+    "shortcuts": ENFORCEMENT_DEPTH_SHORTCUTS,
+    "steps": ENFORCEMENT_DEPTH_STEPS,
     "hitlGates": [],
     "domainCommandCandidates": [
       {"command": null, "label": "提案键 · 不写 packages", "note": "enforcement_brief · ≠fto · ≠watch_alert"}
@@ -1492,110 +749,12 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "phase": true,
     "emptyStateNote": "F9 无效维权顾问为后置业务席：样机可跑比对+回流信封；id 独立于 expert-fto。"
   },
+}
 
-  "expert-search": {
-    "id": "expert-search",
-    "name": "检索员（查新暨三性）",
-    "role": "expert",
-    "specialty": "查新+三性 · research_report",
-    "description": "查新暨三性意见书。产出 06_research_report + worklog。handoff=research_report。",
-    "tools": [
-      "commercial_patent_search",
-      "cluster_hits",
-      "draft_research_report",
-      "bind_novelty"
-    ],
-    "shortcuts": [
-      {
-        "id": "run-query",
-        "label": "跑检索式",
-        "action": "jump",
-        "stepId": "query"
-      },
-      {
-        "id": "open-hits",
-        "label": "看命中",
-        "action": "jump",
-        "stepId": "hits"
-      },
-      {
-        "id": "basket",
-        "label": "入工作篮",
-        "action": "jump",
-        "stepId": "basket"
-      },
-      {
-        "id": "report-orch",
-        "label": "回报总控",
-        "action": "report"
-      }
-    ],
-    "steps": [
-      {
-        "id": "query",
-        "label": "检索式",
-        "script": "【检索】关键词：边缘调度 / 负载预测 / 能耗约束。过程见 worklog §3。",
-        "tool": {
-          "name": "commercial_patent_search",
-          "preview": "query=(边缘 OR edge) AND 调度 · limit=20"
-        }
-      },
-      {
-        "id": "hits",
-        "label": "命中筛选",
-        "script": "【检索】命中 12。Top3：CN114882901A · US20230123456A1 · CN115001234A。",
-        "tool": {
-          "name": "cluster_hits",
-          "preview": "clusters=3"
-        }
-      },
-      {
-        "id": "basket",
-        "label": "工作篮/三性",
-        "script": "【检索】Top5 入篮；三性意见草稿：X/Y/A 占位。",
-        "tool": {
-          "name": "bind_novelty",
-          "preview": "basket=5"
-        }
-      },
-      {
-        "id": "strategy",
-        "label": "报告确认",
-        "script": "【检索】06_research_report + worklog 待确认。",
-        "tool": {
-          "name": "draft_research_report",
-          "preview": "handoff=research_report"
-        },
-        "triggersHitl": true,
-        "hitlGate": "approve_strategy"
-      }
-    ],
-    "hitlGates": [
-      "approve_strategy"
-    ],
-    "domainCommandCandidates": [
-      {
-        "command": null,
-        "label": "通常只读",
-        "note": "未绑案不写"
-      },
-      {
-        "command": "submitResearch",
-        "label": "提交调研",
-        "note": "Confirm 后 · research_report"
-      }
-    ],
-    "guardrails": [
-      "禁止空命中过闸",
-      "命中须可核验",
-      "输出非法律意见"
-    ],
-    "catalogAgentId": "agent-research",
-    "accent": "sky",
-    "catalogGroup": "core",
-    "defaultTeam": true,
-    "ownerLabel": "合伙人/撰写"
-  }
+/** Legacy alias · 与 expert-research 同深度剧本 */
+PATENT_EXPERTS['expert-search'] = {
+  ...PATENT_EXPERTS['expert-research']!,
+  id: 'expert-search',
 }
 
 export const PATENT_CATALOG_IDS: ProjectExpertId[] = ["orchestrator","expert-landscape","expert-inspire","expert-competitor","expert-mining","expert-layout","expert-research","expert-intake","expert-disclosure","expert-draft","expert-figure","expert-fto","expert-filing","expert-oa","expert-annuity","expert-valuation","expert-monetize","expert-enforcement"]
