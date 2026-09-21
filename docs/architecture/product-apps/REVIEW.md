@@ -262,3 +262,10 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 样机仍冻。平台/Pack 正式稿 **Go**（相对 `6ba58ae` Go-with-nits 升格）。
 
+## B席复扫 · nits 抛光（`0c925c6`）
+
+| 结论 | **Pass**（无剩黄；相对 `b6cefe3` 不重开全评） |
+|------|-----------------------------------------------|
+| 六条黄项 | 仍过：双产品冷启动 / mining≠intake / FTO≠layout_insight / F9≠watch / HITL×8 / gap P0 |
+| 本刀增量 | entry-modes 双产品顶注；l3 id 一词一义对照表；layers 禁令与专利 Catalog **不互斥**——加固，无新硬拧 |
+
