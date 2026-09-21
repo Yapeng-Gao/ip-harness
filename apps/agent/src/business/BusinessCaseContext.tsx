@@ -60,6 +60,143 @@ export const BUSINESS_SEED_IDS = {
   B: 'case-biz-sensor-pack',
 } as const
 
+/** P0 · 业务案子 / 进度 / 待确认 localStorage，同标签刷新可恢复 */
+const BUSINESS_LS_KEY = 'ip-harness-agent-business-v1'
+
+export type BusinessCaseMeta = {
+  id: string
+  title: string
+  summary: string
+  expertIds: ProjectExpertId[]
+}
+
+type PersistedBusiness = {
+  v: 1
+  caseIds: string[]
+  progressById: Record<string, CaseProgress>
+  confirms: BusinessConfirmItem[]
+  caseMeta: BusinessCaseMeta[]
+}
+
+function seedCaseMeta(): BusinessCaseMeta[] {
+  return [
+    {
+      id: BUSINESS_SEED_IDS.A,
+      title: '边缘调度模组',
+      summary: '业务样机 · 待确认立项',
+      expertIds: [...BUSINESS_DEFAULT_TEAM_IDS],
+    },
+    {
+      id: BUSINESS_SEED_IDS.B,
+      title: '传感校准套件',
+      summary: '业务样机 · 待确认权利要求',
+      expertIds: [...BUSINESS_DEFAULT_TEAM_IDS],
+    },
+  ]
+}
+
+function loadPersistedBusiness(): PersistedBusiness | null {
+  try {
+    if (typeof localStorage === 'undefined') return null
+    const raw = localStorage.getItem(BUSINESS_LS_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as PersistedBusiness
+    if (!parsed || parsed.v !== 1) return null
+    if (!Array.isArray(parsed.caseIds) || !Array.isArray(parsed.confirms))
+      return null
+    if (!parsed.progressById || typeof parsed.progressById !== 'object')
+      return null
+    if (!Array.isArray(parsed.caseMeta)) return null
+    return parsed
+  } catch {
+    return null
+  }
+}
+
+function persistBusiness(data: PersistedBusiness): void {
+  try {
+    if (typeof localStorage === 'undefined') return
+    localStorage.setItem(BUSINESS_LS_KEY, JSON.stringify(data))
+  } catch {
+    /* quota / private mode */
+  }
+}
+
+function buildInitialBusinessState(): {
+  caseIds: string[]
+  progressById: Record<string, CaseProgress>
+  confirms: BusinessConfirmItem[]
+  caseMeta: BusinessCaseMeta[]
+} {
+  const seedIds: string[] = [BUSINESS_SEED_IDS.A, BUSINESS_SEED_IDS.B]
+  const seedProg = seedProgressMap()
+  const seedConf = seedConfirms()
+  const seedMeta = seedCaseMeta()
+  const persisted = loadPersistedBusiness()
+  if (!persisted) {
+    return {
+      caseIds: seedIds,
+      progressById: seedProg,
+      confirms: seedConf,
+      caseMeta: seedMeta,
+    }
+  }
+
+  const seedIdSet = new Set<string>(seedIds)
+  // 种子 id：以持久化为准（Confirm / 进度不回滚）；用户新建案子前置
+  const extras = persisted.caseIds.filter((id) => !seedIdSet.has(id))
+  const caseIds = [...extras, ...seedIds]
+
+  const progressById: Record<string, CaseProgress> = { ...seedProg }
+  for (const [id, prog] of Object.entries(persisted.progressById)) {
+    if (prog && typeof prog === 'object' && prog.caseId) {
+      progressById[id] = prog
+    }
+  }
+
+  const confById = new Map(persisted.confirms.map((c) => [c.id, c]))
+  const mergedSeedConfirms = seedConf.map((c) => confById.get(c.id) ?? c)
+  const extraConfirms = persisted.confirms.filter(
+    (c) => !seedConf.some((s) => s.id === c.id),
+  )
+  const confirms = [...extraConfirms, ...mergedSeedConfirms]
+
+  const metaById = new Map(persisted.caseMeta.map((m) => [m.id, m]))
+  const mergedSeedMeta = seedMeta.map((m) => metaById.get(m.id) ?? m)
+  const extraMeta = persisted.caseMeta.filter((m) => !seedIdSet.has(m.id))
+  // Keep meta aligned with caseIds order
+  const metaMap = new Map<string, BusinessCaseMeta>([
+    ...mergedSeedMeta.map((m) => [m.id, m] as const),
+    ...extraMeta.map((m) => [m.id, m] as const),
+  ])
+  const caseMeta = caseIds.map((id) => {
+    const m = metaMap.get(id)
+    if (m) return m
+    return {
+      id,
+      title: '未命名案子',
+      summary: '业务向导新建',
+      expertIds: [...BUSINESS_DEFAULT_TEAM_IDS],
+    }
+  })
+
+  return { caseIds, progressById, confirms, caseMeta }
+}
+
+function projectFromMeta(meta: BusinessCaseMeta): AgentProject {
+  return {
+    id: meta.id,
+    title: meta.title,
+    summary: meta.summary,
+    kind: 'domain',
+    domainPackId: 'patent',
+    caseBindState: 'none',
+    expertIds: [...meta.expertIds],
+    createdAt: nowIso(),
+    updatedAt: nowIso(),
+  }
+}
+
 type BusinessCaseContextValue = {
   cases: AgentProject[]
   getCase: (id: string) => AgentProject | undefined
@@ -165,58 +302,62 @@ function seedProgressMap(): Record<string, CaseProgress> {
 
 export function BusinessCaseProvider({ children }: { children: ReactNode }) {
   const { createProject, getProject, folderProjects } = useProjectFolder()
+  const initial = useMemo(() => buildInitialBusinessState(), [])
   const [progressById, setProgressById] =
-    useState<Record<string, CaseProgress>>(seedProgressMap)
+    useState<Record<string, CaseProgress>>(initial.progressById)
   const [confirms, setConfirms] =
-    useState<BusinessConfirmItem[]>(seedConfirms)
-  const [caseIds, setCaseIds] = useState<string[]>([
-    BUSINESS_SEED_IDS.A,
-    BUSINESS_SEED_IDS.B,
-  ])
+    useState<BusinessConfirmItem[]>(initial.confirms)
+  const [caseIds, setCaseIds] = useState<string[]>(initial.caseIds)
+  const [caseMeta, setCaseMeta] = useState<BusinessCaseMeta[]>(initial.caseMeta)
 
+  // 确保 ProjectFolder 有对应案子（刷新 / 热更后回填）
   useEffect(() => {
-    const seeds: {
-      id: string
-      title: string
-      summary: string
-    }[] = [
-      {
-        id: BUSINESS_SEED_IDS.A,
-        title: '边缘调度模组',
-        summary: '业务样机 · 待确认立项',
-      },
-      {
-        id: BUSINESS_SEED_IDS.B,
-        title: '传感校准套件',
-        summary: '业务样机 · 待确认权利要求',
-      },
-    ]
-    for (const s of seeds) {
-      if (!getProject(s.id)) {
+    for (const m of caseMeta) {
+      if (!getProject(m.id)) {
         createProject({
-          id: s.id,
-          title: s.title,
-          summary: s.summary,
+          id: m.id,
+          title: m.title,
+          summary: m.summary,
           kind: 'domain',
           domainPackId: 'patent',
-          expertIds: BUSINESS_DEFAULT_TEAM_IDS,
+          expertIds:
+            m.expertIds.length > 0 ? m.expertIds : BUSINESS_DEFAULT_TEAM_IDS,
         })
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- seed once on mount
-  }, [])
+  }, [caseMeta, createProject, getProject])
+
+  // 同标签刷新可恢复：案子列表 · 进度 · 待确认（含 confirmed / returned）
+  useEffect(() => {
+    persistBusiness({
+      v: 1,
+      caseIds,
+      progressById,
+      confirms,
+      caseMeta,
+    })
+  }, [caseIds, progressById, confirms, caseMeta])
 
   const cases = useMemo(() => {
-    const fromFolder = folderProjects.filter((p) => caseIds.includes(p.id))
-    // Keep order of caseIds
+    // Keep order of caseIds；folder 尚未回填时用 caseMeta 合成，避免「找不到这个案子」闪断
     return caseIds
-      .map((id) => fromFolder.find((p) => p.id === id))
+      .map((id) => {
+        const fromFolder = folderProjects.find((p) => p.id === id)
+        if (fromFolder) return fromFolder
+        const meta = caseMeta.find((m) => m.id === id)
+        return meta ? projectFromMeta(meta) : undefined
+      })
       .filter((p): p is AgentProject => !!p)
-  }, [folderProjects, caseIds])
+  }, [folderProjects, caseIds, caseMeta])
 
   const getCase = useCallback(
-    (id: string) => cases.find((c) => c.id === id) ?? getProject(id),
-    [cases, getProject],
+    (id: string) => {
+      const hit = cases.find((c) => c.id === id) ?? getProject(id)
+      if (hit) return hit
+      const meta = caseMeta.find((m) => m.id === id)
+      return meta ? projectFromMeta(meta) : undefined
+    },
+    [cases, getProject, caseMeta],
   )
 
   const ensureProgress = useCallback(
@@ -279,6 +420,18 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       setCaseIds((prev) =>
         prev.includes(p.id) ? prev : [p.id, ...prev],
       )
+      setCaseMeta((prev) => {
+        if (prev.some((m) => m.id === p.id)) return prev
+        return [
+          {
+            id: p.id,
+            title: p.title,
+            summary: p.summary,
+            expertIds: [...expertIds],
+          },
+          ...prev,
+        ]
+      })
       return p
     },
     [createProject],
