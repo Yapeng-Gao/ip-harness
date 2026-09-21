@@ -5,6 +5,7 @@ import {
   mockValidate,
   type ValidatorResult,
 } from '../../projects/pack/patentValidator'
+import { SELF_HEAL_MAX } from '../../business/packLoops'
 import {
   envelopeToWorklogLines,
   sampleEnvelopeForSeat,
@@ -37,12 +38,40 @@ export function SeatValidatorPanel({
   const [result, setResult] = useState<ValidatorResult | null>(null)
   const [envelope, setEnvelope] = useState<HandoffEnvelope | null>(null)
   const [worklogExtra, setWorklogExtra] = useState('')
+  const [escalated, setEscalated] = useState(false)
   const packHitl = packHitlForSeat(expertId)
   const enabled = hasMockValidator(expertId)
 
   const thread = projectId ? getThread(projectId, expertId) : undefined
 
   const run = (nextAttempt: number) => {
+    if (escalated) return
+    // Knife1：超 SELF_HEAL_MAX → 需人工接手，禁静默死循环
+    if (nextAttempt > SELF_HEAL_MAX) {
+      setAttempt(nextAttempt)
+      setEscalated(true)
+      setResult({
+        seatId: expertId,
+        specName: 'escalate',
+        issues: [
+          {
+            code: 'escalate.human',
+            message: '需人工接手 · 自修复已超上限（禁静默死循环）',
+            blocker: true,
+          },
+        ],
+        pass: false,
+        attempt: nextAttempt,
+      })
+      if (projectId) {
+        appendMessage(projectId, expertId, {
+          role: 'system',
+          content: `【需人工接手】检查未通过·已重试 ${SELF_HEAL_MAX}/${SELF_HEAL_MAX} · 已升级兜底`,
+          meta: { backend: 'mock' },
+        })
+      }
+      return
+    }
     const r = mockValidate(expertId, nextAttempt)
     setAttempt(nextAttempt)
     setResult(r)
@@ -64,14 +93,14 @@ export function SeatValidatorPanel({
         setThreadHitl(projectId, expertId, true, packHitl.gate)
         appendMessage(projectId, expertId, {
           role: 'system',
-          content: `【样机校验通过】spec=${r.specName} · attempt=${r.attempt} → 已到确认点（${packHitl.label} / ${packHitl.gate}）`,
+          content: `【检查通过】已重试 ${r.attempt}/${SELF_HEAL_MAX} → 已到确认点（${packHitl.label}）`,
           meta: { backend: 'mock' },
         })
       }
     } else if (projectId) {
       appendMessage(projectId, expertId, {
         role: 'system',
-        content: `【样机校验问题×${r.issues.length}】请自动修好再跑（样机示意）`,
+        content: `【检查未通过·已重试 ${nextAttempt}/${SELF_HEAL_MAX}】请改后再跑（样机示意）`,
         meta: { backend: 'mock' },
       })
     }
@@ -101,10 +130,10 @@ export function SeatValidatorPanel({
 
   const summary = useMemo(() => {
     if (!result) return null
-    if (result.pass) return 'Pass · 可进 HITL'
-    const blockers = result.issues.filter((i) => i.blocker).length
-    return `Fail · blocker ${blockers} / total ${result.issues.length}`
-  }, [result])
+    if (escalated) return `需人工接手 · 已重试 ${SELF_HEAL_MAX}/${SELF_HEAL_MAX}`
+    if (result.pass) return `检查通过 · 重试 ${result.attempt}/${SELF_HEAL_MAX}`
+    return `检查未通过·已重试 ${result.attempt}/${SELF_HEAL_MAX}`
+  }, [result, escalated])
 
   if (!enabled) {
     return (
@@ -145,7 +174,10 @@ export function SeatValidatorPanel({
       <div className="flex flex-wrap gap-1.5">
         <button
           type="button"
-          onClick={() => run(1)}
+          onClick={() => {
+            setEscalated(false)
+            run(1)
+          }}
           className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-medium text-slate-800"
           data-testid="validator-run"
         >
@@ -154,12 +186,21 @@ export function SeatValidatorPanel({
         <button
           type="button"
           onClick={() => run(Math.max(attempt, 1) + 1)}
-          disabled={!result || result.pass}
+          disabled={!result || result.pass || escalated}
           className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-amber-300 bg-amber-50 px-2 py-1 text-[11px] font-medium text-amber-950 disabled:cursor-not-allowed disabled:opacity-40"
           data-testid="validator-self-heal"
         >
           <RefreshCw className="h-3 w-3" aria-hidden />
-          自动修好再跑
+          自动修好再跑（{Math.min(attempt, SELF_HEAL_MAX)}/{SELF_HEAL_MAX}）
+        </button>
+        <button
+          type="button"
+          onClick={() => run(SELF_HEAL_MAX + 1)}
+          disabled={escalated || result?.pass}
+          className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-rose-300 bg-rose-50 px-2 py-1 text-[11px] font-medium text-rose-950 disabled:cursor-not-allowed disabled:opacity-40"
+          data-testid="validator-escalate"
+        >
+          演示超限→人工接手
         </button>
         <button
           type="button"

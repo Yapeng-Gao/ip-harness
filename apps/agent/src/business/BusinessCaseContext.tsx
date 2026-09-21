@@ -18,6 +18,20 @@ import {
   type BusinessStageId,
   businessSeatLabel,
 } from './businessSeats'
+import {
+  SELF_HEAL_MAX,
+  disclosureAskLines,
+  figureFeedbackLog,
+  hitlReturnLog,
+  processLogId,
+  processLogStamp,
+  researchPessimisticLog,
+  selfHealScript,
+  type ProcessLogEntry,
+} from './packLoops'
+
+export type { ProcessLogEntry } from './packLoops'
+export { SELF_HEAL_MAX, DISCLOSURE_ASK_MAX } from './packLoops'
 
 function nowIso(): string {
   return new Date().toISOString()
@@ -42,6 +56,8 @@ export type BusinessConfirmItem = {
   preparedBy: string
   createdAt: string
   status: 'pending' | 'confirmed' | 'returned'
+  /** 退回批注（人话） */
+  returnNote?: string
 }
 
 /** 同源进度 · 时间线 / 待确认 / 侧栏当前步 */
@@ -76,6 +92,7 @@ type PersistedBusiness = {
   progressById: Record<string, CaseProgress>
   confirms: BusinessConfirmItem[]
   caseMeta: BusinessCaseMeta[]
+  processLogs?: ProcessLogEntry[]
 }
 
 function seedCaseMeta(): BusinessCaseMeta[] {
@@ -122,16 +139,26 @@ function persistBusiness(data: PersistedBusiness): void {
   }
 }
 
+function seedProcessLogs(): ProcessLogEntry[] {
+  // Knife1 演示种子：传感校准套件已走过交底追问 + 查新自修复 1 次
+  return [
+    ...disclosureAskLines(BUSINESS_SEED_IDS.B, 2),
+    ...selfHealScript(BUSINESS_SEED_IDS.B, 'expert-research', 2),
+  ]
+}
+
 function buildInitialBusinessState(): {
   caseIds: string[]
   progressById: Record<string, CaseProgress>
   confirms: BusinessConfirmItem[]
   caseMeta: BusinessCaseMeta[]
+  processLogs: ProcessLogEntry[]
 } {
   const seedIds: string[] = [BUSINESS_SEED_IDS.A, BUSINESS_SEED_IDS.B]
   const seedProg = seedProgressMap()
   const seedConf = seedConfirms()
   const seedMeta = seedCaseMeta()
+  const seedLogs = seedProcessLogs()
   const persisted = loadPersistedBusiness()
   if (!persisted) {
     return {
@@ -139,6 +166,7 @@ function buildInitialBusinessState(): {
       progressById: seedProg,
       confirms: seedConf,
       caseMeta: seedMeta,
+      processLogs: seedLogs,
     }
   }
 
@@ -180,7 +208,12 @@ function buildInitialBusinessState(): {
     }
   })
 
-  return { caseIds, progressById, confirms, caseMeta }
+  const processLogs =
+    Array.isArray(persisted.processLogs) && persisted.processLogs.length > 0
+      ? persisted.processLogs
+      : seedLogs
+
+  return { caseIds, progressById, confirms, caseMeta, processLogs }
 }
 
 function projectFromMeta(meta: BusinessCaseMeta): AgentProject {
@@ -203,6 +236,7 @@ type BusinessCaseContextValue = {
   getProgress: (caseId: string) => CaseProgress
   getPendingConfirms: (caseId?: string) => BusinessConfirmItem[]
   getConfirm: (id: string) => BusinessConfirmItem | undefined
+  getProcessLogs: (caseId?: string) => ProcessLogEntry[]
   createCaseFromWizard: (input: {
     title: string
     summary?: string
@@ -215,13 +249,27 @@ type BusinessCaseContextValue = {
     kind: BusinessConfirmKind,
   ) => BusinessConfirmItem
   confirmItem: (confirmId: string) => void
-  returnItem: (confirmId: string) => void
+  /** 退回：人话提示 + 该项回到待确认；写环边过程 */
+  returnItem: (confirmId: string, note?: string) => void
+  /** Knife1 演示：内循环 / 附图 feedback / 超限 escalate / 查新不乐观灰示意 */
+  runLoopDemo: (
+    caseId: string,
+    demo:
+      | 'disclosure_ask'
+      | 'research_heal'
+      | 'draft_heal'
+      | 'draft_escalate'
+      | 'figure_feedback'
+      | 'research_pessimistic',
+  ) => void
   stageLabel: (id: BusinessStageId) => string
   primaryCta: (caseId: string) => {
     label: string
     action: 'advance' | 'confirm' | 'open'
     confirmId?: string
   }
+  lastReturnHint: string | null
+  clearReturnHint: () => void
 }
 
 const BusinessCaseContext = createContext<BusinessCaseContextValue | null>(null)
@@ -309,6 +357,17 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     useState<BusinessConfirmItem[]>(initial.confirms)
   const [caseIds, setCaseIds] = useState<string[]>(initial.caseIds)
   const [caseMeta, setCaseMeta] = useState<BusinessCaseMeta[]>(initial.caseMeta)
+  const [processLogs, setProcessLogs] = useState<ProcessLogEntry[]>(
+    initial.processLogs,
+  )
+  const [lastReturnHint, setLastReturnHint] = useState<string | null>(null)
+
+  const clearReturnHint = useCallback(() => setLastReturnHint(null), [])
+
+  const appendLogs = useCallback((entries: ProcessLogEntry[]) => {
+    if (entries.length === 0) return
+    setProcessLogs((prev) => [...entries, ...prev].slice(0, 200))
+  }, [])
 
   // 确保 ProjectFolder 有对应案子（刷新 / 热更后回填）
   useEffect(() => {
@@ -335,8 +394,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       progressById,
       confirms,
       caseMeta,
+      processLogs,
     })
-  }, [caseIds, progressById, confirms, caseMeta])
+  }, [caseIds, progressById, confirms, caseMeta, processLogs])
 
   const cases = useMemo(() => {
     // Keep order of caseIds；folder 尚未回填时用 caseMeta 合成，避免「找不到这个案子」闪断
@@ -383,6 +443,12 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
   const getConfirm = useCallback(
     (id: string) => confirms.find((c) => c.id === id),
     [confirms],
+  )
+
+  const getProcessLogs = useCallback(
+    (caseId?: string) =>
+      processLogs.filter((l) => (caseId ? l.caseId === caseId : true)),
+    [processLogs],
   )
 
   const createCaseFromWizard = useCallback(
@@ -463,6 +529,22 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
   const prepareConfirm = useCallback(
     (caseId: string, kind: BusinessConfirmKind) => {
       const meta = CONFIRM_META[kind]
+      // Knife1：准备确认前写入内循环过程（剧本驱动）
+      if (kind === 'disclosure_ready') {
+        appendLogs(disclosureAskLines(caseId, 2))
+      } else if (kind === 'research_ready') {
+        appendLogs(selfHealScript(caseId, 'expert-research', 2))
+      } else if (kind === 'claims_ready') {
+        appendLogs(selfHealScript(caseId, 'expert-draft', 2))
+      }
+      const healHint =
+        kind === 'research_ready'
+          ? '查新覆盖度自修复已过 · '
+          : kind === 'claims_ready'
+            ? '撰写四类校验自修复已过 · '
+            : kind === 'disclosure_ready'
+              ? '交底缺项追问已齐 · '
+              : ''
       const item: BusinessConfirmItem = {
         id: uid('bcf'),
         caseId,
@@ -470,7 +552,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         title: CONFIRM_KIND_LABEL[kind],
         summary: `${businessSeatLabel(meta.seatId)}已准备好，请确认。`,
         resultPreview: `【成果】${CONFIRM_KIND_LABEL[kind]}草稿已生成（样机）。`,
-        processPreview: `【办理过程】${meta.preparedBy}席完成检查，待你确认。`,
+        processPreview: `【办理过程】${healHint}${meta.preparedBy}席完成检查，待你确认。`,
         preparedBy: meta.preparedBy,
         createdAt: stamp(),
         status: 'pending',
@@ -495,7 +577,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       })
       return item
     },
-    [],
+    [appendLogs],
   )
 
   const confirmItem = useCallback((confirmId: string) => {
@@ -563,13 +645,106 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  const returnItem = useCallback((confirmId: string) => {
-    setConfirms((prev) =>
-      prev.map((c) =>
-        c.id === confirmId ? { ...c, status: 'returned' as const } : c,
-      ),
-    )
-  }, [])
+  const returnItem = useCallback(
+    (confirmId: string, note?: string) => {
+      const noteText = (note?.trim() || '请按意见修改').trim()
+      setConfirms((prev) => {
+        const target = prev.find((c) => c.id === confirmId)
+        if (!target || target.status !== 'pending') return prev
+        const meta = CONFIRM_META[target.kind]
+        const log = hitlReturnLog(target.caseId, target.kind, noteText)
+        appendLogs([log])
+        setLastReturnHint(
+          target.kind === 'research_ready'
+            ? `请再查一轮 · ${noteText}`
+            : `请按意见修改 · ${noteText}`,
+        )
+        // 进度：该席从 done 撤回，阶段回到确认所在
+        setProgressById((pprev) => {
+          const cur =
+            pprev[target.caseId] ??
+            emptyProgress(target.caseId, meta.stageId)
+          return {
+            ...pprev,
+            [target.caseId]: {
+              ...cur,
+              stageId: meta.stageId,
+              doneSeatIds: cur.doneSeatIds.filter((id) => id !== meta.seatId),
+              updatedAt: nowIso(),
+            },
+          }
+        })
+        const returned: BusinessConfirmItem = {
+          ...target,
+          status: 'returned',
+          returnNote: noteText,
+        }
+        const requeued: BusinessConfirmItem = {
+          ...target,
+          id: uid('bcf'),
+          status: 'pending',
+          summary: `已退回 · ${noteText}`,
+          processPreview: `【办理过程】退回带批注重跑 · ${noteText}`,
+          createdAt: stamp(),
+          returnNote: noteText,
+        }
+        return [
+          requeued,
+          returned,
+          ...prev.filter((c) => c.id !== confirmId),
+        ]
+      })
+    },
+    [appendLogs],
+  )
+
+  const runLoopDemo = useCallback(
+    (
+      caseId: string,
+      demo:
+        | 'disclosure_ask'
+        | 'research_heal'
+        | 'draft_heal'
+        | 'draft_escalate'
+        | 'figure_feedback'
+        | 'research_pessimistic',
+    ) => {
+      if (demo === 'disclosure_ask') {
+        appendLogs(disclosureAskLines(caseId, 2))
+        return
+      }
+      if (demo === 'research_heal') {
+        appendLogs(selfHealScript(caseId, 'expert-research', 2))
+        return
+      }
+      if (demo === 'draft_heal') {
+        appendLogs(selfHealScript(caseId, 'expert-draft', 2))
+        return
+      }
+      if (demo === 'draft_escalate') {
+        appendLogs(selfHealScript(caseId, 'expert-draft', SELF_HEAL_MAX + 1))
+        return
+      }
+      if (demo === 'figure_feedback') {
+        appendLogs([
+          figureFeedbackLog(caseId),
+          {
+            id: processLogId('fig'),
+            caseId,
+            at: processLogStamp(),
+            kind: 'figure_feedback',
+            seatId: 'expert-draft',
+            message: '撰写已按附图意见改术语 · 待附图再核',
+          },
+        ])
+        return
+      }
+      if (demo === 'research_pessimistic') {
+        appendLogs([researchPessimisticLog(caseId)])
+      }
+    },
+    [appendLogs],
+  )
 
   const stageLabel = useCallback(
     (id: BusinessStageId) =>
@@ -606,13 +781,17 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       getProgress,
       getPendingConfirms,
       getConfirm,
+      getProcessLogs,
       createCaseFromWizard,
       advanceStage,
       prepareConfirm,
       confirmItem,
       returnItem,
+      runLoopDemo,
       stageLabel,
       primaryCta,
+      lastReturnHint,
+      clearReturnHint,
     }),
     [
       cases,
@@ -620,13 +799,17 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       getProgress,
       getPendingConfirms,
       getConfirm,
+      getProcessLogs,
       createCaseFromWizard,
       advanceStage,
       prepareConfirm,
       confirmItem,
       returnItem,
+      runLoopDemo,
       stageLabel,
       primaryCta,
+      lastReturnHint,
+      clearReturnHint,
     ],
   )
 

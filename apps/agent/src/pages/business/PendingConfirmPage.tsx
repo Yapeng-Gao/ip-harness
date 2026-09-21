@@ -77,6 +77,7 @@ export function PendingConfirmDetailPage() {
   } = useBusinessCases()
   const [processOpen, setProcessOpen] = useState(false)
   const [doneMsg, setDoneMsg] = useState<string | null>(null)
+  const [returnNote, setReturnNote] = useState('请按意见修改')
 
   const item = getConfirm(confirmId)
   const c = item ? getCase(item.caseId) : undefined
@@ -108,8 +109,16 @@ export function PendingConfirmDetailPage() {
   }
 
   const onReturn = () => {
-    returnItem(item.id)
-    navigate('/agent/pending')
+    const note = returnNote.trim() || '请按意见修改'
+    returnItem(item.id, note)
+    setDoneMsg(
+      item.kind === 'research_ready'
+        ? `已退回 · 请再查一轮（${note}）· 该项已回待确认`
+        : `已退回 · 请按意见修改（${note}）· 该项已回待确认`,
+    )
+    window.setTimeout(() => {
+      navigate(`/agent/cases/${item.caseId}`)
+    }, 500)
   }
 
   return (
@@ -164,23 +173,35 @@ export function PendingConfirmDetailPage() {
         </div>
 
         {item.status === 'pending' ? (
-          <div className="mt-5 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={onConfirm}
-              className="btn-press focus-ring rounded-md bg-amber-600 px-4 py-2 text-xs font-semibold text-white"
-              data-testid="pending-confirm-submit"
-            >
-              确认
-            </button>
-            <button
-              type="button"
-              onClick={onReturn}
-              className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700"
-              data-testid="pending-confirm-return"
-            >
-              退回
-            </button>
+          <div className="mt-5 space-y-2">
+            <label className="block text-[11px] text-slate-500">
+              退回意见（人话）
+              <input
+                value={returnNote}
+                onChange={(e) => setReturnNote(e.target.value)}
+                className="focus-ring mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-xs text-slate-800"
+                placeholder="请按意见修改"
+                data-testid="pending-return-note"
+              />
+            </label>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={onConfirm}
+                className="btn-press focus-ring rounded-md bg-amber-600 px-4 py-2 text-xs font-semibold text-white"
+                data-testid="pending-confirm-submit"
+              >
+                确认
+              </button>
+              <button
+                type="button"
+                onClick={onReturn}
+                className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700"
+                data-testid="pending-confirm-return"
+              >
+                退回修改
+              </button>
+            </div>
           </div>
         ) : (
           <p className="mt-5 text-sm text-emerald-700">已处理（{item.status}）</p>

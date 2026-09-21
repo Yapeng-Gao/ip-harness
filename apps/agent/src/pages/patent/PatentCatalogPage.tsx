@@ -13,6 +13,7 @@ import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { ProjectExpertId } from '../../projects/types'
 import { PackHitlOverview } from '../../components/patent/PackHitlOverview'
 import { PackHitlWalkBar } from '../../components/patent/PackHitlWalkBar'
+import { PackLoopsPanel } from '../../components/patent/PackLoopsPanel'
 import {
   PACK_DEMO_PROJECT_ID,
   packHitlSeatProgress,
@@ -176,6 +177,7 @@ export function PatentCatalogPage() {
             {...packHitlSeatProgress(getThread, PACK_DEMO_PROJECT_ID)}
           />
           <PackHitlWalkBar />
+          <PackLoopsPanel />
         </div>
 
         <div className="mt-4 flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">

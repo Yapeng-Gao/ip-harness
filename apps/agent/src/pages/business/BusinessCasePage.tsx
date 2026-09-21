@@ -7,6 +7,8 @@ import {
   type BusinessConfirmKind,
 } from '../../business/businessSeats'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { CaseProcessPanel } from '../../components/business/CaseProcessPanel'
+import { useEffect } from 'react'
 
 const PREPARE_KINDS: Record<string, BusinessConfirmKind> = {
   intake: 'go_nogo',
@@ -14,6 +16,26 @@ const PREPARE_KINDS: Record<string, BusinessConfirmKind> = {
   filing: 'file_authorize',
   oa: 'oa_strategy',
   prepare: 'research_ready',
+}
+
+/** 当前阶段可准备的确认序列（Knife1：交底/查新/权项） */
+function nextKindForCase(
+  stageId: string,
+  doneSeatIds: string[],
+): BusinessConfirmKind | null {
+  if (stageId === 'prepare') return 'research_ready'
+  if (stageId === 'intake') {
+    if (!doneSeatIds.includes('expert-research')) return 'research_ready'
+    return 'go_nogo'
+  }
+  if (stageId === 'drafting') {
+    if (!doneSeatIds.includes('expert-disclosure')) return 'disclosure_ready'
+    if (!doneSeatIds.includes('expert-draft')) return 'claims_ready'
+    return 'claims_ready'
+  }
+  if (stageId === 'filing') return 'file_authorize'
+  if (stageId === 'oa') return 'oa_strategy'
+  return PREPARE_KINDS[stageId] ?? null
 }
 
 /**
@@ -30,7 +52,15 @@ export function BusinessCasePage() {
     advanceStage,
     prepareConfirm,
     stageLabel,
+    lastReturnHint,
+    clearReturnHint,
   } = useBusinessCases()
+
+  useEffect(() => {
+    if (!lastReturnHint) return
+    const t = window.setTimeout(() => clearReturnHint(), 6000)
+    return () => window.clearTimeout(t)
+  }, [lastReturnHint, clearReturnHint])
 
   const c = getCase(caseId)
   const prog = getProgress(caseId)
@@ -63,7 +93,7 @@ export function BusinessCasePage() {
       advanceStage(caseId)
       return
     }
-    const kind = PREPARE_KINDS[prog.stageId]
+    const kind = nextKindForCase(prog.stageId, prog.doneSeatIds)
     if (kind) {
       // 禁专家截入：OA 未递交不可准备
       if (kind === 'oa_strategy' && !prog.filed) return
@@ -251,6 +281,20 @@ export function BusinessCasePage() {
             </ul>
           )}
         </section>
+
+        {lastReturnHint && (
+          <div
+            className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-950"
+            role="status"
+            data-testid="business-return-hint"
+          >
+            {lastReturnHint}
+          </div>
+        )}
+
+        <div className="mb-5">
+          <CaseProcessPanel caseId={caseId} showDemos />
+        </div>
 
         <p className="text-center text-[11px] text-slate-400">
           演示环境：进度与确认为样机闭环，非真递交局端。
