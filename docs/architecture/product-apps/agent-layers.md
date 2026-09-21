@@ -54,7 +54,7 @@
 | 产品面 | `/agent` 冷启动 | 说明 |
 |--------|-----------------|------|
 | **通用沙盒**（Solo/Team 演练） | **L1 单助手** | 禁止一进来自由多 bot 墙；Team=`/agent/team` |
-| **专利业务**（Domain 收敛） | **我的案子** | 以 [agent-business-mode](./agent-business-mode.md) 为准；Catalog→`/agent/catalog` |
+| **专利业务**（Domain 收敛） | **开新活空态**（历史在侧栏） | 以 [agent-business-mode](./agent-business-mode.md) 为准；Catalog→`/agent/catalog` |
 
 ```text
 # 通用沙盒
@@ -64,14 +64,14 @@
 /agent/sandbox         → （可选显式）通用沙盒入口
 
 # 专利业务
-/agent                 → 我的案子（business-mode）
+/agent                 → 开新活空态（business-mode；历史侧栏）
 /agent/catalog         → 专家工作台（原 Catalog）
 /agent/projects*       → L3 Domain 项目
 /agent/seats/:id       → 单席
 /agent/projects/:id/room → 群聊 loop
 ```
 
-**验收拆开**：通用沙盒=`/agent/sandbox`→L1；专利业务=`/agent`→我的案子。Catalog≠冷启动。
+**验收拆开**：通用沙盒=`/agent/sandbox`→L1；专利业务=`/agent`→开新活空态（非列表墙）。Catalog≠冷启动。
 
 ## 4. 与旧文关系
 
