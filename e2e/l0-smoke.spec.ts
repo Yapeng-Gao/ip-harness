@@ -35,12 +35,11 @@ test.describe('L0-WB-01', () => {
 test.describe('L0-AG-01', () => {
   test.use({ baseURL: 'http://localhost:5175' })
 
-  test('L0-AG-01 agent home / 办理入口', async ({ page }) => {
+  test('L0-AG-01 agent home / 我的案子', async ({ page }) => {
     await page.goto('http://localhost:5175/agent')
-    // UI 已迁 Catalog：主标题「专利专家 Catalog」（零 click）
-    await expect(
-      page.getByRole('heading', { name: /专利专家 Catalog|办理|Catalog/ }),
-    ).toBeVisible()
+    // 总控 becca1e：/agent 冷启动 =「我的案子」业务首页（Catalog 在 /agent/catalog；零 click）
+    await expect(page.getByRole('heading', { name: '我的案子' })).toBeVisible()
+    await expect(page.getByTestId('business-cases-page')).toBeVisible()
   })
 })
 
