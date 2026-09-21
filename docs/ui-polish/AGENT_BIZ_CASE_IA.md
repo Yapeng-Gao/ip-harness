@@ -7,6 +7,7 @@
 
 权威：[agent-biz-case-ia.md](../architecture/product-apps/agent-biz-case-ia.md)  
 **规格 SHA**：`db5ac05`  
+**样机 SHA**：`7df0c17`  
 互链：[agent-business-mode.md](../architecture/product-apps/agent-business-mode.md) · [agent-seat-as-bot.md](../architecture/product-apps/agent-seat-as-bot.md)（席=bot 不回退）
 
 | 刀 | 钉死 |
