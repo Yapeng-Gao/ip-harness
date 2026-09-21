@@ -37,11 +37,10 @@ test.describe('L0-AG-01', () => {
 
   test('L0-AG-01 agent home / 办理入口', async ({ page }) => {
     await page.goto('http://localhost:5175/agent')
-    const cue = page
-      .getByText(/要办哪件事/)
-      .or(page.getByRole('button', { name: /发送|启动/ }))
-      .or(page.getByLabel('办理目标'))
-    await expect(cue.first()).toBeVisible()
+    // UI 已迁 Catalog：主标题「专利专家 Catalog」（零 click）
+    await expect(
+      page.getByRole('heading', { name: /专利专家 Catalog|办理|Catalog/ }),
+    ).toBeVisible()
   })
 })
 

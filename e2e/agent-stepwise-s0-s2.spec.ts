@@ -92,37 +92,12 @@ test.describe('Agent stepwise S0–S2', () => {
       await expect(page.getByRole('navigation', { name: '办理导航' })).toBeVisible()
       rec.assertions.push('竖导航 agent-side-nav 可见')
 
-      // 待确认 (chip or compact section)
-      const needsChip = page.getByTestId('home-needs-human-chip')
-      const compact = page.getByTestId('home-sidebar-compact')
-      await expect(compact).toBeVisible()
-      const hasChip = (await needsChip.count()) > 0
-      const hasPendingLabel = await page.getByText(/最近待确认|暂无待确认/).first().isVisible()
-      expect(hasChip || hasPendingLabel).toBeTruthy()
-      rec.assertions.push(
-        hasChip ? '待确认 chip 可见' : '待确认区（最近待确认/暂无）可见',
-      )
-
-      // Compose + 开始办理
-      const goal = page.getByRole('textbox', { name: '办理目标' })
-      await expect(goal).toBeVisible()
-      const startBtn = page.getByTestId('home-send')
-      await expect(startBtn).toBeVisible()
-      await expect(startBtn).toHaveText(/开始办理|试用/)
-      rec.assertions.push('compose + 开始办理 可见')
-
-      // Single CaseBind entry on Home
-      const homeCaseBind = page.getByTestId('home-case-bind')
-      await expect(homeCaseBind).toBeVisible()
-      await expect(homeCaseBind.getByTestId('case-bind-controls')).toBeVisible()
-      const caseEntryCount = await page.getByTestId('home-case-bind').count()
-      expect(caseEntryCount).toBe(1)
-      // No compose twin case <select> beside Agent picker
-      const caseSelectsInCompose = page.locator(
-        'textarea[aria-label="办理目标"] ~ * select[aria-label*="案"], textarea[aria-label="办理目标"] ~ * select[aria-label*="案件"]',
-      )
-      expect(await caseSelectsInCompose.count()).toBe(0)
-      rec.assertions.push(`Home 案件入口数量=${caseEntryCount}`)
+      // Home 已迁专利专家 Catalog（与 L0-AG-01 同口径；零 compose 旧地标）
+      await expect(
+        page.getByRole('heading', { name: /专利专家 Catalog|办理|Catalog/ }),
+      ).toBeVisible()
+      await expect(page.getByTestId('patent-catalog-page')).toBeVisible()
+      rec.assertions.push('Catalog h1 + patent-catalog-page 可见')
 
       // No BillingHold full-width amber banner
       const fullBanner = page.locator('[data-billing-hold-banner]')
@@ -131,9 +106,7 @@ test.describe('Agent stepwise S0–S2', () => {
 
       rec.bbox = {
         'agent-side-nav': await bboxOf(page, '[data-testid="agent-side-nav"]'),
-        'home-send': await bboxOf(page, '[data-testid="home-send"]'),
-        'home-case-bind': await bboxOf(page, '[data-testid="home-case-bind"]'),
-        'home-sidebar-compact': await bboxOf(page, '[data-testid="home-sidebar-compact"]'),
+        'patent-catalog-page': await bboxOf(page, '[data-testid="patent-catalog-page"]'),
       }
 
       rec.screenshot = await shot(page, 'S0-home.png')
