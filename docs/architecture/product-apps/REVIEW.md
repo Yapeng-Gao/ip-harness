@@ -248,3 +248,17 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 | gap P0 | §3.1 内联勾选 |
 
 请 B 席复扫黄项即可。
+
+## B席复扫 · 硬拧消歧（`b6cefe3`）
+
+| 结论 | **Pass**（黄项清零；升格 Go） |
+|------|------------------------------|
+| 双产品冷启动 | 过：layers §3 通用=L1 / 专利=Catalog；验收拆开 |
+| mining↛intake | 过：l3 删除别名并显式禁止；仅 search→research |
+| FTO ≠ layout_insight | 过：layers §5 改正；layout_insight 仅布局席 |
+| F9 ≠ watch | 过：Pack 不借用 watch_alert；提案 `enforcement_brief`（不写 packages） |
+| HITL×8↔壳闸 | 过：pack-design ①–⑧对照表 + l3 §6.5 |
+| gap P0 内联 | 过：§3.1 六项勾选 |
+
+样机仍冻。平台/Pack 正式稿 **Go**（相对 `6ba58ae` Go-with-nits 升格）。
+
