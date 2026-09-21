@@ -269,3 +269,11 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 | 六条黄项 | 仍过：双产品冷启动 / mining≠intake / FTO≠layout_insight / F9≠watch / HITL×8 / gap P0 |
 | 本刀增量 | entry-modes 双产品顶注；l3 id 一词一义对照表；layers 禁令与专利 Catalog **不互斥**——加固，无新硬拧 |
 
+## 总控·B席增量确认（tip `0c925c6` · 相对 `b6cefe3`）
+
+| 结论 | **仍 Go** |
+|------|-----------|
+| 增量范围 | entry-modes 双产品顶注；l3 id 对照表；layers 冷启动禁令与 Catalog **不互斥** |
+| 六项复核 | 冷启动双钉 / mining≠intake / FTO≠layout / F9≠watch / HITL×8 / gap P0 —— **无回退、无新黄** |
+| 禁 apps | 本 tip 仅 docs |
+
