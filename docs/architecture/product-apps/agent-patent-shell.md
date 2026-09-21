@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21 · B席）**：与 [agent-layers](./agent-layers.md) **双产品冷启动**对齐——本文件管**专利产品** `/agent`→Catalog；通用沙盒 L1 为旁路。禁 mining→intake 别名。
 > **变更摘要（2026-09-21）**：本文 Catalog 花名册 = 专利 Domain Pack 的 **子集/过渡**；完整 **16 席 · F1–F9 · HITL×8** 见 [../domain-packs/patent-pack-design.md](../domain-packs/patent-pack-design.md)。目标态：规则层裁判 + Handoff 信封 + Pack HITL。端用户**仍禁** mid 可点深链。平台 [../agent-platform.md](../agent-platform.md)。
 # 专利 Agent 壳重做（仅专利 · 过程可见）
 
@@ -125,7 +126,7 @@ Owner / 过程要点 / 产出标题以 [OWNER 矩阵](./patent-drill-ref/OWNER_D
 
 并行：制图 ∥ FTO（权要确认后）。OA **禁**未 file 直派；递交回执后**仅总控**派 OA。
 
-工作台 maintain/monetize/watch 仍见 [agent-l3-patent §4](./agent-l3-patent.md) 缺口（本花名册暂未列席）。
+工作台 maintain/monetize/watch 与 Pack F7–F9 缺口见 [agent-l3-patent](./agent-l3-patent.md) / Pack；**F9 无效维权 ≠ `watch` 监测预警**（不借用 `watch_alert`）。
 
 每席四件套：工具 · 剧本 · DomainCommand 候选 · 护栏。写库须 HITL。
 

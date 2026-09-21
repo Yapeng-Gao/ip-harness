@@ -33,7 +33,7 @@
 
 ## 2. 专家席命名 / 口径（对齐 SaaS）
 
-> 演练席已改名：调研 / 立项。壳内 **展示名**跟下表；`id` 以本表为准（旧 `expert-search`/`expert-mining` 作别名可兼容一版）。
+> 壳内 **展示名**跟下表；`id` 以本表为准。**禁止**把 `expert-mining`（挖掘）别名到 `expert-intake`（立项）——与 Pack 硬拧。
 
 | id（冻结） | 展示名 | 对齐 STAGE_MODULES | 产出口径 | 闸/备注 |
 |------------|--------|-------------------|----------|---------|
@@ -47,7 +47,8 @@
 | `expert-filing` | 递交/形式 | draft→authorize/file 闸 | 齐套清单（无独立 key） | 禁真递交；闸+HITL |
 | `expert-oa` | OA答复 | `prosecution` | **`prosecution_response`** | |
 
-**兼容别名（可选）**：`expert-search`→`expert-research`；`expert-mining`→`expert-intake`。
+**兼容别名（仅允许）**：`expert-search`→`expert-research`（查新）。  
+**禁止别名**：`expert-mining` ↛ `expert-intake`（挖掘 ≠ 立项；Pack `expert-mining`=`mining_pack`）。
 
 ### mock 剧本（可点）
 
@@ -112,6 +113,22 @@
 4. Confirm → DomainCommand 壳内示意
 5. 禁止：无项目直进专家；禁止可点 mid
 ```
+
+
+## 6.5 HITL×8 ↔ 壳闸对照（目标态）
+
+| Pack HITL | 含义 | 现壳 / contracts 闸（若有） | 样机今日 |
+|-----------|------|------------------------------|----------|
+| ① 布局拍板 | 布局方案确认 | （提案；可对齐 layout Confirm） | 多未接线 |
+| ② 立项 | Go/范围 | **`go_nogo`** + `intake_quote` | **有** |
+| ③ 交底确认 | 交底可实施 | Confirm→`disclosure_pack` | 示意 |
+| ④ 查新结论 | 三性意见采纳 | Confirm→`research_report` | 示意 |
+| ⑤ 权项确认 | 权利要求定稿 | Confirm→`draft_claims` / `submitClaims` | 示意 |
+| ⑥ OA 策略 | 答复策略 | Confirm→`prosecution_response`；或 `approve_strategy` | 示意 |
+| ⑦ 年费/放弃 | F7 | （缺口 · maintain） | Phase |
+| ⑧ 交易签约 | F8 | （缺口 · monetize） | Phase |
+
+壳闸键勿另起：`go_nogo` · `approve_strategy` · `authorize_file` · `pay_unlock` · `confirm_quote`。完整 Pack 见 design §1。
 
 ## 7. 验收
 

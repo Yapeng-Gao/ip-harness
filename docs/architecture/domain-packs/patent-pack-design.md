@@ -41,6 +41,20 @@
 
 **HITL×8（收费节点）**：①布局 ②立项 ③交底确认 ④查新结论 ⑤权项确认 ⑥OA 策略 ⑦年费 ⑧交易签约。
 
+### HITL×8 ↔ 现壳闸门（对照）
+
+| # | Pack | 壳/contracts 对齐 |
+|---|------|-------------------|
+| ① | 布局拍板 | 样机少；目标 Confirm（layout） |
+| ② | 立项 | **`go_nogo`** + `intake_quote` |
+| ③ | 交底确认 | Confirm → `disclosure_pack` |
+| ④ | 查新结论 | Confirm → `research_report` |
+| ⑤ | 权项确认 | Confirm → `draft_claims` / `submitClaims` |
+| ⑥ | OA 策略 | Confirm → `prosecution_response`；可叠 `approve_strategy` |
+| ⑦ | 年费 | Phase · `maintain_annuity` |
+| ⑧ | 交易签约 | Phase · `monetize_terms` |
+
+
 编排状态机（带环）：Planning → Running → Validating（自修复）→ HumanReview（HITL）→ NextStep / Feedback 退回 / Suspended(pause) / Failed。详见源稿 Mermaid；实现见 [patent-pack-impl](./patent-pack-impl.md)。
 
 ---
@@ -64,7 +78,7 @@
 | 13 | 年费管家 | F7 | 白名单 | ⑦ | **缺口**（→ `maintain`） | Phase；STAGE `maintain_annuity` |
 | 14 | 价值评估师 | F7 | 白名单 | — | **缺口** | Phase；联动年费建议 |
 | 15 | 转化顾问 | F8 | 白名单 | ⑧ | **缺口**（→ `monetize`） | Phase；`monetize_terms` |
-| 16 | 无效维权顾问 | F9 | 白名单 | — | **缺口**（→ `watch`） | Phase；飞轮→F3；≠ `expert-fto` |
+| 16 | 无效维权顾问 | F9 | 白名单 | — | **缺口** | Phase；飞轮→F3；≠ `expert-fto`；**≠** STAGE `watch`（监测预警）——仅职责相邻，**暂不借用** `watch_alert`；提案独立键如 `enforcement_brief`（**不写 packages**） |
 
 另：壳内 `orchestrator`（总控）为编排席，不计入上表 16 业务节点，但产品路径必选。  
 `expert-fto`（FTO）为样机**辅席**，对应自由实施分析；与 Pack「无效维权顾问」职责相邻但**不等同**，勿合并 id。

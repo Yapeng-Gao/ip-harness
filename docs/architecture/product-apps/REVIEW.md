@@ -235,3 +235,16 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 **冲突扫描**：shell/Pack 主路径齐；layers 冷启动与 FTO 残钉、l3 mining 别名 = 三处硬拧。Team≡Domain 仅 runtime 共用——不判偷换。
 
+
+## B席硬拧消歧补丁（架构设计 · 跟 `6ba58ae`）
+
+| 项 | 处置 |
+|----|------|
+| 冷启动双钉 | layers §3 改为**双产品路径**；专利面以 patent-shell 为准 |
+| mining→intake 别名 | **删除**；仅保留 search→research |
+| FTO→layout_insight | layers §5 **改正**；layout_insight 仅布局席 |
+| F9→watch | Pack 注明**不借用** watch_alert；提案独立键 |
+| HITL×8 对照 | pack-design + l3 §6.5 表 |
+| gap P0 | §3.1 内联勾选 |
+
+请 B 席复扫黄项即可。
