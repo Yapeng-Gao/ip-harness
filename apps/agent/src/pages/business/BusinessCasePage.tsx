@@ -39,7 +39,7 @@ function nextKindForCase(
 }
 
 /**
- * 案子工作台 — 席列表 + 席工作（步骤/双文件/推进）+ 待确认闸口
+ * 案子工作台 — 席列表（点席=独立 bot 会话）+ 会话/双文件/交卷 HITL + 群聊占位
  * 案 id = ProjectFolder projectId（一案子一 id）
  */
 export function BusinessCasePage() {
@@ -285,6 +285,20 @@ export function BusinessCasePage() {
               )
             })}
           </ul>
+
+          <div className="shrink-0 border-t border-slate-200 p-2">
+            <Link
+              to={`/agent/projects/${caseId}/room`}
+              className="mb-2 flex items-center justify-center gap-1 rounded-md border border-dashed border-violet-200 bg-violet-50/70 px-2 py-1.5 text-[10px] font-medium text-violet-900 hover:bg-violet-100"
+              data-testid="business-case-group-chat"
+              title="本案群聊（L2 感 · 与单席并存 · 占位）"
+            >
+              群聊 · 本案
+              <span className="rounded bg-white/80 px-1 text-[8px] text-violet-600">
+                占位
+              </span>
+            </Link>
+          </div>
 
           {pending.length > 0 && (
             <div className="shrink-0 border-t border-slate-200 p-2">
