@@ -6,9 +6,12 @@
 
 **规模（当前）**：**16** 个 `apps/*` workspace + **5** 个 `packages/*`（`contracts` / `domain` / `app-state` / `api` / `ui`）。端口以 [`packages/contracts/src/ports.ts`](./packages/contracts/src/ports.ts) 的 `APP_PORTS` 为准（下表与之一字对齐）。
 
-## 仓库有多少项目
+## 仓库有多少项目（共 16 apps）
 
 ### 产品五壳
+
+> 另有 **HTTP 样机 2** + **并行样机壳 9**，与五壳合计 **16** 个 `apps/*`（再加 packages 5）。扫完五壳表请继续往下看。
+
 
 | App | 包名 | 端口 (`APP_PORTS`) | 说明 |
 |-----|------|-------------------|------|
