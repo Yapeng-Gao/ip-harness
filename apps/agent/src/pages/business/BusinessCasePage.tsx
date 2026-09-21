@@ -1,62 +1,34 @@
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import {
-  BUSINESS_STAGES,
   businessSeatLabel,
   currentSeatForProgress,
   seatsForCase,
-  type BusinessConfirmKind,
 } from '../../business/businessSeats'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { advanceButtonLabel } from '../../business/seatStepBodies'
 import { BusinessSeatWorkbench } from '../../components/business/BusinessSeatWorkbench'
+import { getProjectExpert } from '../../projects/experts'
+import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { ProjectExpertId } from '../../projects/types'
 
-const PREPARE_KINDS: Record<string, BusinessConfirmKind> = {
-  intake: 'go_nogo',
-  drafting: 'claims_ready',
-  filing: 'file_authorize',
-  oa: 'oa_strategy',
-  prepare: 'research_ready',
-}
-
-function nextKindForCase(
-  stageId: string,
-  doneSeatIds: string[],
-): BusinessConfirmKind | null {
-  if (stageId === 'prepare') return 'research_ready'
-  if (stageId === 'intake') {
-    if (!doneSeatIds.includes('expert-research')) return 'research_ready'
-    return 'go_nogo'
-  }
-  if (stageId === 'drafting') {
-    if (!doneSeatIds.includes('expert-disclosure')) return 'disclosure_ready'
-    if (!doneSeatIds.includes('expert-draft')) return 'claims_ready'
-    return 'claims_ready'
-  }
-  if (stageId === 'filing') return 'file_authorize'
-  if (stageId === 'oa') return 'oa_strategy'
-  return PREPARE_KINDS[stageId] ?? null
-}
-
 /**
- * 案子工作台 — 席列表（点席=独立 bot 会话）+ 会话/双文件/交卷 HITL + 群聊 room
+ * 案子工作台（刀1–3）：右栏工作面；席列表在左栏；右上唯一主 CTA。
  * 案 id = ProjectFolder projectId（一案子一 id）
  */
 export function BusinessCasePage() {
   const { caseId = '' } = useParams()
-  const [params, setParams] = useSearchParams()
+  const [params] = useSearchParams()
   const navigate = useNavigate()
   const {
     getCase,
     getProgress,
-    getPendingConfirms,
     primaryCta,
-    advanceStage,
-    prepareConfirm,
     stageLabel,
     lastReturnHint,
     clearReturnHint,
   } = useBusinessCases()
+  const { getThread } = useProjectFolder()
 
   useEffect(() => {
     if (!lastReturnHint) return
@@ -66,7 +38,6 @@ export function BusinessCasePage() {
 
   const c = getCase(caseId)
   const prog = getProgress(caseId)
-  const pending = getPendingConfirms(caseId)
   const cta = primaryCta(caseId)
 
   const seatIds = useMemo(
@@ -97,11 +68,27 @@ export function BusinessCasePage() {
         ? seatFromUrl
         : defaultSeat
 
-  const selectSeat = (id: ProjectExpertId) => {
-    setPickedSeat(id)
-    const next = new URLSearchParams(params)
-    next.set('seat', id)
-    setParams(next, { replace: true })
+  // 与左栏 ?seat= 同步
+  useEffect(() => {
+    if (seatFromUrl && seatIds.includes(seatFromUrl) && seatFromUrl !== pickedSeat) {
+      setPickedSeat(seatFromUrl)
+    }
+  }, [seatFromUrl, seatIds, pickedSeat])
+
+  const thread = getThread(caseId, activeSeat)
+  const stepIndex = thread?.stepIndex ?? 0
+  const def = getProjectExpert(activeSeat)
+  const btnRaw = advanceButtonLabel(def.steps, stepIndex)
+  const workLabel = btnRaw === '交卷待确认' ? '交卷' : '让它干活'
+
+  /** 刀2：右上唯一主 CTA — 待确认优先，否则本席干活/交卷 */
+  const [workNonce, setWorkNonce] = useState(0)
+  const onPrimary = () => {
+    if (cta.action === 'confirm' && cta.confirmId) {
+      navigate(`/agent/pending/${cta.confirmId}`)
+      return
+    }
+    setWorkNonce((n) => n + 1)
   }
 
   if (!c) {
@@ -123,26 +110,8 @@ export function BusinessCasePage() {
     )
   }
 
-  const oaLocked = !prog.filed
-
-  const onPrimary = () => {
-    if (cta.action === 'confirm' && cta.confirmId) {
-      navigate(`/agent/pending/${cta.confirmId}`)
-      return
-    }
-    if (prog.stageId === 'prepare') {
-      advanceStage(caseId)
-      return
-    }
-    const kind = nextKindForCase(prog.stageId, prog.doneSeatIds)
-    if (kind) {
-      if (kind === 'oa_strategy' && !prog.filed) return
-      const item = prepareConfirm(caseId, kind)
-      navigate(`/agent/pending/${item.id}`)
-      return
-    }
-    advanceStage(caseId)
-  }
+  const primaryLabel =
+    cta.action === 'confirm' ? `去确认 · ${cta.label}` : workLabel
 
   return (
     <div
@@ -150,7 +119,9 @@ export function BusinessCasePage() {
       data-testid="business-case-page"
       data-case-id={caseId}
       data-project-id={caseId}
+      data-biz-case-ia="1"
     >
+      {/* 顶栏极简：案名 + 单一主 CTA（阶段已并入左栏） */}
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
         <div className="mb-1 text-[11px] text-slate-400">
           <Link to="/agent" className="hover:underline">
@@ -166,12 +137,8 @@ export function BusinessCasePage() {
             </h1>
             <p className="mt-0.5 text-xs text-slate-500">
               {c.summary || '当前：' + stageLabel(prog.stageId)}
-              {prog.filed && prog.stageId === 'oa' && (prog.oaRound ?? 0) > 0
-                ? ` · 第 ${prog.oaRound} 通`
-                : ''}
-              {prog.moreSeatIds.includes('expert-layout')
-                ? ' · 已启用布局'
-                : ''}
+              {' · '}
+              {businessSeatLabel(activeSeat)}
             </p>
           </div>
           <button
@@ -183,40 +150,17 @@ export function BusinessCasePage() {
                 : 'bg-slate-900 text-white'
             }`}
             data-testid="business-case-primary-cta"
+            data-cta-kind={cta.action === 'confirm' ? 'confirm' : 'work'}
+            title={
+              cta.action === 'confirm'
+                ? '去确认待办'
+                : `${businessSeatLabel(activeSeat)} · ${workLabel}`
+            }
           >
-            {cta.action === 'confirm' ? `去确认 · ${cta.label}` : cta.label}
+            {primaryLabel}
           </button>
         </header>
-
-        {/* 紧凑进度 */}
-        <ol
-          className="mt-2 flex flex-wrap gap-1"
-          data-testid="business-timeline"
-        >
-          {BUSINESS_STAGES.map((s) => {
-            const done = prog.completedStages.includes(s.id)
-            const current = prog.stageId === s.id
-            const locked = s.requiresFiled && oaLocked && !done
-            return (
-              <li
-                key={s.id}
-                className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
-                  current
-                    ? 'border-slate-800 bg-slate-900 text-white'
-                    : done
-                      ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                      : locked
-                        ? 'border-slate-100 text-slate-300'
-                        : 'border-slate-200 text-slate-500'
-                }`}
-                data-testid={`business-stage-${s.id}`}
-                data-current={current ? '1' : '0'}
-              >
-                {s.title}
-              </li>
-            )
-          })}
-        </ol>
+        {/* 刀3：不再渲染可点阶段 pill 墙（重复主链） */}
       </div>
 
       {lastReturnHint && (
@@ -229,119 +173,19 @@ export function BusinessCasePage() {
         </div>
       )}
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* 左：席列表 */}
-        <aside
-          className="flex w-[min(11rem,36vw)] shrink-0 flex-col border-r border-slate-200 bg-slate-50/80"
-          data-testid="business-seat-rail"
-        >
-          <div className="border-b border-slate-100 px-2.5 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-            本案席位
-          </div>
-          <ul className="min-h-0 flex-1 overflow-y-auto p-1.5" data-testid="business-seven-seats">
-            {seatIds.map((sid) => {
-              const selected = activeSeat === sid
-              const done = prog.doneSeatIds.includes(sid)
-              const seatPending = pending.some(
-                (p) =>
-                  p.preparedBy === businessSeatLabel(sid) ||
-                  (sid === 'expert-disclosure' &&
-                    p.kind === 'disclosure_ready') ||
-                  (sid === 'expert-research' && p.kind === 'research_ready') ||
-                  (sid === 'expert-intake' && p.kind === 'go_nogo') ||
-                  (sid === 'expert-draft' && p.kind === 'claims_ready') ||
-                  (sid === 'expert-filing' && p.kind === 'file_authorize') ||
-                  (sid === 'expert-oa' && p.kind === 'oa_strategy') ||
-                  (sid === 'expert-layout' && p.kind === 'layout_adjust'),
-              )
-              return (
-                <li key={sid}>
-                  <button
-                    type="button"
-                    onClick={() => selectSeat(sid)}
-                    className={`focus-ring mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-[12px] ${
-                      selected
-                        ? 'bg-slate-900 font-semibold text-white'
-                        : 'text-slate-700 hover:bg-white'
-                    }`}
-                    data-testid={`business-seat-tab-${sid}`}
-                    data-selected={selected ? '1' : '0'}
-                    aria-current={selected ? 'page' : undefined}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-                        done
-                          ? 'bg-emerald-400'
-                          : seatPending
-                            ? 'bg-amber-400'
-                            : selected
-                              ? 'bg-white/70'
-                              : 'bg-slate-300'
-                      }`}
-                    />
-                    <span className="truncate">{businessSeatLabel(sid)}</span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-
-          <div className="shrink-0 border-t border-slate-200 p-2">
-            <Link
-              to={`/agent/cases/${caseId}/room`}
-              className="mb-2 flex items-center justify-center gap-1 rounded-md border border-violet-200 bg-violet-50 px-2 py-1.5 text-[10px] font-medium text-violet-900 hover:bg-violet-100"
-              data-testid="business-case-group-chat"
-              title="本案群聊 · 最小可进 room · 多席互喊示意"
-            >
-              群聊 · 本案
-              <span className="rounded bg-white/80 px-1 text-[8px] text-violet-600">
-                room
-              </span>
-            </Link>
-          </div>
-
-          {pending.length > 0 && (
-            <div className="shrink-0 border-t border-slate-200 p-2">
-              <div className="mb-1 text-[9px] font-semibold uppercase text-amber-700">
-                待我确认 · {pending.length}
-              </div>
-              <ul className="space-y-1">
-                {pending.slice(0, 3).map((item) => (
-                  <li key={item.id}>
-                    <Link
-                      to={`/agent/pending/${item.id}`}
-                      className="block truncate rounded border border-amber-100 bg-amber-50 px-1.5 py-1 text-[10px] font-medium text-amber-950"
-                      data-testid={`business-case-pending-${item.id}`}
-                    >
-                      {item.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                to="/agent/pending"
-                className="mt-1 block text-center text-[10px] text-slate-400 hover:underline"
-              >
-                收件箱
-              </Link>
-            </div>
-          )}
-        </aside>
-
-        {/* 中：席工作 */}
-        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto px-4 py-4 lg:px-6">
-          <BusinessSeatWorkbench
-            caseId={caseId}
-            seatId={activeSeat}
-            onAdvanced={(confirmId) => {
-              if (confirmId) navigate(`/agent/pending/${confirmId}`)
-            }}
-          />
-          <p className="mt-4 text-center text-[11px] text-slate-400">
-            演示环境：进度与确认为样机闭环，非真递交局端。·
-            案=项目同一 id
-          </p>
-        </div>
+      {/* 右栏：席工作面（左栏在 AgentShell） */}
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 lg:px-6">
+        <BusinessSeatWorkbench
+          caseId={caseId}
+          seatId={activeSeat}
+          workNonce={workNonce}
+          onAdvanced={(confirmId) => {
+            if (confirmId) navigate(`/agent/pending/${confirmId}`)
+          }}
+        />
+        <p className="mt-4 text-center text-[11px] text-slate-400">
+          演示环境：进度与确认为样机闭环，非真递交局端。· 案=项目同一 id
+        </p>
       </div>
     </div>
   )

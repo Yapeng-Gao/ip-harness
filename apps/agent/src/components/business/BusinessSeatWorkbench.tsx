@@ -23,18 +23,38 @@ import { deliverableForExpert } from '../../projects/patentDeliverables'
 import type { ProjectExpertId } from '../../projects/types'
 import { CaseProcessPanel } from './CaseProcessPanel'
 
+/** 业务面默认藏工程文件名 / disclosure_pack 等（详情可展） */
+function sanitizeBizBlurb(raw: string): string {
+  return raw
+    .replace(/\b\d{2}_[a-z0-9_]+(?:\.md)?\b/gi, '')
+    .replace(/\bdisclosure_pack\b/gi, '')
+    .replace(/\bworklog\b/gi, '')
+    .replace(/\s*[+·]\s*(?=[+·]|$)/g, '')
+    .replace(/产出\s*/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/[。．]\s*$/g, '。')
+    .trim()
+}
+
 type Props = {
   caseId: string
   seatId: ProjectExpertId
+  /** 案顶单一主 CTA 触发干活/交卷（刀2） */
+  workNonce?: number
   onAdvanced?: (confirmId?: string) => void
 }
 
 /**
- * 席工作面（席=独立 bot · 默认 7 席同构）：
- * 会话（主）人↔席 bot · 成果 NN_*.md · 办理过程 NN_*_worklog.md · 交卷 HITL
- * 干活/交卷 → advanceSeatWork（复用交底样板 + faa7bd2 双文件随步 + 本案 HITL）
+ * 席工作面（席=独立 bot · 7 席同构 · 案页三刀）：
+ * 会话主 · 成果/过程次 tab（默认藏工程文件名）· 交卷 HITL
+ * 推进 → advanceSeatWork；顶栏唯一主 CTA 经 workNonce 触发
  */
-export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
+export function BusinessSeatWorkbench({
+  caseId,
+  seatId,
+  workNonce = 0,
+  onAdvanced,
+}: Props) {
   const { advanceSeatWork, getPendingConfirms, getProgress } = useBusinessCases()
   const { getThread, appendMessage } = useProjectFolder()
   const def = getProjectExpert(seatId)
@@ -48,8 +68,12 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
   const [flashBody, setFlashBody] = useState(false)
   const [flashLogId, setFlashLogId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [showFileNames, setShowFileNames] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
   const bodyRef = useRef<HTMLPreElement>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
+  const lastWorkNonce = useRef(0)
+  const runAdvanceRef = useRef<(userLine?: string) => void>(() => {})
 
   // 切席：复位会话主（7 席同构壳）
   useEffect(() => {
@@ -58,6 +82,8 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
     setBusy(false)
     setFlashBody(false)
     setFlashLogId(null)
+    setShowFileNames(false)
+    setMoreOpen(false)
   }, [seatId, caseId])
 
   const pendingForSeat = useMemo(() => {
@@ -118,9 +144,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
         meta: { backend: 'mock' },
       })
     }
-    // 短延迟：体感席 bot 在干活（样机）
     window.setTimeout(() => {
-      // 交卷步已 pending：只回话，不再抬步（避免重复 HITL）
       if (pendingForSeat.length > 0 || (submitted && atHitl)) {
         appendMessage(caseId, seatId, {
           role: 'assistant',
@@ -134,7 +158,6 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
       const r = advanceSeatWork(caseId, seatId)
       setFlashBody(true)
       if (r.processLogId) setFlashLogId(r.processLogId)
-      // 交卷后切成果一眼可见；非交卷保持会话主
       if (r.delivered && r.confirm) {
         setPanel('artifact')
         appendMessage(caseId, seatId, {
@@ -150,11 +173,25 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
     }, 320)
   }
 
+  runAdvanceRef.current = runAdvance
+
+  // 案顶单一主 CTA → 同路径干活/交卷
+  useEffect(() => {
+    if (!workNonce || workNonce === lastWorkNonce.current) return
+    lastWorkNonce.current = workNonce
+    const label = advanceButtonLabel(
+      getProjectExpert(seatId).steps,
+      getThread(caseId, seatId)?.stepIndex ?? 0,
+    )
+    runAdvanceRef.current(
+      label === '交卷待确认' ? '请交卷，我来确认' : '请按剧本干下一步',
+    )
+  }, [workNonce, caseId, seatId, getThread])
+
   const sendUser = () => {
     const text = draft.trim()
     if (!text || oaLocked || busy) return
     setDraft('')
-    // 交卷意图 / 干活意图 → 同 advanceSeatWork；否则也推进一轮脚本（样机体感跟 bot 聊）
     const deliverIntent =
       /交卷|确认|打包|提交|完成/.test(text) || btnLabel === '交卷待确认'
     runAdvance(
@@ -174,7 +211,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
 
   const displayContent = (role: string, content: string) => {
     if (role === 'system') {
-      return `${seatLabel}已就绪。跟我聊，或点「让它干活」；交卷后会写入待我确认。`
+      return `${seatLabel}已就绪。跟我聊，或点右上「让它干活」；交卷后会写入待我确认。`
     }
     return content
   }
@@ -185,51 +222,42 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
       data-testid="business-seat-workbench"
       data-seat-as-bot="1"
       data-seat-id={seatId}
+      data-biz-case-ia="1"
     >
       <header className="mb-3 flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">
-            {seatLabel}
-            <span className="ml-2 text-[11px] font-normal text-slate-400">
-              席 bot · {def.specialty}
-            </span>
-          </h2>
+          <h2 className="text-sm font-semibold text-slate-900">{seatLabel}</h2>
           <p className="mt-0.5 text-[11px] text-slate-500 line-clamp-2">
-            独立会话 · 7 席同构壳 · 非主链 tab · {def.description}
+            {sanitizeBizBlurb(def.description)}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            to={`/agent/projects/${caseId}/bots/${seatId}`}
-            className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[10px] font-medium text-violet-900"
-            data-testid="business-seat-open-expert"
-            title="专家台打开本案过程（同 projectId）"
-          >
-            专家台 · 本案
-          </Link>
+        {/* 刀2：专家台降次级；无并列主 CTA（主 CTA 在案顶） */}
+        <div className="relative">
           <button
             type="button"
-            onClick={() =>
-              runAdvance(
-                btnLabel === '交卷待确认'
-                  ? '请交卷，我来确认'
-                  : '请按剧本干下一步',
-              )
-            }
-            disabled={oaLocked || busy}
-            className="btn-press focus-ring rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
-            data-testid="business-seat-advance"
-            data-advance-label={btnLabel}
-            title={
-              oaLocked
-                ? '须先确认递交'
-                : btnLabel === '交卷待确认'
-                  ? '席 bot 交卷 · 写入待我确认'
-                  : '席 bot 干活 · 成果与办理过程随步更新'
-            }
+            onClick={() => setMoreOpen((v) => !v)}
+            className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-500 hover:bg-slate-50"
+            data-testid="business-seat-more"
+            aria-expanded={moreOpen}
           >
-            {btnLabel === '交卷待确认' ? '交卷待确认' : '让它干活'}
+            更多
           </button>
+          {moreOpen && (
+            <div
+              className="absolute right-0 z-10 mt-1 min-w-[9rem] rounded-md border border-slate-200 bg-white py-1 shadow-md"
+              data-testid="business-seat-more-menu"
+            >
+              <Link
+                to={`/agent/projects/${caseId}/bots/${seatId}`}
+                className="block px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-50"
+                data-testid="business-seat-open-expert"
+                title="专家台打开本案过程（同 projectId）"
+                onClick={() => setMoreOpen(false)}
+              >
+                专家台 · 本案
+              </Link>
+            </div>
+          )}
         </div>
       </header>
 
@@ -242,6 +270,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
         </p>
       )}
 
+      {/* 刀3：席内步骤 pill 只读 */}
       <ol
         className="mb-3 flex flex-wrap gap-1.5"
         data-testid="business-seat-steps"
@@ -278,7 +307,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
           data-testid="business-seat-pending-gate"
         >
           <div className="text-[10px] font-semibold uppercase tracking-wider text-amber-800">
-            待我确认（闸口 · 非唯一内容）
+            待我确认
           </div>
           <ul className="mt-1 space-y-1">
             {pendingForSeat.map((item) => (
@@ -296,17 +325,17 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
         </div>
       )}
 
-      {/* 三面切换：会话主 · 成果 · 办理过程 */}
+      {/* 会话主 · 成果/过程次 tab（默认藏工程文件名） */}
       <div
-        className="mb-2 flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5"
+        className="mb-2 flex flex-wrap items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5"
         data-testid="business-seat-surface-tabs"
         role="tablist"
       >
         {(
           [
             ['chat', '会话'],
-            ['artifact', dual ? `成果 · ${dual.artifactFile}` : '成果'],
-            ['worklog', dual ? `办理过程 · ${dual.worklogFile}` : '办理过程'],
+            ['artifact', '成果'],
+            ['worklog', '办理过程'],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -335,6 +364,17 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
             ) : null}
           </button>
         ))}
+        {dual && (panel === 'artifact' || panel === 'worklog') ? (
+          <button
+            type="button"
+            className="ml-auto rounded px-2 py-1 text-[9px] text-slate-400 hover:text-slate-600"
+            data-testid="business-seat-toggle-filename"
+            onClick={() => setShowFileNames((v) => !v)}
+            title="详情可展工程文件名"
+          >
+            {showFileNames ? '收起文件名' : '详情 · 文件名'}
+          </button>
+        ) : null}
       </div>
 
       {panel === 'chat' ? (
@@ -345,7 +385,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3">
             {messages.length === 0 ? (
               <p className="text-[12px] text-slate-500">
-                {seatLabel}已就绪。跟我聊，或点「让它干活」。
+                {seatLabel}已就绪。跟我聊，或点右上「让它干活」。
               </p>
             ) : (
               messages.map((m) => (
@@ -416,7 +456,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={onKey}
                 rows={1}
-                placeholder={`跟「${seatLabel}」说…（Enter 发送 · 脚本回合 mock）`}
+                placeholder={`跟「${seatLabel}」说…（Enter 发送）`}
                 className="focus-ring min-h-[2.25rem] flex-1 resize-none rounded-lg border border-slate-200 px-2.5 py-1.5 text-[12px] text-slate-800 placeholder:text-slate-400"
                 data-testid="business-seat-composer"
                 disabled={oaLocked || busy}
@@ -439,9 +479,15 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
           data-testid="business-seat-dual-file"
         >
           <div className="border-b border-slate-100 px-3 py-2 text-[10px] font-semibold text-slate-400">
-            {panel === 'artifact'
-              ? dual?.artifactFile ?? '成果'
-              : dual?.worklogFile ?? '办理过程'}
+            {panel === 'artifact' ? '成果' : '办理过程'}
+            {showFileNames && dual ? (
+              <span
+                className="ml-2 font-mono font-normal text-slate-300"
+                data-testid="business-seat-eng-filename"
+              >
+                {panel === 'artifact' ? dual.artifactFile : dual.worklogFile}
+              </span>
+            ) : null}
           </div>
           {dual ? (
             <pre
@@ -464,7 +510,6 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
         </section>
       )}
 
-      {/* 兼容旧 testid：双文件 tab 快捷仍可点 */}
       <div className="mb-3 hidden" aria-hidden>
         <button
           type="button"
@@ -475,6 +520,19 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
           type="button"
           data-testid="business-dual-tab-worklog"
           onClick={() => setPanel('worklog')}
+        />
+        {/* 兼容旧 advance testid：映射到会话 chip 路径 */}
+        <button
+          type="button"
+          data-testid="business-seat-advance"
+          data-advance-label={btnLabel}
+          onClick={() =>
+            runAdvance(
+              btnLabel === '交卷待确认'
+                ? '请交卷，我来确认'
+                : '请按剧本干下一步',
+            )
+          }
         />
       </div>
 

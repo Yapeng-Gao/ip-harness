@@ -6,6 +6,7 @@
 ## 规格（A · 先交）
 
 权威：[agent-biz-case-ia.md](../architecture/product-apps/agent-biz-case-ia.md)  
+**规格 SHA**：`db5ac05`  
 互链：[agent-business-mode.md](../architecture/product-apps/agent-business-mode.md) · [agent-seat-as-bot.md](../architecture/product-apps/agent-seat-as-bot.md)（席=bot 不回退）
 
 | 刀 | 钉死 |
@@ -30,11 +31,14 @@
 
 | 文件 | 内容 |
 |------|------|
-| `01-knife1-two-col.png` | 两栏：左案子+席 · 右会话主 |
-| `02-knife2-single-cta.png` | 右上唯一主 CTA · 无席 bot 角标 · 专家台次级 |
-| `03-knife2-hide-eng.png` | 成果 tab 无默认 `08_*.md`；详情可展 |
-| `04-knife3-readonly-steps.png` | 席步骤 pill 只读 · 无重复主链墙 |
+| `01-knife1-two-col.png` | 两栏：左案子+席 · 右会话主 · 群聊入口非第三栏 |
+| `02-knife2-single-cta.png` | 待确认→「去确认·…」；更多→专家台次级 |
+| `02b-knife2-work-cta.png` | 无待确认→「让它干活」 |
+| `03-knife2-hide-eng.png` | 成果 tab 默认无 `08_*.md` |
+| `03b-knife2-filename-expanded.png` | 详情展工程文件名 |
+| `04-knife3-readonly-steps.png` | 席步骤 pill 只读 · 无阶段 pill 墙/中轨 |
 | `05-home-intact.png` | 开聊首页未回退 |
+| `06-research-isomorphic.png` | 查新席同构会话壳 |
 
 ## 验收
 
