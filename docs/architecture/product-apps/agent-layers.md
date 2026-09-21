@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21 · 业务模式）**：专利业务冷启动改为 **「我的案子」**（[agent-business-mode](./agent-business-mode.md)）；Catalog→`/agent/catalog`。与双产品路径兼容：业务 `/agent` ≠ 沙盒 `/agent/sandbox`。
 > **变更摘要（2026-09-21 · B席 nits）**：叠名 **Solo=L1 / Team=L2 / Domain=L3**；**双产品冷启动**见 §3；FTO≠`layout_insight`。
 > **变更摘要（2026-09-21）**：叠名 **Solo=L1 / Team=L2 / Domain=L3**（不删除 L1/L2/L3 入口钉）；**Team 与 Domain 共用同一多 bot 运行时**，入口可并列；平台能力一律 **Tool 化**。平台总览 [../agent-platform.md](../agent-platform.md)；差距 [agent-platform-gap.md](./agent-platform-gap.md)。
 > **专利产品壳**以 [agent-patent-shell.md](./agent-patent-shell.md) 为准（Catalog 默认；L1/自由 L2 降级）。
@@ -53,7 +54,7 @@
 | 产品面 | `/agent` 冷启动 | 说明 |
 |--------|-----------------|------|
 | **通用沙盒**（Solo/Team 演练） | **L1 单助手** | 禁止一进来自由多 bot 墙；Team=`/agent/team` |
-| **专利产品**（Domain Pack 子集） | **专利 Catalog** | 以 [agent-patent-shell](./agent-patent-shell.md) 为准；L1 藏「通用沙盒」旁路 |
+| **专利业务**（Domain 收敛） | **我的案子** | 以 [agent-business-mode](./agent-business-mode.md) 为准；Catalog→`/agent/catalog` |
 
 ```text
 # 通用沙盒
@@ -63,7 +64,8 @@
 /agent/sandbox         → （可选显式）通用沙盒入口
 
 # 专利产品（可与上并列；部署可将 /agent 指到 Catalog）
-/agent                 → 专利 Catalog（产品默认时）
+/agent                 → 我的案子（业务默认；见 agent-business-mode）
+/agent/catalog         → 专家工作台（原 Catalog）
 /agent/projects*       → L3 Domain 项目
 /agent/seats/:id       → 单席
 /agent/projects/:id/room → 群聊 loop

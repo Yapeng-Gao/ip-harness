@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21 · 业务模式）**：业务默认入口见 [agent-business-mode](./agent-business-mode.md)（`/agent`=我的案子）。**本文降为专家工作台 / Catalog 规格**（建议路由 `/agent/catalog`）；双文件与席位仍有效。
 > **变更摘要（2026-09-21 · B席）**：与 [agent-layers](./agent-layers.md) **双产品冷启动**对齐——本文件管**专利产品** `/agent`→Catalog；通用沙盒 L1 为旁路。禁 mining→intake 别名。
 > **变更摘要（2026-09-21）**：本文 Catalog 花名册 = 专利 Domain Pack 的 **子集/过渡**；完整 **16 席 · F1–F9 · HITL×8** 见 [../domain-packs/patent-pack-design.md](../domain-packs/patent-pack-design.md)。目标态：规则层裁判 + Handoff 信封 + Pack HITL。端用户**仍禁** mid 可点深链。平台 [../agent-platform.md](../agent-platform.md)。
 # 专利 Agent 壳重做（仅专利 · 过程可见）
@@ -9,11 +10,13 @@
 > **花名册权威材料**（已入库副本）：[SEAT_ROSTER](./patent-drill-ref/SEAT_ROSTER_FOR_PROTOTYPE.md) · [OWNER 矩阵](./patent-drill-ref/OWNER_DELIVERABLE_MATRIX.md) · [过程可见](./patent-drill-ref/PROCESS_VISIBILITY.md)。  
 > **关系**：本文 = **专利产品壳 IA 主规格**；旧 L1 默认 / 自由 L2 主路径 → **降级或旁路**（见 §1）。
 
-## 1. 默认入口 = 专利 Catalog
+## 1. 入口（专家工作台 · 非业务冷启动）
+
+> 业务冷启动见 [agent-business-mode](./agent-business-mode.md)。本节路由为 **专家/演示**。
 
 | 优先级 | 路由（建议） | 说明 |
 |--------|--------------|------|
-| **默认冷启动** | `/agent` → **专利 Catalog** | 多专家可勾选组队；「新建专利项目」主 CTA |
+| **专家工作台** | `/agent/catalog` | 多专家可勾选组队；原 Catalog |
 | 单聊 | `/agent/seats/:seatId` 或 Catalog 点席 | 与一席一对一 |
 | 组队项目 | `/agent/projects/:id` | 固定/已组花名册 + 案目录双文件 |
 | Grok 式群聊 | `/agent/projects/:id/room`（或等价） | bot↔bot 自发 + loop |
@@ -168,7 +171,7 @@ Owner / 过程要点 / 产出标题以 [OWNER 矩阵](./patent-drill-ref/OWNER_D
 
 ## 7. 验收
 
-- [ ] `/agent` 冷启动 = 专利 Catalog（非通用单助手墙）  
+- [ ] `/agent/catalog` = 专家工作台；业务冷启动不抢此页  
 - [ ] 三种交互均可进入；C 有 bot 自发 loop（mock）  
 - [ ] 每席：步骤条 + 成果面板 + worklog 面板（过程默认可见）  
 - [ ] 席名/文件键对齐 SEAT_ROSTER（含 01–13 + 总控）  

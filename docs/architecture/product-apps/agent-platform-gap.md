@@ -1,6 +1,7 @@
 # Agent 平台 · 样机 ↔ 目标规格差距
 
 > **冻结（2026-09-21）**：本轮 **只冻文档**；**样机未动**（`apps/agent` / 相关 packages **零改**）。  
+> **业务壳**：[agent-business-mode](./agent-business-mode.md)（文档已开；样机另令）。  
 > 目标规格：[../agent-platform.md](../agent-platform.md) · [../domain-packs/](../domain-packs/) · 壳 IA [agent-patent-shell](./agent-patent-shell.md)。  
 > 用途：评审差距与下一刀前置条件；**不是**本轮实现清单。
 
