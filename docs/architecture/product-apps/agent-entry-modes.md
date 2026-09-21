@@ -1,6 +1,6 @@
 > **变更摘要（2026-09-21）**：叠名 **Solo=L1 / Team=L2 / Domain=L3**。专利产品路径 = **Domain Pack** + [agent-patent-shell](./agent-patent-shell.md)（Catalog 冷启动）；通用 L1 默认对专利壳降级见壳文。平台 [../agent-platform.md](../agent-platform.md)。
 > **专利壳主规格**：[agent-patent-shell.md](./agent-patent-shell.md)（本文通用/自由口径对专利冷启动**降级**）。
-> **叠层主心智**：[agent-layers.md](./agent-layers.md)。**默认冷启动 = L1**；**L2 与 L3 并列独立入口**（顶栏可达），勿写成「L3 只能从 L2 升」。
+> **叠层主心智**：[agent-layers.md](./agent-layers.md)。**双产品冷启动（勿互斥）**：通用沙盒=`/agent`→**L1 Solo**；专利产品=`/agent`→**Catalog**（[agent-patent-shell](./agent-patent-shell.md)）。L2/L3 顶栏并列。
 # Agent 入口模式（IA · 并列入口钉 · 2026-09-19）
 
 > **冻结（入口钉）**：  
@@ -15,12 +15,12 @@
 
 | 入口 | 路由 | 顶栏 | 形态 |
 |------|------|------|------|
-| **L1 单助手（默认）** | `/agent` | （主） | 一助手 + composer |
+| **L1 单助手（通用沙盒默认）** | `/agent`（沙盒面） | （主） | 一助手 + composer |
 | **L2 团队（独立）** | `/agent/team`、`/agent/bots/*` | 「团队」 | 多 bot + 自发互通 |
-| **L3 专利项目（独立）** | `/agent/projects…` | 「专利项目」 | 焊死 IP 专家 + 中台映射示意 |
+| **L3 专利项目（独立）** | `/agent/projects…`；产品默认时 `/agent`→Catalog | 「专利项目」 | 焊死 IP 专家 + 中台映射示意 |
 
 ```text
-/agent                              → L1 单助手（默认冷启动）
+/agent                              → 通用沙盒=L1；专利产品部署=Catalog（二选一/分流）
 /agent/team                         → L2 团队主壳（多 bot）
 /agent/bots/:botId                  → L2 一对一（仅团队域）
 /agent/bots/new                     → L2 新建 bot（样机 mock）
@@ -90,10 +90,10 @@
 
 ## 5. 默认落地路由（并列入口）
 
-1. `/agent` = **L1**（默认冷启动）。  
-2. 顶栏「团队」→ `/agent/team`（**L2 独立**）。  
-3. 顶栏「专利项目」→ `/agent/projects`（**L3 独立**；不经 L2）。  
-4. 旧 `/agent/compose` 若保留 → 重定向 L1。
+1. **通用沙盒**：`/agent` = **L1 Solo**。  
+2. **专利产品**：`/agent` = **Catalog**（shell）；顶栏「专利项目」→ `/agent/projects`。  
+3. 顶栏「团队」→ `/agent/team`（**L2 独立**）。  
+4. 两路径**不互斥**——部署分流或显式 `/agent/sandbox`。
 
 ## 6. sessions / Catalog
 
@@ -110,8 +110,8 @@
 
 ## 8. 验收
 
-- [ ] **默认冷启动进 L1**  
-- [ ] 顶栏可直接进 **L2 `/agent/team`** 与 **L3 `/agent/projects`**（并列，互不埋）  
+- [ ] **双产品冷启动**写清（通用=L1 / 专利=Catalog）  
+- [ ] 顶栏可直接进 **L2** 与 **L3**（并列，互不埋）  
 - [ ] 多 bot / 互通仅 L2 路由；L3 专家焊死且无「新建专家」  
 - [ ] 写库路径未放松  
 

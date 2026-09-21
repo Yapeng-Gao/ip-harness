@@ -50,6 +50,16 @@
 **兼容别名（仅允许）**：`expert-search`→`expert-research`（查新）。  
 **禁止别名**：`expert-mining` ↛ `expert-intake`（挖掘 ≠ 立项；Pack `expert-mining`=`mining_pack`）。
 
+### id 钉死对照（一词一义）
+
+| id | 唯一含义 | 产物键 |
+|----|----------|--------|
+| `expert-mining` | **专利挖掘** | `mining_pack` |
+| `expert-intake` | **立项决策** | `intake_quote` + `go_nogo` |
+| `expert-research` | **查新暨三性** | `research_report` |
+| `expert-layout` | **专利布局** | 可对齐 `layout_insight` |
+| `expert-fto` | **FTO/自由实施**（辅） | 无独立 key；≠ layout；≠ F9 维权 |
+
 ### mock 剧本（可点）
 
 | id | 剧本摘要 |
