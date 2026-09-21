@@ -6,9 +6,17 @@ type Props = {
   caseId: string
   /** 专家台可展示演示按钮；业务面默认只读过程 */
   showDemos?: boolean
+  /** 推进后闪一下的新日志行 */
+  highlightLogId?: string
 }
 
-function LogRow({ log }: { log: ProcessLogEntry }) {
+function LogRow({
+  log,
+  highlight,
+}: {
+  log: ProcessLogEntry
+  highlight?: boolean
+}) {
   const tone =
     log.kind === 'escalate' || log.kind === 'oa_blocker'
       ? 'border-rose-200 bg-rose-50 text-rose-900'
@@ -25,13 +33,19 @@ function LogRow({ log }: { log: ProcessLogEntry }) {
               log.kind === 'oa_subtask' ||
               log.kind === 'oa_submit'
             ? 'border-violet-200 bg-violet-50 text-violet-950'
-            : log.muted
-              ? 'border-slate-100 bg-slate-50 text-slate-400'
-              : 'border-slate-100 bg-white text-slate-700'
+            : log.kind === 'advance'
+              ? 'border-sky-200 bg-sky-50 text-sky-950'
+              : log.muted
+                ? 'border-slate-100 bg-slate-50 text-slate-400'
+                : 'border-slate-100 bg-white text-slate-700'
   return (
     <li
-      className={`rounded-lg border px-2.5 py-1.5 text-[11px] ${tone}`}
+      className={`rounded-lg border px-2.5 py-1.5 text-[11px] transition-shadow duration-500 ${tone} ${
+        highlight ? 'ring-2 ring-amber-400 shadow-sm' : ''
+      }`}
       data-testid={`process-log-${log.kind}`}
+      data-log-id={log.id}
+      data-highlight={highlight ? '1' : '0'}
       data-muted={log.muted ? '1' : '0'}
       data-attempt={log.attempt ?? ''}
     >
@@ -68,9 +82,19 @@ function LogRow({ log }: { log: ProcessLogEntry }) {
             需人工接手
           </span>
         )}
+        {log.kind === 'advance' && (
+          <span className="rounded bg-sky-200 px-1 text-[9px] font-semibold text-sky-950">
+            推进
+          </span>
+        )}
         {log.muted && (
           <span className="rounded bg-slate-200 px-1 text-[9px] text-slate-500">
             示意（灰）
+          </span>
+        )}
+        {highlight && (
+          <span className="rounded bg-amber-200 px-1 text-[9px] font-semibold text-amber-950">
+            新
           </span>
         )}
         <span className="ml-auto text-[9px] text-slate-400">{log.at}</span>
@@ -87,7 +111,11 @@ function LogRow({ log }: { log: ProcessLogEntry }) {
  * 办理过程 / 环边可见 · Knife1–3
  * 业务面人话；专家台可跑演示剧本
  */
-export function CaseProcessPanel({ caseId, showDemos = false }: Props) {
+export function CaseProcessPanel({
+  caseId,
+  showDemos = false,
+  highlightLogId,
+}: Props) {
   const { getProcessLogs, runLoopDemo } = useBusinessCases()
   const logs = getProcessLogs(caseId)
 
@@ -146,7 +174,11 @@ export function CaseProcessPanel({ caseId, showDemos = false }: Props) {
       ) : (
         <ul className="max-h-64 space-y-1.5 overflow-y-auto">
           {logs.map((log) => (
-            <LogRow key={log.id} log={log} />
+            <LogRow
+              key={log.id}
+              log={log}
+              highlight={highlightLogId === log.id}
+            />
           ))}
         </ul>
       )}

@@ -1,11 +1,16 @@
 import { Link } from 'react-router-dom'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   businessSeatLabel,
   confirmKindForSeat,
   CONFIRM_KIND_LABEL,
 } from '../../business/businessSeats'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
+import {
+  advanceButtonLabel,
+  buildProgressiveArtifact,
+  buildProgressiveWorklog,
+} from '../../business/seatStepBodies'
 import { getProjectExpert } from '../../projects/experts'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import { deliverableForExpert } from '../../projects/patentDeliverables'
@@ -19,7 +24,7 @@ type Props = {
 }
 
 /**
- * 席工作面：步骤条 + 成果/过程双文件 + 推进一步 → 本案待确认
+ * 席工作面：只读步骤进度 + 成果/过程随步更新 + 完成本步/交卷 → 本案待确认
  */
 export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
   const { advanceSeatWork, getPendingConfirms, getProgress } = useBusinessCases()
@@ -30,6 +35,9 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
   const prog = getProgress(caseId)
   const dual = deliverableForExpert(seatId)
   const [tab, setTab] = useState<'artifact' | 'worklog'>('artifact')
+  const [flashBody, setFlashBody] = useState(false)
+  const [flashLogId, setFlashLogId] = useState<string | null>(null)
+  const bodyRef = useRef<HTMLPreElement>(null)
   const pendingForSeat = useMemo(() => {
     const kind = confirmKindForSeat(seatId)
     if (!kind) return []
@@ -38,10 +46,45 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
 
   const oaLocked = seatId === 'expert-oa' && !prog.filed
   const submitted = !!thread?.artifactSubmitted
+  const btnLabel = advanceButtonLabel(def.steps, stepIndex)
+
+  const artifactBody = useMemo(() => {
+    if (!dual) return ''
+    return buildProgressiveArtifact(dual, def.steps, stepIndex)
+  }, [dual, def.steps, stepIndex])
+
+  const worklogBody = useMemo(() => {
+    if (!dual) return ''
+    return buildProgressiveWorklog(dual, def.steps, stepIndex)
+  }, [dual, def.steps, stepIndex])
+
+  useEffect(() => {
+    if (!flashBody) return
+    const t = window.setTimeout(() => setFlashBody(false), 1200)
+    return () => window.clearTimeout(t)
+  }, [flashBody])
+
+  useEffect(() => {
+    if (!flashLogId) return
+    const t = window.setTimeout(() => setFlashLogId(null), 1800)
+    return () => window.clearTimeout(t)
+  }, [flashLogId])
+
+  useEffect(() => {
+    if (!flashBody) return
+    bodyRef.current?.scrollTo({
+      top: bodyRef.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [flashBody, worklogBody, stepIndex])
 
   const onAdvance = () => {
     if (oaLocked) return
     const r = advanceSeatWork(caseId, seatId)
+    // 推进后切办理过程 + 闪新正文 / 新日志
+    setTab('worklog')
+    setFlashBody(true)
+    if (r.processLogId) setFlashLogId(r.processLogId)
     onAdvanced?.(r.confirm?.id)
   }
 
@@ -74,13 +117,16 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
             disabled={oaLocked}
             className="btn-press focus-ring rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
             data-testid="business-seat-advance"
+            data-advance-label={btnLabel}
             title={
               oaLocked
                 ? '须先确认递交'
-                : '推进本席一步；交付过检写入待我确认'
+                : btnLabel === '交卷待确认'
+                  ? '完成本席交付步 · 写入待我确认'
+                  : '完成本步 · 成果与办理过程随步更新'
             }
           >
-            推进一步
+            {btnLabel}
           </button>
         </div>
       </header>
@@ -97,6 +143,8 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
       <ol
         className="mb-3 flex flex-wrap gap-1.5"
         data-testid="business-seat-steps"
+        aria-label="本席步骤进度（只读）"
+        title="只读进度 · 不可点切"
       >
         {def.steps.map((s, i) => {
           const done = i < stepIndex
@@ -104,7 +152,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
           return (
             <li
               key={s.id}
-              className={`rounded-full border px-2.5 py-1 text-[10px] font-medium ${
+              className={`pointer-events-none cursor-default select-none rounded-full border px-2.5 py-1 text-[10px] font-medium ${
                 done
                   ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
                   : current
@@ -113,6 +161,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
               }`}
               data-testid={`business-seat-step-${s.id}`}
               data-current={current ? '1' : '0'}
+              aria-current={current ? 'step' : undefined}
             >
               {i + 1}. {s.label}
               {s.triggersHitl ? ' · 待交' : ''}
@@ -179,28 +228,43 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
               data-testid="business-dual-tab-worklog"
             >
               办理过程
+              {flashBody && tab === 'worklog' ? (
+                <span
+                  className="ml-1 animate-pulse rounded bg-amber-100 px-1 text-[9px] text-amber-900"
+                  data-testid="business-dual-worklog-flash"
+                >
+                  新
+                </span>
+              ) : null}
             </button>
           </div>
           {dual ? (
             <pre
-              className="max-h-56 overflow-y-auto whitespace-pre-wrap p-3 font-mono text-[10px] leading-relaxed text-slate-700"
+              ref={bodyRef}
+              className={`max-h-56 overflow-y-auto whitespace-pre-wrap p-3 font-mono text-[10px] leading-relaxed text-slate-700 transition-colors duration-500 ${
+                flashBody ? 'bg-amber-50 ring-2 ring-amber-200 ring-inset' : ''
+              }`}
               data-testid={
                 tab === 'artifact'
                   ? 'business-dual-artifact-body'
                   : 'business-dual-worklog-body'
               }
+              data-step-index={stepIndex}
             >
               <div className="mb-1 text-[9px] font-semibold text-slate-400">
                 {tab === 'artifact' ? dual.artifactFile : dual.worklogFile}
               </div>
-              {tab === 'artifact' ? dual.sampleArtifact : dual.sampleWorklog}
+              {tab === 'artifact' ? artifactBody : worklogBody}
             </pre>
           ) : (
             <p className="p-3 text-xs text-slate-400">本席暂无双文件约定</p>
           )}
         </section>
         <div className="min-h-0">
-          <CaseProcessPanel caseId={caseId} />
+          <CaseProcessPanel
+            caseId={caseId}
+            highlightLogId={flashLogId ?? undefined}
+          />
         </div>
       </div>
     </div>

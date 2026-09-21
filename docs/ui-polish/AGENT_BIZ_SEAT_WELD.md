@@ -32,3 +32,7 @@
 | `04-catalog-biz-weld.png` | Catalog「进同一业务案」选择条 |
 | `04b-catalog-seat-biz-btn.png` | 席卡「进本案」 |
 | `05-catalog-into-case-seat.png` | 进本案席位（同 projectId） |
+
+## 续 · 推进真更新（同日）
+
+见 [`AGENT_ADVANCE_UX.md`](./AGENT_ADVANCE_UX.md)：成果/过程随步、交卷文案、只读步骤条。

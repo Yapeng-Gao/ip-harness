@@ -345,6 +345,8 @@ type BusinessCaseContextValue = {
     stepLabel: string
     delivered: boolean
     confirm?: BusinessConfirmItem
+    /** 本步写入的办理过程日志 id（供 UI 闪行） */
+    processLogId?: string
   }
 }
 
@@ -1167,23 +1169,41 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       advanceStep(caseId, seatId)
       const step = def.steps[next] ?? def.steps[cur]
       const stepLabel = step?.label ?? def.name
+      const seatName = businessSeatLabel(seatId)
+      const logId = processLogId('adv')
+      const toolBit = step?.tool
+        ? `${step.tool.name} → ${step.tool.preview}`
+        : '本步产出片段已写入成果'
+      appendLogs([
+        {
+          id: logId,
+          caseId,
+          at: processLogStamp(),
+          kind: 'advance',
+          seatId,
+          message: `${seatName} · 完成本步「${stepLabel}」`,
+          detail: step?.triggersHitl
+            ? `交卷待确认 · ${toolBit}`
+            : `做了什么：${step?.script ?? stepLabel} · ${toolBit}`,
+        },
+      ])
       if (!step?.triggersHitl) {
-        return { stepLabel, delivered: false }
+        return { stepLabel, delivered: false, processLogId: logId }
       }
       markArtifactSubmitted(caseId, seatId)
       const kind = confirmKindForSeat(seatId)
       if (!kind) {
-        return { stepLabel, delivered: true }
+        return { stepLabel, delivered: true, processLogId: logId }
       }
       const prog = progressById[caseId] ?? emptyProgress(caseId)
       if (kind === 'oa_strategy' && !prog.filed) {
-        return { stepLabel, delivered: true }
+        return { stepLabel, delivered: true, processLogId: logId }
       }
       const confirm = prepareConfirm(caseId, kind)
       if (confirm.id.startsWith('bcf-blocked')) {
-        return { stepLabel, delivered: true }
+        return { stepLabel, delivered: true, processLogId: logId }
       }
-      return { stepLabel, delivered: true, confirm }
+      return { stepLabel, delivered: true, confirm, processLogId: logId }
     },
     [
       advanceStep,
@@ -1191,6 +1211,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       markArtifactSubmitted,
       prepareConfirm,
       progressById,
+      appendLogs,
     ],
   )
 
