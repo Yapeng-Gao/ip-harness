@@ -320,3 +320,20 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 样机仍冻。相对 `2395e4c` Go-with-nits **升格 Go**。
 
+## B席轻扫 · Pack 内/外循环升格（`6f5daeb`）
+
+**扫范围**：`patent-pack-design.md` · `patent-pack-impl.md` §1.1 · `agent-pack-loops-roadmap.md`（仅 docs）。
+
+| 结论 | **Go-with-nits** |
+|------|------------------|
+| 内≠外钉死 | 过：design §0.2；impl §1.1 BotRuntime vs FlowEngine；超范围 `max_retries=0` 显式外/blocker |
+| Loop 总索引 / F5 / F6 | 过（轻黄）：§5.4 十行可验收；F6 N 通过；F5 四环枚举见 nit |
+| 三刀可派单 | 过：Knife1→2，Knife3∥2；业务人话 / 专家台过程分工清 |
+| vs business-mode | 过：仅对齐指针+环边人话；冷启动/7 席/Catalog 降级未推翻 |
+| Catalog · HITL×8 · FTO≠维权 | 过：仍成立 |
+| 样机诚实 | 过：无真沙箱/LLM 假装；禁 apps |
+
+### Nit
+
+1. **F5「四环边」枚举**：§1.3 含「查新自修复」；§5.5 改为 HITL③/⑤ + 附图→撰写 + escalate→兜底，查新自修复标**节点内边**。统一以 §5.5 为准改 §1.3 一句，避免派工数错边。
+
