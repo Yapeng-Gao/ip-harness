@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21）**：索引补 **agent-platform** · **domain-packs** · **agent-platform-gap**；Solo/Team/Domain 叠名见 [agent-layers](./agent-layers.md)。
 # 产品面规格（product-apps）
 
 > **样机诚实**：今日是多 Vite 壳（`APP_PORTS`）+ 共享 `@ip/*` + `api-mock:5180` 内存店；无真 SSO、真 MCP、真 Agent harness、真可观测。  
@@ -22,6 +23,7 @@
 | L2 团队互通 | [agent-l2-team.md](./agent-l2-team.md) | bot 自发消息；协作任务样机；仅 /agent/team |
 | L3 专利 bot | [agent-l3-patent.md](./agent-l3-patent.md) | 固定专家；产出↔中台；仅项目模式 |
 | **专利 Agent 壳重做** | [agent-patent-shell.md](./agent-patent-shell.md) | **主规格**：Catalog 默认；单聊/组队/群聊；双文件过程可见 |
+| **平台差距表** | [agent-platform-gap.md](./agent-platform-gap.md) | 样机 ↔ Solo/Team/Domain+Pack 目标；**样机本轮未动** |
 | 专利席花名册副本 | [patent-drill-ref/](./patent-drill-ref/) | SEAT_ROSTER / OWNER 矩阵 / PROCESS_VISIBILITY |
 | Agent 案绑定 | [agent-case-binding.md](./agent-case-binding.md) | 先聊/先项目；案可后创建或绑定；不挡入口 |
 | 跨面项目串接 | [project-cross-surface.md](./project-cross-surface.md) | 建项目串 mid/workbench/Agent/IAM；禁专家中截 |
@@ -77,6 +79,9 @@
 | 开发前规格（开 PR） | [../dev-spec/README.md](../dev-spec/README.md) |
 | 样机数据流 / 模型 | [../data-flow.md](../data-flow.md) · [../data-model.md](../data-model.md) |
 | Harness / 命令纪律 | [../../HARNESS.md](../../HARNESS.md) · [../../COMMANDS.md](../../COMMANDS.md) |
+
+| Agent 沙箱平台（正式） | [../agent-platform.md](../agent-platform.md) | L0 工具层 · Solo/Team/Domain · 一 Run 一沙箱 · Driver |
+| Domain Packs | [../domain-packs/README.md](../domain-packs/README.md) | 专利 Pack 设计/实现蓝图；16 席 · F1–F9 |
 | 运维可观测样机 | [../ops-observability.md](../ops-observability.md) |
 | workbench Owner 现状 | [../../workbench/OWNER_STATUS.md](../../workbench/OWNER_STATUS.md) |
 | mid Owner 现状 | [../../mid/STATUS.md](../../mid/STATUS.md) |

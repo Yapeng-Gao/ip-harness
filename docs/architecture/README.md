@@ -31,6 +31,8 @@
 | AI Infra（训推基建） | [ai-infra/README.md](./ai-infra/README.md) · [REVIEW](./ai-infra/REVIEW.md) | **≠ ops**：GPU/调度/训练/批推/在线推理/发布；产品壳建议 :5179；禁 PatentCase |
 | 文档编辑器并行样机（doc-harness） | [doc-harness/README.md](./doc-harness/README.md) | 另壳 :5178；三栏文档+Agent；MVP draft 权利要求；五壳零改 |
 | 产品面规格（product-apps） | [product-apps/README.md](./product-apps/README.md) | 五壳产品规格；默认同壳不拆节点 app；工具/MCP/插件；评审 [product-apps/REVIEW.md](./product-apps/REVIEW.md) **通过** |
+| Agent 沙箱平台 | [agent-platform.md](./agent-platform.md) | L0 工具层 · Solo/Team/Domain · 一 Run 一沙箱 · OpenSandbox/Cube · Driver |
+| Domain Packs | [domain-packs/README.md](./domain-packs/README.md) | 专利 Pack 设计/实现；F1–F9 · 16 席 · HITL×8 |
 | **原型总方案（执行表）** | [../PROTOTYPE_MASTER_PLAN.md](../PROTOTYPE_MASTER_PLAN.md) | 已有/在建/待建队列 · 端口 · 波次 · 标准剧本；样机口径 |
 | **方案波入口** | [../SCHEME_WAVE.md](../SCHEME_WAVE.md) · [汇总 REVIEW](./SCHEME_WAVE_REVIEW.md) | 停原型 · 检索数据面 · 模型训练 |
 | 检索数据面 | [search-data/README.md](./search-data/README.md) · [REVIEW](./search-data/REVIEW.md) | 处理/存储/检索/增量版本/合规/拓扑；≠ ai-data（方案波 S1） |

@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21）**：叠名 **Solo=L1 / Team=L2 / Domain=L3**。专利产品路径 = **Domain Pack** + [agent-patent-shell](./agent-patent-shell.md)（Catalog 冷启动）；通用 L1 默认对专利壳降级见壳文。平台 [../agent-platform.md](../agent-platform.md)。
 > **专利壳主规格**：[agent-patent-shell.md](./agent-patent-shell.md)（本文通用/自由口径对专利冷启动**降级**）。
 > **叠层主心智**：[agent-layers.md](./agent-layers.md)。**默认冷启动 = L1**；**L2 与 L3 并列独立入口**（顶栏可达），勿写成「L3 只能从 L2 升」。
 # Agent 入口模式（IA · 并列入口钉 · 2026-09-19）

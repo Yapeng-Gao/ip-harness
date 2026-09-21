@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21）**：本文 Catalog 花名册 = 专利 Domain Pack 的 **子集/过渡**；完整 **16 席 · F1–F9 · HITL×8** 见 [../domain-packs/patent-pack-design.md](../domain-packs/patent-pack-design.md)。目标态：规则层裁判 + Handoff 信封 + Pack HITL。端用户**仍禁** mid 可点深链。平台 [../agent-platform.md](../agent-platform.md)。
 # 专利 Agent 壳重做（仅专利 · 过程可见）
 
 > **冻结（用户开令）**：优化样机 **仅专利**，勿以通用助手为主路径。  
@@ -114,6 +115,9 @@ cases/<caseOrProject>/
 | `expert-fto` | FTO律师 | `fto_memo` → `11_…` | 同键 | **无**独立 key（辅；≠三性） | ✓ 建议 |
 | `expert-filing` | 递交流程员 | `filing_checklist` → `12_…` | 同键 | authorize→file 闸 | ✓ 主链 |
 | `expert-oa` | OA答复代理师 | `prosecution_response` → `13_…` | 同键 | **`prosecution_response`**；**仅已 file** | ✓ 主链 |
+
+
+> **Pack 对齐**：上表为样机 Catalog（含立项前簇与主链）。目标 Pack 另含年费管家 / 价值评估师 / 转化顾问 / 无效维权顾问（F7–F9）；`expert-fto` 仍为辅席，**不等于** Pack「无效维权顾问」。实现蓝图见 [../domain-packs/patent-pack-impl.md](../domain-packs/patent-pack-impl.md)。
 
 上游/下游以 [SEAT_ROSTER](./patent-drill-ref/SEAT_ROSTER_FOR_PROTOTYPE.md) 为准。  
 Owner / 过程要点 / 产出标题以 [OWNER 矩阵](./patent-drill-ref/OWNER_DELIVERABLE_MATRIX.md) 为准。  

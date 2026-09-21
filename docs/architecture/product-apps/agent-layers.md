@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21）**：叠名 **Solo=L1 / Team=L2 / Domain=L3**（不删除 L1/L2/L3 入口钉）；**Team 与 Domain 共用同一多 bot 运行时**，入口可并列；平台能力一律 **Tool 化**。平台总览 [../agent-platform.md](../agent-platform.md)；差距 [agent-platform-gap.md](./agent-platform-gap.md)。
 > **专利产品壳**以 [agent-patent-shell.md](./agent-patent-shell.md) 为准（Catalog 默认；L1/自由 L2 降级）。
 # Agent 能力三层叠法（L1→L2→L3）
 
@@ -9,6 +10,19 @@
 > **废止歧义**：**禁止**「默认一进 `/agent` 就是 L2 多 bot 墙」。默认冷启动 = **L1**。  
 > **样机诚实**：无真 LLM；写库 HITL→DomainCommand；禁真 case-core。  
 > **不是**并列双产品。
+
+
+## 0. 命名叠层（Solo / Team / Domain）
+
+| 入口钉（保留） | 平台命名 | 运行时 |
+|----------------|----------|--------|
+| **L1** 单助手 | **Solo** | 单对话 + 工具调用 |
+| **L2** 团队 | **Team** | **多 bot 协作 runtime（与 Domain 相同）**；分工现场决定 |
+| **L3** 专利领域 | **Domain** | **同一多 bot runtime**；分工由 Domain Pack SOP 固化 |
+
+- **入口并列**：顶栏可直达 L2 / L3，**不**要求 Domain 只能从 Team 升（入口钉不变）。
+- **能力工具化**：检索 / 画原型 / 代码执行 / 浏览器 / Skill(MCP) 全部注册为 Tool，不是某 bot 私有魔法。
+- 专利产品冷启动以 [agent-patent-shell](./agent-patent-shell.md) 为准；完整 Pack：[../domain-packs/](../domain-packs/)。
 
 ## 1. 类比（冻结）
 

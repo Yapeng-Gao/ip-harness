@@ -1,3 +1,4 @@
+> **变更摘要（2026-09-21）**：目标态对齐 **16 席专利 Domain Pack**（[../domain-packs/patent-pack-design.md](../domain-packs/patent-pack-design.md)）；本文 Catalog / 主链席位为 **子集/过渡**。目标态补齐：规则层裁判（validator）· Handoff 信封 · HITL×8。端用户路径**仍禁**可点 mid 深链验收。平台 [../agent-platform.md](../agent-platform.md) · 差距 [agent-platform-gap.md](./agent-platform-gap.md)。
 # L3 专利领域 bot（中台对接 · 全链路 · 对齐工作台）
 
 > **冻结**：L3 = 专利领域 bot；产出对接**中台/工作台**节点（壳内映射 + DomainCommand 示意）。  
@@ -6,6 +7,20 @@
 > **样机诚实**：禁真 LLM / 真 case-core；**勿臆造**写入 `packages/contracts`。  
 > **壳 IA 主文**：[agent-patent-shell](./agent-patent-shell.md)。  
 > **对齐**：[project-cross-surface](./project-cross-surface.md) · [workbench STAGE_MODULES](../../apps/workbench/src/stages/index.ts) · `ARTIFACT_FOR_STAGE` · [agent-case-binding](./agent-case-binding.md)。
+
+
+## 0. 与 Domain Pack 目标态
+
+| 项 | 本文（过渡） | Pack 目标态 |
+|----|--------------|-------------|
+| 席位 | 总控 + 主链/辅席（约 9–14 Catalog） | **16 业务节点** + 总控；F1–F9 全矩阵 |
+| F7–F9 | maintain/monetize/watch **缺口**已登记 | 年费/价值/转化/维权 **必须列全**；可 Phase 实现 |
+| 裁判 | Confirm + 闸门示意 | **规则层 validator**（代码做裁判） |
+| 流转 | 总控拆派 + 双文件 | **Handoff 信封** + 审计链 |
+| 审批 | 部分 HITL（如 `go_nogo`） | **HITL×8** 收费节点 |
+| mid | **禁止**端用户可点深链当验收 | 同左（不放松） |
+
+完整矩阵与 Catalog id 对照见 Pack 设计 §2。壳 IA：[agent-patent-shell](./agent-patent-shell.md)。
 
 ## 1. 入口（禁止截入）
 
