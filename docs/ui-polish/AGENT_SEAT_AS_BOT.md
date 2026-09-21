@@ -26,8 +26,8 @@
 | 脚本回合 | 发话 / chip → `advanceSeatWork`（同 HITL store）+ 短延迟「正在干活」 |
 | 双文件 | 成果/办理过程 tab；文件名 `08_disclosure_pack(.md|_worklog.md)` |
 | 交卷 | → 本案「确认交底」待确认页 |
-| 群聊 C | 侧栏「群聊 · 本案 占位」→ `/agent/projects/:caseId/room` |
-| 7 席铺开 | **下一步**（同壳复用即可） |
+| 群聊 C | 侧栏「群聊 · 本案 room」→ `/agent/cases/:caseId/room` 最小可进 + 互喊 |
+| 7 席铺开 | **已做（C）** · 见 AGENT_SEAT_BOT_C · 同壳复用 |
 
 ## 验收（:5175 · Asia/Shanghai）
 
@@ -49,3 +49,9 @@
 | `04-artifact-panel.png` | 成果 `08_disclosure_pack.md` |
 | `05-hitl-after-deliver.png` | 交卷 → 本案「确认交底」 |
 | `06-group-chat-placeholder.png` | 群聊占位仍可见 |
+
+## C（接续 · 7 席 + 群聊 room）
+
+见 [AGENT_SEAT_BOT_C.md](./AGENT_SEAT_BOT_C.md) · 截图 `agent-seat-bot-c/`。  
+默认 7 席同构 `BusinessSeatWorkbench`；群聊由占位升为 `/agent/cases/:caseId/room` 最小可进 + 多席互喊示意。
+

@@ -24,6 +24,7 @@ import { PatentRoomPage } from './pages/patent/PatentRoomPage'
 import { BusinessCasesPage } from './pages/business/BusinessCasesPage'
 import { BusinessCaseNewPage } from './pages/business/BusinessCaseNewPage'
 import { BusinessCasePage } from './pages/business/BusinessCasePage'
+import { BusinessCaseRoomPage } from './pages/business/BusinessCaseRoomPage'
 import {
   PendingConfirmDetailPage,
   PendingConfirmInboxPage,
@@ -49,6 +50,7 @@ export default function App() {
                 <Route index element={<BusinessCasesPage />} />
                 <Route path="cases/new" element={<BusinessCaseNewPage />} />
                 <Route path="cases/:caseId" element={<BusinessCasePage />} />
+                <Route path="cases/:caseId/room" element={<BusinessCaseRoomPage />} />
                 <Route path="pending" element={<PendingConfirmInboxPage />} />
                 <Route path="pending/:confirmId" element={<PendingConfirmDetailPage />} />
                 <Route path="catalog" element={<PatentCatalogPage />} />

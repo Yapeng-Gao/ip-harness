@@ -30,9 +30,9 @@ type Props = {
 }
 
 /**
- * 席工作面（席=独立 bot）：
- * 会话（主）人↔席 bot · 成果 NN_*.md · 办理过程 NN_*_worklog.md
- * 干活/交卷 → advanceSeatWork（复用 faa7bd2 双文件随步 + 本案 HITL）
+ * 席工作面（席=独立 bot · 默认 7 席同构）：
+ * 会话（主）人↔席 bot · 成果 NN_*.md · 办理过程 NN_*_worklog.md · 交卷 HITL
+ * 干活/交卷 → advanceSeatWork（复用交底样板 + faa7bd2 双文件随步 + 本案 HITL）
  */
 export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
   const { advanceSeatWork, getPendingConfirms, getProgress } = useBusinessCases()
@@ -50,6 +50,15 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
   const [busy, setBusy] = useState(false)
   const bodyRef = useRef<HTMLPreElement>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
+
+  // 切席：复位会话主（7 席同构壳）
+  useEffect(() => {
+    setPanel('chat')
+    setDraft('')
+    setBusy(false)
+    setFlashBody(false)
+    setFlashLogId(null)
+  }, [seatId, caseId])
 
   const pendingForSeat = useMemo(() => {
     const kind = confirmKindForSeat(seatId)
@@ -175,6 +184,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
       className="flex min-h-0 flex-1 flex-col"
       data-testid="business-seat-workbench"
       data-seat-as-bot="1"
+      data-seat-id={seatId}
     >
       <header className="mb-3 flex flex-wrap items-start justify-between gap-2">
         <div>
@@ -185,7 +195,7 @@ export function BusinessSeatWorkbench({ caseId, seatId, onAdvanced }: Props) {
             </span>
           </h2>
           <p className="mt-0.5 text-[11px] text-slate-500 line-clamp-2">
-            独立会话 · 非主链 tab · {def.description}
+            独立会话 · 7 席同构壳 · 非主链 tab · {def.description}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
