@@ -30,9 +30,9 @@ import {
 } from './pages/business/PendingConfirmPage'
 
 /**
- * Business mode (agent-business-mode c3fffe4):
- * /agent = 我的案子；Catalog → /agent/catalog。
- * Solo/Team 旁路保留。
+ * Business mode:
+ * /agent = chat home (empty center + case rail); Catalog = expert bypass.
+ * Solo/Team bypass kept.
  */
 export default function App() {
   return (

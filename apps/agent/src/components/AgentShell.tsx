@@ -14,6 +14,7 @@ import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { AgentSessionSidebar } from './AgentSessionSidebar'
 import { PersonaRouteGate } from '@shared/components/PersonaRouteGate'
 import { PendingConfirmBell } from './business/PendingConfirmBell'
+import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
 import { useAgentDebug } from '../business/useAgentDebug'
 
 export function AgentShell() {
@@ -197,6 +198,7 @@ export function AgentShell() {
       </header>
 
       <div className="flex min-h-0 flex-1">
+        {inBusiness && <BusinessCaseSidebar />}
         {!inProjects && !inGrokShell && !inBusiness && !inCatalog && (
           <AgentSessionSidebar />
         )}

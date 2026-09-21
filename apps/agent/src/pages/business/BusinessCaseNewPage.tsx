@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
   BUSINESS_DEFAULT_SEAT_IDS,
@@ -10,6 +10,7 @@ import {
   type BusinessStageId,
 } from '../../business/businessSeats'
 import type { ProjectExpertId } from '../../projects/types'
+import type { BusinessHomeStartState } from './BusinessCasesPage'
 
 /**
  * 新建案子向导 — 时间线 5 段预览 + 默认 7 席；主 CTA ≠ 选专家组队
@@ -18,15 +19,17 @@ import type { ProjectExpertId } from '../../projects/types'
 export function BusinessCaseNewPage() {
   const { createCaseFromWizard } = useBusinessCases()
   const navigate = useNavigate()
+  const loc = useLocation()
+  const start = (loc.state ?? null) as BusinessHomeStartState | null
   const [step, setStep] = useState(0)
-  const [title, setTitle] = useState('')
-  const [summary, setSummary] = useState('')
+  const [title, setTitle] = useState(() => start?.title?.trim() ?? '')
+  const [summary, setSummary] = useState(() => start?.summary?.trim() ?? '')
   const [moreOpen, setMoreOpen] = useState(false)
   const [moreSeats, setMoreSeats] = useState<Set<ProjectExpertId>>(new Set())
-  const [skipPrepare, setSkipPrepare] = useState(true)
+  const [skipPrepare, setSkipPrepare] = useState(() => start?.chip !== 'disclosure')
   /** 办理路线选中态（展示用；点卡可直接进下一步） */
-  const [routeId, setRouteId] = useState<BusinessStageId | null>(
-    skipPrepare ? 'intake' : 'prepare',
+  const [routeId, setRouteId] = useState<BusinessStageId | null>(() =>
+    start?.chip === 'disclosure' ? 'prepare' : 'intake',
   )
 
   const steps = useMemo(
