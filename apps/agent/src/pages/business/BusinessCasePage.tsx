@@ -132,6 +132,9 @@ export function BusinessCasePage() {
             <h1 className="text-[20px] font-semibold text-slate-900">{c.title}</h1>
             <p className="mt-1 text-sm text-slate-500">
               {c.summary || '当前：' + stageLabel(prog.stageId)}
+              {prog.filed && prog.stageId === 'oa' && (prog.oaRound ?? 0) > 0
+                ? ` · 第 ${prog.oaRound} 通`
+                : ''}
             </p>
           </div>
           <button
@@ -192,6 +195,14 @@ export function BusinessCasePage() {
                       {locked && (
                         <span className="text-[10px] text-slate-400">
                           递交后解锁
+                        </span>
+                      )}
+                      {s.id === 'oa' && prog.filed && (prog.oaRound ?? 0) > 0 && (
+                        <span
+                          className="rounded bg-violet-100 px-1.5 py-px text-[10px] font-semibold text-violet-900"
+                          data-testid="business-oa-round-badge"
+                        >
+                          第 {prog.oaRound} 通
                         </span>
                       )}
                       {current && (

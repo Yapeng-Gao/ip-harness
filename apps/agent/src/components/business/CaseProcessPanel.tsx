@@ -10,13 +10,17 @@ type Props = {
 
 function LogRow({ log }: { log: ProcessLogEntry }) {
   const tone =
-    log.kind === 'escalate'
+    log.kind === 'escalate' || log.kind === 'oa_blocker'
       ? 'border-rose-200 bg-rose-50 text-rose-900'
-      : log.kind === 'figure_feedback' || log.kind === 'hitl_return'
+      : log.kind === 'figure_feedback' ||
+          log.kind === 'hitl_return' ||
+          log.kind === 'oa_round'
         ? 'border-amber-200 bg-amber-50 text-amber-950'
-        : log.muted
-          ? 'border-slate-100 bg-slate-50 text-slate-400'
-          : 'border-slate-100 bg-white text-slate-700'
+        : log.kind === 'oa_classify' || log.kind === 'oa_subtask' || log.kind === 'oa_submit'
+          ? 'border-violet-200 bg-violet-50 text-violet-950'
+          : log.muted
+            ? 'border-slate-100 bg-slate-50 text-slate-400'
+            : 'border-slate-100 bg-white text-slate-700'
   return (
     <li
       className={`rounded-lg border px-2.5 py-1.5 text-[11px] ${tone}`}
@@ -30,12 +34,24 @@ function LogRow({ log }: { log: ProcessLogEntry }) {
             {businessSeatLabel(log.seatId)}
           </span>
         )}
-        {typeof log.attempt === 'number' && log.maxAttempts != null && (
+        {typeof log.oaRound === 'number' && log.oaRound > 0 && (
+          <span className="rounded bg-violet-100 px-1 text-[9px] font-semibold text-violet-900">
+            第 {log.oaRound} 通
+          </span>
+        )}
+        {typeof log.attempt === 'number' &&
+          log.maxAttempts != null &&
+          log.kind !== 'oa_blocker' && (
           <span className="rounded bg-amber-100 px-1 text-[9px] font-semibold text-amber-900">
             重试 {log.attempt}/{log.maxAttempts}
           </span>
         )}
-        {log.kind === 'escalate' && (
+        {log.kind === 'oa_blocker' && (
+          <span className="rounded bg-rose-200 px-1 text-[9px] font-semibold text-rose-950">
+            超范围 · 0 次自修复
+          </span>
+        )}
+        {(log.kind === 'escalate' || log.kind === 'oa_blocker') && (
           <span className="rounded bg-rose-200 px-1 text-[9px] font-semibold text-rose-950">
             需人工接手
           </span>
@@ -72,7 +88,7 @@ export function CaseProcessPanel({ caseId, showDemos = false }: Props) {
         办理过程
       </h2>
       <p className="mb-2 text-[11px] text-slate-500">
-        退回修改 / 再查一轮 / 检查重试 · 超限需人工接手（样机）
+        退回修改 / 再查一轮 / 检查重试 · 第 N 通 · 超限需人工接手（样机）
       </p>
 
       {showDemos && (
@@ -88,6 +104,11 @@ export function CaseProcessPanel({ caseId, showDemos = false }: Props) {
               ['draft_escalate', '超3次升级'],
               ['figure_feedback', '附图退回撰写'],
               ['research_pessimistic', '查新不乐观(灰)'],
+              ['oa_inventive', 'OA·创造性+补充检索'],
+              ['oa_clarity', 'OA·清楚性+修术语'],
+              ['oa_strategy_reject', 'OA·策略驳回'],
+              ['oa_round2', '第2通到达'],
+              ['oa_blocker', '超范围blocker'],
             ] as const
           ).map(([key, label]) => (
             <button

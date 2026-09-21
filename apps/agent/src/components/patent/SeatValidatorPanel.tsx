@@ -5,7 +5,10 @@ import {
   mockValidate,
   type ValidatorResult,
 } from '../../projects/pack/patentValidator'
-import { SELF_HEAL_MAX } from '../../business/packLoops'
+import {
+  OA_BLOCKER_SELF_HEAL_MAX,
+  SELF_HEAL_MAX,
+} from '../../business/packLoops'
 import {
   envelopeToWorklogLines,
   sampleEnvelopeForSeat,
@@ -41,8 +44,37 @@ export function SeatValidatorPanel({
   const [escalated, setEscalated] = useState(false)
   const packHitl = packHitlForSeat(expertId)
   const enabled = hasMockValidator(expertId)
+  const isOaSeat = expertId === 'expert-oa'
 
   const thread = projectId ? getThread(projectId, expertId) : undefined
+
+  /** Knife2：超范围 blocker · 0 次自修复 · 禁自动重试假闭环 */
+  const runOaScopeBlocker = () => {
+    setAttempt(1)
+    setEscalated(true)
+    setResult({
+      seatId: expertId,
+      specName: 'oa_scope_blocker',
+      issues: [
+        {
+          code: 'oa.scope.no_basis',
+          message:
+            '超范围红线 · 修改无原始依据 · 需人工接手（0 次自修复，禁自动重试）',
+          blocker: true,
+        },
+      ],
+      pass: false,
+      attempt: 1,
+    })
+    if (projectId) {
+      appendMessage(projectId, expertId, {
+        role: 'system',
+        content:
+          '【需人工接手】超范围 blocker · 自修复 0/0 · 已直接升级（禁静默重跑）',
+        meta: { backend: 'mock' },
+      })
+    }
+  }
 
   const run = (nextAttempt: number) => {
     if (escalated) return
@@ -130,6 +162,9 @@ export function SeatValidatorPanel({
 
   const summary = useMemo(() => {
     if (!result) return null
+    if (escalated && result.specName === 'oa_scope_blocker') {
+      return `需人工接手 · 超范围 · 自修复 ${OA_BLOCKER_SELF_HEAL_MAX}/${OA_BLOCKER_SELF_HEAL_MAX}`
+    }
     if (escalated) return `需人工接手 · 已重试 ${SELF_HEAL_MAX}/${SELF_HEAL_MAX}`
     if (result.pass) return `检查通过 · 重试 ${result.attempt}/${SELF_HEAL_MAX}`
     return `检查未通过·已重试 ${result.attempt}/${SELF_HEAL_MAX}`
@@ -202,6 +237,18 @@ export function SeatValidatorPanel({
         >
           演示超限→人工接手
         </button>
+        {isOaSeat && (
+          <button
+            type="button"
+            onClick={runOaScopeBlocker}
+            disabled={escalated}
+            className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-rose-400 bg-rose-100 px-2 py-1 text-[11px] font-medium text-rose-950 disabled:cursor-not-allowed disabled:opacity-40"
+            data-testid="validator-oa-blocker"
+          >
+            <AlertTriangle className="h-3 w-3" aria-hidden />
+            超范围 blocker→需人工接手（0次）
+          </button>
+        )}
         <button
           type="button"
           onClick={writeHandoff}

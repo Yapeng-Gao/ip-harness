@@ -1,6 +1,6 @@
 /**
- * Knife1 · F5 内循环 + 跨席环边（样机 mock · 无真沙箱）
- * 权威：patent-pack-design §5.5 · agent-pack-loops-roadmap Knife1
+ * Knife1 · F5 内循环 + 跨席环边；Knife2 · F6 OA N 通外循环（样机 mock · 无真沙箱）
+ * 权威：patent-pack-design §5.5 · agent-pack-loops-roadmap Knife1/2
  */
 import type { ProjectExpertId } from '../projects/types'
 import type { BusinessConfirmKind } from './businessSeats'
@@ -11,6 +11,20 @@ export const SELF_HEAL_MAX = 3
 /** 交底缺项追问上限（内循环） */
 export const DISCLOSURE_ASK_MAX = 5
 
+
+/** 超范围 blocker：0 次自修复（一次失败→需人工接手） */
+export const OA_BLOCKER_SELF_HEAL_MAX = 0
+
+/** 理由分类 mock 分支 */
+export type OaReasonClass = 'inventive' | 'clarity' | 'sufficiency' | 'novelty'
+
+export const OA_REASON_LABEL: Record<OaReasonClass, string> = {
+  inventive: '创造性',
+  clarity: '清楚性',
+  sufficiency: '公开不充分',
+  novelty: '新颖性',
+}
+
 export type ProcessLogKind =
   | 'disclosure_ask'
   | 'research_heal'
@@ -20,6 +34,11 @@ export type ProcessLogKind =
   | 'research_pessimistic'
   | 'escalate'
   | 'advance'
+  | 'oa_classify'
+  | 'oa_subtask'
+  | 'oa_round'
+  | 'oa_submit'
+  | 'oa_blocker'
 
 export type ProcessLogEntry = {
   id: string
@@ -35,6 +54,10 @@ export type ProcessLogEntry = {
   maxAttempts?: number
   /** 灰显：HITL④ 不乐观回流示意 */
   muted?: boolean
+  /** OA 第 N 通 */
+  oaRound?: number
+  /** 理由分类（创造性 / 清楚性 …） */
+  oaReason?: OaReasonClass
 }
 
 export function processLogStamp(): string {
@@ -202,6 +225,136 @@ export function researchPessimisticLog(caseId: string): ProcessLogEntry {
     detail: '回流布局/产业全景 · 本刀仅灰示意',
     muted: true,
   }
+}
+
+
+export function oaClassifyLog(
+  caseId: string,
+  reason: OaReasonClass,
+  round = 1,
+): ProcessLogEntry {
+  return {
+    id: processLogId('oacls'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'oa_classify',
+    seatId: 'expert-oa',
+    oaRound: round,
+    oaReason: reason,
+    message: `第 ${round} 通 · 理由分类：${OA_REASON_LABEL[reason]}`,
+    detail: '审查答复席 · 理由分类器（mock 分支）',
+  }
+}
+
+/** 子任务汇入示意：创造性→补充检索；清楚性/公开不充分→修术语 */
+export function oaSubtaskMergeLogs(
+  caseId: string,
+  reason: OaReasonClass,
+  round = 1,
+): ProcessLogEntry[] {
+  if (reason === 'inventive' || reason === 'novelty') {
+    return [
+      {
+        id: processLogId('oasub'),
+        caseId,
+        at: processLogStamp(),
+        kind: 'oa_subtask',
+        seatId: 'expert-research',
+        oaRound: round,
+        oaReason: reason,
+        message: `第 ${round} 通 · 子任务汇入：补充检索`,
+        detail: '查新子 Run → 汇入答复包（示意）',
+      },
+    ]
+  }
+  return [
+    {
+      id: processLogId('oasub'),
+      caseId,
+      at: processLogStamp(),
+      kind: 'oa_subtask',
+      seatId: 'expert-draft',
+      oaRound: round,
+      oaReason: reason,
+      message: `第 ${round} 通 · 子任务汇入：修术语 / 补实施例`,
+      detail: '撰写子 Run → 汇入答复包（示意）',
+    },
+  ]
+}
+
+/** 第 N 通通知书到达 → 回答复入口 */
+export function oaRoundArriveLog(caseId: string, round: number): ProcessLogEntry {
+  return {
+    id: processLogId('oarnd'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'oa_round',
+    seatId: 'expert-oa',
+    oaRound: round,
+    message:
+      round <= 1
+        ? `第 ${round} 通审查意见到达 · 可开始答复`
+        : `第 ${round} 通通知书到达 · 回到答复入口`,
+    detail: 'N 通外循环 · 计数可见（无真局端）',
+  }
+}
+
+export function oaSubmitLog(caseId: string, round: number): ProcessLogEntry {
+  return {
+    id: processLogId('oasubmit'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'oa_submit',
+    seatId: 'expert-oa',
+    oaRound: round,
+    message: `第 ${round} 通答复已提交（样机）`,
+    detail: '策略已确认 · 等待下一通或结案',
+  }
+}
+
+/**
+ * 超范围 blocker：一次失败 → 需人工接手（0 次自修复）
+ * 禁止出现「自动重试修改」假闭环
+ */
+export function oaBlockerEscalateLog(
+  caseId: string,
+  round = 1,
+): ProcessLogEntry {
+  return {
+    id: processLogId('oablk'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'oa_blocker',
+    seatId: 'expert-oa',
+    oaRound: round,
+    attempt: 1,
+    maxAttempts: OA_BLOCKER_SELF_HEAL_MAX,
+    message: '需人工接手',
+    detail: `超范围红线 · 修改无原始依据 · 自修复 ${OA_BLOCKER_SELF_HEAL_MAX} 次（禁自动重试）`,
+  }
+}
+
+/** 准备「确认答复策略」前的 OA 剧本：分类 → 子任务汇入 */
+export function oaStrategyPrepScript(
+  caseId: string,
+  reason: OaReasonClass = 'inventive',
+  round = 1,
+): ProcessLogEntry[] {
+  return [
+    oaClassifyLog(caseId, reason, round),
+    ...oaSubtaskMergeLogs(caseId, reason, round),
+    {
+      id: processLogId('oaadv'),
+      caseId,
+      at: processLogStamp(),
+      kind: 'advance',
+      seatId: 'expert-oa',
+      oaRound: round,
+      oaReason: reason,
+      message: `第 ${round} 通 · 答复策略草案已就绪 · 待确认答复策略`,
+      detail: 'HITL⑥ 策略确认闸',
+    },
+  ]
 }
 
 export function escalateLog(
