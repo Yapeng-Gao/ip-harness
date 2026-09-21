@@ -14,6 +14,9 @@ import {
 } from '../../projects/experts'
 import { CaseBindControls } from '../../components/case/CaseBindControls'
 import { PatentMidMapPanel } from '../../components/projects/PatentMidMapPanel'
+import { PackHitlOverview } from '../../components/patent/PackHitlOverview'
+import { SeatValidatorPanel } from '../../components/patent/SeatValidatorPanel'
+import { hasMockValidator } from '../../projects/pack/patentValidator'
 
 export function ProjectWorkspacePage() {
   const { projectId, botId, expertId } = useParams<{
@@ -121,6 +124,14 @@ export function ProjectWorkspacePage() {
             }
           />
         </div>
+        {isPatent && (
+          <div className="shrink-0 space-y-2 border-b border-slate-100 bg-slate-50/60 px-3 py-2">
+            <PackHitlOverview compact projectId={projectId} />
+            {hasMockValidator(resolved) && (
+              <SeatValidatorPanel expertId={resolved} projectId={projectId} />
+            )}
+          </div>
+        )}
         <div className="flex min-h-0 flex-1">
           <ProjectChatPane
             projectId={projectId}

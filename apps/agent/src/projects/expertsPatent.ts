@@ -446,7 +446,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "专利布局",
     "role": "expert",
     "specialty": "主从案保护网 · layout_plan",
-    "description": "主从案与保护网。产出 05_layout_plan + worklog。",
+    "description": "主从案与保护网。产出 05_layout_plan + worklog。【HITL①】布局拍板。",
     "tools": [
       "plan_family",
       "map_protection_net",
@@ -1017,7 +1017,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "FTO律师",
     "role": "expert",
     "specialty": "自由实施 · fto_memo",
-    "description": "自由实施+claim chart。产出 11_fto_memo + worklog。辅席·≠三性查新。",
+    "description": "自由实施+claim chart。产出 11_fto_memo + worklog。辅席·≠三性查新；≠ Pack 无效维权顾问（expert-enforcement）。",
     "tools": [
       "extract_fto_features",
       "fto_hit_scan",
@@ -1303,6 +1303,142 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "defaultTeam": true,
     "ownerLabel": "客户/发明人"
   },
+
+  "expert-annuity": {
+    "id": "expert-annuity",
+    "name": "年费管家",
+    "role": "expert",
+    "specialty": "年费/放弃 · maintain_annuity",
+    "description": "F7 授权后管理 · 期限+滞纳金表联动价值分级。【HITL⑦】年费/放弃。Phase 席。",
+    "tools": ["list_annuity_due", "compute_surcharge", "propose_pay_or_abandon"],
+    "shortcuts": [
+      {"id": "due", "label": "到期清单", "action": "jump", "stepId": "due"},
+      {"id": "decide", "label": "缴费/放弃", "action": "jump", "stepId": "decide"}
+    ],
+    "steps": [
+      {
+        "id": "due",
+        "label": "到期台账",
+        "script": "【年费】Phase 空态：期限表尚未接线。样机仅示意 HITL⑦。",
+        "tool": {"name": "list_annuity_due", "preview": "phase=true"}
+      },
+      {
+        "id": "decide",
+        "label": "缴费/放弃闸",
+        "script": "【年费】待价值评估联动后开放 Confirm（pay_unlock 心智）。",
+        "triggersHitl": true,
+        "hitlGate": "pay_unlock"
+      }
+    ],
+    "hitlGates": ["pay_unlock"],
+    "domainCommandCandidates": [
+      {"command": null, "label": "Phase · 不写库", "note": "maintain_annuity 心智 · 未接线"}
+    ],
+    "guardrails": ["Phase 空态", "禁真缴费"],
+    "catalogAgentId": "agent-annuity",
+    "accent": "yellow",
+    "catalogGroup": "phase",
+    "defaultTeam": false,
+    "ownerLabel": "IP 运营",
+    "phase": true,
+    "emptyStateNote": "F7 年费管家为 Phase 席：期限/滞纳金表与真沙箱未接线。名单已对齐 Pack；可点进本空态说明。HITL⑦ 在总览可见但灰显，待后续刀。"
+  },
+  "expert-valuation": {
+    "id": "expert-valuation",
+    "name": "价值评估师",
+    "role": "expert",
+    "specialty": "核心/外围/放弃 · valuation",
+    "description": "F7 价值评分：引用/同族/许可/产品映射。联动年费建议。Phase 席。",
+    "tools": ["score_portfolio", "grade_core_periphery", "draft_valuation_card"],
+    "shortcuts": [
+      {"id": "score", "label": "评分卡", "action": "jump", "stepId": "score"}
+    ],
+    "steps": [
+      {
+        "id": "score",
+        "label": "评分卡",
+        "script": "【价值】Phase 空态：公式工具未接线。产出键提案 valuation_card（不写 packages）。",
+        "tool": {"name": "draft_valuation_card", "preview": "phase=true"}
+      }
+    ],
+    "hitlGates": [],
+    "domainCommandCandidates": [
+      {"command": null, "label": "Phase · 提案键", "note": "不写 packages"}
+    ],
+    "guardrails": ["Phase 空态", "联动年费仅建议"],
+    "catalogAgentId": null,
+    "accent": "purple",
+    "catalogGroup": "phase",
+    "defaultTeam": false,
+    "ownerLabel": "IP 决策",
+    "phase": true,
+    "emptyStateNote": "F7 价值评估师为 Phase 席：评分类公式工具未装配。名单已齐；点进见本空态。无独立 HITL（服务 HITL⑦）。"
+  },
+  "expert-monetize": {
+    "id": "expert-monetize",
+    "name": "转化顾问",
+    "role": "expert",
+    "specialty": "许可/转让 · monetize_terms",
+    "description": "F8 转化变现 · 估值与合同必备条款。【HITL⑧】交易签约。Phase 席。",
+    "tools": ["estimate_deal", "draft_term_sheet", "validate_contract_clauses"],
+    "shortcuts": [
+      {"id": "terms", "label": "条款草案", "action": "jump", "stepId": "terms"}
+    ],
+    "steps": [
+      {
+        "id": "terms",
+        "label": "条款草案",
+        "script": "【转化】Phase 空态：合同 validator 未接线。HITL⑧ 总览可见。",
+        "tool": {"name": "draft_term_sheet", "preview": "phase=true"},
+        "triggersHitl": true,
+        "hitlGate": "confirm_quote"
+      }
+    ],
+    "hitlGates": ["confirm_quote"],
+    "domainCommandCandidates": [
+      {"command": null, "label": "Phase · monetize_terms 心智", "note": "未写库"}
+    ],
+    "guardrails": ["Phase 空态", "禁真签约"],
+    "catalogAgentId": "agent-monetize",
+    "accent": "emerald",
+    "catalogGroup": "phase",
+    "defaultTeam": false,
+    "ownerLabel": "商务/IP",
+    "phase": true,
+    "emptyStateNote": "F8 转化顾问为 Phase 席：估值公式与合同条款 validator 未接线。名单已对齐 Pack；HITL⑧ 灰显可在总览查看。"
+  },
+  "expert-enforcement": {
+    "id": "expert-enforcement",
+    "name": "无效维权顾问",
+    "role": "expert",
+    "specialty": "无效/维权 · enforcement_brief",
+    "description": "F9 维权防御 · 全面覆盖比对；飞轮回流 F3。≠ FTO（expert-fto）；≠ watch 监测预警。Phase 席。",
+    "tools": ["claim_chart_compare", "stability_score", "draft_enforcement_brief"],
+    "shortcuts": [
+      {"id": "compare", "label": "比对表", "action": "jump", "stepId": "compare"}
+    ],
+    "steps": [
+      {
+        "id": "compare",
+        "label": "覆盖比对",
+        "script": "【维权】Phase 空态：比对器未接线。提案键 enforcement_brief（不写 packages）。≠ expert-fto。",
+        "tool": {"name": "draft_enforcement_brief", "preview": "phase=true · ≠fto"}
+      }
+    ],
+    "hitlGates": [],
+    "domainCommandCandidates": [
+      {"command": null, "label": "Phase · 提案键", "note": "enforcement_brief · 勿借用 watch_alert"}
+    ],
+    "guardrails": ["≠ expert-fto", "≠ STAGE watch", "Phase 空态"],
+    "catalogAgentId": null,
+    "accent": "zinc",
+    "catalogGroup": "phase",
+    "defaultTeam": false,
+    "ownerLabel": "法务/诉讼",
+    "phase": true,
+    "emptyStateNote": "F9 无效维权顾问为 Phase 席：全面覆盖比对器未接线。id 独立于 expert-fto（FTO 辅席保留）。勿借用 watch_alert。点进本空态说明。"
+  },
+
   "expert-search": {
     "id": "expert-search",
     "name": "检索员（查新暨三性）",
@@ -1408,7 +1544,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
   }
 }
 
-export const PATENT_CATALOG_IDS: ProjectExpertId[] = ["orchestrator","expert-landscape","expert-inspire","expert-competitor","expert-mining","expert-layout","expert-research","expert-intake","expert-disclosure","expert-draft","expert-figure","expert-fto","expert-filing","expert-oa"]
+export const PATENT_CATALOG_IDS: ProjectExpertId[] = ["orchestrator","expert-landscape","expert-inspire","expert-competitor","expert-mining","expert-layout","expert-research","expert-intake","expert-disclosure","expert-draft","expert-figure","expert-fto","expert-filing","expert-oa","expert-annuity","expert-valuation","expert-monetize","expert-enforcement"]
 
 export const PATENT_PROJECT_EXPERT_IDS: ProjectExpertId[] = PATENT_CATALOG_IDS.filter(
   (id) => PATENT_EXPERTS[id]?.defaultTeam,

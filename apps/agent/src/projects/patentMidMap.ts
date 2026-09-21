@@ -10,7 +10,7 @@ import { resolveExpertId } from './experts'
  */
 export type PatentMidMapRow = {
   expertId: ProjectExpertId
-  midStage: StageId | 'cross_stage' | 'pre_intake' | 'drafting_assist' | 'authorize_file' | 'proposal'
+  midStage: StageId | 'cross_stage' | 'pre_intake' | 'drafting_assist' | 'authorize_file' | 'proposal' | 'phase'
   midStageLabel: string
   handoffKeys: HandoffArtifactKey[] | null
   readTools: string[]
@@ -144,6 +144,42 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     readTools: ['parse_oa_notice', 'oa_strategy', 'draft_oa_response'],
     writeCommands: ['saveDraft', 'submitHandoff'],
     honesty: '仅已 file；无真 OA',
+  },
+  {
+    expertId: 'expert-annuity',
+    midStage: 'maintenance',
+    midStageLabel: 'F7 Phase · 年费',
+    handoffKeys: ['maintain_annuity'],
+    readTools: ['list_annuity_due'],
+    writeCommands: null,
+    honesty: 'Phase · HITL⑦ · 禁真缴费',
+  },
+  {
+    expertId: 'expert-valuation',
+    midStage: 'phase',
+    midStageLabel: 'F7 Phase · 价值',
+    handoffKeys: null,
+    readTools: ['score_portfolio'],
+    writeCommands: null,
+    honesty: '提案键 valuation_card · 不写 packages',
+  },
+  {
+    expertId: 'expert-monetize',
+    midStage: 'commercialization',
+    midStageLabel: 'F8 Phase · 转化',
+    handoffKeys: ['monetize_terms'],
+    readTools: ['draft_term_sheet'],
+    writeCommands: null,
+    honesty: 'Phase · HITL⑧ · 禁真签约',
+  },
+  {
+    expertId: 'expert-enforcement',
+    midStage: 'phase',
+    midStageLabel: 'F9 Phase · 维权（≠FTO≠watch）',
+    handoffKeys: null,
+    readTools: ['claim_chart_compare'],
+    writeCommands: null,
+    honesty: '提案 enforcement_brief · ≠ expert-fto · 勿借 watch_alert',
   },
 ]
 

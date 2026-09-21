@@ -11,17 +11,38 @@ import {
 import { deliverableForExpert } from '../../projects/patentDeliverables'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { ProjectExpertId } from '../../projects/types'
+import { PackHitlOverview } from '../../components/patent/PackHitlOverview'
 
 const GROUP_LABEL: Record<string, string> = {
   orch: '总控',
   pre: '立项前簇（可选）',
   core: '主链路',
-  assist: '辅席（建议勾）',
+  assist: '辅席（建议勾 · FTO≠维权）',
+  phase: 'F7–F9 Phase（灰显 · 可点进空态）',
 }
 
+/** Pack 16 业务席（不含总控 / 不含 FTO 辅席） */
+const PACK16 = new Set<ProjectExpertId>([
+  'expert-landscape',
+  'expert-competitor',
+  'expert-inspire',
+  'expert-mining',
+  'expert-layout',
+  'expert-intake',
+  'expert-disclosure',
+  'expert-research',
+  'expert-draft',
+  'expert-figure',
+  'expert-filing',
+  'expert-oa',
+  'expert-annuity',
+  'expert-valuation',
+  'expert-monetize',
+  'expert-enforcement',
+])
+
 /**
- * Default /agent cold start — patent Catalog with teaming.
- * Spec: agent-patent-shell.md (25475b4)
+ * Default /agent cold start — patent Catalog with Pack 16 + HITL×8.
  */
 export function PatentCatalogPage() {
   const navigate = useNavigate()
@@ -35,8 +56,13 @@ export function PatentCatalogPage() {
     return init
   })
 
+  const pack16Count = useMemo(
+    () => PATENT_CATALOG_IDS.filter((id) => PACK16.has(id)).length,
+    [],
+  )
+
   const grouped = useMemo(() => {
-    const order = ['orch', 'pre', 'core', 'assist'] as const
+    const order = ['orch', 'pre', 'core', 'assist', 'phase'] as const
     return order.map((g) => ({
       group: g,
       seats: PATENT_CATALOG_IDS.filter(
@@ -46,7 +72,9 @@ export function PatentCatalogPage() {
   }, [])
 
   const toggle = (id: ProjectExpertId) => {
-    if (isOrchestratorExpert(id)) return // 总控必选
+    if (isOrchestratorExpert(id)) return
+    const def = getProjectExpert(id)
+    if (def.phase) return // Phase: 名单可见，默认不入队（可点空态）
     setSelected((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
@@ -65,7 +93,7 @@ export function PatentCatalogPage() {
   const onCreateTeam = (openRoom?: boolean) => {
     const p = createProject({
       title: title.trim() || '专利专班',
-      summary: `Catalog 组队 · ${teamIds.length} 席`,
+      summary: `Catalog 组队 · ${teamIds.length} 席 · Pack16=${pack16Count}`,
       kind: 'domain',
       domainPackId: 'patent',
       expertIds: teamIds,
@@ -99,7 +127,15 @@ export function PatentCatalogPage() {
               专利专家 Catalog
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              勾选席位组成专班 · 单聊或建项目 · 过程可见（成果 + worklog）
+              Pack 16 席对齐 · mock validator · HITL×8 · 过程可见（成果 +
+              worklog）
+            </p>
+            <p
+              className="mt-1 text-[11px] font-medium text-violet-700"
+              data-testid="pack16-count"
+            >
+              业务席名单 {pack16Count}/16（含 Phase）· mining≠intake ·
+              FTO≠无效维权
             </p>
           </div>
           <div className="flex flex-wrap gap-2 text-[11px]">
@@ -114,9 +150,20 @@ export function PatentCatalogPage() {
               className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-slate-500"
               data-testid="patent-to-sandbox"
             >
-              通用沙盒（旁路）
+              通用沙盒 Solo（旁路）
+            </Link>
+            <Link
+              to="/agent/team"
+              className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-slate-500"
+              data-testid="patent-to-team"
+            >
+              Team（旁路）
             </Link>
           </div>
+        </div>
+
+        <div className="mt-4">
+          <PackHitlOverview />
         </div>
 
         <div className="mt-4 flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
@@ -156,83 +203,107 @@ export function PatentCatalogPage() {
           </Link>
         </div>
         <p className="mt-2 text-[11px] text-slate-400">
-          已选 {teamIds.length} 席（总控必选）· 立项前簇默认可不勾 · 禁冷启动截入递交/OA
+          已选 {teamIds.length} 席（总控必选）· Phase 默认可点空态不入队 ·
+          禁冷启动截入递交/OA · 端用户禁 mid 深链
         </p>
       </header>
 
       <div className="mx-auto max-w-4xl space-y-6">
-        {grouped.map(({ group, seats }) => (
-          <section key={group}>
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-              {GROUP_LABEL[group] ?? group}
-            </h2>
-            <ul className="grid gap-2 sm:grid-cols-2">
-              {seats.map((id) => {
-                const def = getProjectExpert(id)
-                const d = deliverableForExpert(id)
-                const checked = selected.has(id)
-                const blocked = COLD_START_BLOCKED.includes(id)
-                return (
-                  <li
-                    key={id}
-                    className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
-                    data-testid={`patent-catalog-seat-${id}`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <button
-                        type="button"
-                        onClick={() => toggle(id)}
-                        className="focus-ring mt-0.5 shrink-0 text-slate-700"
-                        aria-pressed={checked}
-                        aria-label={checked ? '取消勾选' : '勾选'}
-                        disabled={isOrchestratorExpert(id)}
-                      >
-                        {checked ? (
-                          <CheckSquare className="h-4 w-4 text-slate-900" />
-                        ) : (
-                          <Square className="h-4 w-4 text-slate-400" />
-                        )}
-                      </button>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span
-                            className={`rounded border px-1.5 py-px text-[11px] font-semibold ${expertAccentClass(def.accent)}`}
-                          >
-                            {def.name}
-                          </span>
-                          {def.ownerLabel && (
-                            <span className="text-[10px] text-slate-400">
-                              Owner · {def.ownerLabel}
-                            </span>
+        {grouped.map(({ group, seats }) =>
+          seats.length === 0 ? null : (
+            <section key={group}>
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                {GROUP_LABEL[group] ?? group}
+              </h2>
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {seats.map((id) => {
+                  const def = getProjectExpert(id)
+                  const d = deliverableForExpert(id)
+                  const checked = selected.has(id)
+                  const blocked = COLD_START_BLOCKED.includes(id)
+                  const phase = !!def.phase
+                  return (
+                    <li
+                      key={id}
+                      className={`rounded-xl border p-3 shadow-sm ${
+                        phase
+                          ? 'border-dashed border-slate-300 bg-slate-50/80 opacity-80'
+                          : 'border-slate-200 bg-white'
+                      }`}
+                      data-testid={`patent-catalog-seat-${id}`}
+                      data-phase={phase ? 'true' : 'false'}
+                      data-pack16={PACK16.has(id) ? 'true' : 'false'}
+                    >
+                      <div className="flex items-start gap-2">
+                        <button
+                          type="button"
+                          onClick={() => toggle(id)}
+                          className="focus-ring mt-0.5 shrink-0 text-slate-700"
+                          aria-pressed={checked}
+                          aria-label={checked ? '取消勾选' : '勾选'}
+                          disabled={isOrchestratorExpert(id) || phase}
+                        >
+                          {checked ? (
+                            <CheckSquare className="h-4 w-4 text-slate-900" />
+                          ) : (
+                            <Square className="h-4 w-4 text-slate-400" />
                           )}
-                        </div>
-                        <p className="mt-1 text-[11px] leading-snug text-slate-500">
-                          {def.description}
-                        </p>
-                        {d && (
-                          <p className="mt-1 font-mono text-[10px] text-slate-400">
-                            {d.artifactFile} + {d.worklogFile}
+                        </button>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span
+                              className={`rounded border px-1.5 py-px text-[11px] font-semibold ${expertAccentClass(def.accent)}`}
+                            >
+                              {def.name}
+                            </span>
+                            {phase && (
+                              <span className="rounded bg-slate-200 px-1 text-[9px] font-semibold text-slate-600">
+                                Phase
+                              </span>
+                            )}
+                            {PACK16.has(id) && (
+                              <span className="rounded bg-violet-100 px-1 text-[9px] text-violet-800">
+                                Pack
+                              </span>
+                            )}
+                            {def.ownerLabel && (
+                              <span className="text-[10px] text-slate-400">
+                                Owner · {def.ownerLabel}
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-1 text-[11px] leading-snug text-slate-500">
+                            {def.description}
                           </p>
-                        )}
-                        <div className="mt-2 flex flex-wrap gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => openSeat(id)}
-                            disabled={blocked}
-                            className="btn-press focus-ring rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
-                            data-testid={`patent-seat-dm-${id}`}
-                          >
-                            {blocked ? '须建项目' : '单聊'}
-                          </button>
+                          {d && (
+                            <p className="mt-1 font-mono text-[10px] text-slate-400">
+                              {d.artifactFile} + {d.worklogFile}
+                            </p>
+                          )}
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => openSeat(id)}
+                              disabled={blocked}
+                              className="btn-press focus-ring rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                              data-testid={`patent-seat-dm-${id}`}
+                            >
+                              {blocked
+                                ? '须建项目'
+                                : phase
+                                  ? '空态说明'
+                                  : '单聊'}
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
-          </section>
-        ))}
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
+          ),
+        )}
       </div>
     </div>
   )

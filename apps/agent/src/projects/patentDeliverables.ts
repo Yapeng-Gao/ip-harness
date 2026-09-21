@@ -148,6 +148,38 @@ export const PATENT_DELIVERABLES: Record<string, PatentDeliverable> = {
     '| 1 | 拆通知书 | 已 file | 争点 | — |\n| 2 | 策略+陈述 | 备选 | prosecution_response | — |',
     '| 纯争辩 | 争辩+修改 | 组合 | 可迭代 |',
   ),
+  'expert-annuity': base(
+    'expert-annuity',
+    '14',
+    'maintain_annuity',
+    '年费管家',
+    '| 1 | 到期台账 | 授权后 | 清单 | Phase |\n| 2 | 缴费/放弃 | HITL⑦ | 示意 | Phase |',
+    '| 强缴 | 价值联动 | 联动 | Phase |',
+  ),
+  'expert-valuation': base(
+    'expert-valuation',
+    '15',
+    'valuation_card',
+    '价值评估师',
+    '| 1 | 抽证据 | 案卷 | 评分输入 | Phase |\n| 2 | 分级 | 公式 | 核心/外围/放弃 | Phase |',
+    '| 拍脑袋 | 公式工具 | 公式 | Phase |',
+  ),
+  'expert-monetize': base(
+    'expert-monetize',
+    '16',
+    'monetize_terms',
+    '转化顾问',
+    '| 1 | 估值 | 组合 | 区间 | Phase |\n| 2 | 条款 | validator | 草案 | Phase |',
+    '| 口头意向 | 必备条款齐 | 齐 | Phase |',
+  ),
+  'expert-enforcement': base(
+    'expert-enforcement',
+    '17',
+    'enforcement_brief',
+    '无效维权顾问',
+    '| 1 | 特征映射 | 权要 | 比对表 | Phase |\n| 2 | 回流 F3 | 漏洞 | 信封 | Phase |',
+    '| 合并 FTO | 独立席 | 独立 | ≠fto |',
+  ),
 }
 
 export function deliverableForExpert(

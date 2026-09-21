@@ -110,6 +110,12 @@ export function expertAccentClass(accent: string): string {
       return 'bg-lime-100 text-lime-900 border-lime-200'
     case 'stone':
       return 'bg-stone-100 text-stone-800 border-stone-200'
+    case 'yellow':
+      return 'bg-yellow-100 text-yellow-900 border-yellow-200'
+    case 'purple':
+      return 'bg-purple-100 text-purple-900 border-purple-200'
+    case 'zinc':
+      return 'bg-zinc-100 text-zinc-800 border-zinc-200'
     default:
       return 'bg-slate-100 text-slate-700 border-slate-200'
   }

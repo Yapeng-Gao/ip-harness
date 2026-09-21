@@ -26,6 +26,10 @@ export type ProjectExpertId =
   | 'expert-fto'
   | 'expert-filing'
   | 'expert-oa'
+  | 'expert-annuity'
+  | 'expert-valuation'
+  | 'expert-monetize'
+  | 'expert-enforcement'
   | 'general-orchestrator'
   | 'general-research'
   | 'general-write'
@@ -82,12 +86,16 @@ export type ProjectExpertDef = {
   guardrails: string[]
   catalogAgentId: string | null
   accent: string
-  /** Catalog: pre = 立项前簇 · core = 主链 · assist = 辅 · orch */
-  catalogGroup?: 'pre' | 'core' | 'assist' | 'orch'
+  /** Catalog: pre = 立项前簇 · core = 主链 · assist = 辅 · orch · phase = F7–F9 */
+  catalogGroup?: 'pre' | 'core' | 'assist' | 'orch' | 'phase'
   /** Default checked in Catalog teaming */
   defaultTeam?: boolean
   /** Owner label from OWNER matrix */
   ownerLabel?: string
+  /** F7–F9 Phase seat — gray + empty-state */
+  phase?: boolean
+  /** Empty-state copy when phase / not ready */
+  emptyStateNote?: string
 }
 
 export type ProjectChatMessage = {
