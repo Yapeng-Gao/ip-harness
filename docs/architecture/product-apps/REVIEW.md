@@ -310,3 +310,13 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 禁 apps。详表同上节。样机仍冻。
 
+## B席复扫 · 业务模式黄项消歧（`c3fffe4`）
+
+| 结论 | **Pass**（黄项清零；升格 **Go**） |
+|------|-----------------------------------|
+| 兄弟文冷启动 | 过：layers/entry-modes/platform/gap 一律业务=我的案子；Catalog→`/agent/catalog` |
+| shell 关系句 | 过：专家工作台规格；业务主规格=business-mode |
+| 席数口径 | 过：7=业务专家席；orchestrator 静默不计 7 |
+
+样机仍冻。相对 `2395e4c` Go-with-nits **升格 Go**。
+
