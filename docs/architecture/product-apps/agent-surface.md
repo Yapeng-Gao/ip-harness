@@ -8,12 +8,14 @@ Catalog 源：`src/data/agents.ts`（`AGENT_CATALOG` / `AgentDef`）；类型：
 
 ## 1. 产品面路由（样机）
 
+> 本表是 Agent 通用产品壳的基础路由，不覆盖专利业务壳。专利业务路由权威见 [agent-business-mode](./agent-business-mode.md)：`/agent`=我的案子，`/agent/catalog`=专家工作台；不要把下面旧式 Home/Catalog 路径当作专利业务冷启动。
+
 | 路由 | 意图 |
 |------|------|
-| `/agent` | Home |
+| `/agent` | 通用壳 Home；专利业务模式下由 `agent-business-mode` 覆盖 |
 | `/agent/sessions` | 会话列表 |
 | `/agent/sessions/:id` | 会话工作区（Composer + Confirm + 上下文） |
-| `/agent/agents` | Catalog |
+| `/agent/agents` | 通用壳兼容 Catalog；专利专家工作台使用 `/agent/catalog` |
 | `/agent/harness` | Harness 架构说明页（目标形状，非已实现 runtime） |
 | `/agent/skills` · `/agent/tools` | → Catalog |
 

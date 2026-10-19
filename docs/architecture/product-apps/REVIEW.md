@@ -346,3 +346,19 @@ entry-modes 降为路由/自由度附录，主心智以本稿为准。
 
 相对 `6f5daeb` Go-with-nits **升格 Go**。
 
+## 总控评审 · 专利业务 D0–D4 产品契约（2026-10-19）
+
+**范围**：[agent-product-definition](./agent-product-definition.md) · [agent-user-journeys](./agent-user-journeys.md) · [agent-scope-slice](./agent-scope-slice.md) · [agent-case-ia-v2](./agent-case-ia-v2.md) · [agent-interaction](./agent-interaction.md) · Pack 生命周期图。
+
+| 项 | 结论 | 处置 |
+|----|------|------|
+| F7/F8/F9 授权后关系 | 通过 | 授权时同时解锁为独立并行工作项；当前部门仅为页面焦点。Pack 图已移除 F7→F8→F9 的串行依赖 |
+| 确认权限 | 通过 | 技术负责人确认/退回；代理人交卷/修改但不可代确认；按案子授权关系判权 |
+| 部门/产物/闸 | 部分通过 | 已定义零或一个客户闸及映射字段；D2 只列部分对应关系，逐部门交卷动作、确认人和下游转换留待 D5 与 IAM/domain contracts 对齐 |
+| 状态机 | 通过 | 主作业单一当前工序；授权后 F7/F8/F9 各自保存状态并可并行 |
+| 年费待办 | 通过 | 年费待办按对应年度缴费期限生成，不因授权当天立即出现 |
+| 旧路由/实现声明 | 通过 | agent-surface 标明专利业务路由由 business-mode 覆盖；产品定义不再断言代码未改 |
+| 入口指针与链接 | 通过 | D0–D4 副本保持 canonical 指针；本次检查链接均可解析 |
+
+**结论：Go-with-nits。** D0–D4 文档契约已统一；代码实现需按新增确认权限、并行工作项和产物版本审计要求验收。D5 前还须裁定已确认产物撤回、退回恢复和并行修改冲突；IAM/domain contracts 须定义代理机构、客户联系人、案子授权人和审计存储的关系。
+

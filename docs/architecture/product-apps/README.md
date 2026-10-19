@@ -28,6 +28,11 @@
 | Agent 三层叠法 | [agent-layers.md](./agent-layers.md) | **L1→L2→L3**；非并列双产品；L3↔中台映射 |
 | L2 团队互通 | [agent-l2-team.md](./agent-l2-team.md) | bot 自发消息；协作任务样机；仅 /agent/team |
 | L3 专利 bot | [agent-l3-patent.md](./agent-l3-patent.md) | 固定专家；产出↔中台；仅项目模式 |
+| **产品定义** | [agent-product-definition.md](./agent-product-definition.md) | **用户与画像**：中小企业技术负责人 + 代理人第一波；F1–F9 在册；实现状态见 D4 验收 |
+| **用户旅程** | [agent-user-journeys.md](./agent-user-journeys.md) | **D1**：技术负责人确认链 + 代理人交卷链；同一 F1–F9 |
+| **范围切片** | [agent-scope-slice.md](./agent-scope-slice.md) | **D2**：默认主作业立项→答复；前研可展开；授权后锁定 |
+| **信息架构** | [agent-case-ia-v2.md](./agent-case-ia-v2.md) | **D3**：一节点一部门；同一页看见部门之间的交接和部门里面的路径 |
+| **交互说明** | [agent-interaction.md](./agent-interaction.md) | **D4**：点击、空态、确认退回；文件名、连线、过/未过、日常任务 |
 | **业务模式** | [agent-business-mode.md](./agent-business-mode.md) | **业务冷启动**：我的案子+向导+待确认；Catalog 降级 |
 | **席=独立 bot** | [agent-seat-as-bot.md](./agent-seat-as-bot.md) | 点席=人↔席会话；交卷→本案 HITL；与旧推进关系 |
 | **业务案页 IA 三刀** | [agent-biz-case-ia.md](./agent-biz-case-ia.md) | 两栏 · 藏工程词+单一主 CTA · 单一进度 |
