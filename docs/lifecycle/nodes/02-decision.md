@@ -1,0 +1,706 @@
+# 节点 02 · 立项决策（Go / No-Go）· 产品级业务规格
+
+> 读者：新入职实习生 / 产品经理 / 后端 / 交付。读完之后应当能：独立设计这个节点的产品、写它的接口、给客户讲清它为什么值钱。
+>
+> 代码权威源：`packages/domain/src/handoff.ts`（`REQUIRED_BEFORE_SUBMIT.intake_quote` 3 项 / `TRANSITIONS` / `canPerformHandoff` / `COMMITTEE_VOTE_HARD_GATE_MSG`）· `packages/domain/src/guardrails.ts`（`go_nogo` 闸 · `disclosure_approved` · `persona` · `enterprise`）· `packages/domain/src/persona.ts`（`personaCanGo` / `personaCanVote` / `personaVoteIsAuditable`）· `apps/workbench/src/flows/intake/IntakeFlow.tsx` · `packages/app-state/src/AppContext.tsx`（`recordCommitteeVote` / `hasAuditedCommitteeVote` / `advanceFromWorkbench` / `recordIntakeNoGo` / `updateEngagement`）· `packages/domain/src/types/index.ts`（`Engagement` / `PaymentStatus` / `AgencyIntent` / `QuoteDispatchStatus`）· `src/data/flowSteps.ts`（intake 4 步）· `packages/domain/src/stages.ts`（`decision` 默认清单）
+>
+> 法律口径：《专利法》（2020 修正）第六条、第十五条、第十九条；《专利法实施细则》（2023 修订）；《民法典》合同编（委托合同）。凡金额、比例、条号均标 ⚠，部署前须按当期官方文本与收费表复核。行业实务必为经验值，标 ⚠。
+
+---
+
+## 0. 一句话讲清这个节点
+
+**立项决策 = 在花掉第一笔撰写费之前，把「技术上行不行、商业上值不值、法律上能不能、成本上划不划算」四件事一次性问完，并留下一个可追责的 Go / No-Go 与一个锁定的委托范围。**
+
+它不是「点一下 Go」。它是**整条阶段轴唯一的出口闸**：No-Go 结案，不进撰写；Go 锁定预算、代理模式与委托边界。后面所有花钱的动作（撰写、检索、递交）都以这一步的决议为前提。
+
+产品化视角下，能独立成产品，因为同时满足三条：
+
+1. **有独立买方**：企业 IP 总监买它做「申请组合的守门人」；CFO 买它做「IP 预算的可审批依据」；代理所买它做「接案报价与范围确认」。
+2. **有独立价值**：交底 → 申请的真实转化率行业区间约 20%–40% ⚠（[00](00-inventor-disclosure.md) §8.1），意味着**大部分交底应当被拒**。拒得对不对，直接决定一年几十到几百万的代理费花在哪。
+3. **有独立边界**：输入是交底包 + 检索结论，输出是 `intake_quote` 与一份委托，不依赖撰写模块即可交付价值。
+
+---
+
+## 1. 节点定位与产品边界
+
+### 1.1 在生命周期中的位置
+
+```
+交底(00) ─┐
+          ├──► 检索(01) ──►【立项决策 02】──► 撰写(03) ──► 审查(04) ──► …
+              research_report    │
+                                 ├─ intake_quote（报价 + 委托范围 + 委员票）
+                                 ├─ Go  ──► 撰写 / PCT / …
+                                 └─ No-Go ──► 结案归档（技术秘密 / 防御性公开）
+```
+
+代码里的阶段元数据（`packages/domain/src/stages.ts:57-82`）：`id: 'decision'`，名称「立项决策」，描述「发明披露、技术/商业评审、Go·No-Go 闸门」，唯一个 runner `disclosure`（4 步：提交披露表 → 技术评审会 → 商业价值评估 → Go/No-Go）。
+
+### 1.2 代码口径
+
+| 项 | 值 | 出处 |
+|---|---|---|
+| `StageId` | `decision` | `packages/contracts/src/keys.ts` |
+| 路由 | `/workbench/intake`（可带 `/:caseId`） | `src/data/flowSteps.ts:27-33` |
+| 壳 | workbench :5174 | `apps/workbench` |
+| 产物键 | `intake_quote` | `packages/contracts/src/handoff.ts:26` |
+| 产物中文名 | 立项/报价 | `packages/contracts/src/handoff.ts:15` |
+| 交接动作标签 | 提交报价 / 确认委托 / 确认正式委托 / 归档委托协议 | `packages/domain/src/handoff.ts:355-360` |
+| 默认清单 | c1 发明披露表已提交 / c2 技术评审完成 / c3 商业评审完成 / c4 Go 决议已签署 | `packages/domain/src/stages.ts:76-81` |
+| 投票硬挡开关 | localStorage `ip-harness-committee-vote-hard-block-go` | `packages/contracts/src/crossPortKeys.ts:24-25` |
+
+### 1.3 它是什么 / 不是什么
+
+| 是 | 不是 |
+|---|---|
+| 四维决策（技术 / 市场 / 法律 / 成本）的**留痕** | 一次会议室举手的记录 |
+| 报价与**委托范围**的锁定点 | 发票或付款（那是 12 商务线） |
+| 委员投票的**可审计**载体 | 真实的治理系统（当前是 mock 三人） |
+| Go 之后路径分叉的**岔口** | 撰写本身（那是 03） |
+| No-Go 的**结案理由库** | 案件的删除（No-Go 仍要归档，供日后复用） |
+
+> 实习生最容易错的一点：把 No-Go 当成「流程失败」。No-Go 是**正常且高频**的产出，它的价值在于「有理由、可检索、能复盘」。没有 No-Go 记录的评审，等于没有评审。
+
+### 1.4 上下游契约
+
+| 方向 | 对象 | 契约 |
+|---|---|---|
+| 上游 | 检索（01）`research_report` | 提供可专利性结论、新颖性/创造性评分、FTO 风险档 |
+| 上游 | 交底包 `disclosure_pack` | **必须已批准/授权/归档**，否则 Go 被 `disclosure_approved` 阻断（`guardrails.ts:396-403`） |
+| 上游 | 代理所 | `AgencyIntent`（接案意向）+ 报价 |
+| 下游 | 撰写（03） | `stage → drafting`，新建 `draft_claims = drafting`；`Engagement.phase` 进「撰写中」（契约要求；现状未写，见 §6.3） |
+| 下游 | PCT（09） | Go 时须记录「是否走 PCT」，决定 12 个月优先权窗口 |
+| 下游 | 商务线（12） | 报价→确认→开票→付款；`intake_quote` 批准触发 `appendDraftInvoice` |
+| 下游 | 技术秘密 / 防御性公开 | 当前**无对象**，仅 conclusion 文案 |
+
+### 1.5 独立产品的形态
+
+**产品名建议：立项评审台 / Portfolio Gate**
+
+| 模块 | 能力 | 谁用 |
+|---|---|---|
+| 决策卡 | 六维评分（与 [00](00-inventor-disclosure.md) §8.1 同源）+ 四维结论 | IP 总监 |
+| 委员会 | 固定委员池、法定人数、回避、投票、否决、纪要 | 委员会秘书 |
+| 报价台 | 报价构成（官费 + 代理费 + 检索费 + 翻译费）、范围边界、模式选择 | 代理所 / 采购 |
+| 预算闸 | 预算来源、审批人、年度额度占用 | CFO / 财务 BP |
+| 分叉路由 | Go → 撰写 / PCT / 组合补位；No-Go → 技术秘密 / 防御性公开 | IP 运营 |
+| 复议 | No-Go 后 6 个月复议、条件变化重提 | 发明人 / 部门 |
+
+**不做的**：不做检索（01）、不写权利要求（03）、不开票收款（12）、不做官费代缴。
+
+---
+
+## 2. 角色与权限矩阵
+
+| 角色 | 代码对应 | 能做什么 | 不能做什么 |
+|---|---|---|---|
+| 企业 IP | `persona = 'enterprise_ip'` | 评分、确认报价、批 `intake_quote`、**唯一可 Go/No-Go**（`personaCanGo`，`persona.ts:161-163`） | 不能冒充委员投审计票 |
+| 评审委员 | `persona = 'committee'` | 投票（`personaCanVote` 为真且**写入可审计日志**） | 不可 Go / 批准 / 授权 / 归档（`persona.ts:97-112`、`persona.ts:140-148`） |
+| 代理所 | `persona = 'agency'` | 提交报价、接案评估、推进 handoff、归档 | 不可 Go、不可确认报价（`persona.ts:122-133` 代理禁 `go_nogo`/`confirm_quote`） |
+| 发明人 | `persona = 'inventor'` | 只读；在门户补交底 | 全部交接与 HITL 动作硬禁 |
+| 系统 Agent | `agent-intake`（core 档） | 可专利性评分建议、预算估算、委托范围草案、立项备忘 | 不能替人决议；不能越过 Go/确认报价双闸 |
+
+**当前实现的权限真相**（必须对交付方讲清）：
+
+1. **Go 权限只认 `persona === 'enterprise_ip'`**（`persona.ts:161`），不看 `UserRole` 之外的任何组织角色——没有「业务负责人」「预算审批人」这两个真实角色。
+2. **委员票与企业 IP 票不等价**：`recordCommitteeVote` 只有 `persona === 'committee'` 才写 `committeeVoteLog` 并进审计（`AppContext.tsx:817-848`）；企业 IP 投票只更新 UI，返回「企业代看·非委员审计票」。
+3. **但 Go 要求的是 `enterprise_ip`，投票要求的是 `committee`**：同一个人必须切两次 Persona 才能完成「投票 + Go」。这是演示设定，真实产品应为两个自然人。
+4. **`agent-intake` 的 RACI 写的是「A：业务负责人 / 预算审批人」**（`src/data/agents.ts:125`），代码里没有这个角色——文案与实现不一致。
+
+---
+
+## 3. 业务对象（字段级）
+
+### 3.1 案件在决策阶段的字段
+
+权威源 `packages/domain/src/types/index.ts:212-247`。
+
+| 字段 | 类型 | 必填 | 决策阶段的含义 |
+|---|---|---|---|
+| `stage` | `'decision'` | ✅ | 决定 `ARTIFACT_FOR_STAGE` 映射到 `intake_quote` |
+| `type` | `'发明' \| '实用新型' \| '外观'` | ✅ | 决定报价档与是否需实审 |
+| `fulfillmentMode` | `'self_serve' \| 'delegated'` | ✅ | 决定 Go 的商务前置（见 §4.1） |
+| `risk` | `'低' \| '中' \| '高'` | ✅ | No-Go 时会从「低」抬到「中」（`AppContext.tsx:2311`） |
+| `checklist` | `ChecklistItem[]` | ✅ | c1–c4，Go 的清单闸 |
+| `handoffs.intake_quote` | `HandoffState` | ✅ | 7 态 + versions |
+| `engagement` | `Engagement` | ✅ | 报价、付款、发票 |
+| `quoteDispatchStatus` | `QuoteDispatchStatus?` | — | 报价派单：none → intent → quoted → confirmed → assigned |
+| `legalReview` | `LegalReviewStatus?` | — | 本节点不使用（属 06 转化） |
+
+### 3.2 交接产物 `intake_quote` 的 3 项齐套
+
+权威源 `packages/domain/src/handoff.ts:102-106`：
+
+| 键 | 标签 | 合格线 | 代码判定 |
+|---|---|---|---|
+| `quote` | 报价金额 | 非空 | `quote.trim()`（`IntakeFlow.tsx:488`） |
+| `scope` | 委托范围说明 | 非空 | **实际绑的是 `techSolution`**（`IntakeFlow.tsx:489`） |
+| `votes` | 委员投票（至少一位） | ≥1 人投 | `votesReady`（UI 态，非审计票） |
+
+> **语义错误**：`scope` 本应是「委托范围」（写几组权项、含不含附图、含不含 OA 首轮、含不含翻译），当前却拿「技术方案」顶替。技术方案是**标的**，委托范围是**边界**，二者不是一回事。这是本节点最容易被客户发现的产品缺陷。
+
+### 3.3 报价构成 `QuoteBreakdown`（建议新增）
+
+现状：报价是一个自由文本字符串（`IntakeFlow.tsx:382-384`，placeholder 为「如 ¥28,000（CN 发明撰写）」），外加一个硬编码的官费估算 `≈ ¥3,450`（`IntakeFlow.tsx:390`）。
+
+| 项 | 说明 | 计费主体 | 现状 |
+|---|---|---|---|
+| 官费 | 申请费 + 公布印刷费 + 实审费 +（授权后）登记费 + 年费 | CNIPA | ⚠ 只有一行硬编码合计 |
+| 代理服务费 | 撰写、递交、（可选）OA 答复、年费代缴 | 代理所 | ⚠ 混在 `quote` 字符串里 |
+| 检索费 | 正式检索（3k–15k ⚠）或查新 | 代理所 / 检索机构 | ❌ 未出现 |
+| 翻译费 | 涉外申请（PCT 进入、直接巴黎公约） | 翻译公司 / 代理所 | ❌ 未出现 |
+| 减缴 | 费用困难认定的减免（单位/个人比例不同 ⚠） | CNIPA | ❌ 未出现 |
+| 税费 | 增值税与开票口径 | — | ⚠ 仅「含税口径」字样 |
+
+```ts
+interface QuoteBreakdown {
+  currency: 'CNY'
+  officialFees: Array<{ item: string; amount: number; payableBy: 'enterprise' | 'agency_advance' }>
+  agencyFee: { drafting: number; filing: number; oaPerRound?: number; annuityService?: number }
+  searchFee?: number
+  translationFee?: { languages: string[]; perKWord: number; estimated: number }
+  reductions?: { eligible: boolean; ratio: number; basis: string }
+  taxIncluded: boolean
+  total: number
+  validityDays: number          // 报价有效期，建议 30
+  scopeIncludes: string[]       // 委托范围边界
+  scopeExcludes: string[]
+}
+```
+
+### 3.4 评分卡（六维，与 00 §8.1 对齐，不另造一套）
+
+**为什么不另造**：交底的评审（00 §8.1）与立项的决策（本节点）如果各有一套权重，同一条交底会在两处得到不同分数，客户第一次对比就会问「到底哪个算数」。本节点**沿用同一张卡**，只增加「决策维度映射」——把六维折进四维决策视图。
+
+| 维度 | 权重 | 打分问题 | 1 分 | 5 分 | 折入四维 |
+|---|---|---|---|---|---|
+| 新颖性/创造性 | 25% | 与最接近现有技术的差异是否明显 | 已被完全公开 | 明显区别且非显而易见 | 技术 |
+| 商业价值 | 25% | 是否落在主营产品/核心收入路径 | 边缘试验 | 直接对应主力产品 | 市场 |
+| 可检测性 | 20% | 竞争对手用了能否从外部发现取证 | 纯内部工艺 | 体现在可拆解特征上 | 法律 |
+| 保护广度 | 15% | 能否用较少特征覆盖较大范围 | 只能锁死一个实现 | 可覆盖多种实现 | 法律 |
+| 战略布局 | 10% | 是否填补布局空白 / 阻碍对手 | 与布局无关 | 关键卡位 | 市场 |
+| 生命周期成本 | 5% | 全球申请 + 维持 20 年总成本 | 成本远超价值 | 成本可忽略 | 成本 |
+
+**总分 → 决议建议**（沿用 00 §8.1，不新增阈值）：
+
+| 分数 | 建议 | 与 Go/No-Go 的关系 |
+|---|---|---|
+| ≥ 4.0 | 申请发明 + 海外布局评估 | 建议 Go，且 Go 时须回答「是否 PCT」 |
+| 3.0–3.9 | 申请（发明或实用新型二选一） | 建议 Go，`type` 必须显式选择 |
+| 2.0–2.9 | 转技术秘密 / 防御性公开 | 建议 No-Go |
+| < 2.0 | 不申请 | 建议 No-Go |
+
+> **代码现状**：只有两个滑杆 `techScore` 与 `bizScore`（1–5，`IntakeFlow.tsx:366-371`），是「双维」而非「六维」；没有加权、没有总分、没有阈值比对。`industry-reality.md` §3 节点 02 也点明「双维评分权重与阈值未成模型」。
+>
+> **调整理由必须写明**：若产品要保留双维（更轻），唯一可接受的理由是「交底阶段已用六维评过，决策阶段只看技术/商业两项」——但这就必须把 00 的六维结果**带入**本节点展示，否则两套分数仍然打架。
+
+### 3.5 委员票 `CommitteeVote`
+
+权威源 `AppContext.tsx:806-861`（日志结构）+ `IntakeFlow.tsx:37-41`（委员名单）。
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `id` | string | ✅ | `cv-<ts>-<rand>` |
+| `caseId` | string | ✅ | |
+| `reviewerId` | string | ✅ | 当前是 `v1`/`v2`/`v3` |
+| `reviewerName` | string | ✅ | 「张总（技术）」等硬编码 |
+| `vote` | `'同意' \| '有条件同意' \| '驳回'` | ✅ | |
+| `comment` | string | — | 意见 |
+| `persona` | `PersonaId` | ✅ | 仅 `committee` 进审计日志 |
+| `at` | string | ✅ | ISO 时间 |
+
+> **当前没有的字段**：委员所属**职能域**（技术/商业/法务）、**是否回避**、**票权权重**、**法定人数判定**、**否决理由码**。这五项不补，委员会就只是三个按钮。
+
+### 3.6 委托单 `Engagement`
+
+权威源 `packages/domain/src/types/index.ts:55-65`。
+
+| 字段 | 类型 | 决策阶段取值 | 说明 |
+|---|---|---|---|
+| `phase` | 7 段枚举 | `接案评估` → `正式委托` | 由 handoff 动作驱动 |
+| `quoteBudget` | string | 报价文本 | **预算口径，非成交价** |
+| `paymentStatus` | 6 态 | `未报价` → `报价待确认` → `已确认待付款` | |
+| `feeNotes` | string? | 「企业已确认报价」 | |
+| `agencyName` | string? | 代理所名 | |
+| `budgetApproved` | string? | 等于报价文本 | 与 `quoteBudget` 同值，无独立审批人 |
+| `invoices` | `CaseInvoice[]` | 批准时追加「接案报价确认」待开票发票 | |
+
+### 3.7 代理意向与派单
+
+| 对象 | 取值 | 说明 |
+|---|---|---|
+| `QuoteDispatchStatus` | `none → intent → quoted → confirmed → assigned` | 5 态，但**代码里 `quoted`/`confirmed` 从不被写入**：只有 `none→intent`（`AppContext.tsx:1915-1920`）与 `→assigned`（`1912`/`1989`） |
+| `AgencyIntent.status` | `intent / ignored / accepted` | 接受一家后，同案其余打断为 `ignored`（`AppContext.tsx:1961-1969`），无排名、无比选依据 |
+
+---
+
+## 4. 业务规则（编号）
+
+### 4.1 核心判定（Go 闸）
+
+| ID | 规则 | 现状 |
+|---|---|---|
+| R02-01 | Go/No-Go 只能由企业 IP Persona 执行；委员、发明人、代理所均不可 | ✅（`persona.ts:161`、`IntakeFlow.tsx:171-180`） |
+| R02-02 | 必须选择 Go 或 No-Go，且必须填写决策理由，缺一不可提交 | ✅（`IntakeFlow.tsx:169-170`） |
+| R02-03 | Go 前置：`disclosure_pack` ∈ approved / authorized_to_file / filed | ✅（`guardrails.ts:396-403`） |
+| R02-04 | 自助模式（`self_serve`）Go 前置：预算非空 | ✅（`IntakeFlow.tsx:205-207`） |
+| R02-05 | 委托模式（`delegated`）Go 前置：`intake_quote` 已批准，或付款状态 ∈ 已确认待付款/部分付款/已结清 | ✅（`IntakeFlow.tsx:202-211`） |
+| R02-06 | Go 前阶段清单必做项须全部完成（c1–c4） | ⚠ 有条件（见 §6.3 偏差 3） |
+| R02-07 | 投票硬挡开关开启时，无委员审计票不可 Go | ✅（`IntakeFlow.tsx:182-184` + `AppContext.tsx:2220-2227`） |
+| R02-08 | 决策理由必须能落到四维（技术/市场/法律/成本）中的至少两项 | ❌ 无结构 |
+
+### 4.2 评分
+
+| ID | 规则 | 现状 |
+|---|---|---|
+| R02-10 | 评分卡六维与 00 §8.1 同源，权重一致 | ❌ 只有双维滑杆 |
+| R02-11 | 总分按权重加权计算，保留一位小数 | ❌ |
+| R02-12 | 总分 < 2.5 时 Go 需强制填写「为何仍申请」 | ❌ |
+| R02-13 | 评分变更须留痕（谁、何时、改前改后） | ❌ 滑杆改动无审计 |
+| R02-14 | 检索（01）的新颖性/创造性评分自动带入本节点，不手工重填 | ⚠ 两块数据互不相通 |
+
+### 4.3 委员会
+
+| ID | 规则 | 现状 |
+|---|---|---|
+| R02-20 | 委员池由组织配置，委员有职能域（技术/商业/法务） | ⚠ 硬编码 3 人（`IntakeFlow.tsx:37-41`） |
+| R02-21 | 法定人数：至少 3 人且覆盖技术、商业两域方可表决 | ❌ |
+| R02-22 | 投票选项四态：同意 / 有条件同意 / 驳回 / 弃权（需理由） | ⚠ 只有前三态，无弃权 |
+| R02-23 | 任一委员「驳回」→ 不得 Go，除非企业 IP 书面覆议并记录理由 | ❌ 无否决权 |
+| R02-24 | 委员与本案有利益关系（同部门/共同发明人/持股）须回避，回避后不计入法定人数 | ❌ |
+| R02-25 | 只有 `committee` Persona 的票进入审计日志；企业 IP 代填不算 | ✅（`AppContext.tsx:817`、`846-852`） |
+| R02-26 | 投票截止后自动锁定，委员不可改票；改票须留痕 | ❌ 可无限改 |
+
+### 4.4 报价与委托范围
+
+| ID | 规则 | 现状 |
+|---|---|---|
+| R02-30 | 报价必须拆分为官费 + 代理费（+ 检索费 + 翻译费）四类 | ❌ 单字符串 |
+| R02-31 | 官费按当期 CNIPA 收费表计算，不硬编码 | ⚠ 硬编码 `≈ ¥3,450`（`IntakeFlow.tsx:390`） |
+| R02-32 | 委托范围必须显式列「含/不含」：权项组数、附图、OA 轮次、翻译、年费代缴 | ❌ `scope` 绑的是技术方案 |
+| R02-33 | 报价有效期（建议 30 天）到期须重新确认 | ❌ |
+| R02-34 | 报价变更后须重新走确认，不允许直接覆盖已批准的 `intake_quote` | ✅（handoff 版本 + `request_changes`） |
+| R02-35 | 代理费不得与官费混入同一发票条目 | ⚠ 发票 title 是「接案报价确认 · ¥28,000」 |
+
+### 4.5 齐套与写回
+
+| ID | 规则 | 现状 |
+|---|---|---|
+| R02-40 | `intake_quote` 3 项齐套全为真才可提交/批准 | ✅（`handoff.ts:102-106`） |
+| R02-41 | 三委员全投齐后可提交（法定人数口径） | ❌ 当前「至少一位」即算齐 |
+| R02-42 | 提交报价 → `paymentStatus = 报价待确认`，`phase = 接案评估` | ✅（`IntakeFlow.tsx:508-512`） |
+| R02-43 | 企业确认报价 → `paymentStatus = 已确认待付款`，`phase = 正式委托`，追加待开票发票 | ✅（`IntakeFlow.tsx:517-530`） |
+| R02-44 | Go → 案件进入下一阶段并重置清单 | ✅（`advanceFromWorkbench`，`AppContext.tsx:2242-2283`） |
+| R02-45 | Go → `Engagement.phase` 进「撰写中」 | ❌ 未写（见 §6.3 偏差 2） |
+
+### 4.6 合规
+
+| ID | 规则 | 现状 |
+|---|---|---|
+| R02-50 | Go 时须确认「技术是否在中国境内完成」，涉外申请前须过保密审查 | ❌ |
+| R02-51 | Go 时须记录目标国别与是否走 PCT，联动 12 个月优先权窗口 | ❌ |
+| R02-52 | No-Go 必须选择结构化理由码（非新颖性/无市场/成本过高/权属不清/转技术秘密/防御性公开） | ⚠ 只有自由文本 `reason` |
+| R02-53 | No-Go 后案件进入「结案」而非停在决策阶段 | ❌ 停在原位（见 §6.3 偏差 4） |
+| R02-54 | 预算审批人须与决策人分离（避免自批） | ❌ `budgetApproved` 由同一 Persona 写入 |
+
+### 4.7 时限
+
+| ID | 规则 | 建议值 | 现状 |
+|---|---|---|---|
+| R02-60 | 决策周期（进入 decision → Go/No-Go） | 10 个工作日 | ❌ |
+| R02-61 | 委员投票窗口 | 5 个工作日 | ❌ |
+| R02-62 | 报价确认窗口 | 10 个工作日 | ❌ |
+| R02-63 | No-Go 复议窗口 | 6 个月 | ❌ |
+
+---
+
+## 5. 法律底座 / 行业规则
+
+### 5.1 本节点没有官方法定期限，但它是若干期限的**起点**
+
+**规则**：决策本身不产生 CNIPA 期限；但 Go 的那一刻确定了路径，从而启动了一串法定期限。
+
+| Go 后的路径 | 启动的期限 | 长度 | 失效后果 |
+|---|---|---|---|
+| 直接中国申请 | 实审请求 | 自申请日起 3 年 ⚠ | 逾期视为撤回 |
+| 海外布局（巴黎公约） | 优先权 | 自首次申请日起 12 个月（发明/实用新型）⚠ | 逾期不能主张优先权 |
+| PCT | 国际申请 | 自优先权日起 12 个月 ⚠ | 同上 |
+| PCT 国家阶段 | 进入期限 | 自优先权日起 30 个月（多数局，个别 16 个月）⚠ | 逾期丧失该国保护 |
+| 已公开的技术 | 新颖性宽限期 | 6 个月 | 逾期毁新 |
+
+**产品落点**：Go 决策卡必须问三句——「目标国别？」「是否走 PCT？」「最早公开日是什么时候？」这三问不答，`intake_quote` 的 `scope` 不算完整。
+
+**失效后果**：决策会上没人问 PCT，12 个月后想出海，发现优先权已过，只能重新申请且中国在先申请已公开 → 自己毁掉自己的新颖性。这是本节点最常见的真实事故。
+
+### 5.2 保密审查（《专利法》第十九条 ⚠）
+
+**规则**：在中国完成的发明或实用新型向外国申请专利前，须事先报经国务院专利行政部门进行保密审查；违反的不授予专利权，且构成无效理由。
+
+**产品落点**：Go 是「要不要向外国申请」的第一个决策点。系统必须在 Go 时采集「技术完成地」与「是否有海外计划」，任一为「是/有」则强制挂保密审查待办，未完成不得进 03 的递交。
+
+**失效后果**：跨国企业/有出海业务的公司高发。补救几乎不可能——中国申请直接不授权。
+
+### 5.3 职务发明与奖酬（《专利法》第六条、第十五条；《实施细则》第九十二、九十三条 ⚠）
+
+**规则**：职务发明申请权归单位；单位应与发明人约定奖酬，无约定/规章时按法定兜底（发明专利奖金不低于 4000 元，授权公告日起 3 个月内发放 ⚠ 按 2023 修订文本）。
+
+**产品落点**：Go 是「这件专利将来要发钱」的确认点。决策记录须带出「发明人名单（含顺序）」与「本单位规章版本」，供 05 的奖酬台账继承。No-Go 则要记录「不申请」理由，避免日后发明人主张「为什么不给我申请」。
+
+**失效后果**：离职发明人纠纷里，「公司为什么没给我申请」与「申请了为什么不发奖」是两个独立诉点，都需要本节点的记录作证。
+
+### 5.4 委托合同的法律性质（《民法典》合同编·委托合同 ⚠）
+
+**规则**：委托代理申请属于委托合同关系；受托人应按委托人指示处理事务，变更指示需委托人同意；有偿委托中受托人过错造成损失应赔偿。
+
+**产品落点**：「委托范围」不是文案，是**合同标的**。报价单必须能直接转成委托合同附件：服务项、交付物、期限、费用、双方义务、终止条件。当前系统只有一段自由文本 `quote`，无法承担这个功能。
+
+**失效后果**：范围不清 → 后期「OA 答复要不要另收费」「翻译费谁出」扯皮；代理所做了范围外工作要不回钱，企业被追加费用。
+
+### 5.5 预算与内控（行业惯例 + 企业内控要求 ⚠）
+
+**规则**：IP 费用通常按年度预算池管理，单件超过阈值须升级审批；上市公司/国企对「大额采购」「关联交易」有额外披露与比价要求。
+
+**产品落点**：Go 的商务前置只校验「预算非空」（`IntakeFlow.tsx:205-207`），这是最小实现。真实产品需要：预算来源（年度池/项目专项）、额度占用、审批阈值、比价记录（多家 `AgencyIntent`）。
+
+**失效后果**：年底预算超支无法解释；审计问「为什么这家所贵 40% 还选它」时没有比价依据。
+
+### 5.6 非正常申请与「申请量考核」（《专利法》第二十条；局令第 77 号 ⚠）
+
+**规则**：申请专利应遵循诚实信用原则；不以保护创新为目的、无真实研发基础的属非正常申请。
+
+**产品落点**：如果决策 KPI 是「申请量」，评审必然形同虚设——这正是非正常申请的诱因。本节点的指标必须是**转化率与质量指标**（见 §12），不能是「Go 的数量」。
+
+**失效后果**：批量非正常申请被通报，减缴资格取消，影响企业信用与后续所有申请。
+
+### 5.7 立项环节知识产权分析（GB/T 29490-2023）
+
+**规则**：合规体系要求在产品立项与研发环节对知识产权进行分析（检索、侵权风险）。
+
+**产品落点**：决策记录 + 检索报告 = 认证审核时的现成证据链。这是本节点面向国企/上市公司的销售支点。
+
+---
+
+## 6. 状态机
+
+### 6.1 主状态机：`intake_quote` 的 7 态
+
+```
+drafting ──submit──► submitted_to_enterprise ──start_review──► enterprise_review
+   ▲                        │                                        │
+   │◄──── request_changes ──┴────────────────────────────────────────┤
+   │                                                                  ▼
+ filed ◄──file── authorized_to_file ◄──authorize── approved ◄────────┘
+```
+
+迁移表权威源 `packages/domain/src/handoff.ts:147-186`。本节点的语义：
+
+| 动作 | 角色 | 业务含义 | 出口条件 |
+|---|---|---|---|
+| `save_draft` | agency | 接案评估中 | — |
+| `submit` | agency | 发送报价给企业 | `quote` 非空 + `scope` 非空 |
+| `start_review` | enterprise | 企业开始评审 | — |
+| `request_changes` | enterprise | 报价/范围需改 | annotation |
+| `approve` | enterprise | **确认委托**（报价生效） | 3 项齐套 + 投票硬闸 |
+| `authorize` | enterprise | 确认正式委托 | 同上 |
+| `file` | agency | 归档委托协议 | — |
+
+### 6.2 Go / No-Go 不是 handoff 状态
+
+这是本节点最容易混的一点：**`intake_quote` 的 `approved` ≠ Go**。
+
+| 概念 | 载体 | 含义 |
+|---|---|---|
+| 报价被确认 | `handoffs.intake_quote.status = approved` | 商务上同意这个价与范围 |
+| Go | `PatentCase.stage` 从 `decision` 前移 + 清单 c4 | 业务上决定做这件事 |
+| No-Go | `recordIntakeNoGo` 把 `intake_quote` 打到 `changes_requested` | 一种「退回」，不是独立终态 |
+
+**No-Go 的实现真相**（`AppContext.tsx:2289-2341`）：写 `changes_requested` + 一条 version（status 也是 `changes_requested`，note 为 `No-Go：<理由>`）+ timeline + 把 `risk` 从「低」抬到「中」。`stage` 不变，案件仍停在 `decision`。
+
+### 6.3 当前实现的偏差（逐条点名）
+
+1. **Go 不更新 `Engagement`**：`submitGo` 成功后只调 `advanceFromWorkbench` + `addArtifact` + `appendCaseDriveItem`（`IntakeFlow.tsx:246-259`），没有 `updateEngagement`。因此 `phase` 停在报价批准时的「正式委托」，不会进「撰写中」。而 `15-flow-intake.md` §4 写的是「Go 成功 → `submitHandoff` + `Engagement.phase: 正式委托`」——**文档与代码不一致**（代码里连 `submitHandoff` 都没有）。
+2. **c1 / c2 无任何写入路径**：`decision` 的默认清单 c1「发明披露表已提交」、c2「技术评审完成」由 `addCase` 建成 `done: false`（`AppContext.tsx:1803-1806`），而 `IntakeFlow` 只写 c3（投票 effect）与 c4（Go 时 `resolveDoneIds`）。**从 01 晋级来的新案，c1/c2 永远为假 → Go 永远被「清单未齐」挡住**。种子案 c5 能走通，只因它 c1/c2 预置为 true（`src/data/cases.ts:240-241`）。
+3. **`self_serve` 的商务前置与 handoff 闸互相打脸**：`submitGo` 的自助分支只查 `budget` 非空（`IntakeFlow.tsx:205-207`），但随后 `advanceFromWorkbench` 要求当前阶段交接已批准（`AppContext.tsx:2229-2240`）。自助模式没有代理所，`intake_quote` 需要企业自己以 agency 身份 submit 再批准，才能 Go。UI 上没有引导。
+4. **No-Go 不结案**：`recordIntakeNoGo` 后案件停在 `decision`，`risk` 被抬高，清单不变。没有「结案 / 转技术秘密 / 防御性公开」的对象，也没有复议入口。
+5. **委员票 seed 是假票**：`votes` 初值已含 v1「同意」与 v3「有条件同意」（`IntakeFlow.tsx:72-76`），因此 `votesReady` 一进页面就为真，c3 会被自动勾选，`intake_quote` 的 `votes` 项也一进页面就亮。且切案时 `votes` **不被重置**（`useEffect` 只重置 inventors/scores/decision/reason/quoteSent，`IntakeFlow.tsx:100-110`）。
+6. **投票硬挡形同鸡肋**：`personaCanGo` 只允许 `enterprise_ip`，而审计票只由 `committee` 产生。一个人必须切两次 Persona；`hasAuditedCommitteeVote` 只判「该案是否存在任意一条 committee 票」（`AppContext.tsx:858-861`），不判票数、不判票型。一票「驳回」也能满足硬闸。
+7. **否决权不存在**：`vote === '驳回'` 只是一个字符串，`submitGo` 完全不读 `votes` 内容，只读 `hasAuditedCommitteeVote`。
+8. **`quoteDispatchStatus` 的中间态从不写入**：只有 `none→intent`（`AppContext.tsx:1915-1920`）与 `→assigned`（`1989`），`quoted`/`confirmed` 是死枚举。
+9. **`scope` 绑错字段**：见 §3.2。
+10. **`reviewers` 不随组织变化**：三人硬编码，与 `Persona` 体系脱节。
+
+---
+
+## 7. 闸门与条件（代码对齐）
+
+`evaluateGuardrails` 是唯一放行入口，任何 UI 都必须过它。
+
+| 闸门 / blocker 码 | 触发条件 | 文案 | 位置 |
+|---|---|---|---|
+| `disclosure_approved`（Go） | `action = go_nogo` 且交底包未批准 | 「交底包未批准：须 disclosure_pack 为已批准/授权/归档后方可 Go」 | `guardrails.ts:396-403` |
+| `persona`（Go） | Persona 不是 `enterprise_ip` | 「委员 Persona：不可 Go/No-Go（须企业 IP）」/「代理 Persona：该闸仅企业可确认」 | `guardrails.ts:242-250`、`persona.ts:140-148` |
+| `enterprise` | 非企业角色执行企业闸 | 「仅企业可批准」 | `guardrails.ts:259-272` |
+| 投票硬挡 | `committeeVoteHardBlockGo && !hasAuditedCommitteeVote` | `委员投票未达硬闸`（`handoff.ts:191`） | `IntakeFlow.tsx:182`、`handoff.ts:268-275`、`AppContext.tsx:2220-2227` |
+| 清单闸 | 必做项未完成且不在 `resolveDoneIds` | 「清单未齐：<项名>（晋级只认真实清单/交接）」 | `AppContext.tsx:2209-2218`、`IntakeFlow.tsx:235-243` |
+| 阶段交接闸 | `handoffs.intake_quote.status` ∉ approved/filed/authorized | 「当前阶段交接未批准：intake_quote 为「…」，须先走真实批准/归档后再晋级」 | `AppContext.tsx:2229-2240` |
+| 商务前置（自助） | `mode = self_serve` 且 `budget` 为空 | 「自助立项须填写预算后方可 Go」 | `IntakeFlow.tsx:205-207` |
+| 商务前置（委托） | `mode = delegated` 且报价未批准且付款状态不在允许集 | 「委托模式：须报价已确认 / intake_quote 交接批准后方可 Go」 | `IntakeFlow.tsx:202-211` |
+| 确认报价硬挡 | `intake_quote` approve/authorize + flag ON + 无审计票 | `委员投票未达硬闸` | `handoff.ts:268-275` |
+| 发票阻塞 | 代理侧授权/递交且有逾期发票 | 「发票阻塞」 | `guardrails.ts:274-285` |
+
+**唯一入口的现状**：`IntakeFlow.tsx:212-227` 只在 `decision === 'Go'` 时调 `evaluateGuardrails`；**No-Go 完全不经过护栏**。这是有意设计（No-Go 不消耗资源），但意味着 No-Go 也没有任何合规校验（如「是否已告知发明人」）。
+
+---
+
+## 8. 步骤序列 / 工作流
+
+`src/data/flowSteps.ts:27-33` 定义 4 步：发明披露 → 双维评分 → 委员投票 → Go/No-Go。代码的 `progressStep` 推导（`IntakeFlow.tsx:262-267`）：有决策 → 3；投票齐 → 2；有评分 → 1；否则 0。
+
+| # | 步骤 | 谁做 | 耗时 | 产出 | 完成条件 | 失败回退 |
+|---|---|---|---|---|---|---|
+| 1 | 发明披露复核 | 企业 IP | 0.5 天 | 交底摘要（类型 / 1.1 是否勾 / 缺口数） | `disclosure_pack` 已批准 | 回门户补交底 |
+| 2 | 四维评估 + 评分 | 企业 IP + 业务负责人 | 1–2 天 | 六维分 + 四维结论 | 六维均打分 | 数据不足 → 回 01 补检索 |
+| 3 | 委员投票 | 委员会（技术/商业/法务） | 3–5 天 | `CommitteeVote[]` + 纪要 | 达法定人数 | 票数不足 → 延长/补委员 |
+| 4 | 报价与范围 | 代理所 / 采购 | 1–3 天 | `QuoteBreakdown` + `intake_quote` | 3 项齐套 | 报价过高 → 比价/重新询价 |
+| 5 | Go / No-Go | 企业 IP | 0.5 天 | `intake_quote` 状态 + 纪要 artifact | 四闸全过 | 条件不满足 → 有条件 Go（挂待办）或 No-Go |
+| 6 | 分叉派发 | 系统 | — | 新阶段 handoff + Engagement 更新 | 见 §8.1 | — |
+
+### 8.1 Go 之后的四个分叉
+
+当前代码只有一条：`advanceFromWorkbench` → 下一阶段 `drafting`（`AppContext.tsx:2242`）。真实业务有四条，产品必须显式选择：
+
+| 分叉 | 触发条件 | 动作 | 代码现状 |
+|---|---|---|---|
+| **进撰写** | 常规 Go，国内为主 | `stage → drafting`，`draft_claims = drafting`，报价确认 | ✅ |
+| **进 PCT** | 有海外市场，需多国保护 | 先国内申请占优先权日 → 12 个月内提 PCT ⚠ | ❌ 无对象，只有 docket 一条 `pct_national_entry` |
+| **转技术秘密** | 不可反向工程、生命周期长于 20 年、或已失新颖性 | 不申请；建保密台账、密级、接触人名单 | ❌ 仅 conclusion 文案 |
+| **防御性公开** | 只为阻止对手申请，不打算自己持有 | 公开技术内容（论文/开源/防御性公告），形成现有技术 | ❌ 无对象、无时点、无证据留存 |
+
+> **为什么四选一比二选一重要**：No-Go ≠ 什么都不做。「转技术秘密」要求建立保密措施证据（否则侵权时无法主张商业秘密）；「防御性公开」要求留可核验的公开证据（否则对手仍可申请）。这两条如果只写成一句理由文本，No-Go 的价值就归零。
+
+---
+
+## 9. 写回与命令
+
+| 动作 | 命令 | 写入 | 跨口 |
+|---|---|---|---|
+| 保存报价草稿 | `saveDraft` | `handoffs.intake_quote.status/versions` | 否 |
+| 提交报价 | `submitHandoff` | 状态 + `Engagement{paymentStatus:'报价待确认', phase:'接案评估', quoteBudget}` + `Artifact「接案报价_提交.md」` | 否 |
+| 确认报价 | `confirmQuote`（= `approve` on `intake_quote`） | 状态 + `paymentStatus:'已确认待付款'`、`phase:'正式委托'`、`budgetApproved`、追加待开票发票 | 否 |
+| 正式委托 | `authorizeFile` | `authorized_to_file` | 否 |
+| 归档协议 | `fileResponse` | `filed` | 否 |
+| 退回 | `requestChanges` | `changes_requested` + annotation | 否 |
+
+**Phase 2 · 决策与组织动作（不经 7 态阀门）：**
+
+| 动作 | 命令 / 函数 | 写入 | 跨口 |
+|---|---|---|---|
+| 委员投票 | `recordCommitteeVote`（非 DomainCommand） | `committeeVoteLog` + audit `approveHandoff` + activity | 否 |
+| Go | `advanceFromWorkbench`（Flow 内直调，不经 `advanceStage`） | `stage`、`checklist` 重置、新阶段 handoff = drafting、timeline | 否 |
+| No-Go | `recordIntakeNoGo` | `intake_quote → changes_requested` + version + timeline + `risk` 抬升 | 否 |
+| 接受代理意向 | `acceptAgencyIntent` | `AgencyIntent.status = accepted`、同业其余 → `ignored`、`quoteDispatchStatus = assigned`、追加待开票发票 | 否 |
+| 派所 | `assignAgency` | `assignedAgencyId`、`quoteDispatchStatus = assigned` | 否 |
+
+**命令与交接动作的映射**（`packages/contracts/src/commands.ts:189-210`）：`approve` 在 `intake_quote` 上映射为 `confirmQuote`，其余 key 映射为 `approveHandoff`。这是「报价确认」与「产物批准」被刻意区分的实现点。
+
+**跨口**：本节点全在 workbench :5174 内；`committeeVoteHardBlockGo` 是 localStorage 开关，同源多标签可共享，跨端口不共享。
+
+---
+
+## 10. 期限与 SLA
+
+### 10.1 法律期限（都是「Go 之后」才启动）
+
+| 期限 | 长度 | 起算 | 后果 |
+|---|---|---|---|
+| 优先权（发明/实用新型） | 12 个月 ⚠ | 首次申请日 | 逾期不能主张 |
+| 优先权（外观） | 6 个月 ⚠ | 首次申请日 | 同上 |
+| 实审请求 | 3 年 ⚠ | 申请日 | 逾期视为撤回 |
+| PCT 国家阶段进入 | 30 个月（个别 16 个月）⚠ | 优先权日 | 逾期丧失该国保护 |
+| 保密审查 | 事先 | 向外国申请前 | 违反 → 中国不授权 |
+
+### 10.2 业务 SLA（软，可配置）
+
+| SLA | 建议值 | 说明 |
+|---|---|---|
+| 决策周期 | 10 工作日 | 进入 `decision` 到 Go/No-Go |
+| 委员投票窗口 | 5 工作日 | 逾期按弃权处理（需制度支持） |
+| 报价响应 | 3 工作日 | 企业询价到代理所出价 |
+| 报价有效期 | 30 天 | 超期重报 |
+| 报价确认 | 10 工作日 | 企业侧 |
+| No-Go 复议窗口 | 6 个月 | 条件变化可重提 |
+
+### 10.3 与 docket 引擎的关系
+
+本节点**零 docket 覆盖**。当前 docket 7 条规则全部在立案之后。
+
+**待补四条**：
+
+- `decision_sla`（决策周期逾期 → 升级到 IP 负责人）
+- `committee_vote_window`（投票窗口关闭提醒）
+- `quote_validity`（报价有效期到期）
+- `no_go_review`（No-Go 后 6 个月复议提醒）
+
+---
+
+## 11. 边界与失败场景
+
+| # | 场景 | 正确处置 | 现状 |
+|---|---|---|---|
+| 1 | 交底包没批，企业 IP 直接点 Go | 硬阻断，提示先批交底 | ✅ |
+| 2 | 委员全票驳回，企业 IP 仍要 Go | 须书面覆议并记录理由，系统留痕 | ❌ 无否决权 |
+| 3 | 委员是发明人同部门主管 | 强制回避，不计法定人数 | ❌ |
+| 4 | 三位委员只有一位投票 | 未达法定人数，不得提交 | ⚠ 「至少一位」即算齐 |
+| 5 | 代理所报 ¥28k，另一家报 ¥18k | 需比价记录与选择理由 | ❌ 无排名/比选 |
+| 6 | 报价含「OA 按次计费」但没说几次 | 委托范围必须写明 OA 轮次与单价 | ❌ |
+| 7 | 官费涨价，报价仍按旧价 | 官费从当期收费表取，不硬编码 | ❌ 硬编码 3,450 |
+| 8 | 企业说「先写，钱年底一起结」 | 付款状态与开票分离，Go 允许挂账但留痕 | ⚠ 只有 paymentStatus 字符串 |
+
+**涉外与 No-Go 类：**
+
+| # | 场景 | 正确处置 | 现状 |
+|---|---|---|---|
+| 9 | Go 后才发现技术已公开 7 个月 | 决策卡应含「最早公开日」字段 | ❌ |
+| 10 | Go 后要出海，但没做保密审查 | 涉外的 Go 必须挂保密审查待办 | ❌ |
+| 11 | No-Go 后发明人要求复议 | 6 个月内可复议，带新证据 | ❌ |
+| 12 | No-Go 后决定转技术秘密 | 建保密台账 + 密级 + 接触人 | ❌ |
+| 13 | No-Go 后决定防御性公开 | 留可核验公开证据与时间戳 | ❌ |
+
+**组织与内控类：**
+
+| # | 场景 | 正确处置 | 现状 |
+|---|---|---|---|
+| 14 | 同一发明两个部门重复立项 | 按标题/发明人/技术主题查重 | ❌ |
+| 15 | 预算审批人与决策人是同一人 | 强制分离（四眼原则） | ❌ |
+| 16 | 委员投票后想改票 | 锁定 + 改票留痕 | ❌ 可无限改 |
+| 17 | 代理所在确认报价前就开工撰写 | 报价未批不得进 03（阶段闸） | ✅ |
+
+---
+
+## 12. 指标（验收尺子）
+
+| 指标 | 定义 | 健康区间 | 说明 |
+|---|---|---|---|
+| 交底→Go 转化率 | Go 数 / 进入决策数 | 20%–40% ⚠ | 过低=前端过滥；过高=评审失效 |
+| Go→递交转化率 | 实际递交数 / Go 数 | 70%–90% ⚠ | 低于 70% 说明 Go 太松或撰写受阻 |
+| 决策周期中位数 | 进入 decision 到决议 | ≤ 10 工作日 | 阻塞下游的主变量 |
+| 委员出席率 | 实际投票人数 / 应到人数 | ≥ 90% | 低于此法定人数形同虚设 |
+| 投票覆盖率 | 有完整委员票的 Go 案占比 | 100% | 治理底线 |
+| 否决被覆议率 | 驳回后被覆议通过的占比 | < 10% | 高 → 委员会无实权 |
+
+**费用与复盘类：**
+
+| 指标 | 定义 | 健康区间 | 说明 |
+|---|---|---|---|
+| 报价偏差率 | 实际结算 / 初次报价 | 0.9–1.1 | 超出说明范围定义不清 |
+| 单件决策成本 | 评审工时 + 检索费 | ¥3k–15k ⚠ | 与转化率一起看性价比 |
+| No-Go 留痕完整率 | 有结构化理由码的 No-Go 占比 | 100% | 缺失则无法复盘 |
+| 复议成功率 | 复议后改判 Go 的占比 | 5%–20% ⚠ | 过低 → 复议是形式；过高 → 首判草率 |
+| 预算执行率 | 实际支出 / 年度 IP 预算 | 90%–110% | 决策卡是预算的执行入口 |
+
+> 卖产品时优先讲 **「Go→递交转化率」** 与 **「单件决策成本」**：前者证明评审能挡掉不该做的，后者证明挡得便宜。这两个指标合起来就是「省了多少钱」，是 CFO 唯一会听的语言。
+
+---
+
+## 13. 产品化切分建议
+
+| 层 | 内容 | 是否可独立交付 |
+|---|---|---|
+| L1 决策表单 | 评分 + 决议 + 理由 + 纪要导出 | 是（最低配，可白牌） |
+| L2 委员会引擎 | 委员池、法定人数、回避、否决、投票留痕、票型统计 | 是（治理刚需，上市公司买单） |
+| L3 报价台 | 四类费用拆分、范围含/不含、有效期、比价、合同附件导出 | 是（代理所/采购双向价值） |
+| L4 预算闸 | 年度额度、审批阈值、四眼原则、超支预警 | 是（CFO 买单） |
+| L5 分叉路由 | Go → 撰写/PCT；No-Go → 技术秘密/防御性公开，含证据留存 | 是（差异化最强的一块） |
+| L6 交接接口 | `intake_quote` → 03/09/12 的 API | 依赖下游 |
+
+**定价锚点**：按「决策件数」计价（每件 X 元）最能对齐价值；或按「席位 + 年度预算规模」组合计价。**不要按 Go 的数量计价**——那会激励放宽标准，正好触发非正常申请风险。
+
+**竞品参照系**：
+
+- Anaqua / CPA Global / Dennemeyer：强在流程与费用管理，弱在中国法合规与本地报价口径；
+- 国内 IP 管理系统（如某些代理所 SaaS）：强在案卷管理，委员会与预算审批普遍是「附件上传」；
+- 代理所自建 CRM：强在报价，弱在跨所比选与治理留痕。
+
+**空位**：把「治理（委员会 + 否决 + 回避）+ 中国法路径分叉（PCT/保密审查/技术秘密）+ 报价四费拆分」放进同一个对象（`intake_quote`）。市面上前两者与第三者几乎从不共存。
+
+---
+
+## 14. 现状差距表（代码 vs 本文）
+
+| # | 差距 | 严重度 | 影响 |
+|---|---|---|---|
+| 1 | c1/c2 无写入路径 → 新案 Go 永久被挡 | **高** | 从 01 晋级的新案走不通，只有种子案能演示 |
+| 2 | Go 不写 `Engagement.phase` | 中 | 商务线与阶段轴脱节 |
+| 3 | 评分只有双维，无六维/权重/总分/阈值 | **高** | 与 00 §8.1 打架，无法支撑「有理由的否决」 |
+| 4 | 委员硬编码 3 人，无法定人数/回避/否决 | **高** | 委员会是演示道具，不是治理机制 |
+| 5 | votes seed 预置两票且切案不重置 | **高** | 「评审已完成」是假的，指标全失真 |
+| 6 | 「投票硬挡」只判存在任意一票 | 高 | 一票驳回也能 Go，硬挡失去意义 |
+| 7 | 企业 IP 票不进审计，却只有企业 IP 能 Go | 中 | 一人需切两次 Persona，真实组织无法落地 |
+| 8 | `scope` 绑 `techSolution` | **高** | 委托范围缺失，合同附件无从生成 |
+
+**商务与合规类：**
+
+| # | 差距 | 严重度 | 影响 |
+|---|---|---|---|
+| 9 | 报价为单字符串，无四费拆分 | 高 | 无法核算、无法比价、无法对账 |
+| 10 | 官费硬编码 ≈¥3,450 | 中 | 收费表一变即错 |
+| 11 | `CNIPA_FEE_HINTS.registration = 200` 与 `industry-reality.md` 的 150 不一致 | 低 | 同一仓库两个官费口径 |
+| 12 | No-Go 停在 decision，无结案/技术秘密/防御性公开对象 | **高** | No-Go 的价值全部丢失 |
+| 13 | No-Go 无结构化理由码、无复议入口 | 中 | 无法统计、无法复盘 |
+| 14 | `quoteDispatchStatus` 的 quoted/confirmed 从不写入 | 中 | 派单状态机名存实亡 |
+| 15 | 无保密审查、无目标国别、无 PCT 分叉 | 高 | 涉外场景直接踩法律红线 |
+| 16 | 预算无来源/额度/审批阈值/四眼 | 中 | 内控与审计无法通过 |
+| 17 | 决策阶段零 docket | 中 | 无 SLA、无提醒 |
+| 18 | `agent-intake` 的 RACI 写「业务负责人/预算审批人」，代码无此角色 | 低 | 文案误导 |
+
+**优先补的三件事**（按投入产出比）：
+
+1. **修 c1/c2 的写入路径 + 清掉 votes 假种子**（差距 1、5）——这是「能不能用」的问题，不是「好不好用」。一行修不好，整个节点在新案上不可用。
+2. **六维评分 + 结构化决议（四维 + 理由码 + 否决权）**（差距 3、4、6）——这是产品差异的来源，也是 IP 总监愿意付费的唯一理由。
+3. **`scope` 与报价四费拆分**（差距 8、9）——这是唯一能直接转成合同与发票、因而能直接换算成钱的部分。
+
+---
+
+## 15. 术语表
+
+| 术语 | 含义 |
+|---|---|
+| Go / No-Go | 立项决议的两态；Go 进下一阶段，No-Go 结案或转其他路径 |
+| 有条件 Go | Go 但挂前置待办（如「补完实验数据后再撰写」） |
+| 委员会 / Patent Review Committee | 由技术、商业、法务代表组成的评审机构 |
+| 法定人数 / Quorum | 表决有效所需的最少出席人数 |
+| 回避 / Recusal | 与本案有利害关系的委员退出表决 |
+| 否决权 / Veto | 特定委员一票即可阻止 Go 的权力 |
+| 覆议 | 对否决或 No-Go 的再次审议 |
+| 委托范围 / Scope | 代理所承担的具体工作边界（权项组数、OA 轮次、翻译等） |
+| 报价有效期 | 报价可被接受的时间窗，超期须重报 |
+| 四眼原则 | 决策人与审批人必须分离 |
+
+**工程与对象侧：**
+
+| 术语 | 含义 |
+|---|---|
+| `self_serve` | 企业自助办理，企业自身扮演执行方 |
+| `delegated` | 委托代理所办理，agency 与 enterprise 双方交接 |
+| 技术秘密 | 不申请专利、以保密方式持有的技术资产 |
+| 防御性公开 | 主动公开技术以形成现有技术，阻止他人申请 |
+| 优先权窗口 | 首次申请后 12 个月内可就同一发明在其他国家/地区申请并主张优先权 |
+| `intake_quote` | 本节点的交接产物：报价 + 委托范围 + 委员票 |
+
+---
+
+## 16. 来源
+
+法律与行业口径：
+
+- [《专利法》（2020 年修正）· CNIPA](https://www.cnipa.gov.cn/art/2020/11/23/art_97_155167.html)
+- [《专利法实施细则》（2023 年修订）· CNIPA](https://www.cnipa.gov.cn/art/2023/12/21/art_98_189197.html)
+- [关于施行修改后专利法相关问题解答 · CNIPA](https://www.cnipa.gov.cn/art/2021/5/27/art_2073_159683.html)
+- [GB/T 29490-2023《企业知识产权合规管理体系要求》· CNIPA](https://www.cnipa.gov.cn/art/2023/9/5/art_66_187235.html)
+- [《规范申请专利行为的规定》（2024，局令第 77 号）](https://www.moj.gov.cn/pub/sfbgw/flfggz/flfggzbmgz/202409/t20240911_505797.html)
+- [CNIPA：关于发明人奖励和报酬事宜](https://www.cnipa.gov.cn/jact/front/mailpubdetail.do?transactId=498065&sysid=6)
+
+未给出链接、仅按名称引用的口径（避免编造 URL）：《民法典》合同编第二十三章（委托合同）；《专利审查指南》现行版关于优先权与保密审查的规定；《专利收费办法》当期版本。
+
+> 金额、比例、条号均标 ⚠：报价区间、官费、减缴比例、转化率经验值均须按当期 CNIPA 收费表与企业实际数据复核；法条条号须按 2020 修正 / 2023 修订文本复核。
