@@ -23,16 +23,34 @@ type LabCard = {
   secondary?: { label: string; href: string }
 }
 
-/** 五幕导航 · agent-depth-reliability / pairing playbook（对齐业务冷启动） */
+/** 幕次导航 · agent-depth-reliability / pairing playbook（对齐业务冷启动） */
 const CARDS: LabCard[] = [
   {
-    id: 'biz',
-    version: '幕 1 · 业务主线',
+    id: 'home',
+    version: '幕 1 · 首页',
     badge: '默认冷启动',
-    blurb: '开新活 → 席 bot（查新等已加深）→ 待我确认。对外演示主干。',
+    blurb: '项目列表 + 简报 + 对话框（资料 / @专家 / @部门）→ 落成工作区。',
     href: '/agent',
-    cta: '打开我的案子',
+    cta: '打开首页',
     icon: Briefcase,
+    secondary: { label: '我的案子', href: '/agent/cases' },
+  },
+  {
+    id: 'departments',
+    version: '幕 2 · 部门',
+    badge: '组织',
+    blurb: '8 节点串联 + 专家 role / skill 配置；取代原专家工作台。',
+    href: '/agent/departments',
+    cta: '打开部门',
+    icon: LayoutGrid,
+  },
+  {
+    id: 'assets',
+    version: '幕 2b · 资产',
+    blurb: '全局资料库：分类树 + 文件列表 + 挂项目 / 带到对话。',
+    href: '/agent/assets',
+    cta: '打开资产',
+    icon: Library,
   },
   {
     id: 'warmup',
@@ -51,14 +69,6 @@ const CARDS: LabCard[] = [
     href: '/agent/cases/case-biz-edge-scheduler?drill=1&seat=orchestrator',
     cta: '打开演练全队',
     icon: Sparkles,
-  },
-  {
-    id: 'catalog',
-    version: '幕 2 · 专家工作台',
-    blurb: '默认 7 / 更多 / 全表；加席写回同一案。',
-    href: '/agent/catalog',
-    cta: '打开 Catalog',
-    icon: LayoutGrid,
   },
   {
     id: 'l3',

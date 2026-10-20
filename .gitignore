@@ -43,3 +43,6 @@ tools/e2e-hunt/artifacts/
 apps/search-api/data/search.db
 apps/search-api/data/search.db-*
 apps/search-api/data/objects/
+
+# 本轮样机截图脚本（本地验证用）
+shots/verify-new-pages.mjs

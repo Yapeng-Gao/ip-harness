@@ -4,6 +4,9 @@ import { AgentProvider } from '@shared/context/AgentContext'
 import { ProductProvider } from '@shared/context/ProductContext'
 import { AgentShell } from './components/AgentShell'
 import { AgentHome } from './pages/AgentHome'
+import { HomePage } from './pages/HomePage'
+import { DepartmentsPage } from './pages/DepartmentsPage'
+import { AssetsPage } from './pages/AssetsPage'
 import { AgentL1Shell } from './pages/AgentL1Shell'
 import { GeneralGrokShell } from './pages/GeneralGrokShell'
 import { AgentSessionWorkspace } from './pages/AgentSessionWorkspace'
@@ -13,12 +16,13 @@ import { AgentHarnessOverview } from './pages/AgentHarnessOverview'
 import { ProjectFolderProvider } from './projects/ProjectFolderContext'
 import { GeneralBotsProvider } from './projects/GeneralBotsContext'
 import { BusinessCaseProvider } from './business/BusinessCaseContext'
+import { OrgConfigProvider } from './departments/OrgConfigContext'
+import { AssetLibraryProvider } from './assets/AssetLibraryContext'
 import { GeneralBotNewPage } from './pages/GeneralBotNewPage'
 import { ProjectListPage } from './pages/projects/ProjectListPage'
 import { ProjectWorkspacePage } from './pages/projects/ProjectWorkspacePage'
 import { AgentLabGallery } from './pages/AgentLabGallery'
 import { RedirectToAgentLab } from './pages/RedirectToAgentLab'
-import { PatentCatalogPage } from './pages/patent/PatentCatalogPage'
 import { PatentSeatPage } from './pages/patent/PatentSeatPage'
 import { PatentRoomPage } from './pages/patent/PatentRoomPage'
 import { BusinessCasesPage } from './pages/business/BusinessCasesPage'
@@ -31,9 +35,11 @@ import {
 } from './pages/business/PendingConfirmPage'
 
 /**
- * Business mode:
- * /agent = chat home (empty center + case rail); Catalog = expert bypass.
- * Solo/Team bypass kept.
+ * IA（2026-10-21）：
+ * /agent              首页（项目列表 + 简报 + 待办 + 对话框）
+ * /agent/cases        我的案子（原首页）
+ * /agent/departments  部门（HR 式管理，取代 catalog）
+ * /agent/assets       资产（全局库 + 文件树）
  */
 export default function App() {
   return (
@@ -43,19 +49,24 @@ export default function App() {
           <ProjectFolderProvider>
           <GeneralBotsProvider>
           <BusinessCaseProvider>
+          <OrgConfigProvider>
+          <AssetLibraryProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Navigate to="/agent" replace />} />
               <Route path="/agent" element={<AgentShell />}>
-                <Route index element={<BusinessCasesPage />} />
+                <Route index element={<HomePage />} />
+                <Route path="cases" element={<BusinessCasesPage />} />
                 <Route path="cases/new" element={<BusinessCaseNewPage />} />
                 <Route path="cases/:caseId" element={<BusinessCasePage />} />
                 <Route path="cases/:caseId/room" element={<BusinessCaseRoomPage />} />
                 <Route path="pending" element={<PendingConfirmInboxPage />} />
                 <Route path="pending/:confirmId" element={<PendingConfirmDetailPage />} />
-                <Route path="catalog" element={<PatentCatalogPage />} />
-                {/* 旧深链：冷启动曾是 Catalog */}
-                <Route path="experts" element={<Navigate to="/agent/catalog" replace />} />
+                <Route path="departments" element={<DepartmentsPage />} />
+                <Route path="assets" element={<AssetsPage />} />
+                {/* 2026-10-21：catalog 并入部门页 */}
+                <Route path="catalog" element={<Navigate to="/agent/departments" replace />} />
+                <Route path="experts" element={<Navigate to="/agent/departments" replace />} />
                 <Route path="seats/:seatId" element={<PatentSeatPage />} />
                 <Route path="sandbox" element={<AgentL1Shell />} />
                 <Route path="team" element={<GeneralGrokShell />} />
@@ -81,6 +92,8 @@ export default function App() {
               <Route path="/agents/*" element={<Navigate to="/agent" replace />} />
             </Routes>
           </BrowserRouter>
+          </AssetLibraryProvider>
+          </OrgConfigProvider>
           </BusinessCaseProvider>
           </GeneralBotsProvider>
           </ProjectFolderProvider>

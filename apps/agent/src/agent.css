@@ -404,3 +404,63 @@ body,
 .general-grok-bubble {
   transition-property: transform, opacity, background-color, border-color, color, box-shadow, filter, outline-color !important;
 }
+
+/* —— 2026-10-21 · 首页 / 部门 / 资产 —— */
+
+/* 部门 8 节点串联：窄屏纵向，宽屏横排 */
+.dept-chain {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dept-chain__item {
+  display: flex;
+  align-items: stretch;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.dept-chain__arrow {
+  display: none;
+  align-self: center;
+  flex-shrink: 0;
+}
+@media (min-width: 1280px) {
+  .dept-chain {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .dept-chain__arrow {
+    display: block;
+  }
+  /* 每行最后一格不画箭头 */
+  .dept-chain__item:nth-child(4n) .dept-chain__arrow {
+    display: none;
+  }
+}
+
+.dept-card {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(60, 60, 67, 0.12);
+  background: #fff;
+  box-shadow: var(--shadow-rest);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.dept-card:hover {
+  border-color: rgba(60, 60, 67, 0.22);
+}
+.dept-card[data-status='待确认'] {
+  border-color: color-mix(in srgb, #f59e0b 45%, transparent);
+}
+.dept-card[data-status='退回'] {
+  border-color: color-mix(in srgb, #e11d48 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dept-card {
+    transition: none;
+  }
+}

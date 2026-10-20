@@ -86,12 +86,11 @@ test.describe('Agent stepwise S0–S2', () => {
       expect(page.url()).not.toMatch(/localhost:5173/)
       rec.assertions.push('no mid deep-link (origin=5175)')
 
-      // 业务首页（becca1e）：侧栏在 /agent 业务面隐藏；硬闸保留 origin/无 mid
-      // Home =「我的案子」（与 L0-AG-01 同口径；Catalog 已迁 /agent/catalog）
-      await expect(page.getByRole('heading', { name: '我的案子' })).toBeVisible()
-      await expect(page.getByTestId('business-cases-page')).toBeVisible()
+      // 2026-10-21：/agent 首页 = 项目列表 + 简报 + 对话框；「我的案子」迁 /agent/cases
+      await expect(page.getByRole('heading', { name: '今天要办什么？' })).toBeVisible()
+      await expect(page.getByTestId('agent-home-page')).toBeVisible()
       await expect(page.getByTestId('patent-catalog-page')).toHaveCount(0)
-      rec.assertions.push('我的案子 h1 + business-cases-page 可见；无 patent-catalog-page')
+      rec.assertions.push('首页 h1 + agent-home-page 可见；无 patent-catalog-page')
 
       // No BillingHold full-width amber banner
       const fullBanner = page.locator('[data-billing-hold-banner]')
@@ -99,8 +98,8 @@ test.describe('Agent stepwise S0–S2', () => {
       rec.assertions.push('无 BillingHold 全宽黄条 (data-billing-hold-banner=0)')
 
       rec.bbox = {
-        'business-cases-page': await bboxOf(page, '[data-testid="business-cases-page"]'),
-        'business-new-case': await bboxOf(page, '[data-testid="business-new-case"]'),
+        'agent-home-page': await bboxOf(page, '[data-testid="agent-home-page"]'),
+        'home-composer-send': await bboxOf(page, '[data-testid="home-composer-send"]'),
       }
 
       rec.screenshot = await shot(page, 'S0-home.png')

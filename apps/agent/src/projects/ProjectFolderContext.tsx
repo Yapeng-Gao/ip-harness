@@ -378,8 +378,12 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
         updatedAt: nowIso(),
       }
       const newThreads = expertIds.map((eid) => emptyThread(id, eid))
-      setProjects((prev) => [project, ...prev])
-      setThreads((prev) => [...newThreads, ...prev])
+      // 幂等：StrictMode 双调用 / 同 id 并发时不得重复插入
+      setProjects((prev) => (prev.some((p) => p.id === id) ? prev : [project, ...prev]))
+      setThreads((prev) => [
+        ...newThreads.filter((t) => !prev.some((p) => p.id === t.id)),
+        ...prev,
+      ])
       setTimeline((prev) => [
         ...prev,
         {

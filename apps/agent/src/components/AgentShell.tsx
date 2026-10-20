@@ -91,15 +91,16 @@ export function AgentShell() {
 
   const inSession = loc.pathname.startsWith('/agent/sessions/')
   const inProjects = loc.pathname.startsWith('/agent/projects')
+  const inHome = loc.pathname === '/agent' || loc.pathname === '/agent/'
   const inBusiness =
-    loc.pathname === '/agent' ||
-    loc.pathname === '/agent/' ||
     loc.pathname.startsWith('/agent/cases') ||
     loc.pathname.startsWith('/agent/pending')
-  const inCatalog =
-    loc.pathname === '/agent/catalog' ||
-    loc.pathname.startsWith('/agent/catalog/') ||
-    loc.pathname.startsWith('/agent/seats/')
+  const inDepartments =
+    loc.pathname === '/agent/departments' ||
+    loc.pathname.startsWith('/agent/departments/')
+  const inAssets =
+    loc.pathname === '/agent/assets' || loc.pathname.startsWith('/agent/assets/')
+  const inCatalog = loc.pathname.startsWith('/agent/seats/')
   const inSandbox =
     loc.pathname === '/agent/sandbox' || loc.pathname.startsWith('/agent/sandbox/')
   const inL2Shell =
@@ -108,9 +109,26 @@ export function AgentShell() {
     loc.pathname.startsWith('/agent/bots/')
   const inPatentProject = loc.pathname.startsWith('/agent/projects')
   const inGrokShell = inSandbox || inL2Shell
-  const inPatentShell = inCatalog || inPatentProject || inBusiness
   /** 业务面默认隐藏租户/Persona；?debug=1 显示 */
   const showTenantChrome = debug || inGrokShell || inCatalog
+
+  const pageTitle = inL2Shell
+    ? '团队 · 旁路'
+    : inSandbox
+      ? '通用沙盒'
+      : inCatalog
+        ? '专家工作台'
+        : inDepartments
+          ? '部门'
+          : inAssets
+            ? '资产'
+            : inBusiness
+              ? '我的案子'
+              : inHome
+                ? '知产 Agent'
+                : inPatentProject
+                  ? '专利 Agent'
+                  : '知产 Agent'
 
   return (
     <div className="app-shell-bg flex h-full flex-col overflow-hidden">
@@ -130,17 +148,7 @@ export function AgentShell() {
             IP
           </div>
           <div className="text-sm font-semibold tracking-tight text-slate-900">
-            {inL2Shell
-              ? '团队 · 旁路'
-              : inSandbox
-                ? '通用沙盒'
-                : inCatalog
-                  ? '专家工作台'
-                  : inBusiness
-                    ? '我的案子'
-                    : inPatentShell
-                      ? '专利 Agent'
-                      : '知产 Agent'}
+            {pageTitle}
           </div>
         </div>
 
@@ -165,7 +173,9 @@ export function AgentShell() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
-          {(inBusiness || inCatalog || inPatentProject) && <PendingConfirmBell />}
+          {(inHome || inBusiness || inCatalog || inPatentProject) && (
+            <PendingConfirmBell />
+          )}
           {!inGrokShell && showTenantChrome && (
             <ProductSwitcher current="agent" size="md" className="hidden sm:grid" />
           )}
@@ -199,7 +209,7 @@ export function AgentShell() {
 
       <div className="flex min-h-0 flex-1">
         {inBusiness && <BusinessCaseSidebar />}
-        {!inProjects && !inGrokShell && !inBusiness && !inCatalog && (
+        {!(inProjects || inGrokShell || inBusiness || inCatalog || inDepartments || inAssets || inHome) && (
           <AgentSessionSidebar />
         )}
 

@@ -7,6 +7,10 @@ export type BusinessHomeStartState = {
   summary?: string
   title?: string
   chip?: 'disclosure' | 'research'
+  /** 首页对话框随指令带过来的资料（资产库 id） */
+  attachments?: string[]
+  /** @专家 / @部门 的提及，已格式化为可读串 */
+  mentions?: string[]
 }
 
 /**
@@ -97,13 +101,13 @@ export function BusinessCasesPage() {
             知产 Agent
           </p>
           <h1
-            className="mt-2 text-balance text-[28px] font-semibold tracking-tight text-slate-900 sm:text-[32px]"
+            className="mt-2 text-balance text-[26px] font-semibold tracking-tight text-slate-900 sm:text-[30px]"
             data-testid="business-home-title"
           >
-            今天要办什么？
+            我的案子
           </h1>
           <p className="mt-2 text-pretty text-sm text-slate-500">
-            描述你要办的事，或直接开一个新案子 · 历史在左侧
+            描述你要办的事，或直接开一个新案子 · 首页在工作区
           </p>
 
           <form
