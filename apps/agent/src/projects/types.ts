@@ -22,6 +22,7 @@ export type ProjectExpertId =
   | 'expert-intake'
   | 'expert-disclosure'
   | 'expert-draft'
+  | 'expert-draft-spec' // 壳扩展 · 撰写节点里的说明书（非 Pack 16）
   | 'expert-figure'
   | 'expert-fto'
   | 'expert-filing'
@@ -130,6 +131,10 @@ export type ProjectThread = {
   hitlCleared?: boolean
   updatedAt: string
   artifactSubmitted?: boolean
+  /** 人改过的成果 markdown（有则覆盖递进拼装稿） */
+  artifactMarkdown?: string
+  /** 另存版本时间戳副本（样机） */
+  artifactVersions?: Array<{ savedAt: string; markdown: string }>
 }
 
 export type ProjectTimelineEvent = {

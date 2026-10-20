@@ -10,7 +10,7 @@ export const RESEARCH_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'scope',
     label: '划定检索范围',
     script:
-      '【查新】已从交底/主题抽出技术要点，并拟定拟检索字段。请在「成果」查看要点清单。',
+      '【查新】本轮对照交底书（含示意图）抽技术要点。说明书写完后还会再查一轮，对照权要。',
     tool: {
       name: 'extract_tech_points',
       preview: '技术要点 5 条 · 字段含名称 / 功效 / 结构',

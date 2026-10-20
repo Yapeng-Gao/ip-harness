@@ -20,8 +20,10 @@ import {
   HANDOFF_ARTIFACT_LABELS,
   HANDOFF_LABELS,
   canPerformHandoff,
+  handoffActionAlreadySatisfied,
   nextStatusForAction,
   nextVersionLabel,
+  roleRequiredForHandoff,
   type HandoffAction,
 } from '@shared/data/handoff'
 import {
@@ -109,6 +111,7 @@ import {
   readLocalSnapshot,
   readPersonaCookie,
   readWorkspaceCookie,
+  isMidCrossPortHub,
   subscribeCrossPortSnapshot,
   writeLocalSnapshot,
   writePersonaCookie,
@@ -433,6 +436,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [cases, setCases] = useState<PatentCase[]>(() =>
     INITIAL_CASES.map(clonePatentCaseFromSeed),
   )
+  /** syncPass 连发命令时 React state 尚未落盘；用 ref 串起 submit→review→approve */
+  const casesRef = useRef(cases)
+  casesRef.current = cases
   const [watchAlertsByCase, setWatchAlertsByCase] = useState<
     Record<string, WatchAlert[]>
   >(() => {
@@ -647,6 +653,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   /** P0-2 · 大块态：同口 LS + BroadcastChannel；跨口 mid bridge */
   const applyingRemoteSnap = useRef(false)
+  /** Mid hub：仅本地 dispatch/add 才回写 LS，避免 React 旧态盖过 agent bridge 快照 */
+  const midOwnSnapshotWrite = useRef(false)
   const snapBootDone = useRef(false)
   useEffect(() => {
     const snap = readLocalSnapshot()
@@ -731,6 +739,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (applyingRemoteSnap.current) return
+    if (isMidCrossPortHub()) {
+      const existing = readLocalSnapshot()
+      if (existing && !midOwnSnapshotWrite.current) return
+    }
     const snap: CrossPortSnapshotV1 = {
       v: 1,
       revisedAt: new Date().toISOString(),
@@ -740,6 +752,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       docketEvents,
     }
     writeLocalSnapshot(snap)
+    if (isMidCrossPortHub()) midOwnSnapshotWrite.current = false
   }, [cases, auditLog, flowProgressByCase, docketEvents])
 
   useEffect(() => {
@@ -1050,22 +1063,108 @@ export function AppProvider({ children }: { children: ReactNode }) {
       extras?: { receiptNo?: string; filedAt?: string },
       auditMeta?: CommandMeta & { command?: CommandName; skipAudit?: boolean },
     ): { ok: boolean; message: string } => {
-      const c = cases.find((x) => x.id === caseId)
+      const syncPass = auditMeta?.syncPass === true
+      const caseSource = syncPass ? casesRef.current : cases
+      const c = caseSource.find((x) => x.id === caseId)
       if (!c) return { ok: false, message: '案件不存在' }
       const current = c.handoffs[key]?.status ?? 'drafting'
       const mode = c.fulfillmentMode ?? 'delegated'
+      const labelEarly = HANDOFF_ARTIFACT_LABELS[key]
+      const statusWord = (st: HandoffStatus): string => {
+        if (!syncPass) return HANDOFF_LABELS[st]
+        const words: Record<HandoffStatus, string> = {
+          drafting: '起草中',
+          submitted_to_enterprise: '已提交',
+          enterprise_review: '确认中',
+          changes_requested: '未通过',
+          approved: '已通过',
+          authorized_to_file: '可递交',
+          filed: '已归档',
+        }
+        return words[st]
+      }
+
+      if (syncPass && handoffActionAlreadySatisfied(current, action)) {
+        return { ok: true, message: '已通过' }
+      }
+
+      // 附图挂在已批准的权利要求上：不能 saveDraft 回退状态，只补摘要。
+      if (
+        syncPass &&
+        action === 'save_draft' &&
+        current !== 'drafting' &&
+        current !== 'changes_requested'
+      ) {
+        setCases((prev) => {
+          const next = prev.map((item) => {
+            if (item.id !== caseId) return item
+            const prevH = item.handoffs[key]
+            const prevVersions = prevH?.versions ?? []
+            const ver: ArtifactVersion = {
+              id: `ver-${Date.now()}`,
+              version: nextVersionLabel(prevVersions.length),
+              at: today(),
+              byRole: role,
+              byLabel: '业务确认',
+              note: note ?? '摘要已写入',
+              status: current,
+            }
+            return {
+              ...item,
+              handoffs: {
+                ...item.handoffs,
+                [key]: {
+                  status: current,
+                  updatedAt: today(),
+                  updatedBy: role,
+                  note: note ?? prevH?.note,
+                  versions: [...prevVersions, ver],
+                  receiptNo: prevH?.receiptNo,
+                  filedAt: prevH?.filedAt,
+                },
+              },
+              timeline: [
+                {
+                  id: `t-${Date.now()}`,
+                  time: today(),
+                  title: `${labelEarly}：摘要已写入`,
+                  desc: `业务确认${note ? ` · ${note}` : ''}`,
+                  type: 'success' as const,
+                },
+                ...item.timeline,
+              ],
+            }
+          })
+          casesRef.current = next
+          return next
+        })
+        addActivity(`「${c.title}」${labelEarly} 摘要已写入`)
+        if (!auditMeta?.skipAudit) {
+          pushAudit({
+            actor: auditMeta?.actor ?? 'agent',
+            agentId: auditMeta?.agentId,
+            command: auditMeta?.command ?? 'saveDraft',
+            caseId,
+            detail: auditMeta?.detail ?? `${labelEarly} · 摘要已写入`,
+          })
+        }
+        return { ok: true, message: '已通过' }
+      }
+
       const auditedVote = committeeVoteLog.some((v) => v.caseId === caseId)
-      const check = canPerformHandoff(current, action, role, mode, {
+      const gateRole = syncPass ? roleRequiredForHandoff(action) : role
+      const check = canPerformHandoff(current, action, gateRole, mode, {
         handoffKey: key,
         legalReview: c.legalReview,
-        persona,
-        committeeVoteHardBlockGo,
+        persona: syncPass ? undefined : persona,
+        committeeVoteHardBlockGo: syncPass ? false : committeeVoteHardBlockGo,
         hasAuditedCommitteeVote: auditedVote,
       })
       if (!check.ok) return { ok: false, message: check.reason ?? '非法操作' }
 
-      // 双保险：intake_quote 批准/授权路径（confirmQuote）认 VoteGate
+      // 双保险：intake_quote 批准/授权路径（confirmQuote）认 VoteGate。业务同步不经这一步。
       if (
+        !syncPass &&
         key === 'intake_quote' &&
         (action === 'approve' || action === 'authorize') &&
         committeeVoteHardBlockGo &&
@@ -1099,7 +1198,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const next = nextStatusForAction(action)
       const label = HANDOFF_ARTIFACT_LABELS[key]
-      const roleLabel = role === 'enterprise' ? '企业 IP' : '代理所'
+      const roleLabel = syncPass ? '业务确认' : role === 'enterprise' ? '企业 IP' : '代理所'
       const VERSIONING_ACTIONS: HandoffAction[] = [
         'submit',
         'approve',
@@ -1109,8 +1208,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         'save_draft',
       ]
 
-      setCases((prev) =>
-        prev.map((item) => {
+      setCases((prev) => {
+        const nextCases = prev.map((item) => {
           if (item.id !== caseId) return item
           const prevH = item.handoffs[key]
           const prevVersions = prevH?.versions ?? []
@@ -1121,7 +1220,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
               version: nextVersionLabel(prevVersions.length),
               at: today(),
               byRole: role,
-              note: note ?? HANDOFF_LABELS[next],
+              byLabel: syncPass ? '业务确认' : undefined,
+              note: note ?? statusWord(next),
               status: next,
               annotation:
                 action === 'request_changes'
@@ -1194,7 +1294,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 status: next,
                 updatedAt: today(),
                 updatedBy: role,
-                note: note ?? HANDOFF_LABELS[next],
+                note: note ?? statusWord(next),
                 versions,
                 receiptNo,
                 filedAt,
@@ -1205,7 +1305,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
               {
                 id: `t-${Date.now()}`,
                 time: today(),
-                title: `${label}：${HANDOFF_LABELS[current]} → ${HANDOFF_LABELS[next]}`,
+                title: `${label}：${statusWord(current)} → ${statusWord(next)}`,
                 desc: `${roleLabel}${note ? ` · ${note}` : ''}${
                   action === 'file' && extras?.receiptNo
                     ? ` · 回执 ${extras.receiptNo}`
@@ -1225,10 +1325,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
               ...item.timeline,
             ],
           }
-        }),
-      )
+        })
+        if (syncPass) casesRef.current = nextCases
+        return nextCases
+      })
 
-      addActivity(`「${c.title}」${label} ${HANDOFF_LABELS[next]}（${roleLabel}）`)
+      addActivity(`「${c.title}」${label} ${statusWord(next)}（${roleLabel}）`)
 
       if (action === 'file' && extras?.receiptNo) {
         const filedAt = extras.filedAt ?? today()
@@ -1280,6 +1382,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         key,
         action,
         due: c.nextDeadline,
+        neutral: syncPass,
       })
       if (todoEffect.kind === 'upsert') {
         pushTodo(todoEffect.todo)
@@ -1299,16 +1402,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const actionMsg: Record<typeof action, string> = {
-        save_draft: '草稿已保存',
-        submit: '已提交企业审核',
-        start_review: '已进入企业审核',
-        request_changes: '已退回修改',
-        approve: '已确认策略/批准',
-        authorize: '已授权递交',
-        file: '已确认递交归档',
-      }
-      const message = `${actionMsg[action]}（${HANDOFF_LABELS[next]}）`
+      const actionMsg: Record<typeof action, string> = syncPass
+        ? {
+            save_draft: '摘要已写入',
+            submit: '已提交',
+            start_review: '已进入确认',
+            request_changes: '已退回',
+            approve: '已通过',
+            authorize: '已通过',
+            file: '已归档',
+          }
+        : {
+            save_draft: '草稿已保存',
+            submit: '已提交企业审核',
+            start_review: '已进入企业审核',
+            request_changes: '已退回修改',
+            approve: '已确认策略/批准',
+            authorize: '已授权递交',
+            file: '已确认递交归档',
+          }
+      const message = `${actionMsg[action]}（${statusWord(next)}）`
       if (!auditMeta?.skipAudit) {
         const cmdName =
           auditMeta?.command ?? commandForHandoffAction(action, key)
@@ -1869,6 +1982,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         },
       }
       setCases((prev) => [newCase, ...prev])
+      if (isMidCrossPortHub()) midOwnSnapshotWrite.current = true
       addActivity(`新建案件「${newCase.title}」· ${meta.name}`)
       return newCase
     },
@@ -2504,14 +2618,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const dispatchCommandLocal = useCallback(
     (cmd: DomainCommand, meta?: CommandMeta): CommandResult => {
+      if (isMidCrossPortHub()) midOwnSnapshotWrite.current = true
       const actor = meta?.actor ?? 'user'
       const agentId = meta?.agentId
-      const auditBase = { actor, agentId, detail: meta?.detail }
+      const auditBase = {
+        actor,
+        agentId,
+        detail: meta?.detail,
+        syncPass: meta?.syncPass,
+      }
 
       /** P0-3 · Agent/HITL 写回成功后抬升 flowProgressByCase（中台可见） */
       const withFlowBump = (r: CommandResult): CommandResult => {
         if (!r.ok || !r.caseId) return r
-        const caze = cases.find((c) => c.id === r.caseId)
+        const caseSource = auditBase.syncPass ? casesRef.current : cases
+        const caze = caseSource.find((c) => c.id === r.caseId)
         const handoffKey =
           'handoffKey' in cmd
             ? (cmd as { handoffKey?: import('@ip/domain/types').HandoffArtifactKey }).handoffKey

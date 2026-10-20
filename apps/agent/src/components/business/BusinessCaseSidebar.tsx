@@ -1,40 +1,60 @@
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Plus,
   Search,
   ChevronDown,
-  LayoutGrid,
   FolderKanban,
   MessagesSquare,
+  Users,
 } from 'lucide-react'
 import {
+  BUSINESS_DEFAULT_SEAT_IDS,
   BUSINESS_STAGES,
+  CONFIRM_META,
   businessSeatLabel,
+  confirmKindForSeat,
   currentSeatForProgress,
+  expertsInNode,
   seatsForCase,
 } from '../../business/businessSeats'
+import { navigablePeerSeatIds } from '../../business/deptRoster'
+import {
+  DRILL_CLUSTERS,
+  DRILL_ORCH_ID,
+  drillSeatLabel,
+} from '../../business/drillRoster'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { CaseTeamPanel } from './CaseTeamPanel'
 import type { ProjectExpertId } from '../../projects/types'
 
 /**
- * 业务壳左栏（刀1 两栏）：案子列表 + 本案席（可折叠）+ 群聊入口。
- * 阶段极简并入；不占第三栏。
+ * 业务壳左栏：案子列表 + 本案节点 + 组队 + 群聊
+ * 一站一个节点。只有节点里有第二个能聊的专家时才展开（现仅撰写：权要 / 说明书）。
  */
 export function BusinessCaseSidebar() {
-  const { cases, getCase, getProgress, getPendingConfirms, stageLabel, primaryCta } =
+  const { cases, getCase, getProgress, getPendingConfirms, stageLabel, primaryCta, enableMoreDepartments } =
     useBusinessCases()
   const loc = useLocation()
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const [allOpen, setAllOpen] = useState(true)
   const [seatsOpen, setSeatsOpen] = useState(true)
+  const [teamOpen, setTeamOpen] = useState(false)
   const [q, setQ] = useState('')
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set())
+
+  const drillMode = params.get('drill') === '1'
 
   const activeCaseId = useMemo(() => {
     const m = loc.pathname.match(/^\/agent\/cases\/([^/]+)/)
     return m?.[1] && m[1] !== 'new' ? m[1] : undefined
   }, [loc.pathname])
+
+  // 案内：默认收起「全部案子」，把侧栏留给节点 / 团队
+  useEffect(() => {
+    setAllOpen(!activeCaseId)
+  }, [activeCaseId])
 
   const activeCase = activeCaseId ? getCase(activeCaseId) : undefined
   const prog = activeCaseId ? getProgress(activeCaseId) : undefined
@@ -42,11 +62,17 @@ export function BusinessCaseSidebar() {
 
   const seatIds = useMemo(() => {
     if (!activeCase || !prog) return [] as ProjectExpertId[]
-    return seatsForCase({
+    const base = seatsForCase({
       expertIds: activeCase.expertIds,
       moreSeatIds: prog.moreSeatIds,
     })
+    return [...base, ...navigablePeerSeatIds()]
   }, [activeCase, prog])
+
+  const moreSeatIds = useMemo(() => {
+    const more = prog?.moreSeatIds ?? []
+    return more.filter((id) => !BUSINESS_DEFAULT_SEAT_IDS.includes(id))
+  }, [prog?.moreSeatIds])
 
   const defaultSeat = useMemo(() => {
     if (!prog) return null
@@ -58,10 +84,136 @@ export function BusinessCaseSidebar() {
   }, [prog])
 
   const seatFromUrl = params.get('seat') as ProjectExpertId | null
-  const activeSeat: ProjectExpertId | null =
-    seatFromUrl && seatIds.includes(seatFromUrl)
-      ? seatFromUrl
-      : defaultSeat
+  const activeSeat: ProjectExpertId | null = (() => {
+    if (drillMode) {
+      if (seatFromUrl === DRILL_ORCH_ID) return DRILL_ORCH_ID
+      if (seatFromUrl) return seatFromUrl
+      return DRILL_ORCH_ID
+    }
+    if (seatFromUrl && seatIds.includes(seatFromUrl)) return seatFromUrl
+    return defaultSeat
+  })()
+
+  useEffect(() => {
+    const focus =
+      activeSeat === 'expert-draft-spec' || defaultSeat === 'expert-draft'
+        ? 'expert-draft'
+        : activeSeat
+    if (!focus || expertsInNode(focus).length < 2) return
+    setExpandedNodes((prev) => {
+      if (prev.has(focus)) return prev
+      const next = new Set(prev)
+      next.add(focus)
+      return next
+    })
+  }, [activeSeat, defaultSeat, activeCaseId])
+
+  const seatHref = (sid: ProjectExpertId) => {
+    const q = new URLSearchParams()
+    q.set('seat', sid)
+    if (drillMode) q.set('drill', '1')
+    return `/agent/cases/${activeCaseId}?${q.toString()}`
+  }
+
+  const seatPending = (sid: ProjectExpertId) => {
+    const kind = confirmKindForSeat(sid)
+    const metaPrep = kind ? CONFIRM_META[kind].preparedBy : null
+    return pending.some(
+      (p) =>
+        (kind && p.kind === kind) ||
+        (metaPrep && p.preparedBy === metaPrep),
+    )
+  }
+
+  const renderSeatLink = (sid: ProjectExpertId, label: string) => {
+    const selected = activeSeat === sid
+    const done = prog?.doneSeatIds.includes(sid) ?? false
+    const isPending = seatPending(sid)
+    return (
+      <li key={sid}>
+        <Link
+          to={seatHref(sid)}
+          className={`focus-ring mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-[12px] ${
+            selected
+              ? sid === DRILL_ORCH_ID && drillMode
+                ? 'bg-indigo-800 font-semibold text-white'
+                : 'bg-slate-900 font-semibold text-white'
+              : 'text-slate-700 hover:bg-white'
+          }`}
+          data-testid={`business-seat-tab-${sid}`}
+          data-selected={selected ? '1' : '0'}
+          aria-current={selected ? 'page' : undefined}
+        >
+          <span
+            className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+              done
+                ? 'bg-emerald-400'
+                : isPending
+                  ? 'bg-amber-400'
+                  : selected
+                    ? 'bg-white/70'
+                    : 'bg-slate-300'
+            }`}
+          />
+          <span className="truncate">{label}</span>
+        </Link>
+      </li>
+    )
+  }
+
+  const toggleNode = (seatId: string) => {
+    setExpandedNodes((prev) => {
+      const next = new Set(prev)
+      if (next.has(seatId)) next.delete(seatId)
+      else next.add(seatId)
+      return next
+    })
+  }
+
+  const renderNode = (sid: ProjectExpertId, labelForSingle?: string) => {
+    const experts = expertsInNode(sid)
+    if (experts.length < 2) {
+      return (
+        <ul key={sid} className="space-y-0.5">
+          {renderSeatLink(sid, labelForSingle ?? businessSeatLabel(sid))}
+        </ul>
+      )
+    }
+    const open = expandedNodes.has(sid)
+    const leadDone = prog?.doneSeatIds.includes(sid) ?? false
+    const leadPend = seatPending(sid)
+    return (
+      <div key={sid} data-testid={`business-node-${sid}`}>
+        <button
+          type="button"
+          onClick={() => toggleNode(sid)}
+          className="focus-ring flex w-full items-center gap-1 rounded-md px-2 py-1 text-left text-[12px] font-medium text-slate-700 hover:bg-white/80"
+          aria-expanded={open}
+          data-testid={`business-node-toggle-${sid}`}
+        >
+          <ChevronDown
+            className={`h-3 w-3 shrink-0 text-slate-400 transition ${open ? 'rotate-0' : '-rotate-90'}`}
+            aria-hidden
+          />
+          <span
+            className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+              leadDone
+                ? 'bg-emerald-400'
+                : leadPend
+                  ? 'bg-amber-400'
+                  : 'bg-slate-300'
+            }`}
+          />
+          <span className="truncate">{businessSeatLabel(sid)}</span>
+        </button>
+        {open && (
+          <ul className="ml-3 space-y-0.5 border-l border-slate-200/80 pl-1.5">
+            {experts.map((expert) => renderSeatLink(expert.id, expert.label))}
+          </ul>
+        )}
+      </div>
+    )
+  }
 
   const stageMeta = prog
     ? BUSINESS_STAGES.find((s) => s.id === prog.stageId)
@@ -76,6 +228,8 @@ export function BusinessCaseSidebar() {
       return blob.includes(needle)
     })
   }, [cases, q, getProgress, stageLabel])
+
+  const teamCount = prog?.teamMemberIds?.length ?? 0
 
   return (
     <aside
@@ -177,7 +331,6 @@ export function BusinessCaseSidebar() {
           </>
         )}
 
-        {/* 本案席 + 极简阶段（刀1 · 并入左栏） */}
         {activeCase && prog && (
           <div
             className="mt-3 border-t border-slate-200/80 pt-2"
@@ -196,69 +349,157 @@ export function BusinessCaseSidebar() {
               aria-expanded={seatsOpen}
               data-testid="business-side-seats-toggle"
             >
-              <span>本案席位</span>
+              <span>{drillMode ? '演练全队' : '本案节点'}</span>
               <ChevronDown
                 className={`h-3.5 w-3.5 transition ${seatsOpen ? 'rotate-0' : '-rotate-90'}`}
                 aria-hidden
               />
             </button>
-            {seatsOpen && (
-              <ul className="space-y-0.5" data-testid="business-seven-seats">
-                {seatIds.map((sid) => {
-                  const selected = activeSeat === sid
-                  const done = prog.doneSeatIds.includes(sid)
-                  const seatPending = pending.some(
-                    (p) =>
-                      p.preparedBy === businessSeatLabel(sid) ||
-                      (sid === 'expert-disclosure' &&
-                        p.kind === 'disclosure_ready') ||
-                      (sid === 'expert-research' && p.kind === 'research_ready') ||
-                      (sid === 'expert-intake' && p.kind === 'go_nogo') ||
-                      (sid === 'expert-draft' && p.kind === 'claims_ready') ||
-                      (sid === 'expert-filing' && p.kind === 'file_authorize') ||
-                      (sid === 'expert-oa' && p.kind === 'oa_strategy') ||
-                      (sid === 'expert-layout' && p.kind === 'layout_adjust'),
-                  )
-                  return (
-                    <li key={sid}>
-                      <Link
-                        to={`/agent/cases/${activeCaseId}?seat=${sid}`}
-                        className={`focus-ring mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-[12px] ${
-                          selected
-                            ? 'bg-slate-900 font-semibold text-white'
-                            : 'text-slate-700 hover:bg-white'
-                        }`}
-                        data-testid={`business-seat-tab-${sid}`}
-                        data-selected={selected ? '1' : '0'}
-                        aria-current={selected ? 'page' : undefined}
+            {seatsOpen &&
+              (drillMode ? (
+                <div className="space-y-2" data-testid="business-drill-seats">
+                  <ul className="space-y-0.5">
+                    {renderSeatLink(DRILL_ORCH_ID, '总控')}
+                  </ul>
+                  {DRILL_CLUSTERS.map((section) => (
+                    <div key={section.id} data-testid={`drill-node-section-${section.id}`}>
+                      <div className="mb-0.5 px-2 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                        {section.title}
+                      </div>
+                      <div className="space-y-0.5">
+                        {section.seatIds.map((sid) =>
+                          expertsInNode(sid).length >= 2 ? (
+                            renderNode(sid)
+                          ) : (
+                            <ul key={sid} className="space-y-0.5">
+                              {renderSeatLink(sid, drillSeatLabel(sid))}
+                            </ul>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-0.5" data-testid="business-node-list">
+                  {BUSINESS_DEFAULT_SEAT_IDS.map((sid) => {
+                    const researchRedo =
+                      sid === 'expert-research' &&
+                      (prog.researchPass ?? 0) >= 1 &&
+                      prog.doneSeatIds.includes('expert-draft') &&
+                      !prog.doneSeatIds.includes('expert-research')
+                    return renderNode(
+                      sid,
+                      researchRedo ? '查新 · 对照说明书' : undefined,
+                    )
+                  })}
+                  <div
+                    className="mt-1 border-t border-slate-200/60 pt-1"
+                    data-testid="business-more-nodes"
+                  >
+                    <div className="mb-0.5 px-2 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                      更多节点
+                    </div>
+                    {moreSeatIds.length === 0 ? (
+                      <button
+                        type="button"
+                        className="w-full rounded-md px-2 py-1.5 text-left text-[10px] text-slate-500 hover:bg-white"
+                        data-testid="business-enable-more-depts"
+                        onClick={() =>
+                          activeCaseId && enableMoreDepartments(activeCaseId)
+                        }
                       >
-                        <span
-                          className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-                            done
-                              ? 'bg-emerald-400'
-                              : seatPending
-                                ? 'bg-amber-400'
-                                : selected
-                                  ? 'bg-white/70'
-                                  : 'bg-slate-300'
-                          }`}
-                        />
-                        <span className="truncate">{businessSeatLabel(sid)}</span>
-                      </Link>
-                    </li>
-                  )
-                })}
-              </ul>
+                        启用前研 / 布局…
+                      </button>
+                    ) : (
+                      moreSeatIds.map((sid) => renderNode(sid))
+                    )}
+                  </div>
+                </div>
+              ))}
+
+            {!drillMode && activeCaseId && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setTeamOpen((v) => !v)}
+                  className="focus-ring mt-2 flex w-full items-center justify-between rounded-md px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 hover:bg-white/70 hover:text-slate-700"
+                  aria-expanded={teamOpen}
+                  data-testid="business-side-team-toggle"
+                >
+                  <span className="flex items-center gap-1">
+                    <Users className="h-3 w-3" aria-hidden />
+                    本案团队
+                    {teamCount > 0 ? ` · ${teamCount}` : ''}
+                  </span>
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 transition ${teamOpen ? 'rotate-0' : '-rotate-90'}`}
+                    aria-hidden
+                  />
+                </button>
+                {teamOpen && (
+                  <CaseTeamPanel
+                    caseId={activeCaseId}
+                    compact
+                  />
+                )}
+              </>
+            )}
+
+            {!drillMode && (
+              <div className="mt-2 space-y-1.5">
+                {prog?.casePlan?.trim() ? (
+                  <div
+                    className="rounded-md border border-slate-200 bg-white px-2 py-1.5"
+                    data-testid="business-sidebar-case-plan"
+                  >
+                    <div className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                      本案计划
+                    </div>
+                    <p className="mt-0.5 line-clamp-3 whitespace-pre-wrap text-[10px] leading-snug text-slate-600">
+                      {prog.casePlan}
+                    </p>
+                  </div>
+                ) : null}
+                <a
+                  href={`#case-assistant`}
+                  className="flex items-center justify-center gap-1 rounded-md border border-teal-200 bg-teal-50 px-2 py-1.5 text-[10px] font-medium text-teal-900 hover:bg-teal-100"
+                  data-testid="business-case-assistant-jump"
+                  title="跳到右栏案子助手巡检"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    document
+                      .querySelector('[data-testid="case-assistant-panel"]')
+                      ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+                  }}
+                >
+                  案子助手 · 巡检
+                </a>
+              </div>
+            )}
+
+            {drillMode && activeCaseId && (
+              <button
+                type="button"
+                className="mt-2 w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-700 hover:bg-slate-50"
+                data-testid="business-drill-exit-side"
+                onClick={() =>
+                  navigate(`/agent/cases/${activeCaseId}`, { replace: true })
+                }
+              >
+                退出演练 · 回简模式
+              </button>
             )}
 
             <Link
               to={`/agent/cases/${activeCaseId}/room`}
               className="mt-2 flex items-center justify-center gap-1 rounded-md border border-violet-200 bg-violet-50 px-2 py-1.5 text-[10px] font-medium text-violet-900 hover:bg-violet-100"
               data-testid="business-case-group-chat"
-              title="本案群聊 · 可进 room · 非第三栏"
+              title="本案讨论组群聊"
             >
               <MessagesSquare className="h-3 w-3 shrink-0" aria-hidden />
-              群聊 · 本案
+              组队讨论
+              {teamCount > 0 ? ` · ${teamCount}` : ''}
             </Link>
 
             {pending.length > 0 && (
@@ -285,6 +526,7 @@ export function BusinessCaseSidebar() {
         )}
       </div>
 
+      {/* 专家工作台 = Catalog 旁路，业务案内无主路径价值；先藏，Lab/直链仍可进 /agent/catalog
       <div className="shrink-0 border-t border-slate-200/80 px-2 py-2">
         <Link
           to="/agent/catalog"
@@ -296,6 +538,7 @@ export function BusinessCaseSidebar() {
           专家工作台
         </Link>
       </div>
+      */}
     </aside>
   )
 }

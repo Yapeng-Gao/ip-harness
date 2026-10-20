@@ -5,7 +5,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'context',
     label: '收权要上下文',
-    script: '【附图】已链撰写独权/从权特征，确定需图类型。',
+    script: '【附图】交底书里的示意图只说明结构。这里按说明书和权要出正式图号。',
     tool: { name: 'gather_figure_context', preview: 'linked=draft_claims · figs_needed=4' },
     structuredBody: [
       '**需图类型**',

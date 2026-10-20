@@ -230,7 +230,17 @@ type ProjectFolderContextValue = {
   patchThread: (
     projectId: string,
     expertId: ProjectExpertId,
-    patch: Partial<Pick<ProjectThread, 'boundSessionId' | 'pendingHitl' | 'pendingGate' | 'stepIndex'>>,
+    patch: Partial<
+      Pick<
+        ProjectThread,
+        | 'boundSessionId'
+        | 'pendingHitl'
+        | 'pendingGate'
+        | 'stepIndex'
+        | 'artifactMarkdown'
+        | 'artifactVersions'
+      >
+    >,
   ) => void
   patchProject: (
     projectId: string,
@@ -699,7 +709,12 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       patch: Partial<
         Pick<
           ProjectThread,
-          'boundSessionId' | 'pendingHitl' | 'pendingGate' | 'stepIndex'
+          | 'boundSessionId'
+          | 'pendingHitl'
+          | 'pendingGate'
+          | 'stepIndex'
+          | 'artifactMarkdown'
+          | 'artifactVersions'
         >
       >,
     ) => {

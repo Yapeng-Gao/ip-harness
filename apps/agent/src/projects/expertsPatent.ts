@@ -508,6 +508,37 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "defaultTeam": true,
     "ownerLabel": "客户/质检"
   },
+  "expert-draft-spec": {
+    "id": "expert-draft-spec",
+    "name": "说明书撰写",
+    "role": "expert",
+    "specialty": "说明书专责 · 撰写节点",
+    "description": "撰写节点里的说明书。交卷仍由权要这一席。",
+    "tools": [
+      "draft_specification_outline",
+      "align_with_claims",
+      "spec_consistency_check"
+    ],
+    "shortcuts": DRAFT_DEPTH_SHORTCUTS,
+    "steps": DRAFT_DEPTH_STEPS,
+    "hitlGates": [],
+    "domainCommandCandidates": [
+      {
+        "command": "saveDraft",
+        "label": "保存说明书草稿",
+        "note": "副席 · 不单独挂 HITL"
+      }
+    ],
+    "guardrails": [
+      "副席无独立 confirm",
+      "权要闸仍归 expert-draft"
+    ],
+    "catalogAgentId": "agent-claims",
+    "accent": "violet",
+    "catalogGroup": "core",
+    "defaultTeam": false,
+    "ownerLabel": "撰写"
+  },
   "expert-figure": {
     "id": "expert-figure",
     "name": "制图对接",

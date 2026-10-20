@@ -1,13 +1,38 @@
+> **全流程走查**：`scripts/main-chain-walk.mjs` 可走通立项→OA，并逐步验收中台 `flowProgressByCase` + handoff；历史卡点见 [AGENT_FULLCHAIN_WALK_FAILURES_2026-09-29](../../ui-polish/AGENT_FULLCHAIN_WALK_FAILURES_2026-09-29.md)。
+> **变更摘要（2026-09-29 · 节点/专家/团队）**：侧栏默认 7 节点（不展示部门）；撰写展开权要与说明书；组队勾专家；拖拽讨论组 —— [agent-dept-expert-team](./agent-dept-expert-team.md)。
+> **变更摘要（2026-09-21 · 助手辅审）**：每次 HITL 确认页必挂「助手审校」；案页「案子助手」巡检 ≤3；环边芯片收进「高级」。
 > **变更摘要（2026-09-21 · 案页三刀 IA）**：案内两栏 / 单一主 CTA / 单一进度 → [agent-biz-case-ia](./agent-biz-case-ia.md)。
 > **变更摘要（2026-09-21 · 席=bot）**：案子点席 = 独立席 bot 会话；详见 [agent-seat-as-bot](./agent-seat-as-bot.md)。叠开聊首页，不回退。
 > **变更摘要（2026-09-21 · 首页 IA）**：冷启动对齐 ChatGPT/Kimi/Grok——**主区=开新活空态**，**案子历史在侧栏**；禁止整页案子列表当首页。
 # 业务模式（Domain 收敛壳 · 先规格再样机）
 
-> **冻结（2026-09-21 · 总控开令）**：**先规格再样机**；本轮 **只 docs**，禁改 `apps/**`。  
 > **定位**：专利 **业务用户**主路径——「我的案子 + 该我批的确认」。是 **Domain Pack 的壳收敛**，不推翻 Pack 16 席 / HITL×8 权威。  
 > **消 4 痛**：认知负担 · Catalog 超市 · 样机泄漏 · Solo/Team/租户/总控噪音。  
-> **对齐**：[patent-pack-design](../domain-packs/patent-pack-design.md)（权威 · 含内/外循环）· [agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md)（环边样机三刀）· [agent-patent-shell](./agent-patent-shell.md)（专家/双文件）· [agent-seat-as-bot](./agent-seat-as-bot.md)（席=独立 bot 会话）· [agent-biz-case-ia](./agent-biz-case-ia.md)（案页三刀 IA）· [agent-layers](./agent-layers.md)（双产品）· [agent-platform-gap](./agent-platform-gap.md)。  
+> **对齐**：[patent-pack-design](../domain-packs/patent-pack-design.md)（权威 · 含内/外循环）· [agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md)（环边样机三刀）· [agent-patent-shell](./agent-patent-shell.md)（专家/双文件）· [agent-seat-as-bot](./agent-seat-as-bot.md)（席=独立 bot 会话）· [agent-biz-case-ia](./agent-biz-case-ia.md)（案页三刀 IA）· [agent-layers](./agent-layers.md)（双产品）· [agent-platform-gap](./agent-platform-gap.md) · [agent-depth-reliability](./agent-depth-reliability.md)。  
 > **样机诚实**：无真 LLM / 真 case-core / 真沙箱；进度与 Confirm **必须同源真闭环**（禁假阻塞、禁状态分叉）；端用户 **禁 mid 可点深链**。
+
+---
+
+## 0. 助手辅审与巡检（2026-09-21 · 一期）
+
+| 面 | 规格 |
+|----|------|
+| **HITL 辅审** | `/agent/pending/:id` **每次**挂「助手审校」卡：建议确认/退回 + ≤3 理由 + 席自检一句；可一键「按审校意见退回」（复用 `returnItem`）。**人不被代点确认**。 |
+| **附图闸** | 撰写确认后**不跳过附图**；附图有独立「确认附图」；交底+撰写+附图都确认后才进递交。 |
+| **案子助手** | 案页顶「巡检建议」≤3：链去确认 / 代发跨席 feedback / 转 Word 示意。侧栏可跳转。 |
+| **芯片** | 会话主路径只留干活/交卷；feedback / 席内 loop 收进「高级 · 环边」。 |
+| **非目标** | 真 LLM 审校 · 助手自动确认 · 冷启动 14 席墙 · 演练总控台默认进案 |
+
+### 0.1 演练全队（二期旁路 · 已样机）
+
+| 面 | 规格 |
+|----|------|
+| **入口** | 案顶「演练全队」或 Lab 旁路卡 · URL `?drill=1` · **非** `/agent` 默认 |
+| **侧栏** | 总控置顶 + 主链/前研/辅席 三簇共 14 owner |
+| **总控台** | 分派 / 双文件验收过·不过退回 owner / 转 Word 示意 |
+| **退出** | 「退出演练」回简模式（7 席 + 案子助手巡检） |
+
+实现：`drillRoster.ts` · `OrchestratorDrillWorkbench` · `dispatchDrillSeat` / `acceptDrillDualFile`。
 
 ---
 
@@ -119,6 +144,8 @@
 
 **主 CTA**（首页空态）：`开一个新案子` → 向导（3～5 段）→ 进入案子工作台。  
 **禁止**主 CTA =「选专家组队」。
+
+**建案引导（2026-09-29 · 已裁定）**：默认含「本案计划」一步（可改骨架）；「跳过准备」只改主链起点，不取消计划步。组队须给推荐理由/缺口；席成果须可就地编辑。权威细则见 [agent-dept-expert-team §11](./agent-dept-expert-team.md#11-建案引导--组队规划--成果可编辑2026-09-29-裁定)。
 
 ### 时间线阶段（建议 5 段）↔ HITL×8
 

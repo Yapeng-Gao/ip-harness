@@ -7,16 +7,22 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import { useApp } from '@shared/context/AppContext'
 import { useProjectFolder } from '../projects/ProjectFolderContext'
 import type { AgentProject, ProjectExpertId } from '../projects/types'
 import {
   BUSINESS_DEFAULT_TEAM_IDS,
+  BUSINESS_DEFAULT_SEAT_IDS,
+  BUSINESS_MORE_SEAT_IDS,
   BUSINESS_STAGES,
   CONFIRM_KIND_LABEL,
   CONFIRM_META,
+  applyMainChainConfirm,
   confirmKindForSeat,
+  normalizeResearchPass,
   type BusinessConfirmKind,
   type BusinessStageId,
+  type ResearchPass,
   businessSeatLabel,
 } from './businessSeats'
 import { getProjectExpert } from '../projects/experts'
@@ -36,9 +42,12 @@ import {
   processLogStamp,
   researchPessimisticLog,
   selfHealScript,
+  drillDispatchLog,
+  drillAcceptLog,
   type OaReasonClass,
   type ProcessLogEntry,
 } from './packLoops'
+import { resolveCasePlanStart } from './casePlanDrive'
 import {
   downstreamResumeScript,
   feedbackNeedsMoreSeat,
@@ -51,6 +60,24 @@ import {
   seatLoopChatScript,
   type SeatLoopActionId,
 } from './seatLoops'
+import { drillDispatchBrief, DRILL_ORCH_ID } from './drillRoster'
+import { buildHitlReviseScript } from './hitlReturnRevise'
+import {
+  MID_ARTIFACT_LABEL,
+  confirmCommands,
+  handoffNoteForConfirm,
+  midCaseDraftFromWizard,
+  midSyncMeta,
+  projectBusinessFlow,
+  returnCommands,
+  runConfirmCommands,
+  runReturnCommands,
+  seatIdForConfirm,
+  type MidSyncOutcome,
+} from './midSync'
+import { BUSINESS_SEED_IDS, isBusinessSeedCaseId } from './businessSeeds'
+
+export { BUSINESS_SEED_IDS, isBusinessSeedCaseId } from './businessSeeds'
 
 export type { ProcessLogEntry } from './packLoops'
 export { SELF_HEAL_MAX, DISCLOSURE_ASK_MAX, OA_BLOCKER_SELF_HEAL_MAX } from './packLoops'
@@ -97,6 +124,12 @@ export type BusinessConfirmItem = {
   status: 'pending' | 'confirmed' | 'returned'
   /** 退回批注（人话） */
   returnNote?: string
+  /**
+   * 辅审轮次：首轮可建议退回；改稿后再交卷为 after_revise → 建议确认
+   */
+  assistPass?: 'first' | 'after_revise'
+  /** 上一轮退回意见（改稿后再交时给辅审引用） */
+  priorReturnNote?: string
 }
 
 /** 同源进度 · 时间线 / 待确认 / 侧栏当前步 */
@@ -107,19 +140,16 @@ export type CaseProgress = {
   filed: boolean
   /** OA 第 N 通（未进入审查答复为 0） */
   oaRound: number
+  /** 查新轮次：0 未对照交底；1 交底后已确认；2 说明书后补检已确认 */
+  researchPass?: ResearchPass
   doneSeatIds: ProjectExpertId[]
   moreSeatIds: ProjectExpertId[]
+  /** 本案讨论团队（主责 expert id）；默认空 = 未组队 */
+  teamMemberIds: ProjectExpertId[]
+  /** 建案向导「本案计划」骨架（可空） */
+  casePlan?: string
   updatedAt: string
 }
-
-export const BUSINESS_SEED_IDS = {
-  A: 'case-biz-edge-scheduler',
-  B: 'case-biz-sensor-pack',
-  /** Knife2 · 已递交 · 审查答复样机 */
-  C: 'case-biz-oa-filed',
-  /** Knife3 · 启用布局 · F9→F3 飞轮样机 */
-  D: 'case-biz-layout-flywheel',
-} as const
 
 /** 案子是否启用布局席（业务面才出「请确认布局调整」） */
 export function caseHasLayoutEnabled(
@@ -258,6 +288,10 @@ function buildInitialBusinessState(): {
       progressById[id] = {
         ...prog,
         oaRound: typeof prog.oaRound === 'number' ? prog.oaRound : 0,
+        researchPass: normalizeResearchPass(prog.researchPass),
+        teamMemberIds: Array.isArray(prog.teamMemberIds)
+          ? prog.teamMemberIds
+          : [],
       }
     }
   }
@@ -322,15 +356,28 @@ type BusinessCaseContextValue = {
     summary?: string
     moreSeatIds?: ProjectExpertId[]
     skipPrepare?: boolean
+    casePlan?: string
   }) => AgentProject
   advanceStage: (caseId: string) => void
   prepareConfirm: (
     caseId: string,
     kind: BusinessConfirmKind,
   ) => BusinessConfirmItem
-  confirmItem: (confirmId: string) => void
-  /** 退回：人话提示 + 该项回到待确认；写环边过程 */
-  returnItem: (confirmId: string, note?: string) => void
+  confirmItem: (confirmId: string) => Promise<MidSyncOutcome>
+  /** 退回：解锁席 + 按意见改一版（样机）· 不立刻再挂 pending */
+  returnItem: (confirmId: string, note?: string) => Promise<MidSyncOutcome>
+  /**
+   * 对某席再跑一遍「按最近退回意见改稿」（芯片可点）
+   */
+  runHitlReturnRevise: (
+    caseId: string,
+    seatId: ProjectExpertId,
+  ) => { ok: boolean; reason?: string }
+  /** 本案该席最近一次退回批注（无则 null） */
+  lastReturnNoteForSeat: (
+    caseId: string,
+    seatId: ProjectExpertId,
+  ) => string | null
   /** Knife1/2/3 演示：内循环 / 环边 / OA N 通 / F9→F3 飞轮 */
   runLoopDemo: (
     caseId: string,
@@ -343,6 +390,9 @@ type BusinessCaseContextValue = {
     label: string
     action: 'advance' | 'confirm' | 'open'
     confirmId?: string
+    /** 文案来自本案计划「下一步」 */
+    fromPlan?: boolean
+    seatId?: ProjectExpertId
   }
   lastReturnHint: string | null
   clearReturnHint: () => void
@@ -397,6 +447,27 @@ type BusinessCaseContextValue = {
     actionId: SeatLoopActionId,
     note?: string,
   ) => { ok: boolean; reason?: string }
+  /** 案子助手 · 转 Word 示意（过程一行，非真 Office） */
+  recordWordExportHint: (caseId: string) => void
+  /** 演练总控 · 分派到 owner 席 */
+  dispatchDrillSeat: (
+    caseId: string,
+    toSeat: ProjectExpertId,
+    brief?: string,
+  ) => { ok: boolean; reason?: string; switchToSeat?: ProjectExpertId }
+  /** 演练总控 · 双文件验收过/不过（不过走 feedback 退回） */
+  acceptDrillDualFile: (
+    caseId: string,
+    seatId: ProjectExpertId,
+    ok: boolean,
+    note?: string,
+  ) => { ok: boolean; reason?: string }
+  /** 本案讨论团队（勾选主责）；空 = 未组队 */
+  setCaseTeam: (caseId: string, memberIds: ProjectExpertId[]) => void
+  /** 案子助手改写 / 补全本案计划 */
+  updateCasePlan: (caseId: string, casePlan: string) => void
+  /** 启用前研等「更多部门」（写入 moreSeatIds） */
+  enableMoreDepartments: (caseId: string) => void
 }
 
 const BusinessCaseContext = createContext<BusinessCaseContextValue | null>(null)
@@ -411,8 +482,10 @@ function emptyProgress(
     completedStages: [],
     filed: false,
     oaRound: 0,
+    researchPass: 0,
     doneSeatIds: [],
     moreSeatIds: [],
+    teamMemberIds: [],
     updatedAt: nowIso(),
   }
 }
@@ -429,7 +502,7 @@ function seedConfirms(): BusinessConfirmItem[] {
         '【成果】立项建议：做 · 范围：边缘调度模组控制方法 · 风险：中低 · 预算档：标准。',
       processPreview:
         '【办理过程】比对公开文献；新颖性可成立；创造性需限缩从属。',
-      preparedBy: '立项',
+      preparedBy: CONFIRM_META.go_nogo.preparedBy,
       createdAt: stamp(),
       status: 'pending',
     },
@@ -442,7 +515,7 @@ function seedConfirms(): BusinessConfirmItem[] {
       resultPreview:
         '【成果】权利要求 1–8：独立权项 1 覆盖传感采样与校准；从属 2–8 细化。',
       processPreview: '【办理过程】交底要点已吸入；与附图对齐。',
-      preparedBy: '撰写',
+      preparedBy: CONFIRM_META.claims_ready.preparedBy,
       createdAt: stamp(),
       status: 'pending',
     },
@@ -456,7 +529,7 @@ function seedConfirms(): BusinessConfirmItem[] {
         '【成果】三策略并列：限缩权项 / 纯陈述争辩 / 补充实验数据（样机）。',
       processPreview:
         '【办理过程】理由分类：创造性 · 子任务汇入：补充检索 · 待确认答复策略。',
-      preparedBy: '审查答复',
+      preparedBy: CONFIRM_META.oa_strategy.preparedBy,
       createdAt: stamp(),
       status: 'pending',
     },
@@ -471,7 +544,7 @@ function seedConfirms(): BusinessConfirmItem[] {
         '【成果】补局建议：加从属覆盖空白点 IPC；调整引用链；布局方案 v2（样机）。',
       processPreview:
         '【办理过程】监测事件 → 布局漏洞报告 → F9→F3 回流信封 → 布局待拍板（≠ FTO）。',
-      preparedBy: '布局',
+      preparedBy: CONFIRM_META.layout_adjust.preparedBy,
       createdAt: stamp(),
       status: 'pending',
     },
@@ -486,8 +559,10 @@ function seedProgressMap(): Record<string, CaseProgress> {
       completedStages: ['prepare'],
       filed: false,
       oaRound: 0,
-      doneSeatIds: ['expert-research'],
+      researchPass: 0,
+      doneSeatIds: [],
       moreSeatIds: [],
+      teamMemberIds: [],
       updatedAt: nowIso(),
     },
     [BUSINESS_SEED_IDS.B]: {
@@ -496,12 +571,14 @@ function seedProgressMap(): Record<string, CaseProgress> {
       completedStages: ['prepare', 'intake'],
       filed: false,
       oaRound: 0,
+      researchPass: 1,
       doneSeatIds: [
         'expert-research',
         'expert-intake',
         'expert-disclosure',
       ],
       moreSeatIds: [],
+      teamMemberIds: [],
       updatedAt: nowIso(),
     },
     [BUSINESS_SEED_IDS.C]: {
@@ -510,6 +587,7 @@ function seedProgressMap(): Record<string, CaseProgress> {
       completedStages: ['prepare', 'intake', 'drafting', 'filing'],
       filed: true,
       oaRound: 1,
+      researchPass: 2,
       doneSeatIds: [
         'expert-research',
         'expert-intake',
@@ -519,6 +597,7 @@ function seedProgressMap(): Record<string, CaseProgress> {
         'expert-filing',
       ],
       moreSeatIds: [],
+      teamMemberIds: [],
       updatedAt: nowIso(),
     },
     [BUSINESS_SEED_IDS.D]: {
@@ -529,6 +608,7 @@ function seedProgressMap(): Record<string, CaseProgress> {
       oaRound: 0,
       doneSeatIds: [],
       moreSeatIds: ['expert-layout', 'expert-enforcement'],
+      teamMemberIds: [],
       updatedAt: nowIso(),
     },
   }
@@ -546,6 +626,13 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     appendMessage,
     markArtifactSubmitted,
   } = useProjectFolder()
+  const {
+    addCase: addMidCase,
+    getCase: getMidCase,
+    dispatchCommand,
+    setFlowNodeProgress,
+    addArtifact,
+  } = useApp()
   const initial = useMemo(() => buildInitialBusinessState(), [])
   const [progressById, setProgressById] =
     useState<Record<string, CaseProgress>>(initial.progressById)
@@ -622,8 +709,16 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
   )
 
   const ensureProgress = useCallback(
-    (caseId: string): CaseProgress =>
-      progressById[caseId] ?? emptyProgress(caseId, 'intake'),
+    (caseId: string): CaseProgress => {
+      const raw = progressById[caseId] ?? emptyProgress(caseId, 'intake')
+      return {
+        ...raw,
+        teamMemberIds: Array.isArray(raw.teamMemberIds)
+          ? raw.teamMemberIds
+          : [],
+        researchPass: normalizeResearchPass(raw.researchPass),
+      }
+    },
     [progressById],
   )
 
@@ -636,7 +731,10 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     (caseId?: string) =>
       confirms.filter(
         (c) =>
-          c.status === 'pending' && (caseId ? c.caseId === caseId : true),
+          c.status === 'pending' &&
+          (caseId
+            ? c.caseId === caseId
+            : !isBusinessSeedCaseId(c.caseId)),
       ),
     [confirms],
   )
@@ -658,32 +756,47 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       summary?: string
       moreSeatIds?: ProjectExpertId[]
       skipPrepare?: boolean
+      casePlan?: string
     }) => {
       const more = input.moreSeatIds ?? []
       const expertIds = [
         ...BUSINESS_DEFAULT_TEAM_IDS,
         ...more.filter((id) => !BUSINESS_DEFAULT_TEAM_IDS.includes(id)),
       ]
+      const planText = input.casePlan?.trim()
+      const planStart = resolveCasePlanStart({
+        casePlan: planText,
+        skipPrepare: input.skipPrepare,
+      })
       // 一案子一 projectId：案 id = Catalog/ProjectFolder id；caseId 自绑
       const p = createProject({
         title: input.title.trim() || '未命名案子',
-        summary: input.summary?.trim() || '业务向导新建',
+        summary: input.summary?.trim() || planText || '业务向导新建',
         kind: 'domain',
         domainPackId: 'patent',
         expertIds,
       })
       patchProject(p.id, { caseId: p.id, caseBindState: 'bound' })
-      const stageId: BusinessStageId = input.skipPrepare ? 'intake' : 'prepare'
+      // 阶段与计划一致；无计划则回退 skipPrepare
+      const stageId: BusinessStageId = planText
+        ? planStart.stageId
+        : input.skipPrepare
+          ? 'intake'
+          : 'prepare'
+      const skipPrep =
+        stageId !== 'prepare' || Boolean(input.skipPrepare && !planText)
       setProgressById((prev) => ({
         ...prev,
         [p.id]: {
           caseId: p.id,
           stageId,
-          completedStages: input.skipPrepare ? ['prepare'] : [],
+          completedStages: skipPrep ? ['prepare'] : [],
           filed: false,
           oaRound: 0,
           doneSeatIds: [],
           moreSeatIds: more,
+          teamMemberIds: [],
+          casePlan: planText || undefined,
           updatedAt: nowIso(),
         },
       }))
@@ -702,9 +815,24 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           ...prev,
         ]
       })
+      const midDraft = midCaseDraftFromWizard({
+        id: p.id,
+        title: p.title,
+        summary: p.summary,
+        stageId,
+      })
+      if (!getMidCase(p.id)) addMidCase(midDraft)
+      for (const row of projectBusinessFlow({
+        stageId,
+        doneSeatIds: [],
+        researchPass: 0,
+        filed: false,
+      })) {
+        setFlowNodeProgress(p.id, row.flowKey, row.stepIndex)
+      }
       return p
     },
-    [createProject, patchProject],
+    [addMidCase, createProject, getMidCase, patchProject, setFlowNodeProgress],
   )
 
   const advanceStage = useCallback((caseId: string) => {
@@ -754,7 +882,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
             resultPreview: '【成果】—',
             processPreview:
               '【办理过程】布局席未启用 · 过程已写入专家台，业务面不出待确认。',
-            preparedBy: '布局',
+            preparedBy: CONFIRM_META.layout_adjust.preparedBy,
             createdAt: stamp(),
             status: 'pending',
           }
@@ -772,7 +900,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
             summary: '未递交 · 审查答复未解锁',
             resultPreview: '【成果】—',
             processPreview: '【办理过程】须先确认递交后才可准备答复策略。',
-            preparedBy: '审查答复',
+            preparedBy: CONFIRM_META.oa_strategy.preparedBy,
             createdAt: stamp(),
             status: 'pending',
           }
@@ -797,13 +925,22 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         kind === 'oa_strategy'
           ? `第 ${Math.max(prog.oaRound || 1, 1)} 通 · `
           : ''
+      const priorReturned = confirms.find(
+        (c) =>
+          c.caseId === caseId &&
+          c.kind === kind &&
+          c.status === 'returned' &&
+          !!c.returnNote,
+      )
+      const afterRevise = !!priorReturned
       const item: BusinessConfirmItem = {
         id: uid('bcf'),
         caseId,
         kind,
         title: CONFIRM_KIND_LABEL[kind],
-        summary:
-          kind === 'oa_strategy'
+        summary: afterRevise
+          ? `已按退回意见改一版 · ${businessSeatLabel(meta.seatId)}再请确认。`
+          : kind === 'oa_strategy'
             ? `${roundLabel}${businessSeatLabel(meta.seatId)}已准备好，请确认答复策略。`
             : kind === 'layout_adjust'
               ? '请确认布局调整 · 补局建议已就绪。'
@@ -813,11 +950,17 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
             ? `【成果】第 ${Math.max(prog.oaRound || 1, 1)} 通三策略并列（限缩 / 陈述 / 补实验·样机）。`
             : kind === 'layout_adjust'
               ? '【成果】布局方案 v(n+1) · 补空白点 · 引用链已校（样机）。'
-              : `【成果】${CONFIRM_KIND_LABEL[kind]}草稿已生成（样机）。`,
-        processPreview: `【办理过程】${healHint}${meta.preparedBy}席完成检查，待你确认。`,
+              : afterRevise
+                ? `【成果】${CONFIRM_KIND_LABEL[kind]}改稿版（已对照退回意见补强 · 样机）。`
+                : `【成果】${CONFIRM_KIND_LABEL[kind]}草稿已生成（样机）。`,
+        processPreview: afterRevise
+          ? `【办理过程】${healHint}已按退回意见「${(priorReturned?.returnNote ?? '').slice(0, 40)}」改稿 · 再请确认。`
+          : `【办理过程】${healHint}${meta.preparedBy}席完成检查，待你确认。`,
         preparedBy: meta.preparedBy,
         createdAt: stamp(),
         status: 'pending',
+        assistPass: afterRevise ? 'after_revise' : 'first',
+        priorReturnNote: priorReturned?.returnNote,
       }
       setConfirms((prev) => [
         item,
@@ -839,58 +982,37 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       })
       return item
     },
-    [appendLogs, progressById, caseMeta],
+    [appendLogs, progressById, caseMeta, confirms],
   )
 
   const confirmItem = useCallback(
-    (confirmId: string) => {
+    async (confirmId: string): Promise<MidSyncOutcome> => {
       const target = confirms.find((c) => c.id === confirmId)
-      if (!target || target.status !== 'pending') return
+      if (!target || target.status !== 'pending') {
+        return {
+          businessOk: false,
+          midOk: false,
+          midMessage: '没有待确认项',
+          flowProjected: false,
+        }
+      }
       const meta = CONFIRM_META[target.kind]
       const cur = progressById[target.caseId] ?? emptyProgress(target.caseId, meta.stageId)
-      const doneSeatIds = cur.doneSeatIds.includes(meta.seatId)
-        ? cur.doneSeatIds
-        : [...cur.doneSeatIds, meta.seatId]
-      let completedStages = [...cur.completedStages]
-      let stageId = cur.stageId
-      let filed = cur.filed
-      let oaRound = cur.oaRound ?? 0
+      const next = applyMainChainConfirm(
+        {
+          stageId: cur.stageId,
+          doneSeatIds: cur.doneSeatIds,
+          completedStages: cur.completedStages,
+          filed: cur.filed,
+          oaRound: cur.oaRound ?? 0,
+          researchPass: normalizeResearchPass(cur.researchPass),
+        },
+        target.kind,
+      )
+      const { doneSeatIds, completedStages, stageId, filed, oaRound } = next
 
-      if (target.kind === 'go_nogo') {
-        if (!completedStages.includes('prepare')) completedStages.push('prepare')
-        if (!completedStages.includes('intake')) completedStages.push('intake')
-        stageId = 'drafting'
-      } else if (target.kind === 'research_ready') {
-        stageId = 'intake'
-      } else if (
-        target.kind === 'disclosure_ready' ||
-        target.kind === 'claims_ready'
-      ) {
-        const disclosureDone =
-          doneSeatIds.includes('expert-disclosure') ||
-          target.kind === 'disclosure_ready'
-        const draftDone =
-          doneSeatIds.includes('expert-draft') ||
-          target.kind === 'claims_ready'
-        if (disclosureDone && draftDone) {
-          if (!completedStages.includes('drafting'))
-            completedStages.push('drafting')
-          stageId = 'filing'
-        } else {
-          stageId = 'drafting'
-        }
-      } else if (target.kind === 'file_authorize') {
-        filed = true
-        if (!completedStages.includes('filing'))
-          completedStages.push('filing')
-        stageId = 'oa'
-        oaRound = Math.max(cur.oaRound || 0, 1)
-      } else if (target.kind === 'oa_strategy') {
-        stageId = 'oa'
-        oaRound = Math.max(cur.oaRound || 1, 1)
-      } else if (target.kind === 'layout_adjust') {
-        stageId = 'prepare'
-        if (!completedStages.includes('prepare')) completedStages.push('prepare')
+      if (target.kind === 'claims_ready') {
+        rewindToStep(target.caseId, 'expert-research', 0)
       }
 
       setProgressById((pprev) => ({
@@ -902,6 +1024,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           stageId,
           filed,
           oaRound,
+          researchPass: next.researchPass,
           updatedAt: nowIso(),
         },
       }))
@@ -911,76 +1034,257 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         ),
       )
 
+      const filedHint =
+        target.kind === 'file_authorize'
+          ? `递交已确认 · 第 ${Math.max(oaRound, 1)} 通审查意见已到达 · 请开「审查答复」`
+          : null
       if (target.kind === 'file_authorize') {
         appendLogs([oaRoundArriveLog(target.caseId, Math.max(oaRound, 1))])
+        setLastReturnHint(filedHint)
       } else if (target.kind === 'oa_strategy') {
         appendLogs([oaSubmitLog(target.caseId, Math.max(oaRound, 1))])
       }
+
+      const note = handoffNoteForConfirm({
+        kind: target.kind,
+        artifactMarkdown: getThread(target.caseId, meta.seatId)?.artifactMarkdown,
+        fallback: target.resultPreview || target.summary,
+      })
+      const run = await runConfirmCommands(
+        confirmCommands({
+          kind: target.kind,
+          caseId: target.caseId,
+          note,
+        }),
+        dispatchCommand,
+        midSyncMeta({
+          kind: target.kind,
+          seatId: seatIdForConfirm(target.kind),
+          action: 'confirm',
+        }),
+      )
+      if (run.applied.length > 0 && target.kind !== 'research_ready') {
+        const art = MID_ARTIFACT_LABEL[target.kind]
+        addArtifact(target.caseId, art.name, art.type)
+      }
+      for (const row of projectBusinessFlow({
+        stageId,
+        doneSeatIds,
+        researchPass: next.researchPass,
+        filed,
+      })) {
+        setFlowNodeProgress(target.caseId, row.flowKey, row.stepIndex)
+      }
+      if (!run.ok) {
+        const fail = `中台交接未写入 · ${run.message}`
+        setLastReturnHint(filedHint ? `${filedHint} · ${fail}` : fail)
+      }
+      return {
+        businessOk: true,
+        midOk: run.ok,
+        midMessage: run.message,
+        flowProjected: true,
+      }
     },
-    [confirms, progressById, appendLogs],
+    [
+      addArtifact,
+      appendLogs,
+      confirms,
+      dispatchCommand,
+      getThread,
+      progressById,
+      rewindToStep,
+      setFlowNodeProgress,
+    ],
   )
 
   const returnItem = useCallback(
-    (confirmId: string, note?: string) => {
+    async (confirmId: string, note?: string): Promise<MidSyncOutcome> => {
+      const target = confirms.find((c) => c.id === confirmId)
+      if (!target || target.status !== 'pending') {
+        return {
+          businessOk: false,
+          midOk: false,
+          midMessage: '没有待确认项',
+          flowProjected: false,
+        }
+      }
       const noteText = (note?.trim() || '请按意见修改').trim()
-      setConfirms((prev) => {
-        const target = prev.find((c) => c.id === confirmId)
-        if (!target || target.status !== 'pending') return prev
-        const meta = CONFIRM_META[target.kind]
-        const log = hitlReturnLog(target.caseId, target.kind, noteText)
-        appendLogs([log])
-        setLastReturnHint(
-          target.kind === 'research_ready'
-            ? `请再查一轮 · ${noteText}`
-            : target.kind === 'oa_strategy'
-              ? `答复策略已驳回 · 请重做 · ${noteText}`
-              : target.kind === 'layout_adjust'
-                ? `请按意见调整布局 · ${noteText}`
-                : `请按意见修改 · ${noteText}`,
-        )
-        // 进度：该席从 done 撤回，阶段回到确认所在
-        setProgressById((pprev) => {
-          const cur =
-            pprev[target.caseId] ??
-            emptyProgress(target.caseId, meta.stageId)
-          return {
-            ...pprev,
-            [target.caseId]: {
-              ...cur,
-              stageId: meta.stageId,
-              doneSeatIds: cur.doneSeatIds.filter((id) => id !== meta.seatId),
-              updatedAt: nowIso(),
-            },
-          }
-        })
-        const returned: BusinessConfirmItem = {
-          ...target,
-          status: 'returned',
-          returnNote: noteText,
+      const meta = CONFIRM_META[target.kind]
+      const log = hitlReturnLog(target.caseId, target.kind, noteText)
+      appendLogs([log])
+      const baseHint =
+        target.kind === 'research_ready'
+          ? `请再查一轮 · ${noteText}`
+          : target.kind === 'oa_strategy'
+            ? `答复策略已驳回 · 请重做 · ${noteText}`
+            : target.kind === 'layout_adjust'
+              ? `请按意见调整布局 · ${noteText}`
+              : `请按意见修改 · ${noteText}`
+      setLastReturnHint(baseHint)
+
+      // 只标记 returned · 取消同 kind 其它 pending · 不立刻再挂闸（否则席被锁无法改稿）
+      setConfirms((prev) =>
+        prev
+          .map((c) => {
+            if (c.id === confirmId) {
+              return {
+                ...c,
+                status: 'returned' as const,
+                returnNote: noteText,
+              }
+            }
+            if (
+              c.caseId === target.caseId &&
+              c.kind === target.kind &&
+              c.status === 'pending'
+            ) {
+              return {
+                ...c,
+                status: 'returned' as const,
+                returnNote: noteText,
+              }
+            }
+            return c
+          }),
+      )
+
+      setProgressById((pprev) => {
+        const cur =
+          pprev[target.caseId] ?? emptyProgress(target.caseId, meta.stageId)
+        return {
+          ...pprev,
+          [target.caseId]: {
+            ...cur,
+            stageId: meta.stageId,
+            doneSeatIds: cur.doneSeatIds.filter((id) => id !== meta.seatId),
+            updatedAt: nowIso(),
+          },
         }
-        const requeued: BusinessConfirmItem = {
-          ...target,
-          id: uid('bcf'),
-          status: 'pending',
-          summary:
-            target.kind === 'oa_strategy'
-              ? `策略已驳回 · ${noteText}`
-              : `已退回 · ${noteText}`,
-          processPreview:
-            target.kind === 'oa_strategy'
-              ? `【办理过程】HITL⑥ 策略驳回重做 · ${noteText}`
-              : `【办理过程】退回带批注重跑 · ${noteText}`,
-          createdAt: stamp(),
-          returnNote: noteText,
-        }
-        return [
-          requeued,
-          returned,
-          ...prev.filter((c) => c.id !== confirmId),
-        ]
       })
+
+      // 回退到交卷前一步 + 会话按意见改稿
+      const def = getProjectExpert(meta.seatId)
+      const script = buildHitlReviseScript(target.kind, meta.seatId, noteText)
+      const rewindIdx = script.rewindToIndex(def.steps.length)
+      rewindToStep(target.caseId, meta.seatId, rewindIdx)
+      script.lines.forEach((line, i) => {
+        window.setTimeout(() => {
+          appendMessage(target.caseId, meta.seatId, {
+            role: i === 0 ? 'system' : 'assistant',
+            content: line,
+            meta: { backend: 'mock', stepId: 'hitl_return_revise' },
+          })
+        }, i * 280)
+      })
+
+      const cur =
+        progressById[target.caseId] ?? emptyProgress(target.caseId, meta.stageId)
+      const run = await runReturnCommands(
+        returnCommands({
+          kind: target.kind,
+          caseId: target.caseId,
+          note: noteText,
+        }),
+        dispatchCommand,
+        midSyncMeta({
+          kind: target.kind,
+          seatId: seatIdForConfirm(target.kind),
+          action: 'return',
+        }),
+      )
+      for (const row of projectBusinessFlow({
+        stageId: meta.stageId,
+        doneSeatIds: cur.doneSeatIds.filter((id) => id !== meta.seatId),
+        researchPass: normalizeResearchPass(cur.researchPass),
+        filed: cur.filed,
+      })) {
+        setFlowNodeProgress(target.caseId, row.flowKey, row.stepIndex)
+      }
+      if (!run.ok) {
+        setLastReturnHint(`${baseHint} · 中台交接未写入（${run.message}）`)
+      }
+      return {
+        businessOk: true,
+        midOk: run.ok,
+        midMessage: run.message,
+        flowProjected: true,
+      }
     },
-    [appendLogs],
+    [
+      appendLogs,
+      appendMessage,
+      confirms,
+      dispatchCommand,
+      progressById,
+      rewindToStep,
+      setFlowNodeProgress,
+    ],
+  )
+
+  const lastReturnNoteForSeat = useCallback(
+    (caseId: string, seatId: ProjectExpertId) => {
+      const kind = confirmKindForSeat(seatId)
+      if (!kind) return null
+      const hit = confirms.find(
+        (c) =>
+          c.caseId === caseId &&
+          c.kind === kind &&
+          c.status === 'returned' &&
+          !!c.returnNote,
+      )
+      return hit?.returnNote ?? null
+    },
+    [confirms],
+  )
+
+  const runHitlReturnRevise = useCallback(
+    (caseId: string, seatId: ProjectExpertId) => {
+      const kind = confirmKindForSeat(seatId)
+      if (!kind) return { ok: false as const, reason: 'no_kind' }
+      const note =
+        lastReturnNoteForSeat(caseId, seatId) || '请按意见修改'
+      const pendingSame = confirms.some(
+        (c) =>
+          c.caseId === caseId && c.kind === kind && c.status === 'pending',
+      )
+      if (pendingSame) {
+        return { ok: false as const, reason: 'still_pending' }
+      }
+      const def = getProjectExpert(seatId)
+      const script = buildHitlReviseScript(kind, seatId, note)
+      const rewindIdx = script.rewindToIndex(def.steps.length)
+      rewindToStep(caseId, seatId, rewindIdx)
+      appendLogs([
+        {
+          id: processLogId('rev'),
+          caseId,
+          at: processLogStamp(),
+          kind: 'hitl_return',
+          seatId,
+          message: `${businessSeatLabel(seatId)} · 按退回意见改一版`,
+          detail: note.slice(0, 120),
+        },
+      ])
+      script.lines.forEach((line, i) => {
+        window.setTimeout(() => {
+          appendMessage(caseId, seatId, {
+            role: i === 0 ? 'system' : 'assistant',
+            content: line,
+            meta: { backend: 'mock', stepId: 'hitl_return_revise' },
+          })
+        }, i * 280)
+      })
+      setLastReturnHint(`正在按意见改稿 · ${note}`)
+      return { ok: true as const }
+    },
+    [
+      appendLogs,
+      appendMessage,
+      confirms,
+      lastReturnNoteForSeat,
+      rewindToStep,
+    ],
   )
 
   const runLoopDemo = useCallback(
@@ -1063,7 +1367,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
               '【成果】补局建议：加从属覆盖空白点 · 布局方案 v(n+1)（样机）。',
             processPreview:
               '【办理过程】监测 → 布局漏洞报告 → F9→F3 回流 → 布局待拍板。',
-            preparedBy: '布局',
+            preparedBy: CONFIRM_META.layout_adjust.preparedBy,
             createdAt: stamp(),
             status: 'pending',
           }
@@ -1174,7 +1478,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           summary: `第 ${nextRound} 通通知书到达 · 请确认答复策略。`,
           resultPreview: `【成果】第 ${nextRound} 通策略草案待生成（样机）。`,
           processPreview: `【办理过程】第 ${nextRound} 通到达 · 回答复入口。`,
-          preparedBy: '审查答复',
+          preparedBy: CONFIRM_META.oa_strategy.preparedBy,
           createdAt: stamp(),
           status: 'pending',
         }
@@ -1561,6 +1865,174 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     ],
   )
 
+  const recordWordExportHint = useCallback((caseId: string) => {
+    appendLogs([
+      {
+        id: processLogId('word'),
+        caseId,
+        at: processLogStamp(),
+        kind: 'advance',
+        message: '案子助手 · 已示意导出 Word 草案（非真 Office）',
+        detail: '样机一行 · 无真附件',
+      },
+    ])
+  }, [appendLogs])
+
+  const ensureSeatOnCase = useCallback(
+    (caseId: string, seatId: ProjectExpertId) => {
+      if (seatId === DRILL_ORCH_ID) return
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        if (
+          cur.moreSeatIds.includes(seatId) ||
+          BUSINESS_DEFAULT_SEAT_IDS.includes(seatId)
+        ) {
+          return prev
+        }
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            moreSeatIds: [...cur.moreSeatIds, seatId],
+            updatedAt: nowIso(),
+          },
+        }
+      })
+      setCaseMeta((prev) =>
+        prev.map((m) => {
+          if (m.id !== caseId) return m
+          if (m.expertIds.includes(seatId)) return m
+          return { ...m, expertIds: [...m.expertIds, seatId] }
+        }),
+      )
+    },
+    [],
+  )
+
+  const dispatchDrillSeat = useCallback(
+    (caseId: string, toSeat: ProjectExpertId, brief?: string) => {
+      if (toSeat === DRILL_ORCH_ID) {
+        return { ok: false as const, reason: 'cannot_dispatch_orch' }
+      }
+      const note = (brief?.trim() || drillDispatchBrief(toSeat)).trim()
+      ensureSeatOnCase(caseId, toSeat)
+      appendLogs([drillDispatchLog(caseId, toSeat, note)])
+      appendMessage(caseId, DRILL_ORCH_ID, {
+        role: 'assistant',
+        content: `【总控】已分派「${businessSeatLabel(toSeat)}」· ${note}`,
+        meta: { backend: 'mock', stepId: 'drill_dispatch' },
+      })
+      appendMessage(caseId, toSeat, {
+        role: 'assistant',
+        content: `【总控来信】${note}`,
+        meta: { backend: 'mock', stepId: 'drill_dispatch_in' },
+      })
+      return { ok: true as const, switchToSeat: toSeat }
+    },
+    [appendLogs, appendMessage, ensureSeatOnCase],
+  )
+
+  const acceptDrillDualFile = useCallback(
+    (
+      caseId: string,
+      seatId: ProjectExpertId,
+      ok: boolean,
+      note?: string,
+    ) => {
+      if (seatId === DRILL_ORCH_ID) {
+        return { ok: false as const, reason: 'no_self_accept' }
+      }
+      const noteText =
+        note?.trim() ||
+        (ok
+          ? '成果+办理过程齐全 · 可派下家'
+          : '过程或缺关键取舍 · 请补 worklog 后再交')
+      appendLogs([drillAcceptLog(caseId, seatId, ok, noteText)])
+      if (ok) {
+        appendMessage(caseId, DRILL_ORCH_ID, {
+          role: 'assistant',
+          content: `【总控】验收通过「${businessSeatLabel(seatId)}」· ${noteText}`,
+          meta: { backend: 'mock', stepId: 'drill_accept' },
+        })
+        appendMessage(caseId, seatId, {
+          role: 'assistant',
+          content: `【总控验收】通过 · ${noteText}`,
+          meta: { backend: 'mock', stepId: 'drill_accept_in' },
+        })
+        return { ok: true as const }
+      }
+      // 不过：复用跨席 feedback（总控 → owner）
+      return requestUpstreamFeedback(
+        caseId,
+        DRILL_ORCH_ID,
+        seatId,
+        noteText,
+      )
+    },
+    [appendLogs, appendMessage, requestUpstreamFeedback],
+  )
+
+  const setCaseTeam = useCallback(
+    (caseId: string, memberIds: ProjectExpertId[]) => {
+      const unique = [...new Set(memberIds)]
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            teamMemberIds: unique,
+            updatedAt: nowIso(),
+          },
+        }
+      })
+    },
+    [],
+  )
+
+  const updateCasePlan = useCallback((caseId: string, casePlan: string) => {
+    const text = casePlan.trim()
+    setProgressById((prev) => {
+      const cur = prev[caseId] ?? emptyProgress(caseId)
+      return {
+        ...prev,
+        [caseId]: {
+          ...cur,
+          casePlan: text || undefined,
+          updatedAt: nowIso(),
+        },
+      }
+    })
+  }, [])
+
+  const enableMoreDepartments = useCallback((caseId: string) => {
+    const add = [
+      ...BUSINESS_MORE_SEAT_IDS,
+      'expert-layout' as ProjectExpertId,
+    ]
+    setProgressById((prev) => {
+      const cur = prev[caseId] ?? emptyProgress(caseId)
+      const more = [...cur.moreSeatIds]
+      for (const id of add) {
+        if (!more.includes(id)) more.push(id)
+      }
+      return {
+        ...prev,
+        [caseId]: { ...cur, moreSeatIds: more, updatedAt: nowIso() },
+      }
+    })
+    setCaseMeta((prev) =>
+      prev.map((m) => {
+        if (m.id !== caseId) return m
+        const expertIds = [...m.expertIds]
+        for (const id of add) {
+          if (!expertIds.includes(id)) expertIds.push(id)
+        }
+        return { ...m, expertIds }
+      }),
+    )
+  }, [])
+
   const stageLabel = useCallback(
     (id: BusinessStageId) =>
       BUSINESS_STAGES.find((s) => s.id === id)?.title ?? id,
@@ -1581,6 +2053,18 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       }
       const prog = ensureProgress(caseId)
       const stage = BUSINESS_STAGES.find((s) => s.id === prog.stageId)
+      if (prog.casePlan?.trim()) {
+        const start = resolveCasePlanStart({
+          casePlan: prog.casePlan,
+          skipPrepare: prog.stageId !== 'prepare',
+        })
+        return {
+          label: start.nextStepLabel,
+          action: 'advance' as const,
+          fromPlan: true,
+          seatId: start.seatId,
+        }
+      }
       return {
         label: stage?.advanceCta ?? '推进',
         action: 'advance' as const,
@@ -1602,6 +2086,8 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       prepareConfirm,
       confirmItem,
       returnItem,
+      runHitlReturnRevise,
+      lastReturnNoteForSeat,
       runLoopDemo,
       arriveNextOaRound,
       stageLabel,
@@ -1613,6 +2099,12 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       rewindSeatWork,
       requestUpstreamFeedback,
       runSeatLoop,
+      recordWordExportHint,
+      dispatchDrillSeat,
+      acceptDrillDualFile,
+      setCaseTeam,
+      updateCasePlan,
+      enableMoreDepartments,
     }),
     [
       cases,
@@ -1626,6 +2118,8 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       prepareConfirm,
       confirmItem,
       returnItem,
+      runHitlReturnRevise,
+      lastReturnNoteForSeat,
       runLoopDemo,
       arriveNextOaRound,
       stageLabel,
@@ -1637,6 +2131,12 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       rewindSeatWork,
       requestUpstreamFeedback,
       runSeatLoop,
+      recordWordExportHint,
+      dispatchDrillSeat,
+      acceptDrillDualFile,
+      setCaseTeam,
+      updateCasePlan,
+      enableMoreDepartments,
     ],
   )
 

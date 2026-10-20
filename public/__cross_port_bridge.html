@@ -55,6 +55,11 @@
             try {
               localStorage.setItem(LS_KEY, d.raw)
             } catch (e) {}
+            try {
+              var bc = new BroadcastChannel('ip-harness.cross.v1')
+              bc.postMessage({ type: MSG, op: 'push', raw: d.raw })
+              bc.close()
+            } catch (e) {}
             reply(ev.source, ev.origin, {
               type: MSG,
               op: 'set:ok',

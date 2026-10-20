@@ -185,21 +185,25 @@ export function hitlReturnLog(
       ? 'expert-disclosure'
       : kind === 'claims_ready'
         ? 'expert-draft'
-        : kind === 'research_ready'
-          ? 'expert-research'
-          : kind === 'go_nogo'
-            ? 'expert-intake'
-            : kind === 'file_authorize'
-              ? 'expert-filing'
-              : kind === 'layout_adjust'
-                ? 'expert-layout'
-                : 'expert-oa'
+        : kind === 'figures_ready'
+          ? 'expert-figure'
+          : kind === 'research_ready'
+            ? 'expert-research'
+            : kind === 'go_nogo'
+              ? 'expert-intake'
+              : kind === 'file_authorize'
+                ? 'expert-filing'
+                : kind === 'layout_adjust'
+                  ? 'expert-layout'
+                  : 'expert-oa'
   const human =
     kind === 'research_ready'
       ? '请再查一轮'
       : kind === 'layout_adjust'
         ? '请按意见调整布局'
-        : '请按意见修改'
+        : kind === 'figures_ready'
+          ? '请按意见改附图'
+          : '请按意见修改'
   return {
     id: processLogId('hitl'),
     caseId,
@@ -207,7 +211,7 @@ export function hitlReturnLog(
     kind: 'hitl_return',
     seatId: seat,
     message: `${human} · ${note.trim() || '带批注重跑'}`,
-    detail: '退回修改 · 该项回到待确认',
+    detail: '退回修改 · 解锁席按意见改稿后再交卷',
   }
 }
 
@@ -483,5 +487,42 @@ export function escalateLog(
     maxAttempts: SELF_HEAL_MAX,
     message: '需人工接手',
     detail: `${label}超限 · 禁静默死循环`,
+  }
+}
+
+/** 演练总控 · 分派（样机） */
+export function drillDispatchLog(
+  caseId: string,
+  toSeat: ProjectExpertId,
+  brief: string,
+): ProcessLogEntry {
+  return {
+    id: processLogId('drill-d'),
+    caseId,
+    at: processLogStamp(),
+    kind: 'advance',
+    seatId: 'orchestrator',
+    message: `总控分派 → 「${businessSeatLabel(toSeat)}」`,
+    detail: brief.slice(0, 120),
+  }
+}
+
+/** 演练总控 · 双文件验收过 / 不过 */
+export function drillAcceptLog(
+  caseId: string,
+  seatId: ProjectExpertId,
+  ok: boolean,
+  note: string,
+): ProcessLogEntry {
+  return {
+    id: processLogId('drill-a'),
+    caseId,
+    at: processLogStamp(),
+    kind: ok ? 'advance' : 'hitl_return',
+    seatId: 'orchestrator',
+    message: ok
+      ? `总控验收通过 · 「${businessSeatLabel(seatId)}」双文件`
+      : `总控验收不过 · 退回「${businessSeatLabel(seatId)}」`,
+    detail: note.slice(0, 120),
   }
 }

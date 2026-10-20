@@ -5,20 +5,28 @@ import {
   currentSeatForProgress,
   seatsForCase,
 } from '../../business/businessSeats'
+import { navigablePeerSeatIds } from '../../business/deptRoster'
+import {
+  DRILL_ORCH_ID,
+  DRILL_OWNER_IDS,
+  drillSeatLabel,
+} from '../../business/drillRoster'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { advanceButtonLabel } from '../../business/seatStepBodies'
 import { BusinessSeatWorkbench } from '../../components/business/BusinessSeatWorkbench'
+import { CaseAssistantPanel } from '../../components/business/CaseAssistantPanel'
+import { OrchestratorDrillWorkbench } from '../../components/business/OrchestratorDrillWorkbench'
 import { getProjectExpert } from '../../projects/experts'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
+import { midCaseHref } from '../../lib/deepLinks'
 import type { ProjectExpertId } from '../../projects/types'
 
 /**
- * 案子工作台（刀1–3）：右栏工作面；席列表在左栏；右上唯一主 CTA。
- * 案 id = ProjectFolder projectId（一案子一 id）
+ * 案子工作台：默认简模式；?drill=1 为演练全队旁路（总控+14）
  */
 export function BusinessCasePage() {
   const { caseId = '' } = useParams()
-  const [params] = useSearchParams()
+  const [params, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const {
     getCase,
@@ -30,6 +38,8 @@ export function BusinessCasePage() {
   } = useBusinessCases()
   const { getThread } = useProjectFolder()
 
+  const drillMode = params.get('drill') === '1'
+
   useEffect(() => {
     if (!lastReturnHint) return
     const t = window.setTimeout(() => clearReturnHint(), 6000)
@@ -40,52 +50,79 @@ export function BusinessCasePage() {
   const prog = getProgress(caseId)
   const cta = primaryCta(caseId)
 
-  const seatIds = useMemo(
-    () =>
-      seatsForCase({
+  const seatIds = useMemo(() => {
+    if (drillMode) return [...DRILL_OWNER_IDS, ...navigablePeerSeatIds()]
+    return [
+      ...seatsForCase({
         expertIds: c?.expertIds,
         moreSeatIds: prog.moreSeatIds,
       }),
-    [c?.expertIds, prog.moreSeatIds],
-  )
+      ...navigablePeerSeatIds(),
+    ]
+  }, [drillMode, c?.expertIds, prog.moreSeatIds])
 
-  const defaultSeat = useMemo(
-    () =>
-      currentSeatForProgress({
-        stageId: prog.stageId,
-        doneSeatIds: prog.doneSeatIds,
-        moreSeatIds: prog.moreSeatIds,
-      }),
-    [prog.stageId, prog.doneSeatIds, prog.moreSeatIds],
-  )
+  const defaultSeat = useMemo(() => {
+    if (drillMode) return DRILL_ORCH_ID
+    const fromProgress = currentSeatForProgress({
+      stageId: prog.stageId,
+      doneSeatIds: prog.doneSeatIds,
+      moreSeatIds: prog.moreSeatIds,
+    })
+    // 有计划且 CTA 带 seat 时，优先落计划起点席（仍须在本案席表内）
+    if (cta.fromPlan && cta.seatId && seatIds.includes(cta.seatId)) {
+      if (!prog.doneSeatIds.includes(cta.seatId)) return cta.seatId
+    }
+    return fromProgress
+  }, [
+    drillMode,
+    prog.stageId,
+    prog.doneSeatIds,
+    prog.moreSeatIds,
+    cta.fromPlan,
+    cta.seatId,
+    seatIds,
+  ])
 
   const seatFromUrl = params.get('seat') as ProjectExpertId | null
   const [pickedSeat, setPickedSeat] = useState<ProjectExpertId | null>(null)
-  const activeSeat: ProjectExpertId =
-    pickedSeat && seatIds.includes(pickedSeat)
-      ? pickedSeat
-      : seatFromUrl && seatIds.includes(seatFromUrl)
-        ? seatFromUrl
-        : defaultSeat
 
-  // 与左栏 ?seat= 同步
-  useEffect(() => {
-    if (seatFromUrl && seatIds.includes(seatFromUrl) && seatFromUrl !== pickedSeat) {
-      setPickedSeat(seatFromUrl)
+  const activeSeat: ProjectExpertId = (() => {
+    if (pickedSeat) {
+      if (drillMode && (pickedSeat === DRILL_ORCH_ID || seatIds.includes(pickedSeat)))
+        return pickedSeat
+      if (!drillMode && seatIds.includes(pickedSeat)) return pickedSeat
     }
-  }, [seatFromUrl, seatIds, pickedSeat])
+    if (seatFromUrl) {
+      if (drillMode && (seatFromUrl === DRILL_ORCH_ID || seatIds.includes(seatFromUrl)))
+        return seatFromUrl
+      if (!drillMode && seatIds.includes(seatFromUrl)) return seatFromUrl
+    }
+    return defaultSeat
+  })()
 
-  const thread = getThread(caseId, activeSeat)
+  useEffect(() => {
+    if (!seatFromUrl) return
+    const ok =
+      drillMode
+        ? seatFromUrl === DRILL_ORCH_ID || seatIds.includes(seatFromUrl)
+        : seatIds.includes(seatFromUrl)
+    if (ok && seatFromUrl !== pickedSeat) setPickedSeat(seatFromUrl)
+  }, [seatFromUrl, seatIds, pickedSeat, drillMode])
+
+  const thread = getThread(caseId, activeSeat === DRILL_ORCH_ID ? DRILL_ORCH_ID : activeSeat)
   const stepIndex = thread?.stepIndex ?? 0
   const def = getProjectExpert(activeSeat)
   const btnRaw = advanceButtonLabel(def.steps, stepIndex)
   const workLabel = btnRaw === '交卷待确认' ? '交卷' : '让它干活'
 
-  /** 刀2：右上唯一主 CTA — 待确认优先，否则本席干活/交卷 */
   const [workNonce, setWorkNonce] = useState(0)
   const onPrimary = () => {
     if (cta.action === 'confirm' && cta.confirmId) {
       navigate(`/agent/pending/${cta.confirmId}`)
+      return
+    }
+    if (drillMode && activeSeat === DRILL_ORCH_ID) {
+      navigate(`/agent/cases/${caseId}?drill=1&seat=${DRILL_ORCH_ID}`)
       return
     }
     setWorkNonce((n) => n + 1)
@@ -111,7 +148,36 @@ export function BusinessCasePage() {
   }
 
   const primaryLabel =
-    cta.action === 'confirm' ? `去确认 · ${cta.label}` : workLabel
+    cta.action === 'confirm'
+      ? `去确认 · ${cta.label}`
+      : drillMode && activeSeat === DRILL_ORCH_ID
+        ? '总控台'
+        : cta.fromPlan
+          ? cta.label
+          : workLabel
+
+  const switchSeat = (next: ProjectExpertId) => {
+    setPickedSeat(next)
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('seat', next)
+    if (drillMode) nextParams.set('drill', '1')
+    else nextParams.delete('drill')
+    navigate(`/agent/cases/${caseId}?${nextParams.toString()}`, { replace: true })
+  }
+
+  const setDrill = (on: boolean) => {
+    const next = new URLSearchParams(params)
+    if (on) {
+      next.set('drill', '1')
+      next.set('seat', DRILL_ORCH_ID)
+      setPickedSeat(DRILL_ORCH_ID)
+    } else {
+      next.delete('drill')
+      next.delete('seat')
+      setPickedSeat(null)
+    }
+    setSearchParams(next, { replace: true })
+  }
 
   return (
     <div
@@ -120,15 +186,23 @@ export function BusinessCasePage() {
       data-case-id={caseId}
       data-project-id={caseId}
       data-biz-case-ia="1"
+      data-drill={drillMode ? '1' : '0'}
     >
-      {/* 顶栏极简：案名 + 单一主 CTA（阶段已并入左栏） */}
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
-        <div className="mb-1 text-[11px] text-slate-400">
+        <div className="mb-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
           <Link to="/agent" className="hover:underline">
             我的案子
           </Link>
           <span className="mx-1">/</span>
           {c.title}
+          {drillMode && (
+            <span
+              className="rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-900"
+              data-testid="drill-mode-badge"
+            >
+              演练全队
+            </span>
+          )}
         </div>
         <header className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -138,29 +212,56 @@ export function BusinessCasePage() {
             <p className="mt-0.5 text-xs text-slate-500">
               {c.summary || '当前：' + stageLabel(prog.stageId)}
               {' · '}
-              {businessSeatLabel(activeSeat)}
+              {drillMode
+                ? drillSeatLabel(activeSeat)
+                : businessSeatLabel(activeSeat)}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onPrimary}
-            className={`btn-press focus-ring rounded-md px-3 py-1.5 text-xs font-semibold ${
-              cta.action === 'confirm'
-                ? 'bg-amber-600 text-white'
-                : 'bg-slate-900 text-white'
-            }`}
-            data-testid="business-case-primary-cta"
-            data-cta-kind={cta.action === 'confirm' ? 'confirm' : 'work'}
-            title={
-              cta.action === 'confirm'
-                ? '去确认待办'
-                : `${businessSeatLabel(activeSeat)} · ${workLabel}`
-            }
-          >
-            {primaryLabel}
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href={midCaseHref(caseId)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
+              data-testid="business-case-mid-link"
+            >
+              在中台查看
+            </a>
+            {drillMode ? (
+              <button
+                type="button"
+                onClick={() => setDrill(false)}
+                className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
+                data-testid="drill-exit"
+              >
+                退出演练
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setDrill(true)}
+                className="btn-press focus-ring rounded-md border border-dashed border-indigo-300 bg-indigo-50/50 px-2.5 py-1.5 text-[11px] font-medium text-indigo-900"
+                data-testid="drill-enter"
+                title="旁路：总控+14 · 非业务默认"
+              >
+                演练全队
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onPrimary}
+              className={`btn-press focus-ring rounded-md px-3 py-1.5 text-xs font-semibold ${
+                cta.action === 'confirm'
+                  ? 'bg-amber-600 text-white'
+                  : 'bg-slate-900 text-white'
+              }`}
+              data-testid="business-case-primary-cta"
+              data-cta-kind={cta.action === 'confirm' ? 'confirm' : 'work'}
+            >
+              {primaryLabel}
+            </button>
+          </div>
         </header>
-        {/* 刀3：不再渲染可点阶段 pill 墙（重复主链） */}
       </div>
 
       {lastReturnHint && (
@@ -173,22 +274,35 @@ export function BusinessCasePage() {
         </div>
       )}
 
-      {/* 右栏：席工作面（左栏在 AgentShell） */}
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 lg:px-6">
-        <BusinessSeatWorkbench
-          caseId={caseId}
-          seatId={activeSeat}
-          workNonce={workNonce}
-          onAdvanced={(confirmId) => {
-            if (confirmId) navigate(`/agent/pending/${confirmId}`)
-          }}
-          onSwitchSeat={(next) => {
-            setPickedSeat(next)
-            navigate(`/agent/cases/${caseId}?seat=${next}`, { replace: true })
-          }}
-        />
+        {!drillMode && (
+          <CaseAssistantPanel
+            caseId={caseId}
+            stageId={prog.stageId}
+            activeSeat={activeSeat}
+            onSwitchSeat={switchSeat}
+          />
+        )}
+        {drillMode && activeSeat === DRILL_ORCH_ID ? (
+          <OrchestratorDrillWorkbench
+            caseId={caseId}
+            onSwitchSeat={switchSeat}
+          />
+        ) : (
+          <BusinessSeatWorkbench
+            caseId={caseId}
+            seatId={activeSeat}
+            workNonce={workNonce}
+            onAdvanced={(confirmId) => {
+              if (confirmId) navigate(`/agent/pending/${confirmId}`)
+            }}
+            onSwitchSeat={switchSeat}
+          />
+        )}
         <p className="mt-4 text-center text-[11px] text-slate-400">
-          演示环境：进度与确认为样机闭环，非真递交局端。· 案=项目同一 id
+          {drillMode
+            ? '演练旁路：总控+14 · 样机调度，非业务冷启动默认'
+            : '演示环境：进度与确认为样机闭环，非真递交局端。· 案=项目同一 id'}
         </p>
       </div>
     </div>

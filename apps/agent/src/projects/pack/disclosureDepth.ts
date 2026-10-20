@@ -71,18 +71,31 @@ export const DISCLOSURE_DEPTH_STEPS: ExpertStepDef[] = [
     ].join('\n'),
   },
   {
+    id: 'sketch',
+    label: '示意图',
+    script: '【交底】示意图已挂进交底书：结构框图 + 方法流程。这是给查新和撰写看的草图，不是申请用的正式附图。',
+    tool: { name: 'attach_disclosure_sketches', preview: 'sketches=2 · 非正式附图' },
+    structuredBody: [
+      '**交底书附图（示意图）**',
+      '- 图A 结构框图：预测模块 · 约束引擎 · 执行器',
+      '- 图B 方法流程：采集 → 预测 → 联合求解 → 下发',
+      '',
+      '图中用语与六段方案一致。正式图号、图注对照权要，留到说明书之后的附图节点。',
+    ].join('\n'),
+  },
+  {
     id: 'pack',
     label: '交底确认 · 待交',
-    script: '【交底】可实施交底包待你确认。确认后可派撰写；交底≠权要。',
+    script: '【交底】可实施交底包（含示意图）待你确认。确认后交给查新；交底≠权要，也不是正式附图。',
     tool: { name: 'pack_disclosure', preview: '交卷 · 待确认交底' },
     triggersHitl: true,
     hitlGate: 'approve_strategy',
     structuredBody: [
       '## 交底交付摘要',
       '',
-      '六段齐 · 效果占位已答 · 实施例×2。立项附条件已覆盖。',
+      '六段齐 · 效果占位已答 · 实施例×2 · 示意图 2 张。立项附条件已覆盖。',
       '',
-      '**交给撰写**：本包 + 特征候选；正式写库须你确认。',
+      '**交给查新**：本包（正文 + 示意图）。正式专利附图在说明书之后另做。',
     ].join('\n'),
   },
 ]
@@ -103,7 +116,7 @@ export const DISCLOSURE_SAMPLE_ARTIFACT = `# 技术交底书（样机）
 
 ## 正文
 
-随步骤追加上游条件、六段表、追问、结构、实施例与交卷摘要。
+随步骤追加上游条件、六段表、追问、结构、实施例、示意图与交卷摘要。
 `
 
 export const DISCLOSURE_SAMPLE_WORKLOG_STEPS = `| 1 | 收条件 | 立项 | 附条件 | — |
@@ -111,7 +124,8 @@ export const DISCLOSURE_SAMPLE_WORKLOG_STEPS = `| 1 | 收条件 | 立项 | 附�
 | 3 | 缺项追问 | 交互 | ≤5轮 | — |
 | 4 | 结构 | 提纲 | 五节 | — |
 | 5 | 实施例 | ×2 | 映射 | — |
-| 6 | 确认 | HITL | 待确认 | HITL |`
+| 6 | 示意图 | 图A/图B | 草图 | — |
+| 7 | 确认 | HITL | 待确认 | HITL |`
 
 export const DISCLOSURE_SAMPLE_WORKLOG_CHOICES = `| 硬编效果 | 追问占位 | 追问 | 可撰写 |
 | 交底写权要 | 只交底 | 只交底 | 可确认 |`

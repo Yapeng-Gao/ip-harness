@@ -1,17 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import {
-  BUSINESS_DEFAULT_SEAT_IDS,
-  businessSeatLabel,
-  seatsForCase,
-} from '../../business/businessSeats'
+import { businessSeatLabel, seatsForCase } from '../../business/businessSeats'
+import { recommendTeamForStage } from '../../business/deptRoster'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { CaseTeamPanel } from '../../components/business/CaseTeamPanel'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { ProjectExpertId, RoomMessage } from '../../projects/types'
 
 /**
- * 本案群聊 · 最小可进 room（席=bot C）
- * 与单席会话并存；mock 多席互喊示意；复用 ProjectFolder roomMessages
+ * 本案组队讨论 · 须先勾选团队；mock 互喊；复用 ProjectFolder roomMessages
  */
 type ShoutStep = {
   from: ProjectExpertId
@@ -19,7 +16,6 @@ type ShoutStep = {
   body: string
 }
 
-/** 默认 7 席互喊剧本（查新→…→OA） */
 const SEVEN_SEAT_SHOUT: ShoutStep[] = [
   {
     from: 'expert-research',
@@ -60,7 +56,8 @@ const SEVEN_SEAT_SHOUT: ShoutStep[] = [
 
 export function BusinessCaseRoomPage() {
   const { caseId = '' } = useParams()
-  const { getCase, getProgress, isBusinessCase } = useBusinessCases()
+  const { getCase, getProgress, isBusinessCase, setCaseTeam } =
+    useBusinessCases()
   const {
     getProject,
     roomMessages,
@@ -77,7 +74,7 @@ export function BusinessCaseRoomPage() {
   const project = getProject(caseId)
   const biz = isBusinessCase(caseId)
 
-  const seatIds = useMemo(
+  const allSeatIds = useMemo(
     () =>
       seatsForCase({
         expertIds: c?.expertIds,
@@ -86,6 +83,12 @@ export function BusinessCaseRoomPage() {
     [c?.expertIds, prog.moreSeatIds],
   )
 
+  const seatIds = useMemo(() => {
+    const team = prog.teamMemberIds ?? []
+    return team.filter((id) => allSeatIds.includes(id))
+  }, [prog.teamMemberIds, allSeatIds])
+
+  const teamEmpty = seatIds.length === 0
   const msgs = roomMessages.filter((m) => m.projectId === caseId)
 
   useEffect(() => {
@@ -116,7 +119,7 @@ export function BusinessCaseRoomPage() {
 
   const sendUser = () => {
     const text = draft.trim()
-    if (!text || busy) return
+    if (!text || busy || teamEmpty) return
     appendRoomMessage({
       projectId: caseId,
       fromExpertId: 'user',
@@ -128,7 +131,7 @@ export function BusinessCaseRoomPage() {
   }
 
   const runShoutDemo = () => {
-    if (busy) return
+    if (busy || teamEmpty) return
     for (const id of timersRef.current) window.clearTimeout(id)
     timersRef.current = []
     setBusy(true)
@@ -137,7 +140,7 @@ export function BusinessCaseRoomPage() {
       projectId: caseId,
       fromExpertId: 'orchestrator',
       toExpertId: 'all',
-      body: '【群聊示意】默认 7 席互喊（mock · 无真 LLM）。单席会话仍是主路径。',
+      body: `【讨论组示意】${seatIds.length} 人互喊（mock · 无真 LLM）。`,
       kind: 'note',
       spontaneous: true,
     })
@@ -165,7 +168,7 @@ export function BusinessCaseRoomPage() {
         projectId: caseId,
         fromExpertId: 'orchestrator',
         toExpertId: 'all',
-        body: '【示意结束】可回侧栏点任一席继续独立会话 · 交卷仍走本案 HITL。',
+        body: '【示意结束】可回侧栏点节点继续独立会话 · 交卷仍走该节点的待确认。',
         kind: 'note',
         spontaneous: true,
       })
@@ -180,6 +183,7 @@ export function BusinessCaseRoomPage() {
       data-testid="business-case-room-page"
       data-case-id={caseId}
       data-project-id={caseId}
+      data-team-size={seatIds.length}
     >
       <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-3 py-2">
         <Link
@@ -187,13 +191,13 @@ export function BusinessCaseRoomPage() {
           className="text-xs text-slate-600 underline"
           data-testid="business-case-room-back"
         >
-          回案子 · 单席
+          回案子 · 节点
         </Link>
         <span className="text-sm font-semibold text-slate-900">
-          群聊 · {c.title}
+          组队讨论 · {c.title}
         </span>
         <span className="rounded border border-violet-200 bg-violet-50 px-1.5 py-px text-[10px] text-violet-800">
-          最小 room · mock 气泡
+          {teamEmpty ? '未组队' : `${seatIds.length} 人`}
         </span>
         {project ? (
           <span className="text-[10px] text-slate-400">
@@ -204,92 +208,110 @@ export function BusinessCaseRoomPage() {
           <button
             type="button"
             data-testid="business-case-room-shout"
-            disabled={busy}
+            disabled={busy || teamEmpty}
             onClick={runShoutDemo}
             className="btn-press focus-ring rounded-full border border-violet-300 bg-violet-50 px-2.5 py-0.5 text-[11px] font-semibold text-violet-950 disabled:opacity-50"
           >
-            {busy ? '互喊中…' : '多席互喊示意'}
+            {busy ? '互喊中…' : '讨论组互喊示意'}
           </button>
           <button
             type="button"
             data-testid="business-case-room-clear"
+            disabled={busy}
             onClick={() => clearRoomMessages(caseId)}
-            className="btn-press focus-ring rounded-full border border-slate-200 px-2.5 py-0.5 text-[11px] text-slate-500"
+            className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[11px] text-slate-600 disabled:opacity-50"
           >
-            清空
+            清空气泡
           </button>
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <aside
-          className="hidden w-36 shrink-0 flex-col border-r border-slate-200 bg-slate-50 lg:flex"
+      {teamEmpty ? (
+        <div
+          className="border-b border-amber-100 bg-amber-50/80 px-3 py-3"
+          data-testid="business-case-room-need-team"
+        >
+          <p className="mb-2 text-[12px] text-amber-950">
+            先勾选专家组成讨论组，再开聊。也可一键按当前阶段推荐。
+          </p>
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              className="rounded-md bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+              data-testid="business-case-room-recommend"
+              onClick={() =>
+                setCaseTeam(caseId, recommendTeamForStage(prog.stageId))
+              }
+            >
+              按阶段推荐
+            </button>
+          </div>
+          <CaseTeamPanel caseId={caseId} />
+        </div>
+      ) : (
+        <div
+          className="flex flex-wrap gap-1 border-b border-slate-100 bg-slate-50 px-3 py-1.5"
           data-testid="business-case-room-seats"
         >
-          <div className="border-b border-slate-100 px-2 py-1.5 text-[10px] font-semibold text-slate-400">
-            本案 7 席
-          </div>
-          <ul className="flex-1 overflow-y-auto p-1">
-            {(seatIds.length ? seatIds : BUSINESS_DEFAULT_SEAT_IDS).map(
-              (id) => (
-                <li key={id}>
-                  <Link
-                    to={`/agent/cases/${caseId}?seat=${id}`}
-                    className="mb-0.5 block truncate rounded px-2 py-1 text-[11px] text-slate-700 hover:bg-white"
-                    data-testid={`business-case-room-seat-${id}`}
-                  >
-                    {businessSeatLabel(id)}
-                    <span className="ml-1 text-[9px] text-slate-400">席 bot</span>
-                  </Link>
-                </li>
-              ),
-            )}
-          </ul>
-        </aside>
+          {seatIds.map((id) => (
+            <Link
+              key={id}
+              to={`/agent/cases/${caseId}?seat=${id}`}
+              className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-700 hover:border-slate-300"
+              data-testid={`business-case-room-seat-${id}`}
+            >
+              {businessSeatLabel(id)}
+            </Link>
+          ))}
+        </div>
+      )}
 
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <div
-            className="min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-3"
-            data-testid="business-case-room-feed"
-          >
-            {msgs.length === 0 ? (
-              <p
-                className="text-sm text-slate-400"
-                data-testid="business-case-room-empty"
-              >
-                点「多席互喊示意」看查新→立项→交底→撰写→附图→递交→审查答复接力；或在下方插话。单席会话仍从侧栏进。
-              </p>
-            ) : (
-              msgs.map((m) => <BizRoomBubble key={m.id} m={m} />)
-            )}
-            <div ref={bottomRef} />
-          </div>
-          <div className="shrink-0 border-t border-slate-200 bg-white p-2">
-            <div className="flex gap-2">
-              <input
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') sendUser()
-                }}
-                placeholder="插话（全体可见 · mock）"
-                className="focus-ring flex-1 rounded-md border border-slate-200 px-3 py-2 text-sm"
-                data-testid="business-case-room-input"
-                disabled={busy}
-              />
-              <button
-                type="button"
-                onClick={sendUser}
-                disabled={busy || !draft.trim()}
-                className="btn-press focus-ring rounded-md bg-slate-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-40"
-                data-testid="business-case-room-send"
-              >
-                发送
-              </button>
-            </div>
-          </div>
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 py-2">
+        <div
+          className="mx-auto flex max-w-2xl flex-col gap-2"
+          data-testid="business-case-room-feed"
+        >
+          {msgs.length === 0 && !teamEmpty && (
+            <p
+              className="py-8 text-center text-[12px] text-slate-400"
+              data-testid="business-case-room-empty"
+            >
+              还没有消息 · 可点「讨论组互喊示意」或直接输入
+            </p>
+          )}
+          {msgs.map((m) => (
+            <BizRoomBubble key={m.id} m={m} />
+          ))}
+          <div ref={bottomRef} />
         </div>
       </div>
+
+      <footer className="shrink-0 border-t border-slate-200 bg-white px-3 py-2">
+        <form
+          className="mx-auto flex max-w-2xl gap-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            sendUser()
+          }}
+        >
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            disabled={teamEmpty || busy}
+            placeholder={teamEmpty ? '请先组队…' : '对讨论组说…'}
+            className="focus-ring min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-[13px] disabled:bg-slate-50"
+            data-testid="business-case-room-input"
+          />
+          <button
+            type="submit"
+            disabled={teamEmpty || busy || !draft.trim()}
+            className="btn-press focus-ring rounded-md bg-slate-900 px-3 py-2 text-[12px] font-semibold text-white disabled:opacity-50"
+            data-testid="business-case-room-send"
+          >
+            发送
+          </button>
+        </form>
+      </footer>
     </div>
   )
 }

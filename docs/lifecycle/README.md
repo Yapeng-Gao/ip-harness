@@ -16,7 +16,7 @@
 |---|---|---|---|
 | [00](nodes/00-inventor-disclosure.md) | 发明交底 | 技术事实 → 可撰写材料；权属/署名/奖酬/公开时点在此定死 | — |
 | [00b](nodes/00b-invention-point-chain.md) | 发明点翻译链 | 交底 → 初审 → 检索 → 发明点 → 权项 → 说明书 | — |
-| [01](nodes/01-research.md) | 检索与可专利性 | 判断「还值不值得申请」 | `pre_research` |
+| [01](nodes/01-research.md) | 检索与可专利性 | 可专利性证据，供立项决定要不要申请 | `pre_research` |
 | [02](nodes/02-decision.md) | 立项与预算 | D1/D2 决策 + 报价委托 | `decision` |
 | [03](nodes/03-drafting.md) | 撰写与布局 | D3/D4 决策；权利边界在此成型 | `drafting` |
 | [04](nodes/04-prosecution.md) | 审查答复 | D5 决策；权利边界的第一次谈判 | `prosecution` |
@@ -28,6 +28,8 @@
 | [22](nodes/22-invalidation.md) | 无效宣告（补建） | 反向程序；消灭他人权利 | — |
 | [23](nodes/23-termination-recovery.md) | 终止与恢复（补建） | 权利状态的终局与救济 | — |
 | [24](nodes/24-litigation.md) | 诉讼与维权（补建） | 侵权判定 + 救济实现；四条救济轨道 | — |
+
+14–21 不是缺号的节点。那 8 篇是按原型逐行写的 Flow 精读，已放在 [archive/flow-reads/](archive/flow-reads/)，不代表业务设计。
 
 ## 横切能力（每个节点都要用）
 

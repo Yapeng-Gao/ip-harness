@@ -30,6 +30,12 @@ import {
   loopActionsForSeat,
   parseSeatLoopIntent,
 } from '../../business/seatLoops'
+import { hitlReviseChipLabel } from '../../business/hitlReturnRevise'
+import {
+  appendArtifactVersion,
+  formatArtifactSavedAt,
+  restoreArtifactVersion,
+} from '../../business/artifactVersions'
 import { SeatMarkdownBody } from './SeatMarkdownBody'
 import { humanizeToolBubble, parseRewindIntent } from '../../lib/stepChatFormat'
 
@@ -74,10 +80,12 @@ export function BusinessSeatWorkbench({
     rewindSeatWork,
     requestUpstreamFeedback,
     runSeatLoop,
+    runHitlReturnRevise,
+    lastReturnNoteForSeat,
     getPendingConfirms,
     getProgress,
   } = useBusinessCases()
-  const { getThread, appendMessage } = useProjectFolder()
+  const { getThread, appendMessage, patchThread } = useProjectFolder()
   const def = getProjectExpert(seatId)
   const thread = getThread(caseId, seatId)
   const stepIndex = thread?.stepIndex ?? 0
@@ -90,6 +98,10 @@ export function BusinessSeatWorkbench({
     [caseId, getPendingConfirms],
   )
   const caseHasPending = pendingList.length > 0
+  const seatReturnNote = lastReturnNoteForSeat(caseId, seatId)
+  const seatConfirmKind = confirmKindForSeat(seatId)
+  const canReviseAfterReturn =
+    !!seatReturnNote && !!seatConfirmKind && !caseHasPending
   const pendingHint = useMemo(() => {
     if (!caseHasPending) return ''
     const titles = pendingList
@@ -101,17 +113,23 @@ export function BusinessSeatWorkbench({
   }, [caseHasPending, pendingList, seatLabel])
   const [panel, setPanel] = useState<'chat' | 'artifact' | 'worklog'>('chat')
   const [draft, setDraft] = useState('')
+  const [editingArtifact, setEditingArtifact] = useState(false)
+  const [artifactDraft, setArtifactDraft] = useState('')
+  const [artifactSavedHint, setArtifactSavedHint] = useState<string | null>(
+    null,
+  )
   const [flashBody, setFlashBody] = useState(false)
   const [flashLogId, setFlashLogId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [showFileNames, setShowFileNames] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  /** 简模式：环边 feedback/loop 默认收进「高级」 */
+  const [advancedChipsOpen, setAdvancedChipsOpen] = useState(false)
   const bodyRef = useRef<HTMLDivElement>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const lastWorkNonce = useRef(0)
   const runAdvanceRef = useRef<(userLine?: string) => void>(() => {})
 
-  // 切席：复位会话主（7 席同构壳）
   useEffect(() => {
     setPanel('chat')
     setDraft('')
@@ -120,6 +138,7 @@ export function BusinessSeatWorkbench({
     setFlashLogId(null)
     setShowFileNames(false)
     setMoreOpen(false)
+    setAdvancedChipsOpen(false)
   }, [seatId, caseId])
 
   const pendingForSeat = useMemo(() => {
@@ -136,13 +155,69 @@ export function BusinessSeatWorkbench({
 
   const artifactBody = useMemo(() => {
     if (!dual) return ''
+    if (thread?.artifactMarkdown?.trim()) return thread.artifactMarkdown
     return buildProgressiveArtifact(dual, def.steps, stepIndex)
-  }, [dual, def.steps, stepIndex])
+  }, [dual, def.steps, stepIndex, thread?.artifactMarkdown])
 
   const worklogBody = useMemo(() => {
     if (!dual) return ''
     return buildProgressiveWorklog(dual, def.steps, stepIndex)
   }, [dual, def.steps, stepIndex])
+
+  const beginEditArtifact = () => {
+    setArtifactDraft(artifactBody)
+    setEditingArtifact(true)
+    setArtifactSavedHint(null)
+  }
+
+  const saveArtifactEdit = () => {
+    patchThread(caseId, seatId, { artifactMarkdown: artifactDraft })
+    setEditingArtifact(false)
+    setArtifactSavedHint('已保存到本席成果（覆盖稿）')
+  }
+
+  const saveArtifactAsVersion = () => {
+    const body = editingArtifact ? artifactDraft : artifactBody
+    if (!body.trim()) {
+      setArtifactSavedHint('无可另存的内容')
+      return
+    }
+    const { versions, hint } = appendArtifactVersion({
+      versions: thread?.artifactVersions ?? [],
+      markdown: body,
+    })
+    patchThread(caseId, seatId, {
+      artifactMarkdown: body,
+      artifactVersions: versions,
+    })
+    if (editingArtifact) setEditingArtifact(false)
+    setArtifactSavedHint(hint)
+  }
+
+  const cancelArtifactEdit = () => {
+    setEditingArtifact(false)
+    setArtifactDraft('')
+  }
+
+  const resetArtifactOverride = () => {
+    patchThread(caseId, seatId, { artifactMarkdown: undefined })
+    setEditingArtifact(false)
+    setArtifactSavedHint('已恢复步骤拼装稿')
+  }
+
+  const restoreVersionAt = (index: number) => {
+    const r = restoreArtifactVersion({
+      versions: thread?.artifactVersions ?? [],
+      index,
+    })
+    if (!r) {
+      setArtifactSavedHint('版本不存在')
+      return
+    }
+    patchThread(caseId, seatId, { artifactMarkdown: r.markdown })
+    setEditingArtifact(false)
+    setArtifactSavedHint(r.hint)
+  }
 
   const messages = thread?.messages ?? []
 
@@ -381,6 +456,27 @@ export function BusinessSeatWorkbench({
           <p className="mt-0.5 text-[11px] text-slate-500 line-clamp-2">
             {sanitizeBizBlurb(def.description)}
           </p>
+          {seatId === 'expert-research' && (prog.researchPass ?? 0) >= 1 && !prog.doneSeatIds.includes('expert-research') ? (
+            <p
+              className="mt-1 text-[11px] text-amber-800"
+              data-testid="business-research-pass-spec"
+            >
+              这一轮对照说明书和权要。交底后的查新已经确认过。
+            </p>
+          ) : null}
+          {seatId === 'expert-research' && (prog.researchPass ?? 0) < 1 ? (
+            <p
+              className="mt-1 text-[11px] text-slate-500"
+              data-testid="business-research-pass-disclosure"
+            >
+              这一轮对照交底书（含示意图）。说明书写完后还会再查一轮。
+            </p>
+          ) : null}
+          {seatId === 'expert-disclosure' ? (
+            <p className="mt-1 text-[11px] text-slate-500">
+              交底书要带示意图。正式附图在说明书和再次查新之后。
+            </p>
+          ) : null}
         </div>
         {/* 刀2：专家台降次级；无并列主 CTA（主 CTA 在案顶） */}
         <div className="relative">
@@ -616,59 +712,99 @@ export function BusinessSeatWorkbench({
             <div ref={chatEndRef} />
           </div>
           <div className="shrink-0 border-t border-slate-100 px-2 py-2">
-            {/* 本案 pending：藏 chip，顶栏「去确认」独占；无 pending 才露干活/交卷 */}
+            {/* 简模式：主路径只留干活/交卷；feedback/loop 收进「高级」 */}
             {!caseHasPending ? (
-              <div className="mb-1.5 flex flex-wrap gap-1" data-testid="business-seat-chips">
-                <button
-                  type="button"
-                  className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-700 hover:bg-slate-50"
-                  data-testid="business-seat-chip-work"
-                  disabled={oaLocked || busy}
-                  onClick={() => runAdvance('请按剧本干下一步')}
-                >
-                  让它干活
-                </button>
-                <button
-                  type="button"
-                  className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100"
-                  data-testid="business-seat-chip-deliver"
-                  disabled={oaLocked || busy}
-                  onClick={() => runAdvance('请交卷，我来确认')}
-                >
-                  交卷请确认
-                </button>
-                {feedbackEdges.map((edge) => (
+              <div className="mb-1.5 space-y-1" data-testid="business-seat-chips">
+                <div className="flex flex-wrap gap-1">
                   <button
-                    key={`${edge.from}-${edge.to}`}
                     type="button"
-                    className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-950 hover:bg-violet-100"
-                    data-testid={`business-seat-chip-feedback-${edge.to}`}
+                    className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-700 hover:bg-slate-50"
+                    data-testid="business-seat-chip-work"
                     disabled={oaLocked || busy}
-                    title={`请「上游」调整一版，再基于新产物继续（不回退本席进度）`}
-                    onClick={() =>
-                      runUpstreamFeedback(edge.to, edge.defaultReason)
-                    }
+                    onClick={() => runAdvance('请按剧本干下一步')}
                   >
-                    {edge.chip}
+                    让它干活
                   </button>
-                ))}
-                {loopActions.map((a) => (
                   <button
-                    key={a.id}
                     type="button"
-                    className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
-                      a.id === 'hitl_reject' || a.id === 'heal_escalate' || a.id === 'oa_blocker'
-                        ? 'border-rose-200 bg-rose-50 text-rose-950 hover:bg-rose-100'
-                        : 'border-teal-200 bg-teal-50 text-teal-950 hover:bg-teal-100'
-                    }`}
-                    data-testid={`business-seat-chip-loop-${a.id}`}
-                    disabled={busy || (oaLocked && a.needsFiled)}
-                    title="席内环边 · 写过程 + 会话（样机）"
-                    onClick={() => runLoopAction(a.id)}
+                    className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100"
+                    data-testid="business-seat-chip-deliver"
+                    disabled={oaLocked || busy}
+                    onClick={() => runAdvance('请交卷，我来确认')}
                   >
-                    {a.chip}
+                    交卷请确认
                   </button>
-                ))}
+                  {canReviseAfterReturn && seatConfirmKind && (
+                    <button
+                      type="button"
+                      className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-medium text-rose-950 hover:bg-rose-100"
+                      data-testid="business-seat-chip-revise"
+                      disabled={busy}
+                      title={seatReturnNote ?? undefined}
+                      onClick={() => {
+                        setBusy(true)
+                        window.setTimeout(() => {
+                          runHitlReturnRevise(caseId, seatId)
+                          setPanel('chat')
+                          setBusy(false)
+                        }, 180)
+                      }}
+                    >
+                      {hitlReviseChipLabel(seatConfirmKind)}
+                    </button>
+                  )}
+                  {(feedbackEdges.length > 0 || loopActions.length > 0) && (
+                    <button
+                      type="button"
+                      className="rounded-full border border-dashed border-slate-300 bg-transparent px-2 py-0.5 text-[10px] text-slate-500 hover:bg-slate-50"
+                      data-testid="business-seat-chips-advanced-toggle"
+                      onClick={() => setAdvancedChipsOpen((v) => !v)}
+                    >
+                      {advancedChipsOpen ? '收起高级' : '高级 · 环边'}
+                    </button>
+                  )}
+                </div>
+                {advancedChipsOpen && (
+                  <div
+                    className="flex flex-wrap gap-1"
+                    data-testid="business-seat-chips-advanced"
+                  >
+                    {feedbackEdges.map((edge) => (
+                      <button
+                        key={`${edge.from}-${edge.to}`}
+                        type="button"
+                        className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-950 hover:bg-violet-100"
+                        data-testid={`business-seat-chip-feedback-${edge.to}`}
+                        disabled={oaLocked || busy}
+                        title="请上游调整一版（不回退本席进度）· 优先用案子助手代办"
+                        onClick={() =>
+                          runUpstreamFeedback(edge.to, edge.defaultReason)
+                        }
+                      >
+                        {edge.chip}
+                      </button>
+                    ))}
+                    {loopActions.map((a) => (
+                      <button
+                        key={a.id}
+                        type="button"
+                        className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                          a.id === 'hitl_reject' ||
+                          a.id === 'heal_escalate' ||
+                          a.id === 'oa_blocker'
+                            ? 'border-rose-200 bg-rose-50 text-rose-950 hover:bg-rose-100'
+                            : 'border-teal-200 bg-teal-50 text-teal-950 hover:bg-teal-100'
+                        }`}
+                        data-testid={`business-seat-chip-loop-${a.id}`}
+                        disabled={busy || (oaLocked && a.needsFiled)}
+                        title="席内环边 · 写过程 + 会话（样机）"
+                        onClick={() => runLoopAction(a.id)}
+                      >
+                        {a.chip}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="mb-1.5 space-y-1">
@@ -676,42 +812,61 @@ export function BusinessSeatWorkbench({
                   className="text-[10px] text-amber-800/80"
                   data-testid="business-seat-chips-deferred"
                 >
-                  待确认中 · {pendingList[0]?.title || CONFIRM_KIND_LABEL[pendingList[0]?.kind!] || '请用顶栏「去确认」'} · 确认后继续
+                  待确认中 ·{' '}
+                  {pendingList[0]?.title ||
+                    CONFIRM_KIND_LABEL[pendingList[0]?.kind!] ||
+                    '请用顶栏「去确认」'}{' '}
+                  · 看助手审校后拍板 · 确认后继续
                 </p>
-                <div className="flex flex-wrap gap-1">
-                  {feedbackEdges.map((edge) => (
-                    <button
-                      key={`${edge.from}-${edge.to}`}
-                      type="button"
-                      className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-950 hover:bg-violet-100"
-                      data-testid={`business-seat-chip-feedback-${edge.to}`}
-                      disabled={oaLocked || busy}
-                      onClick={() =>
-                        runUpstreamFeedback(edge.to, edge.defaultReason)
-                      }
-                    >
-                      {edge.chip}
-                    </button>
-                  ))}
-                  {loopActions.map((a) => (
-                    <button
-                      key={a.id}
-                      type="button"
-                      className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
-                        a.id === 'hitl_reject' ||
-                        a.id === 'heal_escalate' ||
-                        a.id === 'oa_blocker'
-                          ? 'border-rose-200 bg-rose-50 text-rose-950 hover:bg-rose-100'
-                          : 'border-teal-200 bg-teal-50 text-teal-950 hover:bg-teal-100'
-                      }`}
-                      data-testid={`business-seat-chip-loop-${a.id}`}
-                      disabled={busy}
-                      onClick={() => runLoopAction(a.id)}
-                    >
-                      {a.chip}
-                    </button>
-                  ))}
-                </div>
+                {(feedbackEdges.length > 0 || loopActions.length > 0) && (
+                  <button
+                    type="button"
+                    className="rounded-full border border-dashed border-slate-300 bg-transparent px-2 py-0.5 text-[10px] text-slate-500 hover:bg-slate-50"
+                    data-testid="business-seat-chips-advanced-toggle"
+                    onClick={() => setAdvancedChipsOpen((v) => !v)}
+                  >
+                    {advancedChipsOpen ? '收起高级' : '高级 · 环边'}
+                  </button>
+                )}
+                {advancedChipsOpen && (
+                  <div
+                    className="flex flex-wrap gap-1"
+                    data-testid="business-seat-chips-advanced"
+                  >
+                    {feedbackEdges.map((edge) => (
+                      <button
+                        key={`${edge.from}-${edge.to}`}
+                        type="button"
+                        className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-950 hover:bg-violet-100"
+                        data-testid={`business-seat-chip-feedback-${edge.to}`}
+                        disabled={oaLocked || busy}
+                        onClick={() =>
+                          runUpstreamFeedback(edge.to, edge.defaultReason)
+                        }
+                      >
+                        {edge.chip}
+                      </button>
+                    ))}
+                    {loopActions.map((a) => (
+                      <button
+                        key={a.id}
+                        type="button"
+                        className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                          a.id === 'hitl_reject' ||
+                          a.id === 'heal_escalate' ||
+                          a.id === 'oa_blocker'
+                            ? 'border-rose-200 bg-rose-50 text-rose-950 hover:bg-rose-100'
+                            : 'border-teal-200 bg-teal-50 text-teal-950 hover:bg-teal-100'
+                        }`}
+                        data-testid={`business-seat-chip-loop-${a.id}`}
+                        disabled={busy}
+                        onClick={() => runLoopAction(a.id)}
+                      >
+                        {a.chip}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             <div className="flex gap-2">
@@ -743,33 +898,159 @@ export function BusinessSeatWorkbench({
             className="rounded-xl border border-slate-200 bg-white shadow-sm"
             data-testid="business-seat-dual-file"
           >
-            <div className="border-b border-slate-100 px-3 py-2 text-[10px] font-semibold text-slate-400">
-              {panel === 'artifact' ? '成果' : '办理过程'}
-              {showFileNames && dual ? (
-                <span
-                  className="ml-2 font-mono font-normal text-slate-300"
-                  data-testid="business-seat-eng-filename"
-                >
-                  {panel === 'artifact' ? dual.artifactFile : dual.worklogFile}
-                </span>
+            <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-3 py-2">
+              <div className="text-[10px] font-semibold text-slate-400">
+                {panel === 'artifact' ? '成果' : '办理过程'}
+                {showFileNames && dual ? (
+                  <span
+                    className="ml-2 font-mono font-normal text-slate-300"
+                    data-testid="business-seat-eng-filename"
+                  >
+                    {panel === 'artifact' ? dual.artifactFile : dual.worklogFile}
+                  </span>
+                ) : null}
+                {panel === 'artifact' && thread?.artifactMarkdown ? (
+                  <span
+                    className="ml-2 font-normal text-emerald-700"
+                    data-testid="business-artifact-edited-badge"
+                  >
+                    已手改
+                  </span>
+                ) : null}
+              </div>
+              {panel === 'artifact' && dual && !editingArtifact ? (
+                <div className="flex flex-wrap gap-1">
+                  <button
+                    type="button"
+                    className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-700 hover:bg-slate-50"
+                    data-testid="business-artifact-edit"
+                    onClick={beginEditArtifact}
+                  >
+                    编辑
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-700 hover:bg-slate-50"
+                    data-testid="business-artifact-save-version"
+                    onClick={saveArtifactAsVersion}
+                  >
+                    另存版本
+                    {thread?.artifactVersions?.length
+                      ? ` · ${thread.artifactVersions.length}`
+                      : ''}
+                  </button>
+                  {thread?.artifactMarkdown ? (
+                    <button
+                      type="button"
+                      className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] text-slate-500 hover:bg-slate-50"
+                      data-testid="business-artifact-reset"
+                      onClick={resetArtifactOverride}
+                    >
+                      恢复拼装稿
+                    </button>
+                  ) : null}
+                </div>
               ) : null}
             </div>
             {dual ? (
-              <SeatMarkdownBody
-                bodyRef={bodyRef}
-                flash={flashBody}
-                data-testid={
-                  panel === 'artifact'
-                    ? 'business-dual-artifact-body'
-                    : 'business-dual-worklog-body'
-                }
-                data-step-index={stepIndex}
-              >
-                {panel === 'artifact' ? artifactBody : worklogBody}
-              </SeatMarkdownBody>
+              editingArtifact && panel === 'artifact' ? (
+                <div className="space-y-2 p-3" data-testid="business-artifact-editor">
+                  <textarea
+                    value={artifactDraft}
+                    onChange={(e) => setArtifactDraft(e.target.value)}
+                    rows={12}
+                    className="focus-ring w-full rounded-md border border-slate-200 px-2.5 py-2 font-mono text-[11px] leading-relaxed text-slate-800"
+                    data-testid="business-artifact-textarea"
+                  />
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      type="button"
+                      className="btn-press focus-ring rounded-md bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+                      data-testid="business-artifact-save"
+                      onClick={saveArtifactEdit}
+                    >
+                      保存
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring rounded-md border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-800"
+                      data-testid="business-artifact-save-version-edit"
+                      onClick={saveArtifactAsVersion}
+                    >
+                      另存版本
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[11px] text-slate-600"
+                      data-testid="business-artifact-cancel"
+                      onClick={cancelArtifactEdit}
+                    >
+                      取消
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <SeatMarkdownBody
+                    bodyRef={bodyRef}
+                    flash={flashBody}
+                    data-testid={
+                      panel === 'artifact'
+                        ? 'business-dual-artifact-body'
+                        : 'business-dual-worklog-body'
+                    }
+                    data-step-index={stepIndex}
+                  >
+                    {panel === 'artifact' ? artifactBody : worklogBody}
+                  </SeatMarkdownBody>
+                  {panel === 'artifact' &&
+                  (thread?.artifactVersions?.length ?? 0) > 0 ? (
+                    <ul
+                      className="border-t border-slate-100 px-3 py-2"
+                      data-testid="business-artifact-version-list"
+                    >
+                      <li className="mb-1 text-[10px] font-semibold text-slate-400">
+                        已另存版本
+                      </li>
+                      {[...(thread?.artifactVersions ?? [])]
+                        .map((v, i) => ({ v, i }))
+                        .reverse()
+                        .map(({ v, i }) => (
+                          <li
+                            key={`${v.savedAt}-${i}`}
+                            className="flex items-center justify-between gap-2 py-0.5 text-[11px] text-slate-600"
+                            data-testid={`business-artifact-version-${i}`}
+                          >
+                            <span className="truncate font-mono text-[10px] text-slate-400">
+                              {formatArtifactSavedAt(new Date(v.savedAt))} ·{' '}
+                              {v.markdown.slice(0, 24)}
+                              {v.markdown.length > 24 ? '…' : ''}
+                            </span>
+                            <button
+                              type="button"
+                              className="shrink-0 rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-700 hover:bg-slate-50"
+                              data-testid={`business-artifact-restore-${i}`}
+                              onClick={() => restoreVersionAt(i)}
+                            >
+                              恢复此版
+                            </button>
+                          </li>
+                        ))}
+                    </ul>
+                  ) : null}
+                </>
+              )
             ) : (
               <p className="p-3 text-xs text-slate-400">本席暂无双文件约定</p>
             )}
+            {artifactSavedHint && panel === 'artifact' ? (
+              <p
+                className="border-t border-slate-100 px-3 py-1.5 text-[10px] text-emerald-700"
+                data-testid="business-artifact-save-hint"
+              >
+                {artifactSavedHint}
+              </p>
+            ) : null}
           </section>
           {/* 办理过程：只在次 tab，勿常驻会话下方 */}
           {panel === 'worklog' ? (

@@ -1,6 +1,6 @@
 # 节点 24 · 诉讼与维权（补建节点）
 
-> **状态：仓内完全未建模。** 本节点是 [lifecycle-coverage](../architecture/lifecycle-coverage.md) 四个缺口中的最后一个。
+> **状态：仓内完全未建模。** 本节点是 [lifecycle-coverage](../../architecture/lifecycle-coverage.md) 四个缺口中的最后一个。
 > 关联：[07-monitoring.md](07-monitoring.md)（发现侵权）· [22-invalidation.md](22-invalidation.md)（无效作为反制）· [06-commercialization.md](06-commercialization.md)（许可谈判）· [01-research.md](01-research.md)（FTO 是镜像问题）
 >
 > 法律口径：《专利法》（2020 修正）第 65–75 条；最高人民法院关于审理专利纠纷案件适用法律问题的若干规定。凡条号、金额、期限标 ⚠ 需按当期文本复核。
@@ -515,7 +515,7 @@
 
 ## 17. 与其他缺口的关系
 
-本节点补齐后，[lifecycle-coverage](../architecture/lifecycle-coverage.md) 记录的四个缺口全部有了业务规格：
+本节点补齐后，[lifecycle-coverage](../../architecture/lifecycle-coverage.md) 记录的四个缺口全部有了业务规格：
 
 | 缺口 | 规格文档 | 状态 |
 |---|---|---|

@@ -497,7 +497,7 @@ drafting ──submit──► submitted_to_enterprise ──start_review──�
 
 `stages.ts:190-202` 定义了 4 步 runner（证据保全 → 发函/调解 → 立案 → 判决执行），全部标「示意」，**无独立 Flow**。转化台的做法是：路径芯片选「维权诉讼」→ 全链路灰化 → 提示「证据保全/发函/立案请走监控升级维权线索」→ 跳转 `/workbench/watch`（`MonetizeFlow.tsx:156-172`）。
 
-**产品判断**：这个 stub 是诚实的，但把「诉讼」放进运用转化的路径枚举是**建模错误**——诉讼不是一种交易，是权利行使。建议在对内文档中把它标为「06 的出口之一，而非 06 的路径之一」，真正的诉讼节点应独立（lifecycle-coverage §4 缺口 3）。
+**产品判断**：这个 stub 是诚实的，但把「诉讼」放进运用转化的路径枚举是**建模错误**——诉讼不是一种交易，是权利行使。建议在对内文档中把它标为「06 的出口之一，而非 06 的路径之一」，真正的诉讼节点见 [24-litigation.md](24-litigation.md)。
 
 ---
 
@@ -696,6 +696,6 @@ drafting ──submit──► submitted_to_enterprise ──start_review──�
 - [WIPO：评估知识产权资产](https://www.wipo.int/zh/web/business/ip-valuation)——成本法 / 市场法 / 收益法的方法论说明
 - [中国专利开放许可制度简介 · Marks & Clerk](https://www.marks-clerk.com/zh-hans/%E8%A7%82%E7%82%B9/%E6%9C%80%E6%96%B0%E8%A7%81%E8%A7%A3/102jv8z-%E4%B8%AD%E5%9B%BD%E4%B8%93%E5%88%A9%E5%BC%80%E6%94%BE%E8%AE%B8%E5%8F%AF%E5%88%B6%E5%BA%A6%E7%AE%80%E4%BB%8B/)
 
-**仓内交叉引用**：[05-maintenance.md](05-maintenance.md)（权利有效是交易前提）· [07-monitoring.md](07-monitoring.md)（侵权线索与「升级维权」）· [12-billing-engagement.md](12-billing-engagement.md)（对价开票与收款）· [19-flow-monetize.md](19-flow-monetize.md)（Flow 逐行精读）· [../industry-reality.md](../industry-reality.md)（行业对照 §3 节点 06）
+**仓内交叉引用**：[05-maintenance.md](05-maintenance.md)（权利有效是交易前提）· [07-monitoring.md](07-monitoring.md)（侵权线索与「升级维权」）· [12-billing-engagement.md](12-billing-engagement.md)（对价开票与收款）· [../archive/flow-reads/19-flow-monetize.md](../archive/flow-reads/19-flow-monetize.md)（已归档，不代表业务设计；运用以本文为准）· [../industry-reality.md](../industry-reality.md)（行业对照 §3 节点 06）
 
 > ⚠ **所有金额与费率**：文中出现的 120 万 / 3% / 2.5% / 2–4% / 2800 万 / 12% 等均来自仓内 mock 种子或 Agent 演示文案，**不构成任何定价依据**。真实定价必须按当期可核验的可比交易与 GB/T 42748-2023 的方法论重新计算，并标注数据来源与日期。

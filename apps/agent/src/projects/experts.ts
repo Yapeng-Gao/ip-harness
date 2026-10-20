@@ -49,7 +49,20 @@ export function expertIdsForProject(project: {
 
 export function getProjectExpert(id: ProjectExpertId): ProjectExpertDef {
   const resolved = resolveExpertId(id)
-  return PROJECT_EXPERTS[resolved] ?? PROJECT_EXPERTS[id]!
+  const hit = PROJECT_EXPERTS[resolved] ?? PROJECT_EXPERTS[id]
+  if (hit) return hit
+  // 壳扩展副席兜底：说明书 → 撰写剧本
+  if (id === 'expert-draft-spec' && PROJECT_EXPERTS['expert-draft']) {
+    return {
+      ...PROJECT_EXPERTS['expert-draft']!,
+      id: 'expert-draft-spec',
+      name: '说明书撰写',
+      specialty: '说明书专责 · 撰写节点',
+      hitlGates: [],
+      defaultTeam: false,
+    }
+  }
+  return PROJECT_EXPERTS['orchestrator']!
 }
 
 export function isOrchestratorExpert(id: ProjectExpertId): boolean {
