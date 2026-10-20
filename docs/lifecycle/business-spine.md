@@ -325,6 +325,7 @@
 | [09](nodes/09-pct-international.md) | 国际布局 | 地域维度的保护 |
 | [22](nodes/22-invalidation.md) | 无效宣告 | 反向程序；消灭他人权利 |
 | [23](nodes/23-termination-recovery.md) | 终止与恢复 | 权利状态的终局与救济 |
+| [24](nodes/24-litigation.md) | 诉讼与维权 | 侵权判定 + 救济实现；唯一直接产生正向现金流的节点 |
 | [10](nodes/10-handoff-state-machine.md) | 交接与审批 | 横切：责任传递 |
 | [11](nodes/11-docket-engine.md) | 期限引擎 | 横切：法定时钟 |
 | [12](nodes/12-billing-engagement.md) | 商务与结算 | 横切：四个口袋 |

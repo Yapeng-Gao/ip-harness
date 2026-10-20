@@ -66,7 +66,7 @@
 
 1. **无效/异议程序**：完全不建模。实务中高频（对己方专利提无效、应对他人无效宣告），至少值得进 `prosecution` 下子节点或独立 stage。→ **已补规格**：[lifecycle/nodes/22-invalidation.md](../lifecycle/nodes/22-invalidation.md)
 2. **PCT / 国际进入**：只有 docket 一条规则 + drafting 文案；缺 PCT 阶段（国际阶段 vs 国家阶段）、多国费用与期限管理。→ **已补规格**：[lifecycle/nodes/09-pct-international.md](../lifecycle/nodes/09-pct-international.md)
-3. **诉讼维权独立化**：现在只是 stub runner + 灰显专家席；缺「立案→证据保全→判决执行」Flow 与 docket 配合。
+3. **诉讼维权独立化**：现在只是 stub runner + 灰显专家席；缺「立案→证据保全→判决执行」Flow 与 docket 配合。→ **已补规格**：[lifecycle/nodes/24-litigation.md](../lifecycle/nodes/24-litigation.md)
 4. **终止/放弃路径**：年费逾期后无「放弃维持→组合退出」终态，轴默认走到底；与「价值评估」专家席（score_portfolio）天然可接。→ **已补规格**：[lifecycle/nodes/23-termination-recovery.md](../lifecycle/nodes/23-termination-recovery.md)
 
 **补建进度**：洞 1、2、4 已产出产品级规格文档（含字段 schema、状态机、规则编号、差距表）；洞 3（诉讼维权）仍未建模。规格文档 ≠ 代码实现——四洞在代码中**均未落地**，文档是补建的施工图。
