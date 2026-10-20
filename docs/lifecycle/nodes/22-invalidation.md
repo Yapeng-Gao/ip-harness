@@ -131,7 +131,18 @@
 | `legalBasis` | string | 法条依据，如「专利法第 22 条第 3 款」 |
 | `argument` | string | 论证要点 |
 | `evidenceRefs` | string[] | 支撑该理由的证据 id |
+| `claimCharts` | `string[]` | **该理由引用的比对图 id**（见下） |
 | `strength` | `'strong' \| 'medium' \| 'weak'` | 内部评估，不对外 |
+
+**理由成立性必须由比对图支撑，不能只写论证。** 三性与充分公开类理由，须引用 `purpose: 'invalidation'` 的 [ClaimChart](25-claim-chart.md)：
+
+| 理由类型 | 比对图用途 | 判定规则 |
+|---|---|---|
+| 新颖性（22.2） | `invalid` + 单篇文献 | 全部要素 `identical` 才成立 |
+| 创造性（22.3） | `invalid` + 组合文献 | 允许 `different`，须另附「为何显而易见」论证 |
+| 26.3 / 26.4 | 不适用比对图 | 走说明书/权项文本分析 |
+
+> **无效用途下禁止出现 `equivalent`**：等同是侵权概念，与新颖性/创造性无关（规则 R25-12）。
 
 ### 3.3 `EvidenceItem`（证据）
 

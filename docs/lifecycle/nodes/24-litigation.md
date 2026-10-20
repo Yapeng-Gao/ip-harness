@@ -112,28 +112,23 @@
 | `invalidationLinked` | string[] | — | 关联的无效案（22） |
 | `stayRequested` | boolean | — | 是否申请中止审理 |
 
-### 3.2 `ClaimChart`（侵权比对表）
+### 3.2 `ClaimChart`（侵权比对表 · 共享对象）
 
-这是诉讼节点的**核心工作底稿**，逐特征对照。
+**本对象已统一为共享规格，见 [25-claim-chart.md](25-claim-chart.md)。** 诉讼使用其中 `purpose: 'infringement'`（原告）或 `'defense'`（被告）两种配置：
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `claimNo` | string | 被比对的权项号 |
-| `elements` | `ClaimElement[]` | 权项分解后的技术特征 |
-| `overallResult` | `'infringed' \| 'not_infringed' \| 'partial'` | 结论 |
+| 字段 | 诉讼用途下的取值/要求 |
+|---|---|
+| `purpose` | `'infringement'` 或 `'defense'` |
+| `targetClaim` | 涉案专利的**具体权项全文**；每项单独建图（含从属权项） |
+| `subject` | `{ kind: 'accused_product', description, evidenceRefs }` |
+| `elements` | 逐要素；`match ∈ {identical, equivalent, absent, different, unresolved}` |
+| `verdict` | **由 elements 推导**；任一要素缺失即 `not_covered` |
+| `basis` | `'literal'` / `'equivalent'` / `'mixed'` |
+| `reviewedBy` | **必填**（诉讼证据的效力前提） |
 
-`ClaimElement`：
+**判定铁律**（规则见 [25 §2](25-claim-chart.md)）：**全面覆盖原则**——被控方案必须包含权项的**每一个**技术特征，少一个就不侵权。比对表必须逐项填，不能只写结论；结论不得手填。
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `id` | string | |
-| `text` | string | 特征原文 |
-| `accusedFeature` | string | 被控产品对应特征 |
-| `match` | `'identical' \| 'equivalent' \| 'absent' \| 'different'` | 判定 |
-| `note` | string | 论证要点 |
-| `evidenceRefs` | string[] | 支撑证据 |
-
-**判定铁律**：**全面覆盖原则**——被控方案必须包含权项的**每一个**技术特征，少一个就不侵权。所以比对表必须逐项填，不能只写结论。
+> 早期版本在本文里定义了独立的 `ClaimChart` / `ClaimElement`，与 FTO 侧的枚举不一致，已合并到 25。
 
 ### 3.3 `EvidenceItem`（证据）
 

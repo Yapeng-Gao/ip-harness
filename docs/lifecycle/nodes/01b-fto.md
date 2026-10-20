@@ -123,7 +123,7 @@
 | `launchDate` | string | ✅ | 计划上市日（决定时效基准） |
 | `businessContext` | `'launch' \| 'new_market' \| 'due_diligence' \| 'defense' \| 'license_in'` | ✅ | 场景，决定报告口径 |
 | `hits` | `ObstaclePatent[]` | ✅ | 障碍专利候选 |
-| `comparisons` | `ClaimComparison[]` | ✅ | 比对结果 |
+| `comparisons` | `ClaimChart[]` | ✅ | 比对结果（共享对象，见 [25](25-claim-chart.md)） |
 | `overallRisk` | `FtoRisk` | 系统 | 全局风险 |
 | `searchDate` | string | ✅ | 检索截止日（**保鲜期起算**） |
 | `freshnessUntil` | string | 系统 | 结论有效期 |
@@ -157,25 +157,21 @@
 
 **核心规则**：`legalStatus` 不是 `granted` 或 `pending` 的，**一律不是障碍**。这条过滤是 FTO 与可专利性检索最本质的差别。
 
-### 3.4 `ClaimComparison`（权利要求比对）
+### 3.4 `ClaimChart`（权利要求比对表 · 共享对象）
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `hitId` | string | 指向障碍专利 |
-| `claimNo` | string | 被比对的权项号（**必须指明**） |
-| `elements` | `ElementMatch[]` | 权项要素逐项对照 |
-| `verdict` | `'covered' \| 'not_covered' \| 'needs_review'` | 是否落入 |
-| `basis` | `'literal' \| 'equivalent'` | 相同 or 等同 |
-| `designAround` | string? | 规避建议 |
+**本对象已统一为共享规格，见 [25-claim-chart.md](25-claim-chart.md)。** FTO 使用其中 `purpose: 'fto'` 的一种配置：
 
-`ElementMatch`：
+| 字段 | FTO 用途下的取值/要求 |
+|---|---|
+| `purpose` | `'fto'` |
+| `targetClaim` | 障碍专利的**具体权项全文**；`jurisdiction` **必填**（权项只在授权国有效） |
+| `subject` | `{ kind: 'own_product', projectId, productVersion, features }` |
+| `elements` | 逐要素；`match ∈ {identical, equivalent, absent, different, unresolved}` |
+| `verdict` | **由 elements 推导**，不可手填（缺任一要素即 `not_covered`） |
+| `basis` | 结论依赖等同时必填 `'equivalent'` |
+| `designAround` | **`not_covered` 时必填**——FTO 要告诉客户怎么改，不是只说侵不侵权 |
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `elementText` | string | 权项中该要素的原文 |
-| `productFeatureId` | string? | 对应的产品特征（**无对应 = 不落入**） |
-| `match` | `'present' \| 'absent' \| 'different'` | |
-| `note` | string | 论证 |
+> 早期版本在本文里定义的 `ClaimComparison` / `ElementMatch`（`present/absent/different`）与诉讼侧枚举不一致，已合并。**以 [25](25-claim-chart.md) 为准。**
 
 ### 3.5 `FtoRisk`（风险等级）
 
@@ -448,7 +444,7 @@ FTO 的价值 ≈ 避免的惩罚性赔偿倍数 × 赔偿基数 × 被诉概率
 | 创建 FTO 项目 | `createFtoProject` | `FtoProject` |
 | 保存特征 | `saveFtoFeatures` | `features[]` |
 | 纳入障碍 | `addObstaclePatent` | `hits[]` |
-| 保存比对 | `saveClaimComparison` | `comparisons[]` |
+| 保存比对 | `saveClaimChart` | `comparisons[]`（共享对象 [25](25-claim-chart.md)） |
 | 定级 | `setFtoRisk` | `overallRisk` |
 | 发布报告 | `publishFtoReport` | `report` + `freshnessUntil` |
 | 触发重跑 | `reopenFto` | 重置为 draft |

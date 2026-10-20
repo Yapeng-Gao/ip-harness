@@ -29,6 +29,7 @@
 | [22](nodes/22-invalidation.md) | 无效宣告（补建） | 反向程序；消灭他人权利 | — |
 | [23](nodes/23-termination-recovery.md) | 终止与恢复（补建） | 权利状态的终局与救济 | — |
 | [24](nodes/24-litigation.md) | 诉讼与维权（补建） | 侵权判定 + 救济实现；四条救济轨道 | — |
+| [25](nodes/25-claim-chart.md) | 权利比对表（共享对象） | FTO / 诉讼 / 无效共用一套结构与推导规则 | — |
 
 14–21 不是缺号的节点。那 8 篇是按原型逐行写的 Flow 精读，已放在 [archive/flow-reads/](archive/flow-reads/)，不代表业务设计。
 
