@@ -1,0 +1,37 @@
+[
+  {
+    "name": "WatchAlertProcessStatus",
+    "node": "07-monitoring",
+    "file": "docs/lifecycle/nodes/07-monitoring.md"
+  },
+  {
+    "name": "WatchAlertStatus",
+    "node": "07-monitoring",
+    "file": "docs/lifecycle/nodes/07-monitoring.md"
+  },
+  {
+    "name": "ClaimChart",
+    "node": "25-claim-chart",
+    "file": "docs/lifecycle/nodes/25-claim-chart.md"
+  },
+  {
+    "name": "ClaimChartSubject",
+    "node": "25-claim-chart",
+    "file": "docs/lifecycle/nodes/25-claim-chart.md"
+  },
+  {
+    "name": "ClaimElement",
+    "node": "25-claim-chart",
+    "file": "docs/lifecycle/nodes/25-claim-chart.md"
+  },
+  {
+    "name": "ElementMatch",
+    "node": "25-claim-chart",
+    "file": "docs/lifecycle/nodes/25-claim-chart.md"
+  },
+  {
+    "name": "ClaimVerdict",
+    "node": "25-claim-chart",
+    "file": "docs/lifecycle/nodes/25-claim-chart.md"
+  }
+]

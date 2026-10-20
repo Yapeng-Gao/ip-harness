@@ -1,0 +1,207 @@
+[
+  {
+    "id": "00-inventor-disclosure",
+    "title": "节点 00 · 发明交底（Invention Disclosure）· 产品级业务规格",
+    "stage": null,
+    "decisionPoints": [
+      "D1",
+      "D2"
+    ],
+    "rules": 73,
+    "file": "docs/lifecycle/nodes/00-inventor-disclosure.md",
+    "lines": 1138
+  },
+  {
+    "id": "00b-invention-point-chain",
+    "title": "交底之后 · 发明点翻译链（Disclosure → Claims → Specification）",
+    "stage": null,
+    "decisionPoints": [],
+    "rules": 0,
+    "file": "docs/lifecycle/nodes/00b-invention-point-chain.md",
+    "lines": 363
+  },
+  {
+    "id": "01-research",
+    "title": "节点 01 · 立项前调研 / 检索（Prior Art Research）· 产品级业务规格",
+    "stage": "pre_research",
+    "decisionPoints": [],
+    "rules": 47,
+    "file": "docs/lifecycle/nodes/01-research.md",
+    "lines": 862
+  },
+  {
+    "id": "01b-fto",
+    "title": "节点 01b · FTO 自由实施分析（Freedom to Operate）",
+    "stage": null,
+    "decisionPoints": [],
+    "rules": 47,
+    "file": "docs/lifecycle/nodes/01b-fto.md",
+    "lines": 758
+  },
+  {
+    "id": "02-decision",
+    "title": "节点 02 · 立项决策（Go / No-Go）· 产品级业务规格",
+    "stage": "decision",
+    "decisionPoints": [
+      "D1",
+      "D2"
+    ],
+    "rules": 55,
+    "file": "docs/lifecycle/nodes/02-decision.md",
+    "lines": 841
+  },
+  {
+    "id": "03-drafting",
+    "title": "节点 03 · 撰写申请（Drafting）· 产品级业务规格",
+    "stage": "drafting",
+    "decisionPoints": [
+      "D3",
+      "D4"
+    ],
+    "rules": 54,
+    "file": "docs/lifecycle/nodes/03-drafting.md",
+    "lines": 816
+  },
+  {
+    "id": "04-prosecution",
+    "title": "节点 04 · 审查答复（Prosecution）· 产品级业务规格",
+    "stage": "prosecution",
+    "decisionPoints": [
+      "D5"
+    ],
+    "rules": 58,
+    "file": "docs/lifecycle/nodes/04-prosecution.md",
+    "lines": 892
+  },
+  {
+    "id": "05-maintenance",
+    "title": "节点 05 · 授权维持（Maintenance）· 产品级业务规格",
+    "stage": "maintenance",
+    "decisionPoints": [
+      "D6"
+    ],
+    "rules": 56,
+    "file": "docs/lifecycle/nodes/05-maintenance.md",
+    "lines": 846
+  },
+  {
+    "id": "06-commercialization",
+    "title": "节点 06 · 运用转化（Commercialization）· 产品级业务规格",
+    "stage": "commercialization",
+    "decisionPoints": [
+      "D7"
+    ],
+    "rules": 58,
+    "file": "docs/lifecycle/nodes/06-commercialization.md",
+    "lines": 843
+  },
+  {
+    "id": "07-monitoring",
+    "title": "节点 07 · 监控预警（Monitoring / IP Watch）· 产品级业务规格",
+    "stage": "monitoring",
+    "decisionPoints": [
+      "D7"
+    ],
+    "rules": 66,
+    "file": "docs/lifecycle/nodes/07-monitoring.md",
+    "lines": 767
+  },
+  {
+    "id": "08-layout",
+    "title": "节点 08 · 布局洞察（Patent Layout / Portfolio Strategy）· 产品级业务规格",
+    "stage": null,
+    "decisionPoints": [
+      "D4"
+    ],
+    "rules": 57,
+    "file": "docs/lifecycle/nodes/08-layout.md",
+    "lines": 747
+  },
+  {
+    "id": "09-pct-international",
+    "title": "节点 09 · PCT 与国际进入（PCT International Phase & National Entry）· 产品级业务规格",
+    "stage": null,
+    "decisionPoints": [
+      "D4"
+    ],
+    "rules": 61,
+    "file": "docs/lifecycle/nodes/09-pct-international.md",
+    "lines": 780
+  },
+  {
+    "id": "10-handoff-state-machine",
+    "title": "横切 10 · 交接状态机（Handoff State Machine）· 产品级业务规格",
+    "stage": null,
+    "decisionPoints": [],
+    "rules": 65,
+    "file": "docs/lifecycle/nodes/10-handoff-state-machine.md",
+    "lines": 694
+  },
+  {
+    "id": "11-docket-engine",
+    "title": "横切 11 · Docket 期限引擎（Docket Engine）· 产品级业务规格",
+    "stage": null,
+    "decisionPoints": [],
+    "rules": 60,
+    "file": "docs/lifecycle/nodes/11-docket-engine.md",
+    "lines": 689
+  },
+  {
+    "id": "12-billing-engagement",
+    "title": "横切 12 · 商务线（报价 · 发票 · 付款 · 委托阶段）· 产品级业务规格",
+    "stage": null,
+    "decisionPoints": [],
+    "rules": 59,
+    "file": "docs/lifecycle/nodes/12-billing-engagement.md",
+    "lines": 701
+  },
+  {
+    "id": "13-agents",
+    "title": "横切 13 · Agent 编成（9 Agent × 18 专家席）· 产品级业务规格",
+    "stage": null,
+    "decisionPoints": [],
+    "rules": 47,
+    "file": "docs/lifecycle/nodes/13-agents.md",
+    "lines": 753
+  },
+  {
+    "id": "22-invalidation",
+    "title": "节点 22 · 无效宣告与异议程序（补建节点）",
+    "stage": null,
+    "decisionPoints": [],
+    "rules": 42,
+    "file": "docs/lifecycle/nodes/22-invalidation.md",
+    "lines": 653
+  },
+  {
+    "id": "23-termination-recovery",
+    "title": "节点 23 · 终止 · 放弃 · 权利恢复（补建节点）",
+    "stage": null,
+    "decisionPoints": [
+      "D6"
+    ],
+    "rules": 56,
+    "file": "docs/lifecycle/nodes/23-termination-recovery.md",
+    "lines": 709
+  },
+  {
+    "id": "24-litigation",
+    "title": "节点 24 · 诉讼与维权（补建节点）",
+    "stage": null,
+    "decisionPoints": [
+      "D7"
+    ],
+    "rules": 53,
+    "file": "docs/lifecycle/nodes/24-litigation.md",
+    "lines": 775
+  },
+  {
+    "id": "25-claim-chart",
+    "title": "节点 25 · 权利要求比对表 `ClaimChart`（共享对象规格）",
+    "stage": null,
+    "decisionPoints": [],
+    "rules": 12,
+    "file": "docs/lifecycle/nodes/25-claim-chart.md",
+    "lines": 291
+  }
+]
