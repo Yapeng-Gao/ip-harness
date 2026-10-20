@@ -1,6 +1,6 @@
 # 节点文档模板（产品级规格 · 17 节）
 
-> **所有节点文档必须按此结构写。** 样板：[00-inventor-disclosure.md](nodes/00-inventor-disclosure.md)。
+> **所有节点文档必须按此结构写。** 00 已按阅读顺序重排，节号对照见 [00-inventor-disclosure.md](nodes/00-inventor-disclosure.md) §5，不要按 00 的节号套本模板。
 > 目的：读者读完后能独立设计这个节点的产品、写它的接口、给客户讲清它为什么值钱。
 >
 > 与旧「8 节地图版」的区别：
