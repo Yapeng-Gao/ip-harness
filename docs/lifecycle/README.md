@@ -17,6 +17,7 @@
 | [00](nodes/00-inventor-disclosure.md) | 发明交底 | 技术事实 → 可撰写材料；权属/署名/奖酬/公开时点在此定死 | — |
 | [00b](nodes/00b-invention-point-chain.md) | 发明点翻译链 | 交底 → 初审 → 检索 → 发明点 → 权项 → 说明书 | — |
 | [01](nodes/01-research.md) | 检索与可专利性 | 可专利性证据，供立项决定要不要申请 | `pre_research` |
+| [01b](nodes/01b-fto.md) | FTO 自由实施分析 | 侵权风险：我的产品在这个市场卖会不会踩线 | — |
 | [02](nodes/02-decision.md) | 立项与预算 | D1/D2 决策 + 报价委托 | `decision` |
 | [03](nodes/03-drafting.md) | 撰写与布局 | D3/D4 决策；权利边界在此成型 | `drafting` |
 | [04](nodes/04-prosecution.md) | 审查答复 | D5 决策；权利边界的第一次谈判 | `prosecution` |

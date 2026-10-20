@@ -38,7 +38,7 @@
 | runner | 名称 | 步骤 |
 |---|---|---|
 | `prior_art` | 现有技术检索 | 定关键词分类号 → 多库并行检索 → 筛选标注 → 生成报告 |
-| `fto` | 初步 FTO | 圈定方案 → 检索有效权项 → 对比侵权可能 → 输出意见书 |
+| `fto` | 初步 FTO | 圈定方案 → 检索有效权项 → 对比侵权可能 → 输出意见书。**完整业务规格见 [01b-fto.md](01b-fto.md)** |
 | `patentability` | 可专利性初评 | 梳理要点 → 对比最接近现有技术 → 给结论 |
 
 > **注意**：`runners` 是静态概念目录，不是案级进度（`packages/domain/src/types/index.ts:123` 已标 `@deprecated`）。案级进度只认 `flowProgressByCase[caseId].research`。

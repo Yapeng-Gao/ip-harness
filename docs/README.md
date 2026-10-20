@@ -21,7 +21,7 @@
 | [architecture/lifecycle-coverage.md](./architecture/lifecycle-coverage.md) | **专利生命周期覆盖度**（7 stage 主轴 × 横切节点 × 标准阶段对照 · 4 缺口） |
 | [lifecycle/README.md](./lifecycle/README.md) | **按节点业务逻辑**（总纲 + 产品逻辑 + 00–24 节点产品级规格 + 10–13 横切） |
 | [lifecycle/business-spine.md](./lifecycle/business-spine.md) | **业务总纲**（转换/主体/对象/规则/时钟/口袋/决策点/失败模式） |
-| [lifecycle/product-logic.md](./lifecycle/product-logic.md) | **产品逻辑**（12 SKU · 覆盖矩阵 · 打包定价 · 路线图 · 验收标准） |
+| [lifecycle/product-logic.md](./lifecycle/product-logic.md) | **产品逻辑**（13 SKU · 覆盖矩阵 · 打包定价 · 路线图 · 验收标准） |
 | [lifecycle/industry-reality.md](./lifecycle/industry-reality.md) | **行业真实法规对照**（各节点法定期限/官费/程序补遗 · 与样机差距 + 4 类建议补建规则） |
 | [architecture/data-flow.md](./architecture/data-flow.md) | 多壳读写数据流 |
 | [architecture/data-model.md](./architecture/data-model.md) | 数据模型与包归属 |
