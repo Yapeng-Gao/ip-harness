@@ -34,7 +34,7 @@ export function HomeContentPreview() {
 
       {/* 2 · 七部徽章墙：每部默认露出 ≤3 专家岗+头像（只展示） */}
       <div
-        className="rounded-[var(--radius-md)] border border-slate-200 bg-white p-3 shadow-[var(--shadow-rest)] sm:p-4"
+        className="rounded-[var(--radius-lg)] border border-slate-200 bg-white p-3 shadow-[var(--shadow-rest)] sm:p-4"
         data-testid="home-chain-wall"
         aria-label="主链七部与专家岗示意（只展示，不可作业）"
       >

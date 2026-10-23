@@ -159,14 +159,14 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           <span>后勤</span>
           <Link
             to={`/agent/cases/${caseId}/billing`}
-            className="underline-offset-2 hover:text-slate-600 hover:underline"
+            className="focus-ring rounded-sm underline-offset-2 hover:text-slate-600 hover:underline"
             data-testid="company-link-billing"
           >
             账单
           </Link>
           <Link
             to={`/agent/cases/${caseId}/members`}
-            className="underline-offset-2 hover:text-slate-600 hover:underline"
+            className="focus-ring rounded-sm underline-offset-2 hover:text-slate-600 hover:underline"
             data-testid="company-link-members"
           >
             成员
@@ -204,7 +204,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
               <li key={dept.id} className="min-w-0">
                 <button
                   type="button"
-                  className={`focus-ring flex h-full w-full flex-col items-start gap-1 rounded-lg border px-2.5 py-2.5 text-left transition ${
+                  className={`btn-press focus-ring flex h-full w-full flex-col items-start gap-1 rounded-lg border px-2.5 py-2.5 text-left transition ${
                     active
                       ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
                       : selected

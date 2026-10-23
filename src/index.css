@@ -134,7 +134,7 @@ p {
   filter: brightness(1.05);
 }
 .icon-btn:active:not(:disabled) {
-  transform: scale(0.94);
+  transform: scale(0.96);
 }
 
 

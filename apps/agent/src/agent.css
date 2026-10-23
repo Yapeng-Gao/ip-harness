@@ -464,3 +464,32 @@ body,
     transition: none;
   }
 }
+
+
+/* DeptSideDrawer · P2 slide-in (no framer-motion); reduced-motion → fade only */
+@keyframes dept-drawer-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes dept-drawer-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.dept-drawer-panel {
+  animation: dept-drawer-slide-in 0.2s var(--ease-interactive, ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dept-drawer-panel {
+    animation: dept-drawer-fade-in 0.15s ease both;
+  }
+}

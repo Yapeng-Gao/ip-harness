@@ -33,7 +33,7 @@ export function PendingConfirmBell() {
         {activeCaseId ? '本案待确认' : '待我确认'}
       </span>
       {n > 0 && (
-        <span className="absolute -right-1 -top-1 inline-flex min-w-[1.125rem] items-center justify-center rounded-full bg-amber-600 px-1 py-px text-[10px] font-semibold text-white">
+        <span className="tabular absolute -right-1 -top-1 inline-flex min-w-[1.125rem] items-center justify-center rounded-full bg-amber-600 px-1 py-px text-[10px] font-semibold text-white">
           {n > 9 ? '9+' : n}
         </span>
       )}

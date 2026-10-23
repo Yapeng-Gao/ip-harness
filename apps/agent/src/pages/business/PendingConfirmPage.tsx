@@ -43,7 +43,7 @@ export function PendingConfirmInboxPage() {
     >
       <div className="mx-auto max-w-2xl">
         <div className="mb-3 text-[11px] text-slate-400">
-          <Link to="/agent/cases" className="hover:underline">
+          <Link to="/agent/cases" className="focus-ring rounded-sm hover:underline">
             多案流水
           </Link>
           <span className="mx-1">/</span>
@@ -51,7 +51,7 @@ export function PendingConfirmInboxPage() {
             <>
               <Link
                 to={`/agent/cases/${filterCaseId}`}
-                className="hover:underline"
+                className="focus-ring rounded-sm hover:underline"
               >
                 {filterCase?.title ?? '本案'}
               </Link>
@@ -273,7 +273,7 @@ export function PendingConfirmDetailPage() {
     >
       <div className="mx-auto max-w-3xl">
         <div className="mb-3 text-[11px] text-slate-400">
-          <Link to="/agent/pending" className="hover:underline">
+          <Link to="/agent/pending" className="focus-ring rounded-sm hover:underline">
             待我确认
           </Link>
           <span className="mx-1">/</span>

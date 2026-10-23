@@ -41,7 +41,9 @@ export function ExpertAvatar({
 }) {
   const dim = size === 'sm' ? 'h-5 w-5' : 'h-7 w-7'
   const ring =
-    tone === 'onDark' ? 'ring-1 ring-white/40' : 'ring-1 ring-slate-200'
+    tone === 'onDark'
+      ? 'outline outline-1 -outline-offset-1 outline-white/10'
+      : 'outline outline-1 -outline-offset-1 outline-black/10'
   const src = expertAvatarUrl(seed ?? name)
   const label = name.trim() || '专家'
 
