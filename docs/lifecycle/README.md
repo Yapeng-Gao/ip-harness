@@ -16,7 +16,8 @@
 
 | 文档 | 内容 |
 |---|---|
-| [2026-10-23-main-chain-from-discussion.md](working/2026-10-23-main-chain-from-discussion.md) | 讨论主链工作稿：激发/挖掘/布局顺序、法律·业务必经 vs 条件触发、与 nodes 对照；定稿后合并进 business-spine |
+| [2026-10-23-main-chain-from-discussion.md](working/2026-10-23-main-chain-from-discussion.md) | 讨论主链工作稿：激发/挖掘/布局顺序、法律·业务必经 vs 条件触发、与 nodes 对照；**合成方向已确认**（骨架取 B、主链前段取 A）；定稿后合并进 business-spine |
+| [2026-10-23-product-vision-company-dept-expert.md](working/2026-10-23-product-vision-company-dept-expert.md) | 产品理念工作稿：外挂 IP 部；公司/部门/专家拟人化；部门↔主链 Ni–N16↔spine 00–25；交卷·待你确认；对外禁用 Agent 黑话 |
 
 ## 节点（17 节产品级规格）
 

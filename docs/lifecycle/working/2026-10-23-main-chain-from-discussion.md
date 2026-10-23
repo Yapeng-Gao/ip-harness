@@ -231,3 +231,28 @@
 5. 最后扫 product-logic / decision-rights 中与主链顺序冲突的句子。
 
 **冲突裁决（与本文 §5 一致）**：业务实务与法条 > 经 Leslie 确认的工作稿结论 > 旧原型与 Flow 精读；骨架模型以 business-spine 为准，主链前段以经确认的本文为准。
+
+---
+
+## 8. 已确认：合成方向（2026-10-23）
+
+> Leslie 已同意 §7 合成方向。本节省录确认内容；**仍不直接改** `business-spine.md` 正文。合并清单执行标为「待 Leslie 点头后改 spine」（理念与部门表见产品理念工作稿确认后一并动手）。
+
+| 项 | 结论 |
+|---|---|
+| 日期 | 2026-10-23（Asia/Shanghai） |
+| 骨架与节点规格 | **保留 B**（business-spine + nodes 17 节 + D1–D7 + product-logic SKU 母本） |
+| 默认主链前段与必经分层 | **写入 A**（激发→捕获→挖掘→交底→查新→(FTO 按需)→布局刷新+单案决策→撰写∥附图→定稿→法定段→年费；法律/业务/条件三层） |
+| 补建 | **Ni 创新激发、Nm 专利挖掘**；**Nc 捕获**单列或并入 00（待拍）——规格深度跟 B |
+| 拆清 | 03 = 单案撰写；08/Nl = 组合布局；02 = 单案决策书；可同会、两份产出 |
+| FTO | 保留 B 机制深度；按 A 不阻塞申请主链 |
+| 丢弃 | 原型「查新→立项→交底」作业务默认；用 A 整篇替换 spine |
+| 下一层 | 产品理念（公司/部门/专家）→ [2026-10-23-product-vision-company-dept-expert.md](2026-10-23-product-vision-company-dept-expert.md) |
+
+**待 Leslie 点头后改 spine（执行清单，本稿不改 spine）：**
+
+1. spine §12 / README 节点表增加 Ni / Nm（及可选 Nc）占位与默认顺序一句话。  
+2. spine 增加法律·业务·条件必经分层（引本文 §2）。  
+3. 改 03/08 对外命名与接口句。  
+4. 按 `_TEMPLATE.md` 为 Ni/Nm（及 Nc）写节点规格。  
+5. 扫 product-logic / decision-rights 中与主链顺序冲突的句子。
