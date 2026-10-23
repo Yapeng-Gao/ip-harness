@@ -1,10 +1,14 @@
 # 工作稿 · lifecycle 审计与优化建议
 
+> **P0 已落地 / 2026-10-23（Asia/Shanghai）** — Leslie 确认按本 backlog 改 docs。  
+> **改动文件**：`decision-rights.md`；`business-spine.md`（§1.3 主链+三层必经、§7 D4、§8.2、§12）；`README.md`；`product-logic.md`（P03/P03b 拆分）；`nodes/01-research.md`；`nodes/01b-fto.md`；`nodes/02-decision.md`（FTO 可空）；`nodes/03-drafting.md`（命名澄清）；本文状态更新。  
+> **未做（仍待）**：L5 D4/PCT 在 Go 时是否必拍；L6 Nc 是否单列；L7 正式写 Ni/Nm(/Nc) 节点文；L8 10/13 产物键与席位挂靠；industry-reality 拆 01/01b（P1）；代码去掉 01 强制 `fto` 齐套（实现债，另案）。
+>
 > **性质**：对 `docs/lifecycle/` 的调研理解与问题清单，**不是** `business-spine.md` 的替代品。  
 > **范围**：business-spine、product-logic、decision-rights、industry-reality、README、全部 `nodes/*.md`（精读 00/00b/01/01b/02/03/04/05/08/10/13；其余抽定位/规则/闸门/上下游）。  
 > **对照**：工作稿主链 [2026-10-23-main-chain-from-discussion.md](2026-10-23-main-chain-from-discussion.md)、产品理念 [2026-10-23-product-vision-company-dept-expert.md](2026-10-23-product-vision-company-dept-expert.md)、中国发明实务（交底→查新、FTO 条件触发、激发/挖掘缺口）。  
 > **日期**：2026-10-23（Asia/Shanghai）。  
-> **纪律**：只写文档建议；**不改** apps、**不擅自改** business-spine 正文；合并正式文须 Leslie 确认。
+> **纪律**：只写文档建议；**不改** apps；正式文合并以 Leslie 确认为准（P0 项已获准落地）。
 
 ---
 
@@ -253,18 +257,18 @@
 
 ### 须 Leslie 确认后再改正式文
 
-| 序 | 动作 | 改哪些 | 门禁 |
-|---|---|---|---|
-| L1 | 改 decision-rights D1/D2 落点表 | decision-rights.md | 确认 C1 |
-| L2 | spine 增默认主链一句话 + 三层必经；§12 占位 Ni/Nm(/Nc) | business-spine.md、README 表 | 确认合成执行 |
-| L3 | 全库改名：03≠布局；P03 与 08 拆 SKU | README、spine、product-logic、相关交叉句 | 确认 C2/C3 |
-| L4 | 01 文档：FTO 齐套改可选；品名去 FTO | 01-research.md（及指向句） | 确认 C4 |
-| L5 | 拍 D4/PCT：Go 时定什么、08 同会规则 | 02、08、decision-rights、spine D4 | 确认 C6 |
-| L6 | 拍 Nc：单列 vs 并入 00 提报前 | 新节点或 00 § | 理念稿开放问题 |
-| L7 | 按模板新建 Ni、Nm（及可选 Nc）节点文 | nodes/ + README | L2+L6 |
-| L8 | 10/13：产物键与席位挂靠新节点；标明对内 | 10、13 | L7 |
-| L9 | 扫 product-logic / archive 与主链冲突句 | 多篇 | L2–L5 |
-| L10 | 术语表：「权项结构 / 组合布局 / 单案国别」 | spine 或 glossary | L3 |
+| 序 | 动作 | 改哪些 | 门禁 | 状态 |
+|---|---|---|---|---|
+| L1 | 改 decision-rights D1/D2 落点表 | decision-rights.md | 确认 C1 | **已落地** |
+| L2 | spine 增默认主链一句话 + 三层必经；§12 占位 Ni/Nm(/Nc) | business-spine.md、README 表 | 确认合成执行 | **已落地** |
+| L3 | 全库改名：03≠布局；P03 与 08 拆 SKU | README、spine、product-logic、相关交叉句 | 确认 C2/C3 | **已落地**（P03b） |
+| L4 | 01 文档：FTO 齐套改可选；品名去 FTO | 01-research.md（及指向句） | 确认 C4 | **已落地**（代码债另案） |
+| L5 | 拍 D4/PCT：Go 时定什么、08 同会规则 | 02、08、decision-rights、spine D4 | 确认 C6 | 待 |
+| L6 | 拍 Nc：单列 vs 并入 00 提报前 | 新节点或 00 § | 理念稿开放问题 | 待 |
+| L7 | 按模板新建 Ni、Nm（及可选 Nc）节点文 | nodes/ + README | L2+L6 | 待（占位已写入） |
+| L8 | 10/13：产物键与席位挂靠新节点；标明对内 | 10、13 | L7 | 待 |
+| L9 | 扫 product-logic / archive 与主链冲突句 | 多篇 | L2–L5 | 部分（SKU 已拆；archive 未扫） |
+| L10 | 术语表：「权项结构 / 组合布局 / 单案国别」 | spine 或 glossary | L3 | 待 |
 
 ### 明确不做（本阶段）
 
@@ -316,7 +320,8 @@
 
 ## 8) 门禁（合并正式文前）
 
-- [ ] Leslie 认可本审计 P0 列表与 Top5  
-- [ ] Leslie 确认 C1/C2/C3/C4/C6 裁决  
-- [ ] Leslie 点头后才执行 L1–L7  
-- [ ] 仍不 push；不改 apps
+- [x] Leslie 认可本审计 P0 列表与 Top5（2026-10-23）  
+- [x] Leslie 确认 C1/C2/C3/C4 并落地 docs（C6 D4/PCT 时机仍 ⚠ 待定）  
+- [x] L1–L4 已执行（decision-rights / spine·README / P03 拆分 / 01·01b）  
+- [ ] L5–L7（D4/PCT、Nc、正式 Ni/Nm 节点文）仍待  
+- [x] 仍不 push；不改 apps

@@ -1,5 +1,7 @@
 # 节点 03 · 撰写申请（Drafting）· 产品级业务规格
 
+> **命名澄清（2026-10-23）**：本节点是**单案撰写**（D3；国别落入承接 08 建议）。**不是**组合「布局洞察」——组合布局见 [08](08-layout.md)。索引层勿再称「撰写与布局」。
+>
 > 代码权威源：`apps/workbench/src/flows/draft/DraftFlow.tsx`（550 行）· `packages/domain/src/handoff.ts`（`REQUIRED_BEFORE_SUBMIT.draft_claims`、`DRAFT_FILING_CHECK_ITEMS`、`TRANSITIONS`）· `packages/domain/src/guardrails.ts`（`disclosure_approved` / `filing_check` / `full_check`）· `packages/domain/src/fullFilingCheck.ts`（`FULL_CHECK_LITE_ITEMS` / `evaluateFullCheck` / `fullCheckScopeFor`）· `packages/domain/src/types/index.ts`（`DraftFilingCheck` / `DraftFilingCheckKey` / `Claim` 无独立类型）· `src/data/flowSteps.ts`（draft 4 步）· `src/data/agents.ts`（`agent-claims`）· `src/data/docketRules.ts`（`application_fee` / `substantive_exam_request`）
 > 法律口径：《专利法》（2020 修正）与《专利法实施细则》（2023 修订，2024-01-20 施行）。凡条号、金额、比例均标 ⚠ 需按当期官方文本复核；本文不臆造条号。
 > 前置阅读：[00-inventor-disclosure.md](00-inventor-disclosure.md) · [00b-invention-point-chain.md](00b-invention-point-chain.md)（发明点与布局的上游逻辑）。

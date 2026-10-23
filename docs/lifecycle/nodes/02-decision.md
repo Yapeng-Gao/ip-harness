@@ -66,7 +66,7 @@
 
 | 方向 | 对象 | 契约 |
 |---|---|---|
-| 上游 | 检索（01）`research_report` | 提供可专利性结论、新颖性/创造性评分、FTO 风险档 |
+| 上游 | 检索（01）`research_report` | 提供可专利性结论、新颖性/创造性评分；**FTO 风险档可空**（无 FTO 不阻断 Go；正式 FTO 见 01b，按上市/定型触发） |
 | 上游 | 交底包 `disclosure_pack` | **必须已批准/授权/归档**，否则 Go 被 `disclosure_approved` 阻断（`guardrails.ts:396-403`） |
 | 上游 | 代理所 | `AgencyIntent`（接案意向）+ 报价 |
 | 下游 | 撰写（03） | `stage → drafting`，新建 `draft_claims = drafting`；`Engagement.phase` 进「撰写中」（契约要求；现状未写，见 §6.3） |

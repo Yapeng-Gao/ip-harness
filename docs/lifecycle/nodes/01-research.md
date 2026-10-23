@@ -16,7 +16,7 @@
 
 产品化视角下，这个节点能独立成产品，因为同时满足三条：
 
-1. **有独立买方**：企业 IP 部门买它做「申请前必过的一道证据闸」；代理所买它做出报告的流水线；投资/法务在尽调时买 FTO 单点。
+1. **有独立买方**：企业 IP 部门买它做「申请前必过的一道证据闸」；代理所买它做出报告的流水线。FTO / 尽调侵权风险见独立节点 [01b](01b-fto.md)（**P02b**），不在本节点主售。
 2. **有独立价值**：一次正式检索的市价约 ¥3,000–15,000 ⚠（按范围），而一次误判导致的无效撰写 + 重复申请，成本是它的数倍。
 3. **有独立边界**：输入是技术方案 + 交底里的 1.1，输出是 `research_report` 与可核验命中集，不依赖撰写、答复、维持任何下游模块即可交付。
 
@@ -29,8 +29,10 @@
 ```
 交底(00) ──► 【调研/检索 01】 ──► 立项决策(02) ──► 撰写(03) ──► 审查(04) ──► …
    │                │                    │
-   │                └─ research_report   └─ 消费：检索结论 + FTO 初评
+   │                └─ research_report   └─ 消费：可专利性结论（FTO 风险档可空）
    └─ prior_art_1_1（检索起点，非检索结果）
+
+         （按需，不堵申请）──► 【01b FTO】──► 上市/定型决策
 ```
 
 代码里的阶段定义（`packages/domain/src/stages.ts:10`）把本节点拆成三个概念 runner：
@@ -38,7 +40,7 @@
 | runner | 名称 | 步骤 |
 |---|---|---|
 | `prior_art` | 现有技术检索 | 定关键词分类号 → 多库并行检索 → 筛选标注 → 生成报告 |
-| `fto` | 初步 FTO | 圈定方案 → 检索有效权项 → 对比侵权可能 → 输出意见书。**完整业务规格见 [01b-fto.md](01b-fto.md)** |
+| `fto` | 初步 FTO（**可选附件**） | 申请主链**不强制**。若触发上市/定型等条件，走完整规格 [01b-fto.md](01b-fto.md)；本 runner 仅历史概念目录，不得把申请齐套绑死在 FTO 上 |
 | `patentability` | 可专利性初评 | 梳理要点 → 对比最接近现有技术 → 给结论 |
 
 > **注意**：`runners` 是静态概念目录，不是案级进度（`packages/domain/src/types/index.ts:123` 已标 `@deprecated`）。案级进度只认 `flowProgressByCase[caseId].research`。
@@ -61,7 +63,7 @@
 |---|---|
 | 一份**有证据链**的现有技术盘点 | 一份「查了一下，没查到」的说明 |
 | 可专利性初判的**输入** | 授权前景的**承诺**（审查员不受检索报告约束） |
-| FTO 初评的风险分级 | 法律意见书（不构成律师意见，代码 guardrail 亦持此口径） |
+| （可选）FTO 初评风险档草稿；**正式 FTO 在 01b** | 法律意见书；亦不得代替可专利性结论 |
 | 撰写阶段选择最接近现有技术的**依据** | 权利要求草稿（那是 03） |
 | 一次可复盘的**检索式 + 命中 + 结论**三元组 | 一次性的聊天式问答 |
 
@@ -74,25 +76,25 @@
 | 上游 | 交底包 `disclosure_pack` | 交底未完成不得进入检索。00b 初审放行后才进 01，并用已定死的 `prior_art_1_1` 作起点。原型里未批准不阻断检索（`guardrails.ts:397`），那是现状，不是契约 |
 | 上游 | 案件 `PatentCase` | `stage === 'pre_research'`；`risk === '高'` 时 `nextDeadline` 取公开风险日 |
 | 上游 | 布局洞察 `layout_insight` / 洞察驱动立案 | `createCaseFromInsight` 建的案子 `fromInsight: true` |
-| 下游 | 立项决策（02） | 消费 `research_report` 的结论、评分、FTO 风险档 |
+| 下游 | 立项决策（02） | 消费 `research_report` 的可专利性结论与评分；**FTO 风险档可空**（有则参考，无则不阻断 Go） |
 | 下游 | 撰写（03） | 消费 X/Y 分类与「最接近现有技术」引用，作为背景技术与独权区别特征的靶子 |
 | 下游 | 侵权/无效（06、22） | 复用命中集做 claim chart |
 | 横向 | 商务线（12） | 本节点**不产生**报价与发票；`intake_quote` 属 02 |
 
 ### 1.5 独立产品的形态
 
-**产品名建议：检索与可专利性评估台 / Prior Art & FTO Desk**
+**产品名建议：检索与可专利性评估台 / Prior Art & Patentability Desk**（**不再**称 “& FTO Desk”；正式 FTO 产品见 01b / P02b）
 
 | 模块 | 能力 | 谁用 |
 |---|---|---|
 | 检索式工作台 | 关键词 × 分类号 × 申请人 × 时间窗的布尔式、同族折叠、跨库同义扩展 | 检索员 / IPR |
 | 命中台账 | pubNo 可核验、原文链接、相关度、X/Y/A/E/P 分类、同族归并 | 检索员 / 代理师 |
-| 三报告分流 | 科技查新 / 可专利性检索 / FTO 三种模板与三种结论口径 | 企业 IP / 代理所 |
+| 报告分流 | 科技查新 / 可专利性检索（两种主模板）；FTO 模板归属 **01b** | 企业 IP / 代理所 |
 | 结论绑定 | 每条结论必须挂到具体命中（`binding`） | 企业 IP（评审用） |
-| FTO 初评 | 5 项要素 + claim chart 草稿 + 风险档 | 企业 IP / 法务 |
-| 交付与交接 | `research_report` 7 项齐套 → 7 态交接 → 立项会 | 代理所 / 企业 |
+| FTO 初评（可选附件） | 仅当业务触发时附风险档草稿；**不进申请主链必齐套**；深评进 01b | 企业 IP / 法务 |
+| 交付与交接 | `research_report` **6 项必齐** → 7 态交接 → 立项会 | 代理所 / 企业 |
 
-**不做的**：不写权利要求（03）、不替代 CNIPA 的专利权评价报告、不出具法律意见、不做实时侵权监测（07）。
+**不做的**：不写权利要求（03）、不替代 CNIPA 的专利权评价报告、不出具法律意见、不做实时侵权监测（07）、**不把正式 FTO 绑进申请交付**（01b）。
 
 ---
 
@@ -104,7 +106,7 @@
 | 代理所检索员 / 代理师 | `persona = 'agency'` | 起草报告、提交企业、归档；可走 `approve_strategy` HITL 链 | 不能确认企业结论（`approve` 属 enterprise） |
 | 评审委员 | `persona = 'committee'` | 只读 `research_report` 供立项投票 | 不可提交 / 批准 / 授权 / 归档（`persona.ts:97-112`） |
 | 发明人 | `persona = 'inventor'` | 只读自己的案件、在门户提供技术线索 | 工作台交接动作全禁（`persona.ts:89-95`） |
-| 系统 Agent | `agent-research`（core 档） | 关键词扩展、商业库检索、命中聚类、可专利性草稿、FTO 初评要点 | 不能空命中过闸；不能改立项报价 |
+| 系统 Agent | `agent-research`（core 档） | 关键词扩展、商业库检索、命中聚类、可专利性草稿；（可选）FTO 初评要点草稿 | 不能空命中过闸；不能改立项报价；**不能**用 FTO 草稿代替 01b |
 
 **当前实现的权限真相**（务必对交付方讲清）：
 
@@ -317,19 +319,20 @@ interface SearchReport {
 
 代码现状：`relevance` 只有「高/中/低相关」三档（`types/index.ts:488`），**没有 X/Y/A/E/P 字段**，也没有 `E` 类所需的「申请日 / 公开日」双日期。这是本节点最该补的 schema 缺口。
 
-### 3.7 交接产物 `research_report` 的 7 项齐套
+### 3.7 交接产物 `research_report` 的齐套（业务口径：6 项必齐 + FTO 可选）
 
-权威源 `packages/domain/src/handoff.ts:93-101`：
+> **业务裁决（2026-10-23）**：申请主链交付以可专利性证据为必经；**FTO 初评不得作为申请齐套硬闸**。正式 FTO 条件触发见 [01b](01b-fto.md)。  
+> **现状差距**：代码 `packages/domain/src/handoff.ts:93-101` 仍把 `fto` 列为第 7 项必填（`ResearchFlow` 亦拦）——属实现债，**不以代码为准**；改代码另案。
 
-| 键 | 标签 | 合格线 | 现状判定方式 |
+| 键 | 标签 | 业务合格线 | 现状判定方式 |
 |---|---|---|---|
-| `kw` | 检索关键词 | 非空 | `keywords.trim()` 非空（`ResearchFlow.tsx:613`） |
-| `db` | 至少一个数据库 / 商业 API 来源 | ≥1 项 | `databases.length > 0` |
-| `hits` | 勾选对比文献 | ≥1 篇 | `selectedResults.length > 0` |
-| `hits_verifiable` | 命中可核验（pubNo + 可点 url） | 全选命中均含 pubNo 与 url | `ResearchFlow.tsx:101-112` |
-| `conclusion` | 可专利性结论 | 四选一 | 下拉非空 |
-| `binding` | 命中→结论绑定 | 至少 1 条结论挂到命中 | `conclusionBullets.length > 0` |
-| `fto` | FTO 初评风险已选 | ≥1 项要素被勾 | `ftoReady`（`ResearchFlow.tsx:281`） |
+| `kw` | 检索关键词 | **必齐** · 非空 | `keywords.trim()` 非空（`ResearchFlow.tsx:613`） |
+| `db` | 至少一个数据库 / 商业 API 来源 | **必齐** · ≥1 项 | `databases.length > 0` |
+| `hits` | 勾选对比文献 | **必齐** · ≥1 篇 | `selectedResults.length > 0` |
+| `hits_verifiable` | 命中可核验（pubNo + 可点 url） | **必齐** · 全选命中均含 pubNo 与 url | `ResearchFlow.tsx:101-112` |
+| `conclusion` | 可专利性结论 | **必齐** · 四选一 | 下拉非空 |
+| `binding` | 命中→结论绑定 | **必齐** · 至少 1 条结论挂到命中 | `conclusionBullets.length > 0` |
+| `fto` | FTO 初评风险档 | **可选附件** · 有则须要素可核；**无则不阻断** submit/approve | 现状：`ftoReady` 仍硬拦（实现债） |
 
 ---
 
@@ -361,9 +364,9 @@ interface SearchReport {
 
 | ID | 规则 | 现状 |
 |---|---|---|
-| R01-10 | 7 项齐套全为真才可 `submit` / `approve` | ✅（`handoff.ts:93-101` + `HandoffActionBar` 缺项拦截） |
-| R01-11 | 未齐套时显示缺项名，且主按钮禁用 | ✅（`ResearchFlow.tsx:621-640`） |
-| R01-12 | FTO 初评至少勾选 1 项要素（风险档本身不算，因为 seed 常有值） | ✅（`ResearchFlow.tsx:281` 注释「不能单独当闸」） |
+| R01-10 | **业务口径**：6 项必齐（kw/db/hits/hits_verifiable/conclusion/binding）全为真才可 `submit` / `approve`；**不含**强制 `fto` | ⚠ 代码仍按 7 项硬拦（实现债） |
+| R01-11 | 未齐套时显示缺项名，且主按钮禁用 | ✅（`ResearchFlow.tsx:621-640`；缺项名单待去掉强制 fto） |
+| R01-12 | **FTO 初评不作为申请主链齐套硬闸**。若本案触发 FTO（上市/定型/新市场/被诉等，见 01b），须按 01b 交付或书面说明不做；本节点仅可附「非正式初评」草稿 | ⚠ 代码仍要求 `ftoReady`（与业务口径冲突，实现债） |
 | R01-13 | 提交与批准必须过 `evaluateGuardrails`，不得在 UI 复制判定 | ✅（`ResearchFlow.tsx:655-669`） |
 | R01-14 | 提交时勾选清单 c1–c4，批准时勾 c5 | ⚠ 见 §14 差距 4（c3 无对应步骤） |
 
@@ -569,7 +572,7 @@ drafting ──submit──► submitted_to_enterprise ──start_review──�
 
 ### 6.2 内部进度：5 步（代码只有 4 段 stepper）
 
-`src/data/flowSteps.ts:19-26` 定义 5 步：检索配置 → 结果研判 → 可专利性 → FTO 初评 → 结论提交。
+`src/data/flowSteps.ts:19-26` 定义 5 步：检索配置 → 结果研判 → 可专利性 → FTO 初评 → 结论提交。**业务口径**：第 4 步为条件触发/可跳过；正式 FTO 不在本 Flow 闭环。
 
 `ResearchFlow.tsx:284-293` 的 `progressStep` 只推 0–4，其中 4 表示「已交接」而非「结论提交」：
 
@@ -606,7 +609,7 @@ drafting ──submit──► submitted_to_enterprise ──start_review──�
 | `persona` | 当前 Persona 不可执行该交接动作 | 按 `personaBlocksHandoffAction` | `guardrails.ts:251-256` |
 | `enterprise` | 非企业执行企业专属闸 | 「仅企业可批准 / 仅企业可授权」 | `guardrails.ts:259-272` |
 | 缺项拦截 | `checkedRequired` 不覆盖全部 REQUIRED | 「提交前缺少必填项：…」 | `HandoffActionBar.tsx:126-140` |
-| 前端硬挡 | 空命中 / 无绑定 / 无结论 / 无 FTO / 不可核验 | `blockPrimary` + `inlineError` | `ResearchFlow.tsx:621-640` |
+| 前端硬挡 | 空命中 / 无绑定 / 无结论 / 不可核验；（现状仍含无 FTO——**业务上应去掉**） | `blockPrimary` + `inlineError` | `ResearchFlow.tsx:621-640` |
 
 **Agent 侧同闸**（两条独立路径，防绕过）：
 
@@ -642,8 +645,8 @@ drafting ──submit──► submitted_to_enterprise ──start_review──�
 | 3 | 多库执行 | IPR / 代理师 | 0.5–2 天 | 原始命中集（未筛选） | ≥1 库有结果 | 换同义词 / 换库 / 降级到语义检索 |
 | 4 | 筛选与分类 | 代理师 | 1–3 天 | 命中台账 + X/Y/A/E/P | 每篇有分类与一句话理由 | 分类存疑 → 加 A 类保守处理 |
 | 5 | 结论与绑定 | 代理师起草 / IPR 确认 | 0.5–1 天 | 新颖性/创造性/结论 + `binding` | 结论均挂命中 | 结论无支撑 → 回 4 |
-| 6 | FTO 初评 | 代理师 / 法务 | 0.5–2 天 | 5 项要素 + claim chart 草稿 + 风险档 | `ftoReady` | 高危 → 升级到 fto 壳深评 |
-| 7 | 交接与归档 | agency → enterprise | 0.5 天 | `research_report` 7 态 | 7 项齐套 + 批准 | 退回补检索 |
+| 6 | FTO 初评（**可选**） | 代理师 / 法务 | 0.5–2 天 | 仅触发时：草稿或升 01b | 业务上可跳过；代码仍看 `ftoReady`（债） | 高危 → **必须**升 01b 深评，不得用初评定上市 |
+| 7 | 交接与归档 | agency → enterprise | 0.5 天 | `research_report` 7 态 | **6 项必齐** + 批准（业务口径） | 退回补检索 |
 
 ### 8.3 每步的「完成条件」必须是可判定的
 
@@ -758,10 +761,10 @@ drafting ──submit──► submitted_to_enterprise ──start_review──�
 | L1 命中台账 | 多库检索入口、命中列表、pubNo 校验、原文链接 | 是（最低配，可与数据商合作） |
 | L2 检索式引擎 | A/B/C 三块构造、布尔式、字段限定、同族折叠、多轮对比 | 是（差异化，检索员愿意付费） |
 | L3 三报告分流 | 查新 / 可专利性 / FTO 三模板、三结论口径、按专利类型分流 | 是（护城河，懂法才做得对） |
-| L4 FTO + claim chart | 5 项要素、逐特征比对、风险档、保鲜期 | 是（法务/尽调买单） |
+| L4（已拆出）正式 FTO | 见 [01b](01b-fto.md) / P02b；本节点不再把 FTO 当主卖点 | 是（法务/尽调买单，**独立 SKU**） |
 | L5 决策接口 | `SearchReport` → 02 的评分卡输入、`binding` 审计导出 | 依赖 02，但可做 API |
 
-**定价锚点**：按「报告件数」计价最自然（每份 X 元），FTO 单列更高价；或按席位（IP 团队）+ 按 API 调用量（数据商模式）。**不要按「检索次数」计价**——会激励跑量不提质。
+**定价锚点**：按「可专利性报告件数」计价最自然（每份 X 元）；**正式 FTO 单列更高价（P02b）**；或按席位（IP 团队）+ 按 API 调用量（数据商模式）。**不要按「检索次数」计价**——会激励跑量不提质。
 
 **竞品参照系**：
 

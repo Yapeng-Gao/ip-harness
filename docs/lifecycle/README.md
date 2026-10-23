@@ -8,7 +8,7 @@
 | 文档 | 内容 |
 |---|---|
 | [**business-spine.md**](business-spine.md) | **业务总纲**：三个转换 / 六类主体 / 五层对象 / 五类规则 / 三套时钟 / 四个口袋 / 七个决策点 / 12 条失败模式 |
-| [**product-logic.md**](product-logic.md) | **产品逻辑**：能力→产品映射 / 规则密度分析 / 12 个 SKU / 失败模式覆盖矩阵 / 打包与定价 / 采购路径 / 路线图 / 竞争空位 / 验收标准 |
+| [**product-logic.md**](product-logic.md) | **产品逻辑**：能力→产品映射 / 规则密度分析 / SKU 清单（含 P02b / P03b） / 失败模式覆盖矩阵 / 打包与定价 / 采购路径 / 路线图 / 竞争空位 / 验收标准 |
 | [**spec/**](spec/README.md) | **机器可读层**（生成物）：1026 条规则 / 117 条决策权 / schema，供模型与工具消费 |
 | [**decision-rights.md**](decision-rights.md) | **决策权 · 例外 · 冲突裁决**：四种权力 / L1–L4 分级 / D1–D7 落人 / 法定与内部例外 / 五条裁决原则 / 七条红线 |
 
@@ -18,23 +18,28 @@
 |---|---|
 | [2026-10-23-main-chain-from-discussion.md](working/2026-10-23-main-chain-from-discussion.md) | 讨论主链工作稿：激发/挖掘/布局顺序、法律·业务必经 vs 条件触发、与 nodes 对照；**合成方向已确认**（骨架取 B、主链前段取 A）；定稿后合并进 business-spine |
 | [2026-10-23-product-vision-company-dept-expert.md](working/2026-10-23-product-vision-company-dept-expert.md) | 产品理念工作稿：外挂 IP 部；公司/部门/专家拟人化；部门↔主链 Ni–N16↔spine 00–25；交卷·待你确认；对外禁用 Agent 黑话 |
-| [2026-10-23-lifecycle-audit-and-optimize.md](working/2026-10-23-lifecycle-audit-and-optimize.md) | lifecycle 审计：理解总图、逐节点问题(P0–P2)、跨文档冲突、优化 backlog；对照主链工作稿与实务；**不改 spine 正文** |
+| [2026-10-23-lifecycle-audit-and-optimize.md](working/2026-10-23-lifecycle-audit-and-optimize.md) | lifecycle 审计与优化 backlog；**P0 已落地（2026-10-23）**：D1/D2 落点、03/08 拆名、01 FTO 可选、spine 主链+三层必经、Ni/Nm/Nc 占位 |
 
 ## 节点（17 节产品级规格）
 
+默认主链与法律/业务/条件三层必经见 [business-spine.md §1.3](business-spine.md)。Ni / Nc / Nm 为前段占位（正式节点文待建）。
+
 | 编号 | 节点 | 业务定位 | StageId |
 |---|---|---|---|
+| **Ni** | 创新激发 | **待建**；方向清单（可轻）。见 [working 主链](working/2026-10-23-main-chain-from-discussion.md) | — |
+| **Nc** | 捕获 | **待建（可选单列）**；技术事实入池。⚠ 是否独立于 00，待 Leslie | — |
+| **Nm** | 专利挖掘 | **待建**；申什么 / 拆几案 / 分级（可粗检，不替代 01） | — |
 | [00](nodes/00-inventor-disclosure.md) | 发明交底 | 技术事实 → 可撰写材料；权属/署名/奖酬/公开时点在此定死 | — |
 | [00b](nodes/00b-invention-point-chain.md) | 发明点翻译链 | 交底 → 初审 → 检索 → 发明点 → 权项 → 说明书 | — |
-| [01](nodes/01-research.md) | 检索与可专利性 | 可专利性证据，供立项决定要不要申请 | `pre_research` |
-| [01b](nodes/01b-fto.md) | FTO 自由实施分析 | 侵权风险：我的产品在这个市场卖会不会踩线 | — |
-| [02](nodes/02-decision.md) | 立项与预算 | D1/D2 决策 + 报价委托 | `decision` |
-| [03](nodes/03-drafting.md) | 撰写与布局 | D3/D4 决策；权利边界在此成型 | `drafting` |
+| [01](nodes/01-research.md) | 检索与可专利性 | 可专利性证据（**业务必经**）；FTO 初评仅为可选附件 | `pre_research` |
+| [01b](nodes/01b-fto.md) | FTO 自由实施分析 | **条件触发**（上市/定型等），不堵申请主链 | — |
+| [02](nodes/02-decision.md) | 立项与预算 | **D1/D2** 决策 + 报价委托 | `decision` |
+| [03](nodes/03-drafting.md) | 撰写（单案） | **D3**；单案权利边界成型（≠组合布局） | `drafting` |
 | [04](nodes/04-prosecution.md) | 审查答复 | D5 决策；权利边界的第一次谈判 | `prosecution` |
 | [05](nodes/05-maintenance.md) | 授权维持 | D6 决策；长期负债管理 | `maintenance` |
 | [06](nodes/06-commercialization.md) | 运用转化 | D7 决策；把权利变成现金流 | `commercialization` |
 | [07](nodes/07-monitoring.md) | 监控预警 | 发现侵权与被侵权 | `monitoring` |
-| [08](nodes/08-layout.md) | 布局洞察 | 组合视角的前瞻规划 | — |
+| [08](nodes/08-layout.md) | 布局洞察 | **组合**前瞻规划（轴外；可与 02 同会） | — |
 | [09](nodes/09-pct-international.md) | 国际布局 | 地域维度的保护 | — |
 | [22](nodes/22-invalidation.md) | 无效宣告（补建） | 反向程序；消灭他人权利 | — |
 | [23](nodes/23-termination-recovery.md) | 终止与恢复（补建） | 权利状态的终局与救济 | — |
