@@ -74,7 +74,8 @@
 | 与产品方讨论链（2026-10）：激发 → 挖掘 → 交底 → 查新 → 立项…；SME + 代理所「小白」；外挂 IP 部（公司/部门/专家） | 主链前段顺序、受众与拟人化产品理念 |
 | [business-spine.md](business-spine.md) | **业务总纲**：默认主链、三层必经、术语、决策点；与节点冲突时以 spine 业务模型为准 |
 | [decision-rights.md](decision-rights.md) | D1–D7 谁建议 / 谁拍板 |
-| [product-logic.md](product-logic.md) | 能力→产品 / SKU（讨论层） |
+| [product-vision.md](product-vision.md) | **产品理念**：外挂 IP 部；公司/部门/专家叙事 |
+| [product-logic.md](product-logic.md) | 能力→产品 / SKU |
 | [industry-reality.md](industry-reality.md) | 法定期限、官费、程序补遗的行业向汇总（须与 §1–3 一手文本交叉核对） |
 | 工作稿 [main-chain-from-discussion](working/2026-10-23-main-chain-from-discussion.md)、[product-vision](working/2026-10-23-product-vision-company-dept-expert.md)、[audit](working/2026-10-23-lifecycle-audit-and-optimize.md)、[node-diagrams-rules-basis](working/2026-10-23-node-diagrams-rules-basis.md) | 讨论定稿过程与调研回填；定稿原则已部分并入 spine / 节点 |
 

@@ -99,10 +99,11 @@ flowchart LR
 
 1. **本页导览**（你正在读）— 主链图 + 三层图例 + D1–D7 落点  
 2. [business-spine.md §1](business-spine.md) — 业务本质与默认主链（§1.3）  
-3. [**sources.md**](sources.md) — **业务逻辑参考来源总表**（法定/程序/官费/讨论依据；明确不以原型为准）  
-4. **本页下方「节点」表** — 扫一眼每站定位  
-5. **单个节点的 §0 + §0.1** — 一句话定位 + **Mermaid 图 / 规则速查(A法定·B程序·C商业·D质量) / 进入·完成·推进判据 / 硬闸 / 依据**  
-6. 需要落地再读该节点 §4 规则编号与 §5 法律底座全文  
+3. [**product-vision.md**](product-vision.md) — **产品理念**（外挂 IP 部；公司/部门/专家叙事）  
+4. [**sources.md**](sources.md) — **业务逻辑参考来源总表**（法定/程序/官费/讨论依据；明确不以原型为准）  
+5. **本页下方「节点」表** — 扫一眼每站定位  
+6. **单个节点的 §0 + §0.1** — 一句话定位 + **Mermaid 图 / 规则速查(A法定·B程序·C商业·D质量) / 进入·完成·推进判据 / 硬闸 / 依据**  
+7. 需要落地再读该节点 §4 规则编号与 §5 法律底座全文  
 
 深度母本仍是 spine 全文 + 各节点规格；冲突时以 spine 业务模型为准。讨论工作稿见下方「工作稿」表。
 
@@ -112,6 +113,7 @@ flowchart LR
 | 文档 | 内容 |
 |---|---|
 | [**business-spine.md**](business-spine.md) | **业务总纲**：三个转换 / 六类主体 / 五层对象 / 五类规则 / 三套时钟 / 四个口袋 / 七个决策点 / 12 条失败模式 |
+| [**product-vision.md**](product-vision.md) | **产品理念**：核心理念「外挂 IP 部」；公司/部门/专家仅为传达与上手；七部精简与入口默认 |
 | [**product-logic.md**](product-logic.md) | **产品逻辑**：能力→产品映射 / 规则密度分析 / SKU 清单（含 P02b / P03b） / 失败模式覆盖矩阵 / 打包与定价 / 采购路径 / 路线图 / 竞争空位 / 验收标准 |
 | [**spec/**](spec/README.md) | **机器可读层**（生成物）：1026 条规则 / 117 条决策权 / schema，供模型与工具消费 |
 | [**decision-rights.md**](decision-rights.md) | **决策权 · 例外 · 冲突裁决**：四种权力 / L1–L4 分级 / D1–D7 落人 / 法定与内部例外 / 五条裁决原则 / 七条红线 |
@@ -121,7 +123,7 @@ flowchart LR
 | 文档 | 内容 |
 |---|---|
 | [2026-10-23-main-chain-from-discussion.md](working/2026-10-23-main-chain-from-discussion.md) | 讨论主链工作稿：激发/挖掘/布局顺序、法律·业务必经 vs 条件触发、与 nodes 对照；**合成方向已确认**（骨架取 B、主链前段取 A）；定稿后合并进 business-spine |
-| [2026-10-23-product-vision-company-dept-expert.md](working/2026-10-23-product-vision-company-dept-expert.md) | 产品理念工作稿：外挂 IP 部；公司/部门/专家拟人化；部门↔主链（自 00a 起）↔spine 00–25；交卷·待你确认；对外禁用 Agent 黑话 |
+| [2026-10-23-product-vision-company-dept-expert.md](working/2026-10-23-product-vision-company-dept-expert.md) | 产品理念工作底稿（**正式文已升格为** [product-vision.md](product-vision.md)） |
 | [2026-10-23-lifecycle-audit-and-optimize.md](working/2026-10-23-lifecycle-audit-and-optimize.md) | lifecycle 审计与优化 backlog；P0 已落地；**L5–L10 本轮推进**（00a/00c 正式文、Nc 默认不单列、术语、D4 意向、债清单） |
 | [2026-10-23-implementation-debt.md](working/2026-10-23-implementation-debt.md) | 实现债：代码仍强制 `research_report.fto` 等（只列路径，不改 apps） |
 | [2026-10-23-node-diagrams-rules-basis.md](working/2026-10-23-node-diagrams-rules-basis.md) | 全节点补图+规则类别+判定+依据；覆盖清单与 ⚠ 待复核项 |
