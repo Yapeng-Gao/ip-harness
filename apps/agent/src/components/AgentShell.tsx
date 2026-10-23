@@ -141,7 +141,7 @@ export function AgentShell() {
                 ? '案盘'
                 : activeBizCase?.title ?? '外挂 IP 部'
               : inHome
-                ? '首页'
+                ? '产品首页'
                 : inPatentProject
                   ? '项目'
                   : '工作台'
