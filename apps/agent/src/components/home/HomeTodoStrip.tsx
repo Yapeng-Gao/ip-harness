@@ -2,10 +2,17 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Bell, CheckCheck } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
-import { CONFIRM_META } from '../../business/businessSeats'
+import {
+  CONFIRM_KIND_LABEL,
+  CONFIRM_META,
+} from '../../business/businessSeats'
+import { orgDeptByLeadSeat } from '../../departments/orgDepts'
+import { deptLabel } from '../../business/deptRoster'
 
 /**
- * 首页待办条 · 待我确认（与顶栏铃铛同源：getPendingConfirms()）
+ * G · 真待确认 · product-pages §4.0a
+ * 骨架：【{案名}】{部门名}已交卷 · 待你确认：{关口一句话}
+ * 与顶栏铃铛同源：getPendingConfirms()
  */
 export function HomeTodoStrip() {
   const { getPendingConfirms, cases } = useBusinessCases()
@@ -23,7 +30,7 @@ export function HomeTodoStrip() {
           aria-hidden
         />
         <span className="text-[12px] text-slate-600">
-          没有待确认 · 交卷后会出现在这里
+          暂无待确认——部门交卷后会停在这里请你拍板
         </span>
         <Link
           to="/agent/pending"
@@ -59,20 +66,28 @@ export function HomeTodoStrip() {
       <ul className="space-y-0.5">
         {first.map((item) => {
           const c = cases.find((x) => x.id === item.caseId)
+          const caseName = c?.title ?? item.caseId
+          const meta = CONFIRM_META[item.kind]
+          const dept = meta ? orgDeptByLeadSeat(meta.seatId) : undefined
+          const deptName = dept
+            ? deptLabel(dept.id)
+            : meta?.preparedBy
+              ? `${meta.preparedBy}部`
+              : '相关部门'
+          const gate =
+            CONFIRM_KIND_LABEL[item.kind] ?? item.title ?? '请确认本关口'
           return (
             <li key={item.id}>
               <Link
                 to={`/agent/pending/${item.id}`}
-                className="focus-ring flex min-h-8 items-center gap-2 rounded-[var(--radius-sm)] px-1.5 py-1 text-[12px] text-amber-950 hover:bg-amber-100/70"
+                className="focus-ring flex min-h-8 items-start gap-2 rounded-[var(--radius-sm)] px-1.5 py-1 text-[12px] leading-snug text-amber-950 hover:bg-amber-100/70"
                 data-testid={`home-todo-${item.id}`}
               >
-                <span className="shrink-0 rounded border border-amber-300 bg-white px-1 py-px text-[10px] font-medium text-amber-900">
-                  {CONFIRM_META[item.kind]?.preparedBy ?? '交卷'}
-                </span>
-                <span className="min-w-0 flex-1 truncate">
-                  <span className="font-medium">{item.title}</span>
-                  <span className="mx-1 text-amber-800/60">·</span>
-                  <span className="text-amber-900/85">{c?.title ?? item.caseId}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="font-medium">【{caseName}】</span>
+                  <span>
+                    {deptName}已交卷 · 待你确认：{gate}
+                  </span>
                 </span>
               </Link>
             </li>
