@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>薄入口 · /agent</title>
+<link rel="stylesheet" href="proto.css" />
+<style>
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 24px 64px; }
+  .hello { font-size: 13px; color: var(--slate-500); margin-bottom: 6px; }
+  h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.015em; }
+  .sub { margin-top: 8px; font-size: 15px; color: var(--slate-600); }
+  .entries { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
+  @media (max-width: 720px) { .entries { grid-template-columns: 1fr; } }
+  .entry {
+    display: block; padding: 20px 18px; border-radius: var(--radius-lg);
+    background: var(--paper); border: 1px solid var(--slate-200);
+    box-shadow: var(--shadow-rest); transition: transform 0.08s ease;
+  }
+  .entry:active { transform: scale(0.98); }
+  .entry.primary { background: var(--slate-900); color: #fff; border-color: var(--slate-900); }
+  .entry .k { font-size: 12px; opacity: 0.7; margin-bottom: 8px; }
+  .entry.primary .k { color: #cbd5e1; }
+  .entry .t { font-size: 17px; font-weight: 650; }
+  .entry .d { margin-top: 8px; font-size: 13px; color: var(--slate-500); line-height: 1.45; }
+  .entry.primary .d { color: #94a3b8; }
+  .pending {
+    margin-top: 36px; padding: 18px; border-radius: var(--radius-lg);
+    background: var(--amber-50); border: 1px solid var(--amber-100);
+  }
+  .pending h2 {
+    font-size: 13px; font-weight: 650; color: var(--amber-700);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .pending ul { list-style: none; margin-top: 12px; }
+  .pending li {
+    display: block; padding: 12px 0; border-top: 1px solid rgba(217,119,6,0.15);
+    font-size: 14px; color: var(--slate-700);
+  }
+  .pending li:first-of-type { border-top: none; }
+  .pending li a { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .pending li a:hover { color: var(--slate-900); }
+  .pending .meta { font-size: 12px; color: var(--amber-700); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .weak { margin-top: 28px; font-size: 13px; color: var(--slate-400); }
+  .weak a { color: var(--slate-500); text-decoration: underline; text-underline-offset: 2px; }
+</style>
+</head>
+<body>
+<nav class="proto-nav" aria-label="原型导航">
+  <span class="brand">主路径原型</span>
+  <a href="welcome.html">宣传站</a>
+  <a href="login.html">登录</a>
+  <a href="thin-home.html" class="on">薄入口</a>
+  <a href="company-home.html">公司首页</a>
+  <a href="dept-workbench.html">部门台</a>
+  <a href="pending-confirm.html">确认页</a>
+  <span class="hint">登录后 · 非货架</span>
+</nav>
+
+<div class="wrap">
+  <div class="hello">已登录 · 角色企业</div>
+  <h1>外挂知识产权部</h1>
+  <p class="sub">按角色一键去干活；待确认在这，不在本页拍板。</p>
+
+  <div class="entries">
+    <a class="entry primary" href="company-home.html">
+      <div class="k">主入口 · 企业</div>
+      <div class="t">当前案子</div>
+      <div class="d">边缘调度器 · 去公司首页</div>
+    </a>
+    <a class="entry" href="company-home.html">
+      <div class="k">开案子</div>
+      <div class="t">新建一条业务线</div>
+      <div class="d">极少字段 → 公司首页（演示链到现案）</div>
+    </a>
+    <a class="entry" href="pending-confirm.html">
+      <div class="k">待确认</div>
+      <div class="t">铃铛 <span class="tabular">2</span></div>
+      <div class="d">交卷后人拍板</div>
+    </a>
+  </div>
+
+  <div class="pending">
+    <h2>
+      待你确认
+      <a class="chip chip-amber tabular" href="pending-confirm.html">共 2</a>
+    </h2>
+    <ul>
+      <li>
+        <a href="pending-confirm.html">
+          <span>【边缘调度器】交底部已交卷 · 待你确认：交底齐套</span>
+          <span class="meta">今天</span>
+        </a>
+      </li>
+      <li>
+        <a href="pending-confirm.html">
+          <span>【光模块封装】查新部已交卷 · 待你确认：可专利性</span>
+          <span class="meta">昨天</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <p class="weak">本页无七部墙 / 专家橱窗 / 场景卡。宣传见 <a href="welcome.html">登录前宣传站</a>。</p>
+</div>
+</body>
+</html>

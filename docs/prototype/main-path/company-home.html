@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>公司首页 · 边缘调度器</title>
+<link rel="stylesheet" href="proto.css" />
+<style>
+  .screen-fill { position: relative; }
+  .main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 48px; }
+  .pos { font-size: 13px; color: var(--slate-500); }
+  h1 { margin-top: 6px; font-size: 24px; font-weight: 700; letter-spacing: -0.015em; }
+  .lead { margin-top: 8px; font-size: 15px; color: var(--slate-600); max-width: 560px; line-height: 1.5; }
+  .actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .grid {
+    margin-top: 28px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  .dept {
+    text-align: left; cursor: pointer; font-family: inherit;
+    background: var(--paper); border: 1px solid var(--slate-200);
+    border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-rest);
+    transition: transform 0.08s ease, outline 0.12s ease;
+  }
+  .dept:hover { border-color: var(--slate-300); }
+  .dept:active { transform: scale(0.98); }
+  .dept.current { outline: 2px solid var(--slate-900); outline-offset: 0; }
+  .dept .nm { font-size: 15px; font-weight: 650; }
+  .dept .st { margin-top: 6px; font-size: 12px; color: var(--slate-500); }
+  .dept .st.warn { color: var(--amber-700); }
+  .dept .st.ok { color: var(--green-600); }
+  .dept .avs { margin-top: 12px; display: flex; gap: 4px; }
+  .drawer-backdrop {
+    position: fixed; inset: 0; background: rgba(15,23,42,0.28);
+    opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 40;
+  }
+  .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; width: min(380px, 92vw);
+    background: var(--paper); border-left: 1px solid var(--slate-200);
+    box-shadow: -8px 0 24px rgba(15,23,42,0.08);
+    transform: translateX(100%); transition: transform 0.22s ease;
+    z-index: 45; display: flex; flex-direction: column; padding: 20px;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer h2 { font-size: 18px; font-weight: 650; }
+  .drawer .stline { margin-top: 8px; font-size: 13px; color: var(--slate-600); line-height: 1.5; }
+  .drawer .experts { margin-top: 20px; }
+  .drawer .experts h3 {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--slate-400); margin-bottom: 10px;
+  }
+  .expert-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--slate-100);
+  }
+  .expert-row:last-child { border-bottom: none; }
+  .expert-row .nm { font-size: 14px; font-weight: 600; }
+  .expert-row .role { font-size: 12px; color: var(--slate-500); }
+  .drawer .foot { margin-top: auto; padding-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+  .drawer .close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--slate-200);
+    background: var(--paper); cursor: pointer; font-size: 16px; color: var(--slate-500);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .drawer, .drawer-backdrop { transition: none; }
+  }
+</style>
+</head>
+<body>
+<nav class="proto-nav" aria-label="原型导航">
+  <span class="brand">主路径原型</span>
+  <a href="welcome.html">宣传站</a>
+  <a href="login.html">登录</a>
+  <a href="thin-home.html">薄入口</a>
+  <a href="company-home.html" class="on">公司首页</a>
+  <a href="dept-workbench.html">部门台</a>
+  <a href="pending-confirm.html">确认页</a>
+  <span class="hint">七部网格 + 抽屉</span>
+</nav>
+
+<div class="screen-fill">
+  <header class="app-top">
+    <div class="crumbs">
+      <a href="thin-home.html">薄入口</a>
+      <span class="sep">/</span>
+      <strong>案 · 边缘调度器</strong>
+    </div>
+    <div class="top-right">
+      <span class="chip">角色 · 企业</span>
+      <a class="bell" href="pending-confirm.html" aria-label="待确认">🔔<span class="badge tabular">2</span></a>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="pos">一案一公司 · 现在在哪个部门</div>
+    <h1>边缘调度器</h1>
+    <p class="lead">七部等宽总览。点某部开右侧抽屉看专家与交卷态；主按钮去当前部门干活。</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="dept-workbench.html">去当前部门 · 交底部</a>
+      <span class="chip chip-amber">当前站 · 交底部 · 齐套 5/6</span>
+    </div>
+
+    <div class="grid" id="grid">
+      <button type="button" class="dept current" data-id="intake"
+        data-name="交底部" data-st="未齐套 · 缺权属声明" data-stclass="warn"
+        data-experts='[["林澈","交底辅导","a"],["周屿","事实核对","b"],["沈予","权属","c"]]'>
+        <div class="nm">交底部</div>
+        <div class="st warn">未齐套 · 缺权属</div>
+        <div class="avs"><span class="av a"></span><span class="av b"></span><span class="av c"></span></div>
+      </button>
+      <button type="button" class="dept" data-id="search"
+        data-name="查新部" data-st="未开工 · 等交底移交" data-stclass=""
+        data-experts='[["周屿","检索策略","b"],["陈陌","对比文件","d"]]'>
+        <div class="nm">查新部</div>
+        <div class="st">未开工 · 等移交</div>
+        <div class="avs"><span class="av b"></span><span class="av d"></span></div>
+      </button>
+      <button type="button" class="dept" data-id="intake-d"
+        data-name="立项部" data-st="未开工" data-stclass=""
+        data-experts='[["沈予","评分汇总","c"],["林澈","报价草稿","a"]]'>
+        <div class="nm">立项部</div>
+        <div class="st">未开工</div>
+        <div class="avs"><span class="av c"></span><span class="av a"></span></div>
+      </button>
+      <button type="button" class="dept" data-id="draft"
+        data-name="撰写部" data-st="未开工" data-stclass=""
+        data-experts='[["林澈","权项结构","a"],["王可","说明书","d"]]'>
+        <div class="nm">撰写部</div>
+        <div class="st">未开工</div>
+        <div class="avs"><span class="av a"></span><span class="av d"></span></div>
+      </button>
+      <button type="button" class="dept" data-id="figure"
+        data-name="附图部" data-st="未开工" data-stclass=""
+        data-experts='[["周屿","图面","b"]]'>
+        <div class="nm">附图部</div>
+        <div class="st">未开工</div>
+        <div class="avs"><span class="av b"></span></div>
+      </button>
+      <button type="button" class="dept" data-id="file"
+        data-name="递交部" data-st="未开工" data-stclass=""
+        data-experts='[["沈予","包齐","c"],["周屿","递交","b"]]'>
+        <div class="nm">递交部</div>
+        <div class="st">未开工</div>
+        <div class="avs"><span class="av c"></span><span class="av b"></span></div>
+      </button>
+      <button type="button" class="dept" data-id="oa"
+        data-name="答复部" data-st="未开工" data-stclass=""
+        data-experts='[["王可","审查意见","d"],["林澈","答复策略","a"]]'>
+        <div class="nm">答复部</div>
+        <div class="st">未开工</div>
+        <div class="avs"><span class="av d"></span><span class="av a"></span></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-backdrop" id="backdrop" hidden></div>
+<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+  <button type="button" class="close" id="drawer-close" aria-label="关闭">×</button>
+  <h2 id="drawer-title">交底部</h2>
+  <p class="stline" id="drawer-st">未齐套 · 缺权属声明</p>
+  <div class="experts">
+    <h3>专家 · 建议岗</h3>
+    <div id="drawer-experts"></div>
+  </div>
+  <div class="foot">
+    <a class="btn btn-primary btn-block" id="drawer-go" href="dept-workbench.html">去该部干活</a>
+    <button type="button" class="btn btn-ghost btn-block" id="drawer-cancel">关闭</button>
+  </div>
+</aside>
+
+<script>
+const backdrop = document.getElementById('backdrop');
+const drawer = document.getElementById('drawer');
+const title = document.getElementById('drawer-title');
+const st = document.getElementById('drawer-st');
+const experts = document.getElementById('drawer-experts');
+const go = document.getElementById('drawer-go');
+let lastFocus = null;
+
+function openDrawer(btn) {
+  lastFocus = btn;
+  title.textContent = btn.dataset.name;
+  st.textContent = btn.dataset.st;
+  st.className = 'stline' + (btn.dataset.stclass === 'warn' ? ' warn' : '');
+  const list = JSON.parse(btn.dataset.experts || '[]');
+  experts.innerHTML = list.map(([n,r,av]) => `
+    <div class="expert-row">
+      <span class="av lg ${av}"></span>
+      <div><div class="nm">${n}</div><div class="role">${r} · 建议稿 ≠ 确认</div></div>
+    </div>`).join('');
+  go.href = btn.dataset.id === 'intake' || btn.classList.contains('current')
+    ? 'dept-workbench.html' : 'dept-workbench.html';
+  backdrop.hidden = false;
+  requestAnimationFrame(() => {
+    backdrop.classList.add('open');
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.getElementById('drawer-close').focus();
+  });
+}
+function closeDrawer() {
+  backdrop.classList.remove('open');
+  drawer.classList.remove('open');
+  drawer.setAttribute('aria-hidden', 'true');
+  setTimeout(() => { backdrop.hidden = true; if (lastFocus) lastFocus.focus(); }, 200);
+}
+document.querySelectorAll('.dept').forEach(btn => btn.addEventListener('click', () => openDrawer(btn)));
+document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+document.getElementById('drawer-cancel').addEventListener('click', closeDrawer);
+backdrop.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>确认页 · 待你确认</title>
+<link rel="stylesheet" href="proto.css" />
+<style>
+  .layout {
+    max-width: 960px; margin: 0 auto; padding: 28px 24px 64px;
+    display: grid; grid-template-columns: 1fr 320px; gap: 24px;
+  }
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+  .pos { font-size: 13px; color: var(--slate-500); }
+  h1 { margin-top: 6px; font-size: 24px; font-weight: 700; letter-spacing: -0.015em; }
+  .lead { margin-top: 8px; font-size: 15px; color: var(--slate-600); line-height: 1.5; }
+  .summary {
+    margin-top: 22px; padding: 20px; border-radius: var(--radius-lg);
+    border: 1px solid var(--slate-200); background: var(--paper); box-shadow: var(--shadow-rest);
+  }
+  .summary h2 { font-size: 15px; font-weight: 650; margin-bottom: 12px; }
+  .summary dl { display: grid; grid-template-columns: 100px 1fr; gap: 8px 12px; font-size: 14px; }
+  .summary dt { color: var(--slate-500); }
+  .summary dd { color: var(--slate-800); }
+  .pack {
+    margin-top: 16px; padding: 14px; border-radius: var(--radius-md);
+    background: var(--slate-50); border: 1px solid var(--slate-100);
+    font-size: 13px; color: var(--slate-600); line-height: 1.55;
+  }
+  .pack strong { color: var(--slate-900); }
+  .expert-note {
+    margin-top: 12px; font-size: 12px; color: var(--slate-500);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .side .card-box {
+    padding: 18px; border-radius: var(--radius-lg);
+    background: var(--amber-50); border: 1px solid var(--amber-100);
+    box-shadow: var(--shadow-rest);
+  }
+  .side h2 { font-size: 14px; font-weight: 650; color: var(--amber-700); margin-bottom: 10px; }
+  .side p { font-size: 13px; color: var(--slate-600); line-height: 1.5; margin-bottom: 14px; }
+  .side .btns { display: flex; flex-direction: column; gap: 8px; }
+  .side .disabled-note {
+    margin-top: 14px; padding: 10px 12px; border-radius: var(--radius-md);
+    background: var(--paper); border: 1px dashed var(--slate-200);
+    font-size: 12px; color: var(--slate-500); line-height: 1.45;
+  }
+  .inbox {
+    margin-top: 28px; grid-column: 1 / -1;
+  }
+  .inbox h2 { font-size: 13px; font-weight: 650; color: var(--slate-400); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 10px; }
+  .inbox a {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 12px 14px; border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+    margin-bottom: 8px; font-size: 14px; background: var(--paper);
+  }
+  .inbox a.on { outline: 2px solid var(--slate-900); }
+  .inbox a .m { font-size: 12px; color: var(--slate-400); font-variant-numeric: tabular-nums; }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--slate-900); color: #fff; padding: 10px 16px;
+    border-radius: var(--radius-md); font-size: 13px; display: none; z-index: 100;
+  }
+  .toast.show { display: block; }
+  textarea {
+    width: 100%; min-height: 72px; margin-bottom: 10px; padding: 10px 12px;
+    border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+    font-family: inherit; font-size: 13px; resize: vertical; background: var(--paper);
+  }
+</style>
+</head>
+<body>
+<nav class="proto-nav" aria-label="原型导航">
+  <span class="brand">主路径原型</span>
+  <a href="welcome.html">宣传站</a>
+  <a href="login.html">登录</a>
+  <a href="thin-home.html">薄入口</a>
+  <a href="company-home.html">公司首页</a>
+  <a href="dept-workbench.html">部门台</a>
+  <a href="pending-confirm.html" class="on">确认页</a>
+  <span class="hint">G2/G3 · 人拍板</span>
+</nav>
+
+<header class="app-top">
+  <div class="crumbs">
+    <a href="thin-home.html">薄入口</a>
+    <span class="sep">/</span>
+    <strong>待你确认</strong>
+  </div>
+  <div class="top-right">
+    <span class="chip">确认人 · 企业负责人</span>
+    <a class="bell" href="pending-confirm.html" aria-label="待确认">🔔<span class="badge tabular">2</span></a>
+  </div>
+</header>
+
+<div class="layout">
+  <div>
+    <div class="pos">拍板闸 · 不是「下一步」</div>
+    <h1>交底部交卷 · 待你确认</h1>
+    <p class="lead">案 · 边缘调度器。过 → 移交查新部；驳回 → 回流交底部补齐。专家建议稿不是签字。</p>
+
+    <div class="summary">
+      <h2>交卷摘要</h2>
+      <dl>
+        <dt>部门</dt><dd>交底部</dd>
+        <dt>齐套</dt><dd class="tabular">6/6（演示：部门台已勾齐）</dd>
+        <dt>交卷物</dt><dd>技术交底正文 v3 · 附图说明 · 权属声明 · 发明人名单 · 附件 2</dd>
+        <dt>决策含义</dt><dd>确认交底包可进入查新；不在此决定「申不申」</dd>
+      </dl>
+      <div class="pack">
+        <strong>要点：</strong> 回迁窗口表述已收紧；权属签字页已齐；发明人三人署名顺序已确认。
+      </div>
+      <div class="expert-note">
+        <span class="av a"></span><span class="av c"></span>
+        林澈 / 沈予 · 建议稿已附 · <strong>非签字</strong>
+      </div>
+    </div>
+  </div>
+
+  <aside class="side">
+    <div class="card-box">
+      <h2>待你确认</h2>
+      <p>你是本案确认人。采纳专家建议 ≠ 本页通过。起草人不可自批。</p>
+      <label for="note" style="font-size:12px;font-weight:600;color:var(--slate-600)">驳回意见（可选）</label>
+      <textarea id="note" placeholder="驳回时填写补齐要求…"></textarea>
+      <div class="btns">
+        <button type="button" class="btn btn-primary btn-block" id="btn-pass">通过 · 移交查新部</button>
+        <button type="button" class="btn btn-danger-ghost btn-block" id="btn-reject">驳回 · 回流交底部</button>
+        <button type="button" class="btn btn-ghost btn-block" disabled title="G2：起草人不得自批">自批（禁用）</button>
+      </div>
+      <div class="disabled-note">
+        G2：起草人自批禁用。<br/>
+        G3：无人确认不得移交、不得装成已递交。
+      </div>
+    </div>
+  </aside>
+
+  <div class="inbox">
+    <h2>待办 inbox</h2>
+    <a class="on" href="pending-confirm.html">
+      <span>【边缘调度器】交底部 · 交底齐套</span>
+      <span class="m">今天</span>
+    </a>
+    <a href="pending-confirm.html">
+      <span>【光模块封装】查新部 · 可专利性</span>
+      <span class="m">昨天</span>
+    </a>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const toast = document.getElementById('toast');
+function show(msg, href) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => { location.href = href; }, 800);
+}
+document.getElementById('btn-pass').addEventListener('click', () => {
+  show('已通过 · 移交查新部', 'company-home.html');
+});
+document.getElementById('btn-reject').addEventListener('click', () => {
+  show('已驳回 · 回流交底部补齐', 'dept-workbench.html');
+});
+</script>
+</body>
+</html>

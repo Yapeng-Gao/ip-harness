@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>主路径设计原型 · 索引</title>
+<link rel="stylesheet" href="proto.css" />
+<style>
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+  .lead { margin-top: 10px; font-size: 15px; color: var(--slate-600); line-height: 1.6; }
+  ol { margin-top: 28px; list-style: none; counter-reset: p; display: flex; flex-direction: column; gap: 10px; }
+  ol li { counter-increment: p; }
+  ol a {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 18px; border-radius: var(--radius-lg);
+    border: 1px solid var(--slate-200); background: var(--paper);
+    box-shadow: var(--shadow-rest);
+  }
+  ol a:hover { border-color: var(--slate-300); }
+  ol a::before {
+    content: counter(p, decimal-leading-zero);
+    font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums;
+    color: var(--slate-400); min-width: 28px; padding-top: 2px;
+  }
+  ol .t { font-size: 16px; font-weight: 650; }
+  ol .d { margin-top: 4px; font-size: 13px; color: var(--slate-500); line-height: 1.45; }
+  .meta {
+    margin-top: 32px; padding: 14px 16px; border-radius: var(--radius-md);
+    background: var(--slate-50); border: 1px solid var(--slate-100);
+    font-size: 13px; color: var(--slate-600); line-height: 1.55;
+  }
+</style>
+</head>
+<body>
+<nav class="proto-nav" aria-label="原型导航">
+  <span class="brand">主路径原型</span>
+  <a href="index.html" class="on">索引</a>
+  <a href="welcome.html">宣传站</a>
+  <a href="login.html">登录</a>
+  <a href="thin-home.html">薄入口</a>
+  <a href="company-home.html">公司首页</a>
+  <a href="dept-workbench.html">部门台</a>
+  <a href="pending-confirm.html">确认页</a>
+</nav>
+
+<div class="wrap">
+  <h1>主路径设计原型</h1>
+  <p class="lead">浅色静态可点原型 · 对齐 <code>product-pages</code> 与 <code>main-path-ui-design</code>。部门台为 Cursor 三栏（左目录 / 中产出 / 右对话+交卷闸）。无 Figma、无云端、无暗色。</p>
+  <ol>
+    <li><a href="welcome.html"><div><div class="t">宣传站</div><div class="d">货架七部 + 场景 + 橱窗 · CTA 登录 · 无交卷</div></div></a></li>
+    <li><a href="login.html"><div><div class="t">登录</div><div class="d">企业 / 代理 · 样机本地会话</div></div></a></li>
+    <li><a href="thin-home.html"><div><div class="t">薄入口</div><div class="d">三入口 + 待确认铃 · 无七部墙</div></div></a></li>
+    <li><a href="company-home.html"><div><div class="t">公司首页</div><div class="d">七部等宽卡 + 右侧抽屉 · 去当前部门</div></div></a></li>
+    <li><a href="dept-workbench.html"><div><div class="t">部门台（交底部）</div><div class="d">Cursor 三栏 · 点目录切换中栏 · 勾齐套解锁交卷（G1）</div></div></a></li>
+    <li><a href="pending-confirm.html"><div><div class="t">确认页</div><div class="d">通过移交 / 驳回回流 · 自批禁用（G2/G3）</div></div></a></li>
+  </ol>
+  <div class="meta">
+    <strong>本地打开：</strong> 用浏览器打开本目录任意 html；或<br/>
+    <code>cd docs/prototype/main-path && python3 -m http.server 8765</code>
+    → <code>http://127.0.0.1:8765/</code>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>宣传站 · 外挂知识产权部</title>
+<link rel="stylesheet" href="proto.css" />
+<style>
+  .hero { max-width: 1080px; margin: 0 auto; padding: 48px 24px 24px; }
+  .hero h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .hero .lead { margin-top: 12px; font-size: 17px; color: var(--slate-600); line-height: 1.6; max-width: 640px; }
+  .hero .cta-row { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .section { max-width: 1080px; margin: 0 auto; padding: 12px 24px 40px; }
+  .section h2 { font-size: 13px; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase; color: var(--slate-400); margin-bottom: 14px; }
+  .shelf {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;
+  }
+  .dept-tile {
+    background: var(--paper); border: 1px solid var(--slate-200); border-radius: var(--radius-lg);
+    padding: 16px 14px; box-shadow: var(--shadow-rest); min-height: 120px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .dept-tile.hot { outline: 2px solid var(--slate-900); outline-offset: -1px; }
+  .dept-tile .name { font-size: 15px; font-weight: 650; }
+  .dept-tile .avs { display: flex; gap: 4px; }
+  .dept-tile .role { font-size: 11px; color: var(--slate-500); }
+  .scenes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 800px) { .scenes { grid-template-columns: 1fr; } }
+  .scene {
+    padding: 18px; border-radius: var(--radius-lg);
+    background: var(--slate-50); border: 1px solid var(--slate-200);
+  }
+  .scene h3 { font-size: 15px; font-weight: 650; margin-bottom: 6px; }
+  .scene p { font-size: 13px; color: var(--slate-600); line-height: 1.5; }
+  .showcase {
+    margin-top: 8px; padding: 20px; border-radius: var(--radius-lg);
+    border: 1px solid var(--slate-200); background: var(--paper);
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px;
+  }
+  @media (max-width: 800px) { .showcase { grid-template-columns: 1fr; } }
+  .showcase h3 { font-size: 16px; font-weight: 650; margin-bottom: 8px; }
+  .showcase p { font-size: 14px; color: var(--slate-600); line-height: 1.6; }
+  .showcase .fake-doc {
+    background: var(--slate-50); border-radius: var(--radius-md); padding: 14px;
+    font-size: 12px; color: var(--slate-500); line-height: 1.7;
+  }
+  .foot-note { text-align: center; padding: 24px; font-size: 12px; color: var(--slate-400); }
+</style>
+</head>
+<body>
+<nav class="proto-nav" aria-label="原型导航">
+  <span class="brand">主路径原型</span>
+  <a href="welcome.html" class="on">宣传站</a>
+  <a href="login.html">登录</a>
+  <a href="thin-home.html">薄入口</a>
+  <a href="company-home.html">公司首页</a>
+  <a href="dept-workbench.html">部门台</a>
+  <a href="pending-confirm.html">确认页</a>
+  <span class="hint">登录前 · 货架 · 非干活</span>
+</nav>
+
+<section class="hero">
+  <h1>外挂知识产权部</h1>
+  <p class="lead">把办专利的全流程，拆成七个可交卷的部门。专家出建议稿，你来拍板。要干活，先登录。</p>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="login.html">登录干活</a>
+    <a class="btn btn-ghost" href="#shelf">先看七部货架</a>
+  </div>
+</section>
+
+<section class="section" id="shelf">
+  <h2>七部货架</h2>
+  <div class="shelf">
+    <div class="dept-tile hot">
+      <div class="name">交底部</div>
+      <div class="avs"><span class="av a"></span><span class="av b"></span><span class="av c"></span></div>
+      <div class="role">交底 · 事实核对</div>
+    </div>
+    <div class="dept-tile">
+      <div class="name">查新部</div>
+      <div class="avs"><span class="av b"></span><span class="av d"></span></div>
+      <div class="role">检索 · 结论稿</div>
+    </div>
+    <div class="dept-tile">
+      <div class="name">立项部</div>
+      <div class="avs"><span class="av c"></span><span class="av a"></span></div>
+      <div class="role">申不申 · 报价</div>
+    </div>
+    <div class="dept-tile">
+      <div class="name">撰写部</div>
+      <div class="avs"><span class="av a"></span><span class="av d"></span></div>
+      <div class="role">权项 · 说明书</div>
+    </div>
+    <div class="dept-tile">
+      <div class="name">附图部</div>
+      <div class="avs"><span class="av b"></span></div>
+      <div class="role">图面 · 标注</div>
+    </div>
+    <div class="dept-tile">
+      <div class="name">递交部</div>
+      <div class="avs"><span class="av c"></span><span class="av b"></span></div>
+      <div class="role">包齐 · 递交</div>
+    </div>
+    <div class="dept-tile">
+      <div class="name">答复部</div>
+      <div class="avs"><span class="av d"></span><span class="av a"></span></div>
+      <div class="role">审查意见</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>场景</h2>
+  <div class="scenes">
+    <div class="scene">
+      <h3>代理办多案</h3>
+      <p>案盘看卡住哪、谁待确认；点进某案的公司首页，再下部门台。</p>
+    </div>
+    <div class="scene">
+      <h3>企业走七部</h3>
+      <p>一案一公司。七部卡片总览，点部开抽屉，去当前部门干活。</p>
+    </div>
+    <div class="scene">
+      <h3>确认拍板</h3>
+      <p>交卷齐套后进人拍板。专家建议稿不是签字；过才移交，驳回回流补齐。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>交卷橱窗（示意）</h2>
+  <div class="showcase">
+    <div>
+      <h3>交底包长什么样</h3>
+      <p>技术交底正文、附图说明、权属、发明人——齐套才能交卷。本站只展示，不提供交卷按钮。</p>
+    </div>
+    <div class="fake-doc">
+      1. 技术领域 …<br/>
+      2. 背景与问题 …<br/>
+      3. 技术方案概要 …<br/>
+      — 登录后在部门台打开全文 —
+    </div>
+  </div>
+</section>
+
+<p class="foot-note">宣传站 · 未登录可达 · 无交卷 / 齐套 / 拍板</p>
+</body>
+</html>
