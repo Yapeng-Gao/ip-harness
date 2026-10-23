@@ -321,7 +321,7 @@ export function BusinessCaseDeptPage() {
   // 持久回流意见（pending.returned.returnNote）；不依赖会 6s 清空的 lastReturnHint
   const persistentReturnNote = latestReturnNote(pending, kindForDept)
   const returnHintText = persistentReturnNote || lastReturnHint || null
-  // 退回相：st=======退回 / 持久 returnNote / 短暂 lastReturnHint 任一即标「退回」（与公司抽屉一致）
+  // 退回相：st===退回 / 持久 returnNote / 短暂 lastReturnHint 任一即标「退回」（与公司抽屉一致）
   const handoffPhase = st
     ? st === '退回' || persistentReturnNote || lastReturnHint
       ? ('退回' as const)
