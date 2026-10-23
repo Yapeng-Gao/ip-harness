@@ -13,7 +13,8 @@ import {
 } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import type { BusinessConfirmItem } from '../../business/BusinessCaseContext'
-import { getProjectExpert, expertAccentClass } from '../../projects/experts'
+import { getProjectExpert } from '../../projects/experts'
+import { ExpertAvatar } from './ExpertAvatar'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import {
   MAIN_CHAIN_DEPTS,
@@ -152,7 +153,6 @@ export function DeptCard({
     return { status: '未到' as const, caseTitle: null as string | null }
   }, [cases, dept, getProgress, pending])
 
-  const accent = expertAccentClass(lead?.accent ?? 'slate')
   const gate = confirmLabelOf(dept)
   const headline = deptHeadline(dept, rollup)
 
@@ -187,12 +187,11 @@ export function DeptCard({
             {headline}
           </span>
           <span className="mt-1 flex items-center gap-1">
-            <span
-              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[9px] font-semibold ${accent}`}
-              aria-hidden
-            >
-              {(lead?.name ?? '?').slice(0, 1)}
-            </span>
+            <ExpertAvatar
+              name={lead?.name ?? dept.leadSeatId}
+              size="sm"
+              seed={dept.leadSeatId}
+            />
             <span className="truncate text-[11px] text-slate-600">
               {lead?.name ?? dept.leadSeatId}
             </span>

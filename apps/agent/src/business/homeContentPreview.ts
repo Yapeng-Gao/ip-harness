@@ -46,7 +46,7 @@ export const HOME_CHAIN_STATIONS: ReadonlyArray<{
   deptId: OrgDeptId
   shortLabel: string
   deliverable: string
-  /** 示意专家岗名，≤3；UI 默认露出（含首字头像），只展示不作业 */
+  /** 示意专家岗名，≤3；UI 默认露出（ExpertAvatar 照片风），只展示不作业 */
   experts: readonly string[]
 }> = MAIN_CHAIN_DEPT_IDS.map((id) => {
   const dept = MAIN_CHAIN_DEPTS.find((d) => d.id === id)

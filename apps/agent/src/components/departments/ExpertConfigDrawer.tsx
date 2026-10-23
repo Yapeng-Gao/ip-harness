@@ -7,7 +7,8 @@ import {
   DEPT_MAIN_XP,
   xpProgress,
 } from '../../departments/orgData'
-import { getProjectExpert, expertAccentClass } from '../../projects/experts'
+import { getProjectExpert } from '../../projects/experts'
+import { ExpertAvatar } from './ExpertAvatar'
 import type { ProjectExpertId } from '../../projects/types'
 import { toolCatalogLabel } from '@shared/data/sessions'
 
@@ -101,11 +102,12 @@ export function ExpertConfigDrawer({ seatId, dept, onClose }: Props) {
     >
       <aside className="flex h-full w-full max-w-md flex-col border-l border-slate-200 bg-white shadow-[var(--shadow-elevated)]">
         <header className="flex shrink-0 items-start gap-2 border-b border-slate-200 px-4 py-3">
-          <span
-            className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold ${expertAccentClass(def?.accent ?? 'slate')}`}
-            aria-hidden
-          >
-            {(def?.name ?? seatId).slice(0, 1)}
+          <span className="mt-0.5 shrink-0">
+            <ExpertAvatar
+              name={def?.name ?? seatId}
+              size="md"
+              seed={seatId}
+            />
           </span>
           <div className="min-w-0 flex-1">
             <h2

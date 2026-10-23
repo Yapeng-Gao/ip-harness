@@ -12,7 +12,8 @@ const orderedDepts: OrgDept[] = [
   ...MAIN_CHAIN_DEPTS,
   ...ORG_DEPTS.filter((d) => !MAIN_CHAIN_DEPTS.some((m) => m.id === d.id)),
 ]
-import { getProjectExpert, expertAccentClass } from '../../projects/experts'
+import { getProjectExpert } from '../../projects/experts'
+import { ExpertAvatar } from './ExpertAvatar'
 import type { ProjectExpertId } from '../../projects/types'
 
 type Props = {
@@ -149,12 +150,11 @@ export function OnboardingStrip({ onConfigure }: Props) {
                   <span className="w-20 shrink-0 truncate text-[12px] font-medium text-slate-800">
                     {deptLabel(d)}
                   </span>
-                  <span
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[9px] font-semibold ${expertAccentClass(lead?.accent ?? 'slate')}`}
-                    aria-hidden
-                  >
-                    {(lead?.name ?? '?').slice(0, 1)}
-                  </span>
+                  <ExpertAvatar
+                    name={lead?.name ?? d.leadSeatId}
+                    size="sm"
+                    seed={d.leadSeatId}
+                  />
                   <span className="min-w-0 flex-1 truncate text-[12px] text-slate-700">
                     {lead?.name ?? d.leadSeatId}
                   </span>
