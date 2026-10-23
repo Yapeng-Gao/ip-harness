@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Bell, ChevronDown, ChevronRight, X } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { ArrowRight, Bell, ChevronDown, ChevronRight } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
   currentSeatForProgress,
@@ -26,25 +26,12 @@ import {
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import { DeptStatusDot } from '../departments/DeptStatusDot'
+import { DeptSideDrawer } from '../departments/DeptSideDrawer'
 
 type Props = {
   caseId: string
   title: string
   summary?: string
-}
-
-/** 首字圆形占位头像（示意，非真人） */
-function ExpertAvatar({ name }: { name: string }) {
-  const ch = name.trim().charAt(0) || '?'
-  return (
-    <span
-      aria-hidden
-      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[12px] font-semibold text-slate-700 ring-1 ring-slate-200"
-      data-testid="company-drawer-avatar"
-    >
-      {ch}
-    </span>
-  )
 }
 
 /** 本站交卷物/状态一句（pages §4.3 抽屉） */
@@ -105,15 +92,6 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
 
   const openDrawer = (id: OrgDeptId) => setDrawerDeptId(id)
   const closeDrawer = () => setDrawerDeptId(null)
-
-  useEffect(() => {
-    if (!drawerDeptId) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeDrawer()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [drawerDeptId])
 
   return (
     <div
@@ -312,124 +290,38 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
       </section>
 
       {drawerDept ? (
-        <DeptDrawer
-          caseId={caseId}
-          dept={drawerDept}
-          deptName={deptLabel(drawerDept)}
+        <DeptSideDrawer
+          open
+          onClose={closeDrawer}
+          overlayTestId="company-dept-drawer"
+          deptLabel={deptLabel(drawerDept)}
+          statusLine={handoffStatusLine(
+            drawerDept.id,
+            deptStatus({
+              dept: drawerDept,
+              progress: prog,
+              pending,
+              confirmKind: confirmKindOf(drawerDept),
+            }),
+          )}
           status={deptStatus({
             dept: drawerDept,
             progress: prog,
             pending,
             confirmKind: confirmKindOf(drawerDept),
           })}
-          onClose={closeDrawer}
+          experts={drawerDept.peers.slice(0, 3).map((peer) => ({
+            id: peer.id,
+            label: peerDisplayLabel(drawerDept.id, peer.id, peer.label),
+          }))}
+          primaryAction={{
+            label: '去该部干活',
+            href: `/agent/cases/${caseId}/depts/${deptSlug(drawerDept.id)}`,
+            onClick: closeDrawer,
+            testId: `company-drawer-go-${drawerDept.id}`,
+          }}
         />
       ) : null}
-    </div>
-  )
-}
-
-function DeptDrawer({
-  caseId,
-  dept,
-  deptName,
-  status,
-  onClose,
-}: {
-  caseId: string
-  dept: OrgDept
-  deptName: string
-  status: DeptStatus
-  onClose: () => void
-}) {
-  const href = `/agent/cases/${caseId}/depts/${deptSlug(dept.id)}`
-  const peers = dept.peers.slice(0, 3)
-  const statusLine = handoffStatusLine(dept.id, status)
-
-  return (
-    <div
-      className="fixed inset-0 z-40 flex justify-end bg-slate-950/20"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="company-dept-drawer-title"
-      data-testid="company-dept-drawer"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose()
-      }}
-    >
-      <aside className="flex h-full w-full max-w-sm flex-col border-l border-slate-200 bg-white shadow-[var(--shadow-elevated)]">
-        <header className="flex shrink-0 items-start gap-2 border-b border-slate-200 px-4 py-3">
-          <div className="min-w-0 flex-1">
-            <h2
-              id="company-dept-drawer-title"
-              className="truncate text-[14px] font-semibold text-slate-900"
-            >
-              {deptName}
-            </h2>
-            <p className="mt-0.5 text-[11px] text-slate-500">{dept.blurb}</p>
-          </div>
-          <button
-            type="button"
-            className="focus-ring rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-            onClick={onClose}
-            aria-label="关闭"
-            data-testid="company-dept-drawer-close"
-          >
-            <X className="h-4 w-4" aria-hidden />
-          </button>
-        </header>
-
-        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">
-          <div data-testid="company-drawer-status">
-            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              交卷态
-            </p>
-            <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-700">
-              <DeptStatusDot status={status} withLabel={false} />
-              <span>{statusLine}</span>
-            </p>
-          </div>
-
-          <div data-testid="company-drawer-peers">
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              专家岗（≤3）
-            </p>
-            {peers.length === 0 ? (
-              <p className="text-[12px] text-slate-500">本部门暂未配置专家岗</p>
-            ) : (
-              <ul className="space-y-2">
-                {peers.map((peer) => {
-                  const label = peerDisplayLabel(dept.id, peer.id, peer.label)
-                  return (
-                    <li
-                      key={peer.id}
-                      className="flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50/80 px-2.5 py-2"
-                      data-testid={`company-drawer-peer-${peer.id}`}
-                    >
-                      <ExpertAvatar name={label} />
-                      <span className="min-w-0 truncate text-[13px] font-medium text-slate-800">
-                        {label}
-                      </span>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </div>
-        </div>
-
-        <footer className="shrink-0 border-t border-slate-200 px-4 py-3">
-          <Link
-            to={href}
-            className="btn-press focus-ring inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-[13px] font-semibold text-white"
-            data-testid={`company-drawer-go-${dept.id}`}
-            onClick={onClose}
-          >
-            去该部干活
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-          </Link>
-        </footer>
-      </aside>
     </div>
   )
 }
