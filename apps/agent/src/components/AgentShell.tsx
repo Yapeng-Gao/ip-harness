@@ -17,12 +17,16 @@ import { PendingConfirmBell } from './business/PendingConfirmBell'
 import { EntryRoleSwitcher } from './business/EntryRoleSwitcher'
 import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
 import { useAgentDebug } from '../business/useAgentDebug'
+import { useEntryRole } from '../business/useEntryRole'
+import { useBusinessCases } from '../business/BusinessCaseContext'
 
 export function AgentShell() {
   const { workspace, getCase, getHandoff } = useApp()
   const { getSession } = useAgents()
   const loc = useLocation()
   const debug = useAgentDebug()
+  const { entryRole } = useEntryRole()
+  const { getCase: getBizCase } = useBusinessCases()
   const [rightOpen, setRightOpen] = useState(false)
   /** P1-C · pending-confirm 首次进入自动展开上下文一次（视觉，不改 HITL） */
   const autoExpandedFor = useRef<string | null>(null)
@@ -113,6 +117,12 @@ export function AgentShell() {
   /** 业务面默认隐藏租户/Persona；?debug=1 显示 */
   const showTenantChrome = debug || inGrokShell || inCatalog
 
+  const activeBizCaseId = useMemo(() => {
+    const m = loc.pathname.match(/^\/agent\/cases\/([^/]+)/)
+    return m?.[1] && m[1] !== 'new' ? m[1] : undefined
+  }, [loc.pathname])
+  const activeBizCase = activeBizCaseId ? getBizCase(activeBizCaseId) : undefined
+
   const pageTitle = inL2Shell
     ? '团队 · 旁路'
     : inSandbox
@@ -124,15 +134,23 @@ export function AgentShell() {
           : inAssets
             ? '资产'
             : inBusiness
-              ? '我的案子'
+              ? entryRole === 'agency'
+                ? '案盘'
+                : activeBizCase?.title ?? '外挂 IP 部'
               : inHome
-                ? '多案流水'
+                ? entryRole === 'agency'
+                  ? '案盘'
+                  : '外挂 IP 部'
                 : inPatentProject
                   ? '项目'
                   : '工作台'
 
   return (
-    <div className="app-shell-bg flex h-full flex-col overflow-hidden">
+    <div
+      className="app-shell-bg flex h-full flex-col overflow-hidden"
+      data-entry-role={entryRole}
+      data-testid="agent-shell"
+    >
       <a href="#agent-main" className="skip-link">
         跳到主要内容
       </a>
@@ -143,6 +161,7 @@ export function AgentShell() {
         }`}
         data-grok-chrome={inGrokShell ? '1' : '0'}
         data-business-mode={inBusiness ? '1' : '0'}
+        data-entry-role={entryRole}
       >
         <div className="flex items-center gap-2">
           <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[10px] font-semibold">

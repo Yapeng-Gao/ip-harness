@@ -8,6 +8,7 @@ import {
   orgDeptByLeadSeat,
 } from '../../departments/orgDepts'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
+import { useEntryRole } from '../../business/useEntryRole'
 
 export type BusinessHomeStartState = {
   summary?: string
@@ -27,6 +28,7 @@ export type BusinessHomeStartState = {
 export function BusinessCasesPage() {
   const { cases, getProgress, stageLabel, getPendingConfirms } = useBusinessCases()
   const { deptLabel } = useOrgConfig()
+  const { entryRole } = useEntryRole()
 
   const rows = useMemo(
     () =>
@@ -53,19 +55,32 @@ export function BusinessCasesPage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="business-cases-page"
+      data-entry-role={entryRole}
       data-home="cases"
     >
       <div className="mx-auto w-full max-w-3xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
+            {entryRole === 'enterprise' ? (
+              <p
+                className="text-[11px] font-medium uppercase tracking-wide text-slate-400"
+                data-testid="business-cases-eyebrow"
+              >
+                全部案子（次入口）
+              </p>
+            ) : null}
             <h1
-              className="text-[20px] font-semibold tracking-tight text-slate-900"
+              className={`text-[20px] font-semibold tracking-tight text-slate-900 ${
+                entryRole === 'enterprise' ? 'mt-0.5' : ''
+              }`}
               data-testid="business-cases-title"
             >
-              多案流水
+              {entryRole === 'agency' ? '案盘 · 多案流水' : '全部案子'}
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              点进案子进公司首页 · 待确认看右上铃铛
+              {entryRole === 'enterprise'
+                ? '企业主路径是公司首页；这里可回看全部案子'
+                : '点进案子进公司首页 · 待确认看右上铃铛'}
             </p>
           </div>
           <Link
