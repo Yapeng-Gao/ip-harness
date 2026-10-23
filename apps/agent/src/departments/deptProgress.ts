@@ -36,10 +36,10 @@ const STAGE_ORDER: BusinessStageId[] = [
 ]
 
 const DEPT_STAGE: Partial<Record<OrgDeptId, BusinessStageId>> = {
-  'dept-layout': 'prepare',
-  'dept-intake': 'intake',
+  'dept-disclosure': 'prepare',
   'dept-research': 'intake',
-  'dept-disclosure': 'drafting',
+  'dept-intake': 'intake',
+  'dept-layout': 'prepare',
   'dept-draft': 'drafting',
   'dept-figure': 'drafting',
   'dept-filing': 'filing',

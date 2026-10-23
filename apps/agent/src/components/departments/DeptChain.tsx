@@ -47,8 +47,8 @@ type Props = {
 }
 
 /**
- * 8 节点串联 · 主作业链
- * 布局 → 立项 → 交底 → 查新 → 撰写 → 附图 → 递交 → 审查答复
+ * 7 节点串联 · 上手主作业链
+ * 交底 → 查新 → 立项 → 撰写 → 附图 → 递交 → 审查答复
  */
 export function DeptChain({ onConfigure }: Props) {
   const { cases, getProgress, getPendingConfirms } = useBusinessCases()
@@ -70,7 +70,7 @@ export function DeptChain({ onConfigure }: Props) {
           主作业链
         </h2>
         <span className="text-[11px] text-slate-500">
-          8 个交卷节点 · 一次只有一个部门在进行中
+          7 个交卷节点 · 一次只有一个部门在进行中
         </span>
       </div>
 

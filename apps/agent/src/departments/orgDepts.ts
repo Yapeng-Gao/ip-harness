@@ -41,17 +41,47 @@ export type OrgDept = {
   blurb: string
 }
 
-/** 主链 8 部（布局 → 立项 → 交底 → 查新 → 撰写 → 附图 → 递交 → 审查答复） */
+/** 上手七部（交底 → 查新 → 立项 → 撰写 → 附图 → 递交 → 审查答复）；布局进「更多」 */
 export const MAIN_CHAIN_DEPT_IDS: OrgDeptId[] = [
-  'dept-layout',
-  'dept-intake',
   'dept-disclosure',
   'dept-research',
+  'dept-intake',
   'dept-draft',
   'dept-figure',
   'dept-filing',
   'dept-oa',
 ]
+
+
+/** URL slug（/cases/:id/depts/:slug）↔ OrgDeptId */
+export const DEPT_SLUG_BY_ID: Record<OrgDeptId, string> = {
+  'dept-landscape': 'landscape',
+  'dept-competitor': 'competitor',
+  'dept-inspire': 'inspire',
+  'dept-mining': 'mining',
+  'dept-layout': 'layout',
+  'dept-intake': 'intake',
+  'dept-disclosure': 'disclosure',
+  'dept-research': 'research',
+  'dept-draft': 'draft',
+  'dept-figure': 'figure',
+  'dept-filing': 'filing',
+  'dept-oa': 'oa',
+  'dept-annuity': 'annuity',
+  'dept-monetize': 'monetize',
+  'dept-enforcement': 'enforcement',
+}
+
+export function deptIdFromSlug(slug: string): OrgDeptId | undefined {
+  const hit = (Object.entries(DEPT_SLUG_BY_ID) as [OrgDeptId, string][]).find(
+    ([, s]) => s === slug,
+  )
+  return hit?.[0]
+}
+
+export function deptSlug(id: OrgDeptId): string {
+  return DEPT_SLUG_BY_ID[id]
+}
 
 export const ORG_GROUP_LABEL: Record<OrgDeptGroup, string> = {
   main: '主作业链',
@@ -135,7 +165,7 @@ function fromRoster(d: DeptDef, group: OrgDeptGroup): OrgDept {
 /** 15 个有席位的部门（FTO 为辅席、案子助手不计部门） */
 export const ORG_DEPTS: OrgDept[] = [
   ...BUSINESS_DEFAULT_DEPT_IDS.map((d) => fromRoster(d, 'main')),
-  fromRoster(LAYOUT_DEPT, 'main'),
+  fromRoster(LAYOUT_DEPT, 'pre'),
   ...PREP_DEPTS.map((d) => fromRoster(d, 'pre')),
   ...POST_DEPTS,
 ]

@@ -287,10 +287,9 @@ export type CollabEdge = {
 
 /** 主链移交（实线）+ 横向协作（虚线）；走向对齐既有交互规格 */
 export const COLLAB_EDGES: CollabEdge[] = [
-  { from: 'dept-layout', to: 'dept-intake', label: '布局方案移交', weekly: 18, kind: 'handoff' },
-  { from: 'dept-intake', to: 'dept-disclosure', label: '立项决议移交', weekly: 22, kind: 'handoff' },
   { from: 'dept-disclosure', to: 'dept-research', label: '交底书移交', weekly: 26, kind: 'handoff' },
-  { from: 'dept-research', to: 'dept-draft', label: '查新意见移交', weekly: 24, kind: 'handoff' },
+  { from: 'dept-research', to: 'dept-intake', label: '查新意见移交', weekly: 24, kind: 'handoff' },
+  { from: 'dept-intake', to: 'dept-draft', label: '立项决议移交', weekly: 22, kind: 'handoff' },
   { from: 'dept-draft', to: 'dept-figure', label: '申请文件包移交', weekly: 20, kind: 'handoff' },
   { from: 'dept-figure', to: 'dept-filing', label: '附图任务单移交', weekly: 17, kind: 'handoff' },
   { from: 'dept-filing', to: 'dept-oa', label: '递交作业单移交', weekly: 14, kind: 'handoff' },
@@ -299,6 +298,7 @@ export const COLLAB_EDGES: CollabEdge[] = [
   { from: 'dept-oa', to: 'dept-draft', label: 'OA 联席答复', weekly: 22, kind: 'cross' },
   { from: 'dept-figure', to: 'dept-draft', label: '图注与权要核对', weekly: 18, kind: 'cross' },
   { from: 'dept-layout', to: 'dept-research', label: '预检索委托', weekly: 15, kind: 'cross' },
+  { from: 'dept-layout', to: 'dept-disclosure', label: '布局方案参考', weekly: 10, kind: 'cross' },
   { from: 'dept-research', to: 'dept-oa', label: '答复补充检索', weekly: 12, kind: 'cross' },
   { from: 'dept-disclosure', to: 'dept-draft', label: '交底缺项追问', weekly: 9, kind: 'cross' },
   { from: 'dept-filing', to: 'dept-oa', label: '文件与答复对齐', weekly: 7, kind: 'cross' },
@@ -306,14 +306,14 @@ export const COLLAB_EDGES: CollabEdge[] = [
 
 /** 协作网络里的固定摆位（0-100 的百分比坐标） */
 export const NETWORK_POS: Record<string, { x: number; y: number }> = {
-  'dept-layout': { x: 17, y: 30 },
-  'dept-intake': { x: 36, y: 14 },
-  'dept-disclosure': { x: 58, y: 22 },
-  'dept-research': { x: 74, y: 34 },
-  'dept-draft': { x: 76, y: 56 },
-  'dept-figure': { x: 55, y: 63 },
-  'dept-filing': { x: 34, y: 62 },
-  'dept-oa': { x: 16, y: 54 },
+  'dept-disclosure': { x: 12, y: 36 },
+  'dept-research': { x: 28, y: 22 },
+  'dept-intake': { x: 46, y: 18 },
+  'dept-draft': { x: 64, y: 28 },
+  'dept-figure': { x: 78, y: 46 },
+  'dept-filing': { x: 62, y: 64 },
+  'dept-oa': { x: 38, y: 68 },
+  'dept-layout': { x: 18, y: 62 },
 }
 
 /** 部门在某案上的负荷：待确认多 = 高负荷 */

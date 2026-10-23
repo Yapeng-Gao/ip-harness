@@ -67,12 +67,12 @@ describe('relationsFor', () => {
   it('中间节点有上下游', () => {
     const r = relationsFor('dept-research')
     assert.equal(r.upstream?.from, 'dept-disclosure')
-    assert.equal(r.downstream?.to, 'dept-draft')
+    assert.equal(r.downstream?.to, 'dept-intake')
     assert.ok(Array.isArray(r.cross))
     assert.ok(r.cross.length > 0)
   })
   it('链首无上游，链尾无下游', () => {
-    assert.equal(relationsFor('dept-layout').upstream, undefined)
+    assert.equal(relationsFor('dept-disclosure').upstream, undefined)
     assert.equal(relationsFor('dept-oa').downstream, undefined)
   })
   it('未知部门返回空关系', () => {

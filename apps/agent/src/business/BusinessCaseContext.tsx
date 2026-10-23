@@ -559,8 +559,8 @@ function seedProgressMap(): Record<string, CaseProgress> {
       completedStages: ['prepare'],
       filed: false,
       oaRound: 0,
-      researchPass: 0,
-      doneSeatIds: [],
+      researchPass: 1,
+      doneSeatIds: ['expert-disclosure', 'expert-research'],
       moreSeatIds: [],
       teamMemberIds: [],
       updatedAt: nowIso(),
@@ -710,7 +710,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
 
   const ensureProgress = useCallback(
     (caseId: string): CaseProgress => {
-      const raw = progressById[caseId] ?? emptyProgress(caseId, 'intake')
+      const raw = progressById[caseId] ?? emptyProgress(caseId, 'prepare')
       return {
         ...raw,
         teamMemberIds: Array.isArray(raw.teamMemberIds)
@@ -778,13 +778,11 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       })
       patchProject(p.id, { caseId: p.id, caseBindState: 'bound' })
       // 阶段与计划一致；无计划则回退 skipPrepare
+      // 上手默认落交底（prepare）；计划可指定更后阶段
       const stageId: BusinessStageId = planText
         ? planStart.stageId
-        : input.skipPrepare
-          ? 'intake'
-          : 'prepare'
-      const skipPrep =
-        stageId !== 'prepare' || Boolean(input.skipPrepare && !planText)
+        : 'prepare'
+      const skipPrep = stageId !== 'prepare'
       setProgressById((prev) => ({
         ...prev,
         [p.id]: {
