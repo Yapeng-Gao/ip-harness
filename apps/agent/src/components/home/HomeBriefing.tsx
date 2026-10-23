@@ -1,9 +1,11 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Activity,
   ArrowRight,
   CheckCircle2,
+  ChevronDown,
+  ChevronRight,
   FolderKanban,
   type LucideIcon,
 } from 'lucide-react'
@@ -15,7 +17,7 @@ import { confirmKindOf } from '../../departments/deptProgress'
 
 /**
  * 首页简报 · 按现有数据派生（样机）
- * 无新后端：在办项目 / 在办案子 / 最近动作。待确认只在上方待办条 + 顶栏铃铛。
+ * 无新后端：在办项目 / 在办案子 / 最近动作。待确认只在顶栏铃铛；简报默认折叠。
  */
 export function HomeBriefing() {
   const { cases, getProgress, getProcessLogs, stageLabel } =
@@ -79,13 +81,30 @@ export function HomeBriefing() {
     }
   }, [cases, getProgress, stageLabel])
 
+  const [open, setOpen] = useState(false)
+
   return (
     <section aria-label="今日简报" data-testid="home-briefing" className="space-y-3">
-      <div className="flex items-baseline justify-between gap-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="focus-ring flex w-full items-center gap-1.5 rounded-[var(--radius-sm)] text-left"
+        data-testid="home-briefing-toggle"
+      >
+        {open ? (
+          <ChevronDown className="h-3.5 w-3.5 text-slate-500" strokeWidth={1.75} aria-hidden />
+        ) : (
+          <ChevronRight className="h-3.5 w-3.5 text-slate-500" strokeWidth={1.75} aria-hidden />
+        )}
         <h2 className="text-[13px] font-semibold tracking-tight text-slate-900">简报</h2>
-        <span className="text-[11px] text-slate-500">样机 · 按现有数据派生</span>
-      </div>
+        <span className="ml-auto text-[11px] text-slate-500">
+          {open ? '样机 · 按现有数据派生' : '点击展开'}
+        </span>
+      </button>
 
+      {open && (
+      <div className="space-y-3">
       <div className="grid grid-cols-2 gap-2">
         <StatTile icon={FolderKanban} label="在办项目" value={stats.activeProjects} />
         <StatTile icon={Activity} label="在办案子" value={stats.activeCases} />
@@ -153,6 +172,8 @@ export function HomeBriefing() {
             ))}
           </ul>
         </div>
+      )}
+      </div>
       )}
     </section>
   )

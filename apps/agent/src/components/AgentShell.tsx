@@ -125,7 +125,7 @@ export function AgentShell() {
             : inBusiness
               ? '我的案子'
               : inHome
-                ? '知产 Agent'
+                ? '知产工作台'
                 : inPatentProject
                   ? '专利 Agent'
                   : '知产 Agent'
