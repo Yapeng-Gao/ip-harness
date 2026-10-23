@@ -36,6 +36,7 @@ import {
   handoffPhaseFromStatus,
   handoffPhaseLabel,
   handoffStatusSentence,
+  latestReturnNote,
 } from '../../departments/handoffPhase'
 import {
   AWAITING_ADVANCE_LOCK_HINT,
@@ -50,7 +51,7 @@ import {
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import type { ProjectExpertId } from '../../projects/types'
-import { CheckCircle2, Circle, ArrowRight, Building2 } from 'lucide-react'
+import { CheckCircle2, Circle, ArrowRight, Building2, PanelLeft, MessageSquare, X } from 'lucide-react'
 import { formatArtifactSavedAt } from '../../business/artifactVersions'
 
 function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
@@ -130,6 +131,9 @@ export function BusinessCaseDeptPage() {
   const [seatOpen, setSeatOpen] = useState(() => Boolean(params.get('seat')))
   const [adoptedPeerIds, setAdoptedPeerIds] = useState<string[]>([])
   const [selectedMaterialId, setSelectedMaterialId] = useState('deliverable')
+  /** 窄屏：左目录可收起；右栏改底抽屉（G1 交卷可达） */
+  const [leftOpen, setLeftOpen] = useState(true)
+  const [mobileRightOpen, setMobileRightOpen] = useState(false)
 
   const activeSeat: ProjectExpertId = (() => {
     if (pickedSeat && seatIds.includes(pickedSeat)) return pickedSeat
@@ -142,6 +146,7 @@ export function BusinessCaseDeptPage() {
     if (seatIds.includes(seatFromUrl) && seatFromUrl !== pickedSeat) {
       setPickedSeat(seatFromUrl)
       setSeatOpen(true)
+      setMobileRightOpen(true)
     }
   }, [seatFromUrl, seatIds, pickedSeat])
 
@@ -231,6 +236,7 @@ export function BusinessCaseDeptPage() {
     if (!seatOpen) {
       setSeatOpen(true)
       setPickedSeat(defaultSeat)
+      setMobileRightOpen(true)
       return
     }
     setWorkNonce((n) => n + 1)
@@ -275,6 +281,7 @@ export function BusinessCaseDeptPage() {
   const switchSeat = (next: ProjectExpertId) => {
     setPickedSeat(next)
     setSeatOpen(true)
+    setMobileRightOpen(true)
     const nextParams = new URLSearchParams(params)
     nextParams.set('seat', next)
     navigate(
@@ -293,6 +300,7 @@ export function BusinessCaseDeptPage() {
     } else {
       setSeatOpen(true)
       setPickedSeat(dept.leadSeatId)
+      setMobileRightOpen(true)
     }
   }
 
@@ -310,8 +318,12 @@ export function BusinessCaseDeptPage() {
   const statusLine = st
     ? handoffStatusSentence(dept.id, st)
     : handoff.deliverable
+  // 持久回流意见（pending.returned.returnNote）；不依赖会 6s 清空的 lastReturnHint
+  const persistentReturnNote = latestReturnNote(pending, kindForDept)
+  const returnHintText = persistentReturnNote || lastReturnHint || null
+  // 退回相：st=======退回 / 持久 returnNote / 短暂 lastReturnHint 任一即标「退回」（与公司抽屉一致）
   const handoffPhase = st
-    ? lastReturnHint || st === '退回'
+    ? st === '退回' || persistentReturnNote || lastReturnHint
       ? ('退回' as const)
       : handoffPhaseFromStatus(st)
     : ('齐套中' as const)
@@ -366,6 +378,8 @@ export function BusinessCaseDeptPage() {
       data-dept-id={dept.id}
       data-seat-open={seatOpen ? '1' : '0'}
       data-layout="cursor-three-pane"
+      data-left-open={leftOpen ? '1' : '0'}
+      data-mobile-right-open={mobileRightOpen ? '1' : '0'}
     >
       {/* 顶栏：案 / 部门 / 铃铛 / 期限；不放交卷主 CTA（§2） */}
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
@@ -422,12 +436,27 @@ export function BusinessCaseDeptPage() {
         data-testid="dept-handoff-shell"
         data-layout="cursor-three-pane"
       >
-        {/* 左·目录 */}
+        {/* 左·目录（窄屏可收起） */}
         <aside
-          className="flex max-h-48 shrink-0 flex-col border-b border-slate-200 bg-white lg:max-h-none lg:w-56 lg:border-b-0 lg:border-r"
+          className={`${
+            leftOpen ? 'flex' : 'hidden'
+          } max-h-48 shrink-0 flex-col border-b border-slate-200 bg-white lg:flex lg:max-h-none lg:w-56 lg:border-b-0 lg:border-r`}
           data-testid="dept-left-tree"
           data-slot="materials-tree"
+          data-collapsed={leftOpen ? '0' : '1'}
         >
+          <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-2 py-1.5 lg:hidden">
+            <span className="text-[11px] font-medium text-slate-600">材料目录</span>
+            <button
+              type="button"
+              onClick={() => setLeftOpen(false)}
+              className="btn-press focus-ring rounded-md px-2 py-1 text-[11px] text-slate-500"
+              data-testid="dept-left-collapse"
+              aria-label="收起材料目录"
+            >
+              收起
+            </button>
+          </div>
           <DeptMaterialsTree
             nodes={materialNodes}
             selectedId={selectedMaterialId}
@@ -455,7 +484,7 @@ export function BusinessCaseDeptPage() {
                   {centerTitle}
                 </h2>
                 <span className="text-[10px] text-slate-400">
-                  齐套勾选见右栏 · 中栏只读产出
+                  中栏=产出正文 · 对话/交卷在右栏
                 </span>
               </div>
               {selectedMaterialId === 'deliverable' ? (
@@ -502,13 +531,40 @@ export function BusinessCaseDeptPage() {
           </section>
         </main>
 
-        {/* 右·对话区：专家协作 + 缺项 + 交卷 + 待你确认（人确定的全在右） */}
+        {/* 窄屏：右栏底抽屉遮罩 */}
+        {mobileRightOpen ? (
+          <button
+            type="button"
+            className="fixed inset-0 z-30 bg-slate-900/20 lg:hidden"
+            aria-label="关闭对话交卷"
+            data-testid="dept-mobile-right-backdrop"
+            onClick={() => setMobileRightOpen(false)}
+          />
+        ) : null}
+
+        {/* 右·对话区：专家 + 对话/过程 + 缺项 + 交卷 + 确认（禁成果阅读面） */}
         <aside
-          className="flex min-h-0 w-full shrink-0 flex-col border-t border-slate-200 bg-white lg:w-[22rem] lg:border-l lg:border-t-0 xl:w-[24rem]"
+          className={`${
+            mobileRightOpen ? 'fixed inset-x-0 bottom-0 z-40 flex max-h-[min(90vh,40rem)] shadow-xl' : 'hidden'
+          } min-h-0 w-full shrink-0 flex-col border-t border-slate-200 bg-white lg:static lg:z-auto lg:flex lg:max-h-none lg:w-[22rem] lg:border-l lg:border-t-0 lg:shadow-none xl:w-[24rem]`}
           data-testid="dept-right-rail"
           data-slot="dialogue-confirm"
+          data-mobile-drawer={mobileRightOpen ? '1' : '0'}
         >
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 px-3 py-2 lg:hidden">
+              <p className="text-[12px] font-semibold text-slate-800">对话 · 交卷</p>
+              <button
+                type="button"
+                onClick={() => setMobileRightOpen(false)}
+                className="btn-press focus-ring inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-slate-500"
+                data-testid="dept-mobile-right-close"
+                aria-label="关闭"
+              >
+                <X className="h-3.5 w-3.5" aria-hidden />
+                收起
+              </button>
+            </div>
             {/* slot: 交卷态 */}
             <header
               className="shrink-0 border-b border-slate-200 px-3 py-2.5"
@@ -663,6 +719,7 @@ export function BusinessCaseDeptPage() {
                       caseId={caseId}
                       seatId={activeSeat}
                       workNonce={workNonce}
+                      hideArtifactPanel
                       deliverBlocked={
                         !allChecklistDone || awaitingThis || st === '已完成'
                       }
@@ -686,7 +743,7 @@ export function BusinessCaseDeptPage() {
                     className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-center text-[11px] text-slate-400"
                     data-testid="dept-seat-collapsed-hint"
                   >
-                    对话区默认收起。点上方专家岗后，在此协作；交卷与确认始终在本右栏底部。
+                    对话区默认收起。点上方专家岗后在此协作（过程可看；成果只在中栏）。交卷与确认在本栏底部。
                   </p>
                 )}
               </section>
@@ -724,15 +781,22 @@ export function BusinessCaseDeptPage() {
                 )}
               </section>
 
-              {/* slot: 回流 */}
+              {/* slot: 回流 · 持久 pending.returnNote 优先，短暂 lastReturnHint 并存兜底 */}
               <section data-slot="return-hint" data-testid="dept-right-return">
-                {lastReturnHint ? (
+                {returnHintText ? (
                   <div
                     className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-[11px] text-amber-950"
                     data-testid="dept-return-hint"
                     role="status"
+                    data-return-source={
+                      persistentReturnNote
+                        ? 'pending'
+                        : lastReturnHint
+                          ? 'flash'
+                          : undefined
+                    }
                   >
-                    回流意见：{lastReturnHint}
+                    回流意见：{returnHintText}
                   </div>
                 ) : null}
                 {awaitingThis ? (
@@ -838,6 +902,36 @@ export function BusinessCaseDeptPage() {
             </footer>
           </div>
         </aside>
+      </div>
+
+      {/* 窄屏底栏：目录开关 + 打开对话/交卷（G1 可达） */}
+      <div
+        className="flex shrink-0 items-center gap-2 border-t border-slate-200 bg-white px-3 py-2 lg:hidden"
+        data-testid="dept-mobile-dock"
+      >
+        <button
+          type="button"
+          onClick={() => setLeftOpen((v) => !v)}
+          className="btn-press focus-ring inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-2 text-[11px] font-medium text-slate-700"
+          data-testid="dept-mobile-toggle-left"
+          aria-pressed={leftOpen}
+        >
+          <PanelLeft className="h-3.5 w-3.5" aria-hidden />
+          {leftOpen ? '收起目录' : '材料目录'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileRightOpen(true)}
+          className={`btn-press focus-ring inline-flex flex-[1.4] items-center justify-center gap-1.5 rounded-md px-3 py-2 text-[11px] font-semibold ${
+            awaitingThis || cta.action === 'confirm'
+              ? 'bg-amber-600 text-white'
+              : 'bg-slate-900 text-white'
+          }`}
+          data-testid="dept-mobile-open-right"
+        >
+          <MessageSquare className="h-3.5 w-3.5" aria-hidden />
+          对话 · 交卷
+        </button>
       </div>
     </div>
   )

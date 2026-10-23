@@ -63,6 +63,11 @@ type Props = {
   /** §3.3 G1：齐套未齐时禁止交卷入 pending */
   deliverBlocked?: boolean
   deliverBlockedReason?: string
+  /**
+   * 部门台 Cursor 三栏：右栏禁「成果」阅读面（产出只在中栏）。
+   * 默认全开，兼容案页 BusinessCasePage。
+   */
+  hideArtifactPanel?: boolean
 }
 
 /**
@@ -79,6 +84,7 @@ export function BusinessSeatWorkbench({
   onSwitchSeat,
   deliverBlocked = false,
   deliverBlockedReason,
+  hideArtifactPanel = false,
 }: Props) {
   const {
     advanceSeatWork,
@@ -117,6 +123,13 @@ export function BusinessSeatWorkbench({
     return `${seatLabel}已就绪。本案有待确认「${titles}${more}」· 确认后本席才能继续推进。请先点顶栏「去确认」。`
   }, [caseHasPending, pendingList, seatLabel])
   const [panel, setPanel] = useState<'chat' | 'artifact' | 'worklog'>('chat')
+  const setSafePanel = (next: 'chat' | 'artifact' | 'worklog') => {
+    if (hideArtifactPanel && next === 'artifact') {
+      setPanel('chat')
+      return
+    }
+    setPanel(next)
+  }
   const [draft, setDraft] = useState('')
   const [editingArtifact, setEditingArtifact] = useState(false)
   const [artifactDraft, setArtifactDraft] = useState('')
@@ -145,6 +158,10 @@ export function BusinessSeatWorkbench({
     setMoreOpen(false)
     setAdvancedChipsOpen(false)
   }, [seatId, caseId])
+
+  useEffect(() => {
+    if (hideArtifactPanel && panel === 'artifact') setPanel('chat')
+  }, [hideArtifactPanel, panel])
 
   const pendingForSeat = useMemo(() => {
     const kind = confirmKindForSeat(seatId)
@@ -275,25 +292,27 @@ export function BusinessSeatWorkbench({
       if (pendingForSeat.length > 0 || (submitted && atHitl)) {
         appendMessage(caseId, seatId, {
           role: 'assistant',
-          content: `【${seatLabel}】本席已交卷，成果在「成果」面板。请你在「待我确认」里确认后，本案进度才会前进。`,
+          content: hideArtifactPanel
+            ? `【${seatLabel}】本席已交卷，产出正文在中栏。请你在「待我确认」里确认后，本案进度才会前进。`
+            : `【${seatLabel}】本席已交卷，成果在「成果」面板。请你在「待我确认」里确认后，本案进度才会前进。`,
           meta: { backend: 'mock' },
         })
         setBusy(false)
-        setPanel('chat')
+        setSafePanel('chat')
         return
       }
       const r = advanceSeatWork(caseId, seatId)
       setFlashBody(true)
       if (r.processLogId) setFlashLogId(r.processLogId)
       if (r.delivered && r.confirm) {
-        setPanel('artifact')
+        setSafePanel('artifact')
         appendMessage(caseId, seatId, {
           role: 'assistant',
           content: `【${seatLabel}】已交卷「${r.stepLabel}」。请你确认后主链才前进。`,
           meta: { backend: 'mock', stepId: 'deliver' },
         })
       } else {
-        setPanel('chat')
+        setSafePanel('chat')
       }
       onAdvanced?.(r.confirm?.id)
       setBusy(false)
@@ -331,7 +350,7 @@ export function BusinessSeatWorkbench({
     window.setTimeout(() => {
       const r = requestUpstreamFeedback(caseId, seatId, toSeat, reason)
       setBusy(false)
-      setPanel('chat')
+      setSafePanel('chat')
       if (r.ok && r.switchToSeat && onSwitchSeat) {
         window.setTimeout(() => onSwitchSeat(r.switchToSeat!), 450)
       }
@@ -351,7 +370,7 @@ export function BusinessSeatWorkbench({
     window.setTimeout(() => {
       runSeatLoop(caseId, seatId, actionId, note)
       setFlashLogId(null)
-      setPanel('chat')
+      setSafePanel('chat')
       setBusy(false)
     }, 180)
   }
@@ -382,7 +401,7 @@ export function BusinessSeatWorkbench({
         } else {
           setFlashBody(true)
           if (r.processLogId) setFlashLogId(r.processLogId)
-          setPanel('chat')
+          setSafePanel('chat')
         }
         setBusy(false)
       }, 220)
@@ -429,7 +448,7 @@ export function BusinessSeatWorkbench({
       if (r.ok) {
         setFlashBody(true)
         if (r.processLogId) setFlashLogId(r.processLogId)
-        setPanel('chat')
+        setSafePanel('chat')
       }
       setBusy(false)
     }, 180)
@@ -465,6 +484,7 @@ export function BusinessSeatWorkbench({
       data-seat-as-bot="1"
       data-seat-id={seatId}
       data-biz-case-ia="1"
+      data-hide-artifact={hideArtifactPanel ? '1' : '0'}
     >
       <header className="mb-3 flex flex-wrap items-start justify-between gap-2">
         <div>
@@ -607,11 +627,13 @@ export function BusinessSeatWorkbench({
         role="tablist"
       >
         {(
-          [
-            ['chat', '会话', '跟人 ↔ 本席 bot 对话；点「让它干活」推进剧本'],
-            ['artifact', '成果', '本席交付件（意见书/权要等），随步骤变长，可扫读'],
-            ['worklog', '办理过程', '本席怎么做的：步骤日志 + 本案过程事件'],
-          ] as const
+          (
+            [
+              ['chat', '会话', '跟人 ↔ 本席 bot 对话；点「让它干活」推进剧本'],
+              ['artifact', '成果', '本席交付件（意见书/权要等），随步骤变长，可扫读'],
+              ['worklog', '办理过程', '本席怎么做的：步骤日志 + 本案过程事件'],
+            ] as const
+          ).filter(([id]) => !(hideArtifactPanel && id === 'artifact'))
         ).map(([id, label, tip]) => (
           <button
             key={id}
@@ -620,7 +642,7 @@ export function BusinessSeatWorkbench({
             title={tip}
             aria-label={`${label}：${tip}`}
             aria-selected={panel === id}
-            onClick={() => setPanel(id)}
+            onClick={() => setSafePanel(id)}
             className={`rounded-md px-2.5 py-1.5 text-[11px] font-semibold ${
               panel === id
                 ? 'bg-white text-slate-900 shadow-sm'
@@ -654,7 +676,7 @@ export function BusinessSeatWorkbench({
         ) : null}
       </div>
 
-      {panel === 'chat' ? (
+      {panel === 'chat' || (hideArtifactPanel && panel === 'artifact') ? (
         <section
           className="mb-3 flex min-h-[16rem] flex-col rounded-xl border border-slate-200 bg-white shadow-sm"
           data-testid="business-seat-chat"
@@ -766,7 +788,7 @@ export function BusinessSeatWorkbench({
                         setBusy(true)
                         window.setTimeout(() => {
                           runHitlReturnRevise(caseId, seatId)
-                          setPanel('chat')
+                          setSafePanel('chat')
                           setBusy(false)
                         }, 180)
                       }}
@@ -1087,12 +1109,12 @@ export function BusinessSeatWorkbench({
         <button
           type="button"
           data-testid="business-dual-tab-artifact"
-          onClick={() => setPanel('artifact')}
+          onClick={() => setSafePanel('artifact')}
         />
         <button
           type="button"
           data-testid="business-dual-tab-worklog"
-          onClick={() => setPanel('worklog')}
+          onClick={() => setSafePanel('worklog')}
         />
         {/* 兼容旧 advance testid：映射到会话 chip 路径 */}
         <button
