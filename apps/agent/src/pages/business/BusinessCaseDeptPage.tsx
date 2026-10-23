@@ -25,6 +25,10 @@ import {
   peerSuggestionHint,
 } from '../../departments/deptPageNarrative'
 import {
+  ADOPT_NE_CONFIRM_NOTE,
+  handoffStatusSentence,
+} from '../../departments/handoffPhase'
+import {
   confirmKindOf,
   deptStatus,
 } from '../../departments/deptProgress'
@@ -244,7 +248,9 @@ export function BusinessCaseDeptPage() {
   }
 
   const companyHref = `/agent/cases/${caseId}`
-  const statusLine = `${handoff.deliverable}${st ? ` · ${st}` : ''}`
+  const statusLine = st
+    ? handoffStatusSentence(dept.id, st)
+    : handoff.deliverable
   const railExperts = peers.map((peer) => {
     const peerSeat =
       peer.kind === 'session' && peer.sessionSeatId
@@ -430,12 +436,29 @@ export function BusinessCaseDeptPage() {
                 ))}
               </ul>
               {!allChecklistDone ? (
-                <p className="mt-2 text-[11px] text-amber-800">
-                  缺项未清前不能交卷。先点右侧专家岗补建议，或进入专家岗继续办。
+                <div
+                  className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-2 text-[11px] text-amber-950"
+                  data-testid="dept-checklist-missing"
+                >
+                  <p className="font-medium">缺项未清 · 交卷不可用</p>
+                  <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                    {checklistItems
+                      .filter((x) => !x.done)
+                      .map((x) => (
+                        <li key={x.label}>{x.label}</li>
+                      ))}
+                  </ul>
+                  <p className="mt-1.5 text-[10px] text-amber-800/80">
+                    先点右侧专家岗补建议稿，或进入专家岗继续办。采纳建议稿 ≠ 确认交卷。
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-2 text-[11px] text-slate-500">
+                  齐套已齐。交卷后将进「待你确认」；确认权在人，专家建议稿不算拍板。
                 </p>
-              ) : null}
+              )}
               <p className="mt-2 text-[10px] text-slate-400">
-                样机投影：勾选状态非 nodes 真硬闸。
+                样机投影：勾选状态非 nodes 真硬闸。{ADOPT_NE_CONFIRM_NOTE}
               </p>
             </section>
 

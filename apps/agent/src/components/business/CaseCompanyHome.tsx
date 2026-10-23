@@ -15,14 +15,17 @@ import {
   type OrgDeptId,
 } from '../../departments/orgDepts'
 import {
-  DEPT_HANDOFF,
   peerDisplayLabel,
 } from '../../departments/deptPageNarrative'
+import {
+  handoffPhaseFromStatus,
+  handoffPhaseLabel,
+  handoffStatusSentence,
+} from '../../departments/handoffPhase'
 import {
   confirmKindOf,
   deptStatus,
   rollupByDept,
-  type DeptStatus,
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import { DeptStatusDot } from '../departments/DeptStatusDot'
@@ -33,13 +36,6 @@ type Props = {
   caseId: string
   title: string
   summary?: string
-}
-
-/** 本站交卷物/状态一句（pages §4.3 抽屉） */
-function handoffStatusLine(deptId: OrgDeptId, status: DeptStatus): string {
-  const deliverable =
-    DEPT_HANDOFF[deptId]?.deliverable ?? '本站交卷物待配置'
-  return `${deliverable} · ${status}`
 }
 
 /**
@@ -239,9 +235,11 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
                     className={`line-clamp-2 text-[10px] leading-snug ${
                       active ? 'text-white/70' : 'text-slate-500'
                     }`}
+                    data-testid={`dept-map-phase-${dept.id}`}
+                    data-handoff-phase={handoffPhaseFromStatus(st)}
                   >
-                    {dept.blurb}
-                    {roll?.pendingCount
+                    {handoffPhaseLabel(handoffPhaseFromStatus(st))}
+                    {roll?.pendingCount && st !== '待确认'
                       ? ` · 待确认 ${roll.pendingCount}`
                       : ''}
                   </span>
@@ -320,7 +318,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           onClose={closeDrawer}
           overlayTestId="company-dept-drawer"
           deptLabel={deptLabel(drawerDept)}
-          statusLine={handoffStatusLine(
+          statusLine={handoffStatusSentence(
             drawerDept.id,
             deptStatus({
               dept: drawerDept,

@@ -3,6 +3,13 @@ import { ArrowRight, Building2, ChevronRight } from 'lucide-react'
 import { ExpertAvatar } from './ExpertAvatar'
 import { DeptStatusDot } from './DeptStatusDot'
 import type { DeptStatus } from '../../departments/deptProgress'
+import {
+  ADOPT_CTA_DONE_LABEL,
+  ADOPT_CTA_LABEL,
+  ADOPT_NE_CONFIRM_NOTE,
+  handoffPhaseFromStatus,
+  handoffPhaseLabel,
+} from '../../departments/handoffPhase'
 
 export type DeptSideExpert = {
   id: string
@@ -98,7 +105,18 @@ export function DeptSidePanel({
               {deptLabel}
             </h2>
             <div className="mt-1 flex flex-wrap items-center gap-1.5">
-              {status ? <DeptStatusDot status={status} /> : null}
+              {status ? (
+                <>
+                  <DeptStatusDot status={status} withLabel={false} />
+                  <span
+                    className="text-[10px] font-medium text-slate-600"
+                    data-testid="dept-side-panel-phase"
+                    data-handoff-phase={handoffPhaseFromStatus(status)}
+                  >
+                    {handoffPhaseLabel(handoffPhaseFromStatus(status))}
+                  </span>
+                </>
+              ) : null}
             </div>
           </div>
           {variant === 'drawer' && onClose ? (
@@ -188,7 +206,7 @@ export function DeptSidePanel({
                         }`}
                         data-testid={`dept-side-adopt-${ex.id}`}
                       >
-                        {ex.adopted ? '已采纳意向' : '采纳'}
+                        {ex.adopted ? ADOPT_CTA_DONE_LABEL : ADOPT_CTA_LABEL}
                       </button>
                     </div>
                   ) : null}
@@ -197,6 +215,15 @@ export function DeptSidePanel({
             })}
           </ul>
         )}
+
+        {showAdopt ? (
+          <p
+            className="mt-3 text-[10px] leading-relaxed text-slate-400"
+            data-testid="dept-side-adopt-ne-confirm"
+          >
+            {ADOPT_NE_CONFIRM_NOTE}
+          </p>
+        ) : null}
 
         {returnHint ? (
           <div
