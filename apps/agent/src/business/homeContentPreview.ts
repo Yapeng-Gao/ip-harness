@@ -1,8 +1,14 @@
 /**
- * 产品首页内容预览示意 · product-pages §4.0a 教育块 E/C/D（只认知，不可点进作业）
+ * 产品首页货架预览 · product-pages §4.0a
+ * 只认知，不可点进作业 / 交卷 / 采纳。
  */
 import type { OrgDeptId } from '../departments/orgDepts'
-import { MAIN_CHAIN_DEPT_IDS } from '../departments/orgDepts'
+import { MAIN_CHAIN_DEPT_IDS, MAIN_CHAIN_DEPTS } from '../departments/orgDepts'
+
+/** 品类大标题（一句大字；禁堆理念句） */
+export const HOME_CATEGORY_TITLE = '外挂知识产权部'
+/** 可选短副（品类，非口号堆） */
+export const HOME_CATEGORY_SUB = '办专利全流程'
 
 /** E · 示范案（假数据，非真作业） */
 export const HOME_DEMO_CASE = {
@@ -12,26 +18,58 @@ export const HOME_DEMO_CASE = {
   progressLine: '查新部交卷中 · 可专利性报告待确认',
 } as const
 
-/** 七部站短名 + 典型交卷名（C · 主链缩略旁注） */
+const SHORT_LABEL: Record<string, string> = {
+  'dept-disclosure': '交底',
+  'dept-research': '查新',
+  'dept-intake': '立项',
+  'dept-draft': '撰写',
+  'dept-figure': '附图',
+  'dept-filing': '递交',
+  'dept-oa': '答复',
+}
+
+const DELIVERABLE: Record<string, string> = {
+  'dept-disclosure': '技术交底书',
+  'dept-research': '可专利性报告',
+  'dept-intake': '决策书',
+  'dept-draft': '申请文件稿',
+  'dept-figure': '附图包',
+  'dept-filing': '申请包',
+  'dept-oa': '答复包',
+}
+
+/**
+ * 七部徽章墙站：站名全展示；专家岗 ≤3，点开才见（数据来自编制 peers）
+ */
 export const HOME_CHAIN_STATIONS: ReadonlyArray<{
   deptId: OrgDeptId
   shortLabel: string
   deliverable: string
-}> = [
-  { deptId: 'dept-disclosure', shortLabel: '交底', deliverable: '技术交底书' },
-  { deptId: 'dept-research', shortLabel: '查新', deliverable: '可专利性报告' },
-  { deptId: 'dept-intake', shortLabel: '立项', deliverable: '决策书' },
-  { deptId: 'dept-draft', shortLabel: '撰写', deliverable: '申请文件稿' },
-  { deptId: 'dept-figure', shortLabel: '附图', deliverable: '附图包' },
-  { deptId: 'dept-filing', shortLabel: '递交', deliverable: '申请包' },
-  { deptId: 'dept-oa', shortLabel: '答复', deliverable: '答复包' },
-]
+  /** 示意专家岗名，≤3；UI 默认不铺满，点部展开 */
+  experts: readonly string[]
+}> = MAIN_CHAIN_DEPT_IDS.map((id) => {
+  const dept = MAIN_CHAIN_DEPTS.find((d) => d.id === id)
+  const peers = (dept?.peers ?? []).slice(0, 3).map((p) => p.label)
+  return {
+    deptId: id,
+    shortLabel: SHORT_LABEL[id] ?? id,
+    deliverable: DELIVERABLE[id] ?? '',
+    experts: peers,
+  }
+})
 
 /** 与 MAIN_CHAIN_DEPT_IDS 顺序对齐（硬闸） */
 export function assertHomeChainAligned(): boolean {
   return (
     HOME_CHAIN_STATIONS.length === MAIN_CHAIN_DEPT_IDS.length &&
     HOME_CHAIN_STATIONS.every((s, i) => s.deptId === MAIN_CHAIN_DEPT_IDS[i])
+  )
+}
+
+/** 每部专家岗数量硬闸：1–3 */
+export function assertHomeExpertsBounded(): boolean {
+  return HOME_CHAIN_STATIONS.every(
+    (s) => s.experts.length >= 1 && s.experts.length <= 3,
   )
 }
 
@@ -42,17 +80,16 @@ export const HOME_SAMPLE_DELIVERABLES = [
   { name: '申请文件稿', status: '示意' },
 ] as const
 
-/** A · 辅文（面积小于 E/C/D） */
+/** 辅文（可省；面积须远小于货架） */
 export const HOME_VALUE_LINE =
-  '帮企业研发和专利代理，把技术做成可递交的专利：按部门交卷往下走，关键关你确认（产品不替你签字）。'
+  '帮企业研发和专利代理，把技术做成可递交的专利。'
 
 export const HOME_HIGHLIGHTS = [
-  { title: '全流程一起办', body: '从交底到递交、答复，不是只给交底模板或查新插件。' },
-  { title: '按部门交卷', body: '像公司里办事，卡在哪一站看得见。' },
-  { title: '关键步骤你点头', body: '待你确认后再往下；无人确认不能装成已递交。' },
+  { title: '全流程一起办', body: '从交底到递交、答复。' },
+  { title: '按部门交卷', body: '卡在哪一站看得见。' },
+  { title: '关键步骤你点头', body: '待你确认后再往下。' },
 ] as const
 
-/** B · 路径微图 hops */
 export const HOME_PATH_HOPS = [
   '开案子 / 案盘',
   '公司首页',

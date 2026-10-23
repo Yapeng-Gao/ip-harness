@@ -12,8 +12,8 @@ import {
 } from '../business/homeIntroDismiss'
 
 /**
- * 产品首页 · /agent（§4.0a 混合首屏 · 内容块 A–G）
- * 教育块 E→C→D→A+B（可「已了解」收起；回访默认收起）→ 常显 F 主 CTA → G 真待确认
+ * 产品首页 · /agent（§4.0a 货架预览 · 非干活处）
+ * 教育块可「已了解」收起（回访默认收起）→ 常显大 CTA → 真待确认（只跳走确认页）
  */
 export function HomePage() {
   const { entryRole } = useEntryRole()
@@ -72,7 +72,7 @@ export function HomePage() {
       data-entry-role={entryRole}
       data-intro-expanded={introExpanded ? '1' : '0'}
     >
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="mx-auto w-full max-w-4xl">
         {introExpanded ? (
           <HomeContentPreview onDismiss={handleDismissIntro} />
         ) : (
@@ -83,7 +83,7 @@ export function HomePage() {
               onClick={handleExpandIntro}
               data-testid="home-intro-expand"
             >
-              看主链与交卷示意
+              看货架预览
               <ChevronDown className="h-3 w-3" aria-hidden />
             </button>
           </div>
@@ -92,16 +92,16 @@ export function HomePage() {
         <section aria-label="主要入口" className="space-y-3" data-testid="home-primary-actions">
           <Link
             to={primaryHref}
-            className="btn-press focus-ring flex flex-col gap-1 rounded-[var(--radius-md)] border border-slate-900 bg-slate-900 px-4 py-3.5 text-white shadow-[var(--shadow-rest)] hover:bg-slate-800"
+            className="btn-press focus-ring flex flex-col gap-1.5 rounded-[var(--radius-md)] border-2 border-slate-900 bg-slate-900 px-5 py-5 text-white shadow-[var(--shadow-rest)] hover:bg-slate-800"
             data-testid="home-action-primary"
             data-primary-role={entryRole}
           >
-            <span className="inline-flex items-center gap-1.5 text-[14px] font-semibold">
-              <Briefcase className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+            <span className="inline-flex items-center gap-2 text-[17px] font-bold tracking-tight">
+              <Briefcase className="h-5 w-5" strokeWidth={1.75} aria-hidden />
               {primaryLabel}
-              <ArrowRight className="ml-auto h-3.5 w-3.5 opacity-80" aria-hidden />
+              <ArrowRight className="ml-auto h-4 w-4 opacity-80" aria-hidden />
             </span>
-            <span className="text-[11px] leading-snug text-white/75">{primaryHint}</span>
+            <span className="text-[13px] leading-snug text-white/80">{primaryHint}</span>
           </Link>
 
           <div
