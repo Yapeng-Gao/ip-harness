@@ -9,6 +9,7 @@ import { navigablePeerSeatIds, type DeptPeer } from '../../business/deptRoster'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { BusinessSeatWorkbench } from '../../components/business/BusinessSeatWorkbench'
 import { CaseAssistantPanel } from '../../components/business/CaseAssistantPanel'
+import { DeptSidePanel } from '../../components/departments/DeptSidePanel'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import { deliverableForExpert } from '../../projects/patentDeliverables'
 import {
@@ -29,7 +30,7 @@ import {
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import type { ProjectExpertId } from '../../projects/types'
-import { CheckCircle2, Circle, ChevronRight } from 'lucide-react'
+import { CheckCircle2, Circle } from 'lucide-react'
 
 function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
   const known = DEPT_HANDOFF[deptId]
@@ -51,8 +52,9 @@ function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
 }
 
 /**
- * 部门工作台 · product-pages §2 / §4.4+
- * 首屏三块：交卷物 | 齐套/硬闸 | ≤3 专家建议；岗内工作区默认收起。
+ * 部门工作台 · product-pages §2 / §4.4+ / vision §6.3a
+ * 主区：交卷物 + 齐套/硬闸 + 交卷；右侧钉栏：≤3 专家+头像、交卷态、回公司/换部（与公司抽屉同构）。
+ * 岗内工作区默认收起。MVP 禁假指标/执行集群/工具引擎。
  */
 export function BusinessCaseDeptPage() {
   const { caseId = '', deptSlug: slug = '' } = useParams()
@@ -241,9 +243,37 @@ export function BusinessCaseDeptPage() {
     )
   }
 
+  const companyHref = `/agent/cases/${caseId}`
+  const statusLine = `${handoff.deliverable}${st ? ` · ${st}` : ''}`
+  const railExperts = peers.map((peer) => {
+    const peerSeat =
+      peer.kind === 'session' && peer.sessionSeatId
+        ? peer.sessionSeatId
+        : peer.leadSeatId
+    const selected =
+      seatOpen &&
+      (activeSeat === peerSeat ||
+        (peer.kind === 'placeholder' &&
+          activeSeat === peer.leadSeatId &&
+          pickedSeat === peer.leadSeatId))
+    return {
+      id: peer.id,
+      label: peerDisplayLabel(dept.id, peer.id, peer.label),
+      hint: peerSuggestionHint(dept.id, peer.id),
+      selected,
+      adopted: adoptedPeerIds.includes(peer.id),
+    }
+  })
+  const switchDepts = MAIN_CHAIN_DEPTS.map((d) => ({
+    id: d.id,
+    label: deptLabel(d),
+    href: `/agent/cases/${caseId}/depts/${deptSlug(d.id)}`,
+    active: d.id === dept.id,
+  }))
+
   return (
     <div
-      className="flex min-h-0 flex-1 flex-col overflow-hidden"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden bg-slate-50"
       data-testid="business-case-dept-page"
       data-case-id={caseId}
       data-dept-id={dept.id}
@@ -255,7 +285,7 @@ export function BusinessCaseDeptPage() {
             多案流水
           </Link>
           <span>/</span>
-          <Link to={`/agent/cases/${caseId}`} className="hover:underline">
+          <Link to={companyHref} className="hover:underline">
             {c.title}
           </Link>
           <span>/</span>
@@ -272,28 +302,13 @@ export function BusinessCaseDeptPage() {
               {stageLabel(prog.stageId)}
               {st ? ` · ${st}` : ''}
             </p>
-            <div className="mt-2 flex flex-wrap gap-1.5" aria-label="七部微进度">
-              {MAIN_CHAIN_DEPTS.map((d) => (
-                <Link
-                  key={d.id}
-                  to={`/agent/cases/${caseId}/depts/${deptSlug(d.id)}`}
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                    d.id === dept.id
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {deptLabel(d)}
-                </Link>
-              ))}
-            </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
-              to={`/agent/cases/${caseId}`}
+              to={companyHref}
               className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
             >
-              公司首页
+              回公司首页
             </Link>
             <Link
               to={pending[0] ? `/agent/pending/${pending[0].id}` : '/agent/pending'}
@@ -341,37 +356,38 @@ export function BusinessCaseDeptPage() {
         </div>
       )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 lg:px-6">
-        <div
-          className="mx-auto grid w-full max-w-5xl gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]"
-          data-testid="dept-handoff-shell"
-        >
-          <section
-            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-            data-testid="dept-deliverable"
-            aria-labelledby="dept-deliverable-title"
-          >
-            <h2
-              id="dept-deliverable-title"
-              className="text-[13px] font-semibold text-slate-900"
+      <div
+        className="flex min-h-0 flex-1 overflow-hidden"
+        data-testid="dept-handoff-shell"
+      >
+        {/* 主区：交卷物 + 齐套 */}
+        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto px-4 py-4 lg:px-6">
+          <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+            <section
+              className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+              data-testid="dept-deliverable"
+              aria-labelledby="dept-deliverable-title"
             >
-              交卷物
-            </h2>
-            <p className="mt-1 text-[12px] leading-relaxed text-slate-600">
-              {handoff.deliverable}
-            </p>
-            {deliverableSummary ? (
-              <pre className="mt-3 max-h-56 overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-600 whitespace-pre-wrap">
-                {deliverableSummary}
-              </pre>
-            ) : (
-              <p className="mt-2 text-[11px] text-slate-400">
-                样机摘要占位：点右侧专家岗后，可在岗内工作区起草与预览。此处不编辑定稿、不改法律状态。
+              <h2
+                id="dept-deliverable-title"
+                className="text-[13px] font-semibold text-slate-900"
+              >
+                交卷物
+              </h2>
+              <p className="mt-1 text-[12px] leading-relaxed text-slate-600">
+                {handoff.deliverable}
               </p>
-            )}
-          </section>
+              {deliverableSummary ? (
+                <pre className="mt-3 max-h-56 overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-600 whitespace-pre-wrap">
+                  {deliverableSummary}
+                </pre>
+              ) : (
+                <p className="mt-2 text-[11px] text-slate-400">
+                  样机摘要占位：点右侧专家岗后，可在岗内工作区起草与预览。此处不编辑定稿、不改法律状态。
+                </p>
+              )}
+            </section>
 
-          <div className="flex flex-col gap-4">
             <section
               className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
               data-testid="dept-checklist"
@@ -405,7 +421,9 @@ export function BusinessCaseDeptPage() {
                         aria-hidden
                       />
                     )}
-                    <span className={item.done ? 'text-slate-700' : 'text-slate-500'}>
+                    <span
+                      className={item.done ? 'text-slate-700' : 'text-slate-500'}
+                    >
                       {item.label}
                     </span>
                   </li>
@@ -413,7 +431,7 @@ export function BusinessCaseDeptPage() {
               </ul>
               {!allChecklistDone ? (
                 <p className="mt-2 text-[11px] text-amber-800">
-                  缺项未清前不能交卷。先点专家岗补建议，或进入专家岗继续办。
+                  缺项未清前不能交卷。先点右侧专家岗补建议，或进入专家岗继续办。
                 </p>
               ) : null}
               <p className="mt-2 text-[10px] text-slate-400">
@@ -421,110 +439,16 @@ export function BusinessCaseDeptPage() {
               </p>
             </section>
 
-            <section
-              className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-              data-testid="dept-experts"
-              aria-labelledby="dept-experts-title"
-            >
-              <h2
-                id="dept-experts-title"
-                className="text-[13px] font-semibold text-slate-900"
+            {seatOpen ? (
+              <section
+                className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+                data-testid="dept-seat-workbench-wrap"
+                aria-label="岗内工作区"
               >
-                专家建议
-                <span className="ml-1.5 text-[11px] font-normal text-slate-400">
-                  ≤3 · 建议稿可采纳
-                </span>
-              </h2>
-              {peers.length === 0 ? (
-                <p className="mt-2 text-[12px] text-slate-500">
-                  本部门暂无专家岗配置；可直接进入专家岗。
-                </p>
-              ) : (
-                <ul className="mt-2 space-y-2">
-                  {peers.map((peer) => {
-                    const peerSeat =
-                      peer.kind === 'session' && peer.sessionSeatId
-                        ? peer.sessionSeatId
-                        : peer.leadSeatId
-                    const selected =
-                      seatOpen &&
-                      (activeSeat === peerSeat ||
-                        (peer.kind === 'placeholder' &&
-                          activeSeat === peer.leadSeatId &&
-                          pickedSeat === peer.leadSeatId))
-                    const label = peerDisplayLabel(dept.id, peer.id, peer.label)
-                    const hint = peerSuggestionHint(dept.id, peer.id)
-                    const adopted = adoptedPeerIds.includes(peer.id)
-                    return (
-                      <li
-                        key={peer.id}
-                        className={`rounded-lg border px-3 py-2 ${
-                          selected
-                            ? 'border-slate-900 bg-slate-900 text-white'
-                            : 'border-slate-200 bg-slate-50 text-slate-800'
-                        }`}
-                        data-testid={`dept-expert-${peer.id}`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => openPeer(peer)}
-                          className="focus-ring flex w-full items-center justify-between text-left"
-                        >
-                          <span className="text-[12px] font-medium">{label}</span>
-                          <ChevronRight
-                            className={`h-3.5 w-3.5 shrink-0 ${
-                              selected ? 'text-white/70' : 'text-slate-300'
-                            }`}
-                            aria-hidden
-                          />
-                        </button>
-                        <p
-                          className={`mt-1 text-[11px] leading-relaxed ${
-                            selected ? 'text-white/75' : 'text-slate-500'
-                          }`}
-                        >
-                          {hint}
-                        </p>
-                        <div className="mt-1.5 flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => toggleAdopt(peer.id)}
-                            className={`btn-press focus-ring rounded-md px-2 py-0.5 text-[10px] font-semibold ${
-                              adopted
-                                ? selected
-                                  ? 'bg-white text-slate-900'
-                                  : 'bg-emerald-600 text-white'
-                                : selected
-                                  ? 'bg-white/15 text-white'
-                                  : 'bg-white text-slate-700 ring-1 ring-slate-200'
-                            }`}
-                            data-testid={`dept-expert-adopt-${peer.id}`}
-                          >
-                            {adopted ? '已采纳意向' : '采纳'}
-                          </button>
-                          <span
-                            className={`text-[10px] ${
-                              selected ? 'text-white/50' : 'text-slate-400'
-                            }`}
-                          >
-                            样机意向，不改法律状态
-                          </span>
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
-              )}
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={openLeadSeat}
-                  className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
-                  data-testid="dept-enter-seat"
-                >
-                  进入专家岗 · {businessSeatLabel(dept.leadSeatId)}
-                </button>
-                {seatOpen ? (
+                <div className="mb-2 flex items-center justify-between gap-2 px-1">
+                  <p className="text-[11px] font-medium text-slate-500">
+                    岗内 · {businessSeatLabel(activeSeat)}
+                  </p>
                   <button
                     type="button"
                     onClick={() => {
@@ -538,66 +462,103 @@ export function BusinessCaseDeptPage() {
                         { replace: true },
                       )
                     }}
-                    className="btn-press focus-ring rounded-md px-2.5 py-1.5 text-[11px] font-medium text-slate-500 underline-offset-2 hover:underline"
+                    className="btn-press focus-ring rounded-md px-2 py-1 text-[11px] font-medium text-slate-500 underline-offset-2 hover:underline"
                     data-testid="dept-close-seat"
                   >
                     收起岗内工作区
                   </button>
-                ) : null}
-              </div>
-            </section>
-
-            {lastReturnHint ? null : (
-              <section
-                className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-3"
-                data-testid="dept-reflow-empty"
-              >
-                <h2 className="text-[12px] font-semibold text-slate-700">回流 / 说明</h2>
-                <p className="mt-1 text-[11px] text-slate-500">
-                  确认页驳回后意见会落在这里；当前无回流。
-                </p>
+                </div>
+                <CaseAssistantPanel
+                  caseId={caseId}
+                  stageId={prog.stageId}
+                  activeSeat={activeSeat}
+                  onSwitchSeat={switchSeat}
+                />
+                <BusinessSeatWorkbench
+                  caseId={caseId}
+                  seatId={activeSeat}
+                  workNonce={workNonce}
+                  onAdvanced={(confirmId) => {
+                    if (confirmId) navigate(`/agent/pending/${confirmId}`)
+                  }}
+                  onSwitchSeat={switchSeat}
+                />
               </section>
-            )}
-          </div>
-
-          {seatOpen ? (
-            <section
-              className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm lg:col-span-2"
-              data-testid="dept-seat-workbench-wrap"
-              aria-label="岗内工作区"
-            >
-              <p className="mb-2 px-1 text-[11px] font-medium text-slate-500">
-                岗内 · {businessSeatLabel(activeSeat)}
+            ) : (
+              <p
+                className="text-center text-[11px] text-slate-400"
+                data-testid="dept-seat-collapsed-hint"
+              >
+                岗内工作区默认收起。点右侧专家岗后再打开；首屏先看交卷物与齐套。
               </p>
-              <CaseAssistantPanel
-                caseId={caseId}
-                stageId={prog.stageId}
-                activeSeat={activeSeat}
-                onSwitchSeat={switchSeat}
-              />
-              <BusinessSeatWorkbench
-                caseId={caseId}
-                seatId={activeSeat}
-                workNonce={workNonce}
-                onAdvanced={(confirmId) => {
-                  if (confirmId) navigate(`/agent/pending/${confirmId}`)
-                }}
-                onSwitchSeat={switchSeat}
-              />
-            </section>
-          ) : (
-            <p
-              className="text-center text-[11px] text-slate-400 lg:col-span-2"
-              data-testid="dept-seat-collapsed-hint"
-            >
-              岗内工作区默认收起。点专家岗或「进入专家岗」后再打开；首屏先看交卷物与齐套。
-            </p>
-          )}
+            )}
 
-          <p className="mt-1 text-center text-[11px] text-slate-400 lg:col-span-2">
-            演示环境：进度与确认为样机闭环，非真递交局端。
-          </p>
+            <p className="text-center text-[11px] text-slate-400">
+              演示环境：进度与确认为样机闭环，非真递交局端。
+            </p>
+          </div>
         </div>
+
+        {/* 右侧钉栏 · 与公司首页抽屉同构 */}
+        <div
+          className="hidden w-[17.5rem] shrink-0 border-l border-slate-200 bg-white lg:flex lg:flex-col"
+          data-testid="dept-right-rail"
+        >
+          <DeptSidePanel
+            variant="rail"
+            deptLabel={deptLabel(dept)}
+            statusLine={statusLine}
+            status={st ?? undefined}
+            experts={railExperts}
+            companyHref={companyHref}
+            switchDepts={switchDepts}
+            showAdopt
+            onAdopt={toggleAdopt}
+            onExpertClick={(peerId) => {
+              const peer = peers.find((p) => p.id === peerId)
+              if (peer) openPeer(peer)
+              else openLeadSeat()
+            }}
+            primaryAction={{
+              label: `进入专家岗 · ${businessSeatLabel(dept.leadSeatId)}`,
+              onClick: openLeadSeat,
+              testId: 'dept-enter-seat',
+            }}
+            returnHint={lastReturnHint}
+            testId="dept-side-panel"
+            className="h-full"
+          />
+        </div>
+      </div>
+
+      {/* 窄屏：钉栏改底栏抽屉入口（§2 移动端） */}
+      <div
+        className="shrink-0 border-t border-slate-200 bg-white px-3 py-2 lg:hidden"
+        data-testid="dept-rail-mobile"
+      >
+        <DeptSidePanel
+          variant="rail"
+          deptLabel={deptLabel(dept)}
+          statusLine={statusLine}
+          status={st ?? undefined}
+          experts={railExperts}
+          companyHref={companyHref}
+          switchDepts={switchDepts}
+          showAdopt
+          onAdopt={toggleAdopt}
+          onExpertClick={(peerId) => {
+            const peer = peers.find((p) => p.id === peerId)
+            if (peer) openPeer(peer)
+            else openLeadSeat()
+          }}
+          primaryAction={{
+            label: `进入专家岗 · ${businessSeatLabel(dept.leadSeatId)}`,
+            onClick: openLeadSeat,
+            testId: 'dept-enter-seat-mobile',
+          }}
+          testId="dept-side-panel-mobile"
+          className="max-h-64"
+        />
       </div>
     </div>
   )
