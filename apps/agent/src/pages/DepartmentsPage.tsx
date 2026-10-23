@@ -47,7 +47,15 @@ export function DepartmentsPage() {
             组织编制
           </h1>
           <span className="text-[11px] text-slate-500">
-            全库配置旁路 · 作业请从案子进七部 · {enabledDepts.length} 个常设部门
+            全库配置旁路 · 作业以{' '}
+            <Link
+              to="/agent/cases"
+              className="font-medium text-sky-700 hover:underline"
+              data-testid="departments-to-cases"
+            >
+              案子 → 公司首页七部
+            </Link>{' '}
+            为主 · {enabledDepts.length} 个常设部门
           </span>
 
           <div className="ml-auto flex items-center gap-2">

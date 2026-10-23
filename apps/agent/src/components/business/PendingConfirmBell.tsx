@@ -2,7 +2,7 @@ import { Link, useMatch } from 'react-router-dom'
 import { Bell } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 
-/** 顶栏「待我确认」铃铛 · 案页上下文时只计/只链本案 pending */
+/** 顶栏「待我确认」铃铛 · 无案时 getPendingConfirms() 含种子（与 HomeTodoStrip 同源）；案页只计本案 */
 export function PendingConfirmBell() {
   const { getPendingConfirms } = useBusinessCases()
   const caseMatch = useMatch({ path: '/agent/cases/:caseId', end: false })

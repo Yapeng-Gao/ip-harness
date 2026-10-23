@@ -9,7 +9,7 @@ export const BUSINESS_SEED_IDS = {
 
 const BUSINESS_SEED_ID_SET = new Set<string>(Object.values(BUSINESS_SEED_IDS))
 
-/** 种子案 id（Lab/环边演示）；全局收件箱默认不展示其 pending */
+/** 种子案 id（Lab/环边演示）；识别用。全局 pending 无参现已含种子（与首页待办/铃铛同源） */
 export function isBusinessSeedCaseId(caseId: string): boolean {
   return BUSINESS_SEED_ID_SET.has(caseId)
 }

@@ -42,7 +42,7 @@ import { CaseMembersPage } from './pages/business/CaseMembersPage'
  * IA（2026-10-21）：
  * /agent              首页（项目列表 + 简报 + 待办 + 对话框）
  * /agent/cases        我的案子（原首页）
- * /agent/departments  部门（HR 式管理，取代 catalog）
+ * /agent/departments  组织编制（全库配置旁路；作业以案→公司首页七部为主）
  * /agent/assets       资产（全局库 + 文件树）
  */
 export default function App() {
