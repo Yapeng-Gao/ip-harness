@@ -18,6 +18,7 @@ import {
   peerDisplayLabel,
 } from '../../departments/deptPageNarrative'
 import {
+  handoffIncompleteSentence,
   handoffPhaseFromStatus,
   handoffPhaseLabel,
   handoffStatusSentence,
@@ -113,7 +114,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </span>
         </div>
         <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
-          七部等宽总览；点某部看专家与交卷态，再去干活。
+          七部等宽总览。点某部开右侧抽屉看专家与交卷态；主按钮去当前部门干活。
         </p>
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
           <h2 className="text-[16px] font-semibold text-slate-900">{title}</h2>
@@ -239,7 +240,10 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
                     data-testid={`dept-map-phase-${dept.id}`}
                     data-handoff-phase={handoffPhaseFromStatus(st)}
                   >
-                    {handoffPhaseLabel(handoffPhaseFromStatus(st))}
+                    {handoffPhaseFromStatus(st) === '齐套中'
+                      ? (handoffIncompleteSentence(dept.id) ??
+                        handoffPhaseLabel('齐套中'))
+                      : handoffPhaseLabel(handoffPhaseFromStatus(st))}
                     {roll?.pendingCount && st !== '待确认'
                       ? ` · 待确认 ${roll.pendingCount}`
                       : ''}

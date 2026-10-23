@@ -52,13 +52,22 @@ export function handoffPhaseLabel(phase: HandoffPhase): string {
   }
 }
 
-/** 公司首页抽屉 / 部门台右栏：交卷物 + 交卷态一句 */
+/** 齐套中演示缺项一句（对齐原型「未齐套 · 缺权属声明」） */
+export function handoffIncompleteSentence(deptId: OrgDeptId): string | null {
+  const gap = DEPT_HANDOFF[deptId]?.demoGap?.trim()
+  return gap ? `未齐套 · 缺${gap}` : null
+}
+
+/** 公司首页抽屉 / 部门台右栏：交卷态一句 */
 export function handoffStatusSentence(
   deptId: OrgDeptId,
   status: DeptStatus,
 ): string {
   const deliverable = DEPT_HANDOFF[deptId]?.deliverable ?? '本站交卷物待配置'
   const phase = handoffPhaseFromStatus(status)
+  if (phase === '齐套中') {
+    return handoffIncompleteSentence(deptId) ?? `${deliverable} · 齐套中`
+  }
   return `${deliverable} · ${handoffPhaseLabel(phase)}`
 }
 
