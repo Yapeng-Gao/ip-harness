@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
   buildCasePlanFromIntake,
-  resolveCasePlanStart,
   type CaseIntakeAnswers,
 } from '../../business/casePlanDrive'
 import {
@@ -133,11 +132,6 @@ export function BusinessCaseNewPage() {
         skipPrepare,
         routeId,
       })
-    const planStart = resolveCasePlanStart({
-      casePlan: plan,
-      skipPrepare,
-      routeId,
-    })
     const p = createCaseFromWizard({
       title: title.trim() || '未命名案子',
       summary: summary.trim() || intake.protectWhat.trim(),
@@ -145,7 +139,7 @@ export function BusinessCaseNewPage() {
       skipPrepare,
       casePlan: plan,
     })
-    navigate(`/agent/cases/${p.id}?seat=${planStart.seatId}`)
+    navigate(`/agent/cases/${p.id}`)
   }
 
   return (
@@ -164,7 +158,7 @@ export function BusinessCaseNewPage() {
           </div>
           <h1 className="text-[20px] font-semibold text-slate-900">新建案子</h1>
           <p className="mt-1 text-sm text-slate-500">
-            先轻量摸底、整理本案计划，再按节点开干（与侧栏一致）
+            外挂知识产权部 · 先轻量摸底，建完进公司首页再进部门干活
           </p>
 
           <ol className="mt-4 flex flex-wrap gap-2">
@@ -521,7 +515,7 @@ export function BusinessCaseNewPage() {
               className="btn-press focus-ring rounded-md bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
               data-testid="business-new-submit"
             >
-              创建并进入案子
+              创建并进入公司首页
             </button>
           )}
         </div>

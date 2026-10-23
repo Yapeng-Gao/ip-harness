@@ -1,3 +1,7 @@
+import {
+  deptSlug,
+  orgDeptByLeadSeat,
+} from '../../departments/orgDepts'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
@@ -181,8 +185,12 @@ export function PendingConfirmDetailPage() {
           : `业务进度已更新 · 中台交接未写入（${synced.midMessage}）`,
       )
       const nextSeat = nextSeatAfterConfirm(item.kind, pass)
+      const nextDept = orgDeptByLeadSeat(nextSeat)
+      const nextPath = nextDept
+        ? `/agent/cases/${item.caseId}/depts/${deptSlug(nextDept.id)}?seat=${nextSeat}`
+        : `/agent/cases/${item.caseId}`
       window.setTimeout(() => {
-        navigate(`/agent/cases/${item.caseId}?seat=${nextSeat}`, {
+        navigate(nextPath, {
           state: { confirmed: item.kind },
         })
       }, 400)
@@ -214,8 +222,12 @@ export function PendingConfirmDetailPage() {
           ? `${base} · 中台交接未写入（${synced.midMessage}）`
           : base,
       )
+      const ownerDept = orgDeptByLeadSeat(ownerSeat)
+      const backPath = ownerDept
+        ? `/agent/cases/${item.caseId}/depts/${deptSlug(ownerDept.id)}?seat=${ownerSeat}`
+        : `/agent/cases/${item.caseId}`
       window.setTimeout(() => {
-        navigate(`/agent/cases/${item.caseId}?seat=${ownerSeat}`)
+        navigate(backPath)
       }, 500)
     })()
   }

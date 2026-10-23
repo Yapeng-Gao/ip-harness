@@ -27,6 +27,10 @@ import {
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { CaseTeamPanel } from './CaseTeamPanel'
 import type { ProjectExpertId } from '../../projects/types'
+import {
+  deptSlug,
+  orgDeptByLeadSeat,
+} from '../../departments/orgDepts'
 
 /**
  * 业务壳左栏：案子列表 + 本案节点 + 组队 + 群聊
@@ -49,6 +53,11 @@ export function BusinessCaseSidebar() {
   const activeCaseId = useMemo(() => {
     const m = loc.pathname.match(/^\/agent\/cases\/([^/]+)/)
     return m?.[1] && m[1] !== 'new' ? m[1] : undefined
+  }, [loc.pathname])
+
+  const activeDeptSlug = useMemo(() => {
+    const m = loc.pathname.match(/^\/agent\/cases\/[^/]+\/depts\/([^/]+)/)
+    return m?.[1]
   }, [loc.pathname])
 
   // 案内：默认收起「全部案子」，把侧栏留给节点 / 团队
@@ -109,9 +118,20 @@ export function BusinessCaseSidebar() {
   }, [activeSeat, defaultSeat, activeCaseId])
 
   const seatHref = (sid: ProjectExpertId) => {
+    if (drillMode) {
+      const q = new URLSearchParams()
+      q.set('seat', sid)
+      q.set('drill', '1')
+      return `/agent/cases/${activeCaseId}?${q.toString()}`
+    }
+    const dept = orgDeptByLeadSeat(sid)
+    if (dept) {
+      const q = new URLSearchParams()
+      q.set('seat', sid)
+      return `/agent/cases/${activeCaseId}/depts/${deptSlug(dept.id)}?${q.toString()}`
+    }
     const q = new URLSearchParams()
     q.set('seat', sid)
-    if (drillMode) q.set('drill', '1')
     return `/agent/cases/${activeCaseId}?${q.toString()}`
   }
 
@@ -126,7 +146,15 @@ export function BusinessCaseSidebar() {
   }
 
   const renderSeatLink = (sid: ProjectExpertId, label: string) => {
-    const selected = activeSeat === sid
+    const deptOfSeat = orgDeptByLeadSeat(sid)
+    const selected =
+      activeSeat === sid ||
+      Boolean(
+        activeDeptSlug &&
+          deptOfSeat &&
+          deptSlug(deptOfSeat.id) === activeDeptSlug &&
+          deptOfSeat.leadSeatId === sid,
+      )
     const done = prog?.doneSeatIds.includes(sid) ?? false
     const isPending = seatPending(sid)
     return (
