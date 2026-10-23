@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Briefcase, FolderOpen, Plus } from 'lucide-react'
+import { ArrowRight, Briefcase, ChevronDown, ChevronUp, FolderOpen, Plus } from 'lucide-react'
 import { HomeTodoStrip } from '../components/home/HomeTodoStrip'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
@@ -8,15 +8,35 @@ import {
   resolveRolePrimaryPath,
 } from '../business/entryRole'
 import { useEntryRole } from '../business/useEntryRole'
+import {
+  dismissHomeIntro,
+  isHomeIntroDismissed,
+} from '../business/homeIntroDismiss'
+
+/** product-pages §4.0a · 价值一句（定稿） */
+const HOME_VALUE_LINE =
+  '给没有 IP 部（或人手不够）的团队，装上外挂知识产权部——按专利全流程办事；关键关待你确认，产品不替人签字。'
+
+/** product-pages §4.0a · 亮点 ≤3（定稿） */
+const HOME_HIGHLIGHTS = [
+  { title: '全流程拿专利', body: '不是单点交底或查新工具。' },
+  { title: '像公司一样办事', body: '进部门、看专家交卷，不用学黑话。' },
+  { title: '关键关你拍板', body: '交卷后待你确认，再往下走。' },
+] as const
+
+/** product-pages §4.0a · 上手路径微图 hops（只认知，不可点进作业） */
+const PATH_HOPS = ['开案子 / 案盘', '公司首页', '部门交卷', '待你确认'] as const
 
 /**
- * 产品首页 · /agent（§4.0a 薄总览）
- * 首屏三块：定位句 → 按角色主 CTA → 待确认摘要
- * 次要：弱链多案/开案；壳内切角色（顶栏）
+ * 产品首页 · /agent（§4.0a 混合首屏）
+ * ①价值一句 → ②≤3亮点 → ③上手微图 → ④定位条 → ⑤角色主 CTA → ⑥待确认
+ * ①–③「已了解」localStorage 收起；回访默认收起；主 CTA + 待确认常显
  */
 export function HomePage() {
   const { entryRole } = useEntryRole()
   const { cases, getProgress, getProcessLogs } = useBusinessCases()
+
+  const [introExpanded, setIntroExpanded] = useState(() => !isHomeIntroDismissed())
 
   const getLogAt = useMemo(
     () => (id: string) => {
@@ -42,15 +62,24 @@ export function HomePage() {
   const enterpriseHasCase = !isAgency && cases.length > 0
 
   const primaryLabel = isAgency
-    ? '进多案流水'
+    ? '进入案盘'
     : enterpriseHasCase
-      ? '进公司首页'
+      ? '进入本案公司'
       : '开案子'
   const primaryHint = isAgency
-    ? '案盘 · 看卡住哪、谁在等确认'
+    ? '看各案卡在哪、谁待确认'
     : enterpriseHasCase
-      ? '最近案子 · 先看懂部门与专家，再干活'
-      : '还没有案子 · 先立一条业务线'
+      ? '先看懂本案 IP 部，再去当前部门'
+      : '立一条业务线，再进公司'
+
+  const handleDismissIntro = () => {
+    dismissHomeIntro()
+    setIntroExpanded(false)
+  }
+
+  const handleExpandIntro = () => {
+    setIntroExpanded(true)
+  }
 
   return (
     <div
@@ -58,9 +87,85 @@ export function HomePage() {
       data-testid="agent-home-page"
       data-home="overview"
       data-entry-role={entryRole}
+      data-intro-expanded={introExpanded ? '1' : '0'}
     >
       <div className="mx-auto w-full max-w-3xl">
-        <header className="mb-5">
+        {introExpanded ? (
+          <section
+            aria-label="了解产品"
+            className="mb-5 space-y-3"
+            data-testid="home-intro-block"
+          >
+            <p
+              className="text-pretty text-[14px] font-medium leading-relaxed text-slate-900"
+              data-testid="home-value-line"
+            >
+              {HOME_VALUE_LINE}
+            </p>
+
+            <ul
+              className="space-y-2 rounded-[var(--radius-md)] border border-slate-200 bg-white px-3 py-3 shadow-[var(--shadow-rest)]"
+              data-testid="home-highlights"
+            >
+              {HOME_HIGHLIGHTS.map((h) => (
+                <li key={h.title} className="text-[12px] leading-snug text-slate-700">
+                  <span className="font-semibold text-slate-900">{h.title}</span>
+                  <span className="text-slate-500"> · </span>
+                  <span>{h.body}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div
+              className="rounded-[var(--radius-md)] border border-dashed border-slate-200 bg-slate-50/80 px-3 py-2.5"
+              data-testid="home-path-micro"
+              aria-label="上手路径（示意）"
+            >
+              <p className="mb-1.5 text-[11px] font-medium text-slate-500">
+                上手路径 · 示意（不可点进作业）
+              </p>
+              <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                {PATH_HOPS.map((hop, i) => (
+                  <li key={hop} className="inline-flex items-center gap-1.5">
+                    {i > 0 ? (
+                      <span className="text-[11px] text-slate-300" aria-hidden>
+                        →
+                      </span>
+                    ) : null}
+                    <span className="rounded-full border border-slate-200 bg-slate-100/90 px-2 py-0.5 text-[11px] font-medium text-slate-500">
+                      {hop}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="btn-press focus-ring rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:border-slate-300 hover:text-slate-800"
+                onClick={handleDismissIntro}
+                data-testid="home-intro-dismiss"
+              >
+                已了解
+              </button>
+            </div>
+          </section>
+        ) : (
+          <div className="mb-3 flex justify-end" data-testid="home-intro-collapsed">
+            <button
+              type="button"
+              className="btn-press focus-ring inline-flex items-center gap-1 rounded-[var(--radius-sm)] px-2 py-1 text-[11px] font-medium text-slate-500 hover:text-slate-800"
+              onClick={handleExpandIntro}
+              data-testid="home-intro-expand"
+            >
+              了解产品
+              <ChevronDown className="h-3 w-3" aria-hidden />
+            </button>
+          </div>
+        )}
+
+        <header className="mb-5" data-testid="home-locator">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <p
               className="text-[11px] font-medium uppercase tracking-wider text-slate-500"
@@ -74,6 +179,18 @@ export function HomePage() {
             >
               当前入口 · {ENTRY_ROLE_LABEL[entryRole]}
             </span>
+            {introExpanded ? (
+              <button
+                type="button"
+                className="btn-press focus-ring ml-auto inline-flex items-center gap-0.5 rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] text-slate-400 hover:text-slate-600"
+                onClick={handleDismissIntro}
+                data-testid="home-intro-collapse"
+                aria-label="收起说明"
+              >
+                收起
+                <ChevronUp className="h-3 w-3" aria-hidden />
+              </button>
+            ) : null}
           </div>
           <h1
             className="mt-1 text-[24px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-[28px]"
@@ -81,12 +198,6 @@ export function HomePage() {
           >
             产品首页
           </h1>
-          <p
-            className="mt-1.5 text-pretty text-[13px] leading-relaxed text-slate-600"
-            data-testid="home-tagline"
-          >
-            把知产工作当成外挂 IP 部来跑。本页只做总览与分流；部门地图与「去当前部门」在案级公司首页，不在此页抢戏。
-          </p>
         </header>
 
         <section aria-label="主要入口" className="space-y-3" data-testid="home-primary-actions">
