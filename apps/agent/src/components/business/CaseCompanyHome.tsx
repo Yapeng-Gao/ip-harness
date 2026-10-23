@@ -27,6 +27,7 @@ import {
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import { DeptStatusDot } from '../departments/DeptStatusDot'
 import { DeptSideDrawer } from '../departments/DeptSideDrawer'
+import { ExpertAvatar } from '../departments/ExpertAvatar'
 
 type Props = {
   caseId: string
@@ -43,7 +44,7 @@ function handoffStatusLine(deptId: OrgDeptId, status: DeptStatus): string {
 
 /**
  * 公司首页 · product-pages §4.3 / vision §6.3a
- * 定位句 + 七部等宽卡片网格（当前高亮）+ 点部右侧抽屉（≤3专家+头像、交卷态一句、去该部干活）
+ * 定位句 + 七部等宽卡片网格（当前高亮；卡底≤3专家照片头像）+ 点部右侧抽屉（≤3专家+头像、交卷态一句、去该部干活）
  * + 页级主 CTA「去当前部门」；浅色壳；右侧禁假指标/执行集群/工具引擎
  */
 export function CaseCompanyHome({ caseId, title, summary }: Props) {
@@ -243,6 +244,30 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
                     {roll?.pendingCount
                       ? ` · 待确认 ${roll.pendingCount}`
                       : ''}
+                  </span>
+                  <span
+                    className="mt-auto flex items-center pt-1.5"
+                    data-testid={`dept-map-avatars-${dept.id}`}
+                    aria-hidden
+                  >
+                    {dept.peers.slice(0, 3).map((peer, pi) => (
+                      <span
+                        key={peer.id}
+                        className={pi > 0 ? '-ml-1.5' : undefined}
+                        style={{ zIndex: 3 - pi }}
+                      >
+                        <ExpertAvatar
+                          name={peerDisplayLabel(
+                            dept.id,
+                            peer.id,
+                            peer.label,
+                          )}
+                          size="sm"
+                          tone={active ? 'onDark' : 'light'}
+                          seed={peer.id}
+                        />
+                      </span>
+                    ))}
                   </span>
                 </button>
               </li>
