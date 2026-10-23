@@ -5,20 +5,11 @@ import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { CONFIRM_META } from '../../business/businessSeats'
 
 /**
- * 首页待办条 · 待我确认
- * 口径：getPendingConfirms() 无参只返回用户自建案的 pending（种子案不计），
- * 这里明说，避免「看不到待办」被误判为 bug。
+ * 首页待办条 · 待我确认（与顶栏铃铛同源：getPendingConfirms()）
  */
 export function HomeTodoStrip() {
   const { getPendingConfirms, cases } = useBusinessCases()
-  /**
-   * getPendingConfirms() 无参时按设计过滤掉演示案；首页要看全量，
-   * 所以按案聚合，口径与部门页一致。
-   */
-  const pending = useMemo(
-    () => cases.flatMap((c) => getPendingConfirms(c.id)),
-    [cases, getPendingConfirms],
-  )
+  const pending = useMemo(() => getPendingConfirms(), [getPendingConfirms])
 
   if (pending.length === 0) {
     return (

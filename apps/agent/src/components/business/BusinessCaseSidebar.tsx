@@ -530,25 +530,14 @@ export function BusinessCaseSidebar() {
               {teamCount > 0 ? ` · ${teamCount}` : ''}
             </Link>
 
-            {pending.length > 0 && (
-              <div className="mt-2 rounded-md border border-amber-100 bg-amber-50/80 p-1.5">
-                <div className="mb-1 px-0.5 text-[9px] font-semibold uppercase text-amber-700">
-                  待我确认 · {pending.length}
-                </div>
-                <ul className="space-y-1">
-                  {pending.slice(0, 3).map((item) => (
-                    <li key={item.id}>
-                      <Link
-                        to={`/agent/pending/${item.id}`}
-                        className="block truncate rounded border border-amber-100 bg-white/70 px-1.5 py-1 text-[10px] font-medium text-amber-950"
-                        data-testid={`business-case-pending-${item.id}`}
-                      >
-                        {item.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+{pending.length > 0 && (
+              <Link
+                to={`/agent/pending?caseId=${encodeURIComponent(activeCaseId!)}`}
+                className="mt-2 flex items-center justify-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-1.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100"
+                data-testid="business-case-pending-link"
+              >
+                待我确认 · {pending.length}（顶栏铃铛同口径）
+              </Link>
             )}
           </div>
         )}

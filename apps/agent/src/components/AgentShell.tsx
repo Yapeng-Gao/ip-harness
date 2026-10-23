@@ -119,7 +119,7 @@ export function AgentShell() {
       : inCatalog
         ? '专家工作台'
         : inDepartments
-          ? '部门'
+          ? '组织编制'
           : inAssets
             ? '资产'
             : inBusiness

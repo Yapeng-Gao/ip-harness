@@ -4,7 +4,6 @@ import {
   Activity,
   ArrowRight,
   CheckCircle2,
-  Clock,
   FolderKanban,
   type LucideIcon,
 } from 'lucide-react'
@@ -16,27 +15,20 @@ import { confirmKindOf } from '../../departments/deptProgress'
 
 /**
  * 首页简报 · 按现有数据派生（样机）
- * 无新后端：在办项目 / 待确认 / 最近动作，全部从既有 context 读。
+ * 无新后端：在办项目 / 在办案子 / 最近动作。待确认只在上方待办条 + 顶栏铃铛。
  */
 export function HomeBriefing() {
-  const { cases, getProgress, getPendingConfirms, getProcessLogs, stageLabel } =
+  const { cases, getProgress, getProcessLogs, stageLabel } =
     useBusinessCases()
   const { folderProjects, getTimeline } = useProjectFolder()
-
-  /** 与首页待办同一口径：按案聚合，含演示案 */
-  const pending = useMemo(
-    () => cases.flatMap((c) => getPendingConfirms(c.id)),
-    [cases, getPendingConfirms],
-  )
 
   const stats = useMemo(
     () => ({
       activeProjects: folderProjects.length,
       activeCases: cases.filter((c) => getProgress(c.id).completedStages.length < 5)
         .length,
-      pendingCount: pending.length,
     }),
-    [cases, folderProjects, getProgress, pending.length],
+    [cases, folderProjects, getProgress],
   )
 
   /** 最近动作：优先 process log，没有则退到 timeline */
@@ -94,9 +86,8 @@ export function HomeBriefing() {
         <span className="text-[11px] text-slate-500">样机 · 按现有数据派生</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <StatTile icon={FolderKanban} label="在办项目" value={stats.activeProjects} />
-        <StatTile icon={Clock} label="待我确认" value={stats.pendingCount} tone="amber" />
         <StatTile icon={Activity} label="在办案子" value={stats.activeCases} />
       </div>
 

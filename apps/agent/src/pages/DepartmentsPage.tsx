@@ -13,9 +13,8 @@ import { OnboardingStrip } from '../components/departments/OnboardingStrip'
 type View = 'org' | 'network' | 'board'
 
 /**
- * 部门 · /agent/departments
- * HR 式组织页：首次配置 → 8 节点串联 → 前研 / 授权后 → 项目看板
- * 取代原 /agent/catalog（选专家建项目的动作移入部门卡）。
+ * 组织编制 · /agent/departments
+ * 全库 HR/配置旁路：常设部门与专家 skill。作业入口在「案子 → 公司首页七部」。
  */
 export function DepartmentsPage() {
   const { enabledDepts } = useOrgConfig()
@@ -45,10 +44,10 @@ export function DepartmentsPage() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2">
           <Building2 className="h-4 w-4 text-slate-600" strokeWidth={1.75} aria-hidden />
           <h1 className="text-[16px] font-semibold tracking-tight text-slate-900">
-            部门
+            组织编制
           </h1>
           <span className="text-[11px] text-slate-500">
-            {enabledDepts.length} 个常设部门 · 每部一名主责
+            全库配置旁路 · 作业请从案子进七部 · {enabledDepts.length} 个常设部门
           </span>
 
           <div className="ml-auto flex items-center gap-2">

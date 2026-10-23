@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
   currentSeatForProgress,
-  businessSeatLabel,
 } from '../../business/businessSeats'
 import {
   MAIN_CHAIN_DEPTS,
@@ -95,8 +94,6 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           <span className="font-semibold text-slate-900">
             {deptLabel(currentDept)}
           </span>
-          <span className="mx-1 text-slate-300">·</span>
-          席位 {businessSeatLabel(currentSeat)}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link

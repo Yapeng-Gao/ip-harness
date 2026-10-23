@@ -75,7 +75,7 @@ import {
   seatIdForConfirm,
   type MidSyncOutcome,
 } from './midSync'
-import { BUSINESS_SEED_IDS, isBusinessSeedCaseId } from './businessSeeds'
+import { BUSINESS_SEED_IDS } from './businessSeeds'
 
 export { BUSINESS_SEED_IDS, isBusinessSeedCaseId } from './businessSeeds'
 
@@ -732,9 +732,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       confirms.filter(
         (c) =>
           c.status === 'pending' &&
-          (caseId
-            ? c.caseId === caseId
-            : !isBusinessSeedCaseId(c.caseId)),
+          (caseId ? c.caseId === caseId : true),
       ),
     [confirms],
   )
