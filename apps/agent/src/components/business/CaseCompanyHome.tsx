@@ -12,6 +12,7 @@ import {
   deptSlug,
   orgDeptByLeadSeat,
   type OrgDept,
+  type OrgDeptId,
 } from '../../departments/orgDepts'
 import {
   confirmKindOf,
@@ -29,12 +30,13 @@ type Props = {
 
 /**
  * 公司首页 · product-pages §4.3
- * 定位句 + 七部地图 + 去当前部门 + 待确认 + 更多部门
+ * 定位句 + 七部地图（点部门展开 ≤3 专家）+ 去当前部门 + 待确认 + 更多部门
  */
 export function CaseCompanyHome({ caseId, title, summary }: Props) {
   const { getProgress, getPendingConfirms, cases } = useBusinessCases()
   const { deptLabel } = useOrgConfig()
   const [moreOpen, setMoreOpen] = useState(false)
+  const [expandedDeptId, setExpandedDeptId] = useState<OrgDeptId | null>(null)
   const prog = getProgress(caseId)
   const pending = getPendingConfirms(caseId)
 
@@ -66,6 +68,10 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
     return [...PRE_DEPTS, ...POST_DEPTS_LIST].filter((d) => !mainIds.has(d.id))
   }, [])
 
+  const toggleDept = (id: OrgDeptId) => {
+    setExpandedDeptId((cur) => (cur === id ? null : id))
+  }
+
   return (
     <div
       className="mx-auto flex w-full max-w-3xl flex-col gap-5"
@@ -73,14 +79,22 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
       data-case-id={caseId}
     >
       <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <p
-          className="text-[13px] font-medium text-slate-800"
-          data-testid="company-tagline"
-        >
-          外挂知识产权部
-        </p>
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <p
+            className="text-[13px] font-medium text-slate-800"
+            data-testid="company-tagline"
+          >
+            一案一家外挂 IP 部
+          </p>
+          <span
+            className="font-mono text-[11px] text-slate-400"
+            data-testid="company-case-id"
+          >
+            {caseId}
+          </span>
+        </div>
         <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
-          一案一家虚拟 IP 部：按部门办事，专家交卷后铃铛确认。公司 / 部门 /
+          按部门办事，专家交卷后铃铛确认。公司 / 部门 /
           专家是上手隐喻，不是另开一套产品。
         </p>
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
@@ -167,50 +181,127 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             const active = dept.id === currentDept.id
             const href = `/agent/cases/${caseId}/depts/${deptSlug(dept.id)}`
             const roll = rollups[dept.id]
+            const expanded = expandedDeptId === dept.id
+            const peers = dept.peers.slice(0, 3)
             return (
               <li key={dept.id}>
-                <Link
-                  to={href}
-                  className={`focus-ring flex items-start gap-2 rounded-lg border px-3 py-2.5 transition ${
+                <div
+                  className={`rounded-lg border transition ${
                     active
                       ? 'border-slate-900 bg-slate-900 text-white'
-                      : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'
-                  }`}
+                      : 'border-slate-200 bg-white text-slate-800'
+                  } ${expanded && !active ? 'border-slate-300' : ''}`}
                   data-testid={`dept-map-card-${dept.id}`}
                   data-active={active ? '1' : '0'}
+                  data-expanded={expanded ? '1' : '0'}
                 >
-                  <span
-                    className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                      active
-                        ? 'bg-white/20 text-white'
-                        : 'bg-slate-100 text-slate-600'
+                  <button
+                    type="button"
+                    className={`focus-ring flex w-full items-start gap-2 rounded-lg px-3 py-2.5 text-left ${
+                      !active ? 'hover:bg-slate-50' : 'hover:bg-white/5'
                     }`}
+                    onClick={() => toggleDept(dept.id)}
+                    aria-expanded={expanded}
+                    data-testid={`dept-map-toggle-${dept.id}`}
                   >
-                    {i + 1}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-1.5 text-[13px] font-semibold">
-                      {deptLabel(dept)}
-                      <DeptStatusDot status={st} withLabel={!active} />
-                    </span>
                     <span
-                      className={`mt-0.5 block text-[11px] ${
-                        active ? 'text-white/70' : 'text-slate-500'
+                      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                        active
+                          ? 'bg-white/20 text-white'
+                          : 'bg-slate-100 text-slate-600'
                       }`}
                     >
-                      {dept.blurb}
-                      {roll?.pendingCount
-                        ? ` · 待确认 ${roll.pendingCount}`
-                        : ''}
+                      {i + 1}
                     </span>
-                  </span>
-                  <ChevronRight
-                    className={`mt-1 h-4 w-4 shrink-0 ${
-                      active ? 'text-white/70' : 'text-slate-300'
-                    }`}
-                    aria-hidden
-                  />
-                </Link>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-1.5 text-[13px] font-semibold">
+                        {deptLabel(dept)}
+                        <DeptStatusDot status={st} withLabel={!active} />
+                      </span>
+                      <span
+                        className={`mt-0.5 block text-[11px] ${
+                          active ? 'text-white/70' : 'text-slate-500'
+                        }`}
+                      >
+                        {dept.blurb}
+                        {roll?.pendingCount
+                          ? ` · 待确认 ${roll.pendingCount}`
+                          : ''}
+                      </span>
+                    </span>
+                    {expanded ? (
+                      <ChevronDown
+                        className={`mt-1 h-4 w-4 shrink-0 ${
+                          active ? 'text-white/70' : 'text-slate-400'
+                        }`}
+                        aria-hidden
+                      />
+                    ) : (
+                      <ChevronRight
+                        className={`mt-1 h-4 w-4 shrink-0 ${
+                          active ? 'text-white/70' : 'text-slate-300'
+                        }`}
+                        aria-hidden
+                      />
+                    )}
+                  </button>
+                  {expanded ? (
+                    <div
+                      className={`border-t px-3 py-2.5 ${
+                        active
+                          ? 'border-white/15'
+                          : 'border-slate-100 bg-slate-50/80'
+                      }`}
+                      data-testid={`dept-map-peers-${dept.id}`}
+                    >
+                      <p
+                        className={`mb-1.5 text-[10px] font-semibold uppercase tracking-wide ${
+                          active ? 'text-white/60' : 'text-slate-400'
+                        }`}
+                      >
+                        专家岗（≤3）
+                      </p>
+                      {peers.length === 0 ? (
+                        <p
+                          className={`text-[11px] ${
+                            active ? 'text-white/70' : 'text-slate-500'
+                          }`}
+                        >
+                          本部门暂未配置专家岗
+                        </p>
+                      ) : (
+                        <ul className="mb-2 space-y-1">
+                          {peers.map((peer) => (
+                            <li
+                              key={peer.id}
+                              className={`rounded-md px-2 py-1 text-[12px] ${
+                                active
+                                  ? 'bg-white/10 text-white'
+                                  : 'bg-white text-slate-700 ring-1 ring-slate-200'
+                              }`}
+                              data-testid={`dept-map-peer-${peer.id}`}
+                            >
+                              {peer.label}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <Link
+                        to={href}
+                        className={`btn-press focus-ring inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-semibold ${
+                          active
+                            ? 'bg-white text-slate-900'
+                            : 'bg-slate-900 text-white'
+                        }`}
+                        data-testid={`dept-map-enter-${dept.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        进本部门
+                        <ArrowRight className="h-3 w-3" aria-hidden />
+                      </Link>
+                    </div>
+                  ) : null}
+                </div>
               </li>
             )
           })}

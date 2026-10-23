@@ -192,15 +192,22 @@ export function BusinessCasePage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setDrill(true)}
-                className="btn-press focus-ring rounded-md border border-dashed border-indigo-300 bg-indigo-50/50 px-2.5 py-1.5 text-[11px] font-medium text-indigo-900"
-                data-testid="drill-enter"
-                title="旁路：总控+14 · 非业务默认"
-              >
-                演练全队
-              </button>
+              <details className="text-[11px] text-slate-400" data-testid="company-more-debug">
+                <summary className="cursor-pointer select-none font-medium text-slate-400 hover:text-slate-600">
+                  更多
+                </summary>
+                <div className="mt-1.5 flex flex-col items-end gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setDrill(true)}
+                    className="btn-press focus-ring text-[11px] font-medium text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
+                    data-testid="drill-enter"
+                    title="旁路：总控+14 · 非业务默认"
+                  >
+                    演练全队（调试）
+                  </button>
+                </div>
+              </details>
             </div>
           </header>
         </div>
