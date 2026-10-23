@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Bell, ChevronDown, ChevronRight } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { ArrowRight, Bell, ChevronDown, ChevronRight, X } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
   currentSeatForProgress,
@@ -14,11 +14,15 @@ import {
   type OrgDept,
   type OrgDeptId,
 } from '../../departments/orgDepts'
-import { peerDisplayLabel } from '../../departments/deptPageNarrative'
+import {
+  DEPT_HANDOFF,
+  peerDisplayLabel,
+} from '../../departments/deptPageNarrative'
 import {
   confirmKindOf,
   deptStatus,
   rollupByDept,
+  type DeptStatus,
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import { DeptStatusDot } from '../departments/DeptStatusDot'
@@ -29,15 +33,37 @@ type Props = {
   summary?: string
 }
 
+/** 首字圆形占位头像（示意，非真人） */
+function ExpertAvatar({ name }: { name: string }) {
+  const ch = name.trim().charAt(0) || '?'
+  return (
+    <span
+      aria-hidden
+      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[12px] font-semibold text-slate-700 ring-1 ring-slate-200"
+      data-testid="company-drawer-avatar"
+    >
+      {ch}
+    </span>
+  )
+}
+
+/** 本站交卷物/状态一句（pages §4.3 抽屉） */
+function handoffStatusLine(deptId: OrgDeptId, status: DeptStatus): string {
+  const deliverable =
+    DEPT_HANDOFF[deptId]?.deliverable ?? '本站交卷物待配置'
+  return `${deliverable} · ${status}`
+}
+
 /**
- * 公司首页 · product-pages §4.3
- * 定位句 + 七部地图（点部门展开 ≤3 专家）+ 去当前部门 + 待确认 + 更多部门
+ * 公司首页 · product-pages §4.3 / vision §6.3a
+ * 定位句 + 七部等宽卡片网格（当前高亮）+ 点部右侧抽屉（≤3专家+头像、交卷态一句、去该部干活）
+ * + 页级主 CTA「去当前部门」；浅色壳；右侧禁假指标/执行集群/工具引擎
  */
 export function CaseCompanyHome({ caseId, title, summary }: Props) {
   const { getProgress, getPendingConfirms, cases } = useBusinessCases()
   const { deptLabel } = useOrgConfig()
   const [moreOpen, setMoreOpen] = useState(false)
-  const [expandedDeptId, setExpandedDeptId] = useState<OrgDeptId | null>(null)
+  const [drawerDeptId, setDrawerDeptId] = useState<OrgDeptId | null>(null)
   const prog = getProgress(caseId)
   const pending = getPendingConfirms(caseId)
 
@@ -69,13 +95,29 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
     return [...PRE_DEPTS, ...POST_DEPTS_LIST].filter((d) => !mainIds.has(d.id))
   }, [])
 
-  const toggleDept = (id: OrgDeptId) => {
-    setExpandedDeptId((cur) => (cur === id ? null : id))
-  }
+  const drawerDept = useMemo(
+    () =>
+      drawerDeptId
+        ? MAIN_CHAIN_DEPTS.find((d) => d.id === drawerDeptId) ?? null
+        : null,
+    [drawerDeptId],
+  )
+
+  const openDrawer = (id: OrgDeptId) => setDrawerDeptId(id)
+  const closeDrawer = () => setDrawerDeptId(null)
+
+  useEffect(() => {
+    if (!drawerDeptId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeDrawer()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [drawerDeptId])
 
   return (
     <div
-      className="mx-auto flex w-full max-w-3xl flex-col gap-5"
+      className="mx-auto flex w-full max-w-5xl flex-col gap-5"
       data-testid="case-company-home"
       data-case-id={caseId}
     >
@@ -95,7 +137,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </span>
         </div>
         <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
-          这是本案的 IP 部：看清当前部门，点开才见专家，去当前部门干活。
+          七部等宽总览；点某部看专家与交卷态，再去干活。
         </p>
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
           <h2 className="text-[16px] font-semibold text-slate-900">{title}</h2>
@@ -169,7 +211,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </span>
         </div>
         <ol
-          className="grid gap-2 sm:grid-cols-2"
+          className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-7"
           data-testid="seven-dept-map"
         >
           {MAIN_CHAIN_DEPTS.map((dept, i) => {
@@ -180,33 +222,28 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
               confirmKind: confirmKindOf(dept),
             })
             const active = dept.id === currentDept.id
-            const href = `/agent/cases/${caseId}/depts/${deptSlug(dept.id)}`
+            const selected = drawerDeptId === dept.id
             const roll = rollups[dept.id]
-            const expanded = expandedDeptId === dept.id
-            const peers = dept.peers.slice(0, 3)
             return (
-              <li key={dept.id}>
-                <div
-                  className={`rounded-lg border transition ${
+              <li key={dept.id} className="min-w-0">
+                <button
+                  type="button"
+                  className={`focus-ring flex h-full w-full flex-col items-start gap-1 rounded-lg border px-2.5 py-2.5 text-left transition ${
                     active
-                      ? 'border-slate-900 bg-slate-900 text-white'
-                      : 'border-slate-200 bg-white text-slate-800'
-                  } ${expanded && !active ? 'border-slate-300' : ''}`}
+                      ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                      : selected
+                        ? 'border-slate-400 bg-white text-slate-800 ring-2 ring-slate-300'
+                        : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50'
+                  }`}
+                  onClick={() => openDrawer(dept.id)}
+                  aria-pressed={selected}
                   data-testid={`dept-map-card-${dept.id}`}
                   data-active={active ? '1' : '0'}
-                  data-expanded={expanded ? '1' : '0'}
+                  data-drawer-open={selected ? '1' : '0'}
                 >
-                  <button
-                    type="button"
-                    className={`focus-ring flex w-full items-start gap-2 rounded-lg px-3 py-2.5 text-left ${
-                      !active ? 'hover:bg-slate-50' : 'hover:bg-white/5'
-                    }`}
-                    onClick={() => toggleDept(dept.id)}
-                    aria-expanded={expanded}
-                    data-testid={`dept-map-toggle-${dept.id}`}
-                  >
+                  <span className="flex w-full items-center gap-1.5">
                     <span
-                      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
                         active
                           ? 'bg-white/20 text-white'
                           : 'bg-slate-100 text-slate-600'
@@ -214,95 +251,22 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
                     >
                       {i + 1}
                     </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-1.5 text-[13px] font-semibold">
-                        {deptLabel(dept)}
-                        <DeptStatusDot status={st} withLabel={!active} />
-                      </span>
-                      <span
-                        className={`mt-0.5 block text-[11px] ${
-                          active ? 'text-white/70' : 'text-slate-500'
-                        }`}
-                      >
-                        {dept.blurb}
-                        {roll?.pendingCount
-                          ? ` · 待确认 ${roll.pendingCount}`
-                          : ''}
-                      </span>
-                    </span>
-                    {expanded ? (
-                      <ChevronDown
-                        className={`mt-1 h-4 w-4 shrink-0 ${
-                          active ? 'text-white/70' : 'text-slate-400'
-                        }`}
-                        aria-hidden
-                      />
-                    ) : (
-                      <ChevronRight
-                        className={`mt-1 h-4 w-4 shrink-0 ${
-                          active ? 'text-white/70' : 'text-slate-300'
-                        }`}
-                        aria-hidden
-                      />
-                    )}
-                  </button>
-                  {expanded ? (
-                    <div
-                      className={`border-t px-3 py-2.5 ${
-                        active
-                          ? 'border-white/15'
-                          : 'border-slate-100 bg-slate-50/80'
-                      }`}
-                      data-testid={`dept-map-peers-${dept.id}`}
-                    >
-                      <p
-                        className={`mb-1.5 text-[10px] font-semibold uppercase tracking-wide ${
-                          active ? 'text-white/60' : 'text-slate-400'
-                        }`}
-                      >
-                        专家岗（≤3）
-                      </p>
-                      {peers.length === 0 ? (
-                        <p
-                          className={`text-[11px] ${
-                            active ? 'text-white/70' : 'text-slate-500'
-                          }`}
-                        >
-                          本部门暂未配置专家岗
-                        </p>
-                      ) : (
-                        <ul className="mb-2 space-y-1">
-                          {peers.map((peer) => (
-                            <li
-                              key={peer.id}
-                              className={`rounded-md px-2 py-1 text-[12px] ${
-                                active
-                                  ? 'bg-white/10 text-white'
-                                  : 'bg-white text-slate-700 ring-1 ring-slate-200'
-                              }`}
-                              data-testid={`dept-map-peer-${peer.id}`}
-                            >
-                              {peerDisplayLabel(dept.id, peer.id, peer.label)}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      <Link
-                        to={href}
-                        className={`btn-press focus-ring inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-semibold ${
-                          active
-                            ? 'bg-white text-slate-900'
-                            : 'bg-slate-900 text-white'
-                        }`}
-                        data-testid={`dept-map-enter-${dept.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        进本部门
-                        <ArrowRight className="h-3 w-3" aria-hidden />
-                      </Link>
-                    </div>
-                  ) : null}
-                </div>
+                    <DeptStatusDot status={st} withLabel={false} />
+                  </span>
+                  <span className="w-full truncate text-[12px] font-semibold leading-snug">
+                    {deptLabel(dept)}
+                  </span>
+                  <span
+                    className={`line-clamp-2 text-[10px] leading-snug ${
+                      active ? 'text-white/70' : 'text-slate-500'
+                    }`}
+                  >
+                    {dept.blurb}
+                    {roll?.pendingCount
+                      ? ` · 待确认 ${roll.pendingCount}`
+                      : ''}
+                  </span>
+                </button>
               </li>
             )
           })}
@@ -346,6 +310,126 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </ul>
         )}
       </section>
+
+      {drawerDept ? (
+        <DeptDrawer
+          caseId={caseId}
+          dept={drawerDept}
+          deptName={deptLabel(drawerDept)}
+          status={deptStatus({
+            dept: drawerDept,
+            progress: prog,
+            pending,
+            confirmKind: confirmKindOf(drawerDept),
+          })}
+          onClose={closeDrawer}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+function DeptDrawer({
+  caseId,
+  dept,
+  deptName,
+  status,
+  onClose,
+}: {
+  caseId: string
+  dept: OrgDept
+  deptName: string
+  status: DeptStatus
+  onClose: () => void
+}) {
+  const href = `/agent/cases/${caseId}/depts/${deptSlug(dept.id)}`
+  const peers = dept.peers.slice(0, 3)
+  const statusLine = handoffStatusLine(dept.id, status)
+
+  return (
+    <div
+      className="fixed inset-0 z-40 flex justify-end bg-slate-950/20"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="company-dept-drawer-title"
+      data-testid="company-dept-drawer"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <aside className="flex h-full w-full max-w-sm flex-col border-l border-slate-200 bg-white shadow-[var(--shadow-elevated)]">
+        <header className="flex shrink-0 items-start gap-2 border-b border-slate-200 px-4 py-3">
+          <div className="min-w-0 flex-1">
+            <h2
+              id="company-dept-drawer-title"
+              className="truncate text-[14px] font-semibold text-slate-900"
+            >
+              {deptName}
+            </h2>
+            <p className="mt-0.5 text-[11px] text-slate-500">{dept.blurb}</p>
+          </div>
+          <button
+            type="button"
+            className="focus-ring rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            onClick={onClose}
+            aria-label="关闭"
+            data-testid="company-dept-drawer-close"
+          >
+            <X className="h-4 w-4" aria-hidden />
+          </button>
+        </header>
+
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">
+          <div data-testid="company-drawer-status">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              交卷态
+            </p>
+            <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-700">
+              <DeptStatusDot status={status} withLabel={false} />
+              <span>{statusLine}</span>
+            </p>
+          </div>
+
+          <div data-testid="company-drawer-peers">
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              专家岗（≤3）
+            </p>
+            {peers.length === 0 ? (
+              <p className="text-[12px] text-slate-500">本部门暂未配置专家岗</p>
+            ) : (
+              <ul className="space-y-2">
+                {peers.map((peer) => {
+                  const label = peerDisplayLabel(dept.id, peer.id, peer.label)
+                  return (
+                    <li
+                      key={peer.id}
+                      className="flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50/80 px-2.5 py-2"
+                      data-testid={`company-drawer-peer-${peer.id}`}
+                    >
+                      <ExpertAvatar name={label} />
+                      <span className="min-w-0 truncate text-[13px] font-medium text-slate-800">
+                        {label}
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <footer className="shrink-0 border-t border-slate-200 px-4 py-3">
+          <Link
+            to={href}
+            className="btn-press focus-ring inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-[13px] font-semibold text-white"
+            data-testid={`company-drawer-go-${dept.id}`}
+            onClick={onClose}
+          >
+            去该部干活
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+          </Link>
+        </footer>
+      </aside>
     </div>
   )
 }
