@@ -1,12 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Briefcase, ChevronDown, ChevronUp, FolderOpen, Plus } from 'lucide-react'
+import { ArrowRight, Briefcase, ChevronDown, FolderOpen, Plus } from 'lucide-react'
 import { HomeTodoStrip } from '../components/home/HomeTodoStrip'
 import { useBusinessCases } from '../business/BusinessCaseContext'
-import {
-  ENTRY_ROLE_LABEL,
-  resolveRolePrimaryPath,
-} from '../business/entryRole'
+import { resolveRolePrimaryPath } from '../business/entryRole'
 import { useEntryRole } from '../business/useEntryRole'
 import {
   dismissHomeIntro,
@@ -29,8 +26,8 @@ const PATH_HOPS = ['开案子 / 案盘', '公司首页', '部门交卷', '待你
 
 /**
  * 产品首页 · /agent（§4.0a 混合首屏）
- * ①价值一句 → ②≤3亮点 → ③上手微图 → ④定位条 → ⑤角色主 CTA → ⑥待确认
- * ①–③「已了解」localStorage 收起；回访默认收起；主 CTA + 待确认常显
+ * 价值一句 → ≤3亮点 → 上手微图 → 角色主 CTA → 待确认
+ * 教育块（价值+亮点+微图）「已了解」localStorage 收起；回访默认收起；主 CTA + 待确认常显
  */
 export function HomePage() {
   const { entryRole } = useEntryRole()
@@ -164,41 +161,6 @@ export function HomePage() {
             </button>
           </div>
         )}
-
-        <header className="mb-5" data-testid="home-locator">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <p
-              className="text-[11px] font-medium uppercase tracking-wider text-slate-500"
-              data-testid="home-eyebrow"
-            >
-              外挂 IP 部
-            </p>
-            <span
-              className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-600"
-              data-testid="home-role-badge"
-            >
-              当前入口 · {ENTRY_ROLE_LABEL[entryRole]}
-            </span>
-            {introExpanded ? (
-              <button
-                type="button"
-                className="btn-press focus-ring ml-auto inline-flex items-center gap-0.5 rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] text-slate-400 hover:text-slate-600"
-                onClick={handleDismissIntro}
-                data-testid="home-intro-collapse"
-                aria-label="收起说明"
-              >
-                收起
-                <ChevronUp className="h-3 w-3" aria-hidden />
-              </button>
-            ) : null}
-          </div>
-          <h1
-            className="mt-1 text-[24px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-[28px]"
-            data-testid="home-title"
-          >
-            产品首页
-          </h1>
-        </header>
 
         <section aria-label="主要入口" className="space-y-3" data-testid="home-primary-actions">
           <Link
