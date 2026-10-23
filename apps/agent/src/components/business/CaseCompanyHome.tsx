@@ -14,6 +14,7 @@ import {
   type OrgDept,
   type OrgDeptId,
 } from '../../departments/orgDepts'
+import { peerDisplayLabel } from '../../departments/deptPageNarrative'
 import {
   confirmKindOf,
   deptStatus,
@@ -94,8 +95,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </span>
         </div>
         <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
-          按部门办事，专家交卷后铃铛确认。公司 / 部门 /
-          专家是上手隐喻，不是另开一套产品。
+          这是本案的 IP 部：看清当前部门，点开才见专家，去当前部门干活。
         </p>
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
           <h2 className="text-[16px] font-semibold text-slate-900">{title}</h2>
@@ -126,28 +126,29 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             <Bell className="h-3.5 w-3.5" aria-hidden />
             待确认{pending.length > 0 ? ` · ${pending.length}` : ''}
           </Link>
-        </div>
-        <p
-          className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-slate-500"
-          data-testid="company-logistics-links"
-        >
           <Link
             to={`/agent/cases/${caseId}/docket`}
-            className="font-medium text-slate-600 underline-offset-2 hover:underline"
+            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
             data-testid="company-link-docket"
           >
-            期限
+            近期限
           </Link>
+        </div>
+        <p
+          className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-400"
+          data-testid="company-logistics-links"
+        >
+          <span>后勤</span>
           <Link
             to={`/agent/cases/${caseId}/billing`}
-            className="font-medium text-slate-600 underline-offset-2 hover:underline"
+            className="underline-offset-2 hover:text-slate-600 hover:underline"
             data-testid="company-link-billing"
           >
             账单
           </Link>
           <Link
             to={`/agent/cases/${caseId}/members`}
-            className="font-medium text-slate-600 underline-offset-2 hover:underline"
+            className="underline-offset-2 hover:text-slate-600 hover:underline"
             data-testid="company-link-members"
           >
             成员
@@ -281,7 +282,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
                               }`}
                               data-testid={`dept-map-peer-${peer.id}`}
                             >
-                              {peer.label}
+                              {peerDisplayLabel(dept.id, peer.id, peer.label)}
                             </li>
                           ))}
                         </ul>

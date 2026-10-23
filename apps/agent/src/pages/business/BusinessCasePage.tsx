@@ -174,42 +174,32 @@ export function BusinessCasePage() {
         data-biz-case-ia="1"
         data-company-home="1"
       >
-        <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
-          <div className="mb-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
-            <Link to="/agent/cases" className="hover:underline">
-              多案流水
-            </Link>
-            <span className="mx-1">/</span>
-            {c.title}
+        <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-2 lg:px-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
+              <Link to="/agent/cases" className="hover:underline">
+                多案流水
+              </Link>
+              <span>/</span>
+              <span className="text-slate-600">{c.title}</span>
+            </div>
+            <details className="text-[11px] text-slate-400" data-testid="company-more-debug">
+              <summary className="cursor-pointer select-none font-medium text-slate-400 hover:text-slate-600">
+                更多
+              </summary>
+              <div className="mt-1.5 flex flex-col items-end gap-1">
+                <button
+                  type="button"
+                  onClick={() => setDrill(true)}
+                  className="btn-press focus-ring text-[11px] font-medium text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
+                  data-testid="drill-enter"
+                  title="旁路：总控+14 · 非业务默认"
+                >
+                  演练全队（调试）
+                </button>
+              </div>
+            </details>
           </div>
-          <header className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h1 className="text-[18px] font-semibold text-slate-900">
-                {c.title}
-              </h1>
-              <p className="mt-0.5 text-xs text-slate-500">
-                {c.summary || '当前：' + stageLabel(prog.stageId)}
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <details className="text-[11px] text-slate-400" data-testid="company-more-debug">
-                <summary className="cursor-pointer select-none font-medium text-slate-400 hover:text-slate-600">
-                  更多
-                </summary>
-                <div className="mt-1.5 flex flex-col items-end gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setDrill(true)}
-                    className="btn-press focus-ring text-[11px] font-medium text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
-                    data-testid="drill-enter"
-                    title="旁路：总控+14 · 非业务默认"
-                  >
-                    演练全队（调试）
-                  </button>
-                </div>
-              </details>
-            </div>
-          </header>
         </div>
         {lastReturnHint && (
           <div
