@@ -557,9 +557,9 @@ pending ──► confirmed
 |---|---|---|---|---|---|---|---|
 | 1 | `orchestrator` | 案子助手/总控 | `cross_stage` | — | `dispatch_task` / `summarize_timeline` / `accept_dual_file` | — | 无直接 handoff 写；双文件验收 |
 | 2 | `expert-landscape` | 产业全景 | `proposal` | — | `map_landscape` / `draft_landscape_report` | — | 01 提案键 · 未进 contracts |
-| 3 | `expert-inspire` | 创新激发 | `proposal` | — | `brainstorm_directions` / `draft_inspire_brief` | — | 提案键；**lifecycle [Ni](Ni-inspire.md)** |
+| 3 | `expert-inspire` | 创新激发 | `proposal` | — | `brainstorm_directions` / `draft_inspire_brief` | — | 提案键；**lifecycle [00a](00a-inspire.md)** |
 | 4 | `expert-competitor` | 竞品监控 | `proposal` | — | `list_competitors` / `draft_competitor_watch` | — | 03 提案键 |
-| 5 | `expert-mining` | 专利挖掘 | `pre_intake` | — | `extract_invention_points` / `pack_mining` | — | mining_pack ≠ 立项；**lifecycle [Nm](Nm-mining.md)** |
+| 5 | `expert-mining` | 专利挖掘 | `pre_intake` | — | `extract_invention_points` / `pack_mining` | — | mining_pack ≠ 立项；**lifecycle [00c](00c-mining.md)** |
 | 6 | `expert-layout` | 专利布局 | `proposal` | — | `plan_family` / `draft_layout_plan` | — | 05 layout_plan 提案；可对齐 `layout_insight` |
 | 7 | `expert-research` | 检索员（查新暨三性） | `pre_research` | `research_report` | `commercial_patent_search` / `cluster_hits` | `submitResearch` | 绑案 Confirm 后才可提交 |
 | 8 | `expert-intake` | 立项决策 | `decision` | `intake_quote` | `ingest_upstream` / `draft_intake_quote` | `submitHandoff` / `createCaseFromInsight` | 须 `go_nogo` HITL |
@@ -574,7 +574,7 @@ pending ──► confirmed
 | 17 | `expert-monetize` | 转化顾问 | `commercialization` | `monetize_terms` | `draft_term_sheet` | — | 后置 · 禁真签约 |
 | 18 | `expert-enforcement` | 无效维权顾问 | `phase` | — | `claim_chart_compare` | — | ≠ FTO ≠ watch |
 
-> **与 lifecycle 对齐（2026-10-23）**：`expert-inspire` / `expert-mining` 已挂正式业务节点 [Ni](Ni-inspire.md) / [Nm](Nm-mining.md)；捕获不单列。产物仍为提案键，交接七态见 [10](10-handoff-state-machine.md) §1.2。对外产品叙事用「部门/专家」，本文「Agent」口径仅对内。
+> **与 lifecycle 对齐（2026-10-23）**：`expert-inspire` / `expert-mining` 已挂正式业务节点 [00a](00a-inspire.md) / [00c](00c-mining.md)；捕获不单列。产物仍为提案键，交接七态见 [10](10-handoff-state-machine.md) §1.2。对外产品叙事用「部门/专家」，本文「Agent」口径仅对内。
 
 > `midStage` 的取值域包含 5 个轴外值：`cross_stage / proposal / pre_intake / drafting_assist / authorize_file / phase`（`patentMidMap.ts:13`），它们**不是** `StageId`。
 

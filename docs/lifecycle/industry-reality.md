@@ -98,9 +98,9 @@
 
 ## 3. 逐节点「行业真实 vs 样机」对照
 
-### Ni 创新激发 / Nm 专利挖掘（前段 · 条件触发 / 业务建议）
+### 00a 创新激发 / 00c 专利挖掘（前段 · 条件触发 / 业务建议）
 - **真实**：激发 = 方向扩召；挖掘 = 拆点/评分/拆案；捕获入池常与交底提报合并。粗检 ≠ 正式查新。
-- **产品**：正式规格 [Ni](nodes/Ni-inspire.md) / [Nm](nodes/Nm-mining.md)；捕获默认不单列（spine §1.3.1）。
+- **产品**：正式规格 [00a](nodes/00a-inspire.md) / [00c](nodes/00c-mining.md)；捕获默认不单列（spine §1.3.1）。
 - **样机**：`apps/inspire` / `apps/mining`；席 `expert-inspire` / `expert-mining`；提案键未进 contracts handoff。
 
 ### 00 发明人披露（in-house pre-filing）

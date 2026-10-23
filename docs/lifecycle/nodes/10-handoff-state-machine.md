@@ -44,8 +44,8 @@
 ### 1.2 九个产物键的归属
 
 > **交叉引用（2026-10-23）· 前段提案键与席位**  
-> - contracts 九键**仍不含** Ni/Nm：`inspire_brief` / `mining_pack` 为**提案键**（见 [13](13-agents.md) §9.2–9.3），**不**走本篇七态，直至产品决定登记为轴外键。  
-> - 席位挂靠：`expert-inspire` → [Ni](Ni-inspire.md)；`expert-mining` → [Nm](Nm-mining.md)；`expert-fto` → [01b](01b-fto.md)（辅席，默认不写 `research_report`）。  
+> - contracts 九键**仍不含** 00a/00c：`inspire_brief` / `mining_pack` 为**提案键**（见 [13](13-agents.md) §9.2–9.3），**不**走本篇七态，直至产品决定登记为轴外键。  
+> - 席位挂靠：`expert-inspire` → [00a](00a-inspire.md)；`expert-mining` → [00c](00c-mining.md)；`expert-fto` → [01b](01b-fto.md)（辅席，默认不写 `research_report`）。  
 > - **实现债**：`REQUIRED_BEFORE_SUBMIT.research_report` 仍含 `fto` 项（`packages/domain/src/handoff.ts`）——与「01b 条件触发、不堵申请」冲突，见 [implementation-debt](../working/2026-10-23-implementation-debt.md)。  
 > - 捕获无独立产物键（Nc 不单列）。
 

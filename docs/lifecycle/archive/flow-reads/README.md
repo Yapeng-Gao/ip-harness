@@ -14,4 +14,4 @@
 | [18-flow-maintain.md](18-flow-maintain.md) | MaintainFlow | [05](../../nodes/05-maintenance.md) |
 | [19-flow-monetize.md](19-flow-monetize.md) | MonetizeFlow | [06](../../nodes/06-commercialization.md) |
 | [20-flow-watch.md](20-flow-watch.md) | WatchFlow | [07](../../nodes/07-monitoring.md) |
-| [21-flow-inventor-home.md](21-flow-inventor-home.md) | InventorPortal | [00](../../nodes/00-inventor-disclosure.md) · 捕获并入 Nm/00 |
+| [21-flow-inventor-home.md](21-flow-inventor-home.md) | InventorPortal | [00](../../nodes/00-inventor-disclosure.md) · 捕获并入 00c/00 |

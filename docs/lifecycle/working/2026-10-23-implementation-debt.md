@@ -20,9 +20,9 @@
 
 | 键 | 席位 | lifecycle | 现状 |
 |---|---|---|---|
-| `inspire_brief`（名示意） | `expert-inspire` | [Ni](../nodes/Ni-inspire.md) | 提案键；非 `HandoffArtifactKey` |
-| `mining_pack` | `expert-mining` | [Nm](../nodes/Nm-mining.md) | 同上；honesty≠立项 |
-| 捕获入池 | （无席专键） | 并入 Nm/00 | 无键 |
+| `inspire_brief`（名示意） | `expert-inspire` | [00a](../nodes/00a-inspire.md) | 提案键；非 `HandoffArtifactKey` |
+| `mining_pack` | `expert-mining` | [00c](../nodes/00c-mining.md) | 同上；honesty≠立项 |
+| 捕获入池 | （无席专键） | 并入 00c/00 | 无键 |
 
 **路径旁证**：`apps/agent/src/projects/patentMidMap.ts`；`expertsPatent.ts`；`docs/architecture/inspire|mining/`。
 

@@ -11,11 +11,11 @@
 ### 一页主链（中国发明 · 拿专利默认路径）
 
 ```
-创新激发 Ni（可轻跑）
+创新激发 00a（可轻跑）
     ↓
 捕获（入池；不单列，并入挖掘/交底入口）
     ↓
-专利挖掘 Nm（可粗检；≠正式查新）
+专利挖掘 00c（可粗检；≠正式查新）
     ↓
 发明交底 00          ← 技术事实收成可写材料
     ↓
@@ -64,19 +64,27 @@
 | 文档 | 内容 |
 |---|---|
 | [2026-10-23-main-chain-from-discussion.md](working/2026-10-23-main-chain-from-discussion.md) | 讨论主链工作稿：激发/挖掘/布局顺序、法律·业务必经 vs 条件触发、与 nodes 对照；**合成方向已确认**（骨架取 B、主链前段取 A）；定稿后合并进 business-spine |
-| [2026-10-23-product-vision-company-dept-expert.md](working/2026-10-23-product-vision-company-dept-expert.md) | 产品理念工作稿：外挂 IP 部；公司/部门/专家拟人化；部门↔主链 Ni–N16↔spine 00–25；交卷·待你确认；对外禁用 Agent 黑话 |
-| [2026-10-23-lifecycle-audit-and-optimize.md](working/2026-10-23-lifecycle-audit-and-optimize.md) | lifecycle 审计与优化 backlog；P0 已落地；**L5–L10 本轮推进**（Ni/Nm 正式文、Nc 默认不单列、术语、D4 意向、债清单） |
+| [2026-10-23-product-vision-company-dept-expert.md](working/2026-10-23-product-vision-company-dept-expert.md) | 产品理念工作稿：外挂 IP 部；公司/部门/专家拟人化；部门↔主链（自 00a 起）↔spine 00–25；交卷·待你确认；对外禁用 Agent 黑话 |
+| [2026-10-23-lifecycle-audit-and-optimize.md](working/2026-10-23-lifecycle-audit-and-optimize.md) | lifecycle 审计与优化 backlog；P0 已落地；**L5–L10 本轮推进**（00a/00c 正式文、Nc 默认不单列、术语、D4 意向、债清单） |
 | [2026-10-23-implementation-debt.md](working/2026-10-23-implementation-debt.md) | 实现债：代码仍强制 `research_report.fto` 等（只列路径，不改 apps） |
 
 ## 节点（17 节产品级规格）
 
 默认主链与法律/业务/条件三层必经见 [business-spine.md §1.3](business-spine.md)；术语三译名见 [§1.4](business-spine.md)。捕获默认不单列见 [§1.3.1](business-spine.md) ⚠。
 
+### 节点编号约定（2026-10-23）
+
+- **两位数字**为主号（`00` 交底、`01` 查新…）；**同号字母后缀**表示同段并列/辅篇（先例：`00b`、`01b`）。
+- 交底前段：`00a` 创新激发 →（捕获不单列）→ `00c` 专利挖掘 → `00` 交底 → `00b` 发明点链 → `01`…
+- **旧 id 弃用**：曾用 `Ni` / `Nm`（及规则前缀 `RNi-` / `RNm-`）已统一为 `00a` / `00c`（`R00a-` / `R00c-`）。文内若见旧 id，以本表为准。
+- **Nc** 仅表示「捕获」概念，**默认不单列成文件**。
+
+
 | 编号 | 节点 | 业务定位 | StageId |
 |---|---|---|---|
-| [Ni](nodes/Ni-inspire.md) | 创新激发 | 方向清单（条件触发/可轻）；席 `expert-inspire` | —（proposal） |
-| **Nc** | 捕获（不单列） | 入池并入 Nm/00 提报入口 ⚠ 可改 | — |
-| [Nm](nodes/Nm-mining.md) | 专利挖掘 | 申什么 / 拆几案 / 分级（可粗检，≠01）；席 `expert-mining` | —（pre_intake） |
+| [00a](nodes/00a-inspire.md) | 创新激发 | 方向清单（条件触发/可轻）；席 `expert-inspire` | —（proposal） |
+| **Nc** | 捕获（不单列） | 入池并入 00c/00 提报入口 ⚠ 可改 | — |
+| [00c](nodes/00c-mining.md) | 专利挖掘 | 申什么 / 拆几案 / 分级（可粗检，≠01）；席 `expert-mining` | —（pre_intake） |
 | [00](nodes/00-inventor-disclosure.md) | 发明交底 | 技术事实 → 可撰写材料；权属/署名/奖酬/公开时点在此定死 | — |
 | [00b](nodes/00b-invention-point-chain.md) | 发明点翻译链 | 交底 → 初审 → 检索 → 发明点 → 权项 → 说明书 | — |
 | [01](nodes/01-research.md) | 检索与可专利性 | 可专利性证据（**业务必经**）；FTO 初评仅为可选附件 | `pre_research` |
