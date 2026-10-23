@@ -26,6 +26,7 @@ import {
 } from '../../departments/deptPageNarrative'
 import {
   ADOPT_NE_CONFIRM_NOTE,
+  handoffPhaseLabel,
   handoffStatusSentence,
 } from '../../departments/handoffPhase'
 import {
@@ -452,14 +453,28 @@ export function BusinessCaseDeptPage() {
                 >
                   齐套 / 硬闸
                 </h2>
-                <span className="text-[11px] text-slate-500">
-                  {awaitingThis
-                    ? '待你确认 · 未拍板'
-                    : st === '已完成'
-                      ? '已确认可往下'
-                      : allChecklistDone
-                        ? '可交卷 → 待你确认'
-                        : '未齐套 · 交卷已禁用'}
+                <span
+                  className="text-[11px] text-slate-500"
+                  data-testid="dept-checklist-phase"
+                  data-handoff-phase={
+                    st === '退回' || lastReturnHint
+                      ? '退回'
+                      : awaitingThis || st === '待确认'
+                        ? '待确认'
+                        : st === '已完成'
+                          ? '已确认可往下'
+                          : '齐套中'
+                  }
+                >
+                  {st === '退回' || lastReturnHint
+                    ? handoffPhaseLabel('退回')
+                    : awaitingThis || st === '待确认'
+                      ? handoffPhaseLabel('待确认')
+                      : st === '已完成'
+                        ? handoffPhaseLabel('已确认可往下')
+                        : allChecklistDone
+                          ? '可交卷 → 待你确认'
+                          : `${handoffPhaseLabel('齐套中')} · 交卷已禁用`}
                 </span>
               </div>
               <ul className="mt-2 space-y-1.5">

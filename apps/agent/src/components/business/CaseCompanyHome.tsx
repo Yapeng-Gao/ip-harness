@@ -21,6 +21,7 @@ import {
   handoffPhaseFromStatus,
   handoffPhaseLabel,
   handoffStatusSentence,
+  latestReturnNote,
 } from '../../departments/handoffPhase'
 import {
   confirmKindOf,
@@ -337,6 +338,10 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             id: peer.id,
             label: peerDisplayLabel(drawerDept.id, peer.id, peer.label),
           }))}
+          returnHint={latestReturnNote(
+            pending,
+            confirmKindOf(drawerDept),
+          )}
           primaryAction={{
             label: '去该部干活',
             href: `/agent/cases/${caseId}/depts/${deptSlug(drawerDept.id)}`,
