@@ -14,6 +14,7 @@ import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { AgentSessionSidebar } from './AgentSessionSidebar'
 import { PersonaRouteGate } from '@shared/components/PersonaRouteGate'
 import { PendingConfirmBell } from './business/PendingConfirmBell'
+import { EntryRoleSwitcher } from './business/EntryRoleSwitcher'
 import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
 import { useAgentDebug } from '../business/useAgentDebug'
 
@@ -151,6 +152,13 @@ export function AgentShell() {
             {pageTitle}
           </div>
         </div>
+
+        {(inHome || inBusiness) && !inGrokShell && (
+          <>
+            <div className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
+            <EntryRoleSwitcher />
+          </>
+        )}
 
         {!inGrokShell && showTenantChrome && (
           <>
