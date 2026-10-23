@@ -8,6 +8,10 @@ import {
 } from '../../business/businessSeats'
 import { orgDeptByLeadSeat } from '../../departments/orgDepts'
 import { deptLabel } from '../../business/deptRoster'
+import {
+  deptSlugForConfirmKind,
+  pendingDetailPath,
+} from '../../business/pendingDeptQuery'
 
 /**
  * G · 真待确认 · product-pages §4.0a
@@ -79,9 +83,13 @@ export function HomeTodoStrip() {
           return (
             <li key={item.id}>
               <Link
-                to={`/agent/pending/${item.id}`}
+                to={pendingDetailPath(
+                  item.id,
+                  deptSlugForConfirmKind(item.kind),
+                )}
                 className="focus-ring flex min-h-8 items-start gap-2 rounded-[var(--radius-sm)] px-1.5 py-1 text-[12px] leading-snug text-amber-950 hover:bg-amber-100/70"
                 data-testid={`home-todo-${item.id}`}
+                data-dept={deptSlugForConfirmKind(item.kind) ?? ''}
               >
                 <span className="min-w-0 flex-1">
                   <span className="font-medium">【{caseName}】</span>

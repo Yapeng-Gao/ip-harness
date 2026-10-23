@@ -53,6 +53,7 @@ import { useOrgConfig } from '../../departments/OrgConfigContext'
 import type { ProjectExpertId } from '../../projects/types'
 import { CheckCircle2, Circle, ArrowRight, Building2, PanelLeft, MessageSquare, X } from 'lucide-react'
 import { formatArtifactSavedAt } from '../../business/artifactVersions'
+import { pendingDetailPath } from '../../business/pendingDeptQuery'
 
 function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
   const known = DEPT_HANDOFF[deptId]
@@ -229,7 +230,7 @@ export function BusinessCaseDeptPage() {
 
   const onSubmit = () => {
     if (cta.action === 'confirm' && cta.confirmId) {
-      navigate(`/agent/pending/${cta.confirmId}`)
+      navigate(pendingDetailPath(cta.confirmId, slug || undefined))
       return
     }
     if (!canSubmit) return
@@ -414,7 +415,13 @@ export function BusinessCaseDeptPage() {
               回公司首页
             </Link>
             <Link
-              to={pending[0] ? `/agent/pending/${pending[0].id}` : '/agent/pending'}
+              to={
+                pending[0]
+                  ? pendingDetailPath(pending[0].id, slug || undefined)
+                  : slug
+                    ? `/agent/pending?dept=${encodeURIComponent(slug)}`
+                    : '/agent/pending'
+              }
               className="btn-press focus-ring rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] font-medium text-amber-950"
               data-testid="dept-pending-link"
             >
@@ -733,7 +740,8 @@ export function BusinessCaseDeptPage() {
                               : '齐套未齐，不能交卷入待你确认'
                       }
                       onAdvanced={(confirmId) => {
-                        if (confirmId) navigate(`/agent/pending/${confirmId}`)
+                        if (confirmId)
+                          navigate(pendingDetailPath(confirmId, slug || undefined))
                       }}
                       onSwitchSeat={switchSeat}
                     />
@@ -845,7 +853,7 @@ export function BusinessCaseDeptPage() {
 
               {(cta.action === 'confirm' || awaitingThis) && cta.confirmId ? (
                 <Link
-                  to={`/agent/pending/${cta.confirmId}`}
+                  to={pendingDetailPath(cta.confirmId, slug || undefined)}
                   className="btn-press focus-ring block w-full rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-center text-[11px] font-medium text-amber-950"
                   data-testid="dept-right-confirm-link"
                 >

@@ -16,19 +16,23 @@ export function BusinessCaseNewPage() {
 
   const [title, setTitle] = useState(() => start?.title?.trim() ?? '')
   const [summary, setSummary] = useState(() => start?.summary?.trim() ?? '')
+  const [contact, setContact] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     const name = title.trim()
     if (!name) {
-      setError('请先填写案名')
+      setError('请先填写案名，才能创建并进入公司首页。')
       return
     }
     setError(null)
+    const blurb = summary.trim()
+    const who = contact.trim()
+    const summaryParts = [blurb, who ? `联系人：${who}` : ''].filter(Boolean)
     const p = createCaseFromWizard({
       title: name,
-      summary: summary.trim() || undefined,
+      summary: summaryParts.join(' · ') || undefined,
     })
     navigate(`/agent/cases/${p.id}`)
   }
@@ -60,7 +64,7 @@ export function BusinessCaseNewPage() {
           开案子
         </h1>
         <p className="mt-1 text-sm text-slate-500" data-testid="business-new-tagline">
-          极少字段立一条业务线，然后进公司首页看懂部门与专家。
+          外挂知识产权部 · 极少字段立一条业务线，然后进公司首页。不在此填交底长表。
         </p>
 
         <form
@@ -88,14 +92,28 @@ export function BusinessCaseNewPage() {
           </label>
 
           <label className="block text-xs text-slate-600">
-            技术一句话（可选）
+            技术一句话
+            <span className="ml-1 font-normal text-slate-400">（短）</span>
             <textarea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               rows={2}
-              placeholder="要保护什么、一句话即可"
+              placeholder="用一句话说明要保护什么"
               className="focus-ring mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
               data-testid="business-new-summary"
+            />
+          </label>
+
+          <label className="block text-xs text-slate-600">
+            联系人
+            <span className="ml-1 font-normal text-slate-400">（短）</span>
+            <input
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              placeholder="姓名或邮箱"
+              autoComplete="name"
+              className="focus-ring mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
+              data-testid="business-new-contact"
             />
           </label>
 
@@ -114,7 +132,15 @@ export function BusinessCaseNewPage() {
           </button>
 
           <p className="text-center text-[11px] text-slate-400">
-            建完先进公司首页，不在此页进交底或七部作业
+            <Link to="/agent" className="underline-offset-2 hover:underline">
+              返回薄入口
+            </Link>
+            {' · '}
+            <Link to="/agent/cases" className="underline-offset-2 hover:underline">
+              案盘
+            </Link>
+            {' · '}
+            建完先进公司首页，不在此填交底长表
           </p>
         </form>
       </div>

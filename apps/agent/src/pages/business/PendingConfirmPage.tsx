@@ -2,7 +2,7 @@ import {
   deptSlug,
   orgDeptByLeadSeat,
 } from '../../departments/orgDepts'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
@@ -18,28 +18,59 @@ import {
   resolveConfirmActorKind,
   type ConfirmActorKind,
 } from '../../business/confirmGate'
+import {
+  confirmKindFromDeptQuery,
+  deptSlugForConfirmKind,
+  normalizeDeptQuery,
+  pendingDetailPath,
+} from '../../business/pendingDeptQuery'
 import { useEntryRole } from '../../business/useEntryRole'
 import { buildHitlAssistReview } from '../../business/hitlAssist'
 import { resolveConfirmResultMarkdown } from '../../business/confirmResultMarkdown'
 import { HitlAssistCard } from '../../components/business/HitlAssistCard'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
+import { useOrgConfig } from '../../departments/OrgConfigContext'
 
 /**
  * 「待我确认」收件箱 + 详情（成果优先 / 过程可折 / 助手审校必挂）
- * 支持 ?caseId= 按案过滤（案页铃铛带入，消种子污染感）
+ * 支持 ?caseId= 按案过滤；?dept= 按部身份（对齐原型 pending-confirm?dept=）
  */
 export function PendingConfirmInboxPage() {
   const { getPendingConfirms, cases, getCase } = useBusinessCases()
+  const { deptLabel } = useOrgConfig()
   const [params] = useSearchParams()
   const filterCaseId = params.get('caseId')?.trim() || undefined
-  const inbox = getPendingConfirms(filterCaseId)
+  const deptQuery = normalizeDeptQuery(params.get('dept'))
+  const kindFilter = confirmKindFromDeptQuery(deptQuery)
+  const rawInbox = getPendingConfirms(filterCaseId)
+  const inbox = useMemo(
+    () => (kindFilter ? rawInbox.filter((i) => i.kind === kindFilter) : rawInbox),
+    [rawInbox, kindFilter],
+  )
   const filterCase = filterCaseId ? getCase(filterCaseId) : undefined
+  const deptFilterLabel = (() => {
+    if (!kindFilter) return deptQuery
+    const d = orgDeptByLeadSeat(CONFIRM_META[kindFilter].seatId)
+    return d ? deptLabel(d) : deptQuery
+  })()
+
+  // 有 ?dept= 且恰一条 → 直达详情（原型按部 payload）
+  if (deptQuery && kindFilter && inbox.length === 1) {
+    const only = inbox[0]!
+    return (
+      <Navigate
+        to={pendingDetailPath(only.id, deptQuery)}
+        replace
+      />
+    )
+  }
 
   return (
     <div
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="pending-confirm-inbox"
       data-case-filter={filterCaseId ?? ''}
+      data-dept-filter={deptQuery ?? ''}
     >
       <div className="mx-auto max-w-2xl">
         <div className="mb-3 text-[11px] text-slate-400">
@@ -63,14 +94,20 @@ export function PendingConfirmInboxPage() {
           )}
         </div>
         <h1 className="text-[20px] font-semibold text-slate-900">
-          {filterCaseId ? '本案待确认' : '待我确认'}
+          {filterCaseId
+            ? '本案待确认'
+            : deptFilterLabel
+              ? `${deptFilterLabel} · 待你确认`
+              : '待我确认'}
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          {filterCaseId
-            ? '仅显示本案 pending · 与进度同源'
-            : '与案子进度同源 · 确认后该项从收件箱消失 · 详情内有助手审校'}
+          {deptFilterLabel
+            ? `按部身份筛选 · ${deptFilterLabel}（?dept=${deptQuery}）`
+            : filterCaseId
+              ? '仅显示本案 pending · 与进度同源'
+              : '与案子进度同源 · 确认后该项从收件箱消失 · 详情内有助手审校'}
         </p>
-        {filterCaseId ? (
+        {filterCaseId || deptQuery ? (
           <p className="mt-1 text-[11px] text-slate-400">
             <Link
               to="/agent/pending"
@@ -96,9 +133,13 @@ export function PendingConfirmInboxPage() {
               return (
                 <li key={item.id}>
                   <Link
-                    to={`/agent/pending/${item.id}`}
+                    to={pendingDetailPath(
+                      item.id,
+                      deptSlugForConfirmKind(item.kind) ?? deptQuery,
+                    )}
                     className="focus-ring block rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-amber-300"
                     data-testid={`pending-row-${item.id}`}
+                    data-dept={deptSlugForConfirmKind(item.kind) ?? ''}
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <span
@@ -130,6 +171,7 @@ export function PendingConfirmInboxPage() {
 
 export function PendingConfirmDetailPage() {
   const { confirmId = '' } = useParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const {
     getConfirm,
@@ -140,6 +182,7 @@ export function PendingConfirmDetailPage() {
   } = useBusinessCases()
   const { getThread } = useProjectFolder()
   const { entryRole } = useEntryRole()
+  const deptFromQuery = normalizeDeptQuery(searchParams.get('dept'))
   const [processOpen, setProcessOpen] = useState(false)
   const [doneMsg, setDoneMsg] = useState<string | null>(null)
   const [returnNote, setReturnNote] = useState('')
@@ -270,6 +313,9 @@ export function PendingConfirmDetailPage() {
       data-confirm-id={confirmId}
       data-confirm-status={item.status}
       data-actor-kind={actor}
+      data-dept={
+        deptFromQuery ?? deptSlugForConfirmKind(item.kind) ?? ''
+      }
     >
       <div className="mx-auto max-w-3xl">
         <div className="mb-3 text-[11px] text-slate-400">
@@ -287,6 +333,20 @@ export function PendingConfirmDetailPage() {
           >
             {statusLabel}
           </span>
+          {(() => {
+            const slug = deptFromQuery ?? deptSlugForConfirmKind(item.kind)
+            if (!slug) return null
+            const d = orgDeptByLeadSeat(CONFIRM_META[item.kind].seatId)
+            return (
+              <span
+                className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-medium text-slate-700"
+                data-testid="pending-dept-badge"
+                data-dept={slug}
+              >
+                部身份 · {d?.label ?? slug}
+              </span>
+            )
+          })()}
           <span className="text-[11px] text-slate-500">
             这是拍板，不是「下一步」
           </span>

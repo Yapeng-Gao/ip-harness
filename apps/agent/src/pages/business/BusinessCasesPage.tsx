@@ -35,6 +35,8 @@ export function BusinessCasesPage() {
   const { deptLabel } = useOrgConfig()
   const { entryRole } = useEntryRole()
   const [query, setQuery] = useState('')
+  /** 对齐原型 cases.html：全部 / 有待确认 / 近期限 / 在交底部 */
+  const [chip, setChip] = useState<'all' | 'pending' | 'urgent' | 'intake'>('all')
 
   const rows = useMemo(
     () =>
@@ -46,14 +48,17 @@ export function BusinessCasesPage() {
           moreSeatIds: prog.moreSeatIds,
         })
         const dept = orgDeptByLeadSeat(seat) ?? MAIN_CHAIN_DEPTS[0]!
+        const pendingCount = getPendingConfirms(c.id).length
         return {
           id: c.id,
           title: c.title,
           caseNo: shortCaseNo(c.id),
+          deptId: dept.id,
           deptName: deptLabel(dept),
           stage: stageLabel(prog.stageId),
-          pendingCount: getPendingConfirms(c.id).length,
-          /** 样机暂无独立客户字段 */
+          pendingCount,
+          /** 样机：有待确认视为近期限红点 */
+          urgent: pendingCount > 0,
           client: '—',
         }
       }),
@@ -62,15 +67,19 @@ export function BusinessCasesPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return rows
-    return rows.filter(
-      (r) =>
+    return rows.filter((r) => {
+      if (chip === 'pending' && r.pendingCount <= 0) return false
+      if (chip === 'urgent' && !r.urgent) return false
+      if (chip === 'intake' && r.deptId !== 'dept-disclosure') return false
+      if (!q) return true
+      return (
         r.title.toLowerCase().includes(q) ||
         r.caseNo.toLowerCase().includes(q) ||
         r.deptName.toLowerCase().includes(q) ||
-        r.id.toLowerCase().includes(q),
-    )
-  }, [rows, query])
+        r.id.toLowerCase().includes(q)
+      )
+    })
+  }, [rows, query, chip])
 
   return (
     <div
@@ -104,19 +113,59 @@ export function BusinessCasesPage() {
                 : '案子清单：卡在哪、谁待确认、期限红点 · 点进公司首页'}
             </p>
           </div>
-          <Link
-            to="/agent/cases/new"
-            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
-            data-testid="business-new-case"
-          >
-            <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden />
-            开新案子
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to="/agent/cases/new"
+              className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
+              data-testid="business-new-case"
+            >
+              <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden />
+              开新案
+            </Link>
+            <Link
+              to="/agent/pending"
+              className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[13px] font-medium text-slate-700 hover:border-slate-300"
+              data-testid="business-cases-pending"
+            >
+              待确认
+            </Link>
+          </div>
+        </div>
+
+        <div
+          className="mt-4 flex flex-wrap gap-2"
+          role="group"
+          aria-label="筛选"
+          data-testid="business-cases-chips"
+        >
+          {(
+            [
+              ['all', '全部'],
+              ['pending', '有待确认'],
+              ['urgent', '近期限'],
+              ['intake', '在交底部'],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setChip(id)}
+              className={`btn-press focus-ring rounded-full border px-3 py-1 text-[12px] font-medium ${
+                chip === id
+                  ? 'border-slate-900 bg-slate-900 text-white'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+              }`}
+              data-testid={`business-cases-chip-${id}`}
+              aria-pressed={chip === id}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         {rows.length > 0 ? (
           <label
-            className="relative mt-4 block"
+            className="relative mt-3 block"
             data-testid="business-cases-filter"
           >
             <span className="sr-only">筛选案子</span>
