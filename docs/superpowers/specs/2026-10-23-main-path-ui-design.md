@@ -1,6 +1,6 @@
 # 主路径高保真设计（Main Path UI）
 
-> **状态**：草案 · Leslie 授权由 Grok Bot 评估定稿第一节  
+> **状态**：docs-only · Figma MCP 月额用尽（Starter View≈20/月），暂停灌层；三栏以本文 + product-pages 为准  
 > **日期**：2026-10-23（Asia/Shanghai）  
 > **方法**：C · 先 Figma 高保真再实现  
 > **范围**：宣传站 → 登录 → `/agent` 薄入口 → 公司首页 → 部门台 → 确认页  
@@ -114,14 +114,14 @@
 
 ---
 
-## 6. 实施顺序（批准设计文档后）
+## 6. 实施顺序
 
-1. 建「设计落地」bot + 更新页面规格/理念通知  
-2. Figma 建文件 · 画 Frame 1–6（可先 4→5→6 再 1–3，因案内更吃理念）  
-3. Leslie 点头 Figma（或授权 Grok Bot 代评）  
-4. 页面规格写入视觉目标短节  
-5. 公司叙事 + Agent壳 本机按帧改  
-6. Grok Bot 验收（对照六帧 + 硬闸）→ 报 Leslie  
+1. ~~建「设计落地」bot~~ · ~~Figma 建文件~~（已完成；`9y6f6XzLUXrUFVC80ufqq5`）  
+2. **本轮停 Figma**：Starter View 月额约 20 次已尽；Leslie 选 **docs-only**  
+3. 权威稿：`product-pages` §2 Cursor 三栏（`85d64e4`）+ 本文 Frame 5；HTML 参考 `箱内 /workspace/figma-html/f5-cursor-3col.html`（非实现源）  
+4. 升席位 / 下月额度恢复后再灌 Figma（可选）  
+5. Leslie 明确「可以改代码」后再派公司叙事 + Agent壳  
+6. Grok Bot 验收 → 报 Leslie  
 
 ---
 
@@ -140,3 +140,4 @@
 |---|---|
 | 2026-10-23 | 初稿：主路径六帧 + 浅色语言 + 设计落地 bot；Leslie「我不懂设计你评估」→ 第一节锁定 |
 | 2026-10-23 | Leslie：工作区要 Cursor 三栏（左目录 / 中产出 / 右对话+确认）；F5 重画 |
+| 2026-10-23 | Figma MCP 月额用尽；Leslie 选 docs-only，停灌层与实现交接 |
