@@ -4,6 +4,7 @@ import {
   HOME_CHAIN_STATIONS,
   HOME_DEMO_CASE,
   HOME_SAMPLE_DELIVERABLES,
+  HOME_SCENARIOS,
 } from '../../business/homeContentPreview'
 
 /** 首字圆形占位头像（示意，非真人） */
@@ -25,18 +26,19 @@ function ExpertAvatar({ name, active }: { name: string; active: boolean }) {
 }
 
 /**
- * §4.0a 货架预览（展示页 · 非干活处）
- * 品类大标题 → 七部徽章墙（每部默认露出 ≤3 专家+首字头像）→ 案卡∥交卷橱窗
+ * §4.0p 登录前宣传站货架（展示页 · 非干活处）
+ * 品类大标题 → 七部徽章墙（每部默认露出 ≤3 专家+首字头像）→ 案卡∥交卷橱窗 → 场景卡
  * 全灰态只认知；不可点进作业 / 交卷 / 采纳。
+ * **未**挂入 HomePage / 登录后 `/agent`（§3.3 B / §4.0a 禁货架）；官网接线时再用。
  */
-export function HomeContentPreview({ onDismiss }: { onDismiss: () => void }) {
+export function HomeContentPreview() {
   const currentId = HOME_DEMO_CASE.currentDeptId
 
   return (
     <section
       aria-label="货架预览"
-      className="mb-6 space-y-4"
-      data-testid="home-intro-block"
+      className="space-y-4"
+      data-testid="welcome-shelf"
       data-home-preview="shelf"
     >
       {/* 1 · 品类大标题 */}
@@ -166,15 +168,21 @@ export function HomeContentPreview({ onDismiss }: { onDismiss: () => void }) {
         </ul>
       </div>
 
-      <div className="flex justify-end">
-        <button
-          type="button"
-          className="btn-press focus-ring rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:border-slate-300 hover:text-slate-800"
-          onClick={onDismiss}
-          data-testid="home-intro-dismiss"
-        >
-          已了解
-        </button>
+      {/* 4 · 场景卡 */}
+      <div data-testid="welcome-scenarios" aria-label="使用场景">
+        <p className="mb-2 text-[11px] font-medium text-slate-400">场景</p>
+        <ul className="grid gap-2 sm:grid-cols-3">
+          {HOME_SCENARIOS.map((sc) => (
+            <li
+              key={sc.id}
+              className="rounded-[var(--radius-md)] border border-slate-200 bg-white px-3.5 py-3 shadow-[var(--shadow-rest)]"
+              data-testid={`welcome-scenario-${sc.id}`}
+            >
+              <p className="text-[13px] font-semibold text-slate-900">{sc.title}</p>
+              <p className="mt-1 text-[12px] leading-snug text-slate-500">{sc.body}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )

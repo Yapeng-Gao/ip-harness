@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Building2, Scale } from 'lucide-react'
 import { useAuthSession } from '../../business/AuthSessionContext'
 import {
@@ -115,6 +115,15 @@ export function AgentLoginPage() {
 
         <p className="mt-4 text-center text-[11px] text-slate-400">
           样机：本地会话，非真登录
+        </p>
+        <p className="mt-2 text-center text-[11px]">
+          <Link
+            to="/agent/welcome"
+            className="focus-ring text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
+            data-testid="welcome-from-login"
+          >
+            先了解产品货架
+          </Link>
         </p>
       </div>
     </div>

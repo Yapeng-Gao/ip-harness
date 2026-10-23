@@ -10,10 +10,11 @@ import {
   HOME_CHAIN_STATIONS,
   HOME_DEMO_CASE,
   HOME_SAMPLE_DELIVERABLES,
+  HOME_SCENARIOS,
 } from './homeContentPreview'
 import { MAIN_CHAIN_DEPT_IDS } from '../departments/orgDepts'
 
-describe('homeContentPreview', () => {
+describe('homeContentPreview (§4.0p shelf data)', () => {
   it('seven stations align with MAIN_CHAIN_DEPT_IDS', () => {
     assert.equal(assertHomeChainAligned(), true)
     assert.equal(HOME_CHAIN_STATIONS.length, 7)
@@ -48,5 +49,14 @@ describe('homeContentPreview', () => {
   it('category title is a short shelf headline', () => {
     assert.ok(HOME_CATEGORY_TITLE.includes('知识产权') || HOME_CATEGORY_TITLE.includes('专利'))
     assert.ok(HOME_CATEGORY_TITLE.length <= 20)
+  })
+
+  it('has 2–3 scenario cards', () => {
+    assert.ok(HOME_SCENARIOS.length >= 2)
+    assert.ok(HOME_SCENARIOS.length <= 3)
+    for (const s of HOME_SCENARIOS) {
+      assert.ok(s.title.length > 0)
+      assert.ok(s.body.length > 0)
+    }
   })
 })

@@ -1,6 +1,7 @@
 /**
- * 产品首页货架预览 · product-pages §4.0a
+ * 登录前宣传站货架数据 · vision §3.3 A / product-pages §4.0p
  * 只认知，不可点进作业 / 交卷 / 采纳。
+ * **未**挂到登录后 `/agent`（薄入口 §3.3 B / §4.0a 禁货架）；供官网复用。
  */
 import type { OrgDeptId } from '../departments/orgDepts'
 import { MAIN_CHAIN_DEPT_IDS, MAIN_CHAIN_DEPTS } from '../departments/orgDepts'
@@ -80,19 +81,21 @@ export const HOME_SAMPLE_DELIVERABLES = [
   { name: '申请文件稿', status: '示意' },
 ] as const
 
-/** 辅文（可省；面积须远小于货架） */
-export const HOME_VALUE_LINE =
-  '帮企业研发和专利代理，把技术做成可递交的专利。'
-
-export const HOME_HIGHLIGHTS = [
-  { title: '全流程一起办', body: '从交底到递交、答复。' },
-  { title: '按部门交卷', body: '卡在哪一站看得见。' },
-  { title: '关键步骤你点头', body: '待你确认后再往下。' },
-] as const
-
-export const HOME_PATH_HOPS = [
-  '开案子 / 案盘',
-  '公司首页',
-  '部门交卷',
-  '待你确认',
+/** ④ 场景卡（白话；不可当作业入口） */
+export const HOME_SCENARIOS = [
+  {
+    id: 'agency-multi',
+    title: '代理办多案',
+    body: '案盘上看各案卡在哪、谁待确认，再进本案。',
+  },
+  {
+    id: 'enterprise-chain',
+    title: '企业走七部',
+    body: '进公司首页看 IP 部，按部门交卷往下走。',
+  },
+  {
+    id: 'confirm-gate',
+    title: '确认拍板',
+    body: '关键关交卷后待你确认；产品不替你签字。',
+  },
 ] as const
