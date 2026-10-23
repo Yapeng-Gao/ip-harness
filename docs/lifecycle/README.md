@@ -99,11 +99,12 @@ flowchart LR
 
 1. **本页导览**（你正在读）— 主链图 + 三层图例 + D1–D7 落点  
 2. [business-spine.md §1](business-spine.md) — 业务本质与默认主链（§1.3）  
-3. [**product-vision.md**](product-vision.md) — **产品理念**（外挂 IP 部；公司/部门/专家叙事）  
-4. [**sources.md**](sources.md) — **业务逻辑参考来源总表**（法定/程序/官费/讨论依据；明确不以原型为准）  
-5. **本页下方「节点」表** — 扫一眼每站定位  
-6. **单个节点的 §0 + §0.1** — 一句话定位 + **Mermaid 图 / 规则速查(A法定·B程序·C商业·D质量) / 进入·完成·推进判据 / 硬闸 / 依据**  
-7. 需要落地再读该节点 §4 规则编号与 §5 法律底座全文  
+3. [**product-vision.md**](product-vision.md) — **产品理念**（外挂 IP 部；公司/部门/专家叙事；§6 信息架构）  
+4. [**product-pages.md**](product-pages.md) — **逐页怎么设计**（14 页规格）+ [**product-logic.md**](product-logic.md)（怎么卖）  
+5. [**sources.md**](sources.md) — **业务逻辑参考来源总表**（法定/程序/官费/讨论依据；明确不以原型为准）  
+6. **本页下方「节点」表** — 扫一眼每站定位  
+7. **单个节点的 §0 + §0.1** — 一句话定位 + **Mermaid 图 / 规则速查(A法定·B程序·C商业·D质量) / 进入·完成·推进判据 / 硬闸 / 依据**  
+8. 需要落地再读该节点 §4 规则编号与 §5 法律底座全文  
 
 深度母本仍是 spine 全文 + 各节点规格；冲突时以 spine 业务模型为准。讨论工作稿见下方「工作稿」表。
 
@@ -114,7 +115,8 @@ flowchart LR
 |---|---|
 | [**business-spine.md**](business-spine.md) | **业务总纲**：三个转换 / 六类主体 / 五层对象 / 五类规则 / 三套时钟 / 四个口袋 / 七个决策点 / 12 条失败模式 |
 | [**product-vision.md**](product-vision.md) | **产品理念**：外挂 IP 部；公司/部门/专家叙事；**§6 信息架构（MVP 14 页；工作台=部门页）** |
-| [**product-logic.md**](product-logic.md) | **产品逻辑**：能力→产品映射 / 规则密度分析 / SKU 清单（含 P02b / P03b） / 失败模式覆盖矩阵 / 打包与定价 / 采购路径 / 路线图 / 竞争空位 / 验收标准 |
+| [**product-logic.md**](product-logic.md) | **产品逻辑**：能力→产品映射 / SKU / 失败模式 / 打包定价 / **§0.2 外挂包装与七部映射** / **§5.4 叙事套装** / 路线图 |
+| [**product-pages.md**](product-pages.md) | **逐页设计规格**：MVP **14** 页；部门工作台统一布局；交卷物/齐套/专家；更多部门映射 |
 | [**spec/**](spec/README.md) | **机器可读层**（生成物）：1026 条规则 / 117 条决策权 / schema，供模型与工具消费 |
 | [**decision-rights.md**](decision-rights.md) | **决策权 · 例外 · 冲突裁决**：四种权力 / L1–L4 分级 / D1–D7 落人 / 法定与内部例外 / 五条裁决原则 / 七条红线 |
 
@@ -127,6 +129,7 @@ flowchart LR
 | [2026-10-23-lifecycle-audit-and-optimize.md](working/2026-10-23-lifecycle-audit-and-optimize.md) | lifecycle 审计与优化 backlog；P0 已落地；**L5–L10 本轮推进**（00a/00c 正式文、Nc 默认不单列、术语、D4 意向、债清单） |
 | [2026-10-23-implementation-debt.md](working/2026-10-23-implementation-debt.md) | 实现债：代码仍强制 `research_report.fto` 等（只列路径，不改 apps） |
 | [2026-10-23-node-diagrams-rules-basis.md](working/2026-10-23-node-diagrams-rules-basis.md) | 全节点补图+规则类别+判定+依据；覆盖清单与 ⚠ 待复核项 |
+| [2026-10-23-product-pages-and-logic-align.md](working/2026-10-23-product-pages-and-logic-align.md) | 产品逻辑收口 + product-pages 逐页规格对齐记 |
 
 ## 节点（产品级规格 · 每站含图）
 
@@ -180,6 +183,7 @@ flowchart LR
 | 文档 | 内容 |
 |---|---|
 | [**sources.md**](sources.md) | **业务逻辑参考来源总表**：法定 / 程序 / 官费与费减 / WIPO 方法 / 讨论与 spine / **明确非依据**（原型与 archive） |
+| [product-pages.md](product-pages.md) | 产品逐页设计规格（外挂 IP 部信息架构落地） |
 | [industry-reality.md](industry-reality.md) | 法定期限 / 官费 / 程序补遗（含 2023 细则新增：奖酬、宽限期、保密审查、非正常申请）；**01 与 01b 分节** |
 | [business-spine.md §1.4](business-spine.md) | **术语**：权项结构 / 组合布局 / 单案国别；查新≠FTO；激发≠挖掘 |
 | [_TEMPLATE.md](_TEMPLATE.md) | 节点文档写作标准（17 节结构、编号规则、8 条纪律、最低篇幅） |
