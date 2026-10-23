@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider } from '@shared/context/AppContext'
 import { AgentProvider } from '@shared/context/AgentContext'
 import { ProductProvider } from '@shared/context/ProductContext'
-import { AgentShell } from './components/AgentShell'
 import { AgentHome } from './pages/AgentHome'
 import { DepartmentsPage } from './pages/DepartmentsPage'
 import { AssetsPage } from './pages/AssetsPage'
@@ -37,10 +36,14 @@ import { CaseDocketPage } from './pages/business/CaseDocketPage'
 import { CaseBillingPage } from './pages/business/CaseBillingPage'
 import { CaseMembersPage } from './pages/business/CaseMembersPage'
 import { AgentEntryRedirect } from './pages/business/AgentEntryRedirect'
+import { AgentLoginPage } from './pages/business/AgentLoginPage'
+import { RequireAuth } from './pages/business/RequireAuth'
 import { EntryRoleProvider } from './business/EntryRoleContext'
+import { AuthSessionProvider } from './business/AuthSessionContext'
 
 /**
  * IA（2026-10-23）：
+ * /agent/login        登录壳（角色二选一 + 样机会话；§4.0）
  * /agent              → AgentEntryRedirect（代理→多案流水；企业→最近案子/开案子）
  * /agent/cases        多案流水（案表 → 公司首页）
  * /agent/departments  组织编制（全库配置旁路；作业以案→公司首页七部为主）
@@ -57,10 +60,12 @@ export default function App() {
           <OrgConfigProvider>
           <AssetLibraryProvider>
           <EntryRoleProvider>
+          <AuthSessionProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Navigate to="/agent" replace />} />
-              <Route path="/agent" element={<AgentShell />}>
+              <Route path="/agent/login" element={<AgentLoginPage />} />
+              <Route path="/agent" element={<RequireAuth />}>
                 <Route index element={<AgentEntryRedirect />} />
                 <Route path="cases" element={<BusinessCasesPage />} />
                 <Route path="cases/new" element={<BusinessCaseNewPage />} />
@@ -102,6 +107,7 @@ export default function App() {
               <Route path="/agents/*" element={<Navigate to="/agent" replace />} />
             </Routes>
           </BrowserRouter>
+          </AuthSessionProvider>
           </EntryRoleProvider>
           </AssetLibraryProvider>
           </OrgConfigProvider>

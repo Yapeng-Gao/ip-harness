@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   PanelRightClose,
   PanelRightOpen,
@@ -18,6 +18,7 @@ import { EntryRoleSwitcher } from './business/EntryRoleSwitcher'
 import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
 import { useAgentDebug } from '../business/useAgentDebug'
 import { useEntryRole } from '../business/useEntryRole'
+import { useAuthSession } from '../business/AuthSessionContext'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 
 export function AgentShell() {
@@ -26,6 +27,8 @@ export function AgentShell() {
   const loc = useLocation()
   const debug = useAgentDebug()
   const { entryRole } = useEntryRole()
+  const { logout } = useAuthSession()
+  const navigate = useNavigate()
   const { getCase: getBizCase } = useBusinessCases()
   const [rightOpen, setRightOpen] = useState(false)
   /** P1-C · pending-confirm 首次进入自动展开上下文一次（视觉，不改 HITL） */
@@ -202,6 +205,19 @@ export function AgentShell() {
         <div className="ml-auto flex items-center gap-2">
           {(inHome || inBusiness || inCatalog || inPatentProject) && (
             <PendingConfirmBell />
+          )}
+          {(inHome || inBusiness) && !inGrokShell && (
+            <button
+              type="button"
+              onClick={() => {
+                logout()
+                navigate('/agent/login', { replace: true })
+              }}
+              className="btn-press focus-ring hidden text-xs text-slate-500 hover:text-slate-800 sm:inline"
+              data-testid="auth-logout"
+            >
+              退出
+            </button>
           )}
           {!inGrokShell && showTenantChrome && (
             <ProductSwitcher current="agent" size="md" className="hidden sm:grid" />

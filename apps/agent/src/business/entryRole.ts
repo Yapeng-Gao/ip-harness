@@ -56,3 +56,22 @@ export const ENTRY_ROLE_LABEL: Record<EntryRole, string> = {
   agency: '我是代理',
   enterprise: '我是企业',
 }
+
+/**
+ * 双角色默认落点（product-pages §4.0 / AgentEntryRedirect）
+ * - agency → /agent/cases
+ * - enterprise + 有案 → 最近案子公司首页
+ * - enterprise + 无案 → /agent/cases/new
+ */
+export function resolveEntryLandingPath(
+  entryRole: EntryRole,
+  cases: readonly { id: string }[],
+  getUpdatedAt: (caseId: string) => string | undefined,
+  getLatestLogAt?: (caseId: string) => string | undefined,
+): string {
+  if (entryRole === 'agency') return '/agent/cases'
+  if (cases.length === 0) return '/agent/cases/new'
+  const latestId = pickLatestCaseId(cases, getUpdatedAt, getLatestLogAt)
+  return `/agent/cases/${latestId ?? cases[0]!.id}`
+}
+
