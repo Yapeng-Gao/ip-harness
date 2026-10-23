@@ -100,9 +100,10 @@ flowchart LR
 1. **本页导览**（你正在读）— 主链图 + 三层图例 + D1–D7 落点  
 2. [business-spine.md §1](business-spine.md) — 业务本质与默认主链（§1.3）  
 3. **本页下方「节点」表** — 扫一眼每站定位  
-4. **单个节点的 §0～§2** — 目的 / 谁做 / 交出什么 / 下一站；需要规则再读 §4 以后  
+4. **单个节点的 §0 + §0.1** — 一句话定位 + **Mermaid 图 / 规则速查(A法定·B程序·C商业·D质量) / 进入·完成·推进判据 / 硬闸 / 依据**  
+5. 需要落地再读该节点 §4 规则编号与 §5 法律底座全文  
 
-深度母本仍是 spine 全文 + 各节点 17 节；冲突时以 spine 业务模型为准。讨论工作稿见下方「工作稿」表。
+深度母本仍是 spine 全文 + 各节点规格；冲突时以 spine 业务模型为准。讨论工作稿见下方「工作稿」表。
 
 ---
 ## 再读这些（总纲 / 产品 / 决策权）
@@ -122,10 +123,13 @@ flowchart LR
 | [2026-10-23-product-vision-company-dept-expert.md](working/2026-10-23-product-vision-company-dept-expert.md) | 产品理念工作稿：外挂 IP 部；公司/部门/专家拟人化；部门↔主链（自 00a 起）↔spine 00–25；交卷·待你确认；对外禁用 Agent 黑话 |
 | [2026-10-23-lifecycle-audit-and-optimize.md](working/2026-10-23-lifecycle-audit-and-optimize.md) | lifecycle 审计与优化 backlog；P0 已落地；**L5–L10 本轮推进**（00a/00c 正式文、Nc 默认不单列、术语、D4 意向、债清单） |
 | [2026-10-23-implementation-debt.md](working/2026-10-23-implementation-debt.md) | 实现债：代码仍强制 `research_report.fto` 等（只列路径，不改 apps） |
+| [2026-10-23-node-diagrams-rules-basis.md](working/2026-10-23-node-diagrams-rules-basis.md) | 全节点补图+规则类别+判定+依据；覆盖清单与 ⚠ 待复核项 |
 
-## 节点（17 节产品级规格）
+## 节点（产品级规格 · 每站含图）
 
 默认主链与法律/业务/条件三层必经见 [business-spine.md §1.3](business-spine.md)；术语三译名见 [§1.4](business-spine.md)。捕获默认不单列见 [§1.3.1](business-spine.md) ⚠。
+
+**人读约定（2026-10-23）**：下列每个业务节点与横切文档均在文首提供 **§0.1 人读：图 · 判定 · 依据**（Mermaid + A/B/C/D 规则速查 + 进入/完成/推进下一站 + 硬闸 + 调研依据）。法定条号/金额凡标 ⚠ 须按当期官方文本复核；不编造未核到的法条号。
 
 ### 节点编号约定（2026-10-23）
 
