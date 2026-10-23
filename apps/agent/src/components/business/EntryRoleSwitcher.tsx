@@ -15,7 +15,7 @@ const OPTIONS: EntryRole[] = ['agency', 'enterprise']
 
 /**
  * 顶栏紧凑入口角色切换（现壳 chip 样式，不换肤）。
- * 切换后回 /agent，由 AgentEntryRedirect 按角色落点。
+ * 切换后回 /agent 产品首页（§4.0a）；主 CTA 仍按角色分流。
  */
 export function EntryRoleSwitcher({ className = '' }: Props) {
   const { entryRole, setEntryRole } = useEntryRole()

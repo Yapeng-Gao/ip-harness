@@ -1,6 +1,11 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { pickLatestCaseId, isEntryRole, resolveEntryLandingPath } from './entryRole'
+import {
+  pickLatestCaseId,
+  isEntryRole,
+  resolveEntryLandingPath,
+  resolveRolePrimaryPath,
+} from './entryRole'
 
 describe('entryRole', () => {
   it('isEntryRole', () => {
@@ -51,22 +56,42 @@ describe('resolveEntryLandingPath', () => {
   const updated = (cid: string) =>
     ({ a: '2026-01-01T00:00:00.000Z', b: '2026-10-01T00:00:00.000Z' })[cid]
 
+  it('always lands on /agent home (agency)', () => {
+    assert.equal(resolveEntryLandingPath('agency', cases, updated), '/agent')
+  })
+
+  it('always lands on /agent home (enterprise)', () => {
+    assert.equal(resolveEntryLandingPath('enterprise', cases, updated), '/agent')
+  })
+
+  it('always lands on /agent home (enterprise, no cases)', () => {
+    assert.equal(
+      resolveEntryLandingPath('enterprise', [], () => undefined),
+      '/agent',
+    )
+  })
+})
+
+describe('resolveRolePrimaryPath', () => {
+  const cases = [{ id: 'a' }, { id: 'b' }]
+  const updated = (cid: string) =>
+    ({ a: '2026-01-01T00:00:00.000Z', b: '2026-10-01T00:00:00.000Z' })[cid]
+
   it('agency → cases list', () => {
-    assert.equal(resolveEntryLandingPath('agency', cases, updated), '/agent/cases')
+    assert.equal(resolveRolePrimaryPath('agency', cases, updated), '/agent/cases')
   })
 
   it('enterprise with cases → latest case home', () => {
     assert.equal(
-      resolveEntryLandingPath('enterprise', cases, updated),
+      resolveRolePrimaryPath('enterprise', cases, updated),
       '/agent/cases/b',
     )
   })
 
   it('enterprise without cases → new', () => {
     assert.equal(
-      resolveEntryLandingPath('enterprise', [], () => undefined),
+      resolveRolePrimaryPath('enterprise', [], () => undefined),
       '/agent/cases/new',
     )
   })
 })
-

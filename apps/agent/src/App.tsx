@@ -35,7 +35,7 @@ import {
 import { CaseDocketPage } from './pages/business/CaseDocketPage'
 import { CaseBillingPage } from './pages/business/CaseBillingPage'
 import { CaseMembersPage } from './pages/business/CaseMembersPage'
-import { AgentEntryRedirect } from './pages/business/AgentEntryRedirect'
+import { HomePage } from './pages/HomePage'
 import { AgentLoginPage } from './pages/business/AgentLoginPage'
 import { RequireAuth } from './pages/business/RequireAuth'
 import { EntryRoleProvider } from './business/EntryRoleContext'
@@ -44,7 +44,7 @@ import { AuthSessionProvider } from './business/AuthSessionContext'
 /**
  * IA（2026-10-23）：
  * /agent/login        登录壳（角色二选一 + 样机会话；§4.0）
- * /agent              → AgentEntryRedirect（代理→多案流水；企业→最近案子/开案子）
+ * /agent              产品首页总览（§4.0a；登录后落点；主 CTA 按角色分流）
  * /agent/cases        多案流水（案表 → 公司首页）
  * /agent/departments  组织编制（全库配置旁路；作业以案→公司首页七部为主）
  * /agent/assets       资产（全局库 + 文件树）
@@ -66,7 +66,7 @@ export default function App() {
               <Route path="/" element={<Navigate to="/agent" replace />} />
               <Route path="/agent/login" element={<AgentLoginPage />} />
               <Route path="/agent" element={<RequireAuth />}>
-                <Route index element={<AgentEntryRedirect />} />
+                <Route index element={<HomePage />} />
                 <Route path="cases" element={<BusinessCasesPage />} />
                 <Route path="cases/new" element={<BusinessCaseNewPage />} />
                 <Route path="cases/:caseId" element={<BusinessCasePage />} />

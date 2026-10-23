@@ -1,7 +1,7 @@
 /**
  * 入口角色（演示落点）· 与租户 workspace 解耦：
- * - agency → /agent/cases 多案流水
- * - enterprise → 最近案子公司首页 / 无案开案子
+ * - 登录后统一落 /agent 首页总览
+ * - 首页主 CTA：agency → 案盘；enterprise → 最近公司首页 / 开案子
  * localStorage 键：ip-agent-entry-role；缺省 agency（演示友好）
  */
 export type EntryRole = 'agency' | 'enterprise'
@@ -58,12 +58,25 @@ export const ENTRY_ROLE_LABEL: Record<EntryRole, string> = {
 }
 
 /**
- * 双角色默认落点（product-pages §4.0 / AgentEntryRedirect）
- * - agency → /agent/cases
+ * 登录后默认落点：人人都有的 /agent 首页总览（不再按角色直跳案盘/公司）。
+ * 参数保留兼容调用方（登录页 / 测试）；落点固定。
+ */
+export function resolveEntryLandingPath(
+  _entryRole: EntryRole,
+  _cases?: readonly { id: string }[],
+  _getUpdatedAt?: (caseId: string) => string | undefined,
+  _getLatestLogAt?: (caseId: string) => string | undefined,
+): string {
+  return '/agent'
+}
+
+/**
+ * 首页按角色主 CTA 目标：
+ * - agency → /agent/cases 案盘
  * - enterprise + 有案 → 最近案子公司首页
  * - enterprise + 无案 → /agent/cases/new
  */
-export function resolveEntryLandingPath(
+export function resolveRolePrimaryPath(
   entryRole: EntryRole,
   cases: readonly { id: string }[],
   getUpdatedAt: (caseId: string) => string | undefined,
@@ -74,4 +87,3 @@ export function resolveEntryLandingPath(
   const latestId = pickLatestCaseId(cases, getUpdatedAt, getLatestLogAt)
   return `/agent/cases/${latestId ?? cases[0]!.id}`
 }
-

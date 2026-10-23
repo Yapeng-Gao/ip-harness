@@ -1,8 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Building2, Scale } from 'lucide-react'
 import { useAuthSession } from '../../business/AuthSessionContext'
-import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
   ENTRY_ROLE_LABEL,
   resolveEntryLandingPath,
@@ -14,34 +13,18 @@ const OPTIONS: EntryRole[] = ['agency', 'enterprise']
 
 /**
  * product-pages §4.0 登录壳
- * 定位句 + 角色二选一 + 进入；样机本地会话；按角色落点（非同页滤权限）。
+ * 定位句 + 角色二选一 + 进入 → 产品首页 /agent（§4.0a）；样机本地会话。
  */
 export function AgentLoginPage() {
   const { loggedIn, login } = useAuthSession()
-  const { entryRole, setEntryRole } = useEntryRole()
-  const { cases, getProgress, getProcessLogs } = useBusinessCases()
+  const { setEntryRole } = useEntryRole()
   const navigate = useNavigate()
 
   const [selected, setSelected] = useState<EntryRole | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const getLogAt = useMemo(
-    () => (id: string) => {
-      const logs = getProcessLogs(id)
-      if (logs.length === 0) return undefined
-      return logs.reduce((max, l) => (l.at > max ? l.at : max), logs[0]!.at)
-    },
-    [getProcessLogs],
-  )
-
   if (loggedIn) {
-    const bounce = resolveEntryLandingPath(
-      entryRole,
-      cases,
-      (id) => getProgress(id).updatedAt,
-      getLogAt,
-    )
-    return <Navigate to={bounce} replace />
+    return <Navigate to={resolveEntryLandingPath('agency')} replace />
   }
 
   const enter = () => {
@@ -56,13 +39,7 @@ export function AgentLoginPage() {
       setError('本地会话写入失败，请重试')
       return
     }
-    const target = resolveEntryLandingPath(
-      selected,
-      cases,
-      (id) => getProgress(id).updatedAt,
-      getLogAt,
-    )
-    navigate(target, { replace: true })
+    navigate(resolveEntryLandingPath(selected), { replace: true })
   }
 
   return (
@@ -84,7 +61,7 @@ export function AgentLoginPage() {
         </div>
 
         <p className="mb-4 text-sm text-slate-600">
-          选择入口角色后进入对应开始页（代理看案盘，企业进本案公司首页）。
+          选择入口角色后进入产品首页；再从首页按角色进入案盘或公司首页。
         </p>
 
         <fieldset className="mb-5">
