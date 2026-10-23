@@ -6,14 +6,13 @@ import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
   ENTRY_ROLE_LABEL,
   pickLatestCaseId,
-  resolveRolePrimaryPath,
 } from '../business/entryRole'
 import { useEntryRole } from '../business/useEntryRole'
 
 /**
- * 产品入口 · /agent（product-pages §4.0a 薄入口）
- * 对齐原型 thin-home：三入口（代理案盘 / 企业公司 / 开案子）+ 待确认。
- * 禁：七部/专家货架、宣传橱窗（属 `/agent/welcome`）。
+ * 产品入口 · /agent（§4.0a 薄入口 · spec 2026-10-23-welcome-thin-home-dual-role）
+ * 真双角色：一屏一个主 CTA + 待确认 + 另一角色弱文字链。
+ * 禁止：三卡平铺、七部墙 / 货架 / 场景 / 橱窗（属 `/agent/welcome`）。
  */
 export function HomePage() {
   const { entryRole } = useEntryRole()
@@ -28,17 +27,6 @@ export function HomePage() {
     [getProcessLogs],
   )
 
-  const primaryHref = useMemo(
-    () =>
-      resolveRolePrimaryPath(
-        entryRole,
-        cases,
-        (id) => getProgress(id).updatedAt,
-        getLogAt,
-      ),
-    [entryRole, cases, getProgress, getLogAt],
-  )
-
   const isAgency = entryRole === 'agency'
   const enterpriseHasCase = !isAgency && cases.length > 0
   const latestId = pickLatestCaseId(
@@ -46,49 +34,36 @@ export function HomePage() {
     (id) => getProgress(id).updatedAt,
     getLogAt,
   )
-  const companyHref = latestId
-    ? `/agent/cases/${latestId}`
-    : '/agent/cases/new'
+  const latestCase = latestId
+    ? cases.find((c) => c.id === latestId)
+    : undefined
 
-  const primaryKey = isAgency
-    ? 'cases'
+  const primary = isAgency
+    ? {
+        href: '/agent/cases',
+        label: '进入案盘',
+        sub: '多案流水 · 卡住哪、待确认、期限',
+        Icon: Briefcase,
+      }
     : enterpriseHasCase
-      ? 'company'
-      : 'new'
+      ? {
+          href: latestId
+            ? `/agent/cases/${latestId}`
+            : '/agent/cases/new',
+          label: '进入本公司',
+          sub: latestCase?.title
+            ? `当前案 · ${latestCase.title}`
+            : '去本案公司首页',
+          Icon: Building2,
+        }
+      : {
+          href: '/agent/cases/new',
+          label: '开案子',
+          sub: '极少字段 → 公司首页',
+          Icon: Plus,
+        }
 
-  const entries: {
-    key: 'cases' | 'company' | 'new'
-    href: string
-    k: string
-    t: string
-    d: string
-    testid: string
-  }[] = [
-    {
-      key: 'cases',
-      href: '/agent/cases',
-      k: isAgency ? '主入口 · 代理' : '次入口 · 案盘',
-      t: '多案流水',
-      d: '案盘 · 卡住哪、待确认、期限红点',
-      testid: 'home-action-cases-card',
-    },
-    {
-      key: 'company',
-      href: companyHref,
-      k: enterpriseHasCase ? '企业 · 有案' : '企业 · 当前',
-      t: enterpriseHasCase ? '当前案子' : '公司首页',
-      d: enterpriseHasCase ? '去本案公司首页' : '无案时请先开案子',
-      testid: 'home-action-company-card',
-    },
-    {
-      key: 'new',
-      href: '/agent/cases/new',
-      k: '企业 · 无案 / 新开',
-      t: '开案子',
-      d: '极少字段 → 公司首页',
-      testid: 'home-action-new-card',
-    },
-  ]
+  const PrimaryIcon = primary.Icon
 
   return (
     <div
@@ -114,80 +89,46 @@ export function HomePage() {
             <span className="font-semibold text-slate-900">
               {ENTRY_ROLE_LABEL[entryRole]}
             </span>
-            <span className="text-slate-400">
-              {' '}
-              · 代理进案盘；企业有案进公司、无案开案子
-            </span>
           </p>
         </header>
 
+        {/* 唯一主 CTA · 禁止 sm:grid-cols-3 三卡平铺 */}
         <section
           aria-label="主要入口"
-          className="grid gap-3 sm:grid-cols-3"
+          className="block"
           data-testid="home-primary-actions"
         >
-          {entries.map((e) => {
-            const primary = e.key === primaryKey
-            const Icon =
-              e.key === 'cases'
-                ? Briefcase
-                : e.key === 'company'
-                  ? Building2
-                  : Plus
-            return (
-              <Link
-                key={e.key}
-                to={e.href}
-                className={`btn-press focus-ring flex flex-col gap-1.5 rounded-[var(--radius-md)] border px-4 py-4 shadow-[var(--shadow-rest)] ${
-                  primary
-                    ? 'border-slate-900 bg-slate-900 text-white hover:bg-slate-800'
-                    : 'border-slate-200 bg-white text-slate-900 hover:border-slate-300'
-                }`}
-                data-testid={e.testid}
-                data-primary={primary ? '1' : '0'}
-              >
-                <span
-                  className={`text-[11px] font-medium ${
-                    primary ? 'text-slate-300' : 'text-slate-500'
-                  }`}
-                >
-                  {e.k}
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-[16px] font-bold tracking-tight">
-                  <Icon
-                    className="h-4 w-4 shrink-0"
-                    strokeWidth={1.75}
-                    aria-hidden
-                  />
-                  {e.t}
-                  {primary ? (
-                    <ArrowRight
-                      className="ml-auto h-3.5 w-3.5 opacity-80"
-                      aria-hidden
-                    />
-                  ) : null}
-                </span>
-                <span
-                  className={`text-[12px] leading-snug ${
-                    primary ? 'text-white/75' : 'text-slate-500'
-                  }`}
-                >
-                  {e.d}
-                </span>
-              </Link>
-            )
-          })}
+          <Link
+            to={primary.href}
+            className="btn-press focus-ring flex w-full flex-col gap-1.5 rounded-[var(--radius-md)] border-2 border-slate-900 bg-slate-900 px-5 py-5 text-white shadow-[var(--shadow-rest)] hover:bg-slate-800"
+            data-testid="home-action-primary"
+            data-primary-role={entryRole}
+            data-primary="1"
+          >
+            <span className="text-[11px] font-medium text-slate-300">
+              {isAgency
+                ? '主入口 · 代理'
+                : enterpriseHasCase
+                  ? '主入口 · 企业 · 有案'
+                  : '主入口 · 企业 · 无案'}
+            </span>
+            <span className="inline-flex items-center gap-2 text-[20px] font-bold tracking-tight sm:text-[22px]">
+              <PrimaryIcon
+                className="h-5 w-5 shrink-0"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              {primary.label}
+              <ArrowRight
+                className="ml-auto h-4 w-4 opacity-80"
+                aria-hidden
+              />
+            </span>
+            <span className="text-[13px] leading-snug text-white/75">
+              {primary.sub}
+            </span>
+          </Link>
         </section>
-
-        {/* 兼容旧自测：主 CTA 选择器 */}
-        <Link
-          to={primaryHref}
-          className="sr-only"
-          data-testid="home-action-primary"
-          data-primary-role={entryRole}
-        >
-          主入口
-        </Link>
 
         <div className="mt-5" data-testid="home-pending-entry">
           <HomeTodoStrip />
@@ -198,23 +139,55 @@ export function HomePage() {
           aria-label="次要入口"
           data-testid="home-secondary-actions"
         >
-          <Link
-            to="/agent/cases"
-            className="focus-ring rounded-[var(--radius-sm)] font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="home-action-cases"
-          >
-            多案流水
-          </Link>
-          <span aria-hidden className="text-slate-300">
-            ·
-          </span>
-          <Link
-            to="/agent/cases/new"
-            className="focus-ring rounded-[var(--radius-sm)] font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="home-action-new-case"
-          >
-            开案子
-          </Link>
+          {isAgency ? (
+            <>
+              <Link
+                to={
+                  latestId
+                    ? `/agent/cases/${latestId}`
+                    : '/agent/cases/new'
+                }
+                className="focus-ring rounded-[var(--radius-sm)] font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+                data-testid="home-action-company-card"
+              >
+                {latestId ? '最近公司首页' : '公司首页'}
+              </Link>
+              <span aria-hidden className="text-slate-300">
+                ·
+              </span>
+              <Link
+                to="/agent/cases/new"
+                className="focus-ring rounded-[var(--radius-sm)] font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+                data-testid="home-action-new-case"
+              >
+                开案子
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/agent/cases"
+                className="focus-ring rounded-[var(--radius-sm)] font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+                data-testid="home-action-cases"
+              >
+                案盘 / 多案流水
+              </Link>
+              {enterpriseHasCase ? (
+                <>
+                  <span aria-hidden className="text-slate-300">
+                    ·
+                  </span>
+                  <Link
+                    to="/agent/cases/new"
+                    className="focus-ring rounded-[var(--radius-sm)] font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+                    data-testid="home-action-new-case"
+                  >
+                    开案子
+                  </Link>
+                </>
+              ) : null}
+            </>
+          )}
           <span aria-hidden className="text-slate-300">
             ·
           </span>
