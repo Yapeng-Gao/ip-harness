@@ -1,12 +1,15 @@
 /**
  * 专家头像 · 真人照片风占位（非字母圆 / 非机器人插画）
  *
- * 来源：randomuser.me 公开人像占位图（`/api/portraits/{men|women}/{0-99}.jpg`）
- * 稳定性：对岗名（或传入的 seed）做 32-bit 字符串 hash → 性别 + 序号固定；
- * 同一岗名永远同一张图。公司抽屉 / 部门钉栏 / 欢迎页货架共用。
+ * 来源：本地 vendored `public/expert-avatars/*.jpg`
+ * （源自 randomuser.me 公开人像占位图，入库以避免运行时 CDN 抖动）
+ * 稳定性：对岗名（或 seed）做 32-bit hash → 下标固定；同岗永远同图。
+ * 公司抽屉 / 部门钉栏 / 欢迎页货架共用本组件。
  */
 
-/** FNV-ish 稳定 hash → 非负 32-bit */
+const AVATAR_COUNT = 23 // 00.jpg … 22.jpg
+
+/** FNV-1a 稳定 hash → 非负 32-bit */
 export function hashExpertSeed(input: string): number {
   const s = input.trim() || '?'
   let h = 2166136261
@@ -17,14 +20,10 @@ export function hashExpertSeed(input: string): number {
   return h >>> 0
 }
 
-/** 按岗名 hash 固定的照片风占位 URL（公开占位服务，非业务真人照） */
-export function expertAvatarUrl(nameOrSeed: string, sizePx = 64): string {
-  const h = hashExpertSeed(nameOrSeed)
-  const gender = h % 2 === 0 ? 'women' : 'men'
-  const idx = h % 100
-  // sizePx 仅作语义保留；randomuser 固定档，浏览器侧用 CSS 圆形裁切
-  void sizePx
-  return `https://randomuser.me/api/portraits/${gender}/${idx}.jpg`
+/** 按岗名 hash 固定的本地照片风占位 URL */
+export function expertAvatarUrl(nameOrSeed: string): string {
+  const idx = hashExpertSeed(nameOrSeed) % AVATAR_COUNT
+  return `/expert-avatars/${String(idx).padStart(2, '0')}.jpg`
 }
 
 export function ExpertAvatar({
@@ -42,10 +41,8 @@ export function ExpertAvatar({
 }) {
   const dim = size === 'sm' ? 'h-5 w-5' : 'h-7 w-7'
   const ring =
-    tone === 'onDark'
-      ? 'ring-1 ring-white/40'
-      : 'ring-1 ring-slate-200'
-  const src = expertAvatarUrl(seed ?? name, size === 'sm' ? 40 : 64)
+    tone === 'onDark' ? 'ring-1 ring-white/40' : 'ring-1 ring-slate-200'
+  const src = expertAvatarUrl(seed ?? name)
   const label = name.trim() || '专家'
 
   return (
@@ -59,7 +56,6 @@ export function ExpertAvatar({
       className={`inline-block shrink-0 rounded-full object-cover ${dim} ${ring}`}
       data-testid="expert-avatar"
       loading="lazy"
-      referrerPolicy="no-referrer"
     />
   )
 }
