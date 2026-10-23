@@ -12,6 +12,12 @@
 | [**spec/**](spec/README.md) | **机器可读层**（生成物）：1026 条规则 / 117 条决策权 / schema，供模型与工具消费 |
 | [**decision-rights.md**](decision-rights.md) | **决策权 · 例外 · 冲突裁决**：四种权力 / L1–L4 分级 / D1–D7 落人 / 法定与内部例外 / 五条裁决原则 / 七条红线 |
 
+## 工作稿（讨论中，未合并进 spine）
+
+| 文档 | 内容 |
+|---|---|
+| [2026-10-23-main-chain-from-discussion.md](working/2026-10-23-main-chain-from-discussion.md) | 讨论主链工作稿：激发/挖掘/布局顺序、法律·业务必经 vs 条件触发、与 nodes 对照；定稿后合并进 business-spine |
+
 ## 节点（17 节产品级规格）
 
 | 编号 | 节点 | 业务定位 | StageId |
