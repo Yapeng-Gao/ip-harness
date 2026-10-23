@@ -25,6 +25,9 @@ export type DeptSideSwitchDept = {
   label: string
   href: string
   active?: boolean
+  /** §3.1a：待确认时锁住「更后」部门推进 */
+  locked?: boolean
+  lockReason?: string
 }
 
 export type DeptSidePanelProps = {
@@ -282,17 +285,30 @@ export function DeptSidePanel({
             <ul className="flex flex-wrap gap-1">
               {switchDepts.map((d) => (
                 <li key={d.id}>
-                  <Link
-                    to={d.href}
-                    className={`focus-ring inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                      d.active
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
-                    data-testid={`dept-side-switch-${d.id}`}
-                  >
-                    {d.label}
-                  </Link>
+                  {d.locked && !d.active ? (
+                    <span
+                      className="inline-block cursor-not-allowed rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-400"
+                      title={d.lockReason ?? '待你确认后才能推进'}
+                      data-testid={`dept-side-switch-${d.id}`}
+                      data-locked="1"
+                      aria-disabled="true"
+                    >
+                      {d.label} · 锁
+                    </span>
+                  ) : (
+                    <Link
+                      to={d.href}
+                      className={`focus-ring inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                        d.active
+                          ? 'bg-slate-900 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                      data-testid={`dept-side-switch-${d.id}`}
+                      data-locked="0"
+                    >
+                      {d.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

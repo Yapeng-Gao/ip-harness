@@ -832,6 +832,11 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
   )
 
   const advanceStage = useCallback((caseId: string) => {
+    // §3.1a：无人确认不得靠 advanceStage 溜进下一阶段
+    const hasPending = confirms.some(
+      (c) => c.caseId === caseId && c.status === 'pending',
+    )
+    if (hasPending) return
     setProgressById((prev) => {
       const cur = prev[caseId] ?? emptyProgress(caseId)
       const idx = BUSINESS_STAGES.findIndex((s) => s.id === cur.stageId)
@@ -852,7 +857,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         },
       }
     })
-  }, [])
+  }, [confirms])
 
   const prepareConfirm = useCallback(
     (caseId: string, kind: BusinessConfirmKind) => {

@@ -60,6 +60,9 @@ type Props = {
   onAdvanced?: (confirmId?: string) => void
   /** 跨席 feedback 后切到上游席 */
   onSwitchSeat?: (seatId: ProjectExpertId) => void
+  /** §3.3 G1：齐套未齐时禁止交卷入 pending */
+  deliverBlocked?: boolean
+  deliverBlockedReason?: string
 }
 
 /**
@@ -74,6 +77,8 @@ export function BusinessSeatWorkbench({
   workNonce = 0,
   onAdvanced,
   onSwitchSeat,
+  deliverBlocked = false,
+  deliverBlockedReason,
 }: Props) {
   const {
     advanceSeatWork,
@@ -247,6 +252,17 @@ export function BusinessSeatWorkbench({
 
   const runAdvance = (userLine?: string) => {
     if (oaLocked || busy) return
+    const wantsDeliver =
+      !!userLine &&
+      (/交卷|确认/.test(userLine) || userLine.includes('请交卷'))
+    if (deliverBlocked && wantsDeliver) {
+      appendMessage(caseId, seatId, {
+        role: 'assistant',
+        content: `【${seatLabel}】${deliverBlockedReason ?? '齐套未齐，不能交卷入「待你确认」。请先补齐缺项。'}`,
+        meta: { backend: 'mock', stepId: 'gate_g1_blocked' },
+      })
+      return
+    }
     setBusy(true)
     if (userLine?.trim()) {
       appendMessage(caseId, seatId, {
@@ -727,9 +743,14 @@ export function BusinessSeatWorkbench({
                   </button>
                   <button
                     type="button"
-                    className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100"
+                    className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
                     data-testid="business-seat-chip-deliver"
-                    disabled={oaLocked || busy}
+                    disabled={oaLocked || busy || deliverBlocked}
+                    title={
+                      deliverBlocked
+                        ? deliverBlockedReason ?? '齐套未齐，不能交卷'
+                        : undefined
+                    }
                     onClick={() => runAdvance('请交卷，我来确认')}
                   >
                     交卷请确认

@@ -29,6 +29,13 @@ import {
   handoffStatusSentence,
 } from '../../departments/handoffPhase'
 import {
+  AWAITING_ADVANCE_LOCK_HINT,
+  canSubmitDeliverable,
+  isAwaitingConfirm,
+  isDeptAdvanceLocked,
+  missingChecklistLabels,
+} from '../../business/confirmGate'
+import {
   confirmKindOf,
   deptStatus,
 } from '../../departments/deptProgress'
@@ -146,15 +153,19 @@ export function BusinessCaseDeptPage() {
         confirmKind: confirmKindOf(dept),
       })
     : null
-  /** 样机：部门已完成 / 待确认视为可交卷；否则齐套未齐（投影，非 nodes 真闸） */
-  const checklistReady = leadDone || st === '待确认' || st === '已完成'
+  const kindForDept = dept ? confirmKindOf(dept) : null
+  const awaitingThis = isAwaitingConfirm(pending, kindForDept)
+  /** 样机投影：待确认/已完成/主责席已 done → 清单勾满；否则按岗内步数渐进 */
+  const checklistReady = leadDone || st === '待确认' || st === '已完成' || awaitingThis
   const checklistItems = handoff.checklist.map((label, i) => ({
     label,
     done: checklistReady || (leadDone ? true : i === 0 && stepIndex > 0),
   }))
-  const allChecklistDone = checklistItems.every((x) => x.done)
+  const allChecklistDone = canSubmitDeliverable(checklistItems)
+  const missingLabels = missingChecklistLabels(checklistItems)
+  /** 硬闸：齐套且非待确认/已完成才可点「交卷」；待确认走「去确认」 */
   const canSubmit =
-    allChecklistDone || cta.action === 'confirm' || checklistReady
+    allChecklistDone && !awaitingThis && st !== '已完成' && cta.action !== 'confirm'
 
   const peers: DeptPeer[] = (dept?.peers ?? []).slice(0, 3)
 
@@ -164,11 +175,11 @@ export function BusinessCaseDeptPage() {
     : null
 
   const onSubmit = () => {
-    if (!canSubmit) return
     if (cta.action === 'confirm' && cta.confirmId) {
       navigate(`/agent/pending/${cta.confirmId}`)
       return
     }
+    if (!canSubmit) return
     if (!seatOpen) {
       setSeatOpen(true)
       setPickedSeat(defaultSeat)
@@ -207,8 +218,8 @@ export function BusinessCaseDeptPage() {
   }
 
   const primaryLabel =
-    cta.action === 'confirm'
-      ? `去确认 · ${cta.label}`
+    cta.action === 'confirm' || awaitingThis
+      ? `去确认 · ${cta.label || '待你确认'}`
       : !canSubmit
         ? '交卷（未齐套）'
         : '交卷'
@@ -270,12 +281,21 @@ export function BusinessCaseDeptPage() {
       adopted: adoptedPeerIds.includes(peer.id),
     }
   })
-  const switchDepts = MAIN_CHAIN_DEPTS.map((d) => ({
-    id: d.id,
-    label: deptLabel(d),
-    href: `/agent/cases/${caseId}/depts/${deptSlug(d.id)}`,
-    active: d.id === dept.id,
-  }))
+  const switchDepts = MAIN_CHAIN_DEPTS.map((d) => {
+    const locked = isDeptAdvanceLocked({
+      currentDeptId: dept.id,
+      targetDeptId: d.id,
+      awaitingConfirm: awaitingThis,
+    })
+    return {
+      id: d.id,
+      label: deptLabel(d),
+      href: `/agent/cases/${caseId}/depts/${deptSlug(d.id)}`,
+      active: d.id === dept.id,
+      locked,
+      lockReason: locked ? AWAITING_ADVANCE_LOCK_HINT : undefined,
+    }
+  })
 
   return (
     <div
@@ -332,19 +352,24 @@ export function BusinessCaseDeptPage() {
             <button
               type="button"
               onClick={onSubmit}
-              disabled={!canSubmit && cta.action !== 'confirm'}
+              disabled={!canSubmit && cta.action !== 'confirm' && !awaitingThis}
               title={
-                !canSubmit && cta.action !== 'confirm'
-                  ? '齐套要点未齐，暂不可交卷'
-                  : undefined
+                awaitingThis || cta.action === 'confirm'
+                  ? AWAITING_ADVANCE_LOCK_HINT
+                  : !canSubmit
+                    ? missingLabels.length
+                      ? `缺项：${missingLabels.join('、')}`
+                      : '齐套要点未齐，暂不可交卷'
+                    : undefined
               }
               className={`btn-press focus-ring rounded-md px-3 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${
-                cta.action === 'confirm'
+                cta.action === 'confirm' || awaitingThis
                   ? 'bg-amber-600 text-white'
                   : 'bg-slate-900 text-white'
               }`}
               data-testid="dept-primary-cta"
               data-can-submit={canSubmit ? '1' : '0'}
+              data-awaiting-confirm={awaitingThis ? '1' : '0'}
             >
               {primaryLabel}
             </button>
@@ -361,6 +386,27 @@ export function BusinessCaseDeptPage() {
           回流意见：{lastReturnHint}
         </div>
       )}
+
+      {awaitingThis ? (
+        <div
+          className="shrink-0 border-b border-amber-300 bg-amber-50 px-4 py-2 text-xs font-medium text-amber-950"
+          role="status"
+          data-testid="dept-awaiting-confirm-banner"
+        >
+          待你确认 · 未拍板 · {AWAITING_ADVANCE_LOCK_HINT}
+          {cta.confirmId ? (
+            <>
+              {' · '}
+              <Link
+                to={`/agent/pending/${cta.confirmId}`}
+                className="underline underline-offset-2"
+              >
+                打开确认页
+              </Link>
+            </>
+          ) : null}
+        </div>
+      ) : null}
 
       <div
         className="flex min-h-0 flex-1 overflow-hidden"
@@ -407,7 +453,13 @@ export function BusinessCaseDeptPage() {
                   齐套 / 硬闸
                 </h2>
                 <span className="text-[11px] text-slate-500">
-                  {allChecklistDone ? '可交卷' : '未齐套 · 交卷已禁用'}
+                  {awaitingThis
+                    ? '待你确认 · 未拍板'
+                    : st === '已完成'
+                      ? '已确认可往下'
+                      : allChecklistDone
+                        ? '可交卷 → 待你确认'
+                        : '未齐套 · 交卷已禁用'}
                 </span>
               </div>
               <ul className="mt-2 space-y-1.5">
@@ -501,6 +553,16 @@ export function BusinessCaseDeptPage() {
                   caseId={caseId}
                   seatId={activeSeat}
                   workNonce={workNonce}
+                  deliverBlocked={!allChecklistDone || awaitingThis || st === '已完成'}
+                  deliverBlockedReason={
+                    awaitingThis
+                      ? '已交卷，待你确认；不能再交卷，也不能换部推进'
+                      : st === '已完成'
+                        ? '本站已确认可往下，无需再交卷'
+                        : missingLabels.length
+                          ? `齐套未齐，不能进待确认。缺项：${missingLabels.join('、')}`
+                          : '齐套未齐，不能交卷入待你确认'
+                  }
                   onAdvanced={(confirmId) => {
                     if (confirmId) navigate(`/agent/pending/${confirmId}`)
                   }}
