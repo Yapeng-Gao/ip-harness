@@ -113,7 +113,7 @@ flowchart LR
 | 文档 | 内容 |
 |---|---|
 | [**business-spine.md**](business-spine.md) | **业务总纲**：三个转换 / 六类主体 / 五层对象 / 五类规则 / 三套时钟 / 四个口袋 / 七个决策点 / 12 条失败模式 |
-| [**product-vision.md**](product-vision.md) | **产品理念**：核心理念「外挂 IP 部」；公司/部门/专家仅为传达与上手；七部精简与入口默认 |
+| [**product-vision.md**](product-vision.md) | **产品理念**：外挂 IP 部；公司/部门/专家叙事；**§6 信息架构（MVP 14 页；工作台=部门页）** |
 | [**product-logic.md**](product-logic.md) | **产品逻辑**：能力→产品映射 / 规则密度分析 / SKU 清单（含 P02b / P03b） / 失败模式覆盖矩阵 / 打包与定价 / 采购路径 / 路线图 / 竞争空位 / 验收标准 |
 | [**spec/**](spec/README.md) | **机器可读层**（生成物）：1026 条规则 / 117 条决策权 / schema，供模型与工具消费 |
 | [**decision-rights.md**](decision-rights.md) | **决策权 · 例外 · 冲突裁决**：四种权力 / L1–L4 分级 / D1–D7 落人 / 法定与内部例外 / 五条裁决原则 / 七条红线 |
