@@ -34,6 +34,9 @@ import {
   PendingConfirmDetailPage,
   PendingConfirmInboxPage,
 } from './pages/business/PendingConfirmPage'
+import { CaseDocketPage } from './pages/business/CaseDocketPage'
+import { CaseBillingPage } from './pages/business/CaseBillingPage'
+import { CaseMembersPage } from './pages/business/CaseMembersPage'
 
 /**
  * IA（2026-10-21）：
@@ -61,6 +64,9 @@ export default function App() {
                 <Route path="cases/new" element={<BusinessCaseNewPage />} />
                 <Route path="cases/:caseId" element={<BusinessCasePage />} />
                 <Route path="cases/:caseId/depts/:deptSlug" element={<BusinessCaseDeptPage />} />
+                <Route path="cases/:caseId/docket" element={<CaseDocketPage />} />
+                <Route path="cases/:caseId/billing" element={<CaseBillingPage />} />
+                <Route path="cases/:caseId/members" element={<CaseMembersPage />} />
                 <Route path="cases/:caseId/room" element={<BusinessCaseRoomPage />} />
                 <Route path="pending" element={<PendingConfirmInboxPage />} />
                 <Route path="pending/:confirmId" element={<PendingConfirmDetailPage />} />

@@ -116,6 +116,32 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             待确认{pending.length > 0 ? ` · ${pending.length}` : ''}
           </Link>
         </div>
+        <p
+          className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-slate-500"
+          data-testid="company-logistics-links"
+        >
+          <Link
+            to={`/agent/cases/${caseId}/docket`}
+            className="font-medium text-slate-600 underline-offset-2 hover:underline"
+            data-testid="company-link-docket"
+          >
+            期限
+          </Link>
+          <Link
+            to={`/agent/cases/${caseId}/billing`}
+            className="font-medium text-slate-600 underline-offset-2 hover:underline"
+            data-testid="company-link-billing"
+          >
+            账单
+          </Link>
+          <Link
+            to={`/agent/cases/${caseId}/members`}
+            className="font-medium text-slate-600 underline-offset-2 hover:underline"
+            data-testid="company-link-members"
+          >
+            成员
+          </Link>
+        </p>
       </section>
 
       <section aria-labelledby="seven-dept-map-title">
