@@ -11,8 +11,8 @@ import { useEntryRole } from '../business/useEntryRole'
 
 /**
  * 产品首页 · /agent（§4.0a 薄总览）
- * 定位句 + 当前角色 + 待确认 + 按角色主 CTA + 次要链
- * 不替代公司首页 / 多案流水；无部门地图作业区
+ * 首屏三块：定位句 → 按角色主 CTA → 待确认摘要
+ * 次要：弱链多案/开案；壳内切角色（顶栏）
  */
 export function HomePage() {
   const { entryRole } = useEntryRole()
@@ -89,10 +89,6 @@ export function HomePage() {
           </p>
         </header>
 
-        <div className="mb-4" data-testid="home-pending-entry">
-          <HomeTodoStrip />
-        </div>
-
         <section aria-label="主要入口" className="space-y-3" data-testid="home-primary-actions">
           <Link
             to={primaryHref}
@@ -142,15 +138,12 @@ export function HomePage() {
           </div>
         </section>
 
-        <footer className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
-          <span>样机 · 本地会话 · 确认后落盘</span>
-          <Link
-            to="/agent/login"
-            className="hover:text-slate-700 hover:underline"
-            data-testid="home-role-reselect"
-          >
-            切换角色（回登录）
-          </Link>
+        <div className="mt-4" data-testid="home-pending-entry">
+          <HomeTodoStrip />
+        </div>
+
+        <footer className="mt-6 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
+          样机 · 本地会话 · 顶栏可切换入口角色 / 退出
         </footer>
       </div>
     </div>
