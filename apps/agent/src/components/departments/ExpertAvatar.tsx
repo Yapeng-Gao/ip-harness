@@ -4,7 +4,7 @@
  * 来源：本地 vendored `public/expert-avatars/*.jpg`
  * （源自 randomuser.me 公开人像占位图，入库以避免运行时 CDN 抖动）
  * 稳定性：对岗名（或 seed）做 32-bit hash → 下标固定；同岗永远同图。
- * 公司抽屉 / 部门钉栏 / 欢迎页货架共用本组件。
+ * 公司抽屉 / 部门台右栏 / 欢迎页货架共用本组件。
  */
 
 const AVATAR_COUNT = 23 // 00.jpg … 22.jpg

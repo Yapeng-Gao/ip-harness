@@ -52,7 +52,7 @@ export function handoffPhaseLabel(phase: HandoffPhase): string {
   }
 }
 
-/** 公司首页抽屉 / 钉栏：交卷物 + 交卷态一句 */
+/** 公司首页抽屉 / 部门台右栏：交卷物 + 交卷态一句 */
 export function handoffStatusSentence(
   deptId: OrgDeptId,
   status: DeptStatus,
@@ -81,7 +81,7 @@ export function latestReturnNote(
   return hit?.returnNote?.trim() || null
 }
 
-/** 钉栏脚注：建议稿可采纳 ≠ 确认（G2） */
+/** 右栏 / 公司抽屉脚注：建议稿可采纳 ≠ 确认（G2） */
 export const ADOPT_NE_CONFIRM_NOTE =
   '建议稿可采纳 ≠ 确认；确认权在人（发明人 / 代理人 / 企业负责人等）'
 

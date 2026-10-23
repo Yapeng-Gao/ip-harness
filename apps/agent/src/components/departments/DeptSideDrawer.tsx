@@ -34,7 +34,7 @@ function focusableIn(root: HTMLElement): HTMLElement[] {
 
 /**
  * 公司首页点部 → 右侧抽屉壳（浅色）
- * 内容与部门台钉栏同构：复用 DeptSidePanel。
+ * 内容与部门台右栏叙事同构：复用 DeptSidePanel（抽屉变体）。
  * 公司叙事可在 CaseCompanyHome 中：选中某部 → open + 传入该部 props。
  *
  * A11y：打开聚焦面板、Tab 陷阱、背景 inert、overscroll-contain、关闭焦点回触发卡。

@@ -32,7 +32,7 @@ export type DeptSideSwitchDept = {
 
 export type DeptSidePanelProps = {
   /**
-   * rail = 部门台右侧钉栏（常在）
+   * rail = 部门台右栏遗留变体（pages 85d64e4 后部门台改三栏内嵌，抽屉仍用本面板）
    * drawer = 公司首页点部抽屉内容（由 DeptSideDrawer 包一层）
    */
   variant: 'rail' | 'drawer'
@@ -44,7 +44,7 @@ export type DeptSidePanelProps = {
   experts: DeptSideExpert[]
   /**
    * 抽屉主动作：「去该部干活」
-   * 钉栏可省略，或传「进入专家岗」等
+   * 右栏可省略，或传「进入专家岗」等
    */
   primaryAction?: {
     label: string
@@ -52,23 +52,23 @@ export type DeptSidePanelProps = {
     onClick?: () => void
     testId?: string
   }
-  /** 钉栏 / 抽屉：回公司首页 */
+  /** 右栏 / 抽屉：回公司首页 */
   companyHref?: string
-  /** 钉栏：换部快捷链（≤7 主链即可） */
+  /** 右栏：换部快捷链（≤7 主链即可） */
   switchDepts?: DeptSideSwitchDept[]
   onExpertClick?: (id: string) => void
   onAdopt?: (id: string) => void
   showAdopt?: boolean
   /** 抽屉关闭 */
   onClose?: () => void
-  /** 回流意见（可落钉栏） */
+  /** 回流意见（可落右栏 / 抽屉） */
   returnHint?: string | null
   className?: string
   testId?: string
 }
 
 /**
- * 公司首页抽屉 ⇄ 部门台钉栏 · 同构面板（product-pages §2 / §4.3 / vision §6.3a）
+ * 公司首页抽屉 ⇄ 部门台右栏叙事 · 同构面板（product-pages §2 / §4.3 / vision §6.3a）
  *
  * 只展示：≤3 专家+头像、交卷态一句、去该部/回公司/换部。
  * MVP 禁：假指标、执行集群、工具引擎卡；浅色壳，不抄暗色。
@@ -102,7 +102,7 @@ export function DeptSidePanel({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              {variant === 'drawer' ? '部门抽屉' : '部门钉栏'}
+              {variant === 'drawer' ? '部门抽屉' : '部门右栏'}
             </p>
             <h2 className="mt-0.5 truncate text-[14px] font-semibold text-slate-900">
               {deptLabel}
