@@ -6,28 +6,11 @@ import {
   HOME_SAMPLE_DELIVERABLES,
   HOME_SCENARIOS,
 } from '../../business/homeContentPreview'
-
-/** 首字圆形占位头像（示意，非真人） */
-function ExpertAvatar({ name, active }: { name: string; active: boolean }) {
-  const ch = name.trim().charAt(0) || '?'
-  return (
-    <span
-      aria-hidden
-      className={
-        active
-          ? 'inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/20 text-[10px] font-semibold text-white'
-          : 'inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-700'
-      }
-      data-testid="home-expert-avatar"
-    >
-      {ch}
-    </span>
-  )
-}
+import { ExpertAvatar } from '../departments/ExpertAvatar'
 
 /**
  * §4.0p 登录前宣传站货架（展示页 · 非干活处）
- * 品类大标题 → 七部徽章墙（每部默认露出 ≤3 专家+首字头像）→ 案卡∥交卷橱窗 → 场景卡
+ * 品类大标题 → 七部徽章墙（每部默认露出 ≤3 专家+照片风占位头像）→ 案卡∥交卷橱窗 → 场景卡
  * 全灰态只认知；不可点进作业 / 交卷 / 采纳。
  * **未**挂入 HomePage / 登录后 `/agent`（§3.3 B / §4.0a 禁货架）；官网接线时再用。
  */
@@ -104,7 +87,7 @@ export function HomeContentPreview() {
                         data-testid={`home-expert-${s.deptId}-${name}`}
                         title={name}
                       >
-                        <ExpertAvatar name={name} active={active} />
+                        <ExpertAvatar name={name} size="sm" tone={active ? 'onDark' : 'light'} />
                         <span className="min-w-0 truncate">{name}</span>
                       </li>
                     ))}
