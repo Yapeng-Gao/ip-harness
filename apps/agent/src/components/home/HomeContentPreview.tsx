@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   HOME_CATEGORY_SUB,
   HOME_CATEGORY_TITLE,
@@ -6,22 +5,32 @@ import {
   HOME_DEMO_CASE,
   HOME_SAMPLE_DELIVERABLES,
 } from '../../business/homeContentPreview'
-import type { OrgDeptId } from '../../departments/orgDepts'
+
+/** 首字圆形占位头像（示意，非真人） */
+function ExpertAvatar({ name, active }: { name: string; active: boolean }) {
+  const ch = name.trim().charAt(0) || '?'
+  return (
+    <span
+      aria-hidden
+      className={
+        active
+          ? 'inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/20 text-[10px] font-semibold text-white'
+          : 'inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-700'
+      }
+      data-testid="home-expert-avatar"
+    >
+      {ch}
+    </span>
+  )
+}
 
 /**
  * §4.0a 货架预览（展示页 · 非干活处）
- * 品类大标题 → 七部徽章墙（点部展开 ≤3 专家示意）→ 案卡∥交卷橱窗
+ * 品类大标题 → 七部徽章墙（每部默认露出 ≤3 专家+首字头像）→ 案卡∥交卷橱窗
  * 全灰态只认知；不可点进作业 / 交卷 / 采纳。
  */
 export function HomeContentPreview({ onDismiss }: { onDismiss: () => void }) {
   const currentId = HOME_DEMO_CASE.currentDeptId
-  const [expandedDeptId, setExpandedDeptId] = useState<OrgDeptId | null>(null)
-
-  const expanded = HOME_CHAIN_STATIONS.find((s) => s.deptId === expandedDeptId)
-
-  const toggleDept = (deptId: OrgDeptId) => {
-    setExpandedDeptId((prev) => (prev === deptId ? null : deptId))
-  }
 
   return (
     <section
@@ -38,86 +47,71 @@ export function HomeContentPreview({ onDismiss }: { onDismiss: () => void }) {
         <p className="mt-1 text-[13px] font-medium text-slate-500">{HOME_CATEGORY_SUB}</p>
       </header>
 
-      {/* 2 · 七部徽章墙（全站名；点开才见专家） */}
+      {/* 2 · 七部徽章墙：每部默认露出 ≤3 专家岗+头像（只展示） */}
       <div
         className="rounded-[var(--radius-md)] border border-slate-200 bg-white p-3 shadow-[var(--shadow-rest)] sm:p-4"
         data-testid="home-chain-wall"
-        aria-label="主链七部（示意，点部看专家岗）"
+        aria-label="主链七部与专家岗示意（只展示，不可作业）"
       >
         <p className="mb-2.5 text-[11px] font-medium text-slate-400">
-          七部主链 · 点一部看专家岗（示意，不可作业）
+          七部主链 · 每部专家岗示意（只展示，不可作业）
         </p>
         <ol
-          className="grid grid-cols-4 gap-2 sm:grid-cols-7"
+          className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7"
           data-testid="home-chain-micro"
         >
           {HOME_CHAIN_STATIONS.map((s) => {
             const active = s.deptId === currentId
-            const open = s.deptId === expandedDeptId
             return (
               <li key={s.deptId} className="min-w-0">
-                <button
-                  type="button"
+                <div
                   className={
                     active
-                      ? 'btn-press focus-ring flex h-full min-h-[4.25rem] w-full flex-col items-center justify-center rounded-[var(--radius-md)] border-2 border-slate-900 bg-slate-900 px-1.5 py-2.5 text-white shadow-sm'
-                      : open
-                        ? 'btn-press focus-ring flex h-full min-h-[4.25rem] w-full flex-col items-center justify-center rounded-[var(--radius-md)] border-2 border-slate-400 bg-slate-100 px-1.5 py-2.5 text-slate-800'
-                        : 'btn-press focus-ring flex h-full min-h-[4.25rem] w-full flex-col items-center justify-center rounded-[var(--radius-md)] border border-slate-200 bg-slate-50 px-1.5 py-2.5 text-slate-700 hover:border-slate-300 hover:bg-slate-100'
+                      ? 'flex h-full min-h-[7.5rem] flex-col rounded-[var(--radius-md)] border-2 border-slate-900 bg-slate-900 px-1.5 py-2 text-white shadow-sm'
+                      : 'flex h-full min-h-[7.5rem] flex-col rounded-[var(--radius-md)] border border-slate-200 bg-slate-50 px-1.5 py-2 text-slate-700'
                   }
-                  aria-expanded={open}
-                  aria-controls={`home-experts-${s.deptId}`}
-                  onClick={() => toggleDept(s.deptId)}
                   data-testid={`home-chain-${s.deptId}`}
                   data-active={active ? '1' : '0'}
-                  data-expanded={open ? '1' : '0'}
+                  aria-label={`${s.shortLabel}部 · 专家岗示意`}
                 >
-                  <span className="text-[15px] font-bold leading-tight sm:text-[16px]">
+                  <span className="text-center text-[15px] font-bold leading-tight sm:text-[16px]">
                     {s.shortLabel}
                   </span>
                   <span
                     className={
                       active
-                        ? 'mt-1 text-center text-[10px] leading-tight text-white/70'
-                        : 'mt-1 text-center text-[10px] leading-tight text-slate-400'
+                        ? 'mt-0.5 text-center text-[10px] leading-tight text-white/70'
+                        : 'mt-0.5 text-center text-[10px] leading-tight text-slate-400'
                     }
                   >
                     {s.deliverable}
                   </span>
-                </button>
+                  <ul
+                    className="mt-1.5 flex flex-1 flex-col justify-end gap-1"
+                    data-testid={`home-experts-${s.deptId}`}
+                    aria-label={`${s.shortLabel}专家岗`}
+                  >
+                    {s.experts.slice(0, 3).map((name) => (
+                      <li
+                        key={name}
+                        className={
+                          active
+                            ? 'flex items-center gap-1 truncate rounded-full bg-white/10 px-1 py-0.5 text-[10px] leading-tight text-white/90'
+                            : 'flex items-center gap-1 truncate rounded-full bg-white px-1 py-0.5 text-[10px] leading-tight text-slate-600 ring-1 ring-slate-200'
+                        }
+                        data-testid={`home-expert-${s.deptId}-${name}`}
+                        title={name}
+                      >
+                        <ExpertAvatar name={name} active={active} />
+                        <span className="min-w-0 truncate">{name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </li>
             )
           })}
         </ol>
-
-        {expanded ? (
-          <div
-            id={`home-experts-${expanded.deptId}`}
-            className="mt-3 rounded-[var(--radius-sm)] border border-dashed border-slate-200 bg-slate-50/80 px-3 py-2.5"
-            data-testid="home-experts-panel"
-            data-dept={expanded.deptId}
-            aria-label={`${expanded.shortLabel}部专家岗示意`}
-          >
-            <p className="mb-1.5 text-[11px] font-medium text-slate-500">
-              {expanded.shortLabel} · 专家岗示意（≤{expanded.experts.length}，不可作业）
-            </p>
-            <ul className="flex flex-wrap gap-1.5">
-              {expanded.experts.map((name) => (
-                <li
-                  key={name}
-                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[12px] text-slate-600"
-                  data-testid={`home-expert-${expanded.deptId}-${name}`}
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <p className="mt-2 text-[11px] text-slate-400" data-testid="home-experts-hint">
-            默认只露七部名；点某部展开专家岗
-          </p>
-        )}
       </div>
 
       {/* 3 · 橱窗：案卡 ∥ 交卷缩略 */}

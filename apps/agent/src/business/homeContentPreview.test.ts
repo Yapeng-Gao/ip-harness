@@ -23,7 +23,7 @@ describe('homeContentPreview', () => {
     )
   })
 
-  it('each station exposes 1–3 expert post labels for expand-on-click', () => {
+  it('each station exposes 1–3 expert post labels visible by default', () => {
     assert.equal(assertHomeExpertsBounded(), true)
     for (const s of HOME_CHAIN_STATIONS) {
       assert.ok(s.shortLabel.length > 0, s.deptId)

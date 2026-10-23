@@ -39,13 +39,13 @@ const DELIVERABLE: Record<string, string> = {
 }
 
 /**
- * 七部徽章墙站：站名全展示；专家岗 ≤3，点开才见（数据来自编制 peers）
+ * 七部徽章墙站：站名全展示；专家岗 ≤3 默认露出（数据来自编制 peers）
  */
 export const HOME_CHAIN_STATIONS: ReadonlyArray<{
   deptId: OrgDeptId
   shortLabel: string
   deliverable: string
-  /** 示意专家岗名，≤3；UI 默认不铺满，点部展开 */
+  /** 示意专家岗名，≤3；UI 默认露出（含首字头像），只展示不作业 */
   experts: readonly string[]
 }> = MAIN_CHAIN_DEPT_IDS.map((id) => {
   const dept = MAIN_CHAIN_DEPTS.find((d) => d.id === id)
