@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Briefcase, FolderOpen, Plus } from 'lucide-react'
 import { HomeTodoStrip } from '../components/home/HomeTodoStrip'
 import { useBusinessCases } from '../business/BusinessCaseContext'
-import { resolveRolePrimaryPath } from '../business/entryRole'
+import {
+  ENTRY_ROLE_LABEL,
+  resolveRolePrimaryPath,
+} from '../business/entryRole'
 import { useEntryRole } from '../business/useEntryRole'
 
 /**
- * 首页 · /agent（登录后总览壳）
- * 定位句 + 待确认 + 按角色主 CTA + 次要链到多案/开案
- * 双角色侧栏差异仍由 AgentShell / BusinessCaseSidebar 承担
+ * 产品首页 · /agent（§4.0a 薄总览）
+ * 定位句 + 当前角色 + 待确认 + 按角色主 CTA + 次要链
+ * 不替代公司首页 / 多案流水；无部门地图作业区
  */
 export function HomePage() {
   const { entryRole } = useEntryRole()
@@ -39,15 +42,15 @@ export function HomePage() {
   const enterpriseHasCase = !isAgency && cases.length > 0
 
   const primaryLabel = isAgency
-    ? '进案盘'
+    ? '进多案流水'
     : enterpriseHasCase
       ? '进公司首页'
       : '开案子'
   const primaryHint = isAgency
-    ? '多案流水 · 看全部案子与待办'
+    ? '案盘 · 看卡住哪、谁在等确认'
     : enterpriseHasCase
-      ? '回到最近案子的公司陪跑首页'
-      : '还没有案子 · 先开一个'
+      ? '最近案子 · 先看懂部门与专家，再干活'
+      : '还没有案子 · 先立一条业务线'
 
   return (
     <div
@@ -58,23 +61,31 @@ export function HomePage() {
     >
       <div className="mx-auto w-full max-w-3xl">
         <header className="mb-5">
-          <p
-            className="text-[11px] font-medium uppercase tracking-wider text-slate-500"
-            data-testid="home-eyebrow"
-          >
-            外挂 IP 部
-          </p>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <p
+              className="text-[11px] font-medium uppercase tracking-wider text-slate-500"
+              data-testid="home-eyebrow"
+            >
+              外挂 IP 部
+            </p>
+            <span
+              className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-600"
+              data-testid="home-role-badge"
+            >
+              当前入口 · {ENTRY_ROLE_LABEL[entryRole]}
+            </span>
+          </div>
           <h1
             className="mt-1 text-[24px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-[28px]"
             data-testid="home-title"
           >
-            首页
+            产品首页
           </h1>
           <p
             className="mt-1.5 text-pretty text-[13px] leading-relaxed text-slate-600"
             data-testid="home-tagline"
           >
-            把知产工作当成公司里的一个部门来跑 · 确认交卷、推进案子、再进部门台
+            把知产工作当成外挂 IP 部来跑。本页只做总览与分流；部门地图与「去当前部门」在案级公司首页，不在此页抢戏。
           </p>
         </header>
 
@@ -122,7 +133,7 @@ export function HomePage() {
             >
               <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-900">
                 <Plus className="h-4 w-4 text-slate-700" strokeWidth={2.25} aria-hidden />
-                开案
+                开案子
               </span>
               <span className="text-[11px] leading-snug text-slate-500">
                 新建案 → 公司首页
@@ -133,6 +144,13 @@ export function HomePage() {
 
         <footer className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
           <span>样机 · 本地会话 · 确认后落盘</span>
+          <Link
+            to="/agent/login"
+            className="hover:text-slate-700 hover:underline"
+            data-testid="home-role-reselect"
+          >
+            切换角色（回登录）
+          </Link>
         </footer>
       </div>
     </div>
