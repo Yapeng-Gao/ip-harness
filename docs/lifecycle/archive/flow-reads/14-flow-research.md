@@ -1,5 +1,7 @@
 # Flow 精读 14 · ResearchFlow（/workbench/research）
 
+> **已归档不代表业务（2026-10-23）**：以下步骤/顺序以当时原型为准，其中「可专利性 / FTO 初评」捆在同 Flow 与现行「01 必经、01b 条件触发」冲突；正式主链见 [business-spine §1.3](../../business-spine.md)；本目录说明见 [README](README.md)。
+
 > **本篇只讲实现**，不讲业务应该是什么。业务规格见 [01-research.md](01-research.md)。
 > 权威源：`apps/workbench/src/flows/research/ResearchFlow.tsx`（716 行）
 > 种子数据：`src/data/workbenchSeeds.ts` 的 `researchSeed`（按 caseId 取，缺省回落 `c2`）

@@ -18,17 +18,18 @@
 |---|---|
 | [2026-10-23-main-chain-from-discussion.md](working/2026-10-23-main-chain-from-discussion.md) | 讨论主链工作稿：激发/挖掘/布局顺序、法律·业务必经 vs 条件触发、与 nodes 对照；**合成方向已确认**（骨架取 B、主链前段取 A）；定稿后合并进 business-spine |
 | [2026-10-23-product-vision-company-dept-expert.md](working/2026-10-23-product-vision-company-dept-expert.md) | 产品理念工作稿：外挂 IP 部；公司/部门/专家拟人化；部门↔主链 Ni–N16↔spine 00–25；交卷·待你确认；对外禁用 Agent 黑话 |
-| [2026-10-23-lifecycle-audit-and-optimize.md](working/2026-10-23-lifecycle-audit-and-optimize.md) | lifecycle 审计与优化 backlog；**P0 已落地（2026-10-23）**：D1/D2 落点、03/08 拆名、01 FTO 可选、spine 主链+三层必经、Ni/Nm/Nc 占位 |
+| [2026-10-23-lifecycle-audit-and-optimize.md](working/2026-10-23-lifecycle-audit-and-optimize.md) | lifecycle 审计与优化 backlog；P0 已落地；**L5–L10 本轮推进**（Ni/Nm 正式文、Nc 默认不单列、术语、D4 意向、债清单） |
+| [2026-10-23-implementation-debt.md](working/2026-10-23-implementation-debt.md) | 实现债：代码仍强制 `research_report.fto` 等（只列路径，不改 apps） |
 
 ## 节点（17 节产品级规格）
 
-默认主链与法律/业务/条件三层必经见 [business-spine.md §1.3](business-spine.md)。Ni / Nc / Nm 为前段占位（正式节点文待建）。
+默认主链与法律/业务/条件三层必经见 [business-spine.md §1.3](business-spine.md)；术语三译名见 [§1.4](business-spine.md)。捕获默认不单列见 [§1.3.1](business-spine.md) ⚠。
 
 | 编号 | 节点 | 业务定位 | StageId |
 |---|---|---|---|
-| **Ni** | 创新激发 | **待建**；方向清单（可轻）。见 [working 主链](working/2026-10-23-main-chain-from-discussion.md) | — |
-| **Nc** | 捕获 | **待建（可选单列）**；技术事实入池。⚠ 是否独立于 00，待 Leslie | — |
-| **Nm** | 专利挖掘 | **待建**；申什么 / 拆几案 / 分级（可粗检，不替代 01） | — |
+| [Ni](nodes/Ni-inspire.md) | 创新激发 | 方向清单（条件触发/可轻）；席 `expert-inspire` | —（proposal） |
+| **Nc** | 捕获（不单列） | 入池并入 Nm/00 提报入口 ⚠ 可改 | — |
+| [Nm](nodes/Nm-mining.md) | 专利挖掘 | 申什么 / 拆几案 / 分级（可粗检，≠01）；席 `expert-mining` | —（pre_intake） |
 | [00](nodes/00-inventor-disclosure.md) | 发明交底 | 技术事实 → 可撰写材料；权属/署名/奖酬/公开时点在此定死 | — |
 | [00b](nodes/00b-invention-point-chain.md) | 发明点翻译链 | 交底 → 初审 → 检索 → 发明点 → 权项 → 说明书 | — |
 | [01](nodes/01-research.md) | 检索与可专利性 | 可专利性证据（**业务必经**）；FTO 初评仅为可选附件 | `pre_research` |
@@ -61,9 +62,10 @@
 
 | 文档 | 内容 |
 |---|---|
-| [industry-reality.md](industry-reality.md) | 法定期限 / 官费 / 程序补遗（含 2023 细则新增：奖酬、宽限期、保密审查、非正常申请） |
+| [industry-reality.md](industry-reality.md) | 法定期限 / 官费 / 程序补遗（含 2023 细则新增：奖酬、宽限期、保密审查、非正常申请）；**01 与 01b 分节** |
+| [business-spine.md §1.4](business-spine.md) | **术语**：权项结构 / 组合布局 / 单案国别；查新≠FTO；激发≠挖掘 |
 | [_TEMPLATE.md](_TEMPLATE.md) | 节点文档写作标准（17 节结构、编号规则、8 条纪律、最低篇幅） |
-| [archive/flow-reads/](archive/flow-reads/) | **归档**：按原型代码逐行写的 8 篇 Flow 精读。仅作迁移参考，**不代表业务设计** |
+| [archive/flow-reads/](archive/flow-reads/README.md) | **归档**：Flow 精读；**不代表业务**；与主链冲突句已加横幅 |
 
 ## 文档结构（17 节）
 

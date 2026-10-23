@@ -1,8 +1,8 @@
 # 工作稿 · lifecycle 审计与优化建议
 
-> **P0 已落地 / 2026-10-23（Asia/Shanghai）** — Leslie 确认按本 backlog 改 docs。  
-> **改动文件**：`decision-rights.md`；`business-spine.md`（§1.3 主链+三层必经、§7 D4、§8.2、§12）；`README.md`；`product-logic.md`（P03/P03b 拆分）；`nodes/01-research.md`；`nodes/01b-fto.md`；`nodes/02-decision.md`（FTO 可空）；`nodes/03-drafting.md`（命名澄清）；本文状态更新。  
-> **未做（仍待）**：L5 D4/PCT 在 Go 时是否必拍；L6 Nc 是否单列；L7 正式写 Ni/Nm(/Nc) 节点文；L8 10/13 产物键与席位挂靠；industry-reality 拆 01/01b（P1）；代码去掉 01 强制 `fto` 齐套（实现债，另案）。
+> **P0 已落地；L5–L10 本轮已推进 / 2026-10-23（Asia/Shanghai）** — Leslie：「剩余都要做」。  
+> **本轮新增/更新**：`nodes/Ni-inspire.md`、`nodes/Nm-mining.md`；spine §1.3.1 Nc 默认不单列 + §1.4 术语；decision-rights §3.0 D4/PCT 意向默认；industry-reality 拆 01/01b；10/13 交叉引用；archive/flow-reads README+横幅；`working/2026-10-23-implementation-debt.md`；02 对齐意向口径；`_TEMPLATE` 增 RNi/RNm。  
+> **仍 ⚠ / 实现另案**：Nc 单列政策可改；D4「国家清单是否升为 Go 必填」可改；**代码**仍强制 `research_report.fto`（见实现债，本轮不改 apps）。
 >
 > **性质**：对 `docs/lifecycle/` 的调研理解与问题清单，**不是** `business-spine.md` 的替代品。  
 > **范围**：business-spine、product-logic、decision-rights、industry-reality、README、全部 `nodes/*.md`（精读 00/00b/01/01b/02/03/04/05/08/10/13；其余抽定位/规则/闸门/上下游）。  
@@ -234,7 +234,7 @@
 | C3 | P03 是否含 08 | product-logic P03 覆盖 03·08 | 08 独立辅台、独立买方；讨论两份产出 | **拆开** | P0 |
 | C4 | FTO 是否申请前必做 | 01：R01-12 / 齐套 fto / 品名含 FTO | 01b + 工作稿 + P02b：条件触发 | **01b / 工作稿**；改 01 齐套口径 | P0 |
 | C5 | 激发/挖掘是否存在 | 13 已有 expert-inspire / expert-mining | spine/README/nodes **无**业务节点 | **补节点或正式挂靠**（合成方向已认） | P0 |
-| C6 | D4 / PCT 时机 | spine：撰写/布局；decision-rights：03/09；02：**待定** | 工作稿：布局刷新+单案决策可同会 | **Leslie 拍**后写死 | P0 |
+| C6 | D4 / PCT 时机 | （曾）02 待定 | **默认：Go 必记意向；清单可后置**（decision-rights §3.0）⚠ | 已写默认 | P0→⚠ |
 | C7 | 「布局」一词三义 | 00b/03 权项布局；08 组合布局；P03 标题混用 | — | 术语表统一三译名 | P1 |
 | C8 | industry-reality 01+FTO | industry-reality §3 捆写 | 01b 独立 | 拆节 | P1 |
 | C9 | 目标用户 | product-logic：有 IP 部中型 | 理念稿：中小研发+代理人 | 分层：上手叙事 vs 采购对象 | P1 |
@@ -263,12 +263,12 @@
 | L2 | spine 增默认主链一句话 + 三层必经；§12 占位 Ni/Nm(/Nc) | business-spine.md、README 表 | 确认合成执行 | **已落地** |
 | L3 | 全库改名：03≠布局；P03 与 08 拆 SKU | README、spine、product-logic、相关交叉句 | 确认 C2/C3 | **已落地**（P03b） |
 | L4 | 01 文档：FTO 齐套改可选；品名去 FTO | 01-research.md（及指向句） | 确认 C4 | **已落地**（代码债另案） |
-| L5 | 拍 D4/PCT：Go 时定什么、08 同会规则 | 02、08、decision-rights、spine D4 | 确认 C6 | 待 |
-| L6 | 拍 Nc：单列 vs 并入 00 提报前 | 新节点或 00 § | 理念稿开放问题 | 待 |
-| L7 | 按模板新建 Ni、Nm（及可选 Nc）节点文 | nodes/ + README | L2+L6 | 待（占位已写入） |
-| L8 | 10/13：产物键与席位挂靠新节点；标明对内 | 10、13 | L7 | 待 |
-| L9 | 扫 product-logic / archive 与主链冲突句 | 多篇 | L2–L5 | 部分（SKU 已拆；archive 未扫） |
-| L10 | 术语表：「权项结构 / 组合布局 / 单案国别」 | spine 或 glossary | L3 | 待 |
+| L5 | 拍 D4/PCT：Go 时定什么、08 同会规则 | 02、08、decision-rights、spine D4 | 确认 C6 | **已落地默认**（Go 必记意向；清单可后置）⚠ 可改 |
+| L6 | 拍 Nc：单列 vs 并入 00 提报前 | spine §1.3.1、Nm/00 | 理念稿开放问题 | **已落地默认：不单列** ⚠ 可改 |
+| L7 | 按模板新建 Ni、Nm（及可选 Nc）节点文 | nodes/Ni-inspire.md、Nm-mining.md + README | L2+L6 | **已落地 Ni/Nm**（Nc 不单列故无独立文） |
+| L8 | 10/13：产物键与席位挂靠新节点；标明对内 | 10、13 | L7 | **已落地**交叉引用 |
+| L9 | 扫 product-logic / archive 与主链冲突句 | 多篇 | L2–L5 | **部分完成**（archive README+14/15/21 横幅；SKU 已拆） |
+| L10 | 术语表：「权项结构 / 组合布局 / 单案国别」 | spine §1.4 | L3 | **已落地** |
 
 ### 明确不做（本阶段）
 
@@ -279,17 +279,16 @@
 
 ---
 
-## 5) 哪些可立刻改 docs、哪些要等 Leslie
+## 5) 门禁现状（2026-10-23 收口后）
 
-| 可立刻改 | 等 Leslie |
+| 已可维持 / 已落地 | 仍 ⚠ 或另案 |
 |---|---|
-| 工作稿（主链/理念/本审计）、README working 链接 | business-spine 正文任何结构性增补 |
-| industry-reality 拆 01/01b、弱化 demo 口吻 | decision-rights D1/D2/D4 表 |
-| 工作稿之间交叉引用、Canvas 讨论页 | product-logic P03 拆分与定价 |
-| 节点内**纯笔误/死链**（若发现） | 新建 Ni/Nm/Nc 正式节点编号与产物键 |
-| | 01 齐套是否去掉强制 FTO（业务口径拍板后才改 01 正式文） |
-| | 发明人入口产品形态、默认七部对外列表 |
-| | D4/PCT 在 Go 时是否必拍 |
+| spine 主链、三层必经、§1.3.1 Nc、§1.4 术语 | Nc 若要单列 → 改 §1.3.1 并新建 Nc 文 |
+| decision-rights D1/D2@02；§3.0 D4 意向默认 | 若合同要求 Go 锁五国预算 → 升级 §3.0 |
+| Ni/Nm 正式节点文；10/13 挂靠 | 提案键是否登记进 contracts |
+| industry-reality 01≠01b | **代码**去掉 `research_report.fto` 强制齐套（实现债） |
+| archive 横幅 + README | 发明人入口产品形态、默认七部对外列表（产品理念） |
+| product-logic P03/P03b 已拆 | P0x 激发/挖掘轻量 SKU 定价细项 |
 
 ---
 
@@ -323,5 +322,6 @@
 - [x] Leslie 认可本审计 P0 列表与 Top5（2026-10-23）  
 - [x] Leslie 确认 C1/C2/C3/C4 并落地 docs（C6 D4/PCT 时机仍 ⚠ 待定）  
 - [x] L1–L4 已执行（decision-rights / spine·README / P03 拆分 / 01·01b）  
-- [ ] L5–L7（D4/PCT、Nc、正式 Ni/Nm 节点文）仍待  
-- [x] 仍不 push；不改 apps
+- [x] L5–L10 本轮已推进（D4 意向默认、Nc 不单列、Ni/Nm 正式文、10/13、术语、archive 横幅、实现债清单）  
+- [x] 仍不 push；不改 apps（实现债另案）  
+- [ ] 若 Leslie 改 ⚠：Nc 单列 / Go 锁国家清单 → 再改 spine §1.3.1 与 decision-rights §3.0

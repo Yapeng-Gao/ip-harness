@@ -1,5 +1,7 @@
 # Flow 精读 21 · InventorPortal（/inventor）+ 办理台首页待办（/workbench）
 
+> **已归档不代表业务（2026-10-23）**：以下步骤/顺序以当时原型为准，发明人门户与办理台顺序是实现快照；捕获默认不单列 Nc，见 spine §1.3.1；正式主链见 [business-spine §1.3](../../business-spine.md)；本目录说明见 [README](README.md)。
+
 > 权威源：`apps/workbench/src/flows/inventor/InventorPortal.tsx`（793 行）· `apps/workbench/src/flows/home/WorkbenchHome.tsx`（288 行）· `src/data/workspaces.ts`（`filterWorkbenchQueue` :156-208）· `packages/app-state/src/AppContext.tsx`
 
 ## A. InventorPortal —— 发明人披露门户

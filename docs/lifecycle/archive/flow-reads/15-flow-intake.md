@@ -1,5 +1,7 @@
 # Flow 精读 15 · IntakeFlow（/workbench/intake）
 
+> **已归档不代表业务（2026-10-23）**：以下步骤/顺序以当时原型为准，立项前依赖样机调研顺序，勿反推「查新前必须完成门户外其它阶段」；正式主链见 [business-spine §1.3](../../business-spine.md)；本目录说明见 [README](README.md)。
+
 > **本篇只讲实现**。业务规格见 [02-decision.md](02-decision.md)。
 > 权威源：`apps/workbench/src/flows/intake/IntakeFlow.tsx`（583 行）
 > 种子：`src/data/workbenchSeeds.ts` 的 `intakeSeed`（缺省回落 `intakeDefaultsFromCase`）

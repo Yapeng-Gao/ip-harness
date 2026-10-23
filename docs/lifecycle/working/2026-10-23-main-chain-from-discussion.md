@@ -257,3 +257,16 @@
 3. 改 03/08 对外命名与接口句。  
 4. 按 `_TEMPLATE.md` 为 Ni/Nm（及 Nc）写节点规格。  
 5. 扫 product-logic / decision-rights 中与主链顺序冲突的句子。
+
+
+---
+
+## 附录 · 2026-10-23 收口状态
+
+| 项 | 状态 |
+|---|---|
+| 合成方向 | 已确认并写入 spine §1.3 |
+| Ni / Nm 正式文 | [Ni-inspire.md](../nodes/Ni-inspire.md) / [Nm-mining.md](../nodes/Nm-mining.md) |
+| Nc | **默认不单列**（spine §1.3.1）⚠ |
+| D4/PCT | Go **必记意向**；清单可后置（decision-rights §3.0）⚠ |
+| 实现债 | [implementation-debt.md](2026-10-23-implementation-debt.md) |

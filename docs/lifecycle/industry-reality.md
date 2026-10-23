@@ -1,5 +1,7 @@
 # 行业真实业务逻辑对照（专利全生命周期 · 补遗）
 
+> **口径（2026-10-23）**：本文是法规/行业对照与样机差距备忘，**不是**业务设计依据；默认主链与必经分层以 [business-spine.md](business-spine.md) 为准。**01 查新** 与 **01b FTO** 已分节，勿再捆成「调研/FTO」一道关。
+
 > 2026-10-19 · 本篇是 [README.md](../README.md) 节点文档的**法规/行业补遗**：把每个「demo 节点」映射到真实法规下的**期限 / 费用 / 程序 / 失败模式**。
 > 权威源永远是法条，本篇是**对照地图**；冲突以法规原文为准。
 
@@ -96,15 +98,27 @@
 
 ## 3. 逐节点「行业真实 vs 样机」对照
 
+### Ni 创新激发 / Nm 专利挖掘（前段 · 条件触发 / 业务建议）
+- **真实**：激发 = 方向扩召；挖掘 = 拆点/评分/拆案；捕获入池常与交底提报合并。粗检 ≠ 正式查新。
+- **产品**：正式规格 [Ni](nodes/Ni-inspire.md) / [Nm](nodes/Nm-mining.md)；捕获默认不单列（spine §1.3.1）。
+- **样机**：`apps/inspire` / `apps/mining`；席 `expert-inspire` / `expert-mining`；提案键未进 contracts handoff。
+
 ### 00 发明人披露（in-house pre-filing）
 - **真实**：企业 IP 部门的**书面发明披露单**（IP disclosure form），含 技术构思 / 发明点 / 现有技术 / 发明人 / 职务发明认定 / 保密标记；触发**新颖性丧失前的保密义务**（自公开 6 个月新颖性宽限是法定例外，不是常规）。
 - **真实规则要点**：披露单是**职务发明权属**与**优先权日**的起点；发明人报酬（《专利法》报酬规定）与披露绑定。
 - **样机差距**：样机 `disclosure_pack` 建模了 6 项齐套 + 7 态，很接近；缺「职务发明认定」「发明人报酬」「保密义务触发新颖性宽限」。
 
-### 01 调研 / FTO（pre_research）
-- **真实**：查新检索（novelty search，申请前）+ **FTO 检索**（freedom-to-operate，上市前）；检索数据库 = 商业（IncoPat/智慧芽/Derwent）+ 官方（CNIPA/USPTO/EPO/ESPACenet）；结论 = 风险分级（非阻断/中等/高阻断）+ **claim chart（权利要求对照表）**。
-- **真实规则**：FTO 结论是**商业决策**依据（上市/规避设计/许可谈判），不是法律意见；**先有检索报告再立项/上市**。
-- **样机差距**：样机 `research_report` + `hits_verifiable`（pubNo 正则）已含检索可验证 + claim chart 草稿；缺「检索式（CPC/IPC 分类号）沉淀」「规避设计结论回写产品」。
+### 01 检索与可专利性（pre_research · 业务必经）
+- **真实**：**查新 / 可专利性检索**（novelty + inventiveness opinion，申请前）；库 = 商业（IncoPat/智慧芽/Derwent）+ 官方（CNIPA/USPTO/EPO/Espacenet）；结论 = 三性意见 + 对比文献绑定 +（可选）初评备注。
+- **真实规则**：**先有可专利性证据再立项开写**（代理所/企业质控）；查新**不能**代替 FTO。
+- **样机差距**：`research_report` + `hits_verifiable` 已有；缺检索式（CPC/IPC）沉淀。⚠ 代码仍把 `fto` 列为 `research_report` 齐套项——属实现债，见 [working/2026-10-23-implementation-debt.md](working/2026-10-23-implementation-debt.md)；**业务上 FTO 不堵申请主链**。
+- **规格**：[nodes/01-research.md](nodes/01-research.md)
+
+### 01b FTO 自由实施（条件触发 · 不堵申请）
+- **真实**：**FTO 检索**（freedom-to-operate），典型触发 = 产品定型/上市/融资尽调/对外供货；结论 = 风险分级 + **claim chart**；是**商业决策**依据，不是「保证不侵权」法律意见。
+- **真实规则**：上市/定型前做；与查新目的、时间点、产出物均不同；**申请主链可不做 FTO**。
+- **样机差距**：独立壳 `apps/fto` + 席 `expert-fto`；claim chart 与 25 统一中。缺「规避设计回写产品」。
+- **规格**：[nodes/01b-fto.md](nodes/01b-fto.md) · 共享对象 [25](nodes/25-claim-chart.md)
 
 ### 02 立项决策（Go/No-Go）
 - **真实**：**可专利性**（novelty/inventiveness）× **商业价值**（市场/竞品/回报）双维，常配**评分矩阵** + 委员会/管理层决议；产出 Go / No-Go / 有条件 Go。

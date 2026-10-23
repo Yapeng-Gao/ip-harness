@@ -202,3 +202,15 @@
 - [2026-10-23-main-chain-from-discussion.md](2026-10-23-main-chain-from-discussion.md) §7 对比与合成清单。  
 - [business-spine.md](../business-spine.md)、[product-logic.md](../product-logic.md)、[decision-rights.md](../decision-rights.md)、nodes 00–13/08 等。  
 - Canvas：专利业务逻辑 · 生命周期（讨论可视化，非代码依据）。
+
+
+---
+
+## 收口状态（2026-10-23）
+
+| 开放问题（原文） | 默认 |
+|---|---|
+| 捕获是否单列 | **否**（并入 Nm/00）⚠ |
+| 布局与立项同会 | **允许**，两份产出 |
+| D4/PCT | Go 记意向，不强制锁国别清单 ⚠ |
+| 节点文 | Ni/Nm 已建；对外仍用部门/专家叙事 |
