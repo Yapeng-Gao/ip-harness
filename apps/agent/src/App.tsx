@@ -4,7 +4,6 @@ import { AgentProvider } from '@shared/context/AgentContext'
 import { ProductProvider } from '@shared/context/ProductContext'
 import { AgentShell } from './components/AgentShell'
 import { AgentHome } from './pages/AgentHome'
-import { HomePage } from './pages/HomePage'
 import { DepartmentsPage } from './pages/DepartmentsPage'
 import { AssetsPage } from './pages/AssetsPage'
 import { AgentL1Shell } from './pages/AgentL1Shell'
@@ -39,9 +38,9 @@ import { CaseBillingPage } from './pages/business/CaseBillingPage'
 import { CaseMembersPage } from './pages/business/CaseMembersPage'
 
 /**
- * IA（2026-10-21）：
- * /agent              首页（项目列表 + 简报 + 待办 + 对话框）
- * /agent/cases        我的案子（原首页）
+ * IA（2026-10-23）：
+ * /agent              → /agent/cases（代理人默认 = 多案流水）
+ * /agent/cases        多案流水（案表 → 公司首页）
  * /agent/departments  组织编制（全库配置旁路；作业以案→公司首页七部为主）
  * /agent/assets       资产（全局库 + 文件树）
  */
@@ -59,7 +58,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/agent" replace />} />
               <Route path="/agent" element={<AgentShell />}>
-                <Route index element={<HomePage />} />
+                <Route index element={<Navigate to="/agent/cases" replace />} />
                 <Route path="cases" element={<BusinessCasesPage />} />
                 <Route path="cases/new" element={<BusinessCaseNewPage />} />
                 <Route path="cases/:caseId" element={<BusinessCasePage />} />

@@ -34,8 +34,8 @@ export function PendingConfirmInboxPage() {
     >
       <div className="mx-auto max-w-2xl">
         <div className="mb-3 text-[11px] text-slate-400">
-          <Link to="/agent" className="hover:underline">
-            我的案子
+          <Link to="/agent/cases" className="hover:underline">
+            多案流水
           </Link>
           <span className="mx-1">/</span>
           {filterCaseId ? (

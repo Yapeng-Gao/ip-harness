@@ -150,8 +150,8 @@ export function BusinessCaseNewPage() {
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 lg:px-8">
         <div className="mx-auto max-w-xl">
           <div className="mb-4 text-[11px] text-slate-400">
-            <Link to="/agent" className="hover:underline">
-              我的案子
+            <Link to="/agent/cases" className="hover:underline">
+              多案流水
             </Link>
             <span className="mx-1">/</span>
             新建案子

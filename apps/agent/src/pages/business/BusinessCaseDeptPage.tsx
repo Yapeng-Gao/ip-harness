@@ -101,7 +101,7 @@ export function BusinessCaseDeptPage() {
       <div className="flex flex-1 items-center justify-center p-8" data-testid="business-case-missing">
         <div className="text-center">
           <p className="text-sm text-slate-600">找不到这个案子</p>
-          <Link to="/agent" className="mt-2 inline-block text-xs text-slate-800 underline">
+          <Link to="/agent/cases" className="mt-2 inline-block text-xs text-slate-800 underline">
             返回我的案子
           </Link>
         </div>
@@ -151,8 +151,8 @@ export function BusinessCaseDeptPage() {
     >
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
         <div className="mb-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
-          <Link to="/agent" className="hover:underline">
-            我的案子
+          <Link to="/agent/cases" className="hover:underline">
+            多案流水
           </Link>
           <span>/</span>
           <Link to={`/agent/cases/${caseId}`} className="hover:underline">

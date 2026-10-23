@@ -27,13 +27,13 @@ type LabCard = {
 const CARDS: LabCard[] = [
   {
     id: 'home',
-    version: '幕 1 · 首页',
+    version: '幕 1 · 多案流水',
     badge: '默认冷启动',
-    blurb: '项目列表 + 简报 + 对话框（资料 / @专家 / @部门）→ 落成工作区。',
-    href: '/agent',
-    cta: '打开首页',
+    blurb: '代理人默认首页：案表（当前部门 / 待确认）→ 点行进公司首页；开新案子短路径。',
+    href: '/agent/cases',
+    cta: '打开多案流水',
     icon: Briefcase,
-    secondary: { label: '我的案子', href: '/agent/cases' },
+    secondary: { label: '开新案子', href: '/agent/cases/new' },
   },
   {
     id: 'departments',
@@ -133,10 +133,10 @@ export function AgentLabGallery() {
             <p className="mt-1 text-sm leading-relaxed text-slate-600">
               冷启动是{' '}
               <Link
-                to="/agent"
+                to="/agent/cases"
                 className="font-medium text-slate-800 underline-offset-2 hover:underline"
               >
-                /agent · 我的案子（业务模式）
+                /agent/cases · 多案流水（业务模式）
               </Link>
               ；下表按演示五幕排列，勿再把 L1 当作默认。
             </p>

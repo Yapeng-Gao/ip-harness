@@ -125,10 +125,10 @@ export function AgentShell() {
             : inBusiness
               ? '我的案子'
               : inHome
-                ? '知产工作台'
+                ? '多案流水'
                 : inPatentProject
-                  ? '专利 Agent'
-                  : '知产 Agent'
+                  ? '项目'
+                  : '工作台'
 
   return (
     <div className="app-shell-bg flex h-full flex-col overflow-hidden">

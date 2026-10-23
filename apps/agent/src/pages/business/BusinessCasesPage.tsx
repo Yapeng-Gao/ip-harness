@@ -1,7 +1,13 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { Bell, ArrowUp, LayoutGrid } from 'lucide-react'
-import { useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
+import { Plus } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { currentSeatForProgress } from '../../business/businessSeats'
+import {
+  MAIN_CHAIN_DEPTS,
+  orgDeptByLeadSeat,
+} from '../../departments/orgDepts'
+import { useOrgConfig } from '../../departments/OrgConfigContext'
 
 export type BusinessHomeStartState = {
   summary?: string
@@ -14,194 +20,146 @@ export type BusinessHomeStartState = {
 }
 
 /**
- * /agent 开聊首页（ChatGPT/Kimi/Grok 空态）
- * 中间：大标题 + 主输入；历史在左侧栏；待确认仅一行预览 + 顶栏铃铛。
- * 仍非 Catalog 冷启动；专家工作台旁路。
+ * /agent/cases · 多案流水（代理人默认首页）
+ * product-vision §3.2/§6.2 · product-pages §4.2
+ * 案表：案名 / 当前部门 / 待确认 / 期限占位 → 点行进公司首页
  */
 export function BusinessCasesPage() {
-  const { getPendingConfirms, cases } = useBusinessCases()
-  const navigate = useNavigate()
-  const inbox = getPendingConfirms()
-  const [draft, setDraft] = useState('')
+  const { cases, getProgress, stageLabel, getPendingConfirms } = useBusinessCases()
+  const { deptLabel } = useOrgConfig()
 
-  const pendingPreview = useMemo(() => {
-    if (inbox.length === 0) return null
-    const first = inbox[0]
-    const c = cases.find((x) => x.id === first.caseId)
-    return {
-      count: inbox.length,
-      label: `${c?.title ?? '案子'} · ${first.title}`,
-      href: `/agent/pending/${first.id}`,
-    }
-  }, [inbox, cases])
-
-  const goNew = (state?: BusinessHomeStartState) => {
-    navigate('/agent/cases/new', { state })
-  }
-
-  const onSubmit = (e?: FormEvent) => {
-    e?.preventDefault()
-    const text = draft.trim()
-    if (text) {
-      goNew({ summary: text, title: text.slice(0, 40) })
-    } else {
-      goNew()
-    }
-  }
-
-  const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      onSubmit()
-    }
-  }
+  const rows = useMemo(
+    () =>
+      cases.map((c) => {
+        const prog = getProgress(c.id)
+        const seat = currentSeatForProgress({
+          stageId: prog.stageId,
+          doneSeatIds: prog.doneSeatIds,
+          moreSeatIds: prog.moreSeatIds,
+        })
+        const dept = orgDeptByLeadSeat(seat) ?? MAIN_CHAIN_DEPTS[0]!
+        return {
+          id: c.id,
+          title: c.title,
+          deptName: deptLabel(dept),
+          stage: stageLabel(prog.stageId),
+          pendingCount: getPendingConfirms(c.id).length,
+        }
+      }),
+    [cases, getProgress, stageLabel, deptLabel, getPendingConfirms],
+  )
 
   return (
     <div
-      className="relative flex min-h-0 flex-1 flex-col overflow-y-auto bg-white"
+      className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="business-cases-page"
-      data-home="chat"
+      data-home="cases"
     >
-      {/* 一行待确认预览 · 不占满首屏 */}
-      {pendingPreview && (
-        <div
-          className="shrink-0 border-b border-amber-100 bg-amber-50/70 px-4 py-2"
-          data-testid="business-inbox-preview"
-        >
-          <div className="mx-auto flex max-w-2xl items-center gap-2 px-1 py-0.5 text-[12px] text-amber-950">
-            <Link
-              to={pendingPreview.href}
-              className="focus-ring flex min-w-0 flex-1 items-center gap-2 rounded-md hover:bg-amber-100/60"
-              data-testid="business-inbox-preview-row"
+      <div className="mx-auto w-full max-w-3xl">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h1
+              className="text-[20px] font-semibold tracking-tight text-slate-900"
+              data-testid="business-cases-title"
             >
-              <Bell className="h-3.5 w-3.5 shrink-0 text-amber-700" aria-hidden />
-              <span className="min-w-0 flex-1 truncate">
-                <span className="font-semibold">待我确认</span>
-                <span className="mx-1 text-amber-800/70">·</span>
-                {pendingPreview.label}
-              </span>
-              <span className="shrink-0 rounded-full bg-amber-600 px-1.5 py-px text-[10px] font-semibold text-white">
-                {pendingPreview.count}
-              </span>
-            </Link>
-            <Link
-              to="/agent/pending"
-              className="focus-ring shrink-0 rounded-md px-1.5 py-0.5 text-[11px] font-medium text-amber-800 underline-offset-2 hover:underline"
-              data-testid="business-inbox-link"
-            >
-              全部
-            </Link>
+              多案流水
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              点进案子进公司首页 · 待确认看右上铃铛
+            </p>
           </div>
+          <Link
+            to="/agent/cases/new"
+            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
+            data-testid="business-new-case"
+          >
+            <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden />
+            开新案子
+          </Link>
         </div>
-      )}
 
-      <div className="flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6">
-        <div className="w-full max-w-xl text-center">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
-            知产 Agent
-          </p>
-          <h1
-            className="mt-2 text-balance text-[26px] font-semibold tracking-tight text-slate-900 sm:text-[30px]"
-            data-testid="business-home-title"
-          >
-            我的案子
-          </h1>
-          <p className="mt-2 text-pretty text-sm text-slate-500">
-            描述你要办的事，或直接开一个新案子 · 首页在工作区
-          </p>
-
-          <form
-            onSubmit={onSubmit}
-            className="mt-8 text-left"
-            data-testid="business-home-composer"
-          >
-            <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-2 shadow-sm focus-within:border-slate-300 focus-within:bg-white focus-within:shadow-md">
-              <textarea
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={onKeyDown}
-                rows={3}
-                placeholder="描述你要办的事…"
-                className="focus-ring w-full resize-none border-0 bg-transparent px-3 py-2 text-[15px] text-slate-900 placeholder:text-slate-400 outline-none"
-                data-testid="business-home-input"
-                aria-label="描述你要办的事"
-              />
-              <div className="flex flex-wrap items-center justify-between gap-2 px-1 pb-1 pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => goNew()}
-                  className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-700 hover:bg-slate-50"
-                  data-testid="business-new-case"
-                >
-                  开一个新案子
-                </button>
-                <button
-                  type="submit"
-                  className="btn-press focus-ring inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white hover:bg-slate-800"
-                  data-testid="business-home-send"
-                  aria-label="开始"
-                  title="开始"
-                >
-                  <ArrowUp className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-                </button>
-              </div>
-            </div>
-          </form>
-
+        {rows.length === 0 ? (
           <div
-            className="mt-4 flex flex-wrap items-center justify-center gap-2"
-            data-testid="business-home-chips"
+            className="mt-8 rounded-xl border border-dashed border-slate-200 bg-white px-4 py-12 text-center"
+            data-testid="business-cases-empty"
           >
-            <button
-              type="button"
-              onClick={() =>
-                goNew({
-                  chip: 'disclosure',
-                  summary: '从交底开始：整理技术交底与发明点',
-                  title: '交底整理',
-                })
-              }
-              className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-              data-testid="business-home-chip-disclosure"
-            >
-              从交底开始
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                goNew({
-                  chip: 'research',
-                  summary: '从查新开始：检索现有技术与可专利性',
-                  title: '查新检索',
-                })
-              }
-              className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-              data-testid="business-home-chip-research"
-            >
-              从查新开始
-            </button>
-          </div>
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
+            <p className="text-sm font-medium text-slate-700">还没有案子</p>
+            <p className="mt-1 text-[12px] text-slate-500">
+              开一个案子，从交底开始走七部主链
+            </p>
             <Link
-              to="/agent/catalog"
-              className="inline-flex items-center gap-1 hover:text-slate-700 hover:underline"
-              data-testid="business-expert-bench"
+              to="/agent/cases/new"
+              className="btn-press focus-ring mt-4 inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
+              data-testid="business-cases-empty-cta"
             >
-              <LayoutGrid className="h-3 w-3" aria-hidden />
-              专家工作台
+              <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden />
+              开新案子
             </Link>
-            {!pendingPreview && (
-              <Link
-                to="/agent/pending"
-                className="hover:text-slate-700 hover:underline"
-                data-testid="business-inbox-link"
-              >
-                待我确认
-              </Link>
-            )}
           </div>
-        </div>
+        ) : (
+          <div
+            className="mt-5 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+            data-testid="business-cases-table"
+          >
+            <div className="hidden grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_5.5rem_3.5rem] gap-2 border-b border-slate-100 bg-slate-50/80 px-4 py-2 text-[11px] font-medium text-slate-500 sm:grid">
+              <span>案名</span>
+              <span>当前部门</span>
+              <span className="text-right">待确认</span>
+              <span className="text-center" title="期限（后续接入）">
+                期限
+              </span>
+            </div>
+            <ul className="divide-y divide-slate-100" aria-label="案子列表">
+              {rows.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    to={`/agent/cases/${row.id}`}
+                    className="focus-ring grid grid-cols-1 items-center gap-1 px-4 py-3 transition-colors hover:bg-slate-50 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_5.5rem_3.5rem] sm:gap-2"
+                    data-testid={`business-case-row-${row.id}`}
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate text-[14px] font-semibold text-slate-900">
+                        {row.title}
+                      </span>
+                      <span className="mt-0.5 block truncate text-[11px] text-slate-400 sm:hidden">
+                        {row.deptName}
+                        {row.pendingCount > 0
+                          ? ` · 待确认 ${row.pendingCount}`
+                          : ''}
+                      </span>
+                    </span>
+                    <span className="hidden min-w-0 sm:block">
+                      <span className="block truncate text-[13px] text-slate-700">
+                        {row.deptName}
+                      </span>
+                      <span className="mt-0.5 block truncate text-[11px] text-slate-400">
+                        {row.stage}
+                      </span>
+                    </span>
+                    <span
+                      className={`hidden text-right text-[13px] tabular-nums sm:block ${
+                        row.pendingCount > 0
+                          ? 'font-semibold text-amber-800'
+                          : 'text-slate-400'
+                      }`}
+                      data-testid={`business-case-pending-${row.id}`}
+                    >
+                      {row.pendingCount > 0 ? row.pendingCount : '—'}
+                    </span>
+                    <span
+                      className="hidden justify-center sm:flex"
+                      title="期限台后续接入"
+                      data-testid={`business-case-docket-${row.id}`}
+                      aria-label="期限占位"
+                    >
+                      <span className="h-2 w-2 rounded-full bg-slate-200" aria-hidden />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   )
