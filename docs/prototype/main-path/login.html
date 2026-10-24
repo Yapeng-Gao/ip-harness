@@ -61,11 +61,11 @@
     <div class="roles" role="radiogroup" aria-label="角色">
       <button type="button" class="role on" data-role="enterprise" id="role-e">
         <div class="n">企业</div>
-        <div class="d">进公司首页 / 开案子</div>
+        <div class="d">薄入口 → 公司 / 开案子</div>
       </button>
-      <button type="button" class="role" data-role="agent" id="role-a">
+      <button type="button" class="role" data-role="agency" id="role-a">
         <div class="n">代理</div>
-        <div class="d">进多案流水</div>
+        <div class="d">薄入口 → 案盘</div>
       </button>
     </div>
     <input type="hidden" name="role" id="role" value="enterprise" />
@@ -85,6 +85,11 @@ document.querySelectorAll('.role').forEach(b => {
     b.classList.add('on');
     document.getElementById('role').value = b.dataset.role;
   });
+});
+document.getElementById('login').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const role = document.getElementById('role').value || 'enterprise';
+  location.href = 'thin-home.html?role=' + encodeURIComponent(role);
 });
 </script>
 </body>

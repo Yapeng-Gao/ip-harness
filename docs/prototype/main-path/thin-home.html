@@ -162,7 +162,7 @@
     </a>
   </div>
 
-  <div class="pending" data-testid="home-pending-entry">
+  <div class="pending" id="pending-block" data-testid="home-pending-entry">
     <h2>
       待你确认
       <a class="chip chip-amber tabular" href="pending-confirm.html?dept=disclosure">共 2</a>
@@ -191,10 +191,10 @@
     <button type="button" class="toggle" id="goal-toggle" aria-expanded="false" aria-controls="goal-panel">
       交办业务目标
     </button>
-    <span class="meta-lbl">知产负责人 · MVP 增强 · 不拆 hops</span>
+    <span class="meta-lbl">知产负责人 · 可选交办</span>
     <div class="goal-panel" id="goal-panel" role="region" aria-label="交办业务目标短表">
       <div class="lbl">交办业务目标（弱入口 · 非第二主 CTA）</div>
-      <p class="hint">出计划后落到公司首页 / 部门；本页不交卷、不拍板。禁万能 Agent 聊天窗顶替。</p>
+      <p class="hint">出计划后落到公司首页，再去部门；本页不交卷、不拍板。</p>
       <form id="goal-form">
         <label class="field">
           <span>目标一句话</span>
@@ -204,13 +204,13 @@
           <span>类型占位</span>
           <select id="goal-type" name="type" aria-label="类型由产品逻辑承接">
             <option value="">类型由产品逻辑承接</option>
-            <option value="placeholder">（不编造四类清单 · 仅占位）</option>
+            <option value="placeholder">类型示意</option>
           </select>
         </label>
         <div class="actions">
           <button type="submit" class="btn btn-ghost btn-sm">交办（原型）</button>
         </div>
-        <p class="note">提交后仍进公司首页隐喻（或留在本页提示「计划后落到部门」）——不跳过公司首页，不开万能对话。</p>
+        <p class="note">提交后进入公司首页，再「去当前部门」。</p>
       </form>
     </div>
   </div>
@@ -292,9 +292,20 @@
     });
     secEl.innerHTML = html;
 
+    var pending = document.getElementById('pending-block');
+    if (pending) {
+      if (roleKey === 'enterprise-new') {
+        pending.style.display = 'none';
+      } else {
+        pending.style.display = '';
+      }
+    }
+
     if (pushUrl) {
       var url = new URL(location.href);
       url.searchParams.set('role', roleKey);
+      url.searchParams.delete('email');
+      url.searchParams.delete('pw');
       history.replaceState(null, '', url.pathname + url.search + url.hash);
     }
   }
@@ -305,8 +316,20 @@
     });
   });
 
+  
+  // strip demo credentials from query (login used GET)
+  (function stripCreds() {
+    var u = new URL(location.href);
+    if (u.searchParams.has('email') || u.searchParams.has('pw')) {
+      u.searchParams.delete('email');
+      u.searchParams.delete('pw');
+      history.replaceState(null, '', u.pathname + u.search + u.hash);
+    }
+  })();
+
   var params = new URLSearchParams(location.search);
   var initial = params.get('role');
+  if (initial === 'agent') initial = 'agency';
   if (!ROLES[initial]) initial = 'agency';
   applyRole(initial, false);
 
@@ -332,7 +355,7 @@
       document.getElementById('goal-text').focus();
       return;
     }
-    toast.textContent = '已交办 · 计划后落到部门 · 先进入公司首页（不拆 hops · 非万能 Agent）';
+    toast.textContent = '已交办 · 计划后落到部门 · 先进入公司首页';
     toast.classList.add('show');
     setTimeout(function () { location.href = 'company-home.html'; }, 900);
   });

@@ -7,6 +7,14 @@
 <link rel="stylesheet" href="proto.css" />
 <style>
 
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; overflow: hidden; }
+  .proto-nav { flex: 0 0 auto; }
+  .topbar { flex: 0 0 auto; }
+  .body { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .col-left, .col-center, .col-right { overflow: auto; min-height: 0; }
+
+
   .body {
     flex: 1; min-height: 0;
     display: grid;
@@ -548,7 +556,27 @@ function setComplete() {
   btnHint.textContent = 'G1 已过：齐套勾齐 → 交卷可用。点交卷进入待你确认。';
   if (treeMiss) treeMiss.classList.remove('missing');
   if (missMeta) missMeta.textContent = 'v1';
-  if (typeof entBadge !== 'undefined' && entBadge) entBadge.innerHTML = '<span class="ok">✓</span> 齐套完成 · 可交卷';
+  if (typeof entBadge !== 'undefined' && entBadge) 
+  entBadge.innerHTML = '<span class="ok">✓</span> 齐套完成 · 可交卷';
+  document.querySelectorAll('#enterprise-center .brief-block .item').forEach(function (row) {
+    var k = row.querySelector('.k');
+    var v = row.querySelector('.v');
+    var tag = row.querySelector('.tag');
+    if (!k || !v) return;
+    var key = k.textContent.trim();
+    if (key === '当前') {
+      v.textContent = '齐套已齐 · 可交卷送确认';
+      if (tag) { tag.textContent = '可交卷'; }
+    }
+    if (key === '权属' || /交卷禁用|尚未/.test(v.textContent)) {
+      v.textContent = '缺项已齐 · 交卷可用';
+      if (tag) { tag.textContent = '已齐'; }
+    }
+    if (key === '交卷') {
+      v.textContent = '齐套完成 → 点右侧交卷进入待你确认';
+    }
+  });
+
   const active = document.querySelector('.tree-item.active');
   if (active && active.dataset.doc === MISS_KEY) renderDoc(MISS_KEY);
 }
