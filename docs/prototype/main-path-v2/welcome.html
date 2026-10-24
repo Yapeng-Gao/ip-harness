@@ -1,31 +1,334 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>外挂知识产权部 · 宣传站</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>外挂知识产权部</title>
 <link rel="stylesheet" href="shell.css">
 </head>
 <body class="marketing-site">
-  <div class="site-hero">
-    <a class="brand site-brand" href="welcome.html" style="border:0;width:auto;padding:0">
+  <header class="site-nav">
+    <a class="brand site-brand" href="welcome.html">
       <span class="brand-mark">外</span>
       <span class="brand-copy"><strong>外挂知识产权部</strong><small>VIRTUAL IP COMPANY</small></span>
     </a>
-    <h1>外挂知识产权部</h1>
-    <p class="lead">给没有 IP 部（或人手不够）的团队，装上一个按专利全流程办事的虚拟知产公司。一家公司、一个知产负责人持续委托、部门按需可见、关键节点人来拍板。</p>
-    <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap">
-      <a class="btn btn-primary" href="login.html">登录 Agent →</a>
-      <a class="btn btn-secondary" href="home.html">继续上次 · 进工作首页</a>
+    <nav aria-label="页面导航">
+      <a href="#how-it-works">如何工作</a>
+      <a href="#dept-shelf">部门能力</a>
+      <a href="#trust-system">可信确认</a>
+    </nav>
+    <div class="site-nav-actions">
+      <a class="site-login" href="login.html">登录</a>
+      <a class="btn btn-ink" href="login.html">进入产品 <span aria-hidden="true">→</span></a>
     </div>
+  </header>
 
-    <div class="shelf-grid" aria-label="七部货架">
-      <div class="shelf-card"><span>交底部</span><h3>把技术说清楚</h3><p>访谈、交底书、权属。齐套后才交卷。</p></div>
-      <div class="shelf-card"><span>查新部</span><h3>能不能申请</h3><p>检索、比对、结论稿。专业复核再立项。</p></div>
-      <div class="shelf-card"><span>立项部</span><h3>值不值得推</h3><p>策略、报价、决议。商业与风险决策。</p></div>
-      <div class="shelf-card"><span>撰写 / 附图</span><h3>写成可递交</h3><p>权利要求、说明书、图号一致。</p></div>
-      <div class="shelf-card"><span>递交与程序</span><h3>对外要授权</h3><p>申请包齐套；授权人确认才递交。</p></div>
-      <div class="shelf-card"><span>审查答复</span><h3>OA 不丢件</h3><p>策略与争辩；企业确认后代理复核。</p></div>
+  <main>
+    <!-- Hero -->
+    <section class="site-hero">
+      <div class="site-hero-copy">
+        <span class="site-eyebrow"><span></span>给没有 IP 部的团队，一家虚拟知产公司</span>
+        <h1>外挂知识产权部</h1>
+        <p>一家公司、一个知产负责人持续委托、部门按需可见。执行看得见，每份交付有依据、有复核，关键节点由你确认，再接力下一站。</p>
+        <div class="site-hero-actions">
+          <a class="btn btn-primary" href="login.html">登录并开始 <span aria-hidden="true">→</span></a>
+          <a class="btn site-text-button" href="#how-it-works">看一次部门接力 <span aria-hidden="true">›</span></a>
+        </div>
+        <small>以中国发明专利为主 · 企业研发与代理所双端</small>
+      </div>
+
+      <div class="hero-product" aria-label="产品界面示意">
+        <div class="hero-product-bar">
+          <span><i></i><i></i><i></i></span>
+          <strong>我的外挂知识产权部</strong>
+          <em>磁驱泵智能控制</em>
+        </div>
+        <div class="hero-product-body">
+          <aside>
+            <span class="project-glyph">MP</span>
+            <strong>磁驱泵智能控制</strong>
+            <small>RD-2026-017</small>
+            <div>
+              <span class="active">公司首页</span>
+              <span>当前部门</span>
+              <span>待确认</span>
+              <span>部门与专家</span>
+            </div>
+          </aside>
+          <section>
+            <div class="hero-lead">
+              <img class="avatar-photo" src="assets/portraits/guyan.png" alt="顾言" width="36" height="36">
+              <div>
+                <strong>顾言 · 知产负责人</strong>
+                <p>交底部已完成文本，现有一项技术事实需要你确认。</p>
+              </div>
+            </div>
+            <div class="hero-flow">
+              <span class="done">✓ 交底</span><i></i>
+              <span class="active">查新</span><i></i>
+              <span>立项</span><i></i>
+              <span>撰写</span>
+            </div>
+            <div class="hero-task">
+              <span class="section-kicker">当前负责部门</span>
+              <h3>交底部</h3>
+              <div>
+                <img class="avatar-photo avatar-photo-sm" src="assets/portraits/expert1.png" alt="" width="28" height="28">
+                <span><strong>技术访谈专家</strong><small>6 项访谈整理已完成</small></span>
+                <span class="status status-green"><span class="status-dot"></span>已完成</span>
+              </div>
+              <div>
+                <img class="avatar-photo avatar-photo-sm" src="assets/portraits/expert2.png" alt="" width="28" height="28">
+                <span><strong>交底书撰写专家</strong><small>V4 等待测试事实确认</small></span>
+                <span class="status status-orange"><span class="status-dot"></span>进行中</span>
+              </div>
+            </div>
+          </section>
+          <aside class="hero-confirm">
+            <span class="status status-orange"><span class="status-dot"></span>需要你确认</span>
+            <h3>异常识别测试数据是否与记录一致？</h3>
+            <p>影响交底书 V4 的技术效果记载；确认后才允许下一部门接力。</p>
+            <span class="hero-confirm-doc">📄 交底书 V3 · 三、技术效果</span>
+            <a href="login.html">查看依据并确认 <span aria-hidden="true">→</span></a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why a company -->
+    <section class="site-problem">
+      <span class="site-section-index">01 / 为什么是一家公司</span>
+      <div>
+        <h2>你缺的不是又一个写作工具，<br>而是有人把整件事持续负责下去。</h2>
+        <div class="problem-lines">
+          <p><span>研发人员</span>不必先懂专利流程，也不必自己拆部门、排任务。</p>
+          <p><span>专业团队</span>不必在聊天、文件和邮件里反复寻找事实与版本。</p>
+          <p><span>企业负责人</span>不必盯着每个任务，只需处理关键事实、风险与决策。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- One handoff flow -->
+    <section class="site-workflow" id="how-it-works">
+      <div class="site-section-head">
+        <div>
+          <span class="site-section-index">02 / 一次真实接力</span>
+          <h2>从一句研发目标，<br>到一份可确认的交付。</h2>
+        </div>
+        <p>点开节点，看看顾言如何组织部门，以及你在哪里参与。</p>
+      </div>
+      <div class="workflow-tabs" role="tablist" aria-label="部门接力示意" id="workflow-tabs"></div>
+      <div class="workflow-stage">
+        <div class="workflow-stage-top">
+          <span class="live-dot"></span>
+          <strong>磁驱泵智能控制系统</strong>
+          <span id="workflow-node-label">节点 1 / 5</span>
+        </div>
+        <div class="workflow-stage-grid">
+          <section>
+            <span class="section-kicker">当前工作现场</span>
+            <h3 id="workflow-title"></h3>
+            <p id="workflow-note"></p>
+            <div class="stage-task">
+              <span class="stage-icon" aria-hidden="true">◎</span>
+              <span><small>正在执行</small><strong id="workflow-task"></strong></span>
+            </div>
+            <div class="stage-output">
+              <span class="stage-icon" aria-hidden="true">▣</span>
+              <span><small>节点交付</small><strong id="workflow-output"></strong></span>
+            </div>
+          </section>
+          <aside>
+            <img class="avatar-photo" id="workflow-avatar" src="assets/portraits/guyan.png" alt="" width="42" height="42">
+            <span class="section-kicker" id="workflow-dept"></span>
+            <h3 id="workflow-confirm"></h3>
+            <p>所有动作都保留任务、依据、版本与确认记录。</p>
+            <a href="login.html">在产品中继续 <span aria-hidden="true">→</span></a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Department shelf -->
+    <section class="site-business" id="dept-shelf">
+      <div class="site-section-head dark-text">
+        <div>
+          <span class="site-section-index">03 / 七部按需可见</span>
+          <h2>部门不是菜单墙，<br>是可交卷的办事站。</h2>
+        </div>
+        <p>顾言按目标路由；你只在需要时看见相关部。</p>
+      </div>
+      <div class="shelf-grid" aria-label="七部能力货架">
+        <article class="shelf-card"><span>00 · 交底部</span><h3>把技术说清楚</h3><p>访谈、交底书、权属。齐套后才交卷。</p></article>
+        <article class="shelf-card"><span>01 · 查新部</span><h3>能不能申请</h3><p>检索、比对、结论稿。专业复核再立项。</p></article>
+        <article class="shelf-card"><span>02 · 立项部</span><h3>值不值得推</h3><p>策略、报价、决议。商业与风险由你拍板。</p></article>
+        <article class="shelf-card"><span>03 · 撰写部</span><h3>写成可递交</h3><p>权利要求、说明书层次清楚，可接力附图。</p></article>
+        <article class="shelf-card"><span>04 · 附图部</span><h3>图文对齐</h3><p>流程图、结构图、图号与说明书一致。</p></article>
+        <article class="shelf-card"><span>05 · 递交与程序</span><h3>对外要授权</h3><p>申请包齐套；授权人确认才递交。</p></article>
+        <article class="shelf-card"><span>06 · 审查答复</span><h3>OA 不丢件</h3><p>策略与争辩；企业确认后代理复核。</p></article>
+      </div>
+      <p class="business-note"><span aria-hidden="true">ⓘ</span> 七部是同一家公司的导航投影：助手模式弱化部门墙，项目日常按节点展开，专业工作室按需配置。</p>
+    </section>
+
+    <!-- Dual audience -->
+    <section class="site-audience">
+      <div class="audience-intro">
+        <span class="site-section-index">04 / 双端同一底座</span>
+        <h2>同一家公司，<br>适合不同的工作方式。</h2>
+      </div>
+      <div class="audience-columns">
+        <section>
+          <span class="audience-icon" aria-hidden="true">企</span>
+          <h3>企业研发端</h3>
+          <p>只面对顾言和必须处理的事项。技术事实、保护范围和风险由你确认，专业过程按需展开。</p>
+          <span>事项 · 事实 · 决策 · 资产</span>
+        </section>
+        <section>
+          <span class="audience-icon" aria-hidden="true">代</span>
+          <h3>代理所端</h3>
+          <p>以期限、卷宗、证据和文书组织专业生产，保留内部质检与客户交付的权限边界。</p>
+          <span>案件 · 文书 · 复核 · 交付</span>
+        </section>
+      </div>
+      <div class="depth-line">
+        <div><strong>助手</strong><span>只说业务目标</span></div>
+        <span class="depth-arrow" aria-hidden="true">→</span>
+        <div><strong>项目</strong><span>部门与专家可见</span></div>
+        <span class="depth-arrow" aria-hidden="true">→</span>
+        <div><strong>专业</strong><span>工作室按需配置</span></div>
+      </div>
+    </section>
+
+    <!-- Trust -->
+    <section class="site-trust" id="trust-system">
+      <span class="site-section-index">05 / 可信确认与接力</span>
+      <h2>专业，不来自角色数量。<br>来自每一步都能被核查。</h2>
+      <div class="trust-grid">
+        <div><strong>01</strong><h3>执行可见</h3><p>展示任务、动作摘要和产出，不堆砌过程噪音。</p></div>
+        <div><strong>02</strong><h3>依据可追</h3><p>结论关联事实、证据、文书位置和具体版本。</p></div>
+        <div><strong>03</strong><h3>确认有类型</h3><p>技术事实、专业复核、商业决策、对外递交——标签清楚。</p></div>
+        <div><strong>04</strong><h3>确认再接力</h3><p>人来拍板；确认后可见交付快照，绝不自动对外递交。</p></div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="site-final">
+      <span>你的下一件知产工作</span>
+      <h2>不必先学会专利流程。<br>先告诉顾言，你想推进什么。</h2>
+      <div>
+        <a class="btn btn-primary" href="login.html">登录并进入 <span aria-hidden="true">→</span></a>
+        <a class="btn site-text-button" href="home.html">继续上次工作</a>
+      </div>
+      <p>使用演示身份进入工作台；不代表真实申请、授权承诺或官方递交。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="brand-copy">
+      <strong>外挂知识产权部</strong>
+      <small>持续委托 · 按需部门 · 可信确认</small>
     </div>
-    <p style="margin-top:36px;font-size:12px;color:#6f776d">登录后进入工作台：向知产负责人交办，按节点确认与接力。</p>
-  </div>
-</body></html>
+    <span>VIRTUAL IP COMPANY</span>
+  </footer>
+
+  <script>
+  (function () {
+    var steps = [
+      {
+        label: '提出目标',
+        dept: '顾言 · 知产负责人',
+        title: '“整理磁驱泵控制技术，形成申请方案。”',
+        note: '识别研发项目、申请目标与关键约束',
+        task: '建立项目并推荐交底、查新与立项路径',
+        output: '工作计划 P1',
+        confirm: '确认目标与推进路径',
+        avatar: 'assets/portraits/guyan.png'
+      },
+      {
+        label: '交底完善',
+        dept: '交底部',
+        title: '技术访谈专家补齐事实，撰写专家形成文本。',
+        note: '主责与协作专家围绕同一交付物工作',
+        task: '整理控制顺序、技术效果与替代实施方式',
+        output: '技术交底书 V3',
+        confirm: '确认测试数据与量产方案',
+        avatar: 'assets/portraits/expert1.png'
+      },
+      {
+        label: '事实确认',
+        dept: '企业研发 · 陈宇',
+        title: '你只处理必须由自己判断的技术事实。',
+        note: '确认绑定依据、文书位置、版本与影响',
+        task: '核对 2.5 kW 稳态工况下的测试记录',
+        output: '交底书 V4 · 已确认快照',
+        confirm: '确认后允许下一部门接力',
+        avatar: 'assets/portraits/chen.png'
+      },
+      {
+        label: '申请起草',
+        dept: '撰写部',
+        title: '权利要求与说明书专家继承已确认事实。',
+        note: '只继承本节点所需事实、证据与决策',
+        task: '设计独立权利要求与从属保护层次',
+        output: '权利要求草案 V1',
+        confirm: '确认保护范围与申请策略',
+        avatar: 'assets/portraits/expert3.png'
+      },
+      {
+        label: '复核交付',
+        dept: '林岚 · 专利代理师',
+        title: '真实代理师复核，形成可追踪交付。',
+        note: '辅助起草，真人复核，对外动作由人确认',
+        task: '核查支持关系、保护范围与全文一致性',
+        output: '申请文件包 · 复核版',
+        confirm: '确认交付，绝不自动递交',
+        avatar: 'assets/portraits/expert5.png'
+      }
+    ];
+
+    var tabs = document.getElementById('workflow-tabs');
+    var step = 0;
+
+    function renderTabs() {
+      tabs.innerHTML = '';
+      steps.forEach(function (s, i) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-selected', i === step ? 'true' : 'false');
+        if (i === step) btn.className = 'active';
+        btn.innerHTML = '<span>' + String(i + 1).padStart(2, '0') + '</span><strong>' + s.label + '</strong><small>' + s.dept + '</small>';
+        btn.addEventListener('click', function () { setStep(i); });
+        tabs.appendChild(btn);
+      });
+    }
+
+    function setStep(i) {
+      step = i;
+      var s = steps[i];
+      document.getElementById('workflow-node-label').textContent = '节点 ' + (i + 1) + ' / ' + steps.length;
+      document.getElementById('workflow-title').textContent = s.title;
+      document.getElementById('workflow-note').textContent = s.note;
+      document.getElementById('workflow-task').textContent = s.task;
+      document.getElementById('workflow-output').textContent = s.output;
+      document.getElementById('workflow-dept').textContent = s.dept;
+      document.getElementById('workflow-confirm').textContent = s.confirm;
+      document.getElementById('workflow-avatar').src = s.avatar;
+      renderTabs();
+    }
+
+    setStep(0);
+
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var id = a.getAttribute('href').slice(1);
+        var el = document.getElementById(id);
+        if (!el) return;
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  })();
+  </script>
+</body>
+</html>
