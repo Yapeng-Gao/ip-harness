@@ -100,30 +100,54 @@
       <div class="relay-lite-copy">
         <span class="site-section-index">一次持续委托</span>
         <h2>跟负责人说目标 → 部门交卷 → 你确认 → 再接力。</h2>
-        <p>顾言组织计划与部门；你只在关键节点出现。执行看得见，交付有依据，确认有类型。</p>
+        <p>不必先学流程。跟顾言说一句要推进什么，他拆成交办、齐套与确认——你只在关键节点出现。</p>
         <ol class="relay-steps">
           <li><strong>提目标</strong><span>告诉顾言要推进什么</span></li>
           <li><strong>部门交卷</strong><span>齐套后送待你确认</span></li>
           <li><strong>人来拍板</strong><span>确认后可见交付快照</span></li>
           <li><strong>下一站</strong><span>接力查新 / 立项 / 撰写…</span></li>
         </ol>
-        <a class="btn btn-ink" href="login.html">在产品里走一遍 <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ink" href="#goal-demo">试一句目标 <span aria-hidden="true">↓</span></a>
       </div>
-      <aside class="relay-lite-card">
-        <div class="relay-lite-bar">
-          <img class="avatar-photo" src="assets/portraits/guyan.png" alt="" width="36" height="36">
-          <div>
-            <strong>顾言 · 知产负责人</strong>
-            <small>持续委托 · 非聊天皮</small>
+      <aside class="relay-demo" id="goal-demo" aria-label="跟顾言说目标">
+        <div class="relay-demo-idle" data-demo-view="idle">
+          <div class="relay-lite-bar">
+            <img class="avatar-photo" src="assets/portraits/guyan.png" alt="" width="36" height="36">
+            <div>
+              <strong>顾言 · 知产负责人</strong>
+              <small>跟我说一句目标</small>
+            </div>
+          </div>
+          <p class="relay-demo-prompt">说完我会拆成：交办到哪一部 · 齐套要交什么 · 下一步谁确认。</p>
+          <div class="chips relay-demo-chips" role="group" aria-label="示例目标">
+            <span>示例</span>
+            <button type="button" data-demo-fill="下周要交这件的权属声明">权属声明</button>
+            <button type="button" data-demo-fill="整理一项磁驱泵控制技术，评估如何保护">整理成果</button>
+            <button type="button" data-demo-fill="新产品上市前排查 FTO 风险">上市前排查</button>
+          </div>
+          <form class="relay-demo-form" id="welcome-goal-form">
+            <label class="sr-only" for="welcome-goal-input">业务目标</label>
+            <input id="welcome-goal-input" name="goal" maxlength="120" placeholder="例如：下周要交这件的权属声明" required autocomplete="off">
+            <button class="btn btn-ink" type="submit">交给顾言</button>
+          </form>
+        </div>
+        <div class="relay-demo-result hidden" data-demo-view="result" aria-live="polite">
+          <div class="relay-lite-bar">
+            <img class="avatar-photo" src="assets/portraits/guyan.png" alt="" width="36" height="36">
+            <div>
+              <strong>顾言已接住</strong>
+              <small>不是聊天皮 · 是持续委托入口</small>
+            </div>
+          </div>
+          <p class="relay-quote" id="demo-echo">「……」</p>
+          <div class="demo-breakdown" id="demo-breakdown">
+            <!-- filled by JS -->
+          </div>
+          <div class="demo-actions">
+            <a class="btn btn-ink" id="demo-continue" href="login.html">登录，走完这条委托 <span aria-hidden="true">→</span></a>
+            <button class="btn site-text-button" type="button" data-demo-reset>再说一句</button>
           </div>
         </div>
-        <p class="relay-quote">「交底部已齐套技术交底书 V3。权属声明待你确认后，我再把查新部接上。」</p>
-        <div class="relay-faces">
-          <span><img class="avatar-photo avatar-photo-sm" src="assets/portraits/expert1.png" alt="" width="28" height="28">技术访谈</span>
-          <span><img class="avatar-photo avatar-photo-sm" src="assets/portraits/expert2.png" alt="" width="28" height="28">交底撰写</span>
-          <span><img class="avatar-photo avatar-photo-sm" src="assets/portraits/chen.png" alt="" width="28" height="28">陈宇 · 确认</span>
-        </div>
-        <a href="login.html">查看依据并确认 <span aria-hidden="true">→</span></a>
       </aside>
     </section>
 
@@ -176,7 +200,7 @@
       <h2>不必先学会专利流程。<br>跟负责人说目标，你想推进什么。</h2>
       <div>
         <a class="btn btn-primary" href="login.html">登录并进入 <span aria-hidden="true">→</span></a>
-        <a class="btn site-text-button" href="home.html">继续上次工作</a>
+        <a class="btn site-text-button" href="#goal-demo">先试一句目标</a>
       </div>
       <p>登录后进入工作台体验主路径；不构成真实申请、授权承诺或官方递交。</p>
     </section>

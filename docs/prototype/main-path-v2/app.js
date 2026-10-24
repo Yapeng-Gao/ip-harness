@@ -544,6 +544,114 @@
     document.body.appendChild(a);
   }
 
+
+  /* Map a free-text goal → first dept / checklist / confirm (fake but consistent) */
+  function planFromGoal(goal) {
+    const g = (goal || '').trim();
+    const lower = g.toLowerCase();
+    let deptId = 'disclosure';
+    if (/fto|查新|检索|可专利|现有技术/.test(lower)) deptId = 'research';
+    else if (/审查|oa|意见陈述|答复/.test(lower)) deptId = 'oa';
+    else if (/立项|报价|值不值得|申请类型/.test(lower)) deptId = 'decision';
+    else if (/撰写|权利要求|说明书/.test(lower)) deptId = 'draft';
+    else if (/附图|流程图/.test(lower)) deptId = 'figure';
+    else if (/递交|官方|国知局/.test(lower)) deptId = 'filing';
+    else if (/权属|交底|保护|成果|发明/.test(lower)) deptId = 'disclosure';
+
+    const d = DEPTS[deptId];
+    const chain = [];
+    let cur = deptId;
+    for (let i = 0; i < 3 && cur; i++) {
+      const node = DEPTS[cur];
+      if (!node) break;
+      chain.push(node);
+      cur = node.next;
+    }
+    const ownershipish = /权属/.test(g);
+    const echo = ownershipish
+      ? '「收到。先把权属声明齐套进交底，你确认归属后，我再接查新。」'
+      : ('「收到：「' + (g.length > 36 ? g.slice(0, 36) + '…' : g) + '」。先由' + d.name + '接手，齐套后请你确认「' + d.confirmType + '」。」');
+    return {
+      goal: g,
+      dept: d,
+      deptId: d.id,
+      echo: echo,
+      checklist: ownershipish
+        ? ['权属声明草稿', '发明人名单', '职务发明核对']
+        : (d.check || []).slice(0, 3),
+      assignDetail: ownershipish
+        ? '本周内补齐权属声明，并入技术交底书'
+        : d.pitch,
+      confirmDetail: ownershipish
+        ? '权属是否归澄明科技——确认后才接力查新'
+        : d.pendingFact,
+      chain: chain,
+      notePlaceholder: ownershipish
+        ? '例如：优先补权属，访谈安排在本周内'
+        : ('例如：优先推进' + d.name + '齐套')
+    };
+  }
+
+  function renderBreakdownHTML(plan) {
+    const checks = (plan.checklist || []).map(function (c) {
+      return '<li>' + c + '</li>';
+    }).join('');
+    return '' +
+      '<article><span>交办</span><strong>' + plan.dept.name + '</strong><small>' + plan.assignDetail + '</small></article>' +
+      '<article><span>齐套要点</span><ul class="plan-check-inline">' + checks + '</ul></article>' +
+      '<article><span>下一步确认</span><strong>' + plan.dept.confirmType + '</strong><small>' + plan.confirmDetail + '</small></article>';
+  }
+
+  function wireWelcomeGoalDemo() {
+    const rootEl = document.getElementById('goal-demo');
+    if (!rootEl) return;
+    const idle = rootEl.querySelector('[data-demo-view="idle"]');
+    const result = rootEl.querySelector('[data-demo-view="result"]');
+    const input = document.getElementById('welcome-goal-input');
+    const form = document.getElementById('welcome-goal-form');
+    const echo = document.getElementById('demo-echo');
+    const breakdown = document.getElementById('demo-breakdown');
+    const cont = document.getElementById('demo-continue');
+
+    function showResult(goal) {
+      const plan = planFromGoal(goal);
+      if (!plan.goal) { toast('请先说一句目标'); return; }
+      setDelegation({ goal: plan.goal, step: 'plan', dept: plan.deptId });
+      if (echo) echo.textContent = plan.echo;
+      if (breakdown) breakdown.innerHTML = renderBreakdownHTML(plan);
+      if (cont) {
+        // After login, land on plan step with goal already stored
+        cont.href = 'login.html';
+        cont.dataset.afterGoal = '1';
+      }
+      idle.classList.add('hidden');
+      result.classList.remove('hidden');
+      rootEl.classList.add('has-result');
+      result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    rootEl.querySelectorAll('[data-demo-fill]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (input) input.value = b.dataset.demoFill;
+        showResult(b.dataset.demoFill);
+      });
+    });
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        showResult((input && input.value) || '');
+      });
+    }
+    rootEl.querySelectorAll('[data-demo-reset]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        result.classList.add('hidden');
+        idle.classList.remove('hidden');
+        rootEl.classList.remove('has-result');
+        if (input) { input.value = ''; input.focus(); }
+      });
+    });
+  }
+
   function wireDelegate() {
     const step = qs('step') || 'goal';
     document.querySelectorAll('[data-step]').forEach(el => {
@@ -560,9 +668,57 @@
     });
 
     const existing = getDelegation() || {};
-    if (existing.goal) {
+    const goalText = existing.goal || '';
+    if (goalText) {
       const inp = document.querySelector('#goal-input');
-      if (inp && !inp.value) inp.value = existing.goal;
+      if (inp && !inp.value) inp.value = goalText;
+    }
+
+    // Goal chips on delegate page
+    document.querySelectorAll('.goal-panel [data-fill]').forEach(b => {
+      b.addEventListener('click', () => {
+        const inp = document.getElementById('goal-input');
+        if (inp) inp.value = b.dataset.fill;
+      });
+    });
+
+    function fillPlanUI(goal) {
+      const plan = planFromGoal(goal || '整理一项研发成果，评估如何保护');
+      const title = document.getElementById('plan-title');
+      const echo = document.getElementById('plan-goal-echo');
+      const bd = document.getElementById('plan-breakdown');
+      const list = document.getElementById('plan-list');
+      const go = document.getElementById('plan-go-btn');
+      const note = document.getElementById('plan-note');
+      if (title) title.textContent = '建议先由' + plan.dept.name + '接手';
+      if (echo) echo.textContent = '你的目标：「' + plan.goal + '」';
+      if (bd) bd.innerHTML = renderBreakdownHTML(plan);
+      if (note && !note.value) note.placeholder = plan.notePlaceholder;
+      if (list) {
+        list.innerHTML = plan.chain.map(function (node, i) {
+          return '<li><span class="ord">' + (i + 1) + '</span><div><strong>' + node.name + '</strong>' +
+            node.pitch + '<small>产出：' + node.deliverable + '；关口：' + node.confirmType + '</small></div></li>';
+        }).join('');
+      }
+      if (go) {
+        go.textContent = '确认计划，去' + plan.dept.name + '执行 →';
+        go.dataset.dept = plan.deptId;
+      }
+      // execute panel
+      const et = document.getElementById('exec-title');
+      const ee = document.getElementById('exec-goal-echo');
+      const eg = document.getElementById('exec-go-btn');
+      if (et) et.textContent = plan.dept.name + '已接手';
+      if (ee) ee.textContent = '目标：「' + plan.goal + '」· 已分派到本案';
+      if (eg) {
+        eg.href = withRole('dept.html?dept=' + plan.deptId);
+        eg.textContent = '打开' + plan.dept.name + '工作台 →';
+      }
+      return plan;
+    }
+
+    if (step === 'plan' || step === 'execute') {
+      fillPlanUI(goalText);
     }
 
     const startBtn = document.querySelector('[data-to-plan]');
@@ -570,7 +726,8 @@
       startBtn.addEventListener('click', () => {
         const goal = (document.querySelector('#goal-input') || {}).value || '';
         if (!goal.trim()) { toast('请先填写业务目标'); return; }
-        setDelegation({ goal: goal.trim(), step: 'plan', dept: 'disclosure' });
+        const plan = planFromGoal(goal.trim());
+        setDelegation({ goal: plan.goal, step: 'plan', dept: plan.deptId });
         location.href = withRole('delegate.html?step=plan');
       });
     }
@@ -578,11 +735,15 @@
     if (confirmPlan) {
       confirmPlan.addEventListener('click', () => {
         const d = getDelegation() || {};
+        const plan = planFromGoal(d.goal || goalText);
         d.step = 'execute';
-        d.dept = 'disclosure';
-        d.plan = ['交底部补齐事实', '查新部检索可专利性', '立项部出决议'];
+        d.dept = plan.deptId;
+        d.plan = plan.chain.map(n => n.name + ' · ' + n.deliverable);
+        const noteEl = document.getElementById('plan-note');
+        if (noteEl && noteEl.value.trim()) d.note = noteEl.value.trim();
         setDelegation(d);
-        location.href = withRole('dept.html?dept=disclosure');
+        // Stay on execute briefly so user sees 分派反馈, then they click into dept
+        location.href = withRole('delegate.html?step=execute');
       });
     }
   }
@@ -611,14 +772,14 @@
     DEPTS, DEPT_ORDER, role, setRole, mode, setMode, qs, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanySnapshot, injectGuyanPresence,
-    renderExperts, renderExpertFaces, wireWelcomeShelf, wireCompanyDeptFaces
+    renderExperts, renderExpertFaces, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
   };
 
   document.addEventListener('DOMContentLoaded', () => {
     wireShell();
     injectGuyanPresence();
     const page = document.body.dataset.page;
-    if (page === 'welcome') wireWelcomeShelf();
+    if (page === 'welcome') { wireWelcomeShelf(); wireWelcomeGoalDemo(); }
     if (page === 'dept') wireDeptPage();
     if (page === 'pending') wirePending();
     if (page === 'delegate') wireDelegate();
