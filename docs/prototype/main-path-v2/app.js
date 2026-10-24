@@ -240,12 +240,12 @@
       btn.classList.toggle('active', btn.dataset.mode === m);
     });
     document.querySelectorAll('[data-tier-cue]').forEach(el => {
-      // outward cue = 专业 (density only; not a separate product shell)
+      // outward cue = 专业 (capability page; not density-on-same-page)
       if (m === 'studio') el.textContent = '专业';
       else if (el.classList.contains('inline')) el.textContent = tierCueLabel(m);
       else el.textContent = '';
     });
-    // assistant: hide sidebar + dept map (CSS); project: everyday; studio: denser 卷宗/多案
+    // assistant: hide sidebar + dept map (CSS); project: everyday; studio: lands on professional.html
     document.querySelectorAll('[data-show-mode]').forEach(el => {
       const allowed = el.dataset.showMode.split(/\s+/);
       el.classList.toggle('hidden', !allowed.includes(m));
@@ -262,9 +262,56 @@
       }
     });
   }
+  /* Work-surface pages: 专业 must land on capability page (换面), not densify in place */
+  const WORK_PAGES = ['home', 'company', 'cases', 'dept', 'pending', 'delegate', 'case-new'];
+
   function setMode(m) {
     localStorage.setItem('mpv2-mode', m);
+    const page = document.body.dataset.page || '';
+    if (m === 'studio' && page !== 'professional') {
+      location.href = withRole('professional.html');
+      return;
+    }
+    if (m !== 'studio' && page === 'professional') {
+      location.href = withRole(m === 'assistant' ? 'home.html' : 'company.html');
+      return;
+    }
     applyModeUI(m);
+  }
+
+  function ensureProfessionalLanding() {
+    const page = document.body.dataset.page || '';
+    if (mode() === 'studio' && WORK_PAGES.indexOf(page) !== -1) {
+      location.replace(withRole('professional.html'));
+      return true;
+    }
+    return false;
+  }
+
+  function goWorkDept(deptId) {
+    localStorage.setItem('mpv2-mode', 'project');
+    location.href = withRole('dept.html?dept=' + encodeURIComponent(deptId || 'disclosure'));
+  }
+
+  function wireProfessionalPage() {
+    const grid = document.getElementById('prof-capability-grid');
+    if (!grid) return;
+    grid.innerHTML = DEPT_ORDER.map(key => {
+      const d = DEPTS[key];
+      const faces = renderExpertFaces(d.experts);
+      return '<article class="prof-card" data-dept="' + d.id + '">' +
+        '<div class="prof-card-head">' +
+          '<span class="prof-code">' + d.code + '</span>' +
+          '<h2>' + d.name + '</h2>' +
+        '</div>' +
+        '<p class="prof-duty">' + (d.pitch || '') + '</p>' +
+        '<div class="prof-experts" aria-label="' + d.name + '专家编制">' + faces + '</div>' +
+        '<button type="button" class="btn btn-ink prof-go" data-go-dept="' + d.id + '">去该部干活 →</button>' +
+        '</article>';
+    }).join('');
+    grid.querySelectorAll('[data-go-dept]').forEach(btn => {
+      btn.addEventListener('click', () => goWorkDept(btn.dataset.goDept));
+    });
   }
 
   function toast(text) {
@@ -1020,20 +1067,31 @@
 
   window.MPV2 = {
     DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, toast, withRole,
-    getDelegation, setDelegation, getSnapshot, setSnapshot,
-    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, injectGuyanPresence,
+    getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept,
+    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence,
     renderExperts, renderExpertFaces, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
   };
 
   document.addEventListener('DOMContentLoaded', () => {
+    if (ensureProfessionalLanding()) return;
+    const page = document.body.dataset.page;
+    // Capability page always owns 专业档（顶栏选中态）
+    if (page === 'professional') localStorage.setItem('mpv2-mode', 'studio');
     wireShell();
     injectGuyanPresence();
-    const page = document.body.dataset.page;
+    document.querySelectorAll('[data-go-professional]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.setItem('mpv2-mode', 'studio');
+        location.href = withRole(a.getAttribute('href') || 'professional.html');
+      });
+    });
     if (page === 'welcome') { wireWelcomeShelf(); wireWelcomeGoalDemo(); }
     if (page === 'dept') wireDeptPage();
     if (page === 'pending') wirePending();
     if (page === 'delegate') wireDelegate();
     if (page === 'home') wireHome();
     if (page === 'company') wireCompanyPage();
+    if (page === 'professional') wireProfessionalPage();
   });
 })();

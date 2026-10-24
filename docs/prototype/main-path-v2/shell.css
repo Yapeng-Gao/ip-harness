@@ -800,12 +800,12 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 }
 .workbench, .workbench-cursor {
   flex: 1; min-height: 0;
-  display: grid; grid-template-columns: 216px minmax(0,1fr) 308px;
+  display: grid; grid-template-columns: 200px minmax(0,1fr) 270px;
   grid-template-rows: minmax(0,1fr);
   background: var(--paper); border: 0;
 }
 .workbench > * { min-height: 0; }
-.workbench.fold-left { grid-template-columns: minmax(0,1fr) 308px; }
+.workbench.fold-left { grid-template-columns: minmax(0,1fr) 270px; }
 .workbench.fold-left .file-pane { display: none; }
 .pane { border-right: 1px solid var(--line); min-height: 0; overflow: auto; }
 .pane:last-child { border-right: 0; }
@@ -1136,7 +1136,7 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 }
 
 @media (max-width: 1100px) {
-  .workbench { grid-template-columns: minmax(0,1fr) 280px; }
+  .workbench { grid-template-columns: minmax(0,1fr) 270px; }
   .file-pane { display: none; }
   .dept-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .dept-grid a:nth-child(2n), .dept-grid button:nth-child(2n) { border-right: 0; }
@@ -1299,7 +1299,8 @@ html[data-mode="assistant"] .company-assist-stage { display: block; }
 
 html[data-mode="project"] .studio-density,
 html[data-mode="assistant"] .studio-density { display: none !important; }
-html[data-mode="studio"] .studio-density { display: block; }
+/* 专业已换面到 professional.html；作业面不再用密度冒充 */
+html[data-mode="studio"] .studio-density { display: none !important; }
 
 html[data-mode="studio"] .cases-table .row { padding-top: 14px; padding-bottom: 14px; }
 html[data-mode="studio"] .cases-table .head,
@@ -1350,10 +1351,9 @@ html[data-mode="assistant"] .dept-grid .studio-meta,
 .primary-zone .secondary-delegate .goal-form { margin-top: 8px; }
 .primary-zone .secondary-delegate .chips { margin-top: 8px; }
 
-/* —— 部门台三档（同 Cursor 三栏骨架） —— */
-/* 助手：左树变窄可点收折，中产物+右对话仍在 */
+/* —— 部门台三栏权重（左~200 / 中1fr / 右~260–280）· 专业档换面不在此加密度 —— */
 html[data-mode="assistant"] .workbench[data-tier-workbench] {
-  grid-template-columns: 148px minmax(0,1fr) 300px;
+  grid-template-columns: 160px minmax(0,1fr) 270px;
 }
 html[data-mode="assistant"] .workbench[data-tier-workbench] .file-pane {
   display: flex; opacity: .92;
@@ -1363,32 +1363,12 @@ html[data-mode="assistant"] .workbench[data-tier-workbench] .tree-label { displa
 html[data-mode="assistant"] .lead-facts { display: none; }
 html[data-mode="assistant"] .sidebar { display: none; }
 
-/* 项目：日常完整三栏 + 企业简版 lead */
 html[data-mode="project"] .workbench[data-tier-workbench] {
-  grid-template-columns: 200px minmax(0,1fr) 308px;
+  grid-template-columns: 200px minmax(0,1fr) 270px;
 }
-
-/* 专业：卷宗三栏 denser */
-html[data-mode="studio"] .workbench[data-tier-workbench] {
-  grid-template-columns: 240px minmax(0,1fr) 320px;
+html[data-mode="project"] .workbench.fold-left {
+  grid-template-columns: minmax(0,1fr) 270px;
 }
-html[data-mode="studio"] .workbench[data-tier-workbench] .file-pane {
-  display: flex; background: var(--warm-paper);
-}
-html[data-mode="studio"] .workbench[data-tier-workbench] .file-pane-head span::after {
-  content: " · 卷宗";
-}
-html[data-mode="studio"] .workbench.fold-left {
-  grid-template-columns: minmax(0,1fr) 320px;
-}
-html[data-mode="studio"] .workbench.fold-left .file-pane { display: none; }
-html[data-role="agency"][data-mode="studio"] .workbench.fold-left {
-  grid-template-columns: 240px minmax(0,1fr) 320px;
-}
-html[data-role="agency"][data-mode="studio"] .workbench.fold-left .file-pane { display: flex; }
-html[data-mode="studio"] .document { box-shadow: 0 2px 8px rgba(20,18,15,.06); }
-html[data-mode="studio"] .chat-pane { background: var(--warm-paper); }
-html[data-mode="studio"] .chat-pane .gate-box { background: var(--paper); }
 
 /* 公司页 need-me 三档都显 */
 .company-need-me { margin-top: 0; margin-bottom: 18px; }
@@ -1484,3 +1464,38 @@ html[data-role="enterprise"] .workbench:not(.fold-left) {
 }
 .node-contract-dl dt { color: var(--ink-3); font-weight: 600; }
 .node-contract-dl dd { margin: 0; }
+
+
+/* —— 专业部门页 · 能力/编制（§4.3a）· 非作业台 —— */
+.content-professional { max-width: 1080px; }
+.prof-toolbar {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; flex-wrap: wrap; margin: 4px 0 20px;
+}
+.prof-hint { font-size: 12px; color: var(--ink-3); }
+.prof-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.prof-card {
+  border: 1px solid var(--line); border-radius: 10px; background: var(--paper);
+  padding: 16px 16px 14px; display: flex; flex-direction: column; gap: 10px;
+  min-height: 200px;
+}
+.prof-card-head { display: flex; align-items: baseline; gap: 8px; }
+.prof-code {
+  font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--ink-3);
+}
+.prof-card h2 { margin: 0; font-size: 16px; letter-spacing: -.01em; }
+.prof-duty {
+  margin: 0; font-size: 13px; line-height: 1.55; color: var(--ink-2); flex: 1;
+}
+.prof-experts {
+  display: flex; flex-wrap: wrap; gap: 8px 10px; padding-top: 4px;
+  border-top: 1px dashed var(--line);
+}
+.prof-go { align-self: flex-start; margin-top: 4px; }
+.prof-footnote {
+  margin: 22px 0 8px; font-size: 12px; color: var(--ink-3); line-height: 1.6;
+}
+body[data-page="professional"] .tier-cue { display: inline-flex; }
