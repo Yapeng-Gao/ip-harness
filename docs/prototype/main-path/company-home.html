@@ -75,6 +75,7 @@
   <a href="welcome.html">宣传站</a>
   <a href="login.html">登录</a>
   <a href="thin-home.html">薄入口</a>
+  <a href="cases.html">案盘</a>
   <a href="company-home.html" class="on">公司首页</a>
   <a href="dept-workbench.html">部门台</a>
   <a href="pending-confirm.html">确认页</a>
@@ -85,6 +86,8 @@
   <header class="app-top">
     <div class="crumbs">
       <a href="thin-home.html">薄入口</a>
+      <span class="sep">/</span>
+      <a href="cases.html">案盘</a>
       <span class="sep">/</span>
       <strong>案 · 边缘调度器</strong>
     </div>
@@ -104,49 +107,49 @@
     </div>
 
     <div class="grid" id="grid">
-      <button type="button" class="dept current" data-id="intake"
+      <button type="button" class="dept current" data-id="intake" data-href="dept-workbench.html"
         data-name="交底部" data-st="未齐套 · 缺权属声明" data-stclass="warn"
         data-experts='[["林澈","交底辅导","a"],["周屿","事实核对","b"],["沈予","权属","c"]]'>
         <div class="nm">交底部</div>
         <div class="st warn">未齐套 · 缺权属</div>
         <div class="avs"><span class="av a"></span><span class="av b"></span><span class="av c"></span></div>
       </button>
-      <button type="button" class="dept" data-id="search"
+      <button type="button" class="dept" data-id="search" data-href="dept-research.html"
         data-name="查新部" data-st="未开工 · 等交底移交" data-stclass=""
         data-experts='[["周屿","检索策略","b"],["陈陌","对比文件","d"]]'>
         <div class="nm">查新部</div>
         <div class="st">未开工 · 等移交</div>
         <div class="avs"><span class="av b"></span><span class="av d"></span></div>
       </button>
-      <button type="button" class="dept" data-id="intake-d"
+      <button type="button" class="dept" data-id="intake-d" data-href="dept-decision.html"
         data-name="立项部" data-st="未开工" data-stclass=""
         data-experts='[["沈予","评分汇总","c"],["林澈","报价草稿","a"]]'>
         <div class="nm">立项部</div>
         <div class="st">未开工</div>
         <div class="avs"><span class="av c"></span><span class="av a"></span></div>
       </button>
-      <button type="button" class="dept" data-id="draft"
+      <button type="button" class="dept" data-id="draft" data-href="dept-draft.html"
         data-name="撰写部" data-st="未开工" data-stclass=""
         data-experts='[["林澈","权项结构","a"],["王可","说明书","d"]]'>
         <div class="nm">撰写部</div>
         <div class="st">未开工</div>
         <div class="avs"><span class="av a"></span><span class="av d"></span></div>
       </button>
-      <button type="button" class="dept" data-id="figure"
+      <button type="button" class="dept" data-id="figure" data-href="dept-figure.html"
         data-name="附图部" data-st="未开工" data-stclass=""
         data-experts='[["周屿","图面","b"]]'>
         <div class="nm">附图部</div>
         <div class="st">未开工</div>
         <div class="avs"><span class="av b"></span></div>
       </button>
-      <button type="button" class="dept" data-id="file"
+      <button type="button" class="dept" data-id="file" data-href="dept-filing.html"
         data-name="递交部" data-st="未开工" data-stclass=""
         data-experts='[["沈予","包齐","c"],["周屿","递交","b"]]'>
         <div class="nm">递交部</div>
         <div class="st">未开工</div>
         <div class="avs"><span class="av c"></span><span class="av b"></span></div>
       </button>
-      <button type="button" class="dept" data-id="oa"
+      <button type="button" class="dept" data-id="oa" data-href="dept-oa.html"
         data-name="答复部" data-st="未开工" data-stclass=""
         data-experts='[["王可","审查意见","d"],["林澈","答复策略","a"]]'>
         <div class="nm">答复部</div>
@@ -192,8 +195,7 @@ function openDrawer(btn) {
       <span class="av lg ${av}"></span>
       <div><div class="nm">${n}</div><div class="role">${r} · 建议稿 ≠ 确认</div></div>
     </div>`).join('');
-  go.href = btn.dataset.id === 'intake' || btn.classList.contains('current')
-    ? 'dept-workbench.html' : 'dept-workbench.html';
+  go.href = btn.dataset.href || 'dept-workbench.html';
   backdrop.hidden = false;
   requestAnimationFrame(() => {
     backdrop.classList.add('open');

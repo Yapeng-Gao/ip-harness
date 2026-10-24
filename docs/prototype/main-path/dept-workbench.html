@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>部门台 · 交底部 · Cursor 三栏</title>
+<title>部门台 · 交底部 · 两工作台 B</title>
 <link rel="stylesheet" href="proto.css" />
 <style>
   .body {
@@ -11,13 +11,46 @@
     display: grid;
     grid-template-columns: 240px 1fr 360px;
     height: calc(100vh - 41px - 52px);
+    transition: grid-template-columns 0.18s ease;
   }
+  .body[data-role="enterprise"] { grid-template-columns: 44px 1fr 360px; }
+  .body[data-role="enterprise"].left-open { grid-template-columns: 240px 1fr 360px; }
+
   .col-left {
     background: var(--slate-50);
     border-right: 1px solid var(--slate-200);
     padding: 14px 12px;
     overflow: auto;
+    position: relative;
   }
+  .body[data-role="enterprise"]:not(.left-open) .col-left {
+    padding: 10px 6px;
+    overflow: hidden;
+  }
+  .body[data-role="enterprise"]:not(.left-open) .col-left .tree,
+  .body[data-role="enterprise"]:not(.left-open) .col-left .col-label { display: none; }
+
+  .fold-rail {
+    display: none;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    width: 100%; height: 100%;
+    align-items: center; justify-content: flex-start;
+    gap: 10px; padding-top: 8px;
+  }
+  .body[data-role="enterprise"]:not(.left-open) .fold-rail { display: flex; }
+  .fold-rail button, .fold-toggle {
+    appearance: none; border: 1px solid var(--slate-200); background: var(--paper);
+    border-radius: var(--radius-sm); cursor: pointer; font-family: inherit;
+    font-size: 12px; font-weight: 600; color: var(--slate-600);
+    padding: 8px 6px;
+  }
+  .fold-rail button:hover, .fold-toggle:hover { background: var(--slate-50); color: var(--slate-900); }
+  .fold-toggle {
+    display: none; margin-bottom: 10px; width: 100%; padding: 6px 8px;
+  }
+  .body[data-role="enterprise"].left-open .fold-toggle { display: block; }
+
   .col-label {
     font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
     text-transform: uppercase; color: var(--slate-400);
@@ -90,6 +123,43 @@
     padding: 28px; border: 1px dashed var(--amber-100); border-radius: var(--radius-lg);
     background: var(--amber-50); color: var(--amber-700); font-size: 14px; line-height: 1.6;
   }
+
+  /* enterprise brief center */
+  #agency-center { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  #enterprise-center { display: none; flex-direction: column; flex: 1; min-height: 0; }
+  .body[data-role="enterprise"] #agency-center { display: none; }
+  .body[data-role="enterprise"] #enterprise-center { display: flex; }
+  .brief-scroll { flex: 1; overflow: auto; padding: 20px 28px 32px; }
+  .brief-block {
+    margin-bottom: 18px; padding: 16px 18px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--slate-200); background: var(--paper);
+    box-shadow: var(--shadow-rest);
+  }
+  .brief-block h2 {
+    font-size: 13px; font-weight: 650; color: var(--slate-500);
+    letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .brief-block .item {
+    font-size: 14px; color: var(--slate-700); line-height: 1.55;
+    padding: 8px 0; border-bottom: 1px solid var(--slate-100);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .brief-block .item:last-child { border-bottom: none; }
+  .brief-block .item .k { font-weight: 600; color: var(--slate-900); min-width: 72px; flex-shrink: 0; }
+  .brief-block .item .v { color: var(--slate-600); flex: 1; }
+  .brief-block .item .tag {
+    font-size: 11px; font-weight: 600; color: var(--amber-700);
+    background: var(--amber-50); border: 1px solid var(--amber-100);
+    padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+  }
+  .brief-block .item .tag.ok {
+    color: #166534; background: #f0fdf4; border-color: #bbf7d0;
+  }
+  .brief-note {
+    font-size: 12px; color: var(--slate-400); margin-top: 4px; line-height: 1.45;
+  }
+
   .col-right {
     background: var(--slate-50);
     border-left: 1px solid var(--slate-200);
@@ -130,9 +200,7 @@
     border: 1px solid var(--amber-100); border-radius: var(--radius-lg);
     padding: 14px; box-shadow: var(--shadow-rest);
   }
-  .confirm-block.ready {
-    background: #f0fdf4; border-color: #bbf7d0;
-  }
+  .confirm-block.ready { background: #f0fdf4; border-color: #bbf7d0; }
   .confirm-block .title {
     display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
   }
@@ -185,6 +253,25 @@
     border-radius: var(--radius-md); font-size: 13px; display: none; z-index: 100;
   }
   .toast.show { display: block; }
+
+  .role-switch {
+    display: inline-flex; gap: 2px; padding: 3px;
+    background: var(--slate-100); border-radius: 999px;
+    border: 1px solid var(--slate-200);
+  }
+  .role-switch button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; color: var(--slate-600); font-family: inherit;
+  }
+  .role-switch button[aria-pressed="true"] {
+    background: var(--slate-900); color: #fff;
+  }
+  .mode-chip {
+    font-size: 11px; color: var(--slate-500);
+    padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--slate-200); background: var(--paper);
+  }
 </style>
 </head>
 <body>
@@ -193,10 +280,11 @@
   <a href="welcome.html">宣传站</a>
   <a href="login.html">登录</a>
   <a href="thin-home.html">薄入口</a>
+  <a href="cases.html">案盘</a>
   <a href="company-home.html">公司首页</a>
   <a href="dept-workbench.html" class="on">部门台</a>
-  <a href="pending-confirm.html">确认页</a>
-  <span class="hint">浅色 · Cursor 三栏 · G1 演示</span>
+  <a href="pending-confirm.html?dept=disclosure">确认页</a>
+  <span class="hint">两工作台 B · 同模板 · G1</span>
 </nav>
 
 <div class="screen-fill">
@@ -206,16 +294,24 @@
       <span class="sep">/</span>
       <strong>交底部</strong>
       <span class="sep">/</span>
-      <span>工作台</span>
+      <span id="crumb-mode">卷宗三栏</span>
     </div>
     <div class="top-right">
-      <span class="chip">角色 · 企业</span>
-      <a class="bell" href="pending-confirm.html" aria-label="待确认">🔔<span class="badge tabular">2</span></a>
+      <div class="role-switch" role="group" aria-label="角色默认重心（同路由演示）">
+        <button type="button" id="role-agency" data-role="agency" aria-pressed="true">代理</button>
+        <button type="button" id="role-enterprise" data-role="enterprise" aria-pressed="false">企业</button>
+      </div>
+      <span class="mode-chip" id="mode-chip">代理 · 卷宗</span>
+      <a class="bell" href="pending-confirm.html?dept=disclosure" aria-label="待确认">🔔<span class="badge tabular">2</span></a>
     </div>
   </header>
 
-  <div class="body">
-    <aside class="col-left">
+  <div class="body" id="body" data-role="agency">
+    <aside class="col-left" id="col-left">
+      <div class="fold-rail">
+        <button type="button" id="btn-expand-left" title="展开目录">目录</button>
+      </div>
+      <button type="button" class="fold-toggle" id="btn-collapse-left">收折目录</button>
       <div class="col-label">本案目录</div>
       <div class="tree" id="tree">
         <div class="tree-group"><span class="chev">▾</span> 交卷物</div>
@@ -246,15 +342,47 @@
     </aside>
 
     <main class="col-center">
-      <div class="center-head">
-        <div>
-          <h1 id="doc-title">技术交底 · 边缘调度器</h1>
-          <div class="sub" id="doc-sub">交底部产出 · 当前选中「技术交底正文」v3</div>
+      <div id="agency-center">
+        <div class="center-head">
+          <div>
+            <h1 id="doc-title">技术交底 · 边缘调度器</h1>
+            <div class="sub" id="doc-sub">交底部产出 · 当前选中「技术交底正文」v3</div>
+          </div>
+          <div class="subtle-check" id="doc-badge"><span class="ok">✓</span> 本项已齐 · 全文可读</div>
         </div>
-        <div class="subtle-check" id="doc-badge"><span class="ok">✓</span> 本项已齐 · 全文可读</div>
+        <div class="doc-scroll">
+          <article class="doc" id="doc-body"></article>
+        </div>
       </div>
-      <div class="doc-scroll">
-        <article class="doc" id="doc-body"></article>
+
+      <div id="enterprise-center">
+        <div class="center-head">
+          <div>
+            <h1>交底部 · 企业简版</h1>
+            <div class="sub">主视线：事项 / 已确认事实 / 待决策 · 同路由模板 · 目录可收折</div>
+          </div>
+          <div class="subtle-check" id="ent-badge"><span class="warn">!</span> 齐套 5/6 · 缺权属</div>
+        </div>
+        <div class="brief-scroll">
+          <div class="brief-block">
+            <h2>事项</h2>
+            <div class="item"><span class="k">当前</span><span class="v">交底部交卷前补齐权属声明</span><span class="tag">进行中</span></div>
+            <div class="item"><span class="k">交卷物</span><span class="v">技术交底正文 · 附图说明 · 发明人名单 · 权属声明</span></div>
+            <div class="item"><span class="k">部门</span><span class="v">交底部 · 专家建议稿已出，等人拍板</span></div>
+          </div>
+          <div class="brief-block">
+            <h2>已确认事实</h2>
+            <div class="item"><span class="k">技术方案</span><span class="v">边缘调度 · 回迁窗口与 SLA 绑定（正文 v3）</span><span class="tag ok">已确认</span></div>
+            <div class="item"><span class="k">发明人</span><span class="v">张一 / 李二 / 王三 · 名单 v2</span><span class="tag ok">已确认</span></div>
+            <div class="item"><span class="k">附图</span><span class="v">架构图 + 时序草图已挂附件</span><span class="tag ok">已确认</span></div>
+          </div>
+          <div class="brief-block">
+            <h2>待决策</h2>
+            <div class="item"><span class="k">权属</span><span class="v">发明人签字页扫描件尚未到齐 · 交卷禁用</span><span class="tag">待你确认</span></div>
+            <div class="item"><span class="k">交卷</span><span class="v">齐套后交卷 → 进入待你确认页（右侧 G1 闸）</span></div>
+          </div>
+          <p class="brief-note">企业简版不另开产品壳：左目录可点「目录」展开查看卷宗树；右栏仍是齐套缺项 + 交卷 + 确认。代理切回「代理」即见卷宗三栏全文。</p>
+        </div>
       </div>
     </main>
 
@@ -341,9 +469,9 @@ const DOCS = {
         <li>信用分随在线时长与成功交付更新，抑制甩锅式借算。</li>
         <li>回迁窗口与业务 SLA 绑定，超时降级为只读缓存服务。</li>
       </ul>
-      <h2>4. 关键效果</h2>
+      <h2>4. 预期效果</h2>
       <p>在模拟断连 30% 的拓扑上，相对基线：跨域回传字节下降约四成；任务完成率在同等 SLA 下提升；协调器状态规模与节点数近似线性，便于部署。</p>
-      <h2>5. 关键方式（节选）</h2>
+      <h2>5. 实施方式（节选）</h2>
       <p>边缘代理周期性上报可用算力与剩余电量；协调器聚合后下发「本地优先清单」。当邻居信用高于阈值且链路 RTT 低于阈，允许借算一跳；否则进入延后队列，由策略引擎在下一窗口重评。</p>`
   },
   figures: {
@@ -400,6 +528,10 @@ const body = document.getElementById('doc-body');
 const titleEl = document.getElementById('doc-title');
 const subEl = document.getElementById('doc-sub');
 const badge = document.getElementById('doc-badge');
+const entBadge = document.getElementById('ent-badge');
+const bodyEl = document.getElementById('body');
+const crumbMode = document.getElementById('crumb-mode');
+const modeChip = document.getElementById('mode-chip');
 let ownershipDone = false;
 
 function renderDoc(key) {
@@ -452,6 +584,7 @@ function setComplete() {
   btnHint.textContent = 'G1 已过：齐套勾齐 → 交卷可用。点交卷进入待你确认。';
   treeOwn.classList.remove('missing');
   ownMeta.textContent = 'v1';
+  entBadge.innerHTML = '<span class="ok">✓</span> 齐套 6/6 · 可交卷';
   const active = document.querySelector('.tree-item.active');
   if (active && active.dataset.doc === 'ownership') renderDoc('ownership');
 }
@@ -462,9 +595,31 @@ btnSubmit.addEventListener('click', () => {
   if (btnSubmit.disabled) return;
   const t = document.getElementById('toast');
   t.classList.add('show');
-  setTimeout(() => { location.href = 'pending-confirm.html'; }, 700);
+  setTimeout(() => { location.href = 'pending-confirm.html?dept=disclosure'; }, 700);
 });
 
+function applyRole(role, pushUrl) {
+  if (role !== 'enterprise') role = 'agency';
+  bodyEl.setAttribute('data-role', role);
+  bodyEl.classList.toggle('left-open', false);
+  document.getElementById('role-agency').setAttribute('aria-pressed', role === 'agency' ? 'true' : 'false');
+  document.getElementById('role-enterprise').setAttribute('aria-pressed', role === 'enterprise' ? 'true' : 'false');
+  crumbMode.textContent = role === 'enterprise' ? '企业简版' : '卷宗三栏';
+  modeChip.textContent = role === 'enterprise' ? '企业 · 简版重心' : '代理 · 卷宗';
+  if (pushUrl) {
+    const url = new URL(location.href);
+    url.searchParams.set('role', role);
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+  }
+}
+
+document.getElementById('role-agency').addEventListener('click', () => applyRole('agency', true));
+document.getElementById('role-enterprise').addEventListener('click', () => applyRole('enterprise', true));
+document.getElementById('btn-expand-left').addEventListener('click', () => bodyEl.classList.add('left-open'));
+document.getElementById('btn-collapse-left').addEventListener('click', () => bodyEl.classList.remove('left-open'));
+
+const params = new URLSearchParams(location.search);
+applyRole(params.get('role') === 'enterprise' ? 'enterprise' : 'agency', false);
 renderDoc('disclosure');
 </script>
 </body>

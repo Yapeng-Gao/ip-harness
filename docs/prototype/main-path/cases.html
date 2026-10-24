@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>多案流水 · 代理案盘</title>
+<link rel="stylesheet" href="proto.css" />
+<style>
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 24px 64px; }
+  .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .pos { font-size: 13px; color: var(--slate-500); }
+  h1 { margin-top: 6px; font-size: 24px; font-weight: 700; letter-spacing: -0.015em; }
+  .lead { margin-top: 8px; font-size: 15px; color: var(--slate-600); max-width: 520px; line-height: 1.5; }
+  .head-actions { display: flex; gap: 10px; align-items: center; }
+  .filters {
+    margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .filters label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--slate-600);
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--slate-200); background: var(--paper);
+    cursor: pointer;
+  }
+  .filters label.on { background: var(--slate-900); color: #fff; border-color: var(--slate-900); }
+  .filters input { display: none; }
+  .board {
+    margin-top: 16px; border: 1px solid var(--slate-200); border-radius: var(--radius-lg);
+    background: var(--paper); box-shadow: var(--shadow-rest); overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--slate-400);
+    padding: 12px 16px; background: var(--slate-50); border-bottom: 1px solid var(--slate-200);
+  }
+  td { padding: 14px 16px; border-bottom: 1px solid var(--slate-100); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr.case-row { cursor: pointer; transition: background 0.08s ease; }
+  tr.case-row:hover { background: var(--slate-50); }
+  tr.case-row:active { transform: scale(0.998); }
+  .name { font-weight: 650; color: var(--slate-900); }
+  .code { margin-top: 4px; font-size: 12px; color: var(--slate-500); font-variant-numeric: tabular-nums; }
+  .dept-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px; font-size: 12px;
+    background: var(--slate-50); border: 1px solid var(--slate-200); color: var(--slate-700);
+  }
+  .dept-pill.hot { background: var(--amber-50); border-color: var(--amber-100); color: var(--amber-700); }
+  .pending-n { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--amber-700); }
+  .pending-n.zero { color: var(--slate-400); font-weight: 500; }
+  .due {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--slate-600); font-variant-numeric: tabular-nums;
+  }
+  .due .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--slate-300);
+  }
+  .due.urgent .dot { background: #dc2626; }
+  .due.soon .dot { background: var(--amber-600); }
+  .client { font-size: 13px; color: var(--slate-600); }
+  .foot-note { margin-top: 16px; font-size: 13px; color: var(--slate-400); line-height: 1.5; }
+  .empty {
+    display: none; padding: 40px 24px; text-align: center;
+    color: var(--slate-500); font-size: 14px;
+  }
+  .board.empty-on .empty { display: block; }
+  .board.empty-on table { display: none; }
+</style>
+</head>
+<body>
+<nav class="proto-nav" aria-label="原型导航">
+  <span class="brand">主路径原型</span>
+  <a href="welcome.html">宣传站</a>
+  <a href="login.html">登录</a>
+  <a href="thin-home.html">薄入口</a>
+  <a href="cases.html" class="on">案盘</a>
+  <a href="company-home.html">公司首页</a>
+  <a href="dept-workbench.html">部门台</a>
+  <a href="pending-confirm.html">确认页</a>
+  <span class="hint">代理案盘 · 非七部作业</span>
+</nav>
+
+<div class="screen-fill">
+  <header class="app-top">
+    <div class="crumbs">
+      <a href="thin-home.html">薄入口</a>
+      <span class="sep">/</span>
+      <strong>多案流水</strong>
+    </div>
+    <div class="top-right">
+      <span class="chip">角色 · 代理</span>
+      <a class="bell" href="pending-confirm.html" aria-label="待确认">🔔<span class="badge tabular">2</span></a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <div class="pos">代理案盘 · 卡住哪、谁待确认、期限红点</div>
+        <h1>多案流水</h1>
+        <p class="lead">点进某案进公司首页；本页不做七部交卷。开新案另页极少字段。</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn btn-primary" href="case-new.html">开新案</a>
+        <a class="btn btn-ghost" href="pending-confirm.html">待确认 · <span class="tabular">2</span></a>
+      </div>
+    </div>
+
+    <div class="filters" id="filters" role="group" aria-label="筛选">
+      <label class="on"><input type="radio" name="f" value="all" checked />全部</label>
+      <label><input type="radio" name="f" value="pending" />有待确认</label>
+      <label><input type="radio" name="f" value="urgent" />近期限</label>
+      <label><input type="radio" name="f" value="intake" />在交底部</label>
+    </div>
+
+    <div class="board" id="board">
+      <table>
+        <thead>
+          <tr>
+            <th>案名 / 编号</th>
+            <th>当前部门</th>
+            <th>待确认</th>
+            <th>期限</th>
+            <th>客户</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr class="case-row" data-href="company-home.html" data-tags="pending intake" tabindex="0">
+            <td>
+              <div class="name">边缘调度器</div>
+              <div class="code">CN-DEMO-2026-001</div>
+            </td>
+            <td><span class="dept-pill hot">交底部 · 齐套 5/6</span></td>
+            <td><span class="pending-n">1</span></td>
+            <td><span class="due soon"><span class="dot" aria-hidden="true"></span>交底补齐 · 3 天</span></td>
+            <td class="client">星云智造</td>
+          </tr>
+          <tr class="case-row" data-href="company-home.html" data-tags="pending urgent" tabindex="0">
+            <td>
+              <div class="name">光模块封装</div>
+              <div class="code">CN-DEMO-2026-014</div>
+            </td>
+            <td><span class="dept-pill">查新部 · 已交卷</span></td>
+            <td><span class="pending-n">1</span></td>
+            <td><span class="due urgent"><span class="dot" aria-hidden="true"></span>可专利性确认 · 今天</span></td>
+            <td class="client">海光联</td>
+          </tr>
+          <tr class="case-row" data-href="company-home.html" data-tags="" tabindex="0">
+            <td>
+              <div class="name">冷链温控阀</div>
+              <div class="code">CN-DEMO-2025-088</div>
+            </td>
+            <td><span class="dept-pill">撰写部</span></td>
+            <td><span class="pending-n zero">0</span></td>
+            <td><span class="due"><span class="dot" aria-hidden="true"></span>无近期限</span></td>
+            <td class="client">北纬冷链</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="empty">还没有案子 · <a href="case-new.html" style="color:var(--slate-700);text-decoration:underline;text-underline-offset:2px">开案子</a></div>
+    </div>
+
+    <p class="foot-note">本页是案盘清单，不是企业单案壳，也没有七部作业台。点行 → 公司首页。</p>
+  </div>
+</div>
+
+<script>
+const rows = [...document.querySelectorAll('.case-row')];
+rows.forEach(tr => {
+  const go = () => { location.href = tr.dataset.href; };
+  tr.addEventListener('click', go);
+  tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+});
+document.querySelectorAll('#filters input').forEach(inp => {
+  inp.addEventListener('change', () => {
+    document.querySelectorAll('#filters label').forEach(l => l.classList.toggle('on', l.querySelector('input') === inp));
+    const v = inp.value;
+    let visible = 0;
+    rows.forEach(tr => {
+      const tags = (tr.dataset.tags || '').split(/\s+/);
+      const show = v === 'all' || tags.includes(v);
+      tr.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('board').classList.toggle('empty-on', visible === 0);
+  });
+});
+</script>
+</body>
+</html>

@@ -75,9 +75,10 @@
   <a href="welcome.html">宣传站</a>
   <a href="login.html">登录</a>
   <a href="thin-home.html">薄入口</a>
+  <a href="cases.html">案盘</a>
   <a href="company-home.html">公司首页</a>
   <a href="dept-workbench.html">部门台</a>
-  <a href="pending-confirm.html" class="on">确认页</a>
+  <a href="pending-confirm.html" class="on" id="nav-pending">确认页</a>
   <span class="hint">G2/G3 · 人拍板</span>
 </nav>
 
@@ -89,28 +90,28 @@
   </div>
   <div class="top-right">
     <span class="chip">确认人 · 企业负责人</span>
-    <a class="bell" href="pending-confirm.html" aria-label="待确认">🔔<span class="badge tabular">2</span></a>
+    <a class="bell" id="bell" href="pending-confirm.html" aria-label="待确认">🔔<span class="badge tabular">2</span></a>
   </div>
 </header>
 
 <div class="layout">
   <div>
     <div class="pos">拍板闸 · 不是「下一步」</div>
-    <h1>交底部交卷 · 待你确认</h1>
-    <p class="lead">案 · 边缘调度器。过 → 移交查新部；驳回 → 回流交底部补齐。专家建议稿不是签字。</p>
+    <h1 id="h1">交底部交卷 · 待你确认</h1>
+    <p class="lead" id="lead">案 · 边缘调度器。过 → 移交查新部；驳回 → 回流交底部补齐。专家建议稿不是签字。</p>
 
     <div class="summary">
       <h2>交卷摘要</h2>
       <dl>
-        <dt>部门</dt><dd>交底部</dd>
-        <dt>齐套</dt><dd class="tabular">6/6（演示：部门台已勾齐）</dd>
-        <dt>交卷物</dt><dd>技术交底正文 v3 · 附图说明 · 权属声明 · 发明人名单 · 附件 2</dd>
-        <dt>决策含义</dt><dd>确认交底包可进入查新；不在此决定「申不申」</dd>
+        <dt>部门</dt><dd id="dd-dept">交底部</dd>
+        <dt>齐套</dt><dd class="tabular" id="dd-kit">6/6（权属已齐）</dd>
+        <dt>交卷物</dt><dd id="dd-pack">技术交底正文 · 附图说明 · 权属声明 · 发明人名单</dd>
+        <dt>决策含义</dt><dd id="dd-meaning">确认交底包可进入查新；不在此决定「申不申」</dd>
       </dl>
-      <div class="pack">
+      <div class="pack" id="pack-points">
         <strong>要点：</strong> 回迁窗口表述已收紧；权属签字页已齐；发明人三人署名顺序已确认。
       </div>
-      <div class="expert-note">
+      <div class="expert-note" id="expert-note">
         <span class="av a"></span><span class="av c"></span>
         林澈 / 沈予 · 建议稿已附 · <strong>非签字</strong>
       </div>
@@ -137,11 +138,11 @@
 
   <div class="inbox">
     <h2>待办 inbox</h2>
-    <a class="on" href="pending-confirm.html">
-      <span>【边缘调度器】交底部 · 交底齐套</span>
+    <a class="on" id="inbox-1" href="pending-confirm.html?dept=disclosure">
+      <span id="inbox-1-label">【边缘调度器】交底部 · 交底齐套</span>
       <span class="m">今天</span>
     </a>
-    <a href="pending-confirm.html">
+    <a id="inbox-2" href="pending-confirm.html?dept=research">
       <span>【光模块封装】查新部 · 可专利性</span>
       <span class="m">昨天</span>
     </a>
@@ -149,18 +150,169 @@
 </div>
 <div class="toast" id="toast"></div>
 <script>
+const DEPTS = {
+  disclosure: {
+    name: '交底部',
+    caseName: '边缘调度器',
+    kit: '6/6（权属已齐）',
+    pack: '技术交底正文 · 附图说明 · 权属声明 · 发明人名单',
+    meaning: '确认交底包可进入查新；不在此决定「申不申」',
+    points: '回迁窗口表述已收紧；权属签字页已齐；发明人三人署名顺序已确认。',
+    expert: '林澈 / 沈予 · 建议稿已附 · <strong>非签字</strong>',
+    inboxLabel: '【边缘调度器】交底部 · 交底齐套',
+    passLabel: '通过 · 移交查新部',
+    passToast: '已通过 · 移交查新部',
+    passHref: 'company-home.html',
+    rejectLabel: '驳回 · 回流交底部',
+    rejectToast: '已驳回 · 回流交底部补齐',
+    rejectHref: 'dept-workbench.html',
+    leadPass: '查新部',
+    leadReject: '交底部'
+  },
+  research: {
+    name: '查新部',
+    caseName: '边缘调度器',
+    kit: '结论稿已齐',
+    pack: 'research_report · 检索式 / 命中列表 / 结论稿',
+    meaning: '确认可专利性结论可进入立项；不在此签决议',
+    points: '主链命中已标注；结论稿含「继续 / 改写」建议段；FTO 另附不挡交卷。',
+    expert: '周晏 / 顾青 · 建议稿已附 · <strong>非签字</strong>',
+    inboxLabel: '【边缘调度器】查新部 · 可专利性',
+    passLabel: '通过 · 移交立项部',
+    passToast: '已通过 · 移交立项部',
+    passHref: 'dept-decision.html',
+    rejectLabel: '驳回 · 回流查新部',
+    rejectToast: '已驳回 · 回流查新部补齐',
+    rejectHref: 'dept-research.html',
+    leadPass: '立项部',
+    leadReject: '查新部'
+  },
+  decision: {
+    name: '立项部',
+    caseName: '边缘调度器',
+    kit: '决议签署已齐',
+    pack: '决策书 + intake_quote · 报价与决议签署页',
+    meaning: '确认立项决议可进入撰写；不在此改权项',
+    points: '报价分口袋已对齐；决议签署页法务已签；继续申请路径已勾。',
+    expert: '沈予 / 韩砺 · 建议稿已附 · <strong>非签字</strong>',
+    inboxLabel: '【边缘调度器】立项部 · 决议签署',
+    passLabel: '通过 · 移交撰写部',
+    passToast: '已通过 · 移交撰写部',
+    passHref: 'dept-draft.html',
+    rejectLabel: '驳回 · 回流立项部',
+    rejectToast: '已驳回 · 回流立项部补齐',
+    rejectHref: 'dept-decision.html',
+    leadPass: '撰写部',
+    leadReject: '立项部'
+  },
+  draft: {
+    name: '撰写部',
+    caseName: '边缘调度器',
+    kit: '权项树已齐',
+    pack: 'draft_claims · 权项树 / 说明书章节',
+    meaning: '确认权项与说明书可进入附图；不在此递交官文',
+    points: '独立权利要求已立；从属树完整；说明书与权项引用一致。',
+    expert: '林澈 / 顾青 · 建议稿已附 · <strong>非签字</strong>',
+    inboxLabel: '【边缘调度器】撰写部 · 权项树',
+    passLabel: '通过 · 移交附图部',
+    passToast: '已通过 · 移交附图部',
+    passHref: 'dept-figure.html',
+    rejectLabel: '驳回 · 回流撰写部',
+    rejectToast: '已驳回 · 回流撰写部补齐',
+    rejectHref: 'dept-draft.html',
+    leadPass: '附图部',
+    leadReject: '撰写部'
+  },
+  figure: {
+    name: '附图部',
+    caseName: '边缘调度器',
+    kit: '图号核对已齐',
+    pack: '附图包 · 图号核对表 / 实施例图',
+    meaning: '确认附图包可进入递交与程序；不在此授权递交',
+    points: '图号与说明书引用已对上；实施例两处缺项已补；线稿可读。',
+    expert: '周晏 / 林澈 · 建议稿已附 · <strong>非签字</strong>',
+    inboxLabel: '【边缘调度器】附图部 · 图号核对',
+    passLabel: '通过 · 移交递交与程序',
+    passToast: '已通过 · 移交递交与程序',
+    passHref: 'dept-filing.html',
+    rejectLabel: '驳回 · 回流附图部',
+    rejectToast: '已驳回 · 回流附图部补齐',
+    rejectHref: 'dept-figure.html',
+    leadPass: '递交与程序',
+    leadReject: '附图部'
+  },
+  filing: {
+    name: '递交与程序',
+    caseName: '边缘调度器',
+    kit: '授权人确认已齐',
+    pack: '申请包 + filing_check · 官费分口袋 / 授权确认',
+    meaning: '确认可请求递交；授权后才装成已递交',
+    points: '申请包清单齐；filing_check 绿；授权人确认页已签。',
+    expert: '韩砺 / 沈予 · 建议稿已附 · <strong>非签字</strong>',
+    inboxLabel: '【边缘调度器】递交与程序 · 授权人确认',
+    passLabel: '通过 · 移交审查答复',
+    passToast: '已通过 · 移交审查答复',
+    passHref: 'company-home.html',
+    rejectLabel: '驳回 · 回流递交与程序',
+    rejectToast: '已驳回 · 回流递交与程序补齐',
+    rejectHref: 'dept-filing.html',
+    leadPass: '审查答复（或回公司首页）',
+    leadReject: '递交与程序'
+  },
+  oa: {
+    name: '审查答复',
+    caseName: '边缘调度器',
+    kit: '企业确认意见已齐',
+    pack: 'OA答复稿 · 争辩策略 / 修改对照',
+    meaning: '确认答复策略可发出；企业未点头不得装已答复',
+    points: '争辩主线已写；修改对照表齐；企业确认意见已落。',
+    expert: '顾青 / 周晏 · 建议稿已附 · <strong>非签字</strong>',
+    inboxLabel: '【边缘调度器】审查答复 · 企业确认意见',
+    passLabel: '通过 · 回公司首页',
+    passToast: '已通过 · 回公司首页',
+    passHref: 'company-home.html',
+    rejectLabel: '驳回 · 回流审查答复',
+    rejectToast: '已驳回 · 回流审查答复补齐',
+    rejectHref: 'dept-oa.html',
+    leadPass: '公司首页',
+    leadReject: '审查答复'
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const key = DEPTS[params.get('dept')] ? params.get('dept') : 'disclosure';
+const d = DEPTS[key];
+
+document.title = '确认页 · ' + d.name + ' · 待你确认';
+document.getElementById('h1').textContent = d.name + '交卷 · 待你确认';
+document.getElementById('lead').textContent =
+  '案 · ' + d.caseName + '。过 → 移交' + d.leadPass + '；驳回 → 回流' + d.leadReject + '补齐。专家建议稿不是签字。';
+document.getElementById('dd-dept').textContent = d.name;
+document.getElementById('dd-kit').textContent = d.kit;
+document.getElementById('dd-pack').textContent = d.pack;
+document.getElementById('dd-meaning').textContent = d.meaning;
+document.getElementById('pack-points').innerHTML = '<strong>要点：</strong> ' + d.points;
+document.getElementById('expert-note').innerHTML =
+  '<span class="av a"></span><span class="av c"></span> ' + d.expert;
+
+const btnPass = document.getElementById('btn-pass');
+const btnReject = document.getElementById('btn-reject');
+btnPass.textContent = d.passLabel;
+btnReject.textContent = d.rejectLabel;
+
+document.getElementById('inbox-1').href = 'pending-confirm.html?dept=' + key;
+document.getElementById('inbox-1-label').textContent = d.inboxLabel;
+document.getElementById('nav-pending').href = 'pending-confirm.html?dept=' + key;
+document.getElementById('bell').href = 'pending-confirm.html?dept=' + key;
+
 const toast = document.getElementById('toast');
 function show(msg, href) {
   toast.textContent = msg;
   toast.classList.add('show');
   setTimeout(() => { location.href = href; }, 800);
 }
-document.getElementById('btn-pass').addEventListener('click', () => {
-  show('已通过 · 移交查新部', 'company-home.html');
-});
-document.getElementById('btn-reject').addEventListener('click', () => {
-  show('已驳回 · 回流交底部补齐', 'dept-workbench.html');
-});
+btnPass.addEventListener('click', () => show(d.passToast, d.passHref));
+btnReject.addEventListener('click', () => show(d.rejectToast, d.rejectHref));
 </script>
 </body>
 </html>

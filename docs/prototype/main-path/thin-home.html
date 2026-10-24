@@ -6,26 +6,46 @@
 <title>薄入口 · /agent</title>
 <link rel="stylesheet" href="proto.css" />
 <style>
-  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 24px 64px; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 64px; }
   .hello { font-size: 13px; color: var(--slate-500); margin-bottom: 6px; }
   h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.015em; }
-  .sub { margin-top: 8px; font-size: 15px; color: var(--slate-600); }
-  .entries { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
-  @media (max-width: 720px) { .entries { grid-template-columns: 1fr; } }
-  .entry {
-    display: block; padding: 20px 18px; border-radius: var(--radius-lg);
-    background: var(--paper); border: 1px solid var(--slate-200);
-    box-shadow: var(--shadow-rest); transition: transform 0.08s ease;
+  .sub { margin-top: 8px; font-size: 15px; color: var(--slate-600); line-height: 1.5; }
+
+  .role-switch {
+    display: inline-flex; gap: 4px; margin-top: 20px; padding: 4px;
+    background: var(--slate-100); border-radius: 999px;
+    border: 1px solid var(--slate-200);
   }
-  .entry:active { transform: scale(0.98); }
-  .entry.primary { background: var(--slate-900); color: #fff; border-color: var(--slate-900); }
-  .entry .k { font-size: 12px; opacity: 0.7; margin-bottom: 8px; }
-  .entry.primary .k { color: #cbd5e1; }
-  .entry .t { font-size: 17px; font-weight: 650; }
-  .entry .d { margin-top: 8px; font-size: 13px; color: var(--slate-500); line-height: 1.45; }
-  .entry.primary .d { color: #94a3b8; }
+  .role-switch button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; color: var(--slate-600);
+  }
+  .role-switch button[aria-pressed="true"] {
+    background: var(--slate-900); color: #fff;
+  }
+  .role-switch button:hover:not([aria-pressed="true"]) {
+    background: var(--paper); color: var(--slate-800);
+  }
+
+  .primary-slot { margin-top: 28px; }
+  .primary-cta {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+    width: 100%; padding: 28px 26px;
+    border-radius: var(--radius-lg);
+    background: var(--slate-900); color: #fff;
+    border: 1px solid var(--slate-900);
+    box-shadow: var(--shadow-rest);
+    transition: transform 0.08s ease, background 0.12s ease;
+  }
+  .primary-cta:hover { background: #1e293b; }
+  .primary-cta:active { transform: scale(0.985); }
+  .primary-cta .k { font-size: 12px; font-weight: 500; color: #94a3b8; }
+  .primary-cta .t { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  .primary-cta .d { font-size: 14px; color: #cbd5e1; line-height: 1.45; }
+
   .pending {
-    margin-top: 36px; padding: 18px; border-radius: var(--radius-lg);
+    margin-top: 32px; padding: 18px; border-radius: var(--radius-lg);
     background: var(--amber-50); border: 1px solid var(--amber-100);
   }
   .pending h2 {
@@ -41,8 +61,73 @@
   .pending li a { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
   .pending li a:hover { color: var(--slate-900); }
   .pending .meta { font-size: 12px; color: var(--amber-700); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .weak { margin-top: 28px; font-size: 13px; color: var(--slate-400); }
-  .weak a { color: var(--slate-500); text-decoration: underline; text-underline-offset: 2px; }
+
+  .secondary {
+    margin-top: 28px; font-size: 13px; color: var(--slate-500); line-height: 1.7;
+  }
+  .secondary a {
+    color: var(--slate-500); text-decoration: underline; text-underline-offset: 2px;
+  }
+  .secondary a:hover { color: var(--slate-700); }
+  .secondary .sep { margin: 0 8px; color: var(--slate-300); text-decoration: none; }
+
+  /* 知产负责人弱入口 · MVP 增强 · 不拆 hops · 禁万能 Agent */
+  .goal-weak {
+    margin-top: 28px; padding-top: 20px;
+    border-top: 1px dashed var(--slate-200);
+  }
+  .goal-weak .toggle {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    color: var(--slate-600); padding: 0;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .goal-weak .toggle:hover { color: var(--slate-900); }
+  .goal-weak .meta-lbl {
+    margin-left: 8px; font-size: 11px; font-weight: 500; color: var(--slate-400);
+  }
+  .goal-panel {
+    display: none; margin-top: 14px; padding: 16px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--slate-200); background: var(--slate-50);
+  }
+  .goal-panel.open { display: block; }
+  .goal-panel .lbl {
+    font-size: 12px; font-weight: 650; color: var(--slate-700); margin-bottom: 6px;
+  }
+  .goal-panel .hint {
+    font-size: 12px; color: var(--slate-400); margin-bottom: 12px; line-height: 1.45;
+  }
+  .goal-panel label.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .goal-panel label.field span { font-size: 13px; font-weight: 600; color: var(--slate-700); }
+  .goal-panel input, .goal-panel select {
+    font-family: inherit; font-size: 14px; color: var(--slate-900);
+    padding: 9px 11px; border-radius: var(--radius-md);
+    border: 1px solid var(--slate-200); background: var(--paper);
+  }
+  .goal-panel input:focus, .goal-panel select:focus {
+    outline: none; box-shadow: var(--focus); border-color: var(--slate-300);
+  }
+  .goal-panel .note {
+    font-size: 12px; color: var(--slate-500); line-height: 1.5; margin-top: 8px;
+  }
+  .goal-panel .actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+  .goal-panel .btn-sm {
+    height: 36px; padding: 0 14px; font-size: 13px;
+  }
+
+  .foot {
+    margin-top: 24px; font-size: 12px; color: var(--slate-400); line-height: 1.5;
+  }
+  .foot a { color: var(--slate-500); text-decoration: underline; text-underline-offset: 2px; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--slate-900); color: #fff; padding: 10px 16px;
+    border-radius: var(--radius-md); font-size: 13px; display: none; z-index: 100;
+    max-width: 90vw; text-align: center; line-height: 1.45;
+  }
+  .toast.show { display: block; }
 </style>
 </head>
 <body>
@@ -51,49 +136,46 @@
   <a href="welcome.html">宣传站</a>
   <a href="login.html">登录</a>
   <a href="thin-home.html" class="on">薄入口</a>
+  <a href="cases.html">案盘</a>
   <a href="company-home.html">公司首页</a>
   <a href="dept-workbench.html">部门台</a>
   <a href="pending-confirm.html">确认页</a>
-  <span class="hint">登录后 · 非货架</span>
+  <span class="hint">一屏一主 CTA · 知产负责人弱入口</span>
 </nav>
 
-<div class="wrap">
-  <div class="hello">已登录 · 角色企业</div>
+<div class="wrap" data-home="thin-entry" id="thin-root" data-entry-role="agency">
+  <div class="hello">已登录 · 薄入口</div>
   <h1>外挂知识产权部</h1>
-  <p class="sub">按角色一键去干活；待确认在这，不在本页拍板。</p>
+  <p class="sub" id="role-sub">当前角色：代理 · 一屏一个主入口，待确认在下，不在本页拍板。</p>
 
-  <div class="entries">
-    <a class="entry primary" href="company-home.html">
-      <div class="k">主入口 · 企业</div>
-      <div class="t">当前案子</div>
-      <div class="d">边缘调度器 · 去公司首页</div>
-    </a>
-    <a class="entry" href="company-home.html">
-      <div class="k">开案子</div>
-      <div class="t">新建一条业务线</div>
-      <div class="d">极少字段 → 公司首页（演示链到现案）</div>
-    </a>
-    <a class="entry" href="pending-confirm.html">
-      <div class="k">待确认</div>
-      <div class="t">铃铛 <span class="tabular">2</span></div>
-      <div class="d">交卷后人拍板</div>
+  <div class="role-switch" role="group" aria-label="角色示意（原型切换）">
+    <button type="button" id="role-agency" aria-pressed="true" data-role="agency">代理</button>
+    <button type="button" id="role-enterprise" aria-pressed="false" data-role="enterprise">企业·有案</button>
+    <button type="button" id="role-enterprise-new" aria-pressed="false" data-role="enterprise-new">企业·无案</button>
+  </div>
+
+  <div class="primary-slot" data-testid="home-primary-actions">
+    <a class="primary-cta" id="primary-cta" data-testid="home-action-primary" href="cases.html">
+      <span class="k" id="primary-k">主入口 · 代理</span>
+      <span class="t" id="primary-t">进入案盘</span>
+      <span class="d" id="primary-d">多案流水 · 卡住哪、待确认、期限红点</span>
     </a>
   </div>
 
-  <div class="pending">
+  <div class="pending" data-testid="home-pending-entry">
     <h2>
       待你确认
-      <a class="chip chip-amber tabular" href="pending-confirm.html">共 2</a>
+      <a class="chip chip-amber tabular" href="pending-confirm.html?dept=disclosure">共 2</a>
     </h2>
     <ul>
       <li>
-        <a href="pending-confirm.html">
+        <a href="pending-confirm.html?dept=disclosure">
           <span>【边缘调度器】交底部已交卷 · 待你确认：交底齐套</span>
           <span class="meta">今天</span>
         </a>
       </li>
       <li>
-        <a href="pending-confirm.html">
+        <a href="pending-confirm.html?dept=research">
           <span>【光模块封装】查新部已交卷 · 待你确认：可专利性</span>
           <span class="meta">昨天</span>
         </a>
@@ -101,7 +183,160 @@
     </ul>
   </div>
 
-  <p class="weak">本页无七部墙 / 专家橱窗 / 场景卡。宣传见 <a href="welcome.html">登录前宣传站</a>。</p>
+  <div class="secondary" data-testid="home-secondary-actions" id="secondary-actions">
+    <!-- filled by script -->
+  </div>
+
+  <div class="goal-weak" id="goal">
+    <button type="button" class="toggle" id="goal-toggle" aria-expanded="false" aria-controls="goal-panel">
+      交办业务目标
+    </button>
+    <span class="meta-lbl">知产负责人 · MVP 增强 · 不拆 hops</span>
+    <div class="goal-panel" id="goal-panel" role="region" aria-label="交办业务目标短表">
+      <div class="lbl">交办业务目标（弱入口 · 非第二主 CTA）</div>
+      <p class="hint">出计划后落到公司首页 / 部门；本页不交卷、不拍板。禁万能 Agent 聊天窗顶替。</p>
+      <form id="goal-form">
+        <label class="field">
+          <span>目标一句话</span>
+          <input id="goal-text" name="goal" type="text" placeholder="例：本季度把边缘调度器交底交齐并进查新" autocomplete="off" required />
+        </label>
+        <label class="field">
+          <span>类型占位</span>
+          <select id="goal-type" name="type" aria-label="类型由产品逻辑承接">
+            <option value="">类型由产品逻辑承接</option>
+            <option value="placeholder">（不编造四类清单 · 仅占位）</option>
+          </select>
+        </label>
+        <div class="actions">
+          <button type="submit" class="btn btn-ghost btn-sm">交办（原型）</button>
+        </div>
+        <p class="note">提交后仍进公司首页隐喻（或留在本页提示「计划后落到部门」）——不跳过公司首页，不开万能对话。</p>
+      </form>
+    </div>
+  </div>
+
+  <p class="foot">本页无七部墙 / 专家橱窗 / 场景卡 / 交卷齐套。宣传见 <a href="welcome.html">登录前宣传站</a>。对齐 design <code>82c202c</code>。</p>
 </div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  var ROLES = {
+    agency: {
+      entryRole: 'agency',
+      sub: '当前角色：代理 · 一屏一个主入口，待确认在下，不在本页拍板。',
+      k: '主入口 · 代理',
+      t: '进入案盘',
+      d: '多案流水 · 卡住哪、待确认、期限红点',
+      href: 'cases.html',
+      secondary: [
+        { href: 'case-new.html', label: '开案子' },
+        { href: 'company-home.html', label: '公司首页' }
+      ]
+    },
+    enterprise: {
+      entryRole: 'enterprise',
+      sub: '当前角色：企业 · 有案 · 一屏一个主入口，待确认在下，不在本页拍板。',
+      k: '主入口 · 企业 · 有案',
+      t: '进入本公司',
+      d: '边缘调度器',
+      href: 'company-home.html',
+      secondary: [
+        { href: 'cases.html', label: '案盘 / 多案流水' },
+        { href: 'case-new.html', label: '开案子' }
+      ]
+    },
+    'enterprise-new': {
+      entryRole: 'enterprise',
+      sub: '当前角色：企业 · 无案 · 一屏一个主入口，待确认在下，不在本页拍板。',
+      k: '主入口 · 企业 · 无案',
+      t: '开案子',
+      d: '极少字段 → 公司首页',
+      href: 'case-new.html',
+      secondary: [
+        { href: 'cases.html', label: '案盘 / 多案流水' },
+        { href: 'company-home.html', label: '公司首页' }
+      ]
+    }
+  };
+
+  var root = document.getElementById('thin-root');
+  var subEl = document.getElementById('role-sub');
+  var cta = document.getElementById('primary-cta');
+  var kEl = document.getElementById('primary-k');
+  var tEl = document.getElementById('primary-t');
+  var dEl = document.getElementById('primary-d');
+  var secEl = document.getElementById('secondary-actions');
+  var buttons = document.querySelectorAll('.role-switch button');
+
+  function applyRole(roleKey, pushUrl) {
+    var cfg = ROLES[roleKey] || ROLES.agency;
+    if (!ROLES[roleKey]) roleKey = 'agency';
+
+    root.setAttribute('data-entry-role', cfg.entryRole);
+    root.setAttribute('data-proto-role', roleKey);
+    subEl.textContent = cfg.sub;
+    kEl.textContent = cfg.k;
+    tEl.textContent = cfg.t;
+    dEl.textContent = cfg.d;
+    cta.href = cfg.href;
+
+    buttons.forEach(function (btn) {
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-role') === roleKey ? 'true' : 'false');
+    });
+
+    var html = '弱链：';
+    cfg.secondary.forEach(function (item, i) {
+      if (i) html += '<span class="sep">·</span>';
+      html += '<a href="' + item.href + '">' + item.label + '</a>';
+    });
+    secEl.innerHTML = html;
+
+    if (pushUrl) {
+      var url = new URL(location.href);
+      url.searchParams.set('role', roleKey);
+      history.replaceState(null, '', url.pathname + url.search + url.hash);
+    }
+  }
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      applyRole(btn.getAttribute('data-role'), true);
+    });
+  });
+
+  var params = new URLSearchParams(location.search);
+  var initial = params.get('role');
+  if (!ROLES[initial]) initial = 'agency';
+  applyRole(initial, false);
+
+  // 知产负责人弱入口
+  var toggle = document.getElementById('goal-toggle');
+  var panel = document.getElementById('goal-panel');
+  var form = document.getElementById('goal-form');
+  var toast = document.getElementById('toast');
+
+  function openGoal(open) {
+    panel.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  toggle.addEventListener('click', function () {
+    openGoal(!panel.classList.contains('open'));
+  });
+  if (location.hash === '#goal') openGoal(true);
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var text = (document.getElementById('goal-text').value || '').trim();
+    if (!text) {
+      document.getElementById('goal-text').focus();
+      return;
+    }
+    toast.textContent = '已交办 · 计划后落到部门 · 先进入公司首页（不拆 hops · 非万能 Agent）';
+    toast.classList.add('show');
+    setTimeout(function () { location.href = 'company-home.html'; }, 900);
+  });
+})();
+</script>
 </body>
 </html>
