@@ -1,6 +1,6 @@
-# 外挂知识产权部 · 主路径预览（本机）
+# 虚拟知产公司 · 主路径预览（本机）
 
-**产品**：外挂知识产权部  
+**产品**：虚拟知产公司  
 **路径**：`docs/prototype/main-path-v2/`  
 **权威**：combine `4483d2e` · vision `6aa679e` · pages `baff817` · design（本轮 sync）  
 **取代**：`docs/prototype/main-path/`（旧版保留归档，不覆盖）  
@@ -19,7 +19,7 @@ cd docs/prototype/main-path-v2 && python3 -m http.server 8766
 
 | 文件 | 说明 |
 |---|---|
-| `welcome.html` | 宣传站 · 大标题「外挂知识产权部」· 七部货架 · CTA 登录 |
+| `welcome.html` | 宣传站 · 大标题「虚拟知产公司」· 七部货架 · CTA 登录 |
 | `login.html` | 企业 / 代理演示身份 → 薄入口 |
 | `home.html` | **薄入口**：一主 CTA（顾言持续委托 / 案盘）+「现在需要我处理」轻量轨；无跨案经营台 |
 | `delegate.html` | **持续委托可点链**：提目标 → 计划可调 → 部门执行 → 确认 → 接力 |
@@ -37,7 +37,7 @@ cd docs/prototype/main-path-v2 && python3 -m http.server 8766
 3. **三档**：顶栏切「助手」→ 侧栏与七部地图隐藏（公司页可唤回）；「项目」日常；「专业」工作室占位。  
 4. **两工作台 B**：`dept.html?role=agency` 卷宗三栏；`?role=enterprise` 简版；顶栏「文书/协同」Tab。  
 5. **闸与快照**：未齐套交卷禁用；确认页类型标签；通过后快照；自批禁用。  
-6. **品牌与纸感**：处处「外挂知识产权部」；浅色纸感；无暗色 OS 皮。
+6. **品牌与纸感**：处处「虚拟知产公司」；浅色纸感；无暗色 OS 皮。
 
 ## 约束
 
