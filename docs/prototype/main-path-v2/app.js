@@ -215,6 +215,11 @@
     applyRoleUI(r);
   }
 
+  function tierCueLabel(m) {
+    if (m === 'studio') return '工作室';
+    if (m === 'assistant') return '助手';
+    return '项目';
+  }
   function applyModeUI(m) {
     document.documentElement.dataset.mode = m;
     document.documentElement.dataset.tier = m; // alias for screenshots / CSS
@@ -222,10 +227,23 @@
     document.querySelectorAll('.mode-switch button').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mode === m);
     });
+    document.querySelectorAll('[data-tier-cue]').forEach(el => {
+      el.textContent = m === 'studio' ? '工作室' : '';
+      // cue visible via CSS for studio; keep text for a11y
+      if (m === 'studio') el.textContent = '工作室';
+      else if (el.classList.contains('inline')) el.textContent = tierCueLabel(m);
+      else el.textContent = '';
+    });
     // assistant: hide sidebar + dept map (CSS); project: everyday; studio: denser 卷宗/多案
     document.querySelectorAll('[data-show-mode]').forEach(el => {
       const allowed = el.dataset.showMode.split(/\s+/);
       el.classList.toggle('hidden', !allowed.includes(m));
+    });
+    // Dept: tier classes only — layout via CSS (assistant=slim tree, not hidden)
+    document.querySelectorAll('[data-tier-workbench]').forEach(wb => {
+      wb.classList.toggle('tier-assist', m === 'assistant');
+      wb.classList.toggle('tier-studio', m === 'studio');
+      if (m === 'studio') wb.classList.remove('fold-left');
     });
   }
   function setMode(m) {
@@ -387,7 +405,7 @@
     document.querySelectorAll('[data-pending-fact]').forEach(el => { el.textContent = dept.pendingFact; });
     wireChecklist(key);
 
-    // 协同 ↔ 文书 tabs
+    // face tabs (legacy, if present)
     document.querySelectorAll('[data-face-tab]').forEach(btn => {
       btn.addEventListener('click', () => {
         const face = btn.dataset.faceTab;
@@ -403,12 +421,9 @@
     if (foldBtn && wb) {
       foldBtn.addEventListener('click', () => {
         wb.classList.toggle('fold-left');
-        foldBtn.textContent = wb.classList.contains('fold-left') ? '展开目录' : '收折目录';
+        foldBtn.textContent = wb.classList.contains('fold-left') ? '展开' : '收折';
       });
-      if (role() === 'enterprise') {
-        wb.classList.add('fold-left');
-        foldBtn.textContent = '展开目录';
-      }
+      // Keep three-column skeleton by default (Cursor-like); user may fold left
     }
 
     const focusGate = document.querySelector('[data-focus-gate]');
@@ -416,16 +431,73 @@
       focusGate.addEventListener('click', () => {
         const pane = document.querySelector('[data-gate-pane] .gate-box, #gate-box');
         if (pane) pane.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        // also ensure 文书 face is visible for gate
-        const docTab = document.querySelector('[data-face-tab="doc"]');
-        if (docTab) docTab.click();
       });
     }
 
-    // mark delegation step
-    const d = getDelegation();
-    if (d && d.step === 'execute') {
-      /* stay on execute until handoff */
+    // Editable center: mark dirty on input
+    const editor = document.getElementById('dept-editor');
+    const saveState = document.querySelector('[data-save-state]');
+    const unsavedDot = document.querySelector('[data-unsaved-dot]');
+    const foot = document.querySelector('[data-editor-foot]');
+    let dirty = false;
+    function setDirty(on) {
+      dirty = on;
+      if (saveState) {
+        saveState.textContent = on ? '编辑中' : '已保存';
+        saveState.classList.toggle('is-editing', on);
+      }
+      if (unsavedDot) unsavedDot.hidden = !on;
+      if (foot) foot.textContent = on ? '有未保存修改' : '内容已同步至项目事实库（演示）';
+    }
+    if (editor) {
+      editor.addEventListener('input', () => setDirty(true));
+    }
+    const saveBtn = document.querySelector('[data-save-doc]');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        setDirty(false);
+        toast('新版本已保存（演示）');
+      });
+    }
+
+    // Tree / editor tab sync (demo titles only)
+    function activateDoc(name) {
+      document.querySelectorAll('[data-doc-tab]').forEach(b => {
+        b.classList.toggle('active', b.dataset.docTab === name);
+      });
+      document.querySelectorAll('[data-editor-tab]').forEach(b => {
+        b.classList.toggle('active', b.dataset.editorTab === name);
+      });
+      if (editor && name && name !== '交底书 V3') {
+        const h1 = editor.querySelector('h1');
+        if (h1) h1.textContent = name;
+      }
+    }
+    document.querySelectorAll('[data-doc-tab]').forEach(b => {
+      b.addEventListener('click', () => activateDoc(b.dataset.docTab));
+    });
+    document.querySelectorAll('[data-editor-tab]').forEach(b => {
+      b.addEventListener('click', () => activateDoc(b.dataset.editorTab));
+    });
+
+    // Right-pane chat compose → bubble + optional delegate
+    const chatForm = document.getElementById('dept-chat-form');
+    const chatInput = document.getElementById('dept-chat-input');
+    const feed = document.querySelector('[data-chat-feed]');
+    if (chatForm && chatInput && feed) {
+      chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (!text) return;
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble';
+        bubble.innerHTML = '<strong>我 → 顾言</strong>' + text.replace(/</g, '&lt;');
+        const experts = feed.querySelector('.experts-block');
+        if (experts) feed.insertBefore(bubble, experts);
+        else feed.appendChild(bubble);
+        chatInput.value = '';
+        toast('已纳入本节点指令（演示）');
+      });
     }
   }
 
@@ -778,6 +850,17 @@
     }
   }
 
+  function wireGoalForm(formId, inputId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const goal = (document.getElementById(inputId) || {}).value || '';
+      if (!goal.trim()) { toast('请先填写业务目标'); return; }
+      setDelegation({ goal: goal.trim(), step: 'plan', dept: 'disclosure' });
+      location.href = withRole('delegate.html?step=plan');
+    });
+  }
   function wireHome() {
     document.querySelectorAll('[data-fill]').forEach(b => {
       b.addEventListener('click', () => {
@@ -785,23 +868,30 @@
         if (inp) inp.value = b.dataset.fill;
       });
     });
-    const form = document.getElementById('lead-form');
-    if (form) {
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const goal = (document.getElementById('lead-input') || {}).value || '';
-        if (!goal.trim()) { toast('请先填写业务目标'); return; }
-        setDelegation({ goal: goal.trim(), step: 'plan', dept: 'disclosure' });
-        // walkable: go to plan step — not toast-only
-        location.href = withRole('delegate.html?step=plan');
+    document.querySelectorAll('[data-fill-assist]').forEach(b => {
+      b.addEventListener('click', () => {
+        const inp = document.getElementById('lead-input-assist');
+        if (inp) inp.value = b.dataset.fillAssist;
       });
-    }
+    });
+    wireGoalForm('lead-form', 'lead-input');
+    wireGoalForm('lead-form-assist', 'lead-input-assist');
+  }
+  function wireCompanyPage() {
+    document.querySelectorAll('[data-company-fill]').forEach(b => {
+      b.addEventListener('click', () => {
+        const inp = document.getElementById('company-lead-input');
+        if (inp) inp.value = b.dataset.companyFill;
+      });
+    });
+    wireGoalForm('company-lead-form', 'company-lead-input');
+    wireCompanySnapshot();
   }
 
   window.MPV2 = {
     DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot,
-    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanySnapshot, injectGuyanPresence,
+    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, injectGuyanPresence,
     renderExperts, renderExpertFaces, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
   };
 
@@ -814,6 +904,6 @@
     if (page === 'pending') wirePending();
     if (page === 'delegate') wireDelegate();
     if (page === 'home') wireHome();
-    if (page === 'company') wireCompanySnapshot();
+    if (page === 'company') wireCompanyPage();
   });
 })();

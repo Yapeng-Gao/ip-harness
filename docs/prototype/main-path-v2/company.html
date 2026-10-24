@@ -15,6 +15,7 @@
   <div class="topbar-context">
     <span class="context-label">当前项目</span>
     <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+    <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
     <a class="weak-link" href="welcome.html">官网</a>
@@ -60,13 +61,31 @@
 
   <p class="kicker">一案一公司</p>
   <h1 class="page-title">磁驱泵智能控制系统</h1>
-  <p class="page-sub">七部按交卷物展开。助手档收起部门墙；项目档日常干活；专业档加重卷宗与多案密度。当前部门：交底部。</p>
+  <p class="page-sub" data-show-mode="project">七部按交卷物展开。当前在交底部 · 交底书 V3 未齐套。</p>
+  <p class="page-sub hidden" data-show-mode="assistant">以顾言委托与待确认为主；七部地图已收起，需要时可唤回。</p>
+  <p class="page-sub hidden" data-show-mode="studio">工作室密度：多案卡 + 卷宗元数据加重；七部交卷导航仍在同一底座。</p>
 
+  <!-- 案况一句：状态 / 下一拍板 / 齐套缺口 -->
+  <section class="case-status-strip" aria-label="本案状态">
+    <div class="case-status-main">
+      <span class="tag"><span class="tag-dot"></span>交底部 · 进行中</span>
+      <strong>下一拍板：权属是否归澄明科技</strong>
+      <span class="case-status-gap">齐套缺口 · 缺权属声明 · 阻塞接力</span>
+    </div>
+    <a class="btn btn-ink" href="pending.html?dept=disclosure" data-keep-role>去确认 →</a>
+  </section>
+
+  <!-- 专业档：多案卡默认显 -->
   <div class="studio-density" data-show-mode="studio">
-    <h3>专业档 · 卷宗与多案密度</h3>
-    <p>同一底座加重可见差：多案协同卡 + 七部交卷物更多元数据。不另开第二套产品壳。</p>
+    <div class="studio-density-head">
+      <div>
+        <span class="kicker">工作室 · 多案协同</span>
+        <h3>卷宗与多案密度</h3>
+      </div>
+      <a class="text-btn" href="cases.html" data-keep-role>案盘全部 →</a>
+    </div>
     <div class="studio-case-grid">
-      <a class="studio-case-card" href="dept.html?dept=disclosure" data-keep-role>
+      <a class="studio-case-card is-current" href="dept.html?dept=disclosure" data-keep-role>
         <strong>磁驱泵 · 交底 V3</strong>
         <small>缺权属声明 · 待确认 · 卷宗 12 份</small>
       </a>
@@ -79,9 +98,80 @@
         <small>权利要求齐套中 · 卷宗 7 份</small>
       </a>
     </div>
-    <p style="margin-top:12px"><a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role>打开交底部 · 卷宗三栏 →</a>
-      <a class="btn btn-secondary" href="cases.html" data-keep-role style="margin-left:8px">多案流水 →</a></p>
   </div>
+
+  <!-- 助手档偏重：顾言对话舞台（不空页） -->
+  <section class="company-assist-stage" data-show-mode="assistant" aria-label="顾言对话工作区">
+    <div class="lead-row" style="gap:12px;margin-bottom:12px">
+      <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="44" height="44">
+      <div>
+        <span class="kicker">助手档 · 对话工作区</span>
+        <h2 style="margin:2px 0 4px;font-size:18px">顾言 · 本案持续委托</h2>
+        <p style="margin:0;font-size:13px;color:var(--ink-3)">说目标 → 拆交办。七部地图已收起，仍可从下方事项进部门干活。</p>
+      </div>
+    </div>
+    <form id="company-lead-form" class="goal-form">
+      <input id="company-lead-input" name="goal" placeholder="例如：补齐权属声明并送确认" aria-label="业务目标" required>
+      <button class="btn btn-ink" type="submit">交给顾言 →</button>
+    </form>
+    <div class="chips">
+      <span>快速交办</span>
+      <button type="button" data-company-fill="补齐权属声明并送技术事实确认">补齐权属</button>
+      <button type="button" data-company-fill="把交底书 V3 齐套后接力查新">齐套后接力</button>
+      <button type="button" data-company-fill="核对技术方案关键特征是否完整">核对关键特征</button>
+    </div>
+  </section>
+
+  <!-- 现在需要我处理（三档都有，≥1 可点） -->
+  <section class="company-need-me need-me" aria-label="现在需要我处理">
+    <div class="need-me-head">
+      <div>
+        <span class="kicker">现在需要我处理</span>
+        <h2>待确认 / 待接力</h2>
+      </div>
+      <a class="text-btn" href="pending.html?dept=disclosure" data-keep-role>全部 →</a>
+    </div>
+    <a class="rail-item" href="pending.html?dept=disclosure" data-keep-role>
+      <span class="rail-ord">01</span>
+      <span>
+        <span class="tag"><span class="tag-dot"></span>技术事实</span>
+        <strong>交底部已交卷 · 待你确认：权属是否归澄明科技</strong>
+        <small>阻塞接力 · 今天 14:30</small>
+      </span>
+      <span class="weak-link">去确认 →</span>
+    </a>
+    <a class="rail-item" href="dept.html?dept=disclosure" data-keep-role>
+      <span class="rail-ord">02</span>
+      <span>
+        <span class="tag tag-ink"><span class="tag-dot"></span>齐套缺口</span>
+        <strong>交底书 V3 · 缺权属声明</strong>
+        <small>未齐套不能交卷</small>
+      </span>
+      <span class="weak-link">去部门台 →</span>
+    </a>
+    <a class="rail-item" href="dept.html?dept=oa" data-keep-role data-show-mode="studio project">
+      <span class="rail-ord">03</span>
+      <span>
+        <span class="tag tag-green"><span class="tag-dot"></span>待接力</span>
+        <strong>【膜分离】可看审查答复进度</strong>
+        <small>同公司另一案 · 专业/项目可见</small>
+      </span>
+      <span class="weak-link">查看 →</span>
+    </a>
+  </section>
+
+  <!-- 项目/专业：顾言次级入口（助手档已有主舞台，此处隐藏避免重复） -->
+  <section class="company-delegate-rail" data-show-mode="project studio" aria-label="顾言持续委托">
+    <div class="lead-row" style="gap:12px;margin:0">
+      <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="36" height="36">
+      <div style="flex:1;min-width:0">
+        <span class="kicker">次级 · 持续委托</span>
+        <h2 style="font-size:15px;margin:2px 0 4px">顾言 · 说一句目标</h2>
+        <p style="margin:0;font-size:12px;color:var(--ink-3)">不压过七部导航；用于把一句话目标拆进部门。</p>
+      </div>
+      <a class="btn btn-secondary" href="delegate.html?step=goal" data-keep-role>打开委托 →</a>
+    </div>
+  </section>
 
   <div class="snapshot-card hidden" data-company-snapshot>
     <h3>交付快照 · 最近一次确认</h3>
@@ -90,12 +180,12 @@
   </div>
 
   <div class="dept-map-recall">
-    助手档已收起部门地图，以顾言委托与待确认为主。
-    <button class="btn btn-secondary" type="button" style="margin-left:10px" onclick="MPV2.setMode('project')">唤回七部地图（切到项目档）</button>
+    助手档已收起七部地图，以委托与待确认为主——不是空页。
+    <button class="btn btn-secondary" type="button" style="margin-left:10px" onclick="MPV2.setMode('project')">唤回七部地图</button>
   </div>
 
   <div class="dept-map-wrap" style="margin-top:18px">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:12px;flex-wrap:wrap">
       <div><span class="kicker">七部 · 交卷导航</span><h2 style="margin:4px 0 0;font-size:16px">现在交哪一卷</h2></div>
       <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role>去当前部门 · 交底部 →</a>
     </div>

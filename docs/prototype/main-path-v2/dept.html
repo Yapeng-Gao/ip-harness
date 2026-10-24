@@ -15,6 +15,7 @@
   <div class="topbar-context">
     <span class="context-label">当前项目</span>
     <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+    <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
     <a class="weak-link" href="welcome.html">官网</a>
@@ -56,166 +57,164 @@
     <div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div>
   </div>
 </aside>
-<main class="content">
 
-  <div class="dept-head">
-    <div>
-      <p class="kicker">部门工作台</p>
-      <h1><span data-dept-name>交底部</span></h1>
-      <p class="page-sub" style="margin:0">确认类型：<span class="tag" style="margin-left:4px"><span class="tag-dot"></span><span data-confirm-type>技术事实</span></span></p>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-secondary" type="button" data-fold-left>收折目录</button>
-      <a class="btn btn-ghost" href="company.html" data-keep-role>回公司</a>
-    </div>
+<main class="content content-workbench">
+  <!-- Cursor 三栏骨架：左目录 / 中可编辑产物 / 右对话 -->
+  <div class="workbench workbench-cursor" data-workbench data-tier-workbench>
+
+    <!-- 左：卷宗目录树 -->
+    <aside class="pane file-pane" aria-label="本案目录">
+      <div class="pane-head file-pane-head">
+        <span>本案目录</span>
+        <button class="text-btn" type="button" data-fold-left title="收折目录">收折</button>
+      </div>
+      <div class="file-project-chip">
+        <span class="project-glyph">MP</span>
+        <span><strong>磁驱泵智能控制</strong><small data-dept-name>交底部</small></span>
+      </div>
+      <div class="tree" data-file-tree>
+        <p class="tree-label">交卷物</p>
+        <button type="button" class="active" data-doc-tab="交底书 V3">交底书 V3<span class="unsaved-dot" data-unsaved-dot hidden></span></button>
+        <button type="button" data-doc-tab="权属声明">权属声明（缺）</button>
+        <p class="tree-label">材料</p>
+        <button type="button" data-doc-tab="访谈纪要">访谈纪要 10-20</button>
+        <button type="button" data-doc-tab="前序检索">前序检索摘要</button>
+        <button type="button" data-show-mode="studio" data-doc-tab="附图 F1">附图草图 F1</button>
+        <button type="button" data-show-mode="studio" data-doc-tab="对比文献">对比文献包 R2</button>
+        <button type="button" data-show-mode="studio" data-doc-tab="确认记录">确认记录 · 技术事实</button>
+      </div>
+      <div class="file-pane-foot" data-show-mode="studio project">
+        <strong>卷宗 12 份</strong>
+        <small>缺权属声明 · 阻塞接力</small>
+      </div>
+    </aside>
+
+    <!-- 中：可编辑产物主舞台 -->
+    <section class="pane editor-pane" aria-label="交卷物编辑">
+      <div class="editor-tabs" role="tablist">
+        <button type="button" class="active" data-editor-tab="交底书 V3">交底书 V3<span></span></button>
+        <button type="button" data-editor-tab="权属声明">权属声明</button>
+        <button type="button" data-editor-tab="访谈纪要" data-show-mode="studio">访谈纪要</button>
+      </div>
+      <div class="editor-toolbar">
+        <div>
+          <button type="button" data-editor-mode="edit">编辑</button>
+          <button type="button" data-toast="批注模式（演示）">批注</button>
+          <button type="button" data-toast="版本对比（演示）">对比版本</button>
+        </div>
+        <span class="editor-save-state" data-save-state>已保存</span>
+      </div>
+
+      <!-- 企业简版重心条：事项/事实/决策，不替代中栏编辑器 -->
+      <div class="lead-workbench" data-show-role="enterprise">
+        <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="28" height="28">
+        <div>
+          <strong>顾言 · 知产负责人</strong>
+          <p>交底书部正在完善文本。你只需处理关键技术事实；齐套与拍板在右侧。</p>
+        </div>
+        <div class="lead-facts" aria-label="企业简版重心">
+          <span><em>事项</em>补齐权属</span>
+          <span><em>事实</em>MP-300 已确认</span>
+          <span><em>决策</em>权属待拍板</span>
+        </div>
+      </div>
+
+      <div class="document-scroll">
+        <article class="document" id="dept-editor" contenteditable="true" spellcheck="false" aria-label="交卷物正文 · 可编辑">
+          <div class="doc-meta">
+            <span>交卷物 · <span data-deliverable>技术交底书 V3</span></span>
+            <span>版本草稿 · 演示可改</span>
+          </div>
+          <h1 data-deliverable>技术交底书 V3</h1>
+          <p class="doc-lead">一种磁驱泵智能控制系统的技术交底。点此正文即可编辑；右侧对话与齐套闸同步本案。</p>
+          <h2>一、技术领域</h2>
+          <p>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判，适用于工业磁驱泵产线。</p>
+          <h2>二、背景问题</h2>
+          <p>现有方案在负载突变时超调明显，且缺少可验证的替代实施方式描述，影响交底齐套与后续查新。</p>
+          <h2>三、技术方案</h2>
+          <p>1. 双环控制：外环流量、内环转速；采样周期可配置。</p>
+          <p>2. 故障特征库：振动频谱阈值触发降功率保护。</p>
+          <p class="fact-highlight">3. 量产标定流程：MP-300 线体工装三点校验。<span>已确认事实 · 可编辑标注</span></p>
+          <h2>四、技术效果</h2>
+          <p>负载阶跃下超调降低；可复现实验记录见附件。权属声明齐套后可交卷送确认。</p>
+          <div class="doc-comment">
+            <strong>专家批注 · 交底书撰写专家</strong>
+            <p>权属声明仍缺。建议由法务出具模板后你确认——建议稿 ≠ 确认。</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="editor-footer">
+        <span data-editor-foot>内容已同步至项目事实库（演示）</span>
+        <div>
+          <button class="btn btn-secondary" type="button" data-save-doc>保存版本</button>
+          <a class="btn btn-ink" href="pending.html?dept=disclosure" data-keep-role>提交确认 →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 右：对话 / 确认 / 齐套 -->
+    <aside class="pane chat-pane" data-gate-pane aria-label="对话与确认">
+      <div class="right-stack">
+        <div class="pane-head chat-pane-head">
+          <div>
+            <span class="kicker" style="display:block;margin-bottom:2px">本节点</span>
+            <strong data-dept-name>交底部</strong>
+          </div>
+          <span class="tag"><span class="tag-dot"></span><span data-confirm-type>技术事实</span></span>
+        </div>
+
+        <div class="chat-bits" data-chat-feed>
+          <div class="chat-bubble">
+            <strong>交底书撰写专家 · 建议稿</strong>
+            权属声明仍缺。建议由法务出具模板后你确认——建议稿 ≠ 确认。
+          </div>
+          <div class="chat-bubble">
+            <strong>顾言 · 知产负责人</strong>
+            齐套后我会把本关送「待你确认」。类型：<span data-confirm-type>技术事实</span>。
+          </div>
+          <div class="chat-bubble chat-bubble-soft">
+            <strong>待确认预览</strong>
+            <span data-pending-fact>权属是否归澄明科技，且无职务发明争议？</span>
+            <small style="display:block;margin-top:6px;color:var(--ink-3)">拍板在确认页；本栏只预览。</small>
+          </div>
+          <div class="experts-block">
+            <div class="pane-subhead">本部门专家</div>
+            <div data-experts></div>
+          </div>
+        </div>
+
+        <form class="chat-compose" id="dept-chat-form" autocomplete="off">
+          <input id="dept-chat-input" type="text" placeholder="跟顾言说一句… 或交办本节点" aria-label="对话输入">
+          <button class="btn btn-ink btn-sm" type="submit">发送</button>
+        </form>
+
+        <div class="gate-box" id="gate-box">
+          <div class="pane-head" style="padding:0 0 8px;border:0">齐套清单</div>
+          <div class="checklist" data-checklist></div>
+          <p class="missing" data-missing-live>缺项：权属声明</p>
+          <p class="gate-meta">齐套 <span class="tabular" data-check-count>0 / 4</span> · 未齐套交卷禁用</p>
+          <button class="handoff-button" type="button" data-submit-gate disabled>
+            <span><strong>交卷 · 送待你确认</strong><small>齐套后可点 · 拍板在确认页</small></span>
+          </button>
+        </div>
+      </div>
+    </aside>
   </div>
 
-  <!-- At-a-glance strip: task / deliverable / kit / confirm path -->
-  <div class="task-strip" aria-label="当前节点一览">
+  <!-- 窄屏/辅助：任务条压在工作台外可选 -->
+  <div class="task-strip task-strip-compact" aria-label="当前节点一览">
     <div class="task-cell">
       <span class="task-label">当前任务</span>
       <strong data-current-task>补齐权属声明后交卷</strong>
     </div>
     <div class="task-cell">
-      <span class="task-label">交卷物</span>
-      <strong data-deliverable>技术交底书 V3</strong>
-    </div>
-    <div class="task-cell">
       <span class="task-label">齐套</span>
-      <strong><span class="tabular" data-check-count>0 / 4</span> · <span data-missing-live>缺项：权属声明</span></strong>
+      <strong><span class="tabular" data-check-count>0 / 4</span></strong>
     </div>
     <div class="task-cell task-cell-cta">
-      <span class="task-label">下一步</span>
-      <button class="btn btn-ink btn-sm" type="button" data-focus-gate>去齐套并交卷</button>
-    </div>
-  </div>
-
-  <div class="next-hint" data-next-hint>
-    <strong>下一步：</strong>在右侧勾选齐套清单（含权属声明）→ 启用「交卷 · 送待你确认」。拍板在确认页，不在本台自批。
-  </div>
-
-  <div class="face-tabs" role="tablist" aria-label="文书与协同">
-    <button type="button" class="active" data-face-tab="doc">
-      文书 <small>交卷物正文</small>
-    </button>
-    <button type="button" data-face-tab="collab">
-      协同 <small>计划 · 专家 · 确认预览</small>
-    </button>
-  </div>
-
-  <div data-face="doc">
-    <div class="workbench" data-workbench>
-      <aside class="pane file-pane">
-        <div class="pane-head">本案目录</div>
-        <div class="tree">
-          <button type="button" class="active">交底书 V3（当前）</button>
-          <button type="button">访谈纪要 10-20</button>
-          <button type="button">权属声明（缺）</button>
-          <button type="button">前序检索摘要</button>
-        </div>
-      </aside>
-
-      <section class="pane" style="display:flex;flex-direction:column;min-width:0">
-        <div data-view="agency">
-          <div class="pane-head"><span>文书 · 产出物</span><span class="pane-meta" data-deliverable>技术交底书 V3</span></div>
-          <div class="doc-body">
-            <h2 data-deliverable>技术交底书 V3</h2>
-            <p><strong>技术领域。</strong>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判。</p>
-            <p><strong>背景问题。</strong>现有方案在负载突变时超调明显，且缺少可验证的替代实施方式描述。</p>
-            <p><strong>技术方案。</strong></p>
-            <ul>
-              <li>双环控制：外环流量、内环转速；采样周期可配置。</li>
-              <li>故障特征库：振动频谱阈值触发降功率保护。</li>
-              <li>量产标定流程：MP-300 线体工装三点校验。</li>
-            </ul>
-            <p><strong>技术效果。</strong>负载阶跃下超调降低；可复现实验记录见附件。</p>
-            <p class="doc-footnote">齐套与交卷在右侧；本栏专注阅读文书。</p>
-          </div>
-        </div>
-        <div class="hidden" data-view="enterprise" style="overflow:auto">
-          <div class="pane-head">事项 · 已确认事实 · 待决策</div>
-          <div class="simple-block">
-            <header><h2>事项</h2><span class="tag tag-ink"><span class="tag-dot"></span>进行中</span></header>
-            <div class="body">
-              <div class="simple-item"><div><strong>补齐权属声明</strong><p>交底部缺项；未齐套不能交卷。</p></div></div>
-              <div class="simple-item"><div><strong>确认技术方案完整</strong><p>专家建议稿已出，待你核对关键特征。</p></div></div>
-            </div>
-          </div>
-          <div class="simple-block">
-            <header><h2>已确认事实</h2></header>
-            <div class="body">
-              <div class="simple-item"><div><strong>应用场景 = 工业磁驱泵控制系统</strong><p>访谈 10-20 已确认。</p></div></div>
-              <div class="simple-item"><div><strong>目标产品线 MP-300</strong><p>量产标定三点校验可复现。</p></div></div>
-            </div>
-          </div>
-          <div class="simple-block">
-            <header><h2>待决策</h2><span class="tag"><span class="tag-dot"></span>技术事实</span></header>
-            <div class="body">
-              <div class="simple-item"><div><strong>权属是否归澄明科技？</strong><p>影响交底书能否作为后续输入。拍板在确认页，不在本栏自批。</p></div></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <aside class="pane" data-gate-pane>
-        <div class="right-stack">
-          <div class="pane-head">本节点 · 协同与交卷</div>
-          <div class="chat-bits">
-            <div class="chat-bubble"><strong>交底书撰写专家 · 建议稿</strong>权属声明仍缺。建议由法务出具模板后你确认——建议稿 ≠ 确认。</div>
-            <div class="chat-bubble"><strong>顾言 · 知产负责人</strong>齐套后我会把本关送「待你确认」。类型：技术事实。</div>
-            <div class="experts-block">
-              <div class="pane-subhead">本部门专家</div>
-              <div data-experts></div>
-            </div>
-          </div>
-          <div class="gate-box" id="gate-box">
-            <div class="pane-head" style="padding:0 0 8px;border:0">齐套清单</div>
-            <div class="checklist" data-checklist></div>
-            <p class="missing" data-missing-live>缺项：权属声明</p>
-            <p class="gate-meta">齐套 <span class="tabular" data-check-count>0 / 4</span> · 未齐套交卷禁用</p>
-            <button class="handoff-button" type="button" data-submit-gate disabled>
-              <span><strong>交卷 · 送待你确认</strong><small>齐套后可点 · 拍板在确认页</small></span>
-            </button>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </div>
-
-  <div class="hidden" data-face="collab">
-    <div class="workbench" style="grid-template-columns:minmax(0,1fr) 300px">
-      <section class="pane collab-panel">
-        <h3>协同 · 计划 / 专家 / 确认预览</h3>
-        <p class="collab-lead">与文书同页切换，共享当前节点与版本。</p>
-        <div class="simple-block">
-          <header><h2>本节点计划</h2></header>
-          <div class="body">
-            <div class="simple-item"><div><strong>1. 访谈补齐替代实施方式</strong><p>已完成</p></div></div>
-            <div class="simple-item"><div><strong>2. 出具权属声明</strong><p>进行中 · 阻塞交卷</p></div></div>
-            <div class="simple-item"><div><strong>3. 送技术事实确认</strong><p>齐套后进入待你确认</p></div></div>
-          </div>
-        </div>
-        <div class="simple-block">
-          <header><h2>专家</h2></header>
-          <div class="body" data-experts></div>
-        </div>
-      </section>
-      <aside class="pane" data-gate-pane>
-        <div class="right-stack">
-          <div class="pane-head">确认预览</div>
-          <div class="chat-bits">
-            <div class="chat-bubble"><strong>待你确认 · <span data-confirm-type>技术事实</span></strong><span data-pending-fact style="display:block;margin-top:4px">权属是否归澄明科技，且无职务发明争议？</span></div>
-            <p class="collab-lead">拍板仍在确认页；本面只预览。质检勾选 ≠ 确认权。</p>
-          </div>
-          <div class="gate-box">
-            <div class="checklist" data-checklist></div>
-            <p class="missing" data-missing-live>缺项：权属声明</p>
-            <button class="handoff-button" type="button" data-submit-gate disabled>
-              <span><strong>交卷 · 送待你确认</strong><small>与文书面共享齐套闸</small></span>
-            </button>
-          </div>
-        </div>
-      </aside>
+      <button class="btn btn-ink btn-sm" type="button" data-focus-gate>去齐套</button>
+      <a class="btn btn-ghost btn-sm" href="company.html" data-keep-role>回公司</a>
     </div>
   </div>
 </main>
