@@ -61,32 +61,63 @@
   <div data-show-role="enterprise">
     <p class="kicker">登录后</p>
     <h1 class="page-title">早上好，陈宇。</h1>
-    <p class="page-sub">把目标交给顾言，走完计划 → 执行 → 确认 → 接力。下方是现在需要你处理的事项。</p>
+    <p class="page-sub">主入口进本公司或开案子；顾言持续委托在同区次级。下方是现在需要你处理的事项。</p>
 
-    <section class="primary-zone" data-home="thin-entry" data-entry-role="enterprise" aria-label="持续委托入口">
-      <div class="lead-row">
-        <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="44" height="44">
-        <div>
-          <span class="kicker">知产负责人 · 持续委托</span>
-          <h2>顾言 · 说一句目标</h2>
-          <p>提目标 → 计划可调 → 部门执行 → 确认 → 接力。关键节点由你拍板。</p>
+    <section class="primary-zone" data-home="thin-entry" data-entry-role="enterprise" aria-label="工作入口">
+      <!-- 有案主 CTA -->
+      <div data-home-case="has">
+        <div class="lead-row">
+          <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="" width="44" height="44">
+          <div>
+            <span class="kicker">企业研发 · 有案</span>
+            <h2>进入本公司，按交卷推进</h2>
+            <p>一案一公司。七部按交卷物展开；关键节点由你拍板。</p>
+          </div>
+        </div>
+        <div class="entry-primary-actions" data-testid="home-action-primary">
+          <a class="btn btn-ink" href="company.html" data-keep-role>进入本公司 →</a>
         </div>
       </div>
-      <form id="lead-form" class="goal-form" data-testid="home-action-primary">
-        <input id="lead-input" name="goal" placeholder="例如：下周要交这件的权属声明" aria-label="业务目标" required>
-        <button class="btn btn-ink" type="submit">交给顾言，开始委托 →</button>
-      </form>
-      <div class="chips">
-        <span>快速交办</span>
-        <button type="button" data-fill="下周要交这件的权属声明">权属声明</button>
-        <button type="button" data-fill="整理一项磁驱泵控制技术，评估如何保护">整理成果</button>
-        <button type="button" data-fill="新产品上市前排查 FTO 风险">上市前排查</button>
-        <button type="button" data-fill="收到第一次审查意见，需要答复策略">收到审查意见</button>
+      <!-- 无案主 CTA -->
+      <div class="hidden" data-home-case="none">
+        <div class="lead-row">
+          <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="" width="44" height="44">
+          <div>
+            <span class="kicker">企业研发 · 无案</span>
+            <h2>先开一条业务线</h2>
+            <p>三步立案子，再进公司首页。也可把目标交给顾言代拆。</p>
+          </div>
+        </div>
+        <div class="entry-primary-actions" data-testid="home-action-primary-nocase">
+          <a class="btn btn-ink" href="case-new.html" data-keep-role>开案子 →</a>
+        </div>
       </div>
-      <p class="primary-cta-note">同区弱链：
-        <a class="weak-link" href="company.html" data-keep-role>进入本公司</a> ·
-        <a class="weak-link" href="case-new.html" data-keep-role>开新案子</a> ·
-        <a class="weak-link" href="cases.html" data-keep-role>全部项目</a>
+      <!-- 顾言持续委托：同区次级，不压过主按钮 -->
+      <div class="secondary-delegate" aria-label="顾言持续委托">
+        <div class="lead-row" style="gap:12px">
+          <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="36" height="36">
+          <div>
+            <span class="kicker">次级 · 持续委托</span>
+            <h2 style="font-size:15px;margin:2px 0 4px">顾言 · 说一句目标</h2>
+            <p style="margin:0;font-size:12px;color:var(--ink-3)">提目标 → 计划可调 → 部门执行 → 确认 → 接力。</p>
+          </div>
+        </div>
+        <form id="lead-form" class="goal-form">
+          <input id="lead-input" name="goal" placeholder="例如：下周要交这件的权属声明" aria-label="业务目标" required>
+          <button class="btn btn-secondary" type="submit">交给顾言 →</button>
+        </form>
+        <div class="chips">
+          <span>快速交办</span>
+          <button type="button" data-fill="下周要交这件的权属声明">权属声明</button>
+          <button type="button" data-fill="整理一项磁驱泵控制技术，评估如何保护">整理成果</button>
+          <button type="button" data-fill="新产品上市前排查 FTO 风险">上市前排查</button>
+          <button type="button" data-fill="收到第一次审查意见，需要答复策略">收到审查意见</button>
+        </div>
+      </div>
+      <p class="primary-cta-note">弱链：
+        <a class="weak-link" href="cases.html" data-keep-role>全部项目</a> ·
+        <a class="weak-link" href="case-new.html" data-keep-role data-home-case-link="has">开新案子</a> ·
+        <a class="weak-link" href="#" data-toggle-has-case>切换有案/无案演示</a>
       </p>
     </section>
 
@@ -139,12 +170,22 @@
         <div>
           <span class="kicker">代理所工作台</span>
           <h2>进入案盘，按期限推进交付</h2>
-          <p>同案协同，不是旁路聊天窗。需要交办目标时，可走顾言持续委托。</p>
+          <p>同案协同。先看多案流水；需要交办目标时，再用顾言持续委托。</p>
         </div>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:10px" data-testid="home-action-primary">
-        <a class="btn btn-primary" href="cases.html" data-keep-role>进入案盘 →</a>
-        <a class="btn btn-secondary" href="delegate.html?step=goal" data-keep-role>顾言持续委托</a>
+      <div class="entry-primary-actions" data-testid="home-action-primary">
+        <a class="btn btn-ink" href="cases.html" data-keep-role>进入案盘 →</a>
+      </div>
+      <div class="secondary-delegate" aria-label="顾言持续委托">
+        <div class="lead-row" style="gap:12px">
+          <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="36" height="36">
+          <div>
+            <span class="kicker">次级 · 持续委托</span>
+            <h2 style="font-size:15px;margin:2px 0 4px">顾言 · 交办目标</h2>
+            <p style="margin:0;font-size:12px;color:var(--ink-3)">不替代案盘；用于把一句话目标拆进部门。</p>
+          </div>
+        </div>
+        <p style="margin:10px 0 0"><a class="btn btn-secondary" href="delegate.html?step=goal" data-keep-role>打开顾言委托 →</a></p>
       </div>
       <p class="primary-cta-note">弱链：
         <a class="weak-link" href="case-new.html" data-keep-role>开新案子</a> ·

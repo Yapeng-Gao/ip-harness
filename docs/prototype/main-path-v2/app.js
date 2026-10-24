@@ -162,6 +162,24 @@
   function mode() {
     return localStorage.getItem('mpv2-mode') || 'project';
   }
+  function hasCase() {
+    if (qs('nocase') === '1') return false;
+    if (qs('hascase') === '1') return true;
+    const v = localStorage.getItem('mpv2-has-case');
+    return v === null ? true : v === '1';
+  }
+  function setHasCase(on) {
+    localStorage.setItem('mpv2-has-case', on ? '1' : '0');
+    applyHasCaseUI();
+  }
+  function applyHasCaseUI() {
+    const on = hasCase();
+    document.documentElement.dataset.hasCase = on ? '1' : '0';
+    document.querySelectorAll('[data-home-case]').forEach(el => {
+      const want = el.dataset.homeCase; // has | none
+      el.classList.toggle('hidden', want === 'has' ? !on : on);
+    });
+  }
   function withRole(href) {
     const u = new URL(href, location.href);
     u.searchParams.set('role', role());
@@ -199,10 +217,12 @@
 
   function applyModeUI(m) {
     document.documentElement.dataset.mode = m;
+    document.documentElement.dataset.tier = m; // alias for screenshots / CSS
+    document.body.dataset.mode = m;
     document.querySelectorAll('.mode-switch button').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mode === m);
     });
-    // assistant: hide sidebar + dept map (CSS); project: normal; studio: placeholder
+    // assistant: hide sidebar + dept map (CSS); project: everyday; studio: denser 卷宗/多案
     document.querySelectorAll('[data-show-mode]').forEach(el => {
       const allowed = el.dataset.showMode.split(/\s+/);
       el.classList.toggle('hidden', !allowed.includes(m));
@@ -248,8 +268,11 @@
 
   function wireShell() {
     if (qs('role')) localStorage.setItem('mpv2-role', qs('role'));
+    if (qs('nocase') === '1') localStorage.setItem('mpv2-has-case', '0');
+    if (qs('hascase') === '1') localStorage.setItem('mpv2-has-case', '1');
     applyRoleUI(role());
     applyModeUI(mode());
+    applyHasCaseUI();
     document.querySelectorAll('.role-switch button').forEach(btn => {
       btn.addEventListener('click', () => {
         setRole(btn.dataset.role);
@@ -258,6 +281,13 @@
     });
     document.querySelectorAll('.mode-switch button').forEach(btn => {
       btn.addEventListener('click', () => setMode(btn.dataset.mode));
+    });
+    document.querySelectorAll('[data-toggle-has-case]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        setHasCase(!hasCase());
+        toast(hasCase() ? '演示：企业有案 → 主 CTA「进入本公司」' : '演示：企业无案 → 主 CTA「开案子」');
+      });
     });
     document.querySelectorAll('[data-toast]').forEach(el => {
       el.addEventListener('click', (e) => {
@@ -769,7 +799,7 @@
   }
 
   window.MPV2 = {
-    DEPTS, DEPT_ORDER, role, setRole, mode, setMode, qs, toast, withRole,
+    DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanySnapshot, injectGuyanPresence,
     renderExperts, renderExpertFaces, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo

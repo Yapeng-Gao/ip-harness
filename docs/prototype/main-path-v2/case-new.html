@@ -75,14 +75,14 @@
     document.getElementById('new-case').addEventListener('submit', (e) => {
       e.preventDefault();
       if (!document.getElementById('case-name').value.trim()) return;
-      location.href = MPV2.withRole('company.html');
+      MPV2.setHasCase(true); location.href = MPV2.withRole('company.html');
     });
     document.getElementById('create-delegate').addEventListener('click', () => {
       const name = document.getElementById('case-name').value.trim();
       const goal = document.getElementById('case-goal').value.trim() || name;
       if (!name) { MPV2.toast('请填写案名'); return; }
       MPV2.setDelegation({ goal, step: 'plan', dept: 'disclosure' });
-      location.href = MPV2.withRole('delegate.html?step=plan');
+      MPV2.setHasCase(true); location.href = MPV2.withRole('delegate.html?step=plan');
     });
   });
   </script>
