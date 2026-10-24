@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>部门台 · 外挂知识产权部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="shell.css">
+</head>
+
+<body data-page="dept" data-reload-on-role="1">
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="home.html"><span class="brand-mark">外</span><span class="brand-copy"><strong>外挂知识产权部</strong><small>IP COMPANY</small></span></a>
+  <div class="topbar-context">
+    <span class="context-label">当前项目</span>
+    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+  </div>
+  <div class="topbar-actions">
+    <button class="search-trigger" type="button" data-toast="搜索演示"><span>⌕</span><span>搜索项目、文件或部门</span><kbd>⌘ K</kbd></button>
+    <a href="welcome.html" style="font-size:12px;color:var(--ink-3)">官网</a>
+    <button class="icon-btn notice-button" type="button" data-toast="有待确认" aria-label="通知">🔔<span></span></button>
+    <div class="mode-switch">
+      <button type="button" data-mode="assistant">助手</button>
+      <button type="button" data-mode="project" class="active">项目</button>
+      <button type="button" data-mode="studio">专业</button>
+    </div>
+    <div class="role-switch" aria-label="切换角色">
+      <button type="button" data-role="enterprise">企业研发</button>
+      <button type="button" data-role="agency">代理所</button>
+    </div>
+    <span class="avatar avatar-human avatar-small">陈</span>
+  </div>
+</header>
+<div class="app-main" style="min-height:calc(100dvh - 60px)">
+<main class="content content-workbench" style="flex:1">
+<section class="workspace-frame" data-workbench>
+
+  <header class="workspace-switchbar">
+    <div class="workspace-title">
+      <a class="icon-btn" href="company.html" aria-label="返回">←</a>
+      <span class="project-glyph">MP</span>
+      <div>
+        <strong>磁驱泵智能控制系统</strong>
+        <small>RD-2026-017 · <span data-dept-name>交底部</span></small>
+      </div>
+    </div>
+    <div class="work-view-switch" aria-label="视图提示">
+      <span style="font-size:10px;color:var(--ink-3);padding:0 8px" data-show-role="agency">代理 · 卷宗三栏</span>
+      <span style="font-size:10px;color:var(--ink-3);padding:0 8px" data-show-role="enterprise" class="hidden">企业 · 简版重心</span>
+    </div>
+    <div class="workspace-live">
+      <span class="live-dot"></span>
+      <span><strong>交底事实完善</strong><small>顾言持续协调中</small></span>
+    </div>
+    <button type="button" class="btn btn-secondary" data-fold-left style="min-height:31px;font-size:10px;margin-left:8px">收折目录</button>
+  </header>
+
+  <!-- ========== AGENCY: Cursor dossier 3-col ========== -->
+  <section class="workbench" data-view="agency" style="height:calc(100% - 62px)">
+    <aside class="file-pane">
+      <div class="pane-top">
+        <a class="back-link" href="company.html">← 公司首页</a>
+      </div>
+      <div class="file-project">
+        <span class="project-glyph">MP</span>
+        <div><strong>磁驱泵智能控制系统</strong><small>RD-2026-017</small></div>
+      </div>
+      <div class="file-stage"><span>研发项目状态</span><span class="status status-orange"><span class="status-dot"></span>交底书完善</span></div>
+      <div class="workspace-scope"><span>⛨</span><span><strong>代理所私有空间</strong><small>客户仅见交付快照</small></span></div>
+      <div class="file-tree">
+        <p>项目资料</p>
+        <button type="button" class="active"><span>📄</span><span>交底书 V3</span><span class="unsaved-dot"></span></button>
+        <button type="button"><span>📄</span><span>检索报告</span></button>
+        <button type="button"><span>📄</span><span>权属声明草稿</span></button>
+        <button type="button"><span>📄</span><span>审批记录</span></button>
+        <p>过程资产</p>
+        <button type="button"><span>📁</span><span>研发原始资料</span><small>8</small></button>
+        <button type="button"><span>📁</span><span>检索证据库</span><small>23</small></button>
+      </div>
+      <div class="file-history"><span>⎇</span><span><strong>所有修改都有版本</strong><small>最近保存：刚刚</small></span></div>
+    </aside>
+
+    <div class="editor-pane">
+      <div class="editor-tabs">
+        <button type="button" class="active">交底书 V3<span></span></button>
+        <button type="button">检索报告</button>
+        <button type="button">审批记录</button>
+      </div>
+      <div class="editor-toolbar">
+        <div><button type="button">✎ 编辑</button><button type="button">批注</button><button type="button">对比版本</button></div>
+        <span>✓ 已保存</span>
+      </div>
+      <div class="document-scroll">
+        <article class="document">
+          <div class="doc-meta"><span>技术交底书 · V3</span><span class="status status-orange"><span class="status-dot"></span>1 处待确认</span></div>
+          <h1>一种磁驱泵的智能控制方法及系统</h1>
+          <p class="doc-lead">本交底书用于向代理师完整说明技术方案。请重点确认黄色标记的技术事实，其他文字由交底部维护。</p>
+          <h2>一、要解决的技术问题</h2>
+          <p>现有磁驱泵通常在温度或振动参数超过固定阈值时触发报警。由于启动、稳态运行和变载荷状态下的正常参数范围不同，固定阈值容易产生误报，或者无法及时识别早期异常。</p>
+          <h2>二、核心技术方案</h2>
+          <p>控制器分别获取温度传感器、振动传感器和转速传感器的数据，先根据温度参数与振动参数确定初始异常评分，再根据当前转速所对应的运行工况，对初始异常评分进行自适应修正。</p>
+          <p>当目标异常评分满足预设条件时，控制器调整磁驱泵的转速或触发停机保护，并记录对应的工况与参数变化。</p>
+          <div class="doc-comment"><p><strong>技术访谈专家</strong>：这里已补充「先评分、再按工况修正」的处理顺序。请确认它与实际程序一致。</p><span class="doc-location">当前位置</span></div>
+          <h2>三、达到的技术效果</h2>
+          <p>通过区分运行工况修正异常评分，可以降低启动和变载荷阶段的误报，并提高早期异常识别的及时性。</p>
+          <p class="fact-highlight">在 2.5 kW 磁驱泵样机的稳态运行测试中，异常识别平均时间由 18 秒缩短至 11.7 秒，误报率由 8.2% 降至 3.1%。<span>已确认测试样本与工况</span></p>
+          <h2>四、可替代实施方式</h2>
+          <p>异常评分可以采用加权求和、规则模型或经训练的机器学习模型获得；传感器数据可以采用同步采样，也可以按设定时间窗口对齐。</p>
+          <h2>五、权属声明</h2>
+          <p class="fact-highlight">本申请涉及技术方案由澄明科技有限公司员工在本职工作中完成，权属归公司所有。<span>待确认 · 当前缺项</span></p>
+        </article>
+      </div>
+      <div class="editor-footer">
+        <span>内容已同步至项目事实库</span>
+        <div><button class="btn btn-secondary" type="button" data-toast="新版本已保存">保存版本</button></div>
+      </div>
+    </div>
+
+    <aside class="department-pane">
+      <div class="department-head">
+        <div><span class="section-kicker">当前负责部门</span><h3 data-dept-name>交底部</h3></div>
+      </div>
+      <div class="working-team" data-experts></div>
+      <div class="department-progress">
+        <div><span>本节点齐套</span><strong data-check-count>3 / 4</strong></div>
+        <div class="progress-track"><span data-progress style="width:75%"></span></div>
+      </div>
+      <div class="department-feed">
+        <div class="feed-item">
+          <span class="avatar avatar-small">访</span>
+          <div>
+            <p><strong>技术访谈专家</strong><time>10:24</time></p>
+            <p>我把「响应更快」改写成了可验证的技术效果，权属声明仍需企业确认。</p>
+            <button type="button">定位到文档 ↗</button>
+          </div>
+        </div>
+        <div class="feed-item">
+          <span class="avatar avatar-small avatar-human">林</span>
+          <div>
+            <p><strong>林岚 · 代理师</strong><time>10:31</time></p>
+            <p>从申请策略看，建议保留「异常评分自适应修正」这一层。它可能是后续答复创造性的关键。</p>
+          </div>
+        </div>
+        <div class="feed-item">
+          <span class="avatar avatar-small">顾</span>
+          <div>
+            <p><strong>顾言 · 知产负责人</strong><time>10:40</time></p>
+            <p>齐套还差权属声明。勾选完成后即可交卷，进入待你确认。</p>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 16px 8px">
+        <div class="pane-section-title" style="margin-bottom:8px"><span>交卷齐套</span></div>
+        <div class="checklist" data-checklist></div>
+      </div>
+      <a class="handoff-button" href="#" data-submit-gate disabled>
+        <span>⎇</span>
+        <span><strong>交卷 · <span data-deliverable>技术交底书 V3</span></strong><small>缺项时不可用 · 交卷后进入待你确认</small></span>
+        <span>→</span>
+      </a>
+    </aside>
+  </section>
+
+  <!-- ========== ENTERPRISE: simplified center ========== -->
+  <section class="collaboration-workspace hidden" data-view="enterprise" style="height:calc(100% - 62px)">
+    <aside class="node-pane">
+      <div class="node-pane-head">
+        <span class="section-kicker">当前业务节点</span>
+        <h2>交底事实完善</h2>
+        <p>补齐技术事实与权属，形成可供撰写部接手的交底书</p>
+      </div>
+      <div class="node-scope"><span>⛨</span><span><strong>企业私有空间</strong><small>确认交付后方可共享</small></span></div>
+      <div class="node-path">
+        <div class="pane-section-title"><span>节点路径</span><small>2 已完成</small></div>
+        <div class="node-step done"><span>✓</span><div><strong>查新立项</strong><small>交付已归档</small></div></div>
+        <div class="node-step active"><span>2</span><div><strong>交底形成</strong><small><span data-dept-name>交底部</span>负责</small></div><span class="status status-orange"><span class="status-dot"></span>当前</span></div>
+        <div class="node-step"><span>3</span><div><strong>撰写附图</strong><small>等待接力条件满足</small></div></div>
+        <div class="node-step"><span>4</span><div><strong>递交答复</strong><small>等待接力条件满足</small></div></div>
+      </div>
+    </aside>
+
+    <div class="enterprise-simple-center collab-main">
+      <div class="collab-scroll">
+        <section class="gu-plan-block">
+          <div class="gu-plan-head">
+            <span class="avatar">顾</span>
+            <div><span class="section-kicker">知产负责人 · 持续协调</span><h2>顾言的工作计划</h2></div>
+          </div>
+          <p>我会组织交底部补齐事实、完成检索对照和撰写。你不需要盯每个专家，只需确认我标出的技术事实与权属。</p>
+          <div class="plan-sequence">
+            <div class="done"><span>✓</span><strong>读取研发资料</strong></div>
+            <div class="done"><span>✓</span><strong>访谈补齐事实</strong></div>
+            <div class="active"><span>3</span><strong>确认权属声明</strong></div>
+            <div><span>4</span><strong>交卷并接力</strong></div>
+          </div>
+        </section>
+
+        <div class="simple-block">
+          <header><h2>事项</h2><span class="status status-orange"><span class="status-dot"></span>1 项待你处理</span></header>
+          <div class="body">
+            <div class="simple-item">
+              <span class="attention-order">01</span>
+              <div>
+                <strong>确认权属声明</strong>
+                <p>交底部已形成交底书 V3。权属声明仍为空缺，阻塞向撰写部接力。</p>
+              </div>
+            </div>
+            <div class="simple-item">
+              <span class="attention-order">02</span>
+              <div>
+                <strong>技术效果测试条件</strong>
+                <p>2.5 kW 稳态工况下的识别时间与误报率已写入文本，你已确认样本一致。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="simple-block">
+          <header><h2>已确认事实</h2><span class="status status-green"><span class="status-dot"></span>2 项</span></header>
+          <div class="body">
+            <div class="simple-item">
+              <span>✓</span>
+              <div>
+                <strong>处理顺序：先评分、再按工况修正</strong>
+                <p>与实际控制程序一致 · 绑定交底书 V3 · 二、核心技术方案</p>
+              </div>
+            </div>
+            <div class="simple-item">
+              <span>✓</span>
+              <div>
+                <strong>异常识别时间由 18 秒降至 11.7 秒</strong>
+                <p>误报率 8.2% → 3.1% · 2.5 kW 稳态样机测试</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="simple-block">
+          <header><h2>待决策</h2></header>
+          <div class="body">
+            <div class="simple-item">
+              <span class="status status-orange"><span class="status-dot"></span>阻塞</span>
+              <div>
+                <strong>权属是否归澄明科技，且无职务发明争议？</strong>
+                <p>影响交底书能否作为撰写部输入。确认后形成交付快照，不会自动对外递交。</p>
+                <button class="source-link" type="button">📄 交底书 V3 · 五、权属声明 ↗</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="delivery-confirm-pane">
+      <section class="current-delivery">
+        <div class="pane-section-title"><span>当前交卷物</span><span class="status status-orange"><span class="status-dot"></span>待齐套</span></div>
+        <div class="delivery-file"><span>📄</span><span><strong data-deliverable>技术交底书 V3</strong><small>方案与效果已撰写，仍缺权属声明</small></span></div>
+      </section>
+      <section class="confirmation-flow">
+        <div class="pane-section-title"><span>交卷齐套</span><small data-check-count>3 / 4</small></div>
+        <div class="checklist" data-checklist></div>
+        <div class="confirm-step active" style="border-top:0;padding-top:8px">
+          <div class="confirm-step-head"><span>→</span><div><strong>交卷</strong><small>齐套后进入待你确认</small></div></div>
+          <p>交卷只提交当前部门交付物，不代表同意对外递交。</p>
+          <a class="btn btn-primary full-btn" href="#" data-submit-gate disabled>交卷并送确认 →</a>
+        </div>
+      </section>
+      <section class="return-panel">
+        <strong>结论不合适？</strong>
+        <p>可先不交卷，继续在对话里补充意见；当前版本会保留。</p>
+      </section>
+    </aside>
+  </section>
+
+</section>
+</main>
+</div>
+</div>
+<script src="app.js"></script>
+</body></html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>公司首页 · 外挂知识产权部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="shell.css">
+</head>
+
+<body>
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="home.html" aria-label="返回首页">
+    <span class="brand-mark">外</span>
+    <span class="brand-copy"><strong>外挂知识产权部</strong><small>IP COMPANY</small></span>
+  </a>
+  <div class="topbar-context">
+    <span class="context-label">当前项目</span>
+    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+  </div>
+  <div class="topbar-actions">
+    <button class="search-trigger" type="button" data-toast="搜索演示"><span>⌕</span><span>搜索项目、文件或部门</span><kbd>⌘ K</kbd></button>
+    <a href="welcome.html" style="font-size:12px;color:var(--ink-3)">官网</a>
+    <button class="icon-btn notice-button" type="button" data-toast="有 2 项待确认" aria-label="通知">🔔<span></span></button>
+    <div class="mode-switch" aria-label="使用模式">
+      <button type="button" data-mode="assistant" class="active">助手</button>
+      <button type="button" data-mode="project">项目</button>
+      <button type="button" data-mode="studio">专业</button>
+    </div>
+    <div class="role-switch" aria-label="切换角色">
+      <button type="button" data-role="enterprise">企业研发</button>
+      <button type="button" data-role="agency">代理所</button>
+    </div>
+    <span class="avatar avatar-human avatar-small">陈</span>
+  </div>
+</header>
+<div class="app-main">
+<aside class="sidebar">
+  <div class="workspace-label" data-show-role="enterprise">澄明科技有限公司<span>研发负责人工作区</span></div>
+  <div class="workspace-label hidden" data-show-role="agency">衡知专利代理事务所<span>代理师工作区</span></div>
+  <nav class="main-nav" data-show-role="enterprise">
+    <a href="home.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">公司首页</a>
+    <a href="cases.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">项目与对象</a>
+    <a href="company.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink);background:var(--paper);box-shadow:0 0 0 1px var(--line);font-weight:600">部门与专家</a>
+    <a href="pending.html?dept=disclosure" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">待你确认</a>
+  </nav>
+  <nav class="main-nav hidden" data-show-role="agency">
+    <a href="home.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">工作首页</a>
+    <a href="cases.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">客户与案件</a>
+    <a href="company.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink);background:var(--paper);box-shadow:0 0 0 1px var(--line);font-weight:600">专业团队</a>
+    <a href="pending.html?dept=oa" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">客户确认</a>
+  </nav>
+  <div class="sidebar-section">
+    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html">＋</a></div>
+    <a class="side-project active" href="dept.html?dept=disclosure"><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
+    <a class="side-project" href="dept.html?dept=oa"><span class="project-glyph muted">MS</span><span><strong>低能耗膜分离工艺</strong><small>第一次 OA 答复</small></span></a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div>
+  </div>
+</aside>
+<main class="content">
+  <div class="list-page">
+    <section class="page-title">
+      <div>
+        <h1>你的外挂知识产权部</h1>
+        <p>七个部门围绕同一案件接力。点开部门查看职责与交卷物，再进入工作台。</p>
+      </div>
+      <a class="btn btn-primary" href="dept.html?dept=disclosure">去交底部干活 →</a>
+    </section>
+    <div class="dept-grid"><button type="button" data-open-drawer="disclosure" data-name="交底部" data-desc="补齐技术事实，形成可接力交底书" data-out="技术交底书" data-ex="技术访谈专家 · 交底书撰写专家">
+      <span>01</span><strong>交底部</strong><small>补齐技术事实，形成可接力交底书</small>
+    </button><button type="button" data-open-drawer="research" data-name="查新部" data-desc="可专利性检索与证据比对" data-out="检索报告 R2" data-ex="检索分析专家 · 特征比对专家">
+      <span>02</span><strong>查新部</strong><small>可专利性检索与证据比对</small>
+    </button><button type="button" data-open-drawer="decision" data-name="立项部" data-desc="保护策略、费用周期与决议" data-out="立项决议" data-ex="布局策略专家 · 报价顾问">
+      <span>03</span><strong>立项部</strong><small>保护策略、费用周期与决议</small>
+    </button><button type="button" data-open-drawer="draft" data-name="撰写部" data-desc="权利要求层次与说明书" data-out="权利要求草案" data-ex="权利要求专家 · 说明书专家">
+      <span>04</span><strong>撰写部</strong><small>权利要求层次与说明书</small>
+    </button><button type="button" data-open-drawer="figure" data-name="附图部" data-desc="图号与说明书引用一致" data-out="附图包 F2" data-ex="附图绘制专家 · 一致性核查">
+      <span>05</span><strong>附图部</strong><small>图号与说明书引用一致</small>
+    </button><button type="button" data-open-drawer="filing" data-name="递交与程序" data-desc="齐套申请包与授权人确认" data-out="申请包" data-ex="流程事务专家 · 期限监控">
+      <span>06</span><strong>递交与程序</strong><small>齐套申请包与授权人确认</small>
+    </button><button type="button" data-open-drawer="oa" data-name="审查答复" data-desc="审查意见拆解与答复策略" data-out="意见陈述书" data-ex="OA 策略专家 · 创造性争辩">
+      <span>07</span><strong>审查答复</strong><small>审查意见拆解与答复策略</small>
+    </button></div>
+    <section style="margin-top:36px">
+      <div class="company-section-head">
+        <div><span class="section-kicker">当前案件</span><h2>磁驱泵智能控制系统</h2></div>
+        <a class="text-btn" href="cases.html">切换案件 →</a>
+      </div>
+      <div class="lifecycle">
+        <div class="life-step done"><span class="life-index">✓</span>查新</div><span class="life-line"></span>
+        <div class="life-step done"><span class="life-index">✓</span>立项</div><span class="life-line"></span>
+        <div class="life-step active"><span class="life-index">3</span>交底</div><span class="life-line"></span>
+        <div class="life-step"><span class="life-index">4</span>撰写</div><span class="life-line"></span>
+        <div class="life-step"><span class="life-index">5</span>附图</div><span class="life-line"></span>
+        <div class="life-step"><span class="life-index">6</span>递交</div><span class="life-line"></span>
+        <div class="life-step"><span class="life-index">7</span>答复</div>
+      </div>
+    </section>
+  </div>
+</main>
+</div>
+</div>
+<div class="drawer" id="drawer">
+  <div class="drawer-scrim" data-close></div>
+  <div class="drawer-panel">
+    <button type="button" class="icon-btn" data-close style="float:right">✕</button>
+    <span class="section-kicker" id="d-kicker">部门</span>
+    <h2 id="d-name" style="margin:8px 0 12px;font-size:24px;letter-spacing:-.02em"></h2>
+    <p id="d-desc" style="color:var(--ink-3);font-size:13px;line-height:1.7"></p>
+    <div class="dept-io">
+      <div><small>交卷物</small><strong id="d-out"></strong></div>
+      <span>→</span>
+      <div><small>专家</small><strong id="d-ex"></strong></div>
+    </div>
+    <p style="font-size:12px;color:var(--ink-3);line-height:1.7;margin:18px 0">专家出建议稿，齐套后交卷；你在「待你确认」里拍板。不会自动对外递交。</p>
+    <a class="btn btn-ink full-btn" id="d-go" href="dept.html">去该部干活 →</a>
+  </div>
+</div>
+<script src="app.js"></script>
+<script>
+const drawer=document.getElementById('drawer');
+document.querySelectorAll('[data-open-drawer]').forEach(b=>b.addEventListener('click',()=>{
+  document.getElementById('d-name').textContent=b.dataset.name;
+  document.getElementById('d-desc').textContent=b.dataset.desc;
+  document.getElementById('d-out').textContent=b.dataset.out;
+  document.getElementById('d-ex').textContent=b.dataset.ex;
+  document.getElementById('d-go').href='dept.html?dept='+b.dataset.openDrawer+'&role='+(localStorage.getItem('mpv2-role')||'enterprise');
+  drawer.classList.add('open');
+}));
+document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',()=>drawer.classList.remove('open')));
+</script>
+</body></html>

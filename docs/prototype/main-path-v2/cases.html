@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>案盘 · 外挂知识产权部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="shell.css">
+</head>
+
+<body>
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="home.html" aria-label="返回首页">
+    <span class="brand-mark">外</span>
+    <span class="brand-copy"><strong>外挂知识产权部</strong><small>IP COMPANY</small></span>
+  </a>
+  <div class="topbar-context">
+    <span class="context-label">当前客户</span>
+    <button class="context-button" type="button">澄明科技 · 案盘 ▾</button>
+  </div>
+  <div class="topbar-actions">
+    <button class="search-trigger" type="button" data-toast="搜索演示"><span>⌕</span><span>搜索项目、文件或部门</span><kbd>⌘ K</kbd></button>
+    <a href="welcome.html" style="font-size:12px;color:var(--ink-3)">官网</a>
+    <button class="icon-btn notice-button" type="button" data-toast="有 2 项待确认" aria-label="通知">🔔<span></span></button>
+    <div class="mode-switch" aria-label="使用模式">
+      <button type="button" data-mode="assistant" class="active">助手</button>
+      <button type="button" data-mode="project">项目</button>
+      <button type="button" data-mode="studio">专业</button>
+    </div>
+    <div class="role-switch" aria-label="切换角色">
+      <button type="button" data-role="enterprise">企业研发</button>
+      <button type="button" data-role="agency">代理所</button>
+    </div>
+    <span class="avatar avatar-human avatar-small">陈</span>
+  </div>
+</header>
+<div class="app-main">
+<aside class="sidebar">
+  <div class="workspace-label" data-show-role="enterprise">澄明科技有限公司<span>研发负责人工作区</span></div>
+  <div class="workspace-label hidden" data-show-role="agency">衡知专利代理事务所<span>代理师工作区</span></div>
+  <nav class="main-nav" data-show-role="enterprise">
+    <a href="home.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">公司首页</a>
+    <a href="cases.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink);background:var(--paper);box-shadow:0 0 0 1px var(--line);font-weight:600">项目与对象</a>
+    <a href="company.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">部门与专家</a>
+    <a href="pending.html?dept=disclosure" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">待你确认</a>
+  </nav>
+  <nav class="main-nav hidden" data-show-role="agency">
+    <a href="home.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">工作首页</a>
+    <a href="cases.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink);background:var(--paper);box-shadow:0 0 0 1px var(--line);font-weight:600">客户与案件</a>
+    <a href="company.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">专业团队</a>
+    <a href="pending.html?dept=oa" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">客户确认</a>
+  </nav>
+  <div class="sidebar-section">
+    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html">＋</a></div>
+    <a class="side-project active" href="dept.html?dept=disclosure"><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
+    <a class="side-project" href="dept.html?dept=oa"><span class="project-glyph muted">MS</span><span><strong>低能耗膜分离工艺</strong><small>第一次 OA 答复</small></span></a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div>
+  </div>
+</aside>
+<main class="content">
+  <div class="list-page">
+    <section class="page-title">
+      <div>
+        <h1 data-show-role="enterprise">项目与业务对象</h1>
+        <h1 class="hidden" data-show-role="agency">客户与案件</h1>
+        <p>以案件组织卷宗、专业任务、交付和确认。</p>
+      </div>
+      <a class="btn btn-primary" href="case-new.html">＋ 开新案子</a>
+    </section>
+    <div class="client-banner" data-show-role="agency">
+      <span style="font-size:24px">🏢</span>
+      <div><strong>澄明科技有限公司</strong><p>6 个进行中案件 · 流体机械、储能、膜分离</p></div>
+      <button class="btn btn-secondary" type="button" data-toast="客户档案演示">查看客户档案</button>
+    </div>
+    <div class="list-toolbar">
+      <div class="inline-search"><span>⌕</span><input placeholder="搜索案件名称或编号"></div>
+      <span class="state-note">按期限与状态排序</span>
+    </div>
+    <div class="data-table cases-table">
+      <div class="data-head"><span>案件</span><span>当前部门</span><span>状态</span><span>负责人</span><span>下一期限</span><span></span></div>
+      <a class="data-row" href="company.html"><span><strong>磁驱泵智能控制系统</strong><small>研发项目 · RD-2026-017</small></span><span>交底部</span><span><span class="status status-orange"><span class="status-dot"></span>交底完善</span></span><span>陈宇</span><span>今天 14:30</span><span>›</span></a>
+      <a class="data-row" href="dept.html?dept=oa"><span><strong>低能耗膜分离清洗控制方法</strong><small>申请案件 · CN202610483217.6</small></span><span>审查答复</span><span><span class="status status-red"><span class="status-dot"></span>第一次 OA</span></span><span>林岚</span><span>剩余 18 天</span><span>›</span></a>
+      <a class="data-row" href="dept.html?dept=draft"><span><strong>模块化储能热管理装置</strong><small>申请案件 · CN202610512086.4</small></span><span>撰写部</span><span><span class="status status-orange"><span class="status-dot"></span>质检中</span></span><span>王工</span><span>10 月 28 日</span><span>›</span></a>
+      <a class="data-row" href="dept.html?dept=research"><span><strong>高速视觉检测设备</strong><small>产品风险 · FTO-2026-009</small></span><span>查新部</span><span><span class="status status-red"><span class="status-dot"></span>高风险待决策</span></span><span>许清</span><span>11 月 03 日</span><span>›</span></a>
+    </div>
+  </div>
+</main>
+</div>
+</div>
+<script src="app.js"></script>
+</body></html>

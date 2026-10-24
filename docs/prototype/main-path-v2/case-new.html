@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>开案子 · 外挂知识产权部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="shell.css">
+</head>
+
+<body>
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="home.html" aria-label="返回首页">
+    <span class="brand-mark">外</span>
+    <span class="brand-copy"><strong>外挂知识产权部</strong><small>IP COMPANY</small></span>
+  </a>
+  <div class="topbar-context">
+    <span class="context-label">当前项目</span>
+    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+  </div>
+  <div class="topbar-actions">
+    <button class="search-trigger" type="button" data-toast="搜索演示"><span>⌕</span><span>搜索项目、文件或部门</span><kbd>⌘ K</kbd></button>
+    <a href="welcome.html" style="font-size:12px;color:var(--ink-3)">官网</a>
+    <button class="icon-btn notice-button" type="button" data-toast="有 2 项待确认" aria-label="通知">🔔<span></span></button>
+    <div class="mode-switch" aria-label="使用模式">
+      <button type="button" data-mode="assistant" class="active">助手</button>
+      <button type="button" data-mode="project">项目</button>
+      <button type="button" data-mode="studio">专业</button>
+    </div>
+    <div class="role-switch" aria-label="切换角色">
+      <button type="button" data-role="enterprise">企业研发</button>
+      <button type="button" data-role="agency">代理所</button>
+    </div>
+    <span class="avatar avatar-human avatar-small">陈</span>
+  </div>
+</header>
+<div class="app-main">
+<aside class="sidebar">
+  <div class="workspace-label" data-show-role="enterprise">澄明科技有限公司<span>研发负责人工作区</span></div>
+  <div class="workspace-label hidden" data-show-role="agency">衡知专利代理事务所<span>代理师工作区</span></div>
+  <nav class="main-nav" data-show-role="enterprise">
+    <a href="home.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">公司首页</a>
+    <a href="cases.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink);background:var(--paper);box-shadow:0 0 0 1px var(--line);font-weight:600">项目与对象</a>
+    <a href="company.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">部门与专家</a>
+    <a href="pending.html?dept=disclosure" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">待你确认</a>
+  </nav>
+  <nav class="main-nav hidden" data-show-role="agency">
+    <a href="home.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">工作首页</a>
+    <a href="cases.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink);background:var(--paper);box-shadow:0 0 0 1px var(--line);font-weight:600">客户与案件</a>
+    <a href="company.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">专业团队</a>
+    <a href="pending.html?dept=oa" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">客户确认</a>
+  </nav>
+  <div class="sidebar-section">
+    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html">＋</a></div>
+    <a class="side-project active" href="dept.html?dept=disclosure"><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
+    <a class="side-project" href="dept.html?dept=oa"><span class="project-glyph muted">MS</span><span><strong>低能耗膜分离工艺</strong><small>第一次 OA 答复</small></span></a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div>
+  </div>
+</aside>
+<main class="content">
+  <div class="list-page" style="max-width:640px">
+    <section class="page-title">
+      <div><h1>开一个新案子</h1><p>极少字段。可以说业务目标，不必先选部门。</p></div>
+    </section>
+    <form onsubmit="event.preventDefault();location.href='company.html'">
+      <label style="display:flex;flex-direction:column;gap:7px;font-size:12px;color:var(--ink-2);margin-bottom:14px">项目或技术名称
+        <input required placeholder="例如：一种低噪声磁驱泵控制方案" style="border:1px solid var(--line);border-radius:5px;padding:10px 11px;background:var(--paper);font:inherit">
+      </label>
+      <label style="display:flex;flex-direction:column;gap:7px;font-size:12px;color:var(--ink-2);margin-bottom:14px">你想解决什么问题？
+        <textarea required rows="4" placeholder="可以直接粘贴研发描述，不需要使用专利语言…" style="border:1px solid var(--line);border-radius:5px;padding:10px 11px;background:var(--paper);font:inherit"></textarea>
+      </label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <label style="display:flex;flex-direction:column;gap:7px;font-size:12px">业务场景
+          <select style="border:1px solid var(--line);border-radius:5px;padding:10px 11px;background:var(--paper);font:inherit"><option>研发成果保护</option><option>新产品上市风险排查</option><option>收到审查意见</option></select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:7px;font-size:12px">期望申请类型
+          <select style="border:1px solid var(--line);border-radius:5px;padding:10px 11px;background:var(--paper);font:inherit"><option>由部门建议</option><option>发明专利</option><option>实用新型</option></select>
+        </label>
+      </div>
+      <details class="goal-panel">
+        <summary style="cursor:pointer;font-size:12px;font-weight:600">可选 · 交办业务目标给知产负责人</summary>
+        <p style="font-size:11px;color:var(--ink-3);margin:10px 0">一句话说明优先级或约束。不会打开万能助手。</p>
+        <label>业务目标（一句话）<input placeholder="例如：本季度先完成交底与查新"></label>
+        <label>类型占位<select><option>保护策略</option><option>期限优先</option><option>费用约束</option></select></label>
+      </details>
+      <div style="margin:16px 0;display:flex;gap:8px;padding:12px;background:var(--warm-paper);font-size:11px;color:var(--ink-3)">
+        <span>✦</span><span>建议首站：交底部 → 查新部。后续按项目调整。</span>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <a class="btn btn-secondary" href="home.html">取消</a>
+        <button class="btn btn-primary" type="submit">创建并进入公司首页 →</button>
+      </div>
+    </form>
+  </div>
+</main>
+</div>
+</div>
+<script src="app.js"></script>
+</body></html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>待你确认 · 外挂知识产权部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="shell.css">
+</head>
+
+<body data-page="pending">
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="home.html"><span class="brand-mark">外</span><span class="brand-copy"><strong>外挂知识产权部</strong><small>IP COMPANY</small></span></a>
+  <div class="topbar-context">
+    <span class="context-label">当前项目</span>
+    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+  </div>
+  <div class="topbar-actions">
+    <button class="search-trigger" type="button" data-toast="搜索演示"><span>⌕</span><span>搜索项目、文件或部门</span><kbd>⌘ K</kbd></button>
+    <a href="welcome.html" style="font-size:12px;color:var(--ink-3)">官网</a>
+    <button class="icon-btn notice-button" type="button" data-toast="有待确认" aria-label="通知">🔔<span></span></button>
+    <div class="mode-switch">
+      <button type="button" data-mode="assistant">助手</button>
+      <button type="button" data-mode="project" class="active">项目</button>
+      <button type="button" data-mode="studio">专业</button>
+    </div>
+    <div class="role-switch" aria-label="切换角色">
+      <button type="button" data-role="enterprise">企业研发</button>
+      <button type="button" data-role="agency">代理所</button>
+    </div>
+    <span class="avatar avatar-human avatar-small">陈</span>
+  </div>
+</header>
+<div class="app-main">
+<aside class="sidebar">
+  <div class="workspace-label">澄明科技有限公司<span>待你确认</span></div>
+  <nav class="main-nav">
+    <a href="home.html" style="height:38px;display:flex;align-items:center;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">公司首页</a>
+    <a href="company.html" style="height:38px;display:flex;align-items:center;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">部门与专家</a>
+    <a href="pending.html" style="height:38px;display:flex;align-items:center;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink);background:var(--paper);box-shadow:0 0 0 1px var(--line);font-weight:600">待你确认</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="human-guard"><span>⛨</span><span><strong>不能自己批自己的交卷</strong><small>通过或驳回，由你拍板</small></span></div>
+  </div>
+</aside>
+<main class="content">
+  <div class="pending-card">
+    <header>
+      <span class="status status-orange"><span class="status-dot"></span>待你确认</span>
+      <p class="section-kicker" style="margin-top:14px"><span data-dept-name>交底部</span> · 交卷物</p>
+      <h1 style="margin:8px 0 0;font-size:26px;letter-spacing:-.03em;font-weight:500" data-pending-title>确认交底书可接力</h1>
+      <p style="margin:10px 0 0;color:var(--ink-3);font-size:13px">交卷物：<strong data-deliverable style="color:var(--ink)">技术交底书 V3</strong> · 缺项口径：<span data-missing>权属声明</span></p>
+    </header>
+    <div class="body">
+      <div class="confirm-step active" style="border-top:0;padding-top:0">
+        <div class="confirm-step-head"><span>1</span><div><strong>需要你判断的事实</strong><small>专家出建议稿，AI 不代替判断</small></div></div>
+        <h3 data-pending-fact>权属是否归澄明科技，且无职务发明争议？</h3>
+        <p data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
+        <button class="source-link" type="button">📄 交底书 V3 · 五、权属声明 ↗</button>
+        <div class="impact-note"><span>⚠</span><p>通过后下一部门可接力；驳回则退回 <span data-dept-name>交底部</span> 补充。此页不能自批。</p></div>
+      </div>
+      <div style="margin-top:18px;padding:14px;background:var(--warm-paper);border:1px solid var(--line)">
+        <div class="pane-section-title"><span>齐套进度（与该部交卷口径一致）</span></div>
+        <p style="margin:10px 0 0;font-size:12px;color:var(--ink-2)">部门已勾选齐套并交卷。你现在确认的是交付快照，而不是重新勾选清单。</p>
+      </div>
+    </div>
+    <div class="pending-actions">
+      <button class="btn btn-secondary" type="button" disabled title="交卷人不能自批">自批（禁用）</button>
+      <a class="btn btn-secondary" data-reject-link href="dept.html?dept=disclosure">驳回 · 退回部门</a>
+      <a class="btn btn-primary" data-pass-link href="company.html">通过 · 允许下一部门接力 →</a>
+    </div>
+  </div>
+  <p style="max-width:720px;margin:18px auto 0;font-size:11px;color:var(--ink-3);text-align:center">切换部门 payload：在地址栏改 <code>?dept=research|decision|draft|figure|filing|oa|disclosure</code></p>
+</main>
+</div>
+</div>
+<script src="app.js"></script>
+</body></html>

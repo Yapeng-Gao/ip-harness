@@ -1,3 +1,7 @@
+> **已归档（superseded）**：Leslie 判定旧版为线框感；请改用 **[`../main-path-v2/`](../main-path-v2/)**（Kimi 观感重做 · 完整 app-shell · 两工作台 B）。本目录 HTML 保留作对照，不再打磨。
+>
+> 打开 v2：`cd docs/prototype/main-path-v2 && python3 -m http.server 8766`
+
 # 主路径可点原型（浅色）
 
 **产品**：外挂知识产权部  
