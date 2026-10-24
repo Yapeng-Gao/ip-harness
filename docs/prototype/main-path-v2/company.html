@@ -28,7 +28,7 @@
       <button type="button" data-role="enterprise" class="active">企业研发</button>
       <button type="button" data-role="agency">代理所</button>
     </div>
-    <span class="avatar avatar-human">陈</span>
+    <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="陈" width="30" height="30">
   </div>
 </header>
 <div class="app-main">
@@ -85,19 +85,39 @@
       <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role>去当前部门 · 交底部 →</a>
     </div>
     <div class="dept-grid" aria-label="七部">
-      <a href="dept.html?dept=disclosure" data-keep-role><span>00 · 进行中</span><strong>交底部</strong><small>未齐套 · 缺权属声明</small></a>
-      <a href="dept.html?dept=research" data-keep-role><span>01 · 待命</span><strong>查新部</strong><small>等交底接力</small></a>
-      <a href="dept.html?dept=decision" data-keep-role><span>02 · 待命</span><strong>立项部</strong><small>等查新结论</small></a>
-      <a href="dept.html?dept=draft" data-keep-role><span>03 · 待命</span><strong>撰写部</strong><small>等立项决议</small></a>
-      <a href="dept.html?dept=figure" data-keep-role><span>04 · 待命</span><strong>附图部</strong><small>等权利要求</small></a>
-      <a href="dept.html?dept=filing" data-keep-role><span>05 · 待命</span><strong>递交与程序</strong><small>等申请包</small></a>
-      <a href="dept.html?dept=oa" data-keep-role><span>06 · 待命</span><strong>审查答复</strong><small>授权后启用</small></a>
+      <a href="dept.html?dept=disclosure" data-keep-role data-dept-open="disclosure"><span>00 · 进行中</span><strong>交底部</strong><small>未齐套 · 缺权属声明</small></a>
+      <a href="dept.html?dept=research" data-keep-role data-dept-open="research"><span>01 · 待命</span><strong>查新部</strong><small>等交底接力</small></a>
+      <a href="dept.html?dept=decision" data-keep-role data-dept-open="decision"><span>02 · 待命</span><strong>立项部</strong><small>等查新结论</small></a>
+      <a href="dept.html?dept=draft" data-keep-role data-dept-open="draft"><span>03 · 待命</span><strong>撰写部</strong><small>等立项决议</small></a>
+      <a href="dept.html?dept=figure" data-keep-role data-dept-open="figure"><span>04 · 待命</span><strong>附图部</strong><small>等权利要求</small></a>
+      <a href="dept.html?dept=filing" data-keep-role data-dept-open="filing"><span>05 · 待命</span><strong>递交与程序</strong><small>等申请包</small></a>
+      <a href="dept.html?dept=oa" data-keep-role data-dept-open="oa"><span>06 · 待命</span><strong>审查答复</strong><small>授权后启用</small></a>
       <button type="button" disabled style="opacity:.5"><span>扩展</span><strong>后置部门</strong><small>FTO / 无效等本轮不做</small></button>
     </div>
   </div>
 </main>
 </div>
 </div>
+
+<div class="drawer" id="dept-drawer" aria-hidden="true">
+  <div class="drawer-scrim" data-drawer-close></div>
+  <aside class="drawer-panel" role="dialog" aria-labelledby="drawer-title">
+    <button class="drawer-close" type="button" data-drawer-close aria-label="关闭">×</button>
+    <p class="kicker">部门</p>
+    <h2 id="drawer-title" data-drawer-name>交底部</h2>
+    <p class="page-sub">交卷物：<strong data-drawer-deliverable></strong></p>
+    <p class="page-sub" style="margin-top:4px">状态：<span data-drawer-status></span></p>
+    <div class="drawer-section">
+      <div class="pane-subhead">本部门专家</div>
+      <div data-drawer-experts></div>
+    </div>
+    <div class="drawer-actions">
+      <a class="btn btn-ink" href="#" data-drawer-go>进入部门台 →</a>
+      <button class="btn btn-ghost" type="button" data-drawer-close>关闭</button>
+    </div>
+  </aside>
+</div>
+
 <script src="app.js"></script>
 
 </body></html>

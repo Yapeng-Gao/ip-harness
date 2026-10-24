@@ -420,6 +420,100 @@ html[data-mode="studio"] .studio-placeholder { display: block; }
 }
 .toast-fixed.show { display: block; }
 
+
+/* —— §10 polish: task strip / hints / photo avatars / 顾言 —— */
+.avatar-photo {
+  width: 30px; height: 30px; border-radius: 50%;
+  object-fit: cover; display: inline-block; vertical-align: middle;
+  border: 1px solid oklch(0 0 0 / 0.1); outline: 1px solid oklch(0 0 0 / 0.08); outline-offset: -1px;
+  background: var(--warm-paper);
+}
+.avatar-photo.avatar-small { width: 28px; height: 28px; }
+.expert-row .avatar-photo { flex: 0 0 auto; }
+
+.task-strip {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--warm-paper); margin-bottom: 10px; overflow: hidden;
+}
+.task-cell {
+  padding: 12px 14px; border-right: 1px solid var(--line); min-width: 0;
+}
+.task-cell:last-child { border-right: 0; }
+.task-label {
+  display: block; font-size: 10px; letter-spacing: .04em; color: var(--ink-3);
+  font-weight: 600; margin-bottom: 4px;
+}
+.task-cell strong {
+  display: block; font-size: 13px; font-weight: 600; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.task-cell-cta { display: flex; flex-direction: column; justify-content: center; background: var(--paper); }
+.btn-sm { height: 32px; padding: 0 12px; font-size: 12px; }
+
+.next-hint {
+  border: 1px dashed var(--line-strong); border-radius: 6px;
+  padding: 10px 14px; margin-bottom: 12px;
+  background: var(--amber-soft); color: var(--ink-2); font-size: 12px; line-height: 1.55;
+}
+.next-hint strong { color: var(--ink); }
+.next-hint.is-ready { background: var(--green-soft); border-color: oklch(0.78 0.05 150); }
+
+.face-tabs button small {
+  display: block; font-size: 10px; font-weight: 400; color: var(--ink-3);
+  margin-top: 2px; letter-spacing: 0;
+}
+.face-tabs button.active small { color: var(--accent-dark); }
+.pane-meta { font-weight: 500; color: var(--ink-2); letter-spacing: 0; text-transform: none; }
+.pane-subhead {
+  font-size: 11px; font-weight: 600; color: var(--ink-3);
+  letter-spacing: .04em; margin: 10px 0 4px;
+}
+.experts-block { margin-top: 8px; }
+.doc-footnote { color: var(--ink-3); font-size: 12px; }
+.gate-meta { font-size: 11px; color: var(--ink-3); margin: 0 0 8px; }
+.collab-lead { color: var(--ink-3); font-size: 13px; margin: 0 0 14px; }
+
+.drawer-close {
+  position: absolute; top: 14px; right: 14px; width: 32px; height: 32px;
+  border: 0; border-radius: 6px; background: transparent; color: var(--ink-3); font-size: 20px;
+}
+.drawer-close:hover { background: var(--warm-paper); color: var(--ink); }
+.drawer-panel { position: relative; }
+.drawer-section { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 12px; }
+.drawer-actions { display: flex; gap: 8px; margin-top: 22px; flex-wrap: wrap; }
+
+/* 顾言 · Codex-like presence (bottom-right half-body) */
+.guyan-presence {
+  position: fixed; z-index: 40; right: 18px; bottom: 18px;
+  display: flex; align-items: flex-end; gap: 10px;
+  padding: 8px 12px 8px 8px;
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: 14px; box-shadow: var(--shadow-rest), 0 8px 28px rgba(20,18,15,.08);
+  color: var(--ink); text-decoration: none;
+  transition-property: transform, box-shadow; transition-duration: 150ms; transition-timing-function: ease-out;
+}
+.guyan-presence:hover {
+  box-shadow: 0 0 0 1px oklch(0 0 0 / 0.08), 0 10px 32px rgba(20,18,15,.12);
+}
+.guyan-presence:active { transform: scale(0.96); }
+.guyan-presence img {
+  width: 56px; height: 70px; object-fit: cover; object-position: top center;
+  border-radius: 10px; display: block;
+  outline: 1px solid oklch(0 0 0 / 0.1); outline-offset: -1px;
+}
+.guyan-meta { display: flex; flex-direction: column; padding-bottom: 4px; min-width: 0; }
+.guyan-meta strong { font-size: 13px; font-weight: 600; }
+.guyan-meta small { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+
+@media (max-width: 1100px) {
+  .task-strip { grid-template-columns: 1fr 1fr; }
+  .task-cell:nth-child(2n) { border-right: 0; }
+  .task-cell:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .guyan-presence { right: 12px; bottom: 12px; }
+  .guyan-meta small { display: none; }
+}
+
 @media (max-width: 1100px) {
   .workbench { grid-template-columns: minmax(0,1fr) 280px; }
   .file-pane { display: none; }
