@@ -105,6 +105,34 @@
         <span class="editor-save-state" data-save-state>已保存</span>
       </div>
 
+      <!-- 企业简版重心（两工作台 B）：事项 / 已确认事实 / 待决策 — 同屏，非文书/协同双视图 -->
+      <div class="editor-lite-focus" aria-label="企业简版重心">
+        <div class="lite-col">
+          <h3>事项</h3>
+          <ul>
+            <li><strong>补齐权属声明</strong> · 阻塞交卷</li>
+            <li>核对关键特征是否写全</li>
+            <li>交底 V3 送确认前自检</li>
+          </ul>
+        </div>
+        <div class="lite-col">
+          <h3>已确认事实</h3>
+          <ul>
+            <li><strong>量产标定 · MP-300</strong> 三点校验</li>
+            <li>双环控制：外环流量 / 内环转速</li>
+            <li>故障特征库已入库</li>
+          </ul>
+        </div>
+        <div class="lite-col">
+          <h3>待决策</h3>
+          <ul>
+            <li><strong>权属是否归澄明科技</strong></li>
+            <li>齐套后拍板 · 类型技术事实</li>
+            <li>通过后接力查新部</li>
+          </ul>
+        </div>
+      </div>
+
       <div class="document-scroll">
         <article class="document" id="dept-editor" contenteditable="true" spellcheck="false" aria-label="交卷物正文 · 可编辑">
           <div class="doc-meta">
@@ -148,6 +176,18 @@
           </div>
           <span class="tag"><span class="tag-dot"></span><span data-confirm-type>技术事实</span></span>
         </div>
+
+        <details class="rail-collapse node-contract" open>
+          <summary>本节点契约</summary>
+          <dl class="node-contract-dl">
+            <dt>负责</dt><dd data-dept-name>交底部</dd>
+            <dt>输入</dt><dd>访谈纪要 · 已确认技术事实</dd>
+            <dt>交付</dt><dd data-deliverable>技术交底书 V3</dd>
+            <dt>接力</dt><dd>齐套 + 确认通过 → 查新</dd>
+            <dt>确认点</dt><dd>技术事实 · 权属归属</dd>
+            <dt>完成</dt><dd>可接力的交底书齐套交卷</dd>
+          </dl>
+        </details>
 
         <div class="chat-bits" data-chat-feed>
           <div class="chat-bubble">

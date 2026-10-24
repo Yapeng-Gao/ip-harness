@@ -153,7 +153,6 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 .content-narrow { max-width: 880px; }
 
 /* —— Mode hooks (details in three-tier block at end) —— */
-.studio-placeholder { display: none; }
 .dept-map-recall { display: none; margin: 16px 0; }
 
 /* —— Buttons —— */
@@ -778,12 +777,6 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 }
 .snapshot-card h3 { margin: 0 0 6px; font-size: 13px; }
 .snapshot-card p { margin: 0; font-size: 12px; color: var(--ink-2); line-height: 1.6; }
-.studio-placeholder {
-  margin-bottom: 18px; border: 1px dashed var(--line-strong); background: var(--warm-paper);
-  border-radius: 8px; padding: 16px 18px;
-}
-.studio-placeholder h3 { margin: 0 0 4px; font-size: 14px; }
-.studio-placeholder p { margin: 0; font-size: 12px; color: var(--ink-3); }
 .dept-map-recall {
   border: 1px dashed var(--line-strong); border-radius: 8px; padding: 14px 16px;
   background: var(--warm-paper); font-size: 13px; color: var(--ink-2);
@@ -1386,9 +1379,13 @@ html[data-mode="studio"] .workbench[data-tier-workbench] .file-pane-head span::a
   content: " · 卷宗";
 }
 html[data-mode="studio"] .workbench.fold-left {
+  grid-template-columns: minmax(0,1fr) 320px;
+}
+html[data-mode="studio"] .workbench.fold-left .file-pane { display: none; }
+html[data-role="agency"][data-mode="studio"] .workbench.fold-left {
   grid-template-columns: 240px minmax(0,1fr) 320px;
 }
-html[data-mode="studio"] .workbench.fold-left .file-pane { display: flex; }
+html[data-role="agency"][data-mode="studio"] .workbench.fold-left .file-pane { display: flex; }
 html[data-mode="studio"] .document { box-shadow: 0 2px 8px rgba(20,18,15,.06); }
 html[data-mode="studio"] .chat-pane { background: var(--warm-paper); }
 html[data-mode="studio"] .chat-pane .gate-box { background: var(--paper); }
@@ -1407,20 +1404,8 @@ html[data-mode="assistant"] .company-need-me {
 }
 
 
-/* —— 部门台减负：侧栏收窄 + lead 提示默认隐 + 右栏次要块折叠 —— */
-body[data-page="dept"] .sidebar {
-  width: 148px; flex: 0 0 148px;
-}
-body[data-page="dept"] .sidebar .workspace-label {
-  padding: 12px 10px 8px; font-size: 11px;
-}
-body[data-page="dept"] .sidebar .workspace-label span { display: none; }
-body[data-page="dept"] .sidebar .main-nav a { height: 32px; font-size: 12px; padding: 0 8px; }
-body[data-page="dept"] .sidebar .side-project small { display: none; }
-body[data-page="dept"] .sidebar .side-project strong { font-size: 11px; }
-body[data-page="dept"] .sidebar .human-guard { padding: 8px; gap: 6px; }
-body[data-page="dept"] .sidebar .human-guard small { display: none; }
-body[data-page="dept"] .sidebar .human-guard strong { font-size: 10px; }
+/* —— 部门台：全局侧栏默认藏（助手/项目/专业），保住一屏三栏；回公司走底条/顶栏 —— */
+body[data-page="dept"] .sidebar { display: none !important; }
 
 /* lead-workbench tip / status pills: off first screen (re-enable by removing rule) */
 .lead-workbench { display: none !important; }
@@ -1448,3 +1433,54 @@ body[data-page="dept"] .sidebar .human-guard strong { font-size: 10px; }
 }
 .task-strip-minimal strong { color: var(--ink-2); font-weight: 600; }
 .task-strip-minimal .tabular { font-variant-numeric: tabular-nums; }
+
+/* —— 两工作台 B：同模板不同默认权重（禁文书/协同双视图） —— */
+.editor-lite-focus {
+  display: none;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--warm-paper);
+}
+html[data-role="enterprise"] .workbench .editor-lite-focus { display: grid; }
+html[data-role="agency"] .workbench .editor-lite-focus { display: none; }
+.editor-lite-focus .lite-col {
+  border: 1px solid var(--line); border-radius: 8px; background: var(--paper);
+  padding: 10px 12px; min-height: 0;
+}
+.editor-lite-focus .lite-col h3 {
+  margin: 0 0 8px; font-size: 11px; font-weight: 600; color: var(--ink-3);
+  letter-spacing: .04em;
+}
+.editor-lite-focus .lite-col ul { margin: 0; padding: 0; list-style: none; }
+.editor-lite-focus .lite-col li {
+  font-size: 12px; color: var(--ink-2); line-height: 1.45;
+  padding: 4px 0; border-top: 1px solid var(--line);
+}
+.editor-lite-focus .lite-col li:first-child { border-top: 0; padding-top: 0; }
+.editor-lite-focus .lite-col li strong { color: var(--ink); font-weight: 600; }
+
+/* agency: denser dossier — tree + meta always prominent */
+html[data-role="agency"] .workbench[data-tier-workbench] {
+  grid-template-columns: 232px minmax(0,1fr) 316px;
+}
+html[data-role="agency"] .file-pane { background: var(--warm-paper); }
+html[data-role="agency"] .file-pane-foot { display: flex !important; flex-direction: column; gap: 2px; }
+html[data-role="agency"] .workbench .tree button { min-height: 30px; }
+
+/* enterprise: lite center; left tree folded by default (JS fold-left) */
+html[data-role="enterprise"] .workbench.fold-left {
+  grid-template-columns: minmax(0,1fr) 300px;
+}
+html[data-role="enterprise"] .workbench:not(.fold-left) {
+  grid-template-columns: 168px minmax(0,1fr) 300px;
+}
+
+/* §2.1 node contract (short) */
+.node-contract-dl {
+  display: grid; grid-template-columns: 64px minmax(0,1fr); gap: 4px 8px;
+  margin: 0; font-size: 11px; color: var(--ink-2); line-height: 1.45;
+}
+.node-contract-dl dt { color: var(--ink-3); font-weight: 600; }
+.node-contract-dl dd { margin: 0; }

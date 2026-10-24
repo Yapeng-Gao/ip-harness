@@ -201,10 +201,22 @@
       el.classList.toggle('hidden', el.dataset.hideRole === r);
     });
     document.querySelectorAll('[data-workbench]').forEach(root => {
-      root.dataset.mode = r;
-      root.querySelectorAll('[data-view]').forEach(v => {
-        v.classList.toggle('hidden', v.dataset.view !== r);
-      });
+      root.dataset.mode = r; // legacy alias
+      root.classList.toggle('role-enterprise', r === 'enterprise');
+      root.classList.toggle('role-agency', r === 'agency');
+      // Dual B: enterprise defaults left-tree folded (lite center focus);
+      // agency keeps full 卷宗 three-col. No 文书/协同 dual views.
+      if (document.body.dataset.page === 'dept') {
+        const foldBtn = document.querySelector('[data-fold-left]');
+        if (r === 'enterprise') {
+          root.classList.add('fold-left');
+          if (foldBtn) foldBtn.textContent = '展开';
+        } else {
+          root.classList.remove('fold-left');
+          if (foldBtn) foldBtn.textContent = '收折';
+        }
+      }
+      // no [data-view] dual-face tabs — ban 文书/协同 dual views
     });
   }
   function setRole(r) {
@@ -216,7 +228,7 @@
   }
 
   function tierCueLabel(m) {
-    if (m === 'studio') return '工作室';
+    if (m === 'studio') return '专业';
     if (m === 'assistant') return '助手';
     return '项目';
   }
@@ -228,9 +240,8 @@
       btn.classList.toggle('active', btn.dataset.mode === m);
     });
     document.querySelectorAll('[data-tier-cue]').forEach(el => {
-      el.textContent = m === 'studio' ? '工作室' : '';
-      // cue visible via CSS for studio; keep text for a11y
-      if (m === 'studio') el.textContent = '工作室';
+      // outward cue = 专业 (density only; not a separate product shell)
+      if (m === 'studio') el.textContent = '专业';
       else if (el.classList.contains('inline')) el.textContent = tierCueLabel(m);
       else el.textContent = '';
     });
@@ -243,7 +254,12 @@
     document.querySelectorAll('[data-tier-workbench]').forEach(wb => {
       wb.classList.toggle('tier-assist', m === 'assistant');
       wb.classList.toggle('tier-studio', m === 'studio');
-      if (m === 'studio') wb.classList.remove('fold-left');
+      // studio densifies 卷宗; do not fight enterprise fold-left (dual B)
+      if (m === 'studio' && document.documentElement.dataset.role === 'agency') {
+        wb.classList.remove('fold-left');
+        const foldBtn = document.querySelector('[data-fold-left]');
+        if (foldBtn) foldBtn.textContent = '收折';
+      }
     });
   }
   function setMode(m) {
