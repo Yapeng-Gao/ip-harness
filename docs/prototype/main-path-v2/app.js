@@ -460,18 +460,128 @@
       });
     }
 
-    // Tree / editor tab sync (demo titles only)
+    // Tree / editor tab sync — title + body stub must match selected file
+    const DOC_STUBS = {
+      '交底书 V3': {
+        title: '技术交底书 V3',
+        meta: '交卷物 · 技术交底书 V3',
+        html:
+          '<p class="doc-lead">一种磁驱泵智能控制系统的技术交底。点此正文即可编辑；右侧对话与齐套闸同步本案。</p>' +
+          '<h2>一、技术领域</h2>' +
+          '<p>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判，适用于工业磁驱泵产线。</p>' +
+          '<h2>二、背景问题</h2>' +
+          '<p>现有方案在负载突变时超调明显，且缺少可验证的替代实施方式描述，影响交底齐套与后续查新。</p>' +
+          '<h2>三、技术方案</h2>' +
+          '<p>1. 双环控制：外环流量、内环转速；采样周期可配置。</p>' +
+          '<p>2. 故障特征库：振动频谱阈值触发降功率保护。</p>' +
+          '<p class="fact-highlight">3. 量产标定流程：MP-300 线体工装三点校验。<span>已确认事实 · 可编辑标注</span></p>' +
+          '<h2>四、技术效果</h2>' +
+          '<p>负载阶跃下超调降低；可复现实验记录见附件。权属声明齐套后可交卷送确认。</p>' +
+          '<div class="doc-comment"><strong>专家批注 · 交底书撰写专家</strong><p>权属声明仍缺。建议由法务出具模板后你确认——建议稿 ≠ 确认。</p></div>'
+      },
+      '权属声明': {
+        title: '权属声明（缺）',
+        meta: '交卷物 · 权属声明',
+        html:
+          '<p class="doc-lead">职务发明权属声明草稿。补齐后才能与交底书一并送确认。</p>' +
+          '<h2>一、发明人</h2>' +
+          '<p>（待填）陈宇、……</p>' +
+          '<h2>二、权属归属</h2>' +
+          '<p>本申请相关技术成果归<strong>澄明科技有限公司</strong>所有，发明人确认无职务发明争议。</p>' +
+          '<h2>三、签署</h2>' +
+          '<p>发明人签署栏 · 法务复核栏 ·（演示可改）</p>' +
+          '<div class="doc-comment"><strong>顾言</strong><p>本文件仍缺。齐套清单里勾上「权属声明」后，右栏才能交卷。</p></div>'
+      },
+      '访谈纪要': {
+        title: '访谈纪要 10-20',
+        meta: '材料 · 访谈纪要',
+        html:
+          '<p class="doc-lead">2026-10-20 技术访谈纪要 · 磁驱泵智能控制。</p>' +
+          '<h2>参与人</h2><p>陈宇（研发）、交底书撰写专家、顾言。</p>' +
+          '<h2>关键事实</h2>' +
+          '<p>1. MP-300 三点校验已在产线验证。</p>' +
+          '<p>2. 超调问题出现在负载阶跃场景。</p>' +
+          '<p>3. 权属需法务出模板后由负责人确认。</p>'
+      },
+      '前序检索': {
+        title: '前序检索摘要',
+        meta: '材料 · 前序检索',
+        html:
+          '<p class="doc-lead">非正式检索摘要，供交底完善参考——正式查新在查新部。</p>' +
+          '<h2>关键词</h2><p>磁驱泵 / 双环控制 / 故障预判</p>' +
+          '<h2>初步观察</h2><p>相近方案多偏开环调速；双环+频谱阈值组合较少见（待查新部核验）。</p>'
+      },
+      '附图 F1': {
+        title: '附图草图 F1',
+        meta: '卷宗 · 附图草图',
+        html:
+          '<p class="doc-lead">附图草图占位 · 专业档可见。</p>' +
+          '<h2>图 1</h2><p>双环控制框图（草）。</p>' +
+          '<h2>图 2</h2><p>故障预判流程（草）。</p>'
+      },
+      '对比文献': {
+        title: '对比文献包 R2',
+        meta: '卷宗 · 对比文献',
+        html:
+          '<p class="doc-lead">对比文献包占位 · 专业档可见。</p>' +
+          '<h2>文献清单</h2><p>CN… / US… / 非专利文献 2 篇（演示）。</p>'
+      },
+      '确认记录': {
+        title: '确认记录 · 技术事实',
+        meta: '卷宗 · 确认记录',
+        html:
+          '<p class="doc-lead">已拍板与待拍板记录（演示）。</p>' +
+          '<h2>已确认</h2><p>MP-300 三点校验为已确认技术事实。</p>' +
+          '<h2>待确认</h2><p>权属是否归澄明科技。</p>'
+      }
+    };
+
     function activateDoc(name) {
+      if (!name) return;
       document.querySelectorAll('[data-doc-tab]').forEach(b => {
         b.classList.toggle('active', b.dataset.docTab === name);
       });
       document.querySelectorAll('[data-editor-tab]').forEach(b => {
         b.classList.toggle('active', b.dataset.editorTab === name);
       });
-      if (editor && name && name !== '交底书 V3') {
-        const h1 = editor.querySelector('h1');
-        if (h1) h1.textContent = name;
+      // Keep / create matching editor tab label
+      const tabs = document.querySelector('.editor-tabs');
+      if (tabs) {
+        let tab = tabs.querySelector('[data-editor-tab="' + name + '"]');
+        if (!tab) {
+          tab = document.createElement('button');
+          tab.type = 'button';
+          tab.dataset.editorTab = name;
+          tab.innerHTML = name + '<span></span>';
+          tab.addEventListener('click', () => activateDoc(name));
+          tabs.appendChild(tab);
+        }
+        tabs.querySelectorAll('[data-editor-tab]').forEach(b => {
+          b.classList.toggle('active', b.dataset.editorTab === name);
+        });
       }
+      const stub = DOC_STUBS[name] || {
+        title: name,
+        meta: '本案文件 · ' + name,
+        html: '<p class="doc-lead">' + name + '（演示正文，可编辑）。</p><p>与左侧目录当前项一致。</p>'
+      };
+      if (editor) {
+        const metaSpan = editor.querySelector('.doc-meta span:first-child');
+        if (metaSpan) metaSpan.innerHTML = stub.meta;
+        const h1 = editor.querySelector('h1');
+        if (h1) h1.textContent = stub.title;
+        // Replace body after h1 while keeping doc-meta + h1
+        const keep = [];
+        const meta = editor.querySelector('.doc-meta');
+        if (meta) keep.push(meta.outerHTML);
+        keep.push('<h1 data-deliverable>' + stub.title + '</h1>');
+        editor.innerHTML = keep.join('') + stub.html;
+        setDirty(false);
+      }
+      document.querySelectorAll('[data-deliverable]').forEach(el => {
+        if (el.tagName === 'H1' || el.closest('#dept-editor')) return;
+        el.textContent = stub.title;
+      });
     }
     document.querySelectorAll('[data-doc-tab]').forEach(b => {
       b.addEventListener('click', () => activateDoc(b.dataset.docTab));
@@ -626,7 +736,11 @@
     }
   }
 
+  /* Leslie 暂隐：半身像浮层 / dock。改 true 即可重开（CSS kill switch 亦需放开） */
+  const SHOW_GUYAN_HALF_DOCK = false;
+
   function injectGuyanPresence() {
+    if (!SHOW_GUYAN_HALF_DOCK) return; // dock hidden · re-enable via flag + CSS
     if (!document.querySelector('.app-shell')) return;
     if (document.body.dataset.page === 'welcome' || document.body.dataset.page === 'login') return;
     if (document.querySelector('.guyan-presence')) return;

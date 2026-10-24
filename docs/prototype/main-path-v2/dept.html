@@ -105,20 +105,6 @@
         <span class="editor-save-state" data-save-state>已保存</span>
       </div>
 
-      <!-- 企业简版重心条：事项/事实/决策，不替代中栏编辑器 -->
-      <div class="lead-workbench" data-show-role="enterprise">
-        <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="28" height="28">
-        <div>
-          <strong>顾言 · 知产负责人</strong>
-          <p>交底书部正在完善文本。你只需处理关键技术事实；齐套与拍板在右侧。</p>
-        </div>
-        <div class="lead-facts" aria-label="企业简版重心">
-          <span><em>事项</em>补齐权属</span>
-          <span><em>事实</em>MP-300 已确认</span>
-          <span><em>决策</em>权属待拍板</span>
-        </div>
-      </div>
-
       <div class="document-scroll">
         <article class="document" id="dept-editor" contenteditable="true" spellcheck="false" aria-label="交卷物正文 · 可编辑">
           <div class="doc-meta">
@@ -148,7 +134,6 @@
         <span data-editor-foot>内容已同步至项目事实库（演示）</span>
         <div>
           <button class="btn btn-secondary" type="button" data-save-doc>保存版本</button>
-          <a class="btn btn-ink" href="pending.html?dept=disclosure" data-keep-role>提交确认 →</a>
         </div>
       </div>
     </section>
@@ -173,15 +158,17 @@
             <strong>顾言 · 知产负责人</strong>
             齐套后我会把本关送「待你确认」。类型：<span data-confirm-type>技术事实</span>。
           </div>
-          <div class="chat-bubble chat-bubble-soft">
-            <strong>待确认预览</strong>
-            <span data-pending-fact>权属是否归澄明科技，且无职务发明争议？</span>
-            <small style="display:block;margin-top:6px;color:var(--ink-3)">拍板在确认页；本栏只预览。</small>
-          </div>
-          <div class="experts-block">
-            <div class="pane-subhead">本部门专家</div>
+          <details class="rail-collapse">
+            <summary>待确认预览</summary>
+            <div class="chat-bubble chat-bubble-soft">
+              <span data-pending-fact>权属是否归澄明科技，且无职务发明争议？</span>
+              <small style="display:block;margin-top:6px;color:var(--ink-3)">拍板在确认页；本栏只预览。</small>
+            </div>
+          </details>
+          <details class="rail-collapse experts-block">
+            <summary>本部门专家</summary>
             <div data-experts></div>
-          </div>
+          </details>
         </div>
 
         <form class="chat-compose" id="dept-chat-form" autocomplete="off">
@@ -202,20 +189,11 @@
     </aside>
   </div>
 
-  <!-- 窄屏/辅助：任务条压在工作台外可选 -->
-  <div class="task-strip task-strip-compact" aria-label="当前节点一览">
-    <div class="task-cell">
-      <span class="task-label">当前任务</span>
-      <strong data-current-task>补齐权属声明后交卷</strong>
-    </div>
-    <div class="task-cell">
-      <span class="task-label">齐套</span>
-      <strong><span class="tabular" data-check-count>0 / 4</span></strong>
-    </div>
-    <div class="task-cell task-cell-cta">
-      <button class="btn btn-ink btn-sm" type="button" data-focus-gate>去齐套</button>
-      <a class="btn btn-ghost btn-sm" href="company.html" data-keep-role>回公司</a>
-    </div>
+  <!-- 极简进度一行：无第二套齐套 CTA（主 CTA 仅右栏闸） -->
+  <div class="task-strip-minimal" aria-label="当前节点进度">
+    <span>当前 · <strong data-current-task>补齐权属声明后交卷</strong></span>
+    <span>齐套 <strong class="tabular" data-check-count>0 / 4</strong></span>
+    <a class="weak-link" href="company.html" data-keep-role style="margin-left:auto">回公司</a>
   </div>
 </main>
 </div>

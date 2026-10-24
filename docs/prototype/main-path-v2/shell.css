@@ -1109,6 +1109,9 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 .drawer-actions { display: flex; gap: 8px; margin-top: 22px; flex-wrap: wrap; }
 
 /* 顾言 · Codex-like presence (bottom-right half-body) */
+/* Kill switch · Leslie 暂隐半身像浮层：删下一行或改 display:flex 即可重开 */
+.guyan-presence { display: none !important; }
+
 .guyan-presence {
   position: fixed; z-index: 40; right: 18px; bottom: 18px;
   display: flex; align-items: flex-end; gap: 10px;
@@ -1403,3 +1406,45 @@ html[data-mode="assistant"] .company-need-me {
   .relay-demo { min-height: 0; }
 }
 
+
+/* —— 部门台减负：侧栏收窄 + lead 提示默认隐 + 右栏次要块折叠 —— */
+body[data-page="dept"] .sidebar {
+  width: 148px; flex: 0 0 148px;
+}
+body[data-page="dept"] .sidebar .workspace-label {
+  padding: 12px 10px 8px; font-size: 11px;
+}
+body[data-page="dept"] .sidebar .workspace-label span { display: none; }
+body[data-page="dept"] .sidebar .main-nav a { height: 32px; font-size: 12px; padding: 0 8px; }
+body[data-page="dept"] .sidebar .side-project small { display: none; }
+body[data-page="dept"] .sidebar .side-project strong { font-size: 11px; }
+body[data-page="dept"] .sidebar .human-guard { padding: 8px; gap: 6px; }
+body[data-page="dept"] .sidebar .human-guard small { display: none; }
+body[data-page="dept"] .sidebar .human-guard strong { font-size: 10px; }
+
+/* lead-workbench tip / status pills: off first screen (re-enable by removing rule) */
+.lead-workbench { display: none !important; }
+
+/* Right-rail secondary: collapsed by default via <details> */
+.chat-pane details.rail-collapse {
+  border-top: 1px solid var(--line); margin-top: 8px; padding-top: 6px;
+}
+.chat-pane details.rail-collapse > summary {
+  cursor: pointer; list-style: none; font-size: 11px; color: var(--ink-3);
+  font-weight: 600; letter-spacing: .04em; padding: 4px 0;
+}
+.chat-pane details.rail-collapse > summary::-webkit-details-marker { display: none; }
+.chat-pane details.rail-collapse > summary::before {
+  content: "▸ "; color: var(--ink-3);
+}
+.chat-pane details.rail-collapse[open] > summary::before { content: "▾ "; }
+
+/* Minimal progress strip (no second CTA) */
+.task-strip-minimal {
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 16px;
+  padding: 6px 14px; border-top: 1px solid var(--line);
+  background: var(--warm-paper); font-size: 11px; color: var(--ink-3);
+}
+.task-strip-minimal strong { color: var(--ink-2); font-weight: 600; }
+.task-strip-minimal .tabular { font-variant-numeric: tabular-nums; }
