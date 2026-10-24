@@ -3,6 +3,7 @@
   const DEPTS = {
     disclosure: {
       id: 'disclosure', name: '交底部', code: '00', deliverable: '技术交底书 V3',
+      pitch: '访谈与事实齐套后，交出可接力的技术交底书。',
       missing: '权属声明', check: ['技术方案完整', '技术效果可验证', '替代实施方式', '权属声明'],
       experts: ['技术访谈专家', '交底书撰写专家', '林岚 · 代理师'],
       pendingTitle: '确认交底书可接力',
@@ -12,6 +13,7 @@
     },
     research: {
       id: 'research', name: '查新部', code: '01', deliverable: '可专利性检索报告 R2',
+      pitch: '检索、比对、结论稿齐套，再谈能不能申请。',
       missing: '结论稿', check: ['检索式与范围', '证据来源核验', '特征比对表', '结论稿'],
       experts: ['检索分析专家', 'FTO 对照专家', '林岚 · 代理师'],
       pendingTitle: '确认查新结论可立项',
@@ -21,6 +23,7 @@
     },
     decision: {
       id: 'decision', name: '立项部', code: '02', deliverable: '立项决议与报价单',
+      pitch: '策略、报价与决议齐套，值不值得推由你拍板。',
       missing: '决议签署', check: ['保护策略建议', '费用与周期', '申请类型建议', '决议签署'],
       experts: ['布局策略专家', '报价顾问', '顾言 · 知产负责人'],
       pendingTitle: '确认立项决议',
@@ -30,6 +33,7 @@
     },
     draft: {
       id: 'draft', name: '撰写部', code: '03', deliverable: '权利要求草案 V1',
+      pitch: '权利要求与说明书层次清楚，写成可递交的文本。',
       missing: '权项树', check: ['独立权利要求', '从属层次', '说明书同步', '权项树'],
       experts: ['权利要求专家', '说明书撰写专家', '林岚 · 代理师'],
       pendingTitle: '确认保护范围',
@@ -39,6 +43,7 @@
     },
     figure: {
       id: 'figure', name: '附图部', code: '04', deliverable: '附图包 F2',
+      pitch: '流程图、结构图与图号，和说明书对齐后交卷。',
       missing: '图号核对', check: ['流程图齐全', '结构图标注', '说明书引用一致', '图号核对'],
       experts: ['附图绘制专家', '一致性核查专家', '林岚 · 代理师'],
       pendingTitle: '确认附图可并入申请包',
@@ -48,6 +53,7 @@
     },
     filing: {
       id: 'filing', name: '递交与程序', code: '05', deliverable: '申请包与递交核查单',
+      pitch: '申请包齐套；授权人确认后才对外递交。',
       missing: '授权人确认', check: ['申请文件齐套', '费用与期限', '递交清单', '授权人确认'],
       experts: ['流程事务专家', '期限监控专家', '林岚 · 代理师'],
       pendingTitle: '确认授权递交',
@@ -57,6 +63,7 @@
     },
     oa: {
       id: 'oa', name: '审查答复', code: '06', deliverable: '意见陈述书 V2',
+      pitch: '策略与争辩齐套；企业确认后代理复核再递。',
       missing: '企业确认意见', check: ['通知书拆解', '修改对照', '创造性争辩', '企业确认意见'],
       experts: ['OA 策略专家', '创造性争辩专家', '林岚 · 代理师'],
       pendingTitle: '确认答复策略',
@@ -96,12 +103,53 @@
   }
 
   function renderExperts(names) {
-    return (names || []).map((e, i) => {
+    return (names || []).slice(0, 3).map((e, i) => {
       const m = expertMeta(e, i);
       return '<div class="expert-row">' +
         '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="28" height="28">' +
         '<span><strong>' + m.name + '</strong><small>' + m.status + '</small></span></div>';
     }).join('');
+  }
+
+  /* Compact ≤3 photo faces + 岗名 — welcome shelf / company dept cards */
+  function renderExpertFaces(names) {
+    return (names || []).slice(0, 3).map((e, i) => {
+      const m = expertMeta(e, i);
+      const short = m.name.replace(/\s*·.*$/, '');
+      return '<span class="expert-face" title="' + m.name + '">' +
+        '<img class="avatar-photo avatar-photo-sm" src="' + m.src + '" alt="" width="28" height="28">' +
+        '<em>' + short + '</em></span>';
+    }).join('');
+  }
+
+  function wireWelcomeShelf() {
+    const grid = document.getElementById('dept-shelf-grid');
+    if (!grid) return;
+    grid.innerHTML = DEPT_ORDER.map(key => {
+      const d = DEPTS[key];
+      return '<article class="shelf-card shelf-card-deliverable">' +
+        '<span class="shelf-dept">' + d.code + ' · ' + d.name + '</span>' +
+        '<h3>' + d.deliverable + '</h3>' +
+        '<p>' + (d.pitch || '') + '</p>' +
+        '<div class="shelf-experts" aria-label="' + d.name + '专家">' + renderExpertFaces(d.experts) + '</div>' +
+        '</article>';
+    }).join('');
+  }
+
+  function wireCompanyDeptFaces() {
+    document.querySelectorAll('[data-dept-open]').forEach(card => {
+      const key = card.dataset.deptOpen;
+      const dept = DEPTS[key];
+      if (!dept) return;
+      let faces = card.querySelector('.dept-faces');
+      if (!faces) {
+        faces = document.createElement('div');
+        faces.className = 'dept-faces';
+        faces.setAttribute('aria-label', '本部门专家');
+        card.appendChild(faces);
+      }
+      faces.innerHTML = renderExpertFaces(dept.experts);
+    });
   }
 
 
@@ -433,6 +481,7 @@
       slot.querySelector('[data-snap-deliverable]').textContent = snap.deliverable || '';
       slot.querySelector('[data-snap-fact]').textContent = snap.fact || '';
     }
+    wireCompanyDeptFaces();
     wireCompanyDrawer();
   }
 
@@ -561,13 +610,15 @@
   window.MPV2 = {
     DEPTS, DEPT_ORDER, role, setRole, mode, setMode, qs, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot,
-    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanySnapshot, injectGuyanPresence, renderExperts
+    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanySnapshot, injectGuyanPresence,
+    renderExperts, renderExpertFaces, wireWelcomeShelf, wireCompanyDeptFaces
   };
 
   document.addEventListener('DOMContentLoaded', () => {
     wireShell();
     injectGuyanPresence();
     const page = document.body.dataset.page;
+    if (page === 'welcome') wireWelcomeShelf();
     if (page === 'dept') wireDeptPage();
     if (page === 'pending') wirePending();
     if (page === 'delegate') wireDelegate();
