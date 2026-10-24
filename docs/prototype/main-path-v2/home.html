@@ -3,14 +3,12 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>工作首页 · 外挂知识产权部</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="shell.css">
 </head>
-
-<body data-page="home">
+<body data-page="home" >
 <div class="app-shell">
 <header class="topbar">
-  <a class="brand" href="home.html" aria-label="返回首页">
+  <a class="brand" href="home.html" data-keep-role aria-label="返回首页">
     <span class="brand-mark">外</span>
     <span class="brand-copy"><strong>外挂知识产权部</strong><small>IP COMPANY</small></span>
   </a>
@@ -19,19 +17,18 @@
     <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
   </div>
   <div class="topbar-actions">
-    <button class="search-trigger" type="button" data-toast="搜索演示"><span>⌕</span><span>搜索项目、文件或部门</span><kbd>⌘ K</kbd></button>
-    <a href="welcome.html" style="font-size:12px;color:var(--ink-3)">官网</a>
-    <button class="icon-btn notice-button" type="button" data-toast="有 2 项待确认" aria-label="通知">🔔<span></span></button>
-    <div class="mode-switch" aria-label="使用模式">
-      <button type="button" data-mode="assistant" class="active">助手</button>
-      <button type="button" data-mode="project">项目</button>
+    <a class="weak-link" href="welcome.html">官网</a>
+    <a class="icon-btn notice-button" href="pending.html?dept=disclosure" data-keep-role aria-label="待确认">🔔<span></span></a>
+    <div class="mode-switch" aria-label="使用深度">
+      <button type="button" data-mode="assistant">助手</button>
+      <button type="button" data-mode="project" class="active">项目</button>
       <button type="button" data-mode="studio">专业</button>
     </div>
     <div class="role-switch" aria-label="切换角色">
-      <button type="button" data-role="enterprise">企业研发</button>
+      <button type="button" data-role="enterprise" class="active">企业研发</button>
       <button type="button" data-role="agency">代理所</button>
     </div>
-    <span class="avatar avatar-human avatar-small">陈</span>
+    <span class="avatar avatar-human">陈</span>
   </div>
 </header>
 <div class="app-main">
@@ -39,153 +36,161 @@
   <div class="workspace-label" data-show-role="enterprise">澄明科技有限公司<span>研发负责人工作区</span></div>
   <div class="workspace-label hidden" data-show-role="agency">衡知专利代理事务所<span>代理师工作区</span></div>
   <nav class="main-nav" data-show-role="enterprise">
-    <a class="active" href="home.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink);background:var(--paper);box-shadow:0 0 0 1px var(--line);font-weight:600">公司首页</a>
-    <a class="" href="cases.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">项目与对象</a>
-    <a class="" href="company.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">部门与专家</a>
-    <a class="" href="pending.html?dept=disclosure" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">待你确认</a>
+    <a class="active" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="company.html" data-keep-role>本公司</a>
+    <a class="" href="cases.html" data-keep-role>项目与对象</a>
+    <a class="" href="pending.html?dept=disclosure" data-keep-role>待你确认</a>
   </nav>
   <nav class="main-nav hidden" data-show-role="agency">
-    <a class="active" href="home.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink);background:var(--paper);box-shadow:0 0 0 1px var(--line);font-weight:600">工作首页</a>
-    <a class="" href="cases.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">客户与案件</a>
-    <a class="" href="company.html" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">专业团队</a>
-    <a class="" href="pending.html?dept=oa" style="height:38px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink-2)">客户确认</a>
+    <a class="active" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="cases.html" data-keep-role>客户与案件</a>
+    <a class="" href="company.html" data-keep-role>本案公司</a>
+    <a class="" href="pending.html?dept=oa" data-keep-role>客户确认</a>
   </nav>
   <div class="sidebar-section">
-    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html">＋</a></div>
-    <a class="side-project active" href="dept.html?dept=disclosure"><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
-    <a class="side-project" href="dept.html?dept=oa"><span class="project-glyph muted">MS</span><span><strong>低能耗膜分离工艺</strong><small>第一次 OA 答复</small></span></a>
+    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
+    <a class="side-project active" href="dept.html?dept=disclosure" data-keep-role><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
+    <a class="side-project" href="dept.html?dept=oa" data-keep-role><span class="project-glyph muted">MS</span><span><strong>低能耗膜分离工艺</strong><small>第一次 OA 答复</small></span></a>
   </div>
   <div class="sidebar-bottom">
     <div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div>
   </div>
 </aside>
-<main class="content content-assistant">
+<main class="content">
 
   <div data-show-role="enterprise">
-    <section class="home-intro company-home-intro">
-      <div>
-        <p class="date-line">公司首页 · 知产负责人统一组织，你只做关键确认</p>
-        <h1>早上好，陈宇。<br>今天有 3 件事需要你处理。</h1>
-      </div>
-    </section>
-    <section class="lead-card" aria-label="知产负责人">
-      <div class="lead-identity">
+    <p class="kicker">薄入口 · 登录后</p>
+    <h1 class="page-title">早上好，陈宇。</h1>
+    <p class="page-sub">一屏一个主入口：把目标交给顾言，走完计划→执行→确认→接力。下方只放「现在需要我处理」。</p>
+
+    <section class="primary-zone" data-home="thin-entry" data-entry-role="enterprise" aria-label="主 CTA">
+      <div class="lead-row">
         <span class="avatar">顾</span>
         <div>
-          <span class="section-kicker">统一委托入口</span>
-          <h2>顾言 · 知产负责人</h2>
-          <p>新目标或全公司指令都从这里开始；不必先选部门。</p>
+          <span class="kicker">主 CTA · 知产负责人持续委托</span>
+          <h2>顾言 · 持续委托</h2>
+          <p>提目标 → 计划可调 → 部门执行 → 确认 → 接力。不另开经营台，不跳过交卷闸。</p>
         </div>
       </div>
-      <div class="lead-command">
-        <form id="lead-form" onsubmit="return false;">
-          <input id="lead-input" placeholder="交办业务目标，例如：整理一项磁驱泵控制技术，想评估如何保护" aria-label="告诉知产负责人你的目标">
-          <button class="btn btn-ink" type="submit">交给顾言 →</button>
-        </form>
-        <div class="lead-suggestions">
-          <span>快速交办</span>
-          <button type="button" data-fill="整理一项研发成果">整理一项研发成果</button>
-          <button type="button" data-fill="新产品上市前排查风险">新产品上市前排查风险</button>
-          <button type="button" data-fill="收到审查意见">收到审查意见</button>
-        </div>
-        <div class="lead-response hidden" id="lead-response">
-          <span style="color:var(--green)">✓</span>
-          <div>
-            <strong>已理解，建议由交底部先接手</strong>
-            <p>我会组织访谈补齐事实，只在需要技术事实或商业决策时找你。</p>
-          </div>
-          <a class="btn btn-secondary" href="company.html">确认计划并开始 →</a>
-        </div>
+      <form id="lead-form" class="goal-form" data-testid="home-action-primary">
+        <input id="lead-input" name="goal" placeholder="例如：整理一项磁驱泵控制技术，想评估如何保护" aria-label="业务目标" required>
+        <button class="btn btn-ink" type="submit">交给顾言，开始委托 →</button>
+      </form>
+      <div class="chips">
+        <span>快速交办</span>
+        <button type="button" data-fill="整理一项研发成果，评估能否申请发明">整理研发成果</button>
+        <button type="button" data-fill="新产品上市前排查 FTO 风险">上市前排查风险</button>
+        <button type="button" data-fill="收到第一次审查意见，需要答复策略">收到审查意见</button>
       </div>
+      <p class="primary-cta-note">同区弱链：
+        <a class="weak-link" href="company.html" data-keep-role>进入本公司</a> ·
+        <a class="weak-link" href="case-new.html" data-keep-role>开新案子</a> ·
+        <a class="weak-link" href="cases.html" data-keep-role>全部项目</a>
+      </p>
     </section>
-    <div class="primary-cta-wrap">
-      <a class="btn btn-primary" href="company.html">进入本公司 →</a>
-      <span style="margin-left:14px" class="weak-link"><a class="weak-link" href="case-new.html">开新案子</a> · <a class="weak-link" href="pending.html?dept=disclosure">待确认（2）</a> · <a class="weak-link" href="cases.html">全部项目</a></span>
-    </div>
-    <section class="company-attention" style="margin-top:28px">
-      <div class="company-section-head">
-        <div><span class="section-kicker">现在需要我处理</span><h2>按期限与流程影响排序</h2></div>
-        <a class="text-btn" href="pending.html?dept=disclosure">全部确认 →</a>
+
+    <section class="need-me" data-testid="home-need-me-rail" aria-label="现在需要我处理">
+      <div class="need-me-head">
+        <div>
+          <span class="kicker">现在需要我处理</span>
+          <h2>待确认 / 待接力</h2>
+        </div>
+        <a class="text-btn" href="pending.html?dept=disclosure" data-keep-role>全部 →</a>
       </div>
-      <div class="attention-list">
-        <a href="pending.html?dept=disclosure" style="display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:15px;padding:18px 8px;border-bottom:1px solid var(--line);color:inherit">
-          <span class="attention-order">01</span>
-          <span><span class="status status-orange"><span class="status-dot"></span>技术事实 · 阻塞接力</span><strong style="display:block;margin-top:6px">权属是否归澄明科技？</strong><small>磁驱泵 · 今天 14:30</small></span>
-          <span style="color:var(--ink-3);font-size:12px">查看依据 →</span>
-        </a>
-        <a href="pending.html?dept=draft" style="display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:15px;padding:18px 8px;border-bottom:1px solid var(--line);color:inherit">
-          <span class="attention-order">02</span>
-          <span><span class="status status-orange"><span class="status-dot"></span>申请策略 · 等待确认</span><strong style="display:block;margin-top:6px">独权是否覆盖量产方案？</strong><small>储能热管理 · 今天 17:00</small></span>
-          <span style="color:var(--ink-3);font-size:12px">进入复核 →</span>
-        </a>
-        <a href="dept.html?dept=research" style="display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:15px;padding:18px 8px;border-bottom:1px solid var(--line);color:inherit">
-          <span class="attention-order">03</span>
-          <span><span class="status status-red"><span class="status-dot"></span>风险决策 · 上市前</span><strong style="display:block;margin-top:6px">高速视觉检测发现 1 件高相关权利要求</strong><small>FTO-2026-009 · 11 月 03 日前</small></span>
-          <span style="color:var(--ink-3);font-size:12px">查看选项 →</span>
-        </a>
-      </div>
+      <a class="rail-item" href="pending.html?dept=disclosure" data-keep-role data-testid="home-pending-entry">
+        <span class="rail-ord">01</span>
+        <span>
+          <span class="tag"><span class="tag-dot"></span>技术事实</span>
+          <strong>【磁驱泵】交底部已交卷 · 待你确认：权属是否归澄明科技</strong>
+          <small>阻塞接力 · 今天 14:30</small>
+        </span>
+        <span class="weak-link">去确认 →</span>
+      </a>
+      <a class="rail-item" href="pending.html?dept=decision" data-keep-role>
+        <span class="rail-ord">02</span>
+        <span>
+          <span class="tag"><span class="tag-dot"></span>商业与风险决策</span>
+          <strong>【磁驱泵】立项部已交卷 · 待你确认：发明申请与报价</strong>
+          <small>待确认 · 明天前</small>
+        </span>
+        <span class="weak-link">去确认 →</span>
+      </a>
+      <a class="rail-item" href="company.html" data-keep-role>
+        <span class="rail-ord">03</span>
+        <span>
+          <span class="tag tag-green"><span class="tag-dot"></span>待接力</span>
+          <strong>【膜分离】可接力 → 审查答复</strong>
+          <small>上一部确认已通过</small>
+        </span>
+        <span class="weak-link">去接力 →</span>
+      </a>
     </section>
   </div>
 
   <div class="hidden" data-show-role="agency">
-    <section class="home-intro agency-intro">
-      <div>
-        <p class="date-line">助手模式 · 知产负责人汇总期限、案件与客户确认</p>
-        <h1>上午好，林岚。<br>先处理期限，再推进交付。</h1>
-      </div>
-    </section>
-    <section class="lead-card">
-      <div class="lead-identity">
-        <span class="avatar">顾</span>
+    <p class="kicker">薄入口 · 登录后</p>
+    <h1 class="page-title">上午好，林岚。</h1>
+    <p class="page-sub">代理主 CTA 进案盘；持续委托可挂在同区。下方「现在需要我处理」= 客户确认 / 待接力。</p>
+
+    <section class="primary-zone" data-home="thin-entry" data-entry-role="agency">
+      <div class="lead-row">
+        <span class="avatar avatar-human">林</span>
         <div>
-          <span class="section-kicker">你的知产负责人</span>
-          <h2>顾言</h2>
-          <p>我帮你安排案件优先级、组织专业团队，并汇总客户确认。</p>
+          <span class="kicker">主 CTA</span>
+          <h2>进入案盘，按期限推进交付</h2>
+          <p>同案协同，不是外挂聊天窗。需要交办目标时，可走顾言持续委托链。</p>
         </div>
       </div>
-      <div class="lead-command">
-        <form onsubmit="return false;">
-          <input placeholder="例如：先处理今天到期的质检，并汇总客户待确认事项">
-          <button class="btn btn-ink" type="button" data-toast="已按期限重排工作">交给顾言 →</button>
-        </form>
+      <div style="display:flex;flex-wrap:wrap;gap:10px" data-testid="home-action-primary">
+        <a class="btn btn-primary" href="cases.html" data-keep-role>进入案盘 →</a>
+        <a class="btn btn-secondary" href="delegate.html?step=goal" data-keep-role>顾言持续委托</a>
       </div>
+      <p class="primary-cta-note">弱链：
+        <a class="weak-link" href="case-new.html" data-keep-role>开新案子</a> ·
+        <a class="weak-link" href="pending.html?dept=oa" data-keep-role>客户待确认</a>
+      </p>
     </section>
-    <div class="primary-cta-wrap">
-      <a class="btn btn-primary" href="cases.html">进入案盘 →</a>
-      <span style="margin-left:14px" class="weak-link"><a class="weak-link" href="case-new.html">开新案子</a> · <a class="weak-link" href="pending.html?dept=oa">客户待确认（5）</a></span>
-    </div>
-    <section class="metric-strip" style="margin-top:28px">
-      <div><small>今日待办</small><strong>8</strong><span>2 项临近内部期限</span></div>
-      <div><small>进行中案件</small><strong>26</strong><span>覆盖 7 家客户</span></div>
-      <div><small>待客户确认</small><strong>5</strong><span>平均等待 1.4 天</span></div>
-      <div><small>本月已交付</small><strong>17</strong><span>质检通过率 94%</span></div>
-    </section>
-    <div class="agency-grid" style="margin-top:28px">
-      <section class="work-queue">
-        <div class="section-head"><div><span class="section-kicker">优先级队列</span><h2>现在最该处理的案件</h2></div><a class="text-btn" href="cases.html">全部案件 →</a></div>
-        <div class="queue-head"><span>案件 / 客户</span><span>当前任务</span><span>期限</span><span>负责人</span><span></span></div>
-        <a class="queue-row" href="dept.html?dept=oa&role=agency"><span><strong>低能耗膜分离工艺</strong><small>澄明科技</small></span><span>第一次 OA 答复</span><span class="urgent">剩余 18 天</span><span>林岚</span><span>›</span></a>
-        <a class="queue-row" href="dept.html?dept=draft&role=agency"><span><strong>模块化储能热管理</strong><small>澄明科技</small></span><span>申请文件质检</span><span class="urgent">今天 17:00</span><span>林岚</span><span>›</span></a>
-        <a class="queue-row" href="dept.html?dept=disclosure&role=agency"><span><strong>磁驱泵智能控制</strong><small>澄明科技</small></span><span>交底书完善</span><span>今天 14:30</span><span>顾研</span><span>›</span></a>
-      </section>
-      <aside class="client-pulse">
-        <div class="section-head"><div><span class="section-kicker">客户协同</span><h2>等待与反馈</h2></div></div>
-        <div class="pulse-item"><span class="avatar avatar-human">陈</span><div><strong>陈宇补充了技术说明</strong><p>磁驱泵 · 25 分钟前</p><a href="dept.html?dept=disclosure&role=agency">查看并继续撰写 →</a></div></div>
-        <div class="pulse-item"><span class="avatar avatar-human">周</span><div><strong>周敏确认了答复策略</strong><p>膜分离 · 昨天</p><a href="dept.html?dept=oa&role=agency">进入 OA 答复 →</a></div></div>
-      </aside>
-    </div>
-  </div>
 
+    <section class="need-me" data-testid="home-need-me-rail">
+      <div class="need-me-head">
+        <div>
+          <span class="kicker">现在需要我处理</span>
+          <h2>待确认 / 待接力</h2>
+        </div>
+        <a class="text-btn" href="pending.html?dept=oa" data-keep-role>全部 →</a>
+      </div>
+      <a class="rail-item" href="pending.html?dept=oa" data-keep-role>
+        <span class="rail-ord">01</span>
+        <span>
+          <span class="tag"><span class="tag-dot"></span>商业与风险决策</span>
+          <strong>【膜分离】审查答复 · 待客户确认策略</strong>
+          <small>剩余 18 天</small>
+        </span>
+        <span class="weak-link">查看 →</span>
+      </a>
+      <a class="rail-item" href="pending.html?dept=filing" data-keep-role>
+        <span class="rail-ord">02</span>
+        <span>
+          <span class="tag"><span class="tag-dot"></span>对外交付 / 递交</span>
+          <strong>【储能热管理】递交前 · 待授权人确认</strong>
+          <small>今天 17:00</small>
+        </span>
+        <span class="weak-link">查看 →</span>
+      </a>
+      <a class="rail-item" href="dept.html?dept=disclosure" data-keep-role>
+        <span class="rail-ord">03</span>
+        <span>
+          <span class="tag tag-green"><span class="tag-dot"></span>待接力</span>
+          <strong>【磁驱泵】可接力 → 交底部完善</strong>
+          <small>客户已补充技术说明</small>
+        </span>
+        <span class="weak-link">去部门台 →</span>
+      </a>
+    </section>
+  </div>
 </main>
 </div>
 </div>
 <script src="app.js"></script>
-<script>
-document.querySelectorAll('[data-fill]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('lead-input').value=b.dataset.fill}));
-document.getElementById('lead-form')?.addEventListener('submit',()=>{
-  if(!document.getElementById('lead-input').value.trim()) return;
-  document.getElementById('lead-response').classList.remove('hidden');
-  MPV2.toast('已交给顾言');
-});
-</script>
+
 </body></html>

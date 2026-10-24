@@ -3,75 +3,33 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>登录 · 外挂知识产权部</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="shell.css">
 </head>
-
-<body class="login-page">
-<header>
-  <a class="brand site-brand" href="welcome.html"><span class="brand-mark">外</span><span class="brand-copy"><strong>外挂知识产权部</strong><small>IP COMPANY</small></span></a>
-  <a class="text-btn" href="welcome.html">← 返回官网</a>
-</header>
-<main>
-  <section class="login-context">
-    <span class="site-eyebrow"><span></span>进入你的知产工作空间</span>
-    <h1>继续推进工作，<br>而不是重新开始。</h1>
-    <p>项目、案件、文书、证据、版本与确认记录，都在同一个业务底座中延续。</p>
-    <div>
-      <span style="font-size:19px">⛨</span>
-      <span><strong>身份决定空间，模式决定使用深度</strong><small>企业与代理所看到的是各自权限内的工作。</small></span>
+<body class="marketing-site">
+  <div class="login-card">
+    <a class="brand" href="welcome.html" style="border:0;width:auto;padding:0;height:auto">
+      <span class="brand-mark">外</span>
+      <span class="brand-copy"><strong>外挂知识产权部</strong><small>DEMO LOGIN</small></span>
+    </a>
+    <h1>选择演示身份</h1>
+    <p>写入角色后进入薄入口。企业走本公司链路；代理走案盘链路。</p>
+    <div class="role-pick" id="role-pick">
+      <button type="button" data-role="enterprise" class="active"><strong>企业研发</strong><small>澄明科技 · 陈宇</small></button>
+      <button type="button" data-role="agency"><strong>代理所</strong><small>衡知专利 · 林岚</small></button>
     </div>
-  </section>
-  <section class="login-panel">
-    <div>
-      <span class="section-kicker">演示身份登录</span>
-      <h2>选择你的工作台</h2>
-      <p>首版原型以演示身份进入，不采集账户信息。</p>
-    </div>
-    <div class="login-role-options" id="login-roles">
-      <button type="button" class="active" data-pick="enterprise">
-        <span style="font-size:22px">🏢</span>
-        <span><strong>企业研发</strong><small>澄明科技 · 陈宇</small></span>
-        <span class="check">✓</span>
-      </button>
-      <button type="button" data-pick="agency">
-        <span style="font-size:22px">💼</span>
-        <span><strong>代理所</strong><small>衡知代理 · 林岚</small></span>
-        <span class="check" hidden>✓</span>
-      </button>
-    </div>
-    <div class="login-state">
-      <span>演示首页状态</span>
-      <div>
-        <button type="button" class="active" data-first="0">已有工作</button>
-        <button type="button" data-first="1">首次使用</button>
-      </div>
-      <p id="first-hint">查看跨项目待办、进展与最近交付。</p>
-    </div>
-    <a class="btn btn-primary full-btn login-enter" id="enter-btn" href="home.html">进入企业研发工作区 →</a>
-    <small class="login-disclaimer">静态原型 · 演示身份不代表真实登录或租户隔离</small>
-  </section>
-</main>
-<script src="app.js"></script>
-<script>
-(function(){
-  let role='enterprise', first=false;
-  const roles=document.querySelectorAll('#login-roles > button');
-  roles.forEach(b=>b.addEventListener('click',()=>{
-    role=b.dataset.pick;
-    roles.forEach(x=>{x.classList.toggle('active',x===b); const c=x.querySelector('.check'); if(c) c.hidden=x!==b;});
-    document.getElementById('enter-btn').textContent=role==='agency'?'进入代理所工作区 →':'进入企业研发工作区 →';
+    <button class="btn btn-ink" type="button" id="go" style="width:100%">进入工作首页 →</button>
+    <p style="margin-top:14px;font-size:12px"><a class="weak-link" href="welcome.html">← 返回宣传站</a></p>
+  </div>
+  <script src="app.js"></script>
+  <script>
+  let r = 'enterprise';
+  document.querySelectorAll('#role-pick button').forEach(b => b.addEventListener('click', () => {
+    r = b.dataset.role;
+    document.querySelectorAll('#role-pick button').forEach(x => x.classList.toggle('active', x === b));
   }));
-  document.querySelectorAll('.login-state > div button').forEach(b=>b.addEventListener('click',()=>{
-    first=b.dataset.first==='1';
-    document.querySelectorAll('.login-state > div button').forEach(x=>x.classList.toggle('active',x===b));
-    document.getElementById('first-hint').textContent=first?'从空白公司开始，不展示虚构项目进度。':'查看跨项目待办、进展与最近交付。';
-  }));
-  document.getElementById('enter-btn').addEventListener('click',(e)=>{
-    e.preventDefault();
-    localStorage.setItem('mpv2-role', role);
-    location.href='home.html?role='+role+(first?'&first=1':'');
+  document.getElementById('go').addEventListener('click', () => {
+    localStorage.setItem('mpv2-role', r);
+    location.href = 'home.html?role=' + r;
   });
-})();
-</script>
+  </script>
 </body></html>

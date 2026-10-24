@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>持续委托 · 外挂知识产权部</title>
+<link rel="stylesheet" href="shell.css">
+</head>
+<body data-page="delegate" >
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="home.html" data-keep-role aria-label="返回首页">
+    <span class="brand-mark">外</span>
+    <span class="brand-copy"><strong>外挂知识产权部</strong><small>IP COMPANY</small></span>
+  </a>
+  <div class="topbar-context">
+    <span class="context-label">当前项目</span>
+    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+  </div>
+  <div class="topbar-actions">
+    <a class="weak-link" href="welcome.html">官网</a>
+    <a class="icon-btn notice-button" href="pending.html?dept=disclosure" data-keep-role aria-label="待确认">🔔<span></span></a>
+    <div class="mode-switch" aria-label="使用深度">
+      <button type="button" data-mode="assistant">助手</button>
+      <button type="button" data-mode="project" class="active">项目</button>
+      <button type="button" data-mode="studio">专业</button>
+    </div>
+    <div class="role-switch" aria-label="切换角色">
+      <button type="button" data-role="enterprise" class="active">企业研发</button>
+      <button type="button" data-role="agency">代理所</button>
+    </div>
+    <span class="avatar avatar-human">陈</span>
+  </div>
+</header>
+<div class="app-main">
+<aside class="sidebar">
+  <div class="workspace-label" data-show-role="enterprise">澄明科技有限公司<span>研发负责人工作区</span></div>
+  <div class="workspace-label hidden" data-show-role="agency">衡知专利代理事务所<span>代理师工作区</span></div>
+  <nav class="main-nav" data-show-role="enterprise">
+    <a class="active" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="company.html" data-keep-role>本公司</a>
+    <a class="" href="cases.html" data-keep-role>项目与对象</a>
+    <a class="" href="pending.html?dept=disclosure" data-keep-role>待你确认</a>
+  </nav>
+  <nav class="main-nav hidden" data-show-role="agency">
+    <a class="active" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="cases.html" data-keep-role>客户与案件</a>
+    <a class="" href="company.html" data-keep-role>本案公司</a>
+    <a class="" href="pending.html?dept=oa" data-keep-role>客户确认</a>
+  </nav>
+  <div class="sidebar-section">
+    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
+    <a class="side-project active" href="dept.html?dept=disclosure" data-keep-role><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
+    <a class="side-project" href="dept.html?dept=oa" data-keep-role><span class="project-glyph muted">MS</span><span><strong>低能耗膜分离工艺</strong><small>第一次 OA 答复</small></span></a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div>
+  </div>
+</aside>
+<main class="content">
+
+  <p class="kicker">知产负责人 · 持续委托可点链</p>
+  <h1 class="page-title">顾言持续委托</h1>
+  <p class="page-sub">提目标 → 计划可调 → 部门执行 → 确认 → 接力。每一步可点通，不是 toast。</p>
+
+  <div class="steps" aria-label="委托进度">
+    <div class="step" data-step="goal"><strong>1 提目标</strong>交办业务目标</div>
+    <div class="step" data-step="plan"><strong>2 计划可调</strong>确认部门顺序</div>
+    <div class="step" data-step="execute"><strong>3 部门执行</strong>齐套与交卷</div>
+    <div class="step" data-step="confirm"><strong>4 确认</strong>人来拍板</div>
+    <div class="step" data-step="relay"><strong>5 接力</strong>交付快照</div>
+  </div>
+
+  <section class="goal-panel" data-panel="goal">
+    <label>业务目标
+      <textarea id="goal-input" rows="3" placeholder="例如：整理一项磁驱泵控制技术，想评估如何保护"></textarea>
+    </label>
+    <div class="chips">
+      <span>示例</span>
+      <button type="button" data-fill="整理一项研发成果，评估能否申请发明" onclick="document.getElementById('goal-input').value=this.dataset.fill">整理研发成果</button>
+      <button type="button" data-fill="新产品上市前排查 FTO 风险" onclick="document.getElementById('goal-input').value=this.dataset.fill">上市前排查</button>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ink" type="button" data-to-plan>生成计划 →</button>
+      <a class="btn btn-ghost" href="home.html" data-keep-role>返回首页</a>
+    </div>
+  </section>
+
+  <section class="goal-panel hidden" data-panel="plan">
+    <p class="kicker">计划可调</p>
+    <h2 style="margin:4px 0 12px;font-size:18px">建议先由交底部接手</h2>
+    <p style="margin:0 0 14px;color:var(--ink-3);font-size:13px">你可以调整说明；确认后进入部门执行。部门退二线，由负责人路由——不拆七部投影。</p>
+    <ul class="plan-list">
+      <li><span class="ord">1</span><div><strong>交底部</strong>补齐技术事实与权属<small>产出：技术交底书；关口：技术事实确认</small></div></li>
+      <li><span class="ord">2</span><div><strong>查新部</strong>检索可专利性<small>产出：检索报告；关口：专业复核</small></div></li>
+      <li><span class="ord">3</span><div><strong>立项部</strong>出保护策略与报价<small>产出：立项决议；关口：商业与风险决策</small></div></li>
+    </ul>
+    <label style="margin-top:12px">计划备注（可调）
+      <textarea rows="2" placeholder="例如：优先补权属，访谈安排在本周内"></textarea>
+    </label>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ink" type="button" data-to-execute>确认计划，去交底部执行 →</button>
+      <a class="btn btn-secondary" href="delegate.html?step=goal" data-keep-role>返回改目标</a>
+    </div>
+  </section>
+
+  <section class="goal-panel hidden" data-panel="execute">
+    <p>部门执行中。请到部门台完成齐套并交卷。</p>
+    <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role>打开交底部 →</a>
+  </section>
+
+  <section class="goal-panel hidden" data-panel="confirm">
+    <p>已交卷，等待确认。</p>
+    <a class="btn btn-ink" href="pending.html?dept=disclosure" data-keep-role>去确认页 →</a>
+  </section>
+
+  <section class="goal-panel hidden" data-panel="relay">
+    <p>确认已通过。请查看交付快照并接力下一部门。</p>
+    <a class="btn btn-ink" href="company.html" data-keep-role>回公司看快照与接力 →</a>
+  </section>
+</main>
+</div>
+</div>
+<script src="app.js"></script>
+
+</body></html>
