@@ -98,7 +98,7 @@
 
 <main class="content content-workbench">
   <div class="dept-goal-banner" id="dept-goal-banner" hidden>
-    <span class="dept-goal-label">为你的目标</span>
+    <span class="dept-goal-label">当前目标</span>
     <strong data-goal-context>—</strong>
   </div>
   <!-- Cursor 三栏骨架：左目录 / 中可编辑产物 / 右对话 -->
@@ -188,24 +188,29 @@
       </div>
     </section>
 
-    <!-- 右栏 L1–L5：身份 → 专家横排席 sticky → 对话主舞台≥55–60% → 缺项薄条 → 契约折+顾言 -->
+    <!-- 右栏 L1–L5：部名 → 专家横排 sticky → 消息流(聊头顶chip) → composer贴底 → 契约折+顾言 -->
     <aside class="pane chat-pane" data-gate-pane aria-label="对话与确认">
       <div class="right-stack">
-        <!-- L1 身份一行 -->
+        <!-- L1 身份只留部名；禁旁长 tip；禁「为你的目标」 -->
         <div class="dept-id-strip" aria-label="本部门身份">
           <strong data-dept-name>交底部</strong>
-          <span class="dept-id-one" data-node-tip>补齐权属声明后交卷 · 技术事实</span>
           <p class="dept-id-duty" data-dept-pitch hidden>访谈与事实齐套后，交出可接力的技术交底书。</p>
-          <p class="node-tip-goal" data-goal-context hidden></p>
         </div>
 
-        <!-- L2 专家横排席 sticky；A1–A3：点开 1:1；禁并排主聊 / 勿凑编 -->
+        <!-- L2 专家横排席 sticky；按编制 5–6 横滑/+N；A1–A3 点开 1:1；禁并排主聊 -->
         <section class="rail-experts" aria-label="本部门专家编制">
           <div class="rail-experts-row" data-experts></div>
         </section>
 
-        <!-- L3 对话主舞台（默认 leader） -->
+        <!-- L3/L4 消息流主高；聊头顶缺项 chip → 抽屉 -->
         <div class="rail-chat-block" data-chat-block data-chat-session="leader">
+          <div class="rail-gap-chip-row" id="gate-box">
+            <button type="button" class="gap-chip" data-gap-bar aria-expanded="false" aria-controls="gap-drawer" aria-haspopup="dialog">
+              <span class="gap-chip-dot" aria-hidden="true"></span>
+              <span class="gap-chip-label" data-missing-live>缺项：权属声明</span>
+              <span class="gap-chip-meta">齐套 <span class="tabular" data-check-count>0 / 4</span></span>
+            </button>
+          </div>
           <div class="rail-chat-head">
             <div class="rail-chat-who">
               <strong data-chat-peer-name>本部门负责人</strong>
@@ -219,43 +224,13 @@
               我是本部门负责人，调度专家把本站做完。缺项推进、齐套交卷找我。要点开某专家可 1:1；确认类型：<span data-confirm-type>技术事实</span>。
             </div>
           </div>
-          <form class="chat-compose" id="dept-chat-form" autocomplete="off">
-            <input id="dept-chat-input" type="text" placeholder="跟本部门负责人说一句…" aria-label="对话输入" name="dept-chat">
-            <button class="btn btn-ink btn-send" type="submit">发送</button>
-          </form>
         </div>
 
-        <!-- L4 缺项默认一行薄条；展开才清单；交卷/闸紧凑同区 -->
-        <div class="rail-gap-zone" id="gate-box">
-          <button type="button" class="gap-thin-bar" data-gap-bar aria-expanded="false" aria-controls="gap-panel">
-            <span class="gap-thin-label" data-missing-live>缺项：权属声明</span>
-            <span class="gap-thin-meta">齐套 <span class="tabular" data-check-count>0 / 4</span></span>
-            <span class="gap-thin-chev" aria-hidden="true">▸</span>
-          </button>
-          <div class="gap-panel" id="gap-panel" data-gap-panel hidden>
-            <div class="confirm-rail" data-confirm-rail hidden>
-              <div class="rail-sec-label">待你确认 · 待决策</div>
-              <p class="confirm-rail-title" data-pending-title>确认交底书可接力</p>
-              <p class="confirm-rail-q" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
-              <p class="confirm-rail-detail" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
-              <p class="confirm-rail-blind" data-confirm-blind-hint hidden>先看中栏交卷物</p>
-              <div class="confirm-rail-actions">
-                <button class="btn btn-ink" type="button" data-rail-pass>通过 → 下一部</button>
-                <button class="btn btn-secondary" type="button" data-rail-reject>驳回 · 本台补齐</button>
-                <button class="btn btn-ghost" type="button" data-rail-prev>退回上一部</button>
-              </div>
-              <p class="confirm-rail-note">建议稿 ≠ 确认。中栏须见交卷物正文才可点通过。</p>
-            </div>
-
-            <div class="rail-sec-label">缺项 · 事项下一步</div>
-            <div class="checklist" data-checklist></div>
-            <button type="button" class="checklist-done-toggle text-btn" data-toggle-done hidden>已齐项</button>
-            <p class="gate-meta">未齐套交卷禁用</p>
-            <button class="handoff-button" type="button" data-submit-gate disabled>
-              <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏拍板</small></span>
-            </button>
-          </div>
-        </div>
+        <!-- L5 composer 贴底（禁发送下缺项） -->
+        <form class="chat-compose" id="dept-chat-form" autocomplete="off">
+          <input id="dept-chat-input" type="text" placeholder="跟本部门负责人说一句…" aria-label="对话输入" name="dept-chat">
+          <button class="btn btn-ink btn-send" type="submit">发送</button>
+        </form>
 
         <!-- L5 契约折 + 顾言薄链 -->
         <details class="rail-collapse node-contract">
@@ -270,6 +245,40 @@
           </dl>
         </details>
         <a class="guyan-thin-link" href="delegate.html" data-keep-role>顾言 · 跨部 / 改目标</a>
+
+        <!-- 缺项抽屉/sheet：清单+交卷/闸；勿放发送下；开时勿长期挤死消息流 -->
+        <div class="gap-drawer" id="gap-drawer" data-gap-panel hidden>
+          <button type="button" class="gap-drawer-scrim" data-gap-close aria-label="关闭缺项抽屉"></button>
+          <div class="gap-drawer-sheet" role="dialog" aria-modal="true" aria-labelledby="gap-drawer-title">
+            <header class="gap-drawer-head">
+              <strong id="gap-drawer-title">缺项与交卷</strong>
+              <button type="button" class="text-btn gap-drawer-close" data-gap-close>关闭</button>
+            </header>
+            <div class="gap-drawer-body">
+              <div class="confirm-rail" data-confirm-rail hidden>
+                <div class="rail-sec-label">待你确认 · 待决策</div>
+                <p class="confirm-rail-title" data-pending-title>确认交底书可接力</p>
+                <p class="confirm-rail-q" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
+                <p class="confirm-rail-detail" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
+                <p class="confirm-rail-blind" data-confirm-blind-hint hidden>先看中栏交卷物</p>
+                <div class="confirm-rail-actions">
+                  <button class="btn btn-ink" type="button" data-rail-pass>通过 → 下一部</button>
+                  <button class="btn btn-secondary" type="button" data-rail-reject>驳回 · 本台补齐</button>
+                  <button class="btn btn-ghost" type="button" data-rail-prev>退回上一部</button>
+                </div>
+                <p class="confirm-rail-note">建议稿 ≠ 确认。中栏须见交卷物正文才可点通过。</p>
+              </div>
+
+              <div class="rail-sec-label">缺项 · 事项下一步</div>
+              <div class="checklist" data-checklist></div>
+              <button type="button" class="checklist-done-toggle text-btn" data-toggle-done hidden>已齐项</button>
+              <p class="gate-meta">未齐套交卷禁用</p>
+              <button class="handoff-button" type="button" data-submit-gate disabled>
+                <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏拍板</small></span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </aside>
   </div>

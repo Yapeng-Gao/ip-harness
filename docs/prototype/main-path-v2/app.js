@@ -5,7 +5,7 @@
       id: 'disclosure', name: '交底部', code: '00', deliverable: '技术交底书 V3',
       pitch: '访谈与事实齐套后，交出可接力的技术交底书。',
       missing: '权属声明', check: ['技术方案完整', '技术效果可验证', '替代实施方式', '权属声明'],
-      experts: ['技术访谈专家', '交底书撰写专家'],
+      experts: ['技术访谈专家', '交底书撰写专家', '权属核验专家', '事实整理专家', '附图协同专家', '质检校对专家'],
       pendingTitle: '确认交底书可接力',
       pendingFact: '权属是否归澄明科技，且无职务发明争议？',
       pendingDetail: '影响交底书是否可作为申请文件部输入；确认后形成交付快照。',
@@ -108,7 +108,10 @@
     else if (/撰写|说明书|权利要求/.test(n)) key = 'expert2';
     else if (/检索|FTO|查新/.test(n)) key = 'expert4';
     else if (/布局|报价|策略/.test(n)) key = 'expert5';
-    else if (/附图|流程|OA|期限/.test(n)) key = 'expert6';
+    else if (/权属|核验/.test(n)) key = 'expert5';
+    else if (/事实|整理/.test(n)) key = 'expert1';
+    else if (/质检|校对/.test(n)) key = 'expert3';
+    else if (/附图|流程|OA|期限|协同/.test(n)) key = 'expert6';
     const human = /顾言|林岚|代理师/.test(n);
     const status = human ? '等待复核 · 建议稿≠确认' : '本节点任务进行中';
     return { name: n, key, src: PORTRAIT[key] || PORTRAIT.expert1, status, human };
@@ -128,6 +131,10 @@
     if (/附图|绘制/.test(n)) return { work: '对齐图号', output: '附图包', progress: '进行中', line: '在办 · 附图包' };
     if (/流程|期限|事务/.test(n)) return { work: '递交核查', output: '核查单', progress: '待授权', line: '在办 · 核查单' };
     if (/OA|争辩/.test(n)) return { work: '拆通知书', output: '争辩草稿', progress: '进行中', line: '在办 · 争辩草稿' };
+    if (/权属|核验/.test(n)) return { work: '核验权属材料', output: '权属清单', progress: '缺项中', line: '缺项 · 权属' };
+    if (/事实|整理/.test(n)) return { work: '整理已确认事实', output: '事实摘录', progress: '进行中', line: '在办 · 事实摘录' };
+    if (/质检|校对/.test(n)) return { work: '齐套校对', output: '校对意见', progress: '等齐套', line: '等齐套 · 校对' };
+    if (/协同/.test(n)) return { work: '协同附图引用', output: '引用表', progress: '待命', line: '待命 · 协同' };
     if (/顾言/.test(n)) return { work: '跨部路由', output: '计划建议', progress: '待命', line: '待命 · 跨部' };
     if (/林岚|代理师/.test(n)) return { work: '代理复核', output: '复核意见', progress: '等齐套', line: '等齐套 · 复核' };
     return { work: '本岗任务', output: '建议稿', progress: '进行中', line: '在办 · 建议稿' };
@@ -144,14 +151,18 @@
     if (/附图|一致性|绘制/.test(n)) return '图号与说明书引用一致后再交卷。';
     if (/流程|期限|事务/.test(n)) return '对外递交前须授权人确认。';
     if (/OA|争辩/.test(n)) return '答复策略须企业确认后再递。';
+    if (/权属|核验/.test(n)) return '权属声明仍缺——先补齐再谈交卷。';
+    if (/事实|整理/.test(n)) return '已确认事实已入库；请核对中栏标注。';
+    if (/质检|校对/.test(n)) return '齐套前只出校对意见，不能代签。';
+    if (/协同/.test(n)) return '附图引用与交底书对齐后再交卷。';
     if (/顾言/.test(n)) return '商业与风险节点由你拍板；我只出计划建议。';
     if (/林岚|代理师/.test(n)) return '代理复核等你齐套；建议稿不能代替确认。';
     return '本岗出建议稿 · 主路径仍跟本部门负责人聊。';
   }
 
-  /* Drawer / generic list: planned staffing; ≤3 upper cap; 0→空态; never pad */
+  /* Drawer / generic list: planned staffing as-is; 0→空态; never pad */
   function renderExperts(names) {
-    const list = (names || []).slice(0, 3);
+    const list = names || [];
     if (!list.length) return '<p class="experts-empty">本部门暂无专家岗</p>';
     return list.map((e, i) => {
       const m = expertMeta(e, i);
@@ -161,23 +172,42 @@
     }).join('');
   }
 
-  /* L2 横排席：头像+短名+状态点 sticky；点开 → 可选 1:1（非 tip）。
-     ≤3 = upper cap only — show planned staffing as-is (0→空态; never pad to 3). */
+  /* L2 横排席：头像+短名+状态点 sticky；按编制；交底部约5–6 横滑/+N；废 ≤3 硬顶；禁凑编 */
   function expertDotClass(ws, human) {
     const p = (ws && ws.progress) || '';
-    if (human || /等|复核|待签署|待授权/.test(p)) return 'is-review';
+    if (human || /等|复核|待签署|待授权|缺项/.test(p)) return 'is-review';
     if (/待命|等齐套/.test(p) || (ws && /待命/.test(ws.line || ''))) return 'is-wait';
     return '';
   }
+  function expertShortName(name) {
+    const n = name || '';
+    if (/访谈/.test(n)) return '访谈';
+    if (/权利要求/.test(n)) return '权项';
+    if (/撰写|说明书/.test(n)) return '撰写';
+    if (/权属|核验/.test(n)) return '权属';
+    if (/事实|整理/.test(n)) return '事实';
+    if (/质检|校对/.test(n)) return '质检';
+    if (/附图|绘制|协同/.test(n)) return '附图';
+    if (/检索|查新/.test(n)) return '检索';
+    if (/FTO/.test(n)) return 'FTO';
+    if (/布局|报价/.test(n)) return '布局';
+    if (/策略/.test(n) && !/OA/.test(n)) return '策略';
+    if (/流程|事务/.test(n)) return '流程';
+    if (/期限/.test(n)) return '期限';
+    if (/OA|争辩/.test(n)) return 'OA';
+    if (/顾言/.test(n)) return '顾言';
+    if (/林岚|代理师/.test(n)) return '林岚';
+    const base = n.split(/\s*·\s*/)[0].replace(/专家$/, '');
+    return base.slice(0, 4) || '专家';
+  }
   function renderRailExperts(names, dept) {
-    const list = (names || []).slice(0, 3);
+    const list = names || [];
     if (!list.length) {
       return '<p class="experts-empty">本部门暂无专家岗</p>';
     }
-    return list.map((e, i) => {
+    const seats = list.map((e, i) => {
       const m = expertMeta(e, i);
-      const parts = m.name.split(/\s*·\s*/);
-      const title = parts[0];
+      const title = expertShortName(e);
       const ws = expertWorkState(e, dept);
       const tip = expertOneLine(e, dept);
       const dot = expertDotClass(ws, m.human);
@@ -194,6 +224,14 @@
         '</span>' +
       '</button>';
     }).join('');
+    /* +N：窄栏溢出提示；点按横滑到末席（禁凑空槽） */
+    let more = '';
+    if (list.length > 4) {
+      const rest = list.length - 4;
+      more = '<button type="button" class="expert-more-btn" data-experts-more aria-label="还有' + rest + '位专家，横滑查看">' +
+        '+' + rest + '</button>';
+    }
+    return seats + more;
   }
 
   /* Per-gap next action: open center doc or ask 本部门负责人 — never checkbox-only */
@@ -734,7 +772,7 @@
           hint.innerHTML = '<strong>下一步：</strong>齐套已完成 — 点击右侧「交卷 · 待你确认」，同屏右栏通过/驳回。';
           hint.classList.add('is-ready');
         } else {
-          hint.innerHTML = '<strong>下一步：</strong>展开右栏缺项薄条，点「打开中栏 / 起草」推进，齐套后交卷。';
+          hint.innerHTML = '<strong>下一步：</strong>点右栏聊头顶缺项 chip，在抽屉里「打开中栏 / 起草」推进，齐套后交卷。';
           hint.classList.remove('is-ready');
         }
       }
@@ -836,14 +874,15 @@
     if (banner) {
       banner.hidden = false;
       const label = banner.querySelector('.dept-goal-label');
-      if (label) label.textContent = '为你的目标';
+      if (label) label.textContent = '当前目标';
       const strong = banner.querySelector('[data-goal-context]');
       if (strong) strong.textContent = short;
     }
     nodes.forEach(function (el) {
       if (el.closest && el.closest('#dept-goal-banner')) return;
-      el.hidden = false;
-      el.textContent = '为你的目标：' + short;
+      /* L1: 禁右栏「为你的目标」——非横幅节点不再回填该文案 */
+      el.hidden = true;
+      el.textContent = '';
     });
   }
 
@@ -1094,7 +1133,7 @@
         text: '我是' + dept.name + '负责人，调度专家把本站「' + dept.deliverable + '」做完。缺项推进、齐套交卷找我。点专家可 1:1；确认类型：' + (dept.confirmType || '技术事实') + '。'
       }
     ];
-    (dept.experts || []).slice(0, 3).forEach(function (name, i) {
+    (dept.experts || []).forEach(function (name, i) {
       const tip = expertOneLine(name, dept);
       const ws = expertWorkState(name, dept);
       sessions['e' + i] = [
@@ -1238,11 +1277,11 @@
         btn.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
     });
-    /* Rail: actual staffing — no pad / no hard ≤3 */
+    /* Rail L2: actual staffing — 交底部演示5–6；横滑/+N；废≤3硬顶；禁凑编 */
     const expertHtml = renderRailExperts(dept.experts, dept);
     document.querySelectorAll('[data-experts]').forEach(el => { el.innerHTML = expertHtml; });
 
-    /* L4: 缺项默认一行薄条；展开才清单 */
+    /* L3: 缺项=聊头顶 chip → 抽屉/sheet；禁发送下；禁两颗全宽 gap 常驻 */
     function setGapPanelOpen(open, opts) {
       const bar = document.querySelector('[data-gap-bar]');
       const panel = document.querySelector('[data-gap-panel]');
@@ -1250,10 +1289,13 @@
       const on = !!open;
       panel.hidden = !on;
       bar.setAttribute('aria-expanded', on ? 'true' : 'false');
-      const chev = bar.querySelector('.gap-thin-chev');
-      if (chev) chev.textContent = on ? '▾' : '▸';
+      const pane = document.querySelector('[data-gate-pane]');
+      if (pane) pane.classList.toggle('gap-drawer-open', on);
       if (on && opts && opts.scroll) {
-        try { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+        try {
+          const sheet = panel.querySelector('.gap-drawer-sheet') || panel;
+          sheet.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (e) {}
       }
     }
     window.__mpv2SetGapPanelOpen = setGapPanelOpen;
@@ -1265,11 +1307,25 @@
         setGapPanelOpen(!open);
       });
     });
+    document.querySelectorAll('[data-gap-close]').forEach(btn => {
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = '1';
+      btn.addEventListener('click', () => setGapPanelOpen(false));
+    });
+    document.querySelectorAll('[data-experts-more]').forEach(btn => {
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = '1';
+      btn.addEventListener('click', () => {
+        const row = btn.closest('[data-experts]') || document.querySelector('[data-experts]');
+        if (row) {
+          try { row.scrollTo({ left: row.scrollWidth, behavior: 'smooth' }); } catch (e) {
+            row.scrollLeft = row.scrollWidth;
+          }
+        }
+      });
+    });
     document.querySelectorAll('[data-current-task]').forEach(el => {
       el.textContent = '补齐「' + (dept.missing || '缺项') + '」后交卷';
-    });
-    document.querySelectorAll('[data-node-tip]').forEach(el => {
-      el.textContent = '补齐「' + (dept.missing || '缺项') + '」后交卷 · 确认类型：' + (dept.confirmType || '');
     });
     document.querySelectorAll('[data-pending-fact]').forEach(el => { el.textContent = dept.pendingFact; });
     wireChecklist(key);
@@ -1517,6 +1573,7 @@
         const ask = btn.getAttribute('data-gap-ask') || '';
         // Ensure leader thread for gap asks (主路径)
         if (typeof switchChatSession === 'function') switchChatSession('leader');
+        if (typeof window.__mpv2SetGapPanelOpen === 'function') window.__mpv2SetGapPanelOpen(false);
         const input = document.getElementById('dept-chat-input');
         if (input) {
           input.value = ask;
