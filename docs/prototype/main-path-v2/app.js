@@ -533,9 +533,94 @@
     document.querySelectorAll('[data-checklist]').forEach(box => wireOneChecklist(box, dept));
   }
 
+  function deliverableStubFor(dept) {
+    const title = dept.deliverable;
+    const bodies = {
+      disclosure:
+        '<p class="doc-lead">一种磁驱泵智能控制系统的技术交底。点此正文即可编辑；右侧对话与齐套闸同步本案。</p>' +
+        '<h2>一、技术领域</h2>' +
+        '<p>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判，适用于工业磁驱泵产线。</p>' +
+        '<h2>二、背景问题</h2>' +
+        '<p>现有方案在负载突变时超调明显，且缺少可验证的替代实施方式描述，影响交底齐套与后续查新。</p>' +
+        '<h2>三、技术方案</h2>' +
+        '<p>1. 双环控制：外环流量、内环转速；采样周期可配置。</p>' +
+        '<p>2. 故障特征库：振动频谱阈值触发降功率保护。</p>' +
+        '<p class="fact-highlight">3. 量产标定流程：MP-300 线体工装三点校验。<span>已确认事实 · 可编辑标注</span></p>' +
+        '<h2>四、技术效果</h2>' +
+        '<p>负载阶跃下超调降低；可复现实验记录见附件。权属声明齐套后可交卷送确认。</p>' +
+        '<div class="doc-comment"><strong>专家批注 · 交底书撰写专家</strong><p>权属声明仍缺。建议由法务出具模板后你确认——建议稿 ≠ 确认。</p></div>',
+      research:
+        '<p class="doc-lead">可专利性检索报告草稿。中栏即本关交卷物，可直接改结论表述。</p>' +
+        '<h2>一、检索范围</h2><p>关键词：磁驱泵 / 双环控制 / 故障预判；库：CNABS · DWPI（演示）。</p>' +
+        '<h2>二、比对要点</h2><p>相近方案多偏开环调速；双环+频谱阈值组合较少见。</p>' +
+        '<h2>三、结论稿（缺项）</h2><p class="fact-highlight">待补：核心特征组合是否具备可专利性的明确结论。<span>当前缺项</span></p>' +
+        '<div class="doc-comment"><strong>检索分析专家</strong><p>结论稿齐套前勿送立项。</p></div>',
+      decision:
+        '<p class="doc-lead">立项决议与报价单草稿。确认策略与费用后才启动撰写。</p>' +
+        '<h2>一、保护策略</h2><p>建议：发明申请 · 核心在双环控制与故障预判组合。</p>' +
+        '<h2>二、费用与周期</h2><p>代理费与官费估算（演示数字）；周期约 18–24 月。</p>' +
+        '<h2>三、决议签署（缺项）</h2><p class="fact-highlight">待负责人签署是否按发明推进。<span>当前缺项</span></p>',
+      draft:
+        '<p class="doc-lead">权利要求草案 V1。独权与从属层次可在此编辑。</p>' +
+        '<h2>权利要求 1（独立）</h2><p>一种磁驱泵智能控制系统，其特征在于包括外环流量控制与内环转速控制……</p>' +
+        '<h2>从属层次</h2><p>权 2–5：采样周期、频谱阈值、三点校验工装（演示）。</p>' +
+        '<h2>权项树（缺项）</h2><p class="fact-highlight">树状依赖尚未闭合。<span>当前缺项</span></p>',
+      figure:
+        '<p class="doc-lead">附图包 F2 说明稿。图号需与说明书引用一致。</p>' +
+        '<h2>图 1</h2><p>双环控制框图。</p>' +
+        '<h2>图 2</h2><p>故障预判流程。</p>' +
+        '<h2>图号核对（缺项）</h2><p class="fact-highlight">说明书引用与图号尚未逐条对齐。<span>当前缺项</span></p>',
+      filing:
+        '<p class="doc-lead">申请包与递交核查单。授权人确认前不对外递交。</p>' +
+        '<h2>申请文件</h2><p>请求书 · 说明书 · 权项 · 附图 · 摘要（演示清单）。</p>' +
+        '<h2>授权人确认（缺项）</h2><p class="fact-highlight">对外递交须授权人勾选确认。<span>当前缺项</span></p>',
+      oa:
+        '<p class="doc-lead">意见陈述书 V2。策略与争辩在此编辑；企业确认后再递。</p>' +
+        '<h2>通知书要点</h2><p>创造性评述针对双环控制组合（演示）。</p>' +
+        '<h2>争辩要点</h2><p>有限修改 + 技术效果对比（演示）。</p>' +
+        '<h2>企业确认意见（缺项）</h2><p class="fact-highlight">企业是否同意当前答复策略。<span>当前缺项</span></p>'
+    };
+    return {
+      title: title,
+      meta: '交卷物 · ' + title,
+      html: bodies[dept.id] || (
+        '<p class="doc-lead">' + title + '（本关交卷物，可编辑）。</p>' +
+        '<h2>正文</h2><p>' + (dept.pitch || '') + '</p>' +
+        '<p class="fact-highlight">缺项：' + (dept.missing || '—') + '<span>齐套后可交卷</span></p>'
+      )
+    };
+  }
+
+  function applyGoalContext() {
+    const d = getDelegation() || {};
+    const goal = (d.goal || '').trim();
+    const banner = document.getElementById('dept-goal-banner');
+    const nodes = document.querySelectorAll('[data-goal-context]');
+    if (!goal) {
+      if (banner) banner.hidden = true;
+      nodes.forEach(function (el) {
+        el.hidden = true;
+        el.textContent = '';
+      });
+      return;
+    }
+    const short = goal.length > 48 ? goal.slice(0, 48) + '…' : goal;
+    if (banner) {
+      banner.hidden = false;
+      const strong = banner.querySelector('[data-goal-context]');
+      if (strong) strong.textContent = short;
+    }
+    nodes.forEach(function (el) {
+      if (el.closest && el.closest('#dept-goal-banner')) return;
+      el.hidden = false;
+      el.textContent = '为你的目标：' + short;
+    });
+  }
+
   function wireDeptPage() {
     const key = qs('dept') || 'disclosure';
     const dept = DEPTS[key] || DEPTS.disclosure;
+    applyGoalContext();
     document.querySelectorAll('[data-dept-name]').forEach(el => { el.textContent = dept.name; });
     document.querySelectorAll('[data-deliverable]').forEach(el => { el.textContent = dept.deliverable; });
     document.querySelectorAll('[data-missing]').forEach(el => { el.textContent = dept.missing; });
@@ -692,6 +777,16 @@
       }
     };
 
+
+    // Ensure this dept's 交卷物 has a real body (not blank / not always 交底书)
+    const primaryStub = deliverableStubFor(dept);
+    const primaryKey = dept.deliverable;
+    DOC_STUBS[primaryKey] = primaryStub;
+    // Short aliases used by default HTML tabs
+    if (dept.id === 'disclosure') {
+      DOC_STUBS['交底书 V3'] = primaryStub;
+    }
+
     function activateDoc(name) {
       if (!name) return;
       document.querySelectorAll('[data-doc-tab]').forEach(b => {
@@ -745,6 +840,24 @@
     document.querySelectorAll('[data-editor-tab]').forEach(b => {
       b.addEventListener('click', () => activateDoc(b.dataset.editorTab));
     });
+
+    // Open this dept's 交卷物 in center by default (visible sample body)
+    const primaryName = primaryKey;
+    document.querySelectorAll('[data-primary-deliverable]').forEach(function (el) {
+      if (el.hasAttribute('data-doc-tab')) {
+        el.setAttribute('data-doc-tab', primaryName);
+        el.dataset.docTab = primaryName;
+        el.innerHTML = primaryName + '<span class="unsaved-dot" data-unsaved-dot hidden></span>';
+      }
+      if (el.hasAttribute('data-editor-tab')) {
+        el.setAttribute('data-editor-tab', primaryName);
+        el.dataset.editorTab = primaryName;
+        el.innerHTML = primaryName + '<span></span>';
+      }
+    });
+    activateDoc(primaryName);
+    const treeLabel = document.querySelector('.tree .tree-label');
+    if (treeLabel) treeLabel.textContent = '交卷物 · ' + dept.name;
 
     // Right-pane chat compose → bubble + optional delegate
     const chatForm = document.getElementById('dept-chat-form');
@@ -1064,25 +1177,35 @@
       if (echo) echo.textContent = '你的目标：「' + plan.goal + '」';
       if (bd) bd.innerHTML = renderBreakdownHTML(plan);
       if (note && !note.value) note.placeholder = plan.notePlaceholder;
+      // Big 产出 hero — not tiny muted
+      const delName = document.getElementById('plan-deliverable-name');
+      const delHint = document.getElementById('plan-deliverable-hint');
+      if (delName) delName.textContent = plan.dept.deliverable;
+      if (delHint) {
+        delHint.textContent = '确认计划后直接打开' + plan.dept.name + '三栏台，中栏可见「' + plan.dept.deliverable + '」';
+      }
       if (list) {
         list.innerHTML = plan.chain.map(function (node, i) {
-          return '<li><span class="ord">' + (i + 1) + '</span><div><strong>' + node.name + '</strong>' +
-            node.pitch + '<small>产出：' + node.deliverable + '；关口：' + node.confirmType + '</small></div></li>';
+          const primary = i === 0
+            ? ('<em class="plan-out-emph">产出：' + node.deliverable + '</em> · 关口：' + node.confirmType)
+            : ('产出：' + node.deliverable + '；关口：' + node.confirmType);
+          return '<li class="' + (i === 0 ? 'is-primary' : '') + '"><span class="ord">' + (i + 1) + '</span><div><strong>' + node.name + '</strong>' +
+            node.pitch + '<small>' + primary + '</small></div></li>';
         }).join('');
       }
       if (go) {
-        go.textContent = '确认计划，去' + plan.dept.name + '执行 →';
+        go.textContent = '确认并打开交卷物 · 去' + plan.dept.name + ' →';
         go.dataset.dept = plan.deptId;
       }
-      // execute panel
+      // execute panel (fallback only — primary path skips it)
       const et = document.getElementById('exec-title');
       const ee = document.getElementById('exec-goal-echo');
       const eg = document.getElementById('exec-go-btn');
-      if (et) et.textContent = plan.dept.name + '已接手';
-      if (ee) ee.textContent = '目标：「' + plan.goal + '」· 已分派到本案';
+      if (et) et.textContent = plan.dept.name + '已接手 · 中栏打开交卷物';
+      if (ee) ee.textContent = '为你的目标：「' + plan.goal + '」';
       if (eg) {
         eg.href = withRole('dept.html?dept=' + plan.deptId);
-        eg.textContent = '打开' + plan.dept.name + '工作台 →';
+        eg.textContent = '打开' + plan.dept.name + ' · 看「' + plan.dept.deliverable + '」→';
       }
       return plan;
     }
@@ -1124,6 +1247,7 @@
         location.href = withRole('delegate.html?step=plan');
       });
     }
+    // Primary path: plan confirm → dept Cursor desk (skip execute theater)
     const confirmPlan = document.querySelector('[data-to-execute]');
     if (confirmPlan) {
       confirmPlan.addEventListener('click', () => {
@@ -1131,13 +1255,25 @@
         const plan = planFromGoal(d.goal || goalText);
         d.step = 'execute';
         d.dept = plan.deptId;
+        d.goal = plan.goal;
+        d.deliverable = plan.dept.deliverable;
         d.plan = plan.chain.map(n => n.name + ' · ' + n.deliverable);
         const noteEl = document.getElementById('plan-note');
         if (noteEl && noteEl.value.trim()) d.note = noteEl.value.trim();
         setDelegation(d);
-        // Stay on execute briefly so user sees 分派反馈, then they click into dept
-        location.href = withRole('delegate.html?step=execute');
+        location.href = withRole('dept.html?dept=' + plan.deptId);
       });
+    }
+
+    // If someone lands on execute (old link / bookmark), bounce to dept
+    if (step === 'execute') {
+      const d = getDelegation() || {};
+      const plan = planFromGoal(d.goal || goalText);
+      const deptId = d.dept || plan.deptId || 'disclosure';
+      // Brief paint then jump — fallback link already points at dept
+      setTimeout(function () {
+        location.replace(withRole('dept.html?dept=' + deptId));
+      }, 80);
     }
   }
 

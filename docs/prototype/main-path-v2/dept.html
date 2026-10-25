@@ -59,6 +59,10 @@
 </aside>
 
 <main class="content content-workbench">
+  <div class="dept-goal-banner" id="dept-goal-banner" hidden>
+    <span class="dept-goal-label">为你的目标</span>
+    <strong data-goal-context>—</strong>
+  </div>
   <!-- Cursor 三栏骨架：左目录 / 中可编辑产物 / 右对话 -->
   <div class="workbench workbench-cursor" data-workbench data-tier-workbench>
 
@@ -74,7 +78,7 @@
       </div>
       <div class="tree" data-file-tree>
         <p class="tree-label">交卷物</p>
-        <button type="button" class="active" data-doc-tab="交底书 V3">交底书 V3<span class="unsaved-dot" data-unsaved-dot hidden></span></button>
+        <button type="button" class="active" data-doc-tab="交底书 V3" data-primary-deliverable>交底书 V3<span class="unsaved-dot" data-unsaved-dot hidden></span></button>
         <button type="button" data-doc-tab="权属声明">权属声明（缺）</button>
         <p class="tree-label">材料</p>
         <button type="button" data-doc-tab="访谈纪要">访谈纪要 10-20</button>
@@ -92,7 +96,7 @@
     <!-- 中：可编辑产物主舞台 -->
     <section class="pane editor-pane" aria-label="交卷物编辑">
       <div class="editor-tabs" role="tablist">
-        <button type="button" class="active" data-editor-tab="交底书 V3">交底书 V3<span></span></button>
+        <button type="button" class="active" data-editor-tab="交底书 V3" data-primary-deliverable>交底书 V3<span></span></button>
         <button type="button" data-editor-tab="权属声明">权属声明</button>
         <button type="button" data-editor-tab="访谈纪要">访谈纪要</button>
       </div>
@@ -171,6 +175,7 @@
       <div class="right-stack">
         <div class="node-tip" aria-label="本节点一句">
           <span class="node-tip-dept" data-dept-name>交底部</span>
+          <p class="node-tip-goal" data-goal-context hidden></p>
           <p class="node-tip-line" data-node-tip>补齐权属声明后交卷 · 确认类型：技术事实</p>
         </div>
 
