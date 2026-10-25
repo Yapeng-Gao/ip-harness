@@ -103,13 +103,101 @@
     return { name: n, key, src: PORTRAIT[key] || PORTRAIT.expert1, status, human };
   }
 
+  /* One-line expert tip (建议稿) — not a private chat */
+  function expertOneLine(name, dept) {
+    const miss = (dept && dept.missing) ? dept.missing : '缺项';
+    const n = name || '';
+    if (/访谈/.test(n)) return '核对访谈事实是否已写入交卷物关键段。';
+    if (/撰写|说明书|权利要求/.test(n)) return '缺「' + miss + '」时先补齐中栏——建议稿 ≠ 确认。';
+    if (/检索|FTO|查新/.test(n)) return '结论须覆盖拟申请核心特征后再送下一部。';
+    if (/布局|报价|策略/.test(n) && !/OA/.test(n)) return '策略与报价是建议稿，签署前可改。';
+    if (/附图|一致性|绘制/.test(n)) return '图号与说明书引用一致后再交卷。';
+    if (/流程|期限|事务/.test(n)) return '对外递交前须授权人确认。';
+    if (/OA|争辩/.test(n)) return '答复策略须企业确认后再递。';
+    if (/顾言/.test(n)) return '商业与风险节点由你拍板；专家只出建议。';
+    if (/林岚|代理师/.test(n)) return '代理复核等你齐套；建议稿不能代替确认。';
+    return '本岗出建议稿 · 主聊对象仍是本部门执行助手。';
+  }
+
+  /* Drawer / generic list: planned staffing; ≤3 upper cap; 0→空态; never pad */
   function renderExperts(names) {
-    return (names || []).slice(0, 3).map((e, i) => {
+    const list = (names || []).slice(0, 3);
+    if (!list.length) return '<p class="experts-empty">本部门暂无专家编制</p>';
+    return list.map((e, i) => {
       const m = expertMeta(e, i);
       return '<div class="expert-row">' +
         '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="28" height="28">' +
         '<span><strong>' + m.name + '</strong><small>' + m.status + '</small></span></div>';
     }).join('');
+  }
+
+  /* Workbench right-rail experts: avatar+岗名 default; expand = one-line tip; not private chat.
+     ≤3 = upper cap only — show planned staffing as-is (0→空态; never pad to 3). */
+  function renderRailExperts(names, dept) {
+    const list = (names || []).slice(0, 3);
+    if (!list.length) {
+      return '<p class="experts-empty">本部门暂无专家编制</p>';
+    }
+    return list.map((e, i) => {
+      const m = expertMeta(e, i);
+      const parts = m.name.split(/\s*·\s*/);
+      const title = parts[0];
+      const role = parts[1] || (m.human ? '在岗复核' : '专岗 · 建议稿');
+      const tip = expertOneLine(e, dept);
+      return '<details class="expert-rail-item">' +
+        '<summary>' +
+          '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="28" height="28">' +
+          '<span><strong>' + title + '</strong><small>' + role + '</small></span>' +
+        '</summary>' +
+        '<p class="expert-rail-tip">' + tip + '<em>建议稿 · 非私聊</em></p>' +
+      '</details>';
+    }).join('');
+  }
+
+  /* Per-gap next action: open center doc or ask 本部门执行助手 — never checkbox-only */
+  function gapActionsFor(item, dept) {
+    const primary = dept.deliverable;
+    let openDoc = primary;
+    let openLabel = '打开中栏文书「' + item + '」';
+    let askLabel = '让助手起草「' + item + '」';
+    let askText = '请起草「' + item + '」草稿，我好粘贴进中栏。';
+    if (item === '权属声明') {
+      openDoc = '权属声明';
+      openLabel = '打开中栏权属声明补齐';
+      askLabel = '让助手起草权属声明';
+      askText = '请起草职务发明权属声明草稿，权属归澄明科技，发明人待填。';
+    } else if (dept.id === 'disclosure' && /技术方案|技术效果|替代实施/.test(item)) {
+      openDoc = '交底书 V3';
+      openLabel = '打开中栏交底书「' + item + '」';
+    } else if (item === dept.missing) {
+      openLabel = '打开中栏文书「' + item + '」';
+      askLabel = '让助手起草「' + item + '」';
+    }
+    return { openDoc: openDoc, openLabel: openLabel, askLabel: askLabel, askText: askText };
+  }
+
+  function checklistItemHtml(item, idx, dept) {
+    const last = idx === dept.check.length - 1;
+    const checked = !last; /* demo: last = current gap */
+    const gap = gapActionsFor(item, dept);
+    const status = checked ? '已齐' : '缺 · 点下方推进';
+    /* Always emit actions so unchecking a done row can re-show 点哪推进 */
+    const actions =
+      '<span class="gap-actions" data-gap-actions' + (checked ? ' hidden' : '') + '>' +
+        '<button type="button" class="gap-act" data-gap-open="' + gap.openDoc.replace(/"/g, '&quot;') + '">' + gap.openLabel + '</button>' +
+        '<button type="button" class="gap-act gap-act-ask" data-gap-ask="' + gap.askText.replace(/"/g, '&quot;') + '">' + gap.askLabel + '</button>' +
+      '</span>';
+    /* div+label: buttons outside <label> so clicks don't toggle checkbox */
+    return '<div class="check-row' + (checked ? ' is-done' : ' is-gap') + '">' +
+      '<label class="check-main">' +
+        '<input type="checkbox"' + (checked ? ' checked' : '') + '>' +
+        '<span class="check-body">' +
+          '<strong>' + item + '</strong>' +
+          '<small class="check-status">' + status + '</small>' +
+        '</span>' +
+      '</label>' +
+      actions +
+    '</div>';
   }
 
   /* Compact ≤3 photo faces + 岗名 — welcome shelf / company dept cards */
@@ -561,13 +649,25 @@
       document.querySelectorAll('[data-missing-live]').forEach(miss => {
         miss.textContent = all ? '齐套完成，可交卷' : ('缺项：' + (dept.missing || '未勾选项'));
       });
+      /* Per-row: unchecked → show 点哪推进；checked → hide actions */
+      list.forEach(inp => {
+        const row = inp.closest('.check-row');
+        if (!row) return;
+        const actions = row.querySelector('[data-gap-actions]');
+        const status = row.querySelector('.check-status');
+        const on = inp.checked;
+        row.classList.toggle('is-done', on);
+        row.classList.toggle('is-gap', !on);
+        if (actions) actions.hidden = !!on;
+        if (status) status.textContent = on ? '已齐' : '缺 · 点下方推进';
+      });
       const hint = document.querySelector('[data-next-hint]');
       if (hint) {
         if (all) {
           hint.innerHTML = '<strong>下一步：</strong>齐套已完成 — 点击右侧「交卷 · 待你确认」，同屏右栏通过/驳回。';
           hint.classList.add('is-ready');
         } else {
-          hint.innerHTML = '<strong>下一步：</strong>在右侧勾选齐套清单（含' + (dept.missing || '缺项') + '）→ 启用交卷。拍板在右栏，不在本台自批。';
+          hint.innerHTML = '<strong>下一步：</strong>点缺项下的「打开中栏… / 让助手…」推进，齐套后交卷。';
           hint.classList.remove('is-ready');
         }
       }
@@ -912,20 +1012,17 @@
     syncDeptFold();
     applyGoalContext();
     document.querySelectorAll('[data-dept-name]').forEach(el => { el.textContent = dept.name; });
+    document.querySelectorAll('[data-dept-pitch]').forEach(el => { el.textContent = dept.pitch || ''; });
     document.querySelectorAll('[data-deliverable]').forEach(el => { el.textContent = dept.deliverable; });
     document.querySelectorAll('[data-missing]').forEach(el => { el.textContent = dept.missing; });
     document.querySelectorAll('[data-confirm-type]').forEach(el => { el.textContent = dept.confirmType; });
     document.querySelectorAll('[data-checklist]').forEach(list => {
       if (list.dataset.built) return;
       list.dataset.built = '1';
-      list.innerHTML = dept.check.map((c, i) => {
-        const last = i === dept.check.length - 1;
-        return '<label><input type="checkbox"' + (last ? '' : ' checked') +
-          '><span><strong>' + c + '</strong><small style="display:block;color:var(--ink-3);margin-top:3px">' +
-          (last ? '当前缺项 · 勾选后可交卷（G1）' : '已齐') + '</small></span></label>';
-      }).join('');
+      list.innerHTML = dept.check.map((c, i) => checklistItemHtml(c, i, dept)).join('');
     });
-    const expertHtml = renderExperts(dept.experts);
+    /* Rail: actual 编制 — no pad / no hard ≤3 */
+    const expertHtml = renderRailExperts(dept.experts, dept);
     document.querySelectorAll('[data-experts]').forEach(el => { el.innerHTML = expertHtml; });
     document.querySelectorAll('[data-current-task]').forEach(el => {
       el.textContent = '补齐「' + (dept.missing || '缺项') + '」后交卷';
@@ -1146,6 +1243,35 @@
       }
     });
     activateDoc(primaryName);
+
+    // Gap next-actions → open center doc / fill 本部门执行助手 (not private expert chat)
+    document.querySelectorAll('[data-gap-open]').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const name = btn.getAttribute('data-gap-open');
+        activateDoc(name);
+        try {
+          const ed = document.querySelector('.editor-pane, #dept-editor');
+          if (ed) ed.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (err) {}
+        toast('已打开中栏 · ' + name);
+      });
+    });
+    document.querySelectorAll('[data-gap-ask]').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const ask = btn.getAttribute('data-gap-ask') || '';
+        const input = document.getElementById('dept-chat-input');
+        if (input) {
+          input.value = ask;
+          input.focus();
+        }
+        toast('已填入助手指令 · 点发送');
+      });
+    });
+
     applyRelayHandoff(dept);
     const treeLabel = document.querySelector('.tree .tree-label');
     if (treeLabel) treeLabel.textContent = '交卷物 · ' + dept.name;
@@ -1728,7 +1854,7 @@
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
-    renderExperts, renderExpertFaces, renderProfExperts, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
+    renderExperts, renderRailExperts, renderExpertFaces, renderProfExperts, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo, gapActionsFor
   };
 
   document.addEventListener('DOMContentLoaded', () => {

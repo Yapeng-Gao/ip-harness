@@ -194,33 +194,24 @@
       </div>
     </section>
 
-    <!-- 右：默认只露节点一句 + 本部门对话 + 齐套 + 单闸；专家/契约折叠 -->
+    <!-- 右栏序：部门身份 → 专家编制 → 缺项推进/齐套闸 → 本部门对话（瘦） -->
     <aside class="pane chat-pane" data-gate-pane aria-label="对话与右栏闸">
       <div class="right-stack">
-        <div class="node-tip" aria-label="本节点一句">
-          <span class="node-tip-dept" data-dept-name>交底部</span>
+        <div class="dept-id-strip" aria-label="本部门身份">
+          <div class="dept-id-kicker">本部门</div>
+          <strong data-dept-name>交底部</strong>
+          <p class="dept-id-duty" data-dept-pitch>访谈与事实齐套后，交出可接力的技术交底书。</p>
+          <p class="dept-id-tip" data-node-tip>补齐权属声明后交卷 · 确认类型：技术事实</p>
           <p class="node-tip-goal" data-goal-context hidden></p>
-          <p class="node-tip-line" data-node-tip>补齐权属声明后交卷 · 确认类型：技术事实</p>
         </div>
 
-        <div class="chat-bits" data-chat-feed>
-          <div class="chat-bubble">
-            <strong>交底书撰写专家 · 建议稿</strong>
-            权属声明仍缺。建议由法务出具模板后你确认——建议稿 ≠ 确认。
-          </div>
-          <div class="chat-bubble">
-            <strong>本部门执行助手</strong>
-            齐套交卷后，右栏露出通过/驳回。类型：<span data-confirm-type>技术事实</span>。请先看中栏交卷物再拍板。
-          </div>
-        </div>
-
-        <form class="chat-compose" id="dept-chat-form" autocomplete="off">
-          <input id="dept-chat-input" type="text" placeholder="跟本部门执行助手说一句…" aria-label="对话输入">
-          <button class="btn btn-ink btn-sm" type="submit">发送</button>
-        </form>
+        <section class="rail-experts" aria-label="本部门专家编制">
+          <div class="rail-sec-label">本部门专家 · 建议稿</div>
+          <div data-experts></div>
+        </section>
 
         <div class="gate-box" id="gate-box">
-          <div class="pane-head" style="padding:0 0 8px;border:0">齐套清单</div>
+          <div class="pane-head rail-sec-label" style="padding:0 0 8px;border:0">缺项怎么推 · 齐套</div>
           <div class="checklist" data-checklist></div>
           <p class="missing" data-missing-live>缺项：权属声明</p>
           <p class="gate-meta">齐套 <span class="tabular" data-check-count>0 / 4</span> · 未齐套交卷禁用</p>
@@ -243,6 +234,20 @@
           </div>
         </div>
 
+        <div class="rail-chat-block">
+          <div class="rail-sec-label">本部门执行助手</div>
+          <div class="chat-bits" data-chat-feed>
+            <div class="chat-bubble">
+              <strong>本部门执行助手</strong>
+              主聊对象是我。专家只出建议稿，不另开私聊。齐套后右栏露通过/驳回 · 类型：<span data-confirm-type>技术事实</span>。
+            </div>
+          </div>
+          <form class="chat-compose" id="dept-chat-form" autocomplete="off">
+            <input id="dept-chat-input" type="text" placeholder="跟本部门执行助手说一句…" aria-label="对话输入">
+            <button class="btn btn-ink btn-sm" type="submit">发送</button>
+          </form>
+        </div>
+
         <details class="rail-collapse node-contract">
           <summary>本节点契约</summary>
           <dl class="node-contract-dl">
@@ -253,11 +258,6 @@
             <dt>确认点</dt><dd>技术事实 · 权属归属</dd>
             <dt>完成</dt><dd>可接力的交底书齐套交卷</dd>
           </dl>
-        </details>
-
-        <details class="rail-collapse experts-block">
-          <summary>本部门专家</summary>
-          <div data-experts></div>
         </details>
       </div>
     </aside>
