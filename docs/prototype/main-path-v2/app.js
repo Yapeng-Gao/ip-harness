@@ -187,6 +187,24 @@
     return { openDoc: openDoc, openLabel: openLabel, askLabel: askLabel, askText: askText };
   }
 
+  /* P1-2: 已齐项折起；toggle 文案 */
+  function syncChecklistDoneToggle(list) {
+    if (!list) return;
+    const done = list.querySelectorAll('.check-row.is-done').length;
+    const box = list.closest('.gate-box') || list.parentElement;
+    const btn = box ? box.querySelector('[data-toggle-done]') : null;
+    if (!btn) return;
+    if (done > 0) {
+      btn.hidden = false;
+      const open = list.classList.contains('show-done');
+      btn.textContent = open ? ('收起已齐 ' + done + ' 项') : ('已齐 ' + done + ' 项');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    } else {
+      btn.hidden = true;
+      list.classList.remove('show-done');
+    }
+  }
+
   function checklistItemHtml(item, idx, dept) {
     const last = idx === dept.check.length - 1;
     const checked = !last; /* demo: last = current gap */
@@ -418,7 +436,11 @@
     // Never auto fold-left; user may still collapse via「收折」.
     const shouldFold = false;
     root.classList.toggle('fold-left', shouldFold);
-    if (foldBtn) foldBtn.textContent = shouldFold ? '展开' : '收折';
+    if (foldBtn) {
+      foldBtn.textContent = shouldFold ? '展开' : '收折';
+      /* P1-4: aria-expanded = 左栏是否展开 */
+      foldBtn.setAttribute('aria-expanded', shouldFold ? 'false' : 'true');
+    }
   }
 
   function applyModeUI(m) {
@@ -674,6 +696,7 @@
         if (actions) actions.hidden = !!on;
         if (status) status.textContent = on ? '已齐' : '缺 · 点下方推进';
       });
+      syncChecklistDoneToggle(box);
       const hint = document.querySelector('[data-next-hint]');
       if (hint) {
         if (all) {
@@ -1033,6 +1056,22 @@
       if (list.dataset.built) return;
       list.dataset.built = '1';
       list.innerHTML = dept.check.map((c, i) => checklistItemHtml(c, i, dept)).join('');
+      /* P1-2: 默认只露当前缺项；已齐项可折 */
+      syncChecklistDoneToggle(list);
+    });
+    document.querySelectorAll('[data-toggle-done]').forEach(btn => {
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = '1';
+      btn.addEventListener('click', () => {
+        const box = btn.closest('.gate-box');
+        const list = box ? box.querySelector('[data-checklist]') : document.querySelector('[data-checklist]');
+        if (!list) return;
+        list.classList.toggle('show-done');
+        const open = list.classList.contains('show-done');
+        const n = list.querySelectorAll('.check-row.is-done').length;
+        btn.textContent = open ? ('收起已齐 ' + n + ' 项') : ('已齐 ' + n + ' 项');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
     });
     /* Rail: actual staffing — no pad / no hard ≤3 */
     const expertHtml = renderRailExperts(dept.experts, dept);
@@ -1062,9 +1101,12 @@
     if (foldBtn && wb) {
       foldBtn.addEventListener('click', () => {
         wb.classList.toggle('fold-left');
-        foldBtn.textContent = wb.classList.contains('fold-left') ? '展开' : '收折';
+        const folded = wb.classList.contains('fold-left');
+        foldBtn.textContent = folded ? '展开' : '收折';
+        foldBtn.setAttribute('aria-expanded', folded ? 'false' : 'true');
       });
       // Keep three-column skeleton by default (Cursor-like); user may fold left
+      foldBtn.setAttribute('aria-expanded', wb.classList.contains('fold-left') ? 'false' : 'true');
     }
 
     const focusGate = document.querySelector('[data-focus-gate]');
@@ -1193,7 +1235,10 @@
         b.classList.toggle('active', b.dataset.docTab === name);
       });
       document.querySelectorAll('[data-editor-tab]').forEach(b => {
-        b.classList.toggle('active', b.dataset.editorTab === name);
+        const on = b.dataset.editorTab === name;
+        b.classList.toggle('active', on);
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
       });
       // Keep / create matching editor tab label
       const tabs = document.querySelector('.editor-tabs');
@@ -1202,13 +1247,18 @@
         if (!tab) {
           tab = document.createElement('button');
           tab.type = 'button';
+          tab.setAttribute('role', 'tab');
+          tab.setAttribute('aria-selected', 'false');
           tab.dataset.editorTab = name;
           tab.innerHTML = name + '<span></span>';
           tab.addEventListener('click', () => activateDoc(name));
           tabs.appendChild(tab);
         }
         tabs.querySelectorAll('[data-editor-tab]').forEach(b => {
-          b.classList.toggle('active', b.dataset.editorTab === name);
+          const on = b.dataset.editorTab === name;
+          b.classList.toggle('active', on);
+          b.setAttribute('role', 'tab');
+          b.setAttribute('aria-selected', on ? 'true' : 'false');
         });
       }
       const stub = DOC_STUBS[name] || {
