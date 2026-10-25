@@ -114,7 +114,26 @@
     return { name: n, key, src: PORTRAIT[key] || PORTRAIT.expert1, status, human };
   }
 
-  /* One-line expert tip (建议稿) — not a private chat */
+  /* 工作/产出/进度 — 席位首屏可感（非 tip） */
+  function expertWorkState(name, dept) {
+    const miss = (dept && dept.missing) ? dept.missing : '缺项';
+    const n = name || '';
+    if (/访谈/.test(n)) return { work: '整理访谈事实', output: '纪要草稿', progress: '进行中', line: '在办 · 纪要草稿' };
+    if (/撰写|说明书/.test(n)) return { work: '起草交卷物', output: '交底建议稿', progress: '待齐套', line: '在办 · 交底建议稿' };
+    if (/权利要求/.test(n)) return { work: '梳权项树', output: '独权草案', progress: '进行中', line: '在办 · 独权草案' };
+    if (/检索|查新/.test(n)) return { work: '特征比对', output: '结论稿段', progress: '进行中', line: '在办 · 结论稿段' };
+    if (/FTO/.test(n)) return { work: '障碍比对', output: '风险摘录', progress: '进行中', line: '在办 · 风险摘录' };
+    if (/布局|报价/.test(n) && !/OA/.test(n)) return { work: '策略与报价', output: '决议建议', progress: '待签署', line: '在办 · 决议建议' };
+    if (/策略/.test(n) && !/OA/.test(n)) return { work: '布局策略', output: '策略建议', progress: '进行中', line: '在办 · 策略建议' };
+    if (/附图|绘制/.test(n)) return { work: '对齐图号', output: '附图包', progress: '进行中', line: '在办 · 附图包' };
+    if (/流程|期限|事务/.test(n)) return { work: '递交核查', output: '核查单', progress: '待授权', line: '在办 · 核查单' };
+    if (/OA|争辩/.test(n)) return { work: '拆通知书', output: '争辩草稿', progress: '进行中', line: '在办 · 争辩草稿' };
+    if (/顾言/.test(n)) return { work: '跨部路由', output: '计划建议', progress: '待命', line: '待命 · 跨部' };
+    if (/林岚|代理师/.test(n)) return { work: '代理复核', output: '复核意见', progress: '等齐套', line: '等齐套 · 复核' };
+    return { work: '本岗任务', output: '建议稿', progress: '进行中', line: '在办 · 建议稿' };
+  }
+
+  /* Seed lines for 1:1 / leader threads */
   function expertOneLine(name, dept) {
     const miss = (dept && dept.missing) ? dept.missing : '缺项';
     const n = name || '';
@@ -125,9 +144,9 @@
     if (/附图|一致性|绘制/.test(n)) return '图号与说明书引用一致后再交卷。';
     if (/流程|期限|事务/.test(n)) return '对外递交前须授权人确认。';
     if (/OA|争辩/.test(n)) return '答复策略须企业确认后再递。';
-    if (/顾言/.test(n)) return '商业与风险节点由你拍板；专家只出建议。';
+    if (/顾言/.test(n)) return '商业与风险节点由你拍板；我只出计划建议。';
     if (/林岚|代理师/.test(n)) return '代理复核等你齐套；建议稿不能代替确认。';
-    return '本岗出建议稿 · 主聊对象仍是本部门执行助手。';
+    return '本岗出建议稿 · 主路径仍跟本部门负责人聊。';
   }
 
   /* Drawer / generic list: planned staffing; ≤3 upper cap; 0→空态; never pad */
@@ -142,7 +161,7 @@
     }).join('');
   }
 
-  /* Workbench right-rail experts: avatar+岗名 default; expand = one-line tip; not private chat.
+  /* Workbench right-rail experts: avatar+岗名+工作态常显；点开 → 可选 1:1（非 tip）。
      ≤3 = upper cap only — show planned staffing as-is (0→空态; never pad to 3). */
   function renderRailExperts(names, dept) {
     const list = (names || []).slice(0, 3);
@@ -153,36 +172,41 @@
       const m = expertMeta(e, i);
       const parts = m.name.split(/\s*·\s*/);
       const title = parts[0];
-      const role = parts[1] || (m.human ? '在岗复核' : '专岗 · 建议稿');
+      const ws = expertWorkState(e, dept);
       const tip = expertOneLine(e, dept);
-      return '<details class="expert-rail-item">' +
-        '<summary>' +
-          '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="28" height="28">' +
-          '<span><strong>' + title + '</strong><small>' + role + '</small></span>' +
-        '</summary>' +
-        '<p class="expert-rail-tip">' + tip + '<em>建议稿 · 非私聊</em></p>' +
-      '</details>';
+      return '<button type="button" class="expert-rail-btn" data-open-expert="' + i + '"' +
+        ' data-expert-name="' + m.name.replace(/"/g, '&quot;') + '"' +
+        ' aria-pressed="false" title="' + tip.replace(/"/g, '&quot;') + '">' +
+        '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="28" height="28" aria-hidden="true">' +
+        '<span class="expert-rail-meta">' +
+          '<strong>' + title + '</strong>' +
+          '<small class="expert-work-line">' + ws.line + '</small>' +
+          '<span class="expert-work-bits" aria-hidden="true">' +
+            '<em>' + ws.work + '</em><em>' + ws.output + '</em><em>' + ws.progress + '</em>' +
+          '</span>' +
+        '</span>' +
+      '</button>';
     }).join('');
   }
 
-  /* Per-gap next action: open center doc or ask 本部门执行助手 — never checkbox-only */
+  /* Per-gap next action: open center doc or ask 本部门负责人 — never checkbox-only */
   function gapActionsFor(item, dept) {
     const primary = dept.deliverable;
     let openDoc = primary;
     let openLabel = '打开中栏文书「' + item + '」';
-    let askLabel = '让助手起草「' + item + '」';
+    let askLabel = '让负责人起草「' + item + '」';
     let askText = '请起草「' + item + '」草稿，我好粘贴进中栏。';
     if (item === '权属声明') {
       openDoc = '权属声明';
       openLabel = '打开中栏权属声明补齐';
-      askLabel = '让助手起草权属声明';
+      askLabel = '让负责人起草权属声明';
       askText = '请起草职务发明权属声明草稿，权属归澄明科技，发明人待填。';
     } else if (dept.id === 'disclosure' && /技术方案|技术效果|替代实施/.test(item)) {
       openDoc = '交底书 V3';
       openLabel = '打开中栏交底书「' + item + '」';
     } else if (item === dept.missing) {
       openLabel = '打开中栏文书「' + item + '」';
-      askLabel = '让助手起草「' + item + '」';
+      askLabel = '让负责人起草「' + item + '」';
     }
     return { openDoc: openDoc, openLabel: openLabel, askLabel: askLabel, askText: askText };
   }
@@ -703,7 +727,7 @@
           hint.innerHTML = '<strong>下一步：</strong>齐套已完成 — 点击右侧「交卷 · 待你确认」，同屏右栏通过/驳回。';
           hint.classList.add('is-ready');
         } else {
-          hint.innerHTML = '<strong>下一步：</strong>点缺项下的「打开中栏… / 让助手…」推进，齐套后交卷。';
+          hint.innerHTML = '<strong>下一步：</strong>点缺项下的「打开中栏… / 让负责人…」推进，齐套后交卷。';
           hint.classList.remove('is-ready');
         }
       }
@@ -1031,6 +1055,126 @@
     }
   }
 
+  function wireDeptMultiBotChat(dept) {
+    const feed = document.querySelector('[data-chat-feed]');
+    const chatForm = document.getElementById('dept-chat-form');
+    const chatInput = document.getElementById('dept-chat-input');
+    const block = document.querySelector('[data-chat-block]');
+    const backBtn = document.querySelector('[data-back-leader]');
+    const peerName = document.querySelector('[data-chat-peer-name]');
+    const peerRole = document.querySelector('[data-chat-peer-role]');
+    if (!feed || !chatForm || !chatInput) return;
+
+    const leaderLabel = '本部门负责人';
+    const sessions = Object.create(null);
+    sessions.leader = [
+      {
+        who: leaderLabel,
+        text: '我是' + dept.name + '负责人，调度专家把本站「' + dept.deliverable + '」做完。缺项推进、齐套交卷找我。点专家可 1:1；确认类型：' + (dept.confirmType || '技术事实') + '。'
+      }
+    ];
+    (dept.experts || []).slice(0, 3).forEach(function (name, i) {
+      const tip = expertOneLine(name, dept);
+      const ws = expertWorkState(name, dept);
+      sessions['e' + i] = [
+        {
+          who: name.split(/\s*·\s*/)[0],
+          text: tip + ' 当前：' + ws.work + ' · 产出「' + ws.output + '」· ' + ws.progress + '。建议稿 ≠ 确认。'
+        }
+      ];
+    });
+
+    let activeKey = 'leader';
+
+    function renderFeed() {
+      const list = sessions[activeKey] || [];
+      feed.innerHTML = list.map(function (m) {
+        return '<div class="chat-bubble"><strong>' + m.who + '</strong>' + m.text + '</div>';
+      }).join('');
+      try { feed.scrollTop = feed.scrollHeight; } catch (e) {}
+    }
+
+    function setRosterActive(key) {
+      document.querySelectorAll('[data-open-expert]').forEach(function (btn) {
+        const on = key === ('e' + btn.getAttribute('data-open-expert'));
+        btn.classList.toggle('is-active', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    function switchChatSession(key) {
+      activeKey = key || 'leader';
+      if (block) block.setAttribute('data-chat-session', activeKey);
+      if (activeKey === 'leader') {
+        if (peerName) peerName.textContent = leaderLabel;
+        if (peerRole) peerRole.textContent = dept.name + ' · 调度专家完成本站';
+        if (backBtn) backBtn.hidden = true;
+        chatInput.placeholder = '跟本部门负责人说一句…';
+        chatInput.setAttribute('aria-label', '跟本部门负责人对话');
+        setRosterActive('leader');
+      } else {
+        const idx = parseInt(activeKey.slice(1), 10);
+        const full = (dept.experts || [])[idx] || '专家';
+        const short = full.split(/\s*·\s*/)[0];
+        const ws = expertWorkState(full, dept);
+        if (peerName) peerName.textContent = short;
+        if (peerRole) peerRole.textContent = '1:1 · ' + ws.line;
+        if (backBtn) backBtn.hidden = false;
+        chatInput.placeholder = '跟' + short + '说一句…';
+        chatInput.setAttribute('aria-label', '跟' + short + '对话');
+        setRosterActive(activeKey);
+      }
+      renderFeed();
+    }
+
+    // expose for gap-ask
+    window.__mpv2SwitchChat = switchChatSession;
+    // local alias used above before define — rebind gap asks that closed over name
+    // (gap-ask calls switchChatSession via typeof check on function in outer — patch uses switchChatSession name)
+    // Attach to closure by assigning on dept page scope via this function's binding:
+    wireDeptMultiBotChat.switchChatSession = switchChatSession;
+
+    document.querySelectorAll('[data-open-expert]').forEach(function (btn) {
+      if (btn.dataset.wiredChat) return;
+      btn.dataset.wiredChat = '1';
+      btn.addEventListener('click', function () {
+        const i = btn.getAttribute('data-open-expert');
+        switchChatSession('e' + i);
+      });
+    });
+    if (backBtn && !backBtn.dataset.wiredChat) {
+      backBtn.dataset.wiredChat = '1';
+      backBtn.addEventListener('click', function () { switchChatSession('leader'); });
+    }
+    if (!chatForm.dataset.wiredMulti) {
+      chatForm.dataset.wiredMulti = '1';
+      chatForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (!text) return;
+        const peer = activeKey === 'leader'
+          ? leaderLabel
+          : ((dept.experts || [])[parseInt(activeKey.slice(1), 10)] || '专家').split(/\s*·\s*/)[0];
+        if (!sessions[activeKey]) sessions[activeKey] = [];
+        sessions[activeKey].push({
+          who: '我 → ' + peer,
+          text: text.replace(/</g, '&lt;')
+        });
+        chatInput.value = '';
+        renderFeed();
+        toast(activeKey === 'leader' ? '已纳入本部门指令' : '已发给专家 · 1:1');
+      });
+    }
+
+    switchChatSession('leader');
+  }
+
+  // bridge for gap-ask (defined after wireDeptMultiBotChat)
+  function switchChatSession(key) {
+    if (wireDeptMultiBotChat.switchChatSession) wireDeptMultiBotChat.switchChatSession(key);
+    else if (window.__mpv2SwitchChat) window.__mpv2SwitchChat(key);
+  }
+
   function wireDeptPage() {
     const key = deptFromQuery('disclosure');
     const dept = DEPTS[key] || DEPTS.disclosure;
@@ -1307,7 +1451,7 @@
     });
     activateDoc(primaryName);
 
-    // Gap next-actions → open center doc / fill 本部门执行助手 (not private expert chat)
+    // Gap next-actions → open center doc / fill 本部门负责人 (leader) composer
     document.querySelectorAll('[data-gap-open]').forEach(btn => {
       btn.addEventListener('click', (ev) => {
         ev.preventDefault();
@@ -1326,12 +1470,14 @@
         ev.preventDefault();
         ev.stopPropagation();
         const ask = btn.getAttribute('data-gap-ask') || '';
+        // Ensure leader thread for gap asks (主路径)
+        if (typeof switchChatSession === 'function') switchChatSession('leader');
         const input = document.getElementById('dept-chat-input');
         if (input) {
           input.value = ask;
           input.focus();
         }
-        toast('已填入助手指令 · 点发送');
+        toast('已填入负责人指令 · 点发送');
       });
     });
 
@@ -1339,23 +1485,8 @@
     const treeLabel = document.querySelector('.tree .tree-label');
     if (treeLabel) treeLabel.textContent = '交卷物 · ' + dept.name;
 
-    // Right-pane chat compose → bubble + optional delegate
-    const chatForm = document.getElementById('dept-chat-form');
-    const chatInput = document.getElementById('dept-chat-input');
-    const feed = document.querySelector('[data-chat-feed]');
-    if (chatForm && chatInput && feed) {
-      chatForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const text = chatInput.value.trim();
-        if (!text) return;
-        const bubble = document.createElement('div');
-        bubble.className = 'chat-bubble';
-        bubble.innerHTML = '<strong>我 → 本部门执行助手</strong>' + text.replace(/</g, '&lt;');
-        feed.appendChild(bubble);
-        chatInput.value = '';
-        toast('已纳入本节点指令');
-      });
-    }
+    // Cursor-style multi-bot: default leader; optional expert 1:1
+    wireDeptMultiBotChat(dept);
 
     // Fill pending title/detail for rail
     document.querySelectorAll('[data-pending-title]').forEach(el => { el.textContent = dept.pendingTitle; });

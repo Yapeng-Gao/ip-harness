@@ -188,7 +188,7 @@
       </div>
     </section>
 
-    <!-- 右栏：紧凑置顶(身份/缺项/闸/专家露头) → 对话主高 → 契约(折) -->
+    <!-- 右栏：紧凑置顶(身份/缺项/闸) → 专家编制席位 → leader主聊/专家1:1 → 契约(折) -->
     <aside class="pane chat-pane" data-gate-pane aria-label="对话与确认">
       <div class="right-stack">
         <div class="rail-top-chrome">
@@ -227,21 +227,27 @@
           <a class="guyan-thin-link" href="delegate.html" data-keep-role>顾言 · 跨部 / 改目标</a>
         </div>
 
-        <!-- P1-1: 专家吸在对话块顶，不随 rail-top-chrome 滚走 -->
-        <section class="rail-experts" aria-label="本部门专家">
+        <!-- P1-1 + A1–A3: 专家席位吸顶；默认 leader 主聊；点专家进 1:1 -->
+        <section class="rail-experts" aria-label="本部门专家编制">
           <div class="rail-experts-row" data-experts></div>
         </section>
 
-        <div class="rail-chat-block">
-          <div class="rail-sec-label">本部门执行助手</div>
+        <div class="rail-chat-block" data-chat-block data-chat-session="leader">
+          <div class="rail-chat-head">
+            <div class="rail-chat-who">
+              <strong data-chat-peer-name>本部门负责人</strong>
+              <small data-chat-peer-role>调度专家完成本站 · 默认主对话</small>
+            </div>
+            <button type="button" class="text-btn rail-back-leader" data-back-leader hidden>回部门对话</button>
+          </div>
           <div class="chat-bits" data-chat-feed>
             <div class="chat-bubble">
-              <strong>本部门执行助手</strong>
-              主聊对象是我。专家只出建议稿，不另开私聊。齐套后露出通过/驳回 · 类型：<span data-confirm-type>技术事实</span>。
+              <strong>本部门负责人</strong>
+              我是本部门负责人，调度专家把本站做完。缺项推进、齐套交卷找我。要点开某专家可 1:1；确认类型：<span data-confirm-type>技术事实</span>。
             </div>
           </div>
           <form class="chat-compose" id="dept-chat-form" autocomplete="off">
-            <input id="dept-chat-input" type="text" placeholder="跟本部门执行助手说一句…" aria-label="对话输入">
+            <input id="dept-chat-input" type="text" placeholder="跟本部门负责人说一句…" aria-label="对话输入" name="dept-chat">
             <button class="btn btn-ink btn-send" type="submit">发送</button>
           </form>
         </div>
