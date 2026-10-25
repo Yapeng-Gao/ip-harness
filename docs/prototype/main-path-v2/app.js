@@ -463,10 +463,21 @@
     localStorage.setItem('mpv2-snapshot', JSON.stringify(obj));
   }
 
+  function ensureBrandGoal() {
+    document.querySelectorAll('a.brand').forEach(function (a) {
+      if (a.querySelector('.brand-goal')) return;
+      var g = document.createElement('span');
+      g.className = 'brand-goal';
+      g.textContent = '尽快把专利申下来';
+      a.appendChild(g);
+    });
+  }
+
   function wireShell() {
     if (qs('role')) localStorage.setItem('mpv2-role', qs('role'));
     if (qs('nocase') === '1') localStorage.setItem('mpv2-has-case', '0');
     if (qs('hascase') === '1') localStorage.setItem('mpv2-has-case', '1');
+    ensureBrandGoal();
     applyRoleUI(role());
     applyModeUI(mode());
     applyHasCaseUI();
@@ -587,7 +598,7 @@
     const title = dept.deliverable;
     const bodies = {
       disclosure:
-        '<p class="doc-lead">中栏交卷物正文 · 可编辑。右侧为对话与齐套闸——勿把右栏齐套当成整页工作台。</p>' +
+        '<p class="doc-lead">本关交卷物 · 可直接编辑技术方案与关键特征。</p>' +
         '<h2>一、技术领域</h2>' +
         '<p>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判，适用于工业磁驱泵产线。</p>' +
         '<h2>二、背景问题</h2>' +
@@ -986,7 +997,7 @@
         title: '技术交底书 V3',
         meta: '交卷物 · 技术交底书 V3',
         html:
-          '<p class="doc-lead">中栏交卷物正文 · 可编辑。右侧为对话与齐套闸——勿把右栏齐套当成整页工作台。</p>' +
+          '<p class="doc-lead">本关交卷物 · 可直接编辑技术方案与关键特征。</p>' +
           '<h2>一、技术领域</h2>' +
           '<p>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判，适用于工业磁驱泵产线。</p>' +
           '<h2>二、背景问题</h2>' +

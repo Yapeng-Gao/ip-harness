@@ -43,18 +43,30 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   border-bottom: 1px solid var(--line); background: var(--paper); position: relative; z-index: 30;
 }
 .brand {
-  width: 220px; flex: 0 0 220px; height: 100%;
-  display: flex; align-items: center; gap: 10px; padding: 0 16px;
+  width: 248px; flex: 0 0 248px; height: 100%;
+  display: flex; align-items: center; gap: 10px; padding: 0 14px;
   border-right: 1px solid var(--line); color: var(--ink);
+  flex-wrap: wrap; row-gap: 2px;
 }
 .brand-mark {
   width: 28px; height: 28px; background: var(--ink); color: var(--paper);
   display: grid; place-items: center; font-size: 15px; font-weight: 600;
-  border-radius: 6px 6px 6px 1px;
+  border-radius: 6px 6px 6px 1px; flex: 0 0 auto;
 }
-.brand-copy { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-copy { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
 .brand-copy strong { font-size: 13px; font-weight: 600; }
 .brand-copy small { font-size: 8px; letter-spacing: .14em; color: var(--ink-3); margin-top: 3px; font-weight: 600; }
+.brand-goal {
+  flex: 1 1 100%;
+  margin: 0 0 0 38px;
+  font-size: 10px; font-weight: 600; color: var(--ink-2);
+  letter-spacing: .02em; white-space: nowrap; line-height: 1.2;
+}
+.site-brand .brand-goal { margin-left: 0; flex: 0 1 auto; }
+.site-nav .site-brand {
+  width: auto; flex: 0 1 auto; height: auto; border-right: 0;
+  padding: 0; gap: 10px; align-items: center;
+}
 .topbar-context { display: flex; align-items: center; gap: 8px; padding: 0 16px; flex: 1; min-width: 0; }
 .context-label { color: var(--ink-3); font-size: 11px; white-space: nowrap; }
 .context-button {
@@ -233,6 +245,18 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 }
 .site-hero-actions { display: flex; justify-content: center; gap: 12px; margin: 32px 0 18px; flex-wrap: wrap; }
 .site-hero-copy > small { color: var(--ink-3); font-size: 11px; }
+.site-brand-sub {
+  margin: -8px 0 14px !important;
+  font-size: 14px !important; font-weight: 600; color: var(--ink-2) !important;
+  letter-spacing: .06em; line-height: 1.4 !important; max-width: none !important;
+}
+.site-goal-line {
+  margin: 0 0 12px !important;
+  font-size: 16px !important; font-weight: 600; color: var(--ink) !important;
+  line-height: 1.65 !important; max-width: 720px !important;
+}
+.site-hero-vision .site-brand-sub,
+.site-hero-vision .site-goal-line { text-align: left; }
 
 .hero-product {
   max-width: 1180px; margin: 64px auto -6px; background: var(--warm-paper);
@@ -1453,6 +1477,62 @@ html[data-mode="assistant"] .company-assist-stage { display: block; }
 .company-delegate-rail {
   border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px;
   background: var(--paper); margin: 0 0 18px;
+}
+
+
+/* —— 公司页 · 主链进度（当前站 → 距可递交） —— */
+.case-progress-strip {
+  margin: 16px 0 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--warm-paper);
+}
+.case-progress-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px;
+  margin-bottom: 12px;
+}
+.case-progress-head strong { font-size: 14px; color: var(--ink); }
+.case-progress-hint { font-size: 11px; color: var(--ink-3); }
+.case-progress-track {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.case-progress-track li {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--ink-3);
+}
+.case-progress-track li:not(:last-child)::after {
+  content: "→"; color: var(--ink-3); margin-left: 2px; font-weight: 600;
+}
+.case-progress-track a {
+  color: inherit; text-decoration: none;
+  padding: 4px 8px; border-radius: 999px; border: 1px solid transparent;
+}
+.case-progress-track li.is-current a {
+  color: var(--paper); background: var(--ink); border-color: var(--ink); font-weight: 600;
+}
+.case-progress-track li.is-goal a {
+  color: var(--ink); border-color: var(--line); background: var(--paper); font-weight: 600;
+}
+.case-progress-track li.is-later a { opacity: .72; }
+.case-progress-track a:hover { border-color: var(--ink-2); color: var(--ink); }
+
+/* 作业面：专业档可用但弱化抢注意力（模式仍在；不删） */
+html[data-mode="project"] body[data-page="dept"] .mode-switch button[data-mode="studio"],
+html[data-mode="project"] body[data-page="company"] .mode-switch button[data-mode="studio"],
+html[data-mode="project"] body[data-page="home"] .mode-switch button[data-mode="studio"],
+html[data-mode="project"] body[data-page="delegate"] .mode-switch button[data-mode="studio"],
+html[data-mode="assistant"] body[data-page="dept"] .mode-switch button[data-mode="studio"],
+html[data-mode="assistant"] body[data-page="company"] .mode-switch button[data-mode="studio"],
+html[data-mode="assistant"] body[data-page="home"] .mode-switch button[data-mode="studio"] {
+  opacity: .55; font-weight: 400;
+}
+html[data-mode="project"] body[data-page="dept"] .mode-switch button[data-mode="studio"]:hover,
+html[data-mode="project"] body[data-page="company"] .mode-switch button[data-mode="studio"]:hover,
+html[data-mode="project"] body[data-page="home"] .mode-switch button[data-mode="studio"]:hover,
+html[data-mode="project"] body[data-page="delegate"] .mode-switch button[data-mode="studio"]:hover {
+  opacity: .85;
 }
 
 .case-status-strip {
