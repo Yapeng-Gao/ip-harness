@@ -1575,21 +1575,13 @@ html[data-mode="assistant"] .company-assist-stage { display: block; }
 .case-progress-track li.is-later a { opacity: .72; }
 .case-progress-track a:hover { border-color: var(--ink-2); color: var(--ink); }
 
-/* 作业面：专业档可用但弱化抢注意力（模式仍在；不删） */
-html[data-mode="project"] body[data-page="dept"] .mode-switch button[data-mode="studio"],
-html[data-mode="project"] body[data-page="company"] .mode-switch button[data-mode="studio"],
-html[data-mode="project"] body[data-page="home"] .mode-switch button[data-mode="studio"],
-html[data-mode="project"] body[data-page="delegate"] .mode-switch button[data-mode="studio"],
-html[data-mode="assistant"] body[data-page="dept"] .mode-switch button[data-mode="studio"],
-html[data-mode="assistant"] body[data-page="company"] .mode-switch button[data-mode="studio"],
-html[data-mode="assistant"] body[data-page="home"] .mode-switch button[data-mode="studio"] {
-  opacity: .55; font-weight: 400;
+/* fix-p0：作业面「专业」与「项目」同级可点；禁半残 opacity（可发现性 ≥ 项目） */
+html[data-mode="project"] .mode-switch button[data-mode="studio"],
+html[data-mode="assistant"] .mode-switch button[data-mode="studio"] {
+  opacity: 1; font-weight: 500;
 }
-html[data-mode="project"] body[data-page="dept"] .mode-switch button[data-mode="studio"]:hover,
-html[data-mode="project"] body[data-page="company"] .mode-switch button[data-mode="studio"]:hover,
-html[data-mode="project"] body[data-page="home"] .mode-switch button[data-mode="studio"]:hover,
-html[data-mode="project"] body[data-page="delegate"] .mode-switch button[data-mode="studio"]:hover {
-  opacity: .85;
+html[data-mode="studio"] .mode-switch button[data-mode="studio"].active {
+  opacity: 1; font-weight: 600;
 }
 
 .case-status-strip {
@@ -2936,3 +2928,49 @@ html[data-mode="assistant"] body[data-page="dept"] #dept-editor {
   font-variant-numeric: tabular-nums;
 }
 .deadline-cell { font-variant-numeric: tabular-nums; }
+
+
+/* fix-p0: home gap-first hierarchy */
+/* 有缺口：need-me 收字号/块量，勿与墨色大卡抢主叙事 */
+.need-me.need-me-muted {
+  margin-top: 6px; margin-bottom: 12px; padding: 6px 0 2px;
+  border: 0; border-top: 1px solid var(--line); border-radius: 0;
+  background: transparent; box-shadow: none;
+}
+.need-me.need-me-muted .need-me-head { margin-bottom: 4px; }
+.need-me.need-me-muted .need-me-head .kicker { font-size: 10px; color: var(--ink-3); }
+.need-me.need-me-muted .need-me-head h2 {
+  font-size: 12px; font-weight: 500; color: var(--ink-3); letter-spacing: 0;
+}
+.need-me.need-me-muted .text-btn { font-size: 11px; color: var(--ink-3); }
+.need-me.need-me-muted .rail-item {
+  padding: 8px 2px; grid-template-columns: 28px minmax(0,1fr) auto; gap: 8px;
+}
+.need-me.need-me-muted .rail-ord { font-size: 10px; }
+.need-me.need-me-muted .rail-item strong { font-size: 12px; font-weight: 500; margin-top: 2px; }
+.need-me.need-me-muted .rail-item small { font-size: 10px; }
+.need-me.need-me-muted .tag { font-size: 10px; padding: 1px 6px; }
+.need-me.need-me-muted .weak-link { font-size: 11px; }
+
+/* 有缺口：顾言/持续委托再降一档——默认可折，勿抢主 CTA */
+.secondary-delegate-fold {
+  margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line);
+}
+.secondary-delegate-fold > summary {
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--ink-3); font-weight: 500; padding: 4px 0;
+  user-select: none;
+}
+.secondary-delegate-fold > summary::-webkit-details-marker { display: none; }
+.secondary-delegate-fold > summary::before {
+  content: "▸"; font-size: 10px; color: var(--ink-3); width: 12px;
+}
+.secondary-delegate-fold[open] > summary::before { content: "▾"; }
+.secondary-delegate-fold > summary .kicker { font-size: 10px; }
+.secondary-delegate-fold .lead-row { margin-top: 8px; margin-bottom: 8px; }
+.secondary-delegate-fold .goal-form input { font-size: 12px; padding: 8px 10px; }
+.secondary-delegate-fold .chips button { font-size: 10px; padding: 3px 8px; }
+.secondary-delegate-fold .btn { font-size: 12px; padding: 6px 10px; }
+.shell-zone .secondary-delegate-fold {
+  margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line);
+}
