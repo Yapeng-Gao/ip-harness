@@ -2238,3 +2238,25 @@ html[data-mode="assistant"] body[data-page="dept"] #dept-editor {
   border:1px solid var(--line); margin:0 0 10px !important;
 }
 .demo-case-progress-label { margin:0 0 6px; font-size:11px; color:var(--ink-3); letter-spacing:.04em; }
+
+/* —— welcome-more fold (jargon scrub) —— */
+.welcome-more {
+  max-width: 1100px;
+  margin: 28px auto 0;
+  padding: 0 34px 8px;
+}
+.welcome-more > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 14px;
+  color: var(--ink-3);
+  padding: 12px 0;
+  border-top: 1px solid var(--line, #e7e0d6);
+}
+.welcome-more > summary::-webkit-details-marker { display: none; }
+.welcome-more > summary::before { content: "▸ "; }
+.welcome-more[open] > summary::before { content: "▾ "; }
+.welcome-more[open] > summary { color: var(--ink-2); margin-bottom: 8px; }
+@media (max-width: 720px) {
+  .welcome-more { padding-left: 18px; padding-right: 18px; }
+}
