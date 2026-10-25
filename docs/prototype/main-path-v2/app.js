@@ -19,10 +19,11 @@
       pendingTitle: '确认查新结论可立项',
       pendingFact: '结论稿是否覆盖拟申请核心特征组合？',
       pendingDetail: '确认后立项部可读取检索结论与证据表，不会自动对外递交。',
-      confirmType: '专业复核', next: 'decision'
+      confirmType: '专业复核', next: 'intake'
     },
-    decision: {
-      id: 'decision', name: '立项部', code: '02', deliverable: '立项决议与报价单',
+    intake: {
+      // alias: decision → intake
+      id: 'intake', name: '立项部', code: '02', deliverable: '立项决议与报价单',
       pitch: '策略、报价与决议齐套，值不值得推由你拍板。',
       missing: '决议签署', check: ['保护策略建议', '费用与周期', '申请类型建议', '决议签署'],
       experts: ['布局策略专家', '报价顾问', '顾言 · 知产负责人'],
@@ -73,7 +74,7 @@
     }
   };
 
-  const DEPT_ORDER = ['disclosure','research','decision','draft','figure','filing','oa'];
+  const DEPT_ORDER = ['disclosure','research','intake','draft','figure','filing','oa'];
 
   /* Photo-style portraits (local assets) — no letter circles / robot art */
   const PORTRAIT = {
@@ -169,6 +170,14 @@
   function qs(name) {
     return new URLSearchParams(location.search).get(name);
   }
+  function normalizeDeptId(id) {
+    // alias: decision → intake
+    if (id === 'decision') return 'intake';
+    return id || 'disclosure';
+  }
+  function deptFromQuery(fallback) {
+    return normalizeDeptId(qs('dept') || fallback || 'disclosure');
+  }
   function role() {
     return qs('role') || localStorage.getItem('mpv2-role') || 'enterprise';
   }
@@ -182,7 +191,7 @@
     return (r || role()) === 'agency' ? 'oa' : 'disclosure';
   }
   function gateHref(deptId) {
-    const id = deptId || pendingDeptForRole();
+    const id = normalizeDeptId(deptId || pendingDeptForRole());
     return 'dept.html?dept=' + id + '&gate=1';
   }
   function prevDeptId(deptId) {
@@ -382,7 +391,7 @@
   }
 
   function goWorkDept(deptId) {
-    const target = 'dept.html?dept=' + encodeURIComponent(deptId || 'disclosure');
+    const target = 'dept.html?dept=' + encodeURIComponent(normalizeDeptId(deptId || 'disclosure'));
     localStorage.setItem('mpv2-last-work', target);
     localStorage.setItem('mpv2-mode', 'project');
     location.href = withRole(target);
@@ -604,7 +613,7 @@
         '<h2>二、比对要点</h2><p>相近方案多偏开环调速；双环+频谱阈值组合较少见。</p>' +
         '<h2>三、结论稿（缺项）</h2><p class="fact-highlight">待补：核心特征组合是否具备可专利性的明确结论。<span>当前缺项</span></p>' +
         '<div class="doc-comment"><strong>检索分析专家</strong><p>结论稿齐套前勿送立项。</p></div>',
-      decision:
+      intake:
         '<p class="doc-lead">立项决议与报价单草稿。确认策略与费用后才启动撰写。</p>' +
         '<h2>一、保护策略</h2><p>建议：发明申请 · 核心在双环控制与故障预判组合。</p>' +
         '<h2>二、费用与周期</h2><p>代理费与官费估算（演示数字）；周期约 18–24 月。</p>' +
@@ -793,6 +802,7 @@
         }
         const d = getDelegation();
         if (d) { d.step = 'workbench'; setDelegation(d); }
+        clearGateQuery(); // 驳回后清 URL gate=1，避免刷新又进闸态
         toast('已驳回 · 请本台补齐后再交卷');
       });
     }
@@ -815,26 +825,43 @@
     window.addEventListener('resize', syncBlindConfirm);
   }
 
+  function clearGateQuery() {
+    try {
+      const u = new URL(location.href);
+      if (u.searchParams.get('gate') !== '1') return;
+      u.searchParams.delete('gate');
+      history.replaceState(null, '', u.toString());
+    } catch (e) {}
+  }
+
   function ensureGateDeepLink(dept) {
     const want = qs('gate') === '1';
-    if (!want && !getSubmitted(dept.id)) return;
-    // Deep-link / 铃铛「去确认」：强制项目档，齐套勾齐并露出右栏闸
+    const submitted = getSubmitted(dept.id);
+    if (!want && !submitted) return;
+    // Deep-link / 铃铛：强制项目档；仅已真实交卷才露通过/驳回（禁伪齐套破 G1）
     localStorage.setItem('mpv2-mode', 'project');
     applyModeUI('project');
+    if (submitted) {
+      revealConfirmRail(dept, { focus: true });
+      return;
+    }
+    // gate=1 但未交卷：落齐套区，交卷仍按缺项禁用；禁止 auto-check / 伪 setSubmitted
     const box = document.querySelector('[data-checklist]');
     if (box) {
-      box.querySelectorAll('input[type=checkbox]').forEach(i => { i.checked = true; });
-      // re-sync submit enabled state then mark submitted
-      box.querySelectorAll('input[type=checkbox]').forEach(i => {
-        i.dispatchEvent(new Event('change', { bubbles: true }));
-      });
+      try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+      const pane = box.closest('[data-gate-pane], .right-stack, aside') || box.parentElement;
+      if (pane) pane.classList.add('gate-focus');
     }
-    setSubmitted(dept.id, true);
-    revealConfirmRail(dept, { focus: true });
+    const submit = document.querySelector('[data-submit-gate]');
+    if (submit) {
+      submit.setAttribute('disabled', 'disabled');
+      submit.classList.add('is-disabled');
+      submit.classList.remove('is-submitted');
+    }
   }
 
   function wireDeptPage() {
-    const key = qs('dept') || 'disclosure';
+    const key = deptFromQuery('disclosure');
     const dept = DEPTS[key] || DEPTS.disclosure;
     // Landing from plan / goWorkDept should be project; if goal context present, snap to project
     try {
@@ -1110,7 +1137,7 @@
     document.querySelectorAll('[data-pending-detail]').forEach(el => { el.textContent = dept.pendingDetail; });
 
     wireRailGate(dept);
-    // Restore submitted state or honor ?gate=1 deep-link from bell / 去确认
+    // Restore real submitted confirm-rail, or land gate=1 on checklist (no fake submit)
     if (getSubmitted(key) || qs('gate') === '1') {
       ensureGateDeepLink(dept);
     }
@@ -1166,7 +1193,7 @@
 
   function wirePending() {
     // Soft redirect: independent confirm page retired — deep-link workbench rail gate
-    const key = qs('dept') || pendingDeptForRole();
+    const key = deptFromQuery(pendingDeptForRole());
     location.replace(withRole(gateHref(key)));
     return;
     const dept = DEPTS[key] || DEPTS.disclosure;
@@ -1393,7 +1420,7 @@
     let deptId = 'disclosure';
     if (/fto|查新|检索|可专利|现有技术/.test(lower)) deptId = 'research';
     else if (/审查|oa|意见陈述|答复/.test(lower)) deptId = 'oa';
-    else if (/立项|报价|值不值得|申请类型/.test(lower)) deptId = 'decision';
+    else if (/立项|报价|值不值得|申请类型/.test(lower)) deptId = 'intake';
     else if (/撰写|权利要求|说明书/.test(lower)) deptId = 'draft';
     else if (/附图|流程图/.test(lower)) deptId = 'figure';
     else if (/递交|官方|国知局/.test(lower)) deptId = 'filing';
@@ -1670,7 +1697,7 @@
   }
 
   window.MPV2 = {
-    DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, toast, withRole,
+    DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, normalizeDeptId, deptFromQuery, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold,

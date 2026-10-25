@@ -8,6 +8,7 @@
 (function () {
   var q = new URLSearchParams(location.search);
   var dept = q.get('dept') || (localStorage.getItem('mpv2-role') === 'agency' ? 'oa' : 'disclosure');
+  if (dept === 'decision') dept = 'intake'; // alias: decision → intake
   var role = q.get('role') || localStorage.getItem('mpv2-role') || 'enterprise';
   var target = 'dept.html?dept=' + encodeURIComponent(dept) + '&gate=1&role=' + encodeURIComponent(role);
   location.replace(target);
@@ -26,6 +27,7 @@
 (function () {
   var q = new URLSearchParams(location.search);
   var dept = q.get('dept') || 'disclosure';
+  if (dept === 'decision') dept = 'intake'; // alias: decision → intake
   var a = document.getElementById('pending-fallback');
   if (a && window.MPV2) a.href = MPV2.withRole('dept.html?dept=' + dept + '&gate=1');
   else if (a) a.href = 'dept.html?dept=' + dept + '&gate=1';

@@ -545,6 +545,61 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 }
 .workflow-stage-grid > aside a:hover { opacity: .85; }
 
+
+/* welcome · 登录前货架：场景卡 + 确认样例橱窗 */
+.site-scenarios {
+  padding: 88px max(34px, calc((100vw - 1180px) / 2)) 24px;
+}
+.scenario-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 36px;
+}
+.scenario-card {
+  border: 1px solid #cfc6ba; background: #faf7f2; border-radius: 10px;
+  padding: 22px 20px;
+  box-shadow: 0 0 0 1px oklch(0 0 0 / 0.02), 0 1px 2px rgba(20,18,15,.04);
+}
+.scenario-kicker {
+  display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .04em;
+  color: var(--ink-2); margin-bottom: 8px;
+}
+.scenario-card h3 { margin: 0 0 10px; font-size: 18px; letter-spacing: -.02em; }
+.scenario-card p { margin: 0 0 12px; color: #606a5e; font-size: 13px; line-height: 1.7; }
+.scenario-card ul {
+  margin: 0; padding: 0 0 0 1.1em; color: #5a6358; font-size: 12px; line-height: 1.75;
+}
+.confirm-showcase {
+  margin-top: 18px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px;
+  border: 1px solid #cfc6ba; border-radius: 12px; background: #f3efe8; padding: 22px;
+}
+.confirm-showcase-copy h3 { margin: 6px 0 10px; font-size: 18px; letter-spacing: -.02em; }
+.confirm-showcase-copy p { margin: 0; color: #606a5e; font-size: 13px; line-height: 1.7; }
+.confirm-showcase-panel {
+  background: #faf7f2; border: 1px solid #c8bfb2; border-radius: 10px; padding: 16px 16px 14px;
+}
+.confirm-showcase-panel header {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px;
+}
+.confirm-showcase-panel header strong { font-size: 13px; }
+.confirm-showcase-panel header small { font-size: 11px; color: var(--ink-3); }
+.confirm-q { margin: 0 0 12px; font-size: 14px; font-weight: 600; line-height: 1.55; color: var(--ink); }
+.confirm-preview-snip {
+  border: 1px dashed #c5bbae; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px;
+  background: #f7f3ed;
+}
+.confirm-preview-snip span { display: block; font-size: 10px; font-weight: 600; color: var(--ink-3); margin-bottom: 4px; }
+.confirm-preview-snip em { font-style: normal; font-size: 12px; color: #5a6358; }
+.confirm-actions-demo { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-demo {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  border: 1px solid #c5bbae; color: var(--ink-2); background: #faf7f2;
+}
+.btn-demo.ink { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+@media (max-width: 860px) {
+  .scenario-grid, .confirm-showcase { grid-template-columns: 1fr; }
+  .site-scenarios { padding-left: 20px; padding-right: 20px; }
+}
+
 .site-business { padding: 100px max(34px, calc((100vw - 1180px) / 2)); }
 .dark-text { color: var(--ink); }
 .shelf-grid {

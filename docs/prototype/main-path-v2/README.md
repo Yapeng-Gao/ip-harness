@@ -2,7 +2,7 @@
 
 **产品**：虚拟知产公司  
 **路径**：`docs/prototype/main-path-v2/`  
-**权威**：vision `2ffbb7d` · pages `0bc7ce9`（§4.3a 专业部门页 · 换面）· combine `4483d2e`  
+**权威**：vision `66a64d2` · pages `ada8fff` · proto 本 commit  
 **取代**：`docs/prototype/main-path/`（旧版保留归档，不覆盖）  
 **禁**：改 `apps/agent`；占端口 5174；改 Kimi Downloads 源码
 
@@ -19,7 +19,7 @@ cd docs/prototype/main-path-v2 && python3 -m http.server 8766
 
 | 文件 | 说明 |
 |---|---|
-| `welcome.html` | 宣传站 · 大标题「虚拟知产公司」· 七部货架 · CTA 登录 |
+| `welcome.html` | 宣传站 · 大标题「虚拟知产公司」· 场景卡/确认样例 · 七部货架 · CTA「登录干活」|
 | `login.html` | 企业 / 代理演示身份 → 薄入口 |
 | `home.html` | **薄入口**：角色主 CTA + 顾言持续委托同区次级 +「现在需要我处理」轻量轨 |
 | `delegate.html` | **持续委托可点链**：提目标 → 计划可调 → 部门执行 → 确认 → 接力 |
@@ -38,7 +38,7 @@ cd docs/prototype/main-path-v2 && python3 -m http.server 8766
 3. **三档换面**：顶栏「助手」→ 侧栏与七部地图隐藏；「项目」→ 公司/部门作业面；「专业」→ **着陆 `professional.html`**（能力卡，一眼异于作业面）。**作废**同面加密度。  
 4. **去该部干活**：专业页 CTA → 切回项目档并进 `dept.html` Cursor 三栏。  
 5. **两工作台 B**：`dept.html?role=enterprise` 中栏见事项/已确认事实/待决策；`?role=agency` 卷宗三栏更满。**禁**文书/协同双视图。  
-6. **闸与快照**：公司齐套缺口主 CTA→工作台齐套（非直进确认）；未齐套交卷禁用；确认页拍板。  
+6. **闸与快照**：公司齐套缺口主 CTA→当前部门工作台；未齐套交卷禁用；**工作台右栏拍板**（独立确认页已废主 hops）。  
 7. **品牌与纸感**：处处「虚拟知产公司」；浅色纸感；无暗色 OS 皮；无 Kimi 橙。
 
 ## 约束
