@@ -100,7 +100,7 @@ flowchart LR
 1. **本页导览**（你正在读）— 主链图 + 三层图例 + D1–D7 落点  
 2. [business-spine.md §1](business-spine.md) — 业务本质与默认主链（§1.3）  
 3. [**product-vision.md**](product-vision.md) — **产品理念**（权威 SHA **`f180716`** · 目标=尽快把专利申下来；品类 H1=虚拟知产公司 / VIRTUAL IP COMPANY；外挂=轻副标（旁注曾跟 `5248975`）；公司/部门/专家叙事；§6 信息架构）  
-4. [**product-pages.md**](product-pages.md) — **逐页怎么设计**（MVP 14 + 扩展 12）+ [**product-logic.md**](product-logic.md)（怎么卖）  
+4. [**product-pages.md**](product-pages.md) — **逐页怎么设计**（MVP **15** + 扩展 12）+ [**product-logic.md**](product-logic.md)（怎么卖）  
 5. [**sources.md**](sources.md) — **业务逻辑参考来源总表**（法定/程序/官费/讨论依据；明确不以原型为准）  
 6. **本页下方「节点」表** — 扫一眼每站定位  
 7. **单个节点的 §0 + §0.1** — 一句话定位 + **Mermaid 图 / 规则速查(A法定·B程序·C商业·D质量) / 进入·完成·推进判据 / 硬闸 / 依据**  
