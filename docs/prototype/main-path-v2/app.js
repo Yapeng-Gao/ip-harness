@@ -244,18 +244,9 @@
       root.dataset.mode = r; // legacy alias
       root.classList.toggle('role-enterprise', r === 'enterprise');
       root.classList.toggle('role-agency', r === 'agency');
-      // Dual B: enterprise defaults left-tree folded (lite center focus);
-      // agency keeps full 卷宗 three-col. No 文书/协同 dual views.
-      if (document.body.dataset.page === 'dept') {
-        const foldBtn = document.querySelector('[data-fold-left]');
-        if (r === 'enterprise') {
-          root.classList.add('fold-left');
-          if (foldBtn) foldBtn.textContent = '展开';
-        } else {
-          root.classList.remove('fold-left');
-          if (foldBtn) foldBtn.textContent = '收折';
-        }
-      }
+      // Dual B: enterprise project may fold left (center still 1fr);
+      // assistant ALWAYS keeps Cursor 3-col (left tree + center doc + right rail).
+      if (document.body.dataset.page === 'dept') syncDeptFold(root);
       // no [data-view] dual-face tabs — ban 文书/协同 dual views
     });
   }
@@ -273,6 +264,19 @@
     if (m === 'assistant') return '助手';
     return '项目';
   }
+  function syncDeptFold(root) {
+    if (document.body.dataset.page !== 'dept') return;
+    root = root || document.querySelector('[data-workbench]');
+    if (!root) return;
+    const foldBtn = document.querySelector('[data-fold-left]');
+    const r = role();
+    const m = mode();
+    // Assist must keep left tree + center doc; enterprise project may fold left.
+    const shouldFold = (r === 'enterprise' && m !== 'assistant');
+    root.classList.toggle('fold-left', shouldFold);
+    if (foldBtn) foldBtn.textContent = shouldFold ? '展开' : '收折';
+  }
+
   function applyModeUI(m) {
     document.documentElement.dataset.mode = m;
     document.documentElement.dataset.tier = m; // alias for screenshots / CSS
@@ -295,6 +299,7 @@
     document.querySelectorAll('[data-tier-workbench]').forEach(wb => {
       wb.classList.toggle('tier-assist', m === 'assistant');
       wb.classList.remove('tier-studio');
+      if (document.body.dataset.page === 'dept') syncDeptFold(wb);
     });
   }
   function setMode(m) {
@@ -620,6 +625,18 @@
   function wireDeptPage() {
     const key = qs('dept') || 'disclosure';
     const dept = DEPTS[key] || DEPTS.disclosure;
+    // Landing from plan / goWorkDept should be project; if goal context present, snap to project
+    try {
+      const d = getDelegation();
+      if (d && (d.goal || d.deliverable || d.step === 'execute')) {
+        if (mode() === 'assistant') {
+          localStorage.setItem('mpv2-mode', 'project');
+          applyModeUI('project');
+        }
+      }
+    } catch (e) {}
+    localStorage.setItem('mpv2-last-work', 'dept.html?dept=' + key);
+    syncDeptFold();
     applyGoalContext();
     document.querySelectorAll('[data-dept-name]').forEach(el => { el.textContent = dept.name; });
     document.querySelectorAll('[data-deliverable]').forEach(el => { el.textContent = dept.deliverable; });
@@ -1261,6 +1278,9 @@
         const noteEl = document.getElementById('plan-note');
         if (noteEl && noteEl.value.trim()) d.note = noteEl.value.trim();
         setDelegation(d);
+        // Force project desk — never land on dept stuck in 助手 (center collapses)
+        localStorage.setItem('mpv2-mode', 'project');
+        localStorage.setItem('mpv2-last-work', 'dept.html?dept=' + plan.deptId);
         location.href = withRole('dept.html?dept=' + plan.deptId);
       });
     }
@@ -1270,6 +1290,7 @@
       const d = getDelegation() || {};
       const plan = planFromGoal(d.goal || goalText);
       const deptId = d.dept || plan.deptId || 'disclosure';
+      localStorage.setItem('mpv2-mode', 'project');
       // Brief paint then jump — fallback link already points at dept
       setTimeout(function () {
         location.replace(withRole('dept.html?dept=' + deptId));
@@ -1320,7 +1341,7 @@
     DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, applyBellByRole, lastWorkHref,
-    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence,
+    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold,
     renderExperts, renderExpertFaces, renderProfExperts, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
   };
 

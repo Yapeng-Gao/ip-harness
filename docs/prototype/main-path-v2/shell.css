@@ -806,7 +806,7 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 }
 .workbench > * { min-height: 0; }
 .workbench.fold-left { grid-template-columns: minmax(0,1fr) 270px; }
-.workbench.fold-left .file-pane { display: none; }
+.workbench.fold-left .file-pane { display: none !important; }
 .pane { border-right: 1px solid var(--line); min-height: 0; overflow: auto; }
 .pane:last-child { border-right: 0; }
 .pane-head {
@@ -849,6 +849,11 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 /* Center: editable deliverable */
 .editor-pane {
   display: flex; flex-direction: column; min-width: 0; overflow: hidden; border-right: 1px solid var(--line);
+  /* Center deliverable owns the stage — never let grid squeeze it into a tab strip */
+  flex: 1 1 auto;
+}
+.workbench > .editor-pane {
+  min-width: min(100%, 360px);
 }
 .editor-tabs {
   height: 40px; flex: 0 0 40px; display: flex; align-items: stretch;
@@ -1136,8 +1141,19 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 }
 
 @media (max-width: 1100px) {
-  .workbench { grid-template-columns: minmax(0,1fr) 270px; }
-  .file-pane { display: none; }
+  /* Narrow: at least center + right; center is 1fr (priority), never right-only */
+  .workbench,
+  .workbench.fold-left,
+  html[data-mode="assistant"] .workbench[data-tier-workbench],
+  html[data-mode="project"] .workbench[data-tier-workbench],
+  html[data-role="enterprise"] .workbench.fold-left,
+  html[data-role="enterprise"] .workbench:not(.fold-left),
+  html[data-role="agency"] .workbench[data-tier-workbench] {
+    grid-template-columns: minmax(0,1fr) minmax(220px, 270px) !important;
+  }
+  .workbench > .file-pane { display: none !important; }
+  .workbench > .editor-pane { min-width: 0; order: 0; }
+  .workbench > .chat-pane { order: 1; max-width: 270px; }
   .dept-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .dept-grid a:nth-child(2n), .dept-grid button:nth-child(2n) { border-right: 0; }
 }
@@ -1303,19 +1319,35 @@ html[data-mode="project"] .cases-table .row {
 .primary-zone .secondary-delegate .goal-form { margin-top: 8px; }
 .primary-zone .secondary-delegate .chips { margin-top: 8px; }
 
-/* —— 部门台三栏权重（左~200 / 中1fr / 右~260–280）· 专业档换面不在此加密度 —— */
-html[data-mode="assistant"] .workbench[data-tier-workbench] {
+/* —— 部门台三栏权重（左~200 / 中1fr / 右~260–280）· 助手也必须保中栏文书 —— */
+html[data-mode="assistant"] .workbench[data-tier-workbench]:not(.fold-left) {
   grid-template-columns: 160px minmax(0,1fr) 270px;
 }
-html[data-mode="assistant"] .workbench[data-tier-workbench] .file-pane {
+/* CRITICAL: never force file-pane visible under fold-left — that put 3 kids in a 2-col grid,
+   squeezed .editor-pane into the 270px track and wrapped .chat-pane as the only main stage. */
+html[data-mode="assistant"] .workbench.fold-left {
+  grid-template-columns: minmax(0,1fr) 270px;
+}
+html[data-mode="assistant"] .workbench.fold-left .file-pane {
+  display: none !important;
+}
+html[data-mode="assistant"] .workbench[data-tier-workbench]:not(.fold-left) .file-pane {
   display: flex; opacity: .92;
 }
 html[data-mode="assistant"] .workbench[data-tier-workbench] .file-pane-foot,
 html[data-mode="assistant"] .workbench[data-tier-workbench] .tree-label { display: none; }
 html[data-mode="assistant"] .lead-facts { display: none; }
 html[data-mode="assistant"] .sidebar { display: none; }
+/* Assist density may slim chrome, but never hide center editor / left tree skeleton */
+html[data-mode="assistant"] .workbench .editor-pane,
+html[data-mode="assistant"] .workbench .document-scroll,
+html[data-mode="assistant"] .workbench #dept-editor {
+  display: flex;
+}
+html[data-mode="assistant"] .workbench #dept-editor { display: block; }
+html[data-mode="assistant"] .workbench .document-scroll { display: block; }
 
-html[data-mode="project"] .workbench[data-tier-workbench] {
+html[data-mode="project"] .workbench[data-tier-workbench]:not(.fold-left) {
   grid-template-columns: 200px minmax(0,1fr) 270px;
 }
 html[data-mode="project"] .workbench.fold-left {
@@ -1367,13 +1399,18 @@ body[data-page="dept"] .sidebar { display: none !important; }
 .editor-lite-focus {
   display: none;
   grid-template-columns: repeat(3, minmax(0,1fr));
-  gap: 10px;
-  padding: 12px 14px;
+  gap: 8px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--line);
   background: var(--warm-paper);
+  flex: 0 0 auto;
+  max-height: 112px;
+  overflow: auto;
 }
 html[data-role="enterprise"] .workbench .editor-lite-focus { display: grid; }
 html[data-role="agency"] .workbench .editor-lite-focus { display: none; }
+/* Document stays the main stage under lite cards */
+.editor-pane .document-scroll { flex: 1 1 auto; min-height: 180px; }
 .editor-lite-focus .lite-col {
   border: 1px solid var(--line); border-radius: 8px; background: var(--paper);
   padding: 10px 12px; min-height: 0;
@@ -1595,3 +1632,45 @@ html[data-mode="studio"] body[data-page="professional"] .sidebar-section { displ
   line-height: 1.4;
 }
 .node-tip-goal[hidden] { display: none !important; }
+
+
+/* —— HARD: dept always Cursor desk (center deliverable visible) —— */
+body[data-page="dept"] .workbench {
+  display: grid !important;
+  grid-template-rows: minmax(0,1fr);
+  min-height: 0;
+}
+body[data-page="dept"] .workbench:not(.fold-left) {
+  grid-template-columns: 200px minmax(0,1fr) 270px;
+}
+body[data-page="dept"] .workbench.fold-left {
+  grid-template-columns: minmax(0,1fr) 270px;
+}
+body[data-page="dept"] .workbench > .editor-pane {
+  display: flex !important;
+  min-width: 0;
+  /* Prefer center track: when 2-col, editor is first visible child after hidden file */
+}
+body[data-page="dept"] .workbench > .chat-pane {
+  display: flex !important;
+  width: auto;
+  max-width: 280px;
+}
+body[data-page="dept"] .workbench.fold-left > .file-pane {
+  display: none !important;
+}
+/* If file is hidden, ensure editor occupies the 1fr column (first auto-placed cell) */
+body[data-page="dept"] .workbench.fold-left > .editor-pane {
+  grid-column: 1;
+  grid-row: 1;
+}
+body[data-page="dept"] .workbench.fold-left > .chat-pane {
+  grid-column: 2;
+  grid-row: 1;
+  max-width: none;
+  width: auto;
+}
+body[data-page="dept"] #dept-editor,
+body[data-page="dept"] .document-scroll {
+  visibility: visible;
+}
