@@ -1094,13 +1094,14 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
   display: flex; flex-direction: column;
 }
 .chat-pane .chat-bits { min-height: 0; overflow: auto; }
-.chat-pane .gate-box { flex: 0 0 auto; }
+.chat-pane .gate-box,
+.chat-pane .rail-gap-zone { flex: 0 0 auto; }
+/* L1–L5: rail-top-chrome retired; keep selector harmless if leftover */
 .chat-pane .rail-top-chrome {
   flex: 0 0 auto;
-  max-height: 46%;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  border-bottom: 1px solid var(--line);
+  max-height: none;
+  overflow: visible;
+  border-bottom: 0;
 }
 .chat-compose {
   display: flex; gap: 6px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--line);
@@ -1878,9 +1879,9 @@ html[data-role="enterprise"] .workbench:not(.fold-left) {
 }
 body[data-page="professional"] .tier-cue { display: inline-flex; }
 
-/* 工作台右栏：部门身份 → 专家编制 → 缺项推进 → 对话（≤280） */
+/* 工作台右栏 L1–L5：身份 → 横排席 → 对话主舞台≥55–60% → 缺项薄条 → 契约/顾言（≤280） */
 .dept-id-strip {
-  /* P1-2: 身份一行 */
+  /* L1 / P1-2: 身份一行 */
   flex: 0 0 auto;
   display: flex; align-items: baseline; gap: 8px; flex-wrap: nowrap;
   padding: 6px 12px;
@@ -1909,32 +1910,39 @@ body[data-page="professional"] .tier-cue { display: inline-flex; }
   color: var(--ink-3); margin: 0 0 6px;
 }
 .rail-experts {
-  /* P1-1 + A2: 吸在对话块顶 — 编制席位常显；点开 1:1 */
+  /* L2 / P1-1: 横排席 sticky 贴对话顶；点开 1:1；禁并排主聊 */
   flex: 0 0 auto;
   position: sticky;
   top: 0;
-  z-index: 2;
-  padding: 4px 10px 6px;
+  z-index: 3;
+  padding: 4px 8px 5px;
   border-bottom: 1px solid var(--line);
-  background: var(--paper);
+  background: color-mix(in oklch, var(--paper) 86%, transparent);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   box-shadow: 0 1px 0 oklch(0 0 0 / 0.04);
 }
 .rail-experts > .rail-sec-label { display: none; }
 .rail-experts-row {
-  display: flex; flex-direction: column; gap: 2px;
+  display: flex; flex-direction: row; flex-wrap: nowrap;
+  align-items: center; gap: 4px;
+  overflow-x: auto; overscroll-behavior: contain;
+  scrollbar-width: none;
 }
+.rail-experts-row::-webkit-scrollbar { display: none; }
 .experts-empty {
-  margin: 0; font-size: 12px; color: var(--ink-3); line-height: 1.45;
+  margin: 0; font-size: 11px; color: var(--ink-3); line-height: 1.45; padding: 2px 4px;
 }
-/* Cursor-style expert roster: clickable, not tip/details */
+/* Cursor-style horizontal seat: avatar + short name + status dot */
 .expert-rail-btn {
-  display: flex; align-items: center; gap: 8px;
-  width: 100%; text-align: left;
-  margin: 0; padding: 5px 6px;
-  border: 1px solid transparent; border-radius: 8px;
+  display: inline-flex; align-items: center; gap: 5px;
+  flex: 0 0 auto; width: auto; max-width: 118px;
+  text-align: left;
+  margin: 0; padding: 3px 7px 3px 3px;
+  border: 1px solid transparent; border-radius: 999px;
   background: transparent; color: var(--ink);
   cursor: pointer;
-  min-height: 40px;
+  min-height: 32px;
   transition: background-color 120ms ease-out, border-color 120ms ease-out, transform 100ms ease-out;
 }
 .expert-rail-btn:hover {
@@ -1951,23 +1959,26 @@ body[data-page="professional"] .tier-cue { display: inline-flex; }
   border-color: color-mix(in oklch, var(--ink) 22%, var(--line));
   box-shadow: 0 0 0 1px oklch(0 0 0 / 0.04);
 }
-.expert-rail-btn .avatar-photo { flex: 0 0 auto; }
+.expert-rail-btn .avatar-photo {
+  flex: 0 0 auto; width: 22px; height: 22px;
+}
 .expert-rail-meta {
   min-width: 0; flex: 1 1 auto;
-  display: flex; flex-direction: column; gap: 1px;
+  display: flex; flex-direction: row; align-items: center; gap: 5px;
 }
 .expert-rail-meta strong {
-  display: block; font-size: 12px; font-weight: 650; color: var(--ink); line-height: 1.25;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  display: block; font-size: 11px; font-weight: 650; color: var(--ink); line-height: 1.2;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 64px;
 }
-.expert-work-line {
-  display: block; font-size: 10px; font-weight: 500; color: var(--ink-2); line-height: 1.25;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-variant-numeric: tabular-nums;
+.expert-status-dot {
+  flex: 0 0 auto; width: 6px; height: 6px; border-radius: 50%;
+  background: #3d6b42;
+  box-shadow: 0 0 0 1px oklch(0 0 0 / 0.06);
 }
-.expert-work-bits {
-  display: none; /* density: line carries 工作/产出/进度; bits reserved */
-}
+.expert-status-dot.is-wait { background: var(--ink-3); }
+.expert-status-dot.is-review { background: color-mix(in oklch, var(--accent-dark) 70%, #b7791f); }
+.expert-work-line { display: none; }
+.expert-work-bits { display: none; }
 /* legacy details (if any page still emits) */
 .expert-rail-item { border-bottom: 1px solid var(--line); }
 .expert-rail-item:last-child { border-bottom: 0; }
@@ -1992,19 +2003,20 @@ body[data-page="professional"] .tier-cue { display: inline-flex; }
 .check-status { display: block; color: var(--ink-3); margin-top: 2px; font-size: 10px; }
 .check-row.is-gap .check-status { color: var(--accent-dark); font-weight: 600; }
 .gap-actions {
-  display: flex; flex-direction: column; gap: 4px;
-  margin: 6px 0 0 22px;
+  /* L4: 禁两颗全宽 gap 常驻 — 展开后用紧凑文字链 */
+  display: flex; flex-direction: row; flex-wrap: wrap; gap: 6px 10px;
+  margin: 4px 0 2px 22px;
 }
 .gap-actions[hidden] { display: none !important; }
 .gap-act {
-  display: block; width: 100%; text-align: left;
-  border: 1px solid var(--line); border-radius: 6px;
-  background: var(--warm-paper); color: var(--ink);
-  font-size: 11px; font-weight: 600; line-height: 1.35;
-  padding: 6px 8px; cursor: pointer;
+  display: inline-flex; align-items: center; width: auto; text-align: left;
+  border: 0; border-radius: 0; background: transparent;
+  color: var(--ink); font-size: 11px; font-weight: 600; line-height: 1.35;
+  padding: 2px 0; min-height: 28px; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
 }
-.gap-act:hover { border-color: var(--ink); }
-.gap-act-ask { background: var(--paper); font-weight: 500; color: var(--ink-2); }
+.gap-act:hover { color: var(--accent-dark); border-color: transparent; }
+.gap-act-ask { background: transparent; font-weight: 500; color: var(--ink-2); }
 /* P1-2: 默认只露当前缺项 */
 .checklist .check-row.is-done { display: none; }
 .checklist.show-done .check-row.is-done { display: block; }
@@ -2017,7 +2029,9 @@ body[data-page="professional"] .tier-cue { display: inline-flex; }
 .checklist-done-toggle:hover { color: var(--ink-2); }
 /* P1-3: 顾言极薄文字链 */
 .guyan-thin-link {
-  display: block; margin: 4px 12px 8px; padding: 2px 0;
+  /* L5: 顾言极薄链，贴契约下 */
+  display: block; flex: 0 0 auto;
+  margin: 0 12px 8px; padding: 2px 0;
   font-size: 11px; font-weight: 500; color: var(--ink-3);
   text-decoration: none; line-height: 1.4;
   border: 0; background: none;
@@ -2029,7 +2043,10 @@ body[data-page="professional"] .tier-cue { display: inline-flex; }
 }
 
 .rail-chat-block {
-  flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
+  /* L3: 对话主舞台 ≥55–60% 栏高；默认 leader */
+  flex: 1 1 58%;
+  min-height: 55%;
+  display: flex; flex-direction: column;
   border-top: 0;
   background: var(--paper);
 }
@@ -3063,13 +3080,13 @@ html[data-mode="assistant"] body[data-page="dept"] #dept-editor {
 /* fix-both W2: experts always visible (avatar+岗名); per-item details only */
 .rail-experts-fold { display: contents; }
 
-/* gate=1: confirm block visually on top inside gate-box */
-.chat-pane.gate-focus .gate-box {
+/* gate=1: confirm on top inside gap panel (L4); see .rail-gap-zone rules */
+.chat-pane.gate-focus .rail-gap-zone {
   display: flex; flex-direction: column;
 }
 .chat-pane.gate-focus .confirm-rail {
   order: -1;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 /* docket dates */
@@ -3123,4 +3140,89 @@ html[data-mode="assistant"] body[data-page="dept"] #dept-editor {
 .secondary-delegate-fold .btn { font-size: 12px; padding: 6px 10px; }
 .shell-zone .secondary-delegate-fold {
   margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line);
+}
+
+
+/* ===== L4 缺项一行薄条 + 展开面板（pages 7d52bb6） ===== */
+.rail-gap-zone {
+  flex: 0 0 auto;
+  display: flex; flex-direction: column;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+  max-height: 38%;
+  min-height: 0;
+}
+.gap-thin-bar {
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; text-align: left;
+  margin: 0; padding: 7px 12px;
+  border: 0; border-bottom: 1px solid transparent;
+  background: var(--warm-paper); color: var(--ink);
+  cursor: pointer; min-height: 36px;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out;
+}
+.gap-thin-bar:hover { background: color-mix(in oklch, var(--warm-paper) 70%, var(--paper)); }
+.gap-thin-bar:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--ink) 35%, transparent);
+  outline-offset: -2px;
+}
+.gap-thin-bar[aria-expanded="true"] {
+  border-bottom-color: var(--line);
+}
+.gap-thin-label {
+  flex: 1 1 auto; min-width: 0;
+  font-size: 12px; font-weight: 650; color: var(--accent-dark);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.gap-thin-meta {
+  flex: 0 0 auto;
+  font-size: 10px; font-weight: 500; color: var(--ink-3);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.gap-thin-chev {
+  flex: 0 0 auto; font-size: 10px; color: var(--ink-3);
+  transition: transform 120ms ease-out;
+}
+.gap-thin-bar[aria-expanded="true"] .gap-thin-chev {
+  transform: rotate(90deg);
+}
+.gap-panel {
+  flex: 1 1 auto; min-height: 0;
+  display: flex; flex-direction: column;
+  overflow-y: auto; overscroll-behavior: contain;
+  padding: 6px 12px 10px;
+  background: var(--paper);
+}
+.gap-panel[hidden] { display: none !important; }
+.rail-gap-zone .gate-meta {
+  margin: 4px 0 6px; font-size: 10px; color: var(--ink-3);
+}
+.rail-gap-zone .handoff-button { margin-top: 4px; }
+.rail-gap-zone .confirm-rail {
+  margin-top: 0; margin-bottom: 8px; padding: 6px 0 8px;
+}
+.rail-gap-zone .rail-sec-label { margin-top: 2px; }
+
+/* gate open: expand panel but cap height so chat stays main stage */
+.chat-pane.gate-focus .rail-gap-zone {
+  max-height: 42%;
+}
+.chat-pane.gate-focus .gap-panel {
+  display: flex !important;
+}
+.chat-pane.gate-focus .confirm-rail {
+  order: -1;
+  margin-bottom: 8px;
+}
+.chat-pane.gate-focus .rail-chat-block {
+  min-height: 48%; /* briefly softer while gate open; still primary */
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .rail-experts {
+    background: var(--paper);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }

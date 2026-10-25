@@ -161,8 +161,14 @@
     }).join('');
   }
 
-  /* Workbench right-rail experts: avatar+岗名+工作态常显；点开 → 可选 1:1（非 tip）。
+  /* L2 横排席：头像+短名+状态点 sticky；点开 → 可选 1:1（非 tip）。
      ≤3 = upper cap only — show planned staffing as-is (0→空态; never pad to 3). */
+  function expertDotClass(ws, human) {
+    const p = (ws && ws.progress) || '';
+    if (human || /等|复核|待签署|待授权/.test(p)) return 'is-review';
+    if (/待命|等齐套/.test(p) || (ws && /待命/.test(ws.line || ''))) return 'is-wait';
+    return '';
+  }
   function renderRailExperts(names, dept) {
     const list = (names || []).slice(0, 3);
     if (!list.length) {
@@ -174,16 +180,17 @@
       const title = parts[0];
       const ws = expertWorkState(e, dept);
       const tip = expertOneLine(e, dept);
+      const dot = expertDotClass(ws, m.human);
+      const aria = title + ' · ' + ws.line;
       return '<button type="button" class="expert-rail-btn" data-open-expert="' + i + '"' +
         ' data-expert-name="' + m.name.replace(/"/g, '&quot;') + '"' +
-        ' aria-pressed="false" title="' + tip.replace(/"/g, '&quot;') + '">' +
-        '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="28" height="28" aria-hidden="true">' +
+        ' aria-pressed="false" aria-label="' + aria.replace(/"/g, '&quot;') + '"' +
+        ' title="' + (tip + ' · ' + ws.line).replace(/"/g, '&quot;') + '">' +
+        '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="22" height="22" aria-hidden="true">' +
         '<span class="expert-rail-meta">' +
           '<strong>' + title + '</strong>' +
+          '<span class="expert-status-dot' + (dot ? (' ' + dot) : '') + '" aria-hidden="true"></span>' +
           '<small class="expert-work-line">' + ws.line + '</small>' +
-          '<span class="expert-work-bits" aria-hidden="true">' +
-            '<em>' + ws.work + '</em><em>' + ws.output + '</em><em>' + ws.progress + '</em>' +
-          '</span>' +
         '</span>' +
       '</button>';
     }).join('');
@@ -215,7 +222,7 @@
   function syncChecklistDoneToggle(list) {
     if (!list) return;
     const done = list.querySelectorAll('.check-row.is-done').length;
-    const box = list.closest('.gate-box') || list.parentElement;
+    const box = list.closest('.rail-gap-zone, .gate-box, [data-gap-panel]') || list.parentElement;
     const btn = box ? box.querySelector('[data-toggle-done]') : null;
     if (!btn) return;
     if (done > 0) {
@@ -233,12 +240,12 @@
     const last = idx === dept.check.length - 1;
     const checked = !last; /* demo: last = current gap */
     const gap = gapActionsFor(item, dept);
-    const status = checked ? '已齐' : '缺 · 点下方推进';
-    /* Always emit actions so unchecking a done row can re-show 点哪推进 */
+    const status = checked ? '已齐' : '缺 · 展开后推进';
+    /* L4: 展开清单内用紧凑文字链；禁两颗全宽 gap 常驻；起草→预填输入 */
     const actions =
       '<span class="gap-actions" data-gap-actions' + (checked ? ' hidden' : '') + '>' +
-        '<button type="button" class="gap-act" data-gap-open="' + gap.openDoc.replace(/"/g, '&quot;') + '">' + gap.openLabel + '</button>' +
-        '<button type="button" class="gap-act gap-act-ask" data-gap-ask="' + gap.askText.replace(/"/g, '&quot;') + '">' + gap.askLabel + '</button>' +
+        '<button type="button" class="gap-act" data-gap-open="' + gap.openDoc.replace(/"/g, '&quot;') + '">打开中栏</button>' +
+        '<button type="button" class="gap-act gap-act-ask" data-gap-ask="' + gap.askText.replace(/"/g, '&quot;') + '">起草</button>' +
       '</span>';
     /* div+label: buttons outside <label> so clicks don't toggle checkbox */
     return '<div class="check-row' + (checked ? ' is-done' : ' is-gap') + '">' +
@@ -682,7 +689,7 @@
   }
 
   function wireOneChecklist(box, dept) {
-    const pane = box.closest('aside, .right-stack, .gate-box') || box.parentElement;
+    const pane = box.closest('aside, .right-stack, .rail-gap-zone, .gate-box, [data-gap-panel]') || box.parentElement;
     let submit = pane ? pane.querySelector('[data-submit-gate]') : null;
     if (!submit) {
       const col = box.closest('.workbench > *, .pane');
@@ -718,7 +725,7 @@
         row.classList.toggle('is-done', on);
         row.classList.toggle('is-gap', !on);
         if (actions) actions.hidden = !!on;
-        if (status) status.textContent = on ? '已齐' : '缺 · 点下方推进';
+        if (status) status.textContent = on ? '已齐' : '缺 · 展开后推进';
       });
       syncChecklistDoneToggle(box);
       const hint = document.querySelector('[data-next-hint]');
@@ -727,7 +734,7 @@
           hint.innerHTML = '<strong>下一步：</strong>齐套已完成 — 点击右侧「交卷 · 待你确认」，同屏右栏通过/驳回。';
           hint.classList.add('is-ready');
         } else {
-          hint.innerHTML = '<strong>下一步：</strong>点缺项下的「打开中栏… / 让负责人…」推进，齐套后交卷。';
+          hint.innerHTML = '<strong>下一步：</strong>展开右栏缺项薄条，点「打开中栏 / 起草」推进，齐套后交卷。';
           hint.classList.remove('is-ready');
         }
       }
@@ -878,6 +885,15 @@
     if (!rail) return;
     rail.hidden = false;
     rail.classList.add('is-open');
+    /* L4: 闸开时展开缺项面板（紧凑），勿长期挤死聊天 */
+    if (typeof window.__mpv2SetGapPanelOpen === 'function') {
+      window.__mpv2SetGapPanelOpen(true);
+    } else {
+      const panel = document.querySelector('[data-gap-panel]');
+      const bar = document.querySelector('[data-gap-bar]');
+      if (panel) panel.hidden = false;
+      if (bar) bar.setAttribute('aria-expanded', 'true');
+    }
     document.querySelectorAll('[data-pending-title]').forEach(el => { el.textContent = dept.pendingTitle; });
     document.querySelectorAll('[data-pending-fact]').forEach(el => { el.textContent = dept.pendingFact; });
     document.querySelectorAll('[data-pending-detail]').forEach(el => { el.textContent = dept.pendingDetail; });
@@ -1043,6 +1059,11 @@
     // gate=1 但未交卷：落齐套区，交卷仍按缺项禁用；禁止 auto-check / 伪 setSubmitted
     const box = document.querySelector('[data-checklist]');
     if (box) {
+      if (typeof window.__mpv2SetGapPanelOpen === 'function') window.__mpv2SetGapPanelOpen(true);
+      else {
+        const panel = document.querySelector('[data-gap-panel]');
+        if (panel) panel.hidden = false;
+      }
       try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
       const pane = box.closest('[data-gate-pane], .right-stack, aside') || box.parentElement;
       if (pane) pane.classList.add('gate-focus');
@@ -1207,7 +1228,7 @@
       if (btn.dataset.wired) return;
       btn.dataset.wired = '1';
       btn.addEventListener('click', () => {
-        const box = btn.closest('.gate-box');
+        const box = btn.closest('.rail-gap-zone, .gate-box, [data-gap-panel]');
         const list = box ? box.querySelector('[data-checklist]') : document.querySelector('[data-checklist]');
         if (!list) return;
         list.classList.toggle('show-done');
@@ -1220,6 +1241,30 @@
     /* Rail: actual staffing — no pad / no hard ≤3 */
     const expertHtml = renderRailExperts(dept.experts, dept);
     document.querySelectorAll('[data-experts]').forEach(el => { el.innerHTML = expertHtml; });
+
+    /* L4: 缺项默认一行薄条；展开才清单 */
+    function setGapPanelOpen(open, opts) {
+      const bar = document.querySelector('[data-gap-bar]');
+      const panel = document.querySelector('[data-gap-panel]');
+      if (!bar || !panel) return;
+      const on = !!open;
+      panel.hidden = !on;
+      bar.setAttribute('aria-expanded', on ? 'true' : 'false');
+      const chev = bar.querySelector('.gap-thin-chev');
+      if (chev) chev.textContent = on ? '▾' : '▸';
+      if (on && opts && opts.scroll) {
+        try { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+      }
+    }
+    window.__mpv2SetGapPanelOpen = setGapPanelOpen;
+    document.querySelectorAll('[data-gap-bar]').forEach(bar => {
+      if (bar.dataset.wired) return;
+      bar.dataset.wired = '1';
+      bar.addEventListener('click', () => {
+        const open = bar.getAttribute('aria-expanded') === 'true';
+        setGapPanelOpen(!open);
+      });
+    });
     document.querySelectorAll('[data-current-task]').forEach(el => {
       el.textContent = '补齐「' + (dept.missing || '缺项') + '」后交卷';
     });
@@ -1256,7 +1301,7 @@
     const focusGate = document.querySelector('[data-focus-gate]');
     if (focusGate) {
       focusGate.addEventListener('click', () => {
-        const pane = document.querySelector('[data-gate-pane] .gate-box, #gate-box');
+        const pane = document.querySelector('[data-gate-pane] .rail-gap-zone, #gate-box, [data-gap-panel]');
         if (pane) pane.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });
     }
@@ -1477,7 +1522,7 @@
           input.value = ask;
           input.focus();
         }
-        toast('已填入负责人指令 · 点发送');
+        toast('已预填输入 · 点发送');
       });
     });
 

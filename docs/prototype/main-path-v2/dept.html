@@ -188,50 +188,23 @@
       </div>
     </section>
 
-    <!-- 右栏：紧凑置顶(身份/缺项/闸) → 专家编制席位 → leader主聊/专家1:1 → 契约(折) -->
+    <!-- 右栏 L1–L5：身份 → 专家横排席 sticky → 对话主舞台≥55–60% → 缺项薄条 → 契约折+顾言 -->
     <aside class="pane chat-pane" data-gate-pane aria-label="对话与确认">
       <div class="right-stack">
-        <div class="rail-top-chrome">
-          <div class="dept-id-strip" aria-label="本部门身份">
-            <strong data-dept-name>交底部</strong>
-            <span class="dept-id-one" data-node-tip>补齐权属声明后交卷 · 技术事实</span>
-            <p class="dept-id-duty" data-dept-pitch hidden>访谈与事实齐套后，交出可接力的技术交底书。</p>
-            <p class="node-tip-goal" data-goal-context hidden></p>
-          </div>
-
-          <div class="gate-box" id="gate-box">
-            <div class="confirm-rail" data-confirm-rail hidden>
-              <div class="rail-sec-label">待你确认 · 待决策</div>
-              <p class="confirm-rail-title" data-pending-title>确认交底书可接力</p>
-              <p class="confirm-rail-q" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
-              <p class="confirm-rail-detail" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
-              <p class="confirm-rail-blind" data-confirm-blind-hint hidden>先看中栏交卷物</p>
-              <div class="confirm-rail-actions">
-                <button class="btn btn-ink" type="button" data-rail-pass>通过 → 下一部</button>
-                <button class="btn btn-secondary" type="button" data-rail-reject>驳回 · 本台补齐</button>
-                <button class="btn btn-ghost" type="button" data-rail-prev>退回上一部</button>
-              </div>
-              <p class="confirm-rail-note">建议稿 ≠ 确认。中栏须见交卷物正文才可点通过。</p>
-            </div>
-
-            <div class="rail-sec-label">缺项 · 事项下一步</div>
-            <div class="checklist" data-checklist></div>
-            <button type="button" class="checklist-done-toggle text-btn" data-toggle-done hidden>已齐项</button>
-            <p class="missing" data-missing-live>缺项：权属声明</p>
-            <p class="gate-meta">齐套 <span class="tabular" data-check-count>0 / 4</span> · 未齐套交卷禁用</p>
-            <button class="handoff-button" type="button" data-submit-gate disabled>
-              <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏拍板</small></span>
-            </button>
-          </div>
-
-          <a class="guyan-thin-link" href="delegate.html" data-keep-role>顾言 · 跨部 / 改目标</a>
+        <!-- L1 身份一行 -->
+        <div class="dept-id-strip" aria-label="本部门身份">
+          <strong data-dept-name>交底部</strong>
+          <span class="dept-id-one" data-node-tip>补齐权属声明后交卷 · 技术事实</span>
+          <p class="dept-id-duty" data-dept-pitch hidden>访谈与事实齐套后，交出可接力的技术交底书。</p>
+          <p class="node-tip-goal" data-goal-context hidden></p>
         </div>
 
-        <!-- P1-1 + A1–A3: 专家席位吸顶；默认 leader 主聊；点专家进 1:1 -->
+        <!-- L2 专家横排席 sticky；A1–A3：点开 1:1；禁并排主聊 / 勿凑编 -->
         <section class="rail-experts" aria-label="本部门专家编制">
           <div class="rail-experts-row" data-experts></div>
         </section>
 
+        <!-- L3 对话主舞台（默认 leader） -->
         <div class="rail-chat-block" data-chat-block data-chat-session="leader">
           <div class="rail-chat-head">
             <div class="rail-chat-who">
@@ -252,6 +225,39 @@
           </form>
         </div>
 
+        <!-- L4 缺项默认一行薄条；展开才清单；交卷/闸紧凑同区 -->
+        <div class="rail-gap-zone" id="gate-box">
+          <button type="button" class="gap-thin-bar" data-gap-bar aria-expanded="false" aria-controls="gap-panel">
+            <span class="gap-thin-label" data-missing-live>缺项：权属声明</span>
+            <span class="gap-thin-meta">齐套 <span class="tabular" data-check-count>0 / 4</span></span>
+            <span class="gap-thin-chev" aria-hidden="true">▸</span>
+          </button>
+          <div class="gap-panel" id="gap-panel" data-gap-panel hidden>
+            <div class="confirm-rail" data-confirm-rail hidden>
+              <div class="rail-sec-label">待你确认 · 待决策</div>
+              <p class="confirm-rail-title" data-pending-title>确认交底书可接力</p>
+              <p class="confirm-rail-q" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
+              <p class="confirm-rail-detail" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
+              <p class="confirm-rail-blind" data-confirm-blind-hint hidden>先看中栏交卷物</p>
+              <div class="confirm-rail-actions">
+                <button class="btn btn-ink" type="button" data-rail-pass>通过 → 下一部</button>
+                <button class="btn btn-secondary" type="button" data-rail-reject>驳回 · 本台补齐</button>
+                <button class="btn btn-ghost" type="button" data-rail-prev>退回上一部</button>
+              </div>
+              <p class="confirm-rail-note">建议稿 ≠ 确认。中栏须见交卷物正文才可点通过。</p>
+            </div>
+
+            <div class="rail-sec-label">缺项 · 事项下一步</div>
+            <div class="checklist" data-checklist></div>
+            <button type="button" class="checklist-done-toggle text-btn" data-toggle-done hidden>已齐项</button>
+            <p class="gate-meta">未齐套交卷禁用</p>
+            <button class="handoff-button" type="button" data-submit-gate disabled>
+              <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏拍板</small></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- L5 契约折 + 顾言薄链 -->
         <details class="rail-collapse node-contract">
           <summary>本节点契约</summary>
           <dl class="node-contract-dl">
@@ -263,6 +269,7 @@
             <dt>完成</dt><dd>可接力的交底书齐套交卷</dd>
           </dl>
         </details>
+        <a class="guyan-thin-link" href="delegate.html" data-keep-role>顾言 · 跨部 / 改目标</a>
       </div>
     </aside>
   </div>
