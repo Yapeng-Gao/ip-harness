@@ -307,8 +307,14 @@
     const foldBtn = document.querySelector('[data-fold-left]');
     const r = role();
     const m = mode();
-    // Assist must keep left tree + center doc; enterprise project may fold left.
-    const shouldFold = (r === 'enterprise' && m !== 'assistant');
+    // Plan/goal landing: keep full Cursor 3-col (left open) so中栏文书一眼可见
+    let fromPlan = false;
+    try {
+      const d = getDelegation();
+      if (d && (d.step === 'workbench' || d.step === 'execute' || d.goal || d.deliverable)) fromPlan = true;
+    } catch (e) {}
+    // Assist always 3-col; plan landing always 3-col; other enterprise project may fold left.
+    const shouldFold = (r === 'enterprise' && m !== 'assistant' && !fromPlan);
     root.classList.toggle('fold-left', shouldFold);
     if (foldBtn) foldBtn.textContent = shouldFold ? '展开' : '收折';
   }
@@ -580,7 +586,7 @@
     const title = dept.deliverable;
     const bodies = {
       disclosure:
-        '<p class="doc-lead">一种磁驱泵智能控制系统的技术交底。点此正文即可编辑；右侧对话与齐套闸同步本案。</p>' +
+        '<p class="doc-lead">中栏交卷物正文 · 可编辑。右侧为对话与齐套闸——勿把右栏齐套当成整页工作台。</p>' +
         '<h2>一、技术领域</h2>' +
         '<p>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判，适用于工业磁驱泵产线。</p>' +
         '<h2>二、背景问题</h2>' +
@@ -786,7 +792,7 @@
           }
         }
         const d = getDelegation();
-        if (d) { d.step = 'execute'; setDelegation(d); }
+        if (d) { d.step = 'workbench'; setDelegation(d); }
         toast('已驳回 · 请本台补齐后再交卷');
       });
     }
@@ -833,7 +839,7 @@
     // Landing from plan / goWorkDept should be project; if goal context present, snap to project
     try {
       const d = getDelegation();
-      if (d && (d.goal || d.deliverable || d.step === 'execute')) {
+      if (d && (d.goal || d.deliverable || d.step === 'execute' || d.step === 'workbench' || d.step === 'confirm')) {
         if (mode() === 'assistant') {
           localStorage.setItem('mpv2-mode', 'project');
           applyModeUI('project');
@@ -929,7 +935,7 @@
         title: '技术交底书 V3',
         meta: '交卷物 · 技术交底书 V3',
         html:
-          '<p class="doc-lead">一种磁驱泵智能控制系统的技术交底。点此正文即可编辑；右侧对话与齐套闸同步本案。</p>' +
+          '<p class="doc-lead">中栏交卷物正文 · 可编辑。右侧为对话与齐套闸——勿把右栏齐套当成整页工作台。</p>' +
           '<h2>一、技术领域</h2>' +
           '<p>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判，适用于工业磁驱泵产线。</p>' +
           '<h2>二、背景问题</h2>' +
@@ -1226,7 +1232,7 @@
       back.addEventListener('click', (e) => {
         e.preventDefault();
         const d = getDelegation();
-        if (d) { d.step = 'execute'; setDelegation(d); }
+        if (d) { d.step = 'workbench'; setDelegation(d); }
         location.href = withRole('dept.html?dept=' + dept.id);
       });
     }
@@ -1488,18 +1494,32 @@
   }
 
   function wireDelegate() {
-    const step = qs('step') || 'goal';
+    let step = qs('step') || 'goal';
+    // Legacy aliases: execute/confirm never dwell on this page (head also redirects)
+    if (step === 'execute' || step === 'confirm' || step === 'workbench') {
+      const d = getDelegation() || {};
+      const plan = planFromGoal(d.goal || '');
+      const deptId = d.dept || plan.deptId || 'disclosure';
+      localStorage.setItem('mpv2-mode', 'project');
+      const gate = (step === 'confirm') ? '&gate=1' : '';
+      location.replace(withRole('dept.html?dept=' + deptId + gate));
+      return;
+    }
+    // Map workbench alias for step bar
+    const stepForBar = (step === 'workbench') ? 'workbench' : step;
     document.querySelectorAll('[data-step]').forEach(el => {
       const s = el.dataset.step;
       el.classList.remove('done', 'current');
-      const order = ['goal','plan','execute','confirm','relay'];
+      const order = ['goal','plan','workbench','relay'];
       const si = order.indexOf(s);
-      const ci = order.indexOf(step);
+      const ci = order.indexOf(stepForBar);
       if (si < ci) el.classList.add('done');
       if (si === ci) el.classList.add('current');
     });
     document.querySelectorAll('[data-panel]').forEach(p => {
-      p.classList.toggle('hidden', p.dataset.panel !== step);
+      // workbench has no panel on delegate — hide all work panels except goal/plan/relay
+      const show = p.dataset.panel === step;
+      p.classList.toggle('hidden', !show);
     });
 
     const existing = getDelegation() || {};
@@ -1534,7 +1554,7 @@
       const delHint = document.getElementById('plan-deliverable-hint');
       if (delName) delName.textContent = plan.dept.deliverable;
       if (delHint) {
-        delHint.textContent = '确认计划后直接打开' + plan.dept.name + '工作台，中栏可见「' + plan.dept.deliverable + '」';
+        delHint.textContent = '确认计划后立刻打开' + plan.dept.name + '工作台，中栏可见「' + plan.dept.deliverable + '」· 同屏右栏拍板';
       }
       if (list) {
         list.innerHTML = plan.chain.map(function (node, i) {
@@ -1549,20 +1569,10 @@
         go.textContent = '确认并打开交卷物 · 去' + plan.dept.name + ' →';
         go.dataset.dept = plan.deptId;
       }
-      // execute panel (fallback only — primary path skips it)
-      const et = document.getElementById('exec-title');
-      const ee = document.getElementById('exec-goal-echo');
-      const eg = document.getElementById('exec-go-btn');
-      if (et) et.textContent = plan.dept.name + '已接手 · 中栏打开交卷物';
-      if (ee) ee.textContent = '为你的目标：「' + plan.goal + '」';
-      if (eg) {
-        eg.href = withRole('dept.html?dept=' + plan.deptId);
-        eg.textContent = '打开' + plan.dept.name + '工作台 · 看「' + plan.dept.deliverable + '」→';
-      }
       return plan;
     }
 
-    if (step === 'plan' || step === 'execute' || step === 'confirm' || step === 'relay') {
+    if (step === 'plan' || step === 'workbench' || step === 'relay') {
       const plan = fillPlanUI(goalText);
       // confirm / relay: drive links from plan.dept — no hardcoded disclosure
       if (step === 'confirm' || step === 'relay') {
@@ -1599,13 +1609,13 @@
         location.href = withRole('delegate.html?step=plan');
       });
     }
-    // Primary path: plan confirm → dept Cursor desk (skip execute theater)
-    const confirmPlan = document.querySelector('[data-to-execute]');
+    // Primary path: plan confirm → IMMEDIATE dept Cursor desk (zero execute splash)
+    const confirmPlan = document.querySelector('[data-to-dept], [data-to-execute]');
     if (confirmPlan) {
       confirmPlan.addEventListener('click', () => {
         const d = getDelegation() || {};
         const plan = planFromGoal(d.goal || goalText);
-        d.step = 'execute';
+        d.step = 'workbench';
         d.dept = plan.deptId;
         d.goal = plan.goal;
         d.deliverable = plan.dept.deliverable;
@@ -1613,23 +1623,10 @@
         const noteEl = document.getElementById('plan-note');
         if (noteEl && noteEl.value.trim()) d.note = noteEl.value.trim();
         setDelegation(d);
-        // Force project desk — never land on dept stuck in 助手 (center collapses)
         localStorage.setItem('mpv2-mode', 'project');
         localStorage.setItem('mpv2-last-work', 'dept.html?dept=' + plan.deptId);
-        location.href = withRole('dept.html?dept=' + plan.deptId);
+        location.replace(withRole('dept.html?dept=' + plan.deptId));
       });
-    }
-
-    // If someone lands on execute (old link / bookmark), bounce to dept
-    if (step === 'execute') {
-      const d = getDelegation() || {};
-      const plan = planFromGoal(d.goal || goalText);
-      const deptId = d.dept || plan.deptId || 'disclosure';
-      localStorage.setItem('mpv2-mode', 'project');
-      // Brief paint then jump — fallback link already points at dept
-      setTimeout(function () {
-        location.replace(withRole('dept.html?dept=' + deptId));
-      }, 80);
     }
   }
 

@@ -3,6 +3,36 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>持续委托 · 虚拟知产公司</title>
+<script>
+/* Kill execute/confirm splash BEFORE paint — plan confirm lands on dept Cursor desk */
+(function () {
+  try {
+    var q = new URLSearchParams(location.search);
+    var step = q.get('step') || '';
+    if (step !== 'execute' && step !== 'confirm' && step !== 'workbench') return;
+    var role = q.get('role') || localStorage.getItem('mpv2-role') || 'enterprise';
+    var dept = q.get('dept') || '';
+    if (!dept) {
+      try {
+        var d = JSON.parse(sessionStorage.getItem('mpv2-delegation') || 'null');
+        if (d && d.dept) dept = d.dept;
+      } catch (e) {}
+    }
+    if (!dept) dept = (role === 'agency') ? 'oa' : 'disclosure';
+    localStorage.setItem('mpv2-mode', 'project');
+    localStorage.setItem('mpv2-last-work', 'dept.html?dept=' + dept);
+    try {
+      var d0 = JSON.parse(sessionStorage.getItem('mpv2-delegation') || 'null') || {};
+      d0.dept = dept;
+      d0.step = (step === 'confirm') ? 'confirm' : 'workbench';
+      sessionStorage.setItem('mpv2-delegation', JSON.stringify(d0));
+    } catch (e2) {}
+    var target = 'dept.html?dept=' + encodeURIComponent(dept) + '&role=' + encodeURIComponent(role);
+    if (step === 'confirm') target += '&gate=1';
+    location.replace(target);
+  } catch (e) {}
+})();
+</script>
 <link rel="stylesheet" href="shell.css">
 </head>
 <body data-page="delegate" >
@@ -60,14 +90,13 @@
 
   <p class="kicker">知产负责人 · 持续委托</p>
   <h1 class="page-title">跟顾言说目标</h1>
-  <p class="page-sub">说一句要推进什么 → 确认计划 → 直接进工作台看交卷物 → 齐套后你拍板。</p>
+  <p class="page-sub">说一句要推进什么 → 确认计划 → 立刻进工作台（中栏交卷物 + 同屏右栏拍板）。</p>
 
   <div class="steps" aria-label="委托进度">
     <div class="step" data-step="goal"><strong>1 提目标</strong>交办业务目标</div>
     <div class="step" data-step="plan"><strong>2 计划可调</strong>确认部门顺序</div>
-    <div class="step" data-step="execute"><strong>3 干活见交卷物</strong>工作台中栏</div>
-    <div class="step" data-step="confirm"><strong>4 确认</strong>人来拍板</div>
-    <div class="step" data-step="relay"><strong>5 接力</strong>交付快照</div>
+    <div class="step" data-step="workbench"><strong>3 工作台</strong>干活+同屏拍板</div>
+    <div class="step" data-step="relay"><strong>4 接力</strong>交付快照</div>
   </div>
 
   <section class="goal-panel" data-panel="goal">
@@ -101,7 +130,7 @@
     <div class="plan-deliverable-hero" id="plan-deliverable-hero" aria-label="本关交卷物">
       <span class="plan-deliverable-kicker">产出 · 本关交卷物</span>
       <strong id="plan-deliverable-name">技术交底书 V3</strong>
-      <small id="plan-deliverable-hint">确认计划后直接打开工作台，中栏即可看到并编辑本文书</small>
+      <small id="plan-deliverable-hint">确认计划后立刻打开工作台，中栏见交卷物；拍板在同屏右栏</small>
     </div>
     <div class="demo-breakdown plan-breakdown" id="plan-breakdown">
       <article>
@@ -123,7 +152,7 @@
         <small id="plan-confirm-detail">权属是否归澄明科技——确认后才接力查新</small>
       </article>
     </div>
-    <p style="margin:14px 0 10px;color:var(--ink-3);font-size:13px">后续顺序可调；确认计划 = 去该部干活，中栏打开交卷物。</p>
+    <p style="margin:14px 0 10px;color:var(--ink-3);font-size:13px">后续顺序可调；确认计划 = 立刻进该部工作台（中栏交卷物 + 同屏右栏）。</p>
     <ul class="plan-list" id="plan-list">
       <li><span class="ord">1</span><div><strong>交底部</strong>补齐技术事实与权属<small>产出：技术交底书；关口：技术事实确认</small></div></li>
       <li><span class="ord">2</span><div><strong>查新部</strong>检索可专利性<small>产出：检索报告；关口：专业复核</small></div></li>
@@ -133,31 +162,16 @@
       <textarea id="plan-note" rows="2" placeholder="例如：优先补权属，访谈安排在本周内"></textarea>
     </label>
     <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn btn-ink" type="button" data-to-execute id="plan-go-btn">确认并打开交卷物 →</button>
+      <button class="btn btn-ink" type="button" data-to-dept id="plan-go-btn">确认并打开交卷物 →</button>
       <a class="btn btn-secondary" href="delegate.html?step=goal" data-keep-role>返回改目标</a>
     </div>
   </section>
 
-  <section class="goal-panel hidden" data-panel="execute">
-    <p class="kicker">正在打开工作台</p>
-    <h2 id="exec-title" style="margin:4px 0 8px;font-size:18px">交底部已接手</h2>
-    <p id="exec-goal-echo" class="plan-goal-echo"></p>
-    <p class="exec-skip-note">真干活在工作台中栏看交卷物；本页不停留。若未自动跳转，请点下方按钮。</p>
-    <div class="exec-progress" id="exec-progress" hidden>
-      <div class="exec-row done"><span>01</span><div><strong>已分派</strong><small>目标已落到部门与本案</small></div></div>
-      <div class="exec-row current"><span>02</span><div><strong>齐套进行中</strong><small>在工作台右栏勾选</small></div></div>
-      <div class="exec-row"><span>03</span><div><strong>待你确认</strong><small>交卷后到工作台右栏拍板</small></div></div>
-    </div>
-    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-      <a class="btn btn-ink" id="exec-go-btn" href="dept.html?dept=disclosure" data-keep-role>打开工作台 · 看交卷物 →</a>
-      <a class="btn btn-ghost" href="delegate.html?step=plan" data-keep-role>回看计划</a>
-    </div>
-  </section>
-
-  <section class="goal-panel hidden" data-panel="confirm">
-    <p class="kicker">拍板在工作台右栏</p>
+  <!-- execute/confirm panels removed: head script redirects to dept; no splash dwell -->
+  <section class="goal-panel hidden" data-panel="confirm" aria-hidden="true">
+    <p class="kicker">拍板在同屏右栏</p>
     <p id="confirm-copy">已交卷，等待确认。委托页不代替拍板。</p>
-    <a class="btn btn-ink" id="confirm-go-btn" href="dept.html?dept=disclosure&gate=1" data-keep-role>去工作台右栏 →</a>
+    <a class="btn btn-ink" id="confirm-go-btn" href="dept.html?dept=disclosure&gate=1" data-keep-role>去工作台同屏右栏 →</a>
   </section>
 
   <section class="goal-panel hidden" data-panel="relay">

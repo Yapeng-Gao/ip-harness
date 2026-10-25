@@ -3,6 +3,29 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>工作台 · 虚拟知产公司</title>
+<script>
+/* Force project desk before paint — never land stuck in 助手 (center collapses) */
+(function () {
+  try {
+    var q = new URLSearchParams(location.search);
+    var m = localStorage.getItem('mpv2-mode') || 'project';
+    var hasGoal = false;
+    try {
+      var d = JSON.parse(sessionStorage.getItem('mpv2-delegation') || 'null');
+      if (d && (d.goal || d.deliverable || d.step === 'execute' || d.step === 'workbench' || d.step === 'confirm')) hasGoal = true;
+    } catch (e) {}
+    /* plan/gate landing must be project; assistant otherwise keeps real 3-col */
+    if (q.get('gate') === '1' || hasGoal) {
+      localStorage.setItem('mpv2-mode', 'project');
+      m = 'project';
+    }
+    document.documentElement.setAttribute('data-mode', m);
+    document.documentElement.setAttribute('data-tier', m);
+  } catch (e) {
+    document.documentElement.setAttribute('data-mode', 'project');
+  }
+})();
+</script>
 <link rel="stylesheet" href="shell.css">
 </head>
 <body data-page="dept" data-reload-on-role="1">
@@ -110,7 +133,7 @@
       </div>
 
       <!-- 企业简版重心（两工作台 B）：事项 / 已确认事实 / 待决策 — 同屏，非文书/协同双视图 -->
-      <div class="editor-lite-focus" aria-label="企业简版重心">
+      <div class="editor-lite-focus" data-lite-strip aria-label="企业简版要点（文书在下）">
         <div class="lite-col">
           <h3>事项</h3>
           <ul>
@@ -144,7 +167,7 @@
             <span>版本草稿 · 演示可改</span>
           </div>
           <h1 data-deliverable>技术交底书 V3</h1>
-          <p class="doc-lead">一种磁驱泵智能控制系统的技术交底。点此正文即可编辑；右侧对话与齐套闸同步本案。</p>
+          <p class="doc-lead">中栏交卷物正文 · 可编辑。右侧为对话与齐套闸——勿把右栏齐套当成整页工作台。</p>
           <h2>一、技术领域</h2>
           <p>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判，适用于工业磁驱泵产线。</p>
           <h2>二、背景问题</h2>
