@@ -363,11 +363,8 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 
 /* —— Vision pillars (welcome · outsourced IP) —— */
 .site-hero-vision {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(280px, .9fr);
-  gap: 36px;
-  align-items: stretch;
-  max-width: 1180px;
+  display: block;
+  max-width: 720px;
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
@@ -1421,6 +1418,13 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
   margin: 2px 0 0; padding: 0 0 0 14px; list-style: disc;
   font-size: 11px; color: var(--ink-3); line-height: 1.55;
 }
+.site-quiet-link {
+  font-size: 12px;
+  color: var(--ink-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.site-quiet-link:hover { color: var(--ink-2); }
 .demo-actions {
   display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px;
 }
