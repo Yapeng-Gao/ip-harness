@@ -79,11 +79,11 @@
         <p class="tree-label">材料</p>
         <button type="button" data-doc-tab="访谈纪要">访谈纪要 10-20</button>
         <button type="button" data-doc-tab="前序检索">前序检索摘要</button>
-        <button type="button" data-show-mode="studio" data-doc-tab="附图 F1">附图草图 F1</button>
-        <button type="button" data-show-mode="studio" data-doc-tab="对比文献">对比文献包 R2</button>
-        <button type="button" data-show-mode="studio" data-doc-tab="确认记录">确认记录 · 技术事实</button>
+        <button type="button" data-doc-tab="附图 F1">附图草图 F1</button>
+        <button type="button" data-doc-tab="对比文献">对比文献包 R2</button>
+        <button type="button" data-doc-tab="确认记录">确认记录 · 技术事实</button>
       </div>
-      <div class="file-pane-foot" data-show-mode="studio project">
+      <div class="file-pane-foot">
         <strong>卷宗 12 份</strong>
         <small>缺权属声明 · 阻塞接力</small>
       </div>
@@ -94,7 +94,7 @@
       <div class="editor-tabs" role="tablist">
         <button type="button" class="active" data-editor-tab="交底书 V3">交底书 V3<span></span></button>
         <button type="button" data-editor-tab="权属声明">权属声明</button>
-        <button type="button" data-editor-tab="访谈纪要" data-show-mode="studio">访谈纪要</button>
+        <button type="button" data-editor-tab="访谈纪要">访谈纪要</button>
       </div>
       <div class="editor-toolbar">
         <div>
@@ -166,28 +166,13 @@
       </div>
     </section>
 
-    <!-- 右：对话 / 确认 / 齐套 -->
+    <!-- 右：默认只露节点一句 + 本部门对话 + 齐套 + 单闸；专家/契约折叠 -->
     <aside class="pane chat-pane" data-gate-pane aria-label="对话与确认">
       <div class="right-stack">
-        <div class="pane-head chat-pane-head">
-          <div>
-            <span class="kicker" style="display:block;margin-bottom:2px">本节点</span>
-            <strong data-dept-name>交底部</strong>
-          </div>
-          <span class="tag"><span class="tag-dot"></span><span data-confirm-type>技术事实</span></span>
+        <div class="node-tip" aria-label="本节点一句">
+          <span class="node-tip-dept" data-dept-name>交底部</span>
+          <p class="node-tip-line" data-node-tip>补齐权属声明后交卷 · 确认类型：技术事实</p>
         </div>
-
-        <details class="rail-collapse node-contract" open>
-          <summary>本节点契约</summary>
-          <dl class="node-contract-dl">
-            <dt>负责</dt><dd data-dept-name>交底部</dd>
-            <dt>输入</dt><dd>访谈纪要 · 已确认技术事实</dd>
-            <dt>交付</dt><dd data-deliverable>技术交底书 V3</dd>
-            <dt>接力</dt><dd>齐套 + 确认通过 → 查新</dd>
-            <dt>确认点</dt><dd>技术事实 · 权属归属</dd>
-            <dt>完成</dt><dd>可接力的交底书齐套交卷</dd>
-          </dl>
-        </details>
 
         <div class="chat-bits" data-chat-feed>
           <div class="chat-bubble">
@@ -198,17 +183,6 @@
             <strong>顾言 · 知产负责人</strong>
             齐套后我会把本关送「待你确认」。类型：<span data-confirm-type>技术事实</span>。
           </div>
-          <details class="rail-collapse">
-            <summary>待确认预览</summary>
-            <div class="chat-bubble chat-bubble-soft">
-              <span data-pending-fact>权属是否归澄明科技，且无职务发明争议？</span>
-              <small style="display:block;margin-top:6px;color:var(--ink-3)">拍板在确认页；本栏只预览。</small>
-            </div>
-          </details>
-          <details class="rail-collapse experts-block">
-            <summary>本部门专家</summary>
-            <div data-experts></div>
-          </details>
         </div>
 
         <form class="chat-compose" id="dept-chat-form" autocomplete="off">
@@ -225,6 +199,23 @@
             <span><strong>交卷 · 送待你确认</strong><small>齐套后可点 · 拍板在确认页</small></span>
           </button>
         </div>
+
+        <details class="rail-collapse node-contract">
+          <summary>本节点契约</summary>
+          <dl class="node-contract-dl">
+            <dt>负责</dt><dd data-dept-name>交底部</dd>
+            <dt>输入</dt><dd>访谈纪要 · 已确认技术事实</dd>
+            <dt>交付</dt><dd data-deliverable>技术交底书 V3</dd>
+            <dt>接力</dt><dd>齐套 + 确认通过 → 查新</dd>
+            <dt>确认点</dt><dd>技术事实 · 权属归属</dd>
+            <dt>完成</dt><dd>可接力的交底书齐套交卷</dd>
+          </dl>
+        </details>
+
+        <details class="rail-collapse experts-block">
+          <summary>本部门专家</summary>
+          <div data-experts></div>
+        </details>
       </div>
     </aside>
   </div>

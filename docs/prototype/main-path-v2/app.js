@@ -1,4 +1,4 @@
-/* main-path-v2 · combine behavior (thin entry · delegation chain · tiers · G1–G3 · snapshot) */
+/* main-path-v2 · thin entry · delegation · tiers · snapshot */
 (function () {
   const DEPTS = {
     disclosure: {
@@ -119,6 +119,19 @@
       return '<span class="expert-face" title="' + m.name + '">' +
         '<img class="avatar-photo avatar-photo-sm" src="' + m.src + '" alt="" width="28" height="28">' +
         '<em>' + short + '</em></span>';
+    }).join('');
+  }
+
+  /* Professional capability cards: avatar + name + one-line role */
+  function renderProfExperts(names) {
+    return (names || []).slice(0, 3).map((e, i) => {
+      const m = expertMeta(e, i);
+      const parts = m.name.split(/\s*·\s*/);
+      const title = parts[0];
+      const role = parts[1] || (m.human ? '在岗复核 · 建议稿≠确认' : '本节点专岗 · 出建议稿');
+      return '<div class="prof-expert">' +
+        '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="32" height="32">' +
+        '<span><strong>' + title + '</strong><small>' + role + '</small></span></div>';
     }).join('');
   }
 
@@ -250,16 +263,10 @@
       const allowed = el.dataset.showMode.split(/\s+/);
       el.classList.toggle('hidden', !allowed.includes(m));
     });
-    // Dept: tier classes only — layout via CSS (assistant=slim tree, not hidden)
+    // Dept: assistant slim tree via CSS; 专业换面不在此加密度
     document.querySelectorAll('[data-tier-workbench]').forEach(wb => {
       wb.classList.toggle('tier-assist', m === 'assistant');
-      wb.classList.toggle('tier-studio', m === 'studio');
-      // studio densifies 卷宗; do not fight enterprise fold-left (dual B)
-      if (m === 'studio' && document.documentElement.dataset.role === 'agency') {
-        wb.classList.remove('fold-left');
-        const foldBtn = document.querySelector('[data-fold-left]');
-        if (foldBtn) foldBtn.textContent = '收折';
-      }
+      wb.classList.remove('tier-studio');
     });
   }
   /* Work-surface pages: 专业 must land on capability page (换面), not densify in place */
@@ -298,12 +305,13 @@
     if (!grid) return;
     grid.innerHTML = DEPT_ORDER.map(key => {
       const d = DEPTS[key];
-      const faces = renderExpertFaces(d.experts);
+      const faces = renderProfExperts(d.experts);
       return '<article class="prof-card" data-dept="' + d.id + '">' +
         '<div class="prof-card-head">' +
           '<span class="prof-code">' + d.code + '</span>' +
           '<h2>' + d.name + '</h2>' +
         '</div>' +
+        '<p class="prof-deliverable">交卷物 · ' + d.deliverable + '</p>' +
         '<p class="prof-duty">' + (d.pitch || '') + '</p>' +
         '<div class="prof-experts" aria-label="' + d.name + '专家编制">' + faces + '</div>' +
         '<button type="button" class="btn btn-ink prof-go" data-go-dept="' + d.id + '">去该部干活 →</button>' +
@@ -464,6 +472,9 @@
     document.querySelectorAll('[data-experts]').forEach(el => { el.innerHTML = expertHtml; });
     document.querySelectorAll('[data-current-task]').forEach(el => {
       el.textContent = '补齐「' + (dept.missing || '缺项') + '」后交卷';
+    });
+    document.querySelectorAll('[data-node-tip]').forEach(el => {
+      el.textContent = '补齐「' + (dept.missing || '缺项') + '」后交卷 · 确认类型：' + (dept.confirmType || '');
     });
     document.querySelectorAll('[data-pending-fact]').forEach(el => { el.textContent = dept.pendingFact; });
     wireChecklist(key);
@@ -665,9 +676,7 @@
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble';
         bubble.innerHTML = '<strong>我 → 顾言</strong>' + text.replace(/</g, '&lt;');
-        const experts = feed.querySelector('.experts-block');
-        if (experts) feed.insertBefore(bubble, experts);
-        else feed.appendChild(bubble);
+        feed.appendChild(bubble);
         chatInput.value = '';
         toast('已纳入本节点指令（演示）');
       });
@@ -1069,7 +1078,7 @@
     DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence,
-    renderExperts, renderExpertFaces, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
+    renderExperts, renderExpertFaces, renderProfExperts, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
   };
 
   document.addEventListener('DOMContentLoaded', () => {
