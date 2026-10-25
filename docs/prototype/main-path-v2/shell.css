@@ -784,6 +784,24 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 .need-me {
   margin-top: 28px; border-top: 1px solid var(--line); padding-top: 18px;
 }
+/* Home: gap list is visual first (case work), not a footer under shell CTA */
+.need-me-primary {
+  margin-top: 0; margin-bottom: 22px; border-top: 0; padding: 18px 20px 14px;
+  border: 1px solid var(--line); background: var(--paper); border-radius: 10px;
+  box-shadow: var(--shadow-rest);
+}
+.need-me-primary .need-me-head h2 { font-size: 18px; }
+.need-me-primary .rail-item:last-child { border-bottom: 0; }
+.shell-zone {
+  margin-top: 8px; padding: 14px 16px 12px;
+  border: 1px dashed var(--line); border-radius: 8px; background: var(--warm-paper);
+}
+.shell-zone-lead { margin: 0 0 6px; font-size: 12px; color: var(--ink-3); }
+.shell-zone .secondary-delegate {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+}
+.shell-zone .secondary-delegate .goal-form { margin-top: 8px; }
+.shell-zone .secondary-delegate .chips { margin-top: 8px; }
 .need-me-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
 .need-me-head h2 { margin: 0; font-size: 16px; }
 .rail-item {
@@ -1439,7 +1457,7 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 
 /* Shared: hide/show by data-show-mode handled in JS (.hidden) */
 
-/* —— 助手：藏侧栏 + 对话主舞台 —— */
+/* —— 助手：藏侧栏 + 对话工作区 —— */
 html[data-mode="assistant"] .sidebar { display: none; }
 html[data-mode="assistant"] .brand { border-right: 0; width: auto; flex: 0 0 auto; }
 html[data-mode="assistant"] .app-main { display: flex; }

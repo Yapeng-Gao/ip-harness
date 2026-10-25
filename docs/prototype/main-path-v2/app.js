@@ -5,7 +5,7 @@
       id: 'disclosure', name: '交底部', code: '00', deliverable: '技术交底书 V3',
       pitch: '访谈与事实齐套后，交出可接力的技术交底书。',
       missing: '权属声明', check: ['技术方案完整', '技术效果可验证', '替代实施方式', '权属声明'],
-      experts: ['技术访谈专家', '交底书撰写专家', '林岚 · 代理师'],
+      experts: ['技术访谈专家', '交底书撰写专家'],
       pendingTitle: '确认交底书可接力',
       pendingFact: '权属是否归澄明科技，且无职务发明争议？',
       pendingDetail: '影响交底书是否可作为申请文件部输入；确认后形成交付快照。',
@@ -15,7 +15,7 @@
       id: 'research', name: '查新部', code: '01', deliverable: '可专利性检索报告 R2',
       pitch: '检索、比对、结论稿齐套，再谈能不能申请。',
       missing: '结论稿', check: ['检索式与范围', '证据来源核验', '特征比对表', '结论稿'],
-      experts: ['检索分析专家', 'FTO 对照专家', '林岚 · 代理师'],
+      experts: ['检索分析专家'],
       pendingTitle: '确认查新结论可立项',
       pendingFact: '结论稿是否覆盖拟申请核心特征组合？',
       pendingDetail: '确认后立项部可读取检索结论与证据表，不会自动对外递交。',
@@ -26,7 +26,7 @@
       id: 'intake', name: '立项部', code: '02', deliverable: '立项决议与报价单',
       pitch: '策略、报价与决议齐套，值不值得推由你拍板。',
       missing: '决议签署', check: ['保护策略建议', '费用与周期', '申请类型建议', '决议签署'],
-      experts: ['布局策略专家', '报价顾问', '顾言 · 知产负责人'],
+      experts: ['布局策略专家', '顾言 · 知产负责人'],
       pendingTitle: '确认立项决议',
       pendingFact: '是否按发明申请推进，并接受当前报价与周期？',
       pendingDetail: '签署后撰写部接手；未签署不启动撰写任务。',
@@ -36,7 +36,7 @@
       id: 'draft', name: '撰写部', code: '03', deliverable: '权利要求草案 V1',
       pitch: '权利要求与说明书层次清楚，写成可递交的文本。',
       missing: '权项树', check: ['独立权利要求', '从属层次', '说明书同步', '权项树'],
-      experts: ['权利要求专家', '说明书撰写专家', '林岚 · 代理师'],
+      experts: ['权利要求专家', '说明书撰写专家'],
       pendingTitle: '确认保护范围',
       pendingFact: '独权是否覆盖 MP-300 量产控制方案？',
       pendingDetail: '确认后附图部与质检可接力；不代表同意递交。',
@@ -46,7 +46,7 @@
       id: 'figure', name: '附图部', code: '04', deliverable: '附图包 F2',
       pitch: '流程图、结构图与图号，和说明书对齐后交卷。',
       missing: '图号核对', check: ['流程图齐全', '结构图标注', '说明书引用一致', '图号核对'],
-      experts: ['附图绘制专家', '一致性核查专家', '林岚 · 代理师'],
+      experts: ['附图绘制专家'],
       pendingTitle: '确认附图可并入申请包',
       pendingFact: '图号与说明书引用是否一致？',
       pendingDetail: '确认后进入递交前齐套。',
@@ -56,7 +56,7 @@
       id: 'filing', name: '递交与程序', code: '05', deliverable: '申请包与递交核查单',
       pitch: '申请包齐套；授权人确认后才对外递交。',
       missing: '授权人确认', check: ['申请文件齐套', '费用与期限', '递交清单', '授权人确认'],
-      experts: ['流程事务专家', '期限监控专家', '林岚 · 代理师'],
+      experts: ['流程事务专家', '期限监控专家'],
       pendingTitle: '确认授权递交',
       pendingFact: '授权人是否确认以当前版本对外递交？',
       pendingDetail: '未获授权人前，系统不执行对外递交。',
@@ -66,7 +66,7 @@
       id: 'oa', name: '审查答复', code: '06', deliverable: '意见陈述书 V2',
       pitch: '策略与争辩齐套；企业确认后代理复核再递。',
       missing: '企业确认意见', check: ['通知书拆解', '修改对照', '创造性争辩', '企业确认意见'],
-      experts: ['OA 策略专家', '创造性争辩专家', '林岚 · 代理师'],
+      experts: ['OA 策略专家', '林岚 · 代理师'],
       pendingTitle: '确认答复策略',
       pendingFact: '企业是否同意有限修改 + 创造性争辩？',
       pendingDetail: '确认后代理师复核再递交；不会自动递交。',
@@ -582,7 +582,7 @@
       el.addEventListener('click', (e) => {
         e.preventDefault();
         setHasCase(!hasCase());
-        toast(hasCase() ? '演示：企业有案 → 主 CTA「进入本公司」' : '演示：企业无案 → 主 CTA「开案子」');
+        toast(hasCase() ? '已切换为有进行中案子' : '已切换为暂无案子');
       });
     });
     document.querySelectorAll('[data-toast]').forEach(el => {
@@ -712,19 +712,19 @@
         '<div class="doc-comment"><strong>专家批注 · 交底书撰写专家</strong><p>权属声明仍缺。建议由法务出具模板后你确认——建议稿 ≠ 确认。</p></div>',
       research:
         '<p class="doc-lead">可专利性检索报告草稿。中栏即本关交卷物，可直接改结论表述。</p>' +
-        '<h2>一、检索范围</h2><p>关键词：磁驱泵 / 双环控制 / 故障预判；库：CNABS · DWPI（演示）。</p>' +
+        '<h2>一、检索范围</h2><p>关键词：磁驱泵 / 双环控制 / 故障预判；库：CNABS · DWPI。</p>' +
         '<h2>二、比对要点</h2><p>相近方案多偏开环调速；双环+频谱阈值组合较少见。</p>' +
         '<h2>三、结论稿（缺项）</h2><p class="fact-highlight">待补：核心特征组合是否具备可专利性的明确结论。<span>当前缺项</span></p>' +
         '<div class="doc-comment"><strong>检索分析专家</strong><p>结论稿齐套前勿送立项。</p></div>',
       intake:
         '<p class="doc-lead">立项决议与报价单草稿。确认策略与费用后才启动撰写。</p>' +
         '<h2>一、保护策略</h2><p>建议：发明申请 · 核心在双环控制与故障预判组合。</p>' +
-        '<h2>二、费用与周期</h2><p>代理费与官费估算（演示数字）；周期约 18–24 月。</p>' +
+        '<h2>二、费用与周期</h2><p>代理费与官费估算；周期约 18–24 月。</p>' +
         '<h2>三、决议签署（缺项）</h2><p class="fact-highlight">待负责人签署是否按发明推进。<span>当前缺项</span></p>',
       draft:
         '<p class="doc-lead">权利要求草案 V1。独权与从属层次可在此编辑。</p>' +
         '<h2>权利要求 1（独立）</h2><p>一种磁驱泵智能控制系统，其特征在于包括外环流量控制与内环转速控制……</p>' +
-        '<h2>从属层次</h2><p>权 2–5：采样周期、频谱阈值、三点校验工装（演示）。</p>' +
+        '<h2>从属层次</h2><p>权 2–5：采样周期、频谱阈值、三点校验工装。</p>' +
         '<h2>权项树（缺项）</h2><p class="fact-highlight">树状依赖尚未闭合。<span>当前缺项</span></p>',
       figure:
         '<p class="doc-lead">附图包 F2 说明稿。图号需与说明书引用一致。</p>' +
@@ -733,12 +733,12 @@
         '<h2>图号核对（缺项）</h2><p class="fact-highlight">说明书引用与图号尚未逐条对齐。<span>当前缺项</span></p>',
       filing:
         '<p class="doc-lead">申请包与递交核查单。授权人确认前不对外递交。</p>' +
-        '<h2>申请文件</h2><p>请求书 · 说明书 · 权项 · 附图 · 摘要（演示清单）。</p>' +
+        '<h2>申请文件</h2><p>请求书 · 说明书 · 权项 · 附图 · 摘要。</p>' +
         '<h2>授权人确认（缺项）</h2><p class="fact-highlight">对外递交须授权人勾选确认。<span>当前缺项</span></p>',
       oa:
         '<p class="doc-lead">意见陈述书 V2。策略与争辩在此编辑；企业确认后再递。</p>' +
-        '<h2>通知书要点</h2><p>创造性评述针对双环控制组合（演示）。</p>' +
-        '<h2>争辩要点</h2><p>有限修改 + 技术效果对比（演示）。</p>' +
+        '<h2>通知书要点</h2><p>创造性评述针对双环控制组合。</p>' +
+        '<h2>争辩要点</h2><p>有限修改 + 技术效果对比。</p>' +
         '<h2>企业确认意见（缺项）</h2><p class="fact-highlight">企业是否同意当前答复策略。<span>当前缺项</span></p>'
     };
     return {
@@ -1075,7 +1075,7 @@
         saveState.classList.toggle('is-editing', on);
       }
       if (unsavedDot) unsavedDot.hidden = !on;
-      if (foot) foot.textContent = on ? '有未保存修改' : '内容已同步至项目事实库（演示）';
+      if (foot) foot.textContent = on ? '有未保存修改' : '已同步至项目事实库';
     }
     if (editor) {
       editor.addEventListener('input', () => setDirty(true));
@@ -1084,7 +1084,7 @@
     if (saveBtn) {
       saveBtn.addEventListener('click', () => {
         setDirty(false);
-        toast('新版本已保存（演示）');
+        toast('新版本已保存');
       });
     }
 
@@ -1117,7 +1117,7 @@
           '<h2>二、权属归属</h2>' +
           '<p>本申请相关技术成果归<strong>澄明科技有限公司</strong>所有，发明人确认无职务发明争议。</p>' +
           '<h2>三、签署</h2>' +
-          '<p>发明人签署栏 · 法务复核栏 ·（演示可改）</p>' +
+          '<p>发明人签署栏 · 法务复核栏 ·</p>' +
           '<div class="doc-comment"><strong>顾言</strong><p>本文件仍缺。齐套清单里勾上「权属声明」后，右栏才能交卷。</p></div>'
       },
       '访谈纪要': {
@@ -1152,13 +1152,13 @@
         meta: '卷宗 · 对比文献',
         html:
           '<p class="doc-lead">对比文献包占位 · 专业档可见。</p>' +
-          '<h2>文献清单</h2><p>CN… / US… / 非专利文献 2 篇（演示）。</p>'
+          '<h2>文献清单</h2><p>CN… / US… / 非专利文献 2 篇。</p>'
       },
       '确认记录': {
         title: '确认记录 · 技术事实',
         meta: '卷宗 · 确认记录',
         html:
-          '<p class="doc-lead">已拍板与待拍板记录（演示）。</p>' +
+          '<p class="doc-lead">已拍板与待拍板记录。</p>' +
           '<h2>已确认</h2><p>MP-300 三点校验为已确认技术事实。</p>' +
           '<h2>待确认</h2><p>权属是否归澄明科技。</p>'
       }
@@ -1201,7 +1201,7 @@
       const stub = DOC_STUBS[name] || {
         title: name,
         meta: '本案文件 · ' + name,
-        html: '<p class="doc-lead">' + name + '（演示正文，可编辑）。</p><p>与左侧目录当前项一致。</p>'
+        html: '<p class="doc-lead">' + name + '（可编辑）。</p><p>与左侧目录当前项一致。</p>'
       };
       if (editor) {
         const metaSpan = editor.querySelector('.doc-meta span:first-child');
@@ -1290,7 +1290,7 @@
         bubble.innerHTML = '<strong>我 → 本部门执行助手</strong>' + text.replace(/</g, '&lt;');
         feed.appendChild(bubble);
         chatInput.value = '';
-        toast('已纳入本节点指令（演示）');
+        toast('已纳入本节点指令');
       });
     }
 
@@ -1319,7 +1319,7 @@
         title: '权属声明（与交底一并确认）',
         html:
           '<p class="doc-lead">职务发明权属声明 · 本关拍板依据之一。</p>' +
-          '<h2>一、发明人</h2><p>陈宇等（演示可改）。</p>' +
+          '<h2>一、发明人</h2><p>陈宇等。</p>' +
           '<h2>二、权属归属</h2>' +
           '<p>本申请相关技术成果归<strong>澄明科技有限公司</strong>所有，发明人确认无职务发明争议。</p>' +
           '<h2>三、与交底书关系</h2>' +
@@ -1347,7 +1347,7 @@
           '<h2>齐套项</h2><ul>' +
           (dept.check || []).map(function (c) { return '<li>' + c + '</li>'; }).join('') +
           '</ul>' +
-          '<p class="fact-highlight">缺项曾标：' + (dept.missing || '—') + '<span>现已勾齐（演示）</span></p>'
+          '<p class="fact-highlight">缺项曾标：' + (dept.missing || '—') + '<span>现已勾齐</span></p>'
       });
     }
     return { primary: primary, chips: chips };
