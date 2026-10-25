@@ -99,7 +99,7 @@ flowchart LR
 
 1. **本页导览**（你正在读）— 主链图 + 三层图例 + D1–D7 落点  
 2. [business-spine.md §1](business-spine.md) — 业务本质与默认主链（§1.3）  
-3. [**product-vision.md**](product-vision.md) — **产品理念**（权威 SHA **`5248975`** · 目标=尽快办申请；品类 H1=虚拟知产公司；外挂=手段副标；公司/部门/专家叙事；§6 信息架构）  
+3. [**product-vision.md**](product-vision.md) — **产品理念**（权威 SHA **`f180716`** · 目标=尽快把专利申下来；品类 H1=虚拟知产公司 / VIRTUAL IP COMPANY；外挂=轻副标（旁注曾跟 `5248975`）；公司/部门/专家叙事；§6 信息架构）  
 4. [**product-pages.md**](product-pages.md) — **逐页怎么设计**（MVP 14 + 扩展 12）+ [**product-logic.md**](product-logic.md)（怎么卖）  
 5. [**sources.md**](sources.md) — **业务逻辑参考来源总表**（法定/程序/官费/讨论依据；明确不以原型为准）  
 6. **本页下方「节点」表** — 扫一眼每站定位  
@@ -114,9 +114,9 @@ flowchart LR
 | 文档 | 内容 |
 |---|---|
 | [**business-spine.md**](business-spine.md) | **业务总纲**：三个转换 / 六类主体 / 五层对象 / 五类规则 / 三套时钟 / 四个口袋 / 七个决策点 / 12 条失败模式 |
-| [**product-vision.md**](product-vision.md) | **产品理念**（权威 SHA **`5248975`**）：目标=尽快办申请；品类 H1=虚拟知产公司；外挂=手段副标；公司/部门/专家叙事；**§6 信息架构（跟齐 pages MVP 15；工作台=部门页）** |
+| [**product-vision.md**](product-vision.md) | **产品理念**（权威 SHA **`f180716`**）：目标=尽快把专利申下来；品类 H1=虚拟知产公司 / VIRTUAL IP COMPANY；外挂=轻副标（旁注曾跟 `5248975`）；公司/部门/专家叙事；**§6 信息架构（跟齐 pages MVP 15；工作台=部门页）** |
 | [**product-logic.md**](product-logic.md) | **产品逻辑**：能力→产品映射 / SKU / 失败模式 / 打包定价 / **§0.2 外挂包装与七部映射** / **§5.4 叙事套装** / 路线图 |
-| [**product-pages.md**](product-pages.md) | **逐页设计规格**（跟齐 vision **`5248975`**）：MVP **15** + 扩展 **12**；目标优先定位句；品类 H1=虚拟知产公司；公司页「当前站→距可递交」；§5.13 不单列归属 |
+| [**product-pages.md**](product-pages.md) | **逐页设计规格**（跟齐 vision **`f180716`**）：MVP **15** + 扩展 **12**；Hero 开篇目标句+品类 H1；公司页「当前站→距可递交」；§5.13 不单列归属 |
 | [**spec/**](spec/README.md) | **机器可读层**（生成物）：1026 条规则 / 117 条决策权 / schema，供模型与工具消费 |
 | [**decision-rights.md**](decision-rights.md) | **决策权 · 例外 · 冲突裁决**：四种权力 / L1–L4 分级 / D1–D7 落人 / 法定与内部例外 / 五条裁决原则 / 七条红线 |
 
@@ -184,7 +184,7 @@ flowchart LR
 | 文档 | 内容 |
 |---|---|
 | [**sources.md**](sources.md) | **业务逻辑参考来源总表**：法定 / 程序 / 官费与费减 / WIPO 方法 / 讨论与 spine / **明确非依据**（原型与 archive） |
-| [product-pages.md](product-pages.md) | 产品逐页设计规格（跟齐 vision `5248975`；MVP15+扩展12；目标=尽快办申请；品类 H1=虚拟知产公司） |
+| [product-pages.md](product-pages.md) | 产品逐页设计规格（跟齐 vision `f180716`；MVP15+扩展12；目标=尽快把专利申下来；品类 H1=虚拟知产公司 / VIRTUAL IP COMPANY） |
 | [industry-reality.md](industry-reality.md) | 法定期限 / 官费 / 程序补遗（含 2023 细则新增：奖酬、宽限期、保密审查、非正常申请）；**01 与 01b 分节** |
 | [business-spine.md §1.4](business-spine.md) | **术语**：权项结构 / 组合布局 / 单案国别；查新≠FTO；激发≠挖掘 |
 | [_TEMPLATE.md](_TEMPLATE.md) | 节点文档写作标准（17 节结构、编号规则、8 条纪律、最低篇幅） |
