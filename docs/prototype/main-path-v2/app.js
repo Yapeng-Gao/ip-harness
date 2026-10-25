@@ -71,6 +71,17 @@
       pendingFact: '企业是否同意有限修改 + 创造性争辩？',
       pendingDetail: '确认后代理师复核再递交；不会自动递交。',
       confirmType: '商业与风险决策', next: null
+    },
+    /* 更多 · 副线；≠查新部；不入 DEPT_ORDER 主七部 */
+    fto: {
+      id: 'fto', name: '自由实施部', code: '01b', deliverable: 'FTO 自由实施报告 V1',
+      pitch: '上市前排查自由实施风险；副线护航，不挡申请主链。',
+      missing: '障碍结论稿', check: ['目标市场与产品范围', '有效权项过滤', '逐要素比对表', '障碍结论稿'],
+      experts: ['FTO 比对专家'],
+      pendingTitle: '确认上市风险结论',
+      pendingFact: '是否接受当前障碍结论与规避建议后再上市？',
+      pendingDetail: '副线确认；不自动启动或阻断申请主链递交。',
+      confirmType: '商业与风险决策', next: null, more: true
     }
   };
 
@@ -259,8 +270,9 @@
     return new URLSearchParams(location.search).get(name);
   }
   function normalizeDeptId(id) {
-    // alias: decision → intake
+    // alias: decision → intake; freedom/fto → 自由实施部（更多）
     if (id === 'decision') return 'intake';
+    if (id === 'freedom' || id === 'fto-freedom') return 'fto';
     return id || 'disclosure';
   }
   function deptFromQuery(fallback) {
@@ -1580,13 +1592,15 @@
     const g = (goal || '').trim();
     const lower = g.toLowerCase();
     let deptId = 'disclosure';
-    if (/fto|查新|检索|可专利|现有技术/.test(lower)) deptId = 'research';
+    /* §0.3 四类：FTO/上市风险 → 自由实施部（更多），≠查新部 research */
+    if (/fto|上市.?风险|自由实施|上市前/.test(lower)) deptId = 'fto';
     else if (/审查|oa|意见陈述|答复/.test(lower)) deptId = 'oa';
+    else if (/查新|检索|可专利|现有技术/.test(lower)) deptId = 'research';
     else if (/立项|报价|值不值得|申请类型/.test(lower)) deptId = 'intake';
     else if (/撰写|权利要求|说明书/.test(lower)) deptId = 'draft';
     else if (/附图|流程图/.test(lower)) deptId = 'figure';
     else if (/递交|官方|国知局/.test(lower)) deptId = 'filing';
-    else if (/权属|交底|保护|成果|发明/.test(lower)) deptId = 'disclosure';
+    else if (/权属|交底|保护|成果|发明|开案/.test(lower)) deptId = 'disclosure';
 
     const d = DEPTS[deptId];
     const chain = [];
