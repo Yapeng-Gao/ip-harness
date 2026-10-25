@@ -124,6 +124,14 @@
         <button type="button" data-doc-tab="附图 F1">附图草图 F1</button>
         <button type="button" data-doc-tab="对比文献">对比文献包 R2</button>
         <button type="button" data-doc-tab="确认记录">确认记录 · 技术事实</button>
+        <details class="tree-facts-fold">
+          <summary class="tree-label">已确认事实</summary>
+          <ul class="tree-facts-list">
+            <li>量产标定 · MP-300 三点校验</li>
+            <li>双环控制：外环流量 / 内环转速</li>
+            <li>故障特征库已入库</li>
+          </ul>
+        </details>
       </div>
       <div class="file-pane-foot">
         <strong>卷宗 12 份</strong>
@@ -145,34 +153,6 @@
           <button type="button" data-toast="版本对比">对比版本</button>
         </div>
         <span class="editor-save-state" data-save-state>已保存</span>
-      </div>
-
-      <!-- 企业简版：事项 / 已确认事实 / 待决策 -->
-      <div class="editor-lite-focus" data-lite-strip aria-label="企业简版要点（文书在下）">
-        <div class="lite-col">
-          <h3>事项</h3>
-          <ul>
-            <li><strong>补齐权属声明</strong> · 阻塞交卷</li>
-            <li>核对关键特征是否写全</li>
-            <li>交底 V3 送确认前自检</li>
-          </ul>
-        </div>
-        <div class="lite-col">
-          <h3>已确认事实</h3>
-          <ul>
-            <li><strong>量产标定 · MP-300</strong> 三点校验</li>
-            <li>双环控制：外环流量 / 内环转速</li>
-            <li>故障特征库已入库</li>
-          </ul>
-        </div>
-        <div class="lite-col">
-          <h3>待决策</h3>
-          <ul>
-            <li><strong>权属是否归澄明科技</strong></li>
-            <li>齐套后拍板 · 类型技术事实</li>
-            <li>通过后接力查新部</li>
-          </ul>
-        </div>
       </div>
 
       <div class="document-scroll">
@@ -208,47 +188,47 @@
       </div>
     </section>
 
-    <!-- 右栏：身份 → 缺项/确认 → 专家(折) → 对话 → 契约(折) -->
+    <!-- 右栏：紧凑置顶(身份/缺项/闸/专家露头) → 对话主高 → 契约(折) -->
     <aside class="pane chat-pane" data-gate-pane aria-label="对话与确认">
       <div class="right-stack">
-        <div class="dept-id-strip" aria-label="本部门身份">
-          <div class="dept-id-kicker">本部门</div>
-          <strong data-dept-name>交底部</strong>
-          <p class="dept-id-duty" data-dept-pitch>访谈与事实齐套后，交出可接力的技术交底书。</p>
-          <p class="dept-id-tip" data-node-tip>补齐权属声明后交卷 · 确认类型：技术事实</p>
-          <p class="node-tip-goal" data-goal-context hidden></p>
-        </div>
-
-        <div class="gate-box" id="gate-box">
-          <div class="confirm-rail" data-confirm-rail hidden>
-            <div class="pane-head" style="padding:0 0 8px;border:0">待你确认</div>
-            <p class="confirm-rail-title" data-pending-title>确认交底书可接力</p>
-            <p class="confirm-rail-q" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
-            <p class="confirm-rail-detail" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
-            <p class="confirm-rail-blind" data-confirm-blind-hint hidden>先看中栏交卷物</p>
-            <div class="confirm-rail-actions">
-              <button class="btn btn-ink" type="button" data-rail-pass>通过 → 下一部</button>
-              <button class="btn btn-secondary" type="button" data-rail-reject>驳回 · 本台补齐</button>
-              <button class="btn btn-ghost" type="button" data-rail-prev>退回上一部</button>
-            </div>
-            <p class="confirm-rail-note">建议稿 ≠ 确认。中栏须见交卷物正文才可点通过。</p>
+        <div class="rail-top-chrome">
+          <div class="dept-id-strip" aria-label="本部门身份">
+            <div class="dept-id-kicker">本部门</div>
+            <strong data-dept-name>交底部</strong>
+            <p class="dept-id-duty" data-dept-pitch>访谈与事实齐套后，交出可接力的技术交底书。</p>
+            <p class="dept-id-tip" data-node-tip>补齐权属声明后交卷 · 确认类型：技术事实</p>
+            <p class="node-tip-goal" data-goal-context hidden></p>
           </div>
 
-          <div class="pane-head rail-sec-label" style="padding:0 0 8px;border:0">缺项下一步 · 齐套</div>
-          <div class="checklist" data-checklist></div>
-          <p class="missing" data-missing-live>缺项：权属声明</p>
-          <p class="gate-meta">齐套 <span class="tabular" data-check-count>0 / 4</span> · 未齐套交卷禁用</p>
-          <button class="handoff-button" type="button" data-submit-gate disabled>
-            <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏拍板</small></span>
-          </button>
-        </div>
+          <div class="gate-box" id="gate-box">
+            <div class="confirm-rail" data-confirm-rail hidden>
+              <div class="rail-sec-label">待你确认 · 待决策</div>
+              <p class="confirm-rail-title" data-pending-title>确认交底书可接力</p>
+              <p class="confirm-rail-q" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
+              <p class="confirm-rail-detail" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
+              <p class="confirm-rail-blind" data-confirm-blind-hint hidden>先看中栏交卷物</p>
+              <div class="confirm-rail-actions">
+                <button class="btn btn-ink" type="button" data-rail-pass>通过 → 下一部</button>
+                <button class="btn btn-secondary" type="button" data-rail-reject>驳回 · 本台补齐</button>
+                <button class="btn btn-ghost" type="button" data-rail-prev>退回上一部</button>
+              </div>
+              <p class="confirm-rail-note">建议稿 ≠ 确认。中栏须见交卷物正文才可点通过。</p>
+            </div>
 
-        <details class="rail-collapse rail-experts-fold">
-          <summary>本部门专家 · 建议稿</summary>
+            <div class="rail-sec-label">缺项 · 事项下一步</div>
+            <div class="checklist" data-checklist></div>
+            <p class="missing" data-missing-live>缺项：权属声明</p>
+            <p class="gate-meta">齐套 <span class="tabular" data-check-count>0 / 4</span> · 未齐套交卷禁用</p>
+            <button class="handoff-button" type="button" data-submit-gate disabled>
+              <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏拍板</small></span>
+            </button>
+          </div>
+
           <section class="rail-experts" aria-label="本部门专家">
+            <div class="rail-sec-label">本部门专家 · 建议稿</div>
             <div data-experts></div>
           </section>
-        </details>
+        </div>
 
         <div class="rail-chat-block">
           <div class="rail-sec-label">本部门执行助手</div>
