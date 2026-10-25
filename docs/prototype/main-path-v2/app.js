@@ -503,7 +503,7 @@
         '</div>' +
         '<p class="prof-deliverable">交卷物 · ' + d.deliverable + '</p>' +
         '<p class="prof-duty">' + (d.pitch || '') + '</p>' +
-        '<div class="prof-experts" aria-label="' + d.name + '专家编制">' + faces + '</div>' +
+        '<div class="prof-experts" aria-label="' + d.name + '专家">' + faces + '</div>' +
         '<button type="button" class="btn btn-ink prof-go" data-go-dept="' + d.id + '">去该部干活 →</button>' +
         '</article>';
     }).join('');
