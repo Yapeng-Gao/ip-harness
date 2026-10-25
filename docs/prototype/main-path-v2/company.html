@@ -19,6 +19,7 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
+    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
     <a class="weak-link" href="welcome.html">官网</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch" aria-label="使用深度">
@@ -49,6 +50,13 @@
     <a class="active" href="company.html" data-keep-role>本案公司</a>
     <a class="" href="dept.html?dept=oa&gate=1" data-keep-role>客户确认</a>
   </nav>
+
+  <div class="sidebar-section logistics-nav" aria-label="后勤弱链">
+    <div class="sidebar-heading"><span>后勤</span></div>
+    <a class="side-logistics" href="docket.html" data-keep-role>期限</a>
+    <a class="side-logistics" href="billing.html" data-keep-role>账单</a>
+    <a class="side-logistics" href="members.html" data-keep-role>成员</a>
+  </div>
   <div class="sidebar-section">
     <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
     <a class="side-project active" href="dept.html?dept=disclosure" data-keep-role><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
@@ -203,8 +211,24 @@
       <a href="dept.html?dept=figure" data-keep-role data-dept-open="figure" data-deliverable-bound="1"><span>待命 · 附图部</span><strong>附图包 F2</strong><small>等权利要求</small><div class="dept-faces" aria-label="本部门专家"></div></a>
       <a href="dept.html?dept=filing" data-keep-role data-dept-open="filing" data-deliverable-bound="1"><span>待命 · 递交与程序</span><strong>申请包与递交核查单</strong><small>等申请包</small><div class="dept-faces" aria-label="本部门专家"></div></a>
       <a href="dept.html?dept=oa" data-keep-role data-dept-open="oa" data-deliverable-bound="1"><span>待命 · 审查答复</span><strong>意见陈述书 V2</strong><small>授权后启用</small><div class="dept-faces" aria-label="本部门专家"></div></a>
-      <button type="button" disabled style="opacity:.5"><span>扩展</span><strong>后置能力</strong><small>FTO / 无效等本轮不做</small></button>
     </div>
+    <details class="more-depts" id="more-depts">
+      <summary>更多部门 <span>（默认折叠 · 不扩七部）</span></summary>
+      <div class="more-depts-grid" aria-label="更多部门目录">
+        <a class="more-dept-stub" href="#" data-toast="创新激发部 · 后置 stub">创新激发部<small>方向清单</small></a>
+        <a class="more-dept-stub" href="#" data-toast="挖掘部 · 后置 stub">挖掘部<small>挖掘报告</small></a>
+        <a class="more-dept-stub" href="#" data-toast="自由实施部 · 后置 stub">自由实施部<small>FTO · 不挡申请</small></a>
+        <a class="more-dept-stub" href="#" data-toast="布局办 · 后置 stub">布局办<small>布局图</small></a>
+        <a class="more-dept-stub" href="#" data-toast="维持部 · 后置 stub">维持部<small>年费 / 权利维持</small></a>
+        <a class="more-dept-stub" href="#" data-toast="终止与恢复 · 后置 stub">终止与恢复<small>资产状态</small></a>
+        <a class="more-dept-stub" href="#" data-toast="运用部 · 后置 stub">运用部<small>转化</small></a>
+        <a class="more-dept-stub" href="#" data-toast="监控部 · 后置 stub">监控部<small>监控</small></a>
+        <a class="more-dept-stub" href="#" data-toast="国际部 · 后置 stub">国际部<small>PCT</small></a>
+        <a class="more-dept-stub" href="#" data-toast="无效部 · 后置 stub">无效部<small>无效</small></a>
+        <a class="more-dept-stub" href="#" data-toast="诉讼与维权 · 后置 stub">诉讼与维权<small>维权</small></a>
+        <a class="more-dept-stub" href="#" data-toast="权利比对台账 · 工具 stub">权利比对台账<small>工具 · 非部门</small></a>
+      </div>
+    </details>
   </div>
 </main>
 </div>
@@ -223,7 +247,7 @@
       <div data-drawer-experts></div>
     </div>
     <div class="drawer-actions">
-      <a class="btn btn-ink" href="#" data-drawer-go>进入工作台 →</a>
+      <a class="btn btn-ink" href="#" data-drawer-go>去该部干活 →</a>
       <button class="btn btn-ghost" type="button" data-drawer-close>关闭</button>
     </div>
   </aside>

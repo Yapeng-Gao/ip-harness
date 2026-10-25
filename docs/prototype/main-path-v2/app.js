@@ -1822,6 +1822,92 @@
       location.href = withRole('delegate.html?step=plan');
     });
   }
+
+  function wireFilterChips(rootSel, onChange) {
+    const root = document.querySelector(rootSel);
+    if (!root) return;
+    root.querySelectorAll('.filter-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        root.querySelectorAll('.filter-chip').forEach(b => b.classList.toggle('active', b === btn));
+        onChange(btn.dataset.filter || 'all');
+      });
+    });
+  }
+
+  function wireDocketPage() {
+    if ((document.body.dataset.page || '') !== 'docket') return;
+    const list = document.querySelector('[data-docket-list]');
+    const empty = document.querySelector('[data-docket-empty]');
+    if (!list) return;
+    const rows = () => [...list.querySelectorAll('.docket-row')];
+    function apply(f) {
+      let visible = 0;
+      rows().forEach(row => {
+        const st = row.dataset.status || 'all';
+        let show = f === 'all' || st === f || (f === 'soon' && (st === 'soon' || row.classList.contains('is-today')));
+        if (f === 'overdue') show = st === 'overdue' || row.classList.contains('is-overdue');
+        row.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+      if (empty) empty.classList.toggle('hidden', visible > 0);
+      list.classList.toggle('hidden', visible === 0);
+    }
+    wireFilterChips('[data-docket-filter]', apply);
+    // empty demo via ?empty=1
+    if (qs('empty') === '1') {
+      rows().forEach(r => r.classList.add('hidden'));
+      list.classList.add('hidden');
+      if (empty) empty.classList.remove('hidden');
+    }
+  }
+
+  function wireCasesPage() {
+    if ((document.body.dataset.page || '') !== 'cases') return;
+    const list = document.querySelector('[data-cases-list]');
+    const empty = document.querySelector('[data-cases-empty]');
+    if (!list) return;
+    const rows = () => [...list.querySelectorAll('a.row')];
+    function apply(f) {
+      let visible = 0;
+      rows().forEach(row => {
+        const st = row.dataset.caseStatus || '';
+        const dl = row.dataset.caseDeadline || '';
+        let show = true;
+        if (f === 'soon') show = dl === 'soon' || dl === 'today' || dl === 'overdue';
+        else if (f === 'pending') show = st === 'pending';
+        else if (f === 'active') show = st === 'active';
+        row.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+      // head stays; empty when none
+      const forceEmpty = qs('empty') === '1' || (!hasCase() && qs('nocase') === '1');
+      if (forceEmpty) {
+        rows().forEach(r => r.classList.add('hidden'));
+        visible = 0;
+      }
+      if (empty) empty.classList.toggle('hidden', visible > 0);
+      // keep table head visible when rows exist
+      list.classList.toggle('is-filtered-empty', visible === 0);
+      if (visible === 0) list.querySelectorAll('a.row').forEach(r => r.classList.add('hidden'));
+    }
+    wireFilterChips('[data-cases-filter]', apply);
+    apply('all');
+  }
+
+  function wireBillingMembersEmpty() {
+    const page = document.body.dataset.page || '';
+    if (page === 'billing' && qs('empty') === '1') {
+      document.querySelectorAll('.billing-summary, .pocket-grid, .billing-ledger').forEach(el => el.classList.add('hidden'));
+      const empty = document.querySelector('[data-billing-empty]');
+      if (empty) empty.classList.remove('hidden');
+    }
+    if (page === 'members' && qs('empty') === '1') {
+      document.querySelectorAll('[data-members-list], .members-toolbar').forEach(el => el.classList.add('hidden'));
+      const empty = document.querySelector('[data-members-empty]');
+      if (empty) empty.classList.remove('hidden');
+    }
+  }
+
   function wireHome() {
     document.querySelectorAll('[data-fill]').forEach(b => {
       b.addEventListener('click', () => {
@@ -1878,5 +1964,8 @@
     if (page === 'home') wireHome();
     if (page === 'company') wireCompanyPage();
     if (page === 'professional') wireProfessionalPage();
+    if (page === 'docket') wireDocketPage();
+    if (page === 'cases') wireCasesPage();
+    wireBillingMembersEmpty();
   });
 })();

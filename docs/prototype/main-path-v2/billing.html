@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>账单 / 委托 · 虚拟知产公司</title>
+<link rel="stylesheet" href="shell.css">
+</head>
+<body data-page="billing">
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="home.html" data-keep-role aria-label="返回首页">
+    <span class="brand-mark">虚</span>
+    <span class="brand-copy"><strong>虚拟知产公司</strong><small>VIRTUAL IP COMPANY</small></span>
+  </a>
+  <div class="topbar-context">
+    <span class="context-label">当前项目</span>
+    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+    <span class="tier-cue" data-tier-cue aria-live="polite"></span>
+  </div>
+  <div class="topbar-actions">
+    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
+    <a class="weak-link" href="welcome.html">官网</a>
+    <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
+    <div class="mode-switch" aria-label="使用深度">
+      <button type="button" data-mode="assistant">助手</button>
+      <button type="button" data-mode="project" class="active">项目</button>
+      <button type="button" data-mode="studio">专业</button>
+    </div>
+    <div class="role-switch" aria-label="切换角色">
+      <button type="button" data-role="enterprise" class="active">企业研发</button>
+      <button type="button" data-role="agency">代理所</button>
+    </div>
+    <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="陈" width="30" height="30">
+  </div>
+</header>
+<div class="app-main">
+<aside class="sidebar">
+  <div class="workspace-label" data-show-role="enterprise">澄明科技有限公司<span>研发负责人工作区</span></div>
+  <div class="workspace-label hidden" data-show-role="agency">衡知专利代理事务所<span>代理师工作区</span></div>
+  <nav class="main-nav" data-show-role="enterprise">
+    <a class="" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="company.html" data-keep-role>本公司</a>
+    <a class="" href="cases.html" data-keep-role>项目与对象</a>
+    <a class="" href="dept.html?dept=disclosure&gate=1" data-keep-role>待你确认</a>
+  </nav>
+  <nav class="main-nav hidden" data-show-role="agency">
+    <a class="" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="cases.html" data-keep-role>客户与案件</a>
+    <a class="" href="company.html" data-keep-role>本案公司</a>
+    <a class="" href="dept.html?dept=oa&gate=1" data-keep-role>客户确认</a>
+  </nav>
+  <div class="sidebar-section logistics-nav" aria-label="后勤弱链">
+    <div class="sidebar-heading"><span>后勤</span></div>
+    <a class="side-logistics" href="docket.html" data-keep-role>期限</a>
+    <a class="side-logistics active" href="billing.html" data-keep-role>账单</a>
+    <a class="side-logistics" href="members.html" data-keep-role>成员</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
+    <a class="side-project active" href="dept.html?dept=disclosure" data-keep-role><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
+  </div>
+  <div class="sidebar-bottom"><div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div></div>
+</aside>
+<main class="content">
+
+  <p class="kicker">账单 / 委托 · §4.12</p>
+  <h1 class="page-title">委托与费用</h1>
+  <p class="page-sub">委托范围与钱清楚；官费与服务费分口袋，不混账。</p>
+
+  <section class="billing-summary" aria-label="委托摘要">
+    <div class="billing-summary-main">
+      <span class="kicker">委托单摘要</span>
+      <h2>磁驱泵智能控制系统 · 发明申请陪跑</h2>
+      <p>范围：交底 → 查新 → 立项 → 撰写 → 附图 → 递交；不含无效/诉讼。报价基准：当期约定（演示数据）。</p>
+      <dl class="billing-money">
+        <div><dt>应收合计</dt><dd>¥ 48,600</dd></div>
+        <div><dt>已付</dt><dd>¥ 12,000</dd></div>
+        <div><dt>待付</dt><dd>¥ 36,600</dd></div>
+      </dl>
+    </div>
+    <div class="billing-actions">
+      <button class="btn btn-ink" type="button" data-toast="已记录：确认报价（演示）">确认报价</button>
+      <button class="btn btn-secondary" type="button" data-toast="已记录：登记付款（演示）">登记付款</button>
+    </div>
+  </section>
+
+  <div class="pocket-grid" aria-label="费用口袋">
+    <section class="pocket-card">
+      <header><span class="kicker">官费口袋</span><strong>官方规费</strong></header>
+      <ul class="pocket-lines">
+        <li><span>发明申请费</span><strong>¥ 900</strong><small>待缴</small></li>
+        <li><span>实质审查请求费</span><strong>¥ 2,500</strong><small>待缴</small></li>
+        <li><span>印刷费等</span><strong>¥ 50</strong><small>待缴</small></li>
+      </ul>
+      <p class="pocket-note">以国家知识产权局当期收费公告为准；页上不编造未核金额。</p>
+    </section>
+    <section class="pocket-card">
+      <header><span class="kicker">服务费口袋</span><strong>代理 / 陪跑服务</strong></header>
+      <ul class="pocket-lines">
+        <li><span>交底与查新包</span><strong>¥ 12,000</strong><small>已付</small></li>
+        <li><span>撰写与附图</span><strong>¥ 28,000</strong><small>待付</small></li>
+        <li><span>递交与程序</span><strong>¥ 5,150</strong><small>待付</small></li>
+      </ul>
+      <p class="pocket-note">与官费分列；确认报价后才进入付款登记。</p>
+    </section>
+  </div>
+
+  <section class="billing-ledger" aria-label="发票与付款行">
+    <div class="need-me-head">
+      <div>
+        <span class="kicker">发票 / 付款行</span>
+        <h2>近期流水</h2>
+      </div>
+      <button class="text-btn" type="button" data-toast="导出对账（演示）">导出对账</button>
+    </div>
+    <div class="cases-table billing-table">
+      <div class="head"><span>日期</span><span>摘要</span><span>口袋</span><span>金额</span><span>状态</span></div>
+      <div class="row"><span>2026-09-12</span><span>交底与查新包首期</span><span>服务费</span><span>¥ 12,000</span><span class="tag tag-green"><span class="tag-dot"></span>已付</span></div>
+      <div class="row"><span>—</span><span>撰写与附图</span><span>服务费</span><span>¥ 28,000</span><span class="tag"><span class="tag-dot"></span>待付</span></div>
+      <div class="row"><span>—</span><span>发明申请费等官费</span><span>官费</span><span>¥ 3,450</span><span class="tag"><span class="tag-dot"></span>待缴</span></div>
+    </div>
+    <p class="primary-cta-note">次要：链到年费代缴说明（更多部门 · 维持部，后置）。</p>
+  </section>
+
+  <div class="empty-state hidden" data-billing-empty>
+    <strong>尚未报价</strong>
+    <p>立项/商务确认后才会出现委托摘要与分口袋金额。</p>
+    <a class="btn btn-ink" href="dept.html?dept=intake" data-keep-role>去立项部 →</a>
+    <a class="weak-link" href="company.html" data-keep-role>回公司首页</a>
+  </div>
+
+</main></div></div>
+<script src="app.js"></script>
+</body></html>

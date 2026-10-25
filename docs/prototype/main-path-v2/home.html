@@ -18,6 +18,7 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
+    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
     <a class="weak-link" href="welcome.html">官网</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch" aria-label="使用深度">
@@ -48,6 +49,12 @@
     <a class="" href="company.html" data-keep-role>本案公司</a>
     <a class="" href="dept.html?dept=oa&gate=1" data-keep-role>客户确认</a>
   </nav>
+  <div class="sidebar-section logistics-nav" aria-label="后勤弱链">
+    <div class="sidebar-heading"><span>后勤</span></div>
+    <a class="side-logistics" href="docket.html" data-keep-role>期限</a>
+    <a class="side-logistics" href="billing.html" data-keep-role>账单</a>
+    <a class="side-logistics" href="members.html" data-keep-role>成员</a>
+  </div>
   <div class="sidebar-section">
     <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
     <a class="side-project active" href="dept.html?dept=disclosure" data-keep-role><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
@@ -62,7 +69,7 @@
   <div data-show-role="enterprise">
     <p class="kicker">登录后</p>
     <h1 class="page-title">早上好，陈宇。</h1>
-    <p class="page-sub" data-show-mode="project">本案有缺口待补。先看下方待办，点进去补齐；本公司与开案子是壳入口。</p>
+    <p class="page-sub" data-show-mode="project">有缺口：先点下方大卡去干活。进入本公司 / 开案子仅弱链。</p>
     <p class="page-sub hidden" data-show-mode="assistant">以顾言对话与委托为主；需要进公司时用下方弱链。</p>
 
     <!-- 助手模式：对话工作区 -->
@@ -93,8 +100,17 @@
       </p>
     </section>
 
-    <!-- 主叙事：本案缺口 → 去干活（视觉第一） -->
-    <section class="need-me need-me-primary" data-show-mode="project" data-testid="home-need-me-rail" aria-label="现在需要我处理">
+    <!-- 主叙事：有缺口 → 一主 CTA 大卡去干活（§4.0a） -->
+    <section class="gap-primary-zone" data-show-mode="project" data-home-gap="has" data-home-case="has" aria-label="缺口主 CTA">
+      <a class="gap-primary-card" href="dept.html?dept=disclosure&gate=1" data-keep-role data-testid="home-action-primary" data-home="thin-entry">
+        <span class="kicker">一主 CTA · 有缺口</span>
+        <strong>缺口 → 去干活</strong>
+        <span class="gap-primary-lead">【磁驱泵】交底书 V3 · 缺权属声明 · 3 项待你处理</span>
+        <span class="gap-primary-go">打开工作台右栏闸 →</span>
+      </a>
+    </section>
+
+    <section class="need-me need-me-primary" data-show-mode="project" data-home-gap="has" data-testid="home-need-me-rail" aria-label="现在需要我处理">
       <div class="need-me-head">
         <div>
           <span class="kicker">现在需要我处理</span>
@@ -102,16 +118,16 @@
         </div>
         <a class="text-btn" href="dept.html?dept=disclosure&gate=1" data-keep-role>全部 →</a>
       </div>
-      <a class="rail-item" href="dept.html?dept=disclosure" data-keep-role data-testid="home-pending-entry">
+      <a class="rail-item" data-home-case="has" href="dept.html?dept=disclosure&gate=1" data-keep-role data-testid="home-pending-entry">
         <span class="rail-ord">01</span>
         <span>
           <span class="tag tag-ink"><span class="tag-dot"></span>齐套缺口</span>
-          <strong>【磁驱泵】交底书 V3 · 缺权属声明 · 去当前部门</strong>
+          <strong>【磁驱泵】交底书 V3 · 缺权属声明 · 去干活</strong>
           <small>未齐套不能交卷 · 今天 14:30</small>
         </span>
-        <span class="weak-link">去当前部门 →</span>
+        <span class="weak-link">去干活 →</span>
       </a>
-      <a class="rail-item" href="dept.html?dept=intake&gate=1" data-keep-role>
+      <a class="rail-item" data-home-case="has" href="dept.html?dept=intake&gate=1" data-keep-role>
         <span class="rail-ord">02</span>
         <span>
           <span class="tag"><span class="tag-dot"></span>商业与风险决策</span>
@@ -120,7 +136,7 @@
         </span>
         <span class="weak-link">去工作台拍板 →</span>
       </a>
-      <a class="rail-item" href="company.html" data-keep-role>
+      <a class="rail-item" data-home-case="has" href="company.html" data-keep-role>
         <span class="rail-ord">03</span>
         <span>
           <span class="tag tag-green"><span class="tag-dot"></span>待接力</span>
@@ -129,14 +145,21 @@
         </span>
         <span class="weak-link">去接力 →</span>
       </a>
+
+      <div class="need-me-empty hidden" data-home-case="none" data-testid="home-need-empty">
+        <strong>暂无待办缺口</strong>
+        <p>开案子或进本公司后，齐套缺口与待确认会出现在这里。</p>
+        <a class="btn btn-ink" href="case-new.html" data-keep-role>开案子 →</a>
+        <a class="weak-link" href="company.html" data-keep-role>进入本公司</a>
+      </div>
     </section>
 
     <!-- 壳入口 / 顾言次级：不压过缺口待办 -->
     <section class="shell-zone" data-home="thin-entry" data-entry-role="enterprise" data-show-mode="project" aria-label="壳入口与委托">
-      <div data-home-case="has">
-        <p class="shell-zone-lead">壳入口：一案一公司，七部按交卷物展开。</p>
+      <div data-home-case="has" data-testid="home-secondary-actions">
+        <p class="shell-zone-lead">弱链（有缺口时不作主 CTA）：</p>
         <p class="primary-cta-note">
-          <a class="weak-link" href="company.html" data-keep-role data-testid="home-action-primary">进入本公司</a> ·
+          <a class="weak-link" href="company.html" data-keep-role>进入本公司</a> ·
           <a class="weak-link" href="cases.html" data-keep-role>全部项目</a> ·
           <a class="weak-link" href="case-new.html" data-keep-role data-home-case-link="has">开新案子</a>
         </p>
@@ -177,7 +200,7 @@
   <div class="hidden" data-show-role="agency">
     <p class="kicker">登录后</p>
     <h1 class="page-title">上午好，林岚。</h1>
-    <p class="page-sub" data-show-mode="project">先看客户确认与待接力；案盘与委托是壳入口。</p>
+    <p class="page-sub" data-show-mode="project">有缺口：先点大卡去干活。进入案盘仅弱链。</p>
     <p class="page-sub hidden" data-show-mode="assistant">以顾言交办为主；需要看期限时用弱链进案盘。</p>
 
     <section class="assist-dialog-stage" data-show-mode="assistant" aria-label="顾言对话工作区">
@@ -196,7 +219,16 @@
       </p>
     </section>
 
-    <section class="need-me need-me-primary" data-show-mode="project" data-testid="home-need-me-rail">
+    <section class="gap-primary-zone" data-show-mode="project" data-home-gap="has" aria-label="缺口主 CTA">
+      <a class="gap-primary-card" href="dept.html?dept=oa&gate=1" data-keep-role data-testid="home-action-primary" data-home="thin-entry">
+        <span class="kicker">一主 CTA · 有缺口</span>
+        <strong>缺口 → 去干活</strong>
+        <span class="gap-primary-lead">【膜分离】审查答复 · 待客户确认策略 · 多项待处理</span>
+        <span class="gap-primary-go">打开工作台右栏闸 →</span>
+      </a>
+    </section>
+
+    <section class="need-me need-me-primary" data-show-mode="project" data-home-gap="has" data-testid="home-need-me-rail">
       <div class="need-me-head">
         <div>
           <span class="kicker">现在需要我处理</span>
@@ -204,14 +236,14 @@
         </div>
         <a class="text-btn" href="dept.html?dept=oa&gate=1" data-keep-role>全部 →</a>
       </div>
-      <a class="rail-item" href="dept.html?dept=oa&gate=1" data-keep-role>
+      <a class="rail-item" href="dept.html?dept=oa&gate=1" data-keep-role data-testid="home-pending-entry">
         <span class="rail-ord">01</span>
         <span>
           <span class="tag"><span class="tag-dot"></span>商业与风险决策</span>
           <strong>【膜分离】审查答复 · 待客户确认策略</strong>
           <small>剩余 18 天</small>
         </span>
-        <span class="weak-link">查看 →</span>
+        <span class="weak-link">去干活 →</span>
       </a>
       <a class="rail-item" href="dept.html?dept=filing&gate=1" data-keep-role>
         <span class="rail-ord">02</span>
@@ -234,11 +266,11 @@
     </section>
 
     <section class="shell-zone" data-home="thin-entry" data-entry-role="agency" data-show-mode="project" aria-label="壳入口与委托">
-      <p class="shell-zone-lead">壳入口：同案协同，按期限推进交付。</p>
-      <p class="primary-cta-note">
-        <a class="weak-link" href="cases.html" data-keep-role data-testid="home-action-primary">进入案盘</a> ·
+      <p class="shell-zone-lead">弱链（有缺口时不作主 CTA）：</p>
+      <p class="primary-cta-note" data-testid="home-secondary-actions">
+        <a class="weak-link" href="cases.html" data-keep-role>进入案盘</a> ·
         <a class="weak-link" href="case-new.html" data-keep-role>开新案子</a> ·
-        <a class="weak-link" href="dept.html?dept=oa&gate=1" data-keep-role>客户待确认</a>
+        <a class="weak-link" href="company.html" data-keep-role>本案公司</a>
       </p>
       <div class="secondary-delegate" aria-label="顾言持续委托">
         <div class="lead-row" style="gap:12px">

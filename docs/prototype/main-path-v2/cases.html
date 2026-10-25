@@ -18,6 +18,7 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
+    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
     <a class="weak-link" href="welcome.html">官网</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role>🔔<span></span></a>
     <div class="mode-switch">
@@ -48,6 +49,12 @@
     <a class="" href="company.html" data-keep-role>本案公司</a>
     <a class="" href="dept.html?dept=oa&gate=1" data-keep-role>客户确认</a>
   </nav>
+  <div class="sidebar-section logistics-nav" aria-label="后勤弱链">
+    <div class="sidebar-heading"><span>后勤</span></div>
+    <a class="side-logistics" href="docket.html" data-keep-role>期限</a>
+    <a class="side-logistics" href="billing.html" data-keep-role>账单</a>
+    <a class="side-logistics" href="members.html" data-keep-role>成员</a>
+  </div>
   <div class="sidebar-section">
     <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
     <a class="side-project active" href="dept.html?dept=disclosure" data-keep-role><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
@@ -59,35 +66,51 @@
   <p class="kicker" data-show-role="agency">案盘</p>
   <p class="kicker hidden" data-show-role="enterprise">项目与对象</p>
   <h1 class="page-title">进行中的案子</h1>
-  <p class="page-sub" data-show-mode="project">日常案盘。点行进入本案公司；统一从公司首页再进工作台。</p>
+  <p class="page-sub" data-show-mode="project">跨案清单：卡住哪、谁待确认、期限红点。点行进本案公司，再进工作台。</p>
   <p class="page-sub hidden" data-show-mode="assistant">侧栏已收起；案盘保留，便于从弱导航进案。</p>
-  <p style="margin-bottom:14px"><a class="btn btn-ink" href="case-new.html" data-keep-role>开新案子</a></p>
-  <div class="cases-table">
+
+  <div class="cases-toolbar">
+    <a class="btn btn-ink" href="case-new.html" data-keep-role>开新案子</a>
+    <div class="filter-bar" role="group" aria-label="案盘筛选" data-cases-filter>
+      <button type="button" class="filter-chip active" data-filter="all">全部</button>
+      <button type="button" class="filter-chip" data-filter="soon">即将到期</button>
+      <button type="button" class="filter-chip" data-filter="pending">待确认</button>
+      <button type="button" class="filter-chip" data-filter="active">齐套中</button>
+    </div>
+  </div>
+
+  <div class="cases-table" data-cases-list>
     <div class="head"><span>案子 / 客户</span><span>当前部门</span><span>状态</span><span>期限</span><span></span></div>
-    <a class="row" href="company.html" data-keep-role style="color:inherit">
+    <a class="row" href="company.html" data-keep-role data-case-status="pending" data-case-deadline="today" style="color:inherit">
       <span><strong>磁驱泵智能控制</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
       <span>交底部</span><span><span class="tag"><span class="tag-dot"></span>待确认</span></span>
-      <span>今天 14:30</span><span class="weak-link">本案公司 →</span>
+      <span class="deadline-cell"><span class="urgency-dot today" title="今日到期"></span>今天 14:30</span><span class="weak-link">本案公司 →</span>
     </a>
-    <a class="row" href="company.html" data-keep-role style="color:inherit">
+    <a class="row" href="company.html" data-keep-role data-case-status="pending" data-case-deadline="soon" style="color:inherit">
       <span><strong>低能耗膜分离工艺</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
       <span>审查答复</span><span><span class="tag"><span class="tag-dot"></span>商业与风险决策</span></span>
-      <span>剩余 18 天</span><span class="weak-link">本案公司 →</span>
+      <span class="deadline-cell"><span class="urgency-dot soon" title="即将到期"></span>剩余 18 天</span><span class="weak-link">本案公司 →</span>
     </a>
-    <a class="row" href="company.html" data-keep-role style="color:inherit">
+    <a class="row" href="company.html" data-keep-role data-case-status="active" data-case-deadline="today" style="color:inherit">
       <span><strong>模块化储能热管理</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
       <span>撰写部</span><span><span class="tag tag-ink"><span class="tag-dot"></span>齐套中</span></span>
-      <span>今天 17:00</span><span class="weak-link">本案公司 →</span>
+      <span class="deadline-cell"><span class="urgency-dot today" title="今日到期"></span>今天 17:00</span><span class="weak-link">本案公司 →</span>
     </a>
-    <a class="row" href="company.html" data-keep-role style="color:inherit">
+    <a class="row" href="company.html" data-keep-role data-case-status="active" data-case-deadline="soon" style="color:inherit">
       <span><strong>微型气泵密封结构</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
       <span>递交与程序</span><span><span class="tag tag-green"><span class="tag-dot"></span>可递交</span></span>
-      <span>明天 10:00</span><span class="weak-link">本案公司 →</span>
+      <span class="deadline-cell"><span class="urgency-dot soon"></span>明天 10:00</span><span class="weak-link">本案公司 →</span>
     </a>
-    <a class="row" href="company.html" data-keep-role style="color:inherit">
+    <a class="row" href="company.html" data-keep-role data-case-status="active" data-case-deadline="ok" style="color:inherit">
       <span><strong>车载热泵阀体</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
       <span>查新部</span><span><span class="tag tag-ink"><span class="tag-dot"></span>检索中</span></span>
-      <span>本周五</span><span class="weak-link">本案公司 →</span>
+      <span class="deadline-cell"><span class="urgency-dot"></span>本周五</span><span class="weak-link">本案公司 →</span>
     </a>
+  </div>
+
+  <div class="empty-state hidden" data-cases-empty aria-live="polite">
+    <strong>还没有案子</strong>
+    <p>立一条业务线后，会出现在案盘；再从公司首页进工作台。</p>
+    <a class="btn btn-ink" href="case-new.html" data-keep-role>开案子 →</a>
   </div>
 </main></div></div><script src="app.js"></script></body></html>

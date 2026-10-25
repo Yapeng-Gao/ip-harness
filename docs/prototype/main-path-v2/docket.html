@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>期限台 · 虚拟知产公司</title>
+<link rel="stylesheet" href="shell.css">
+</head>
+<body data-page="docket">
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="home.html" data-keep-role aria-label="返回首页">
+    <span class="brand-mark">虚</span>
+    <span class="brand-copy"><strong>虚拟知产公司</strong><small>VIRTUAL IP COMPANY</small></span>
+  </a>
+  <div class="topbar-context">
+    <span class="context-label">当前项目</span>
+    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+    <span class="tier-cue" data-tier-cue aria-live="polite"></span>
+  </div>
+  <div class="topbar-actions">
+    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
+    <a class="weak-link" href="welcome.html">官网</a>
+    <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
+    <div class="mode-switch" aria-label="使用深度">
+      <button type="button" data-mode="assistant">助手</button>
+      <button type="button" data-mode="project" class="active">项目</button>
+      <button type="button" data-mode="studio">专业</button>
+    </div>
+    <div class="role-switch" aria-label="切换角色">
+      <button type="button" data-role="enterprise" class="active">企业研发</button>
+      <button type="button" data-role="agency">代理所</button>
+    </div>
+    <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="陈" width="30" height="30">
+  </div>
+</header>
+<div class="app-main">
+<aside class="sidebar">
+  <div class="workspace-label" data-show-role="enterprise">澄明科技有限公司<span>研发负责人工作区</span></div>
+  <div class="workspace-label hidden" data-show-role="agency">衡知专利代理事务所<span>代理师工作区</span></div>
+  <nav class="main-nav" data-show-role="enterprise">
+    <a class="" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="company.html" data-keep-role>本公司</a>
+    <a class="" href="cases.html" data-keep-role>项目与对象</a>
+    <a class="" href="dept.html?dept=disclosure&gate=1" data-keep-role>待你确认</a>
+  </nav>
+  <nav class="main-nav hidden" data-show-role="agency">
+    <a class="" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="cases.html" data-keep-role>客户与案件</a>
+    <a class="" href="company.html" data-keep-role>本案公司</a>
+    <a class="" href="dept.html?dept=oa&gate=1" data-keep-role>客户确认</a>
+  </nav>
+  <div class="sidebar-section logistics-nav" aria-label="后勤弱链">
+    <div class="sidebar-heading"><span>后勤</span></div>
+    <a class="side-logistics active" href="docket.html" data-keep-role>期限</a>
+    <a class="side-logistics" href="billing.html" data-keep-role>账单</a>
+    <a class="side-logistics" href="members.html" data-keep-role>成员</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
+    <a class="side-project active" href="dept.html?dept=disclosure" data-keep-role><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
+  </div>
+  <div class="sidebar-bottom"><div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div></div>
+</aside>
+<main class="content">
+
+  <p class="kicker">期限台 · §4.11</p>
+  <h1 class="page-title">本案期限</h1>
+  <p class="page-sub">看见法定/程序期限与绝限。不在此改官方法律状态；逾期须可见。</p>
+
+  <div class="filter-bar" role="group" aria-label="期限筛选" data-docket-filter>
+    <button type="button" class="filter-chip active" data-filter="all">全部</button>
+    <button type="button" class="filter-chip" data-filter="soon">即将到期</button>
+    <button type="button" class="filter-chip" data-filter="overdue">已逾期</button>
+  </div>
+
+  <div class="docket-list" data-docket-list aria-label="期限列表">
+    <article class="docket-row is-overdue" data-status="overdue">
+      <div class="docket-when">
+        <span class="urgency-dot overdue" title="已逾期"></span>
+        <strong>已逾期 2 天</strong>
+        <small>绝限 · 2026-10-23</small>
+      </div>
+      <div class="docket-main">
+        <span class="tag tag-ink"><span class="tag-dot"></span>绝限强调</span>
+        <strong>权属声明补齐 · 交底部齐套</strong>
+        <small>磁驱泵智能控制 · 交底部</small>
+      </div>
+      <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role>打开工作台 →</a>
+    </article>
+    <article class="docket-row is-today" data-status="soon">
+      <div class="docket-when">
+        <span class="urgency-dot today" title="今日到期"></span>
+        <strong>今天 14:30</strong>
+        <small>即将到期</small>
+      </div>
+      <div class="docket-main">
+        <span class="tag"><span class="tag-dot"></span>程序期限</span>
+        <strong>交底书 V3 · 齐套复核</strong>
+        <small>磁驱泵智能控制 · 交底部</small>
+      </div>
+      <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role>打开工作台 →</a>
+    </article>
+    <article class="docket-row" data-status="soon">
+      <div class="docket-when">
+        <span class="urgency-dot soon" title="即将到期"></span>
+        <strong>剩余 18 天</strong>
+        <small>法定答复期</small>
+      </div>
+      <div class="docket-main">
+        <span class="tag"><span class="tag-dot"></span>法定期限</span>
+        <strong>第一次 OA 答复截止</strong>
+        <small>低能耗膜分离工艺 · 审查答复</small>
+      </div>
+      <a class="btn btn-ink" href="dept.html?dept=oa" data-keep-role>打开工作台 →</a>
+    </article>
+    <article class="docket-row" data-status="all">
+      <div class="docket-when">
+        <span class="urgency-dot"></span>
+        <strong>本周五</strong>
+        <small>内部节点</small>
+      </div>
+      <div class="docket-main">
+        <span class="tag tag-green"><span class="tag-dot"></span>处理中</span>
+        <strong>查新检索范围确认</strong>
+        <small>车载热泵阀体 · 查新部</small>
+      </div>
+      <a class="btn btn-secondary" href="dept.html?dept=research" data-keep-role>打开工作台 →</a>
+    </article>
+  </div>
+
+  <div class="empty-state hidden" data-docket-empty aria-live="polite">
+    <strong>本案暂无期限事件</strong>
+    <p>齐套与法定节点产生后会出现在这里。可先回公司看当前站。</p>
+    <a class="btn btn-ink" href="company.html" data-keep-role>回公司首页 →</a>
+  </div>
+
+  <p class="logistics-foot">次要：标记处理中 · 升级通知（演示）。金额与法条以当期约定为准。</p>
+
+</main></div></div>
+<script src="app.js"></script>
+</body></html>

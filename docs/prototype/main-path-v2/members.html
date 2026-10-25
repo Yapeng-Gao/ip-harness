@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>成员与权限 · 虚拟知产公司</title>
+<link rel="stylesheet" href="shell.css">
+</head>
+<body data-page="members">
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="home.html" data-keep-role aria-label="返回首页">
+    <span class="brand-mark">虚</span>
+    <span class="brand-copy"><strong>虚拟知产公司</strong><small>VIRTUAL IP COMPANY</small></span>
+  </a>
+  <div class="topbar-context">
+    <span class="context-label">当前项目</span>
+    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+    <span class="tier-cue" data-tier-cue aria-live="polite"></span>
+  </div>
+  <div class="topbar-actions">
+    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
+    <a class="weak-link" href="welcome.html">官网</a>
+    <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
+    <div class="mode-switch" aria-label="使用深度">
+      <button type="button" data-mode="assistant">助手</button>
+      <button type="button" data-mode="project" class="active">项目</button>
+      <button type="button" data-mode="studio">专业</button>
+    </div>
+    <div class="role-switch" aria-label="切换角色">
+      <button type="button" data-role="enterprise" class="active">企业研发</button>
+      <button type="button" data-role="agency">代理所</button>
+    </div>
+    <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="陈" width="30" height="30">
+  </div>
+</header>
+<div class="app-main">
+<aside class="sidebar">
+  <div class="workspace-label" data-show-role="enterprise">澄明科技有限公司<span>研发负责人工作区</span></div>
+  <div class="workspace-label hidden" data-show-role="agency">衡知专利代理事务所<span>代理师工作区</span></div>
+  <nav class="main-nav" data-show-role="enterprise">
+    <a class="" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="company.html" data-keep-role>本公司</a>
+    <a class="" href="cases.html" data-keep-role>项目与对象</a>
+    <a class="" href="dept.html?dept=disclosure&gate=1" data-keep-role>待你确认</a>
+  </nav>
+  <nav class="main-nav hidden" data-show-role="agency">
+    <a class="" href="home.html" data-keep-role>工作首页</a>
+    <a class="" href="cases.html" data-keep-role>客户与案件</a>
+    <a class="" href="company.html" data-keep-role>本案公司</a>
+    <a class="" href="dept.html?dept=oa&gate=1" data-keep-role>客户确认</a>
+  </nav>
+  <div class="sidebar-section logistics-nav" aria-label="后勤弱链">
+    <div class="sidebar-heading"><span>后勤</span></div>
+    <a class="side-logistics" href="docket.html" data-keep-role>期限</a>
+    <a class="side-logistics" href="billing.html" data-keep-role>账单</a>
+    <a class="side-logistics active" href="members.html" data-keep-role>成员</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
+    <a class="side-project active" href="dept.html?dept=disclosure" data-keep-role><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
+  </div>
+  <div class="sidebar-bottom"><div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div></div>
+</aside>
+<main class="content">
+
+  <p class="kicker">成员与权限 · §4.13</p>
+  <h1 class="page-title">谁能进公司、谁能确认</h1>
+  <p class="page-sub">成员列表：角色白话 + 可确认哪些闸。不是专家花名册墙。</p>
+
+  <div class="members-toolbar">
+    <button class="btn btn-ink" type="button" data-toast="已打开邀请（演示）">邀请成员</button>
+    <button class="btn btn-secondary" type="button" data-toast="角色已保存（演示）">保存角色</button>
+    <a class="weak-link" href="#" data-toast="决策权说明 · decision-rights（演示）">查看决策权说明</a>
+  </div>
+
+  <div class="members-list" aria-label="成员列表" data-members-list>
+    <article class="member-row">
+      <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="" width="36" height="36">
+      <div class="member-main">
+        <strong>陈宇</strong>
+        <span class="tag tag-ink"><span class="tag-dot"></span>创建者 · IPR / 研发负责人</span>
+        <small>可确认：技术事实 · 商业与风险决策 · 对外递交授权</small>
+      </div>
+      <span class="member-meta">本案创建者</span>
+    </article>
+    <article class="member-row">
+      <img class="avatar avatar-photo" src="assets/portraits/expert3.png" alt="" width="36" height="36">
+      <div class="member-main">
+        <strong>林岚</strong>
+        <span class="tag"><span class="tag-dot"></span>代理人</span>
+        <small>可确认：专业复核（代理侧）；不可代企业签对外递交</small>
+      </div>
+      <button class="text-btn" type="button" data-toast="移除成员（演示）">移除</button>
+    </article>
+    <article class="member-row">
+      <img class="avatar avatar-photo" src="assets/portraits/expert1.png" alt="" width="36" height="36">
+      <div class="member-main">
+        <strong>周启明</strong>
+        <span class="tag"><span class="tag-dot"></span>发明人</span>
+        <small>可确认：技术事实（本技术方案相关）；无对外递交权</small>
+      </div>
+      <button class="text-btn" type="button" data-toast="移除成员（演示）">移除</button>
+    </article>
+    <article class="member-row">
+      <img class="avatar avatar-photo" src="assets/portraits/expert5.png" alt="" width="36" height="36">
+      <div class="member-main">
+        <strong>沈若白</strong>
+        <span class="tag"><span class="tag-dot"></span>授权人</span>
+        <small>可确认：对外交付 / 递交（最终对外动作）</small>
+      </div>
+      <button class="text-btn" type="button" data-toast="移除成员（演示）">移除</button>
+    </article>
+  </div>
+
+  <p class="logistics-foot">硬闸：不可把「专家建议岗」配成法定递交权；角色变更留痕。专家编制见专业页，不在本页堆花名册。</p>
+
+  <div class="empty-state hidden" data-members-empty>
+    <strong>目前只有创建者一人</strong>
+    <p>邀请发明人、代理人或授权人，才能把确认闸分给对人。</p>
+    <button class="btn btn-ink" type="button" data-toast="已打开邀请（演示）">邀请成员</button>
+  </div>
+
+</main></div></div>
+<script src="app.js"></script>
+</body></html>
