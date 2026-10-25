@@ -548,28 +548,28 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
 
 /* welcome · 登录前货架：场景卡 + 确认样例橱窗 */
 .site-scenarios {
-  padding: 88px max(34px, calc((100vw - 1180px) / 2)) 24px;
+  padding: 72px max(34px, calc((100vw - 1180px) / 2)) 20px;
 }
 .scenario-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 36px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px;
 }
 .scenario-card {
   border: 1px solid #cfc6ba; background: #faf7f2; border-radius: 10px;
-  padding: 22px 20px;
+  padding: 18px 18px 16px;
   box-shadow: 0 0 0 1px oklch(0 0 0 / 0.02), 0 1px 2px rgba(20,18,15,.04);
 }
 .scenario-kicker {
   display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .04em;
-  color: var(--ink-2); margin-bottom: 8px;
+  color: var(--ink-2); margin-bottom: 6px;
 }
-.scenario-card h3 { margin: 0 0 10px; font-size: 18px; letter-spacing: -.02em; }
-.scenario-card p { margin: 0 0 12px; color: #606a5e; font-size: 13px; line-height: 1.7; }
+.scenario-card h3 { margin: 0 0 8px; font-size: 17px; letter-spacing: -.02em; line-height: 1.35; }
+.scenario-card p { margin: 0 0 10px; color: #606a5e; font-size: 13px; line-height: 1.6; }
 .scenario-card ul {
-  margin: 0; padding: 0 0 0 1.1em; color: #5a6358; font-size: 12px; line-height: 1.75;
+  margin: 0; padding: 0 0 0 1.05em; color: #5a6358; font-size: 12px; line-height: 1.65;
 }
 .confirm-showcase {
-  margin-top: 18px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px;
-  border: 1px solid #cfc6ba; border-radius: 12px; background: #f3efe8; padding: 22px;
+  margin-top: 14px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 16px;
+  border: 1px solid #cfc6ba; border-radius: 12px; background: #f3efe8; padding: 18px;
 }
 .confirm-showcase-copy h3 { margin: 6px 0 10px; font-size: 18px; letter-spacing: -.02em; }
 .confirm-showcase-copy p { margin: 0; color: #606a5e; font-size: 13px; line-height: 1.7; }
@@ -1597,7 +1597,7 @@ html[data-role="agency"] .file-pane { background: var(--warm-paper); }
 html[data-role="agency"] .file-pane-foot { display: flex !important; flex-direction: column; gap: 2px; }
 html[data-role="agency"] .workbench .tree button { min-height: 30px; }
 
-/* enterprise: lite center; left tree folded by default (JS fold-left) */
+/* enterprise: true 3-col default (left open); fold-left only when user collapses */
 html[data-role="enterprise"] .workbench.fold-left {
   grid-template-columns: minmax(0,1fr) 270px;
 }

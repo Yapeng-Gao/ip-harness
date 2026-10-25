@@ -3,34 +3,41 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>转工作台拍板 · 虚拟知产公司</title>
-<link rel="stylesheet" href="shell.css">
+<style>html{background:#f7f4ef}#pending-shell{display:none;padding:48px 24px;text-align:center;font-family:system-ui,sans-serif;color:#1c1917}</style>
 <script>
+/* Soft redirect BEFORE paint — zero flash of pending UI */
 (function () {
-  var q = new URLSearchParams(location.search);
-  var dept = q.get('dept') || (localStorage.getItem('mpv2-role') === 'agency' ? 'oa' : 'disclosure');
-  if (dept === 'decision') dept = 'intake'; // alias: decision → intake
-  var role = q.get('role') || localStorage.getItem('mpv2-role') || 'enterprise';
-  var target = 'dept.html?dept=' + encodeURIComponent(dept) + '&gate=1&role=' + encodeURIComponent(role);
-  location.replace(target);
+  try {
+    var q = new URLSearchParams(location.search);
+    var dept = q.get('dept') || (localStorage.getItem('mpv2-role') === 'agency' ? 'oa' : 'disclosure');
+    if (dept === 'decision') dept = 'intake'; // alias: decision → intake
+    var role = q.get('role') || localStorage.getItem('mpv2-role') || 'enterprise';
+    var target = 'dept.html?dept=' + encodeURIComponent(dept) + '&gate=1&role=' + encodeURIComponent(role);
+    location.replace(target);
+  } catch (e) {}
 })();
 </script>
 </head>
 <body data-page="pending">
-<div class="app-shell" style="padding:48px 24px;text-align:center">
-  <p class="kicker">主路径已废独立确认页</p>
+<div id="pending-shell" class="app-shell">
+  <p class="kicker">主路径拍板在工作台</p>
   <h1 class="page-title" style="font-size:20px">转工作台同屏右栏闸…</h1>
-  <p class="page-sub">拍板在工作台同屏右栏。若未自动跳转，请点下方链接。</p>
+  <p class="page-sub">若未自动跳转，请点下方链接。</p>
   <p style="margin-top:18px"><a class="btn btn-ink" id="pending-fallback" href="dept.html?gate=1">打开工作台拍板 →</a></p>
 </div>
-<script src="app.js"></script>
 <script>
 (function () {
   var q = new URLSearchParams(location.search);
   var dept = q.get('dept') || 'disclosure';
-  if (dept === 'decision') dept = 'intake'; // alias: decision → intake
+  if (dept === 'decision') dept = 'intake';
+  var role = q.get('role') || localStorage.getItem('mpv2-role') || 'enterprise';
   var a = document.getElementById('pending-fallback');
-  if (a && window.MPV2) a.href = MPV2.withRole('dept.html?dept=' + dept + '&gate=1');
-  else if (a) a.href = 'dept.html?dept=' + dept + '&gate=1';
+  if (a) a.href = 'dept.html?dept=' + encodeURIComponent(dept) + '&gate=1&role=' + encodeURIComponent(role);
+  // Only reveal shell if replace somehow did not navigate away
+  setTimeout(function () {
+    var s = document.getElementById('pending-shell');
+    if (s) s.style.display = 'block';
+  }, 80);
 })();
 </script>
 </body></html>

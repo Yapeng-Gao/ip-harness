@@ -12,10 +12,10 @@
     var hasGoal = false;
     try {
       var d = JSON.parse(sessionStorage.getItem('mpv2-delegation') || 'null');
-      if (d && (d.goal || d.deliverable || d.step === 'execute' || d.step === 'workbench' || d.step === 'confirm')) hasGoal = true;
+      if (d && (d.goal || d.deliverable || d.step === 'execute' || d.step === 'workbench' || d.step === 'confirm' || d.step === 'relay')) hasGoal = true;
     } catch (e) {}
     /* plan/gate landing must be project; assistant otherwise keeps real 3-col */
-    if (q.get('gate') === '1' || hasGoal) {
+    if (q.get('gate') === '1' || q.get('relay') === '1' || hasGoal) {
       localStorage.setItem('mpv2-mode', 'project');
       m = 'project';
     }

@@ -289,8 +289,7 @@
       root.dataset.mode = r; // legacy alias
       root.classList.toggle('role-enterprise', r === 'enterprise');
       root.classList.toggle('role-agency', r === 'agency');
-      // Dual B: enterprise project may fold left (center still 1fr);
-      // assistant ALWAYS keeps Cursor 3-col (left tree + center doc + right rail).
+      // Workbench default = true 3-col (left open); user may fold manually.
       if (document.body.dataset.page === 'dept') syncDeptFold(root);
       // no [data-view] dual-face tabs — ban 文书/协同 dual views
     });
@@ -314,16 +313,9 @@
     root = root || document.querySelector('[data-workbench]');
     if (!root) return;
     const foldBtn = document.querySelector('[data-fold-left]');
-    const r = role();
-    const m = mode();
-    // Plan/goal landing: keep full Cursor 3-col (left open) so中栏文书一眼可见
-    let fromPlan = false;
-    try {
-      const d = getDelegation();
-      if (d && (d.step === 'workbench' || d.step === 'execute' || d.goal || d.deliverable)) fromPlan = true;
-    } catch (e) {}
-    // Assist always 3-col; plan landing always 3-col; other enterprise project may fold left.
-    const shouldFold = (r === 'enterprise' && m !== 'assistant' && !fromPlan);
+    // Enterprise / project / assistant: default true Cursor 3-col with left tree open.
+    // Never auto fold-left; user may still collapse via「收折」.
+    const shouldFold = false;
     root.classList.toggle('fold-left', shouldFold);
     if (foldBtn) foldBtn.textContent = shouldFold ? '展开' : '收折';
   }
@@ -665,6 +657,8 @@
     const short = goal.length > 48 ? goal.slice(0, 48) + '…' : goal;
     if (banner) {
       banner.hidden = false;
+      const label = banner.querySelector('.dept-goal-label');
+      if (label) label.textContent = '为你的目标';
       const strong = banner.querySelector('[data-goal-context]');
       if (strong) strong.textContent = short;
     }
@@ -673,6 +667,36 @@
       el.hidden = false;
       el.textContent = '为你的目标：' + short;
     });
+  }
+
+  /** 交底→查新等接力落地：页头一句 + 中栏交卷物已展开（非空转） */
+  function applyRelayHandoff(dept) {
+    const banner = document.getElementById('dept-goal-banner');
+    if (!banner || !dept) return;
+    const d = getDelegation() || {};
+    const want = qs('relay') === '1' || (d.step === 'relay' && d.next === dept.id);
+    if (!want) return;
+    const last = d.lastDept && DEPTS[d.lastDept] ? DEPTS[d.lastDept] : null;
+    const label = banner.querySelector('.dept-goal-label');
+    const strong = banner.querySelector('[data-goal-context]');
+    banner.hidden = false;
+    if (label) label.textContent = '接力接手';
+    if (strong) {
+      strong.textContent = (last ? last.name + '已通过 · ' : '') +
+        '本台中栏已打开「' + dept.deliverable + '」';
+    }
+    const editor = document.getElementById('dept-editor');
+    if (editor) {
+      try { editor.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+    }
+    // strip relay=1 so refresh does not re-flash handoff
+    try {
+      const u = new URL(location.href);
+      if (u.searchParams.get('relay') === '1') {
+        u.searchParams.delete('relay');
+        history.replaceState(null, '', u.toString());
+      }
+    } catch (e) {}
   }
 
 
@@ -769,7 +793,7 @@
           toast('已通过 · 接力' + (DEPTS[nxt] ? DEPTS[nxt].name : '下一部'));
           localStorage.setItem('mpv2-mode', 'project');
           localStorage.setItem('mpv2-last-work', 'dept.html?dept=' + nxt);
-          location.href = withRole('dept.html?dept=' + nxt);
+          location.href = withRole('dept.html?dept=' + nxt + '&relay=1');
         } else {
           toast('已通过 · 本案主链收尾');
           location.href = withRole('company.html?snapshot=1');
@@ -866,7 +890,7 @@
     // Landing from plan / goWorkDept should be project; if goal context present, snap to project
     try {
       const d = getDelegation();
-      if (d && (d.goal || d.deliverable || d.step === 'execute' || d.step === 'workbench' || d.step === 'confirm')) {
+      if (d && (d.goal || d.deliverable || d.step === 'execute' || d.step === 'workbench' || d.step === 'confirm' || d.step === 'relay' || qs('relay') === '1')) {
         if (mode() === 'assistant') {
           localStorage.setItem('mpv2-mode', 'project');
           applyModeUI('project');
@@ -1111,6 +1135,7 @@
       }
     });
     activateDoc(primaryName);
+    applyRelayHandoff(dept);
     const treeLabel = document.querySelector('.tree .tree-label');
     if (treeLabel) treeLabel.textContent = '交卷物 · ' + dept.name;
 
@@ -1601,19 +1626,10 @@
 
     if (step === 'plan' || step === 'workbench' || step === 'relay') {
       const plan = fillPlanUI(goalText);
-      // confirm / relay: drive links from plan.dept — no hardcoded disclosure
-      if (step === 'confirm' || step === 'relay') {
+      // relay panel only (confirm dead panel removed — 拍板在工作台同屏右栏)
+      if (step === 'relay') {
         const deptId = (getDelegation() || {}).dept || plan.deptId || 'disclosure';
         const dept = DEPTS[deptId] || DEPTS.disclosure;
-        const confirmGo = document.getElementById('confirm-go-btn');
-        const confirmCopy = document.getElementById('confirm-copy');
-        if (confirmCopy) {
-          confirmCopy.textContent = dept.name + '已交卷，等待你确认「' + dept.confirmType + '」。';
-        }
-        if (confirmGo) {
-          confirmGo.href = withRole(gateHref(dept.id));
-          confirmGo.textContent = '去工作台拍板 · ' + dept.name + ' →';
-        }
         const relayCopy = document.getElementById('relay-copy');
         const relayGo = document.getElementById('relay-go-btn');
         if (relayCopy) {
@@ -1700,7 +1716,7 @@
     DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, normalizeDeptId, deptFromQuery, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
-    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold,
+    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
     renderExperts, renderExpertFaces, renderProfExperts, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
   };
 
