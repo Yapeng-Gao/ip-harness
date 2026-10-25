@@ -175,6 +175,33 @@
   function mode() {
     return localStorage.getItem('mpv2-mode') || 'project';
   }
+  /* Work-surface pages: 专业 must land on capability page (换面), not densify in place */
+  const WORK_PAGES = ['home', 'company', 'cases', 'dept', 'pending', 'delegate', 'case-new'];
+
+  function pendingDeptForRole(r) {
+    return (r || role()) === 'agency' ? 'oa' : 'disclosure';
+  }
+  function rememberLastWork() {
+    const page = document.body.dataset.page || '';
+    if (WORK_PAGES.indexOf(page) === -1) return;
+    const rel = location.pathname.split('/').pop() + location.search;
+    // strip role param noise but keep dept/step
+    try {
+      const u = new URL(rel, location.href);
+      u.searchParams.delete('role');
+      const clean = u.pathname.split('/').pop() + (u.search || '');
+      localStorage.setItem('mpv2-last-work', clean || 'company.html');
+    } catch {
+      localStorage.setItem('mpv2-last-work', 'company.html');
+    }
+  }
+  function lastWorkHref(fallback) {
+    const raw = localStorage.getItem('mpv2-last-work') || '';
+    const page = (raw.split('?')[0] || '').replace(/^.*\//, '');
+    const base = page.replace('.html', '');
+    if (!raw || WORK_PAGES.indexOf(base) === -1) return fallback || 'company.html';
+    return raw;
+  }
   function hasCase() {
     if (qs('nocase') === '1') return false;
     if (qs('hascase') === '1') return true;
@@ -238,6 +265,7 @@
     u.searchParams.set('role', r);
     history.replaceState(null, '', u.toString());
     applyRoleUI(r);
+    applyBellByRole(r);
   }
 
   function tierCueLabel(m) {
@@ -269,21 +297,32 @@
       wb.classList.remove('tier-studio');
     });
   }
-  /* Work-surface pages: 专业 must land on capability page (换面), not densify in place */
-  const WORK_PAGES = ['home', 'company', 'cases', 'dept', 'pending', 'delegate', 'case-new'];
-
   function setMode(m) {
-    localStorage.setItem('mpv2-mode', m);
     const page = document.body.dataset.page || '';
     if (m === 'studio' && page !== 'professional') {
+      rememberLastWork();
+      localStorage.setItem('mpv2-mode', 'studio');
       location.href = withRole('professional.html');
       return;
     }
     if (m !== 'studio' && page === 'professional') {
-      location.href = withRole(m === 'assistant' ? 'home.html' : 'company.html');
+      localStorage.setItem('mpv2-mode', m);
+      if (m === 'assistant') {
+        location.href = withRole('home.html');
+        return;
+      }
+      // project: restore last work surface to avoid studio↔pro bounce
+      location.href = withRole(lastWorkHref('company.html'));
       return;
     }
+    localStorage.setItem('mpv2-mode', m);
     applyModeUI(m);
+  }
+
+  /* Leave capability page into project work — always clear studio first */
+  function exitProfessional(href) {
+    localStorage.setItem('mpv2-mode', 'project');
+    location.href = withRole(href || lastWorkHref('company.html'));
   }
 
   function ensureProfessionalLanding() {
@@ -296,8 +335,10 @@
   }
 
   function goWorkDept(deptId) {
+    const target = 'dept.html?dept=' + encodeURIComponent(deptId || 'disclosure');
+    localStorage.setItem('mpv2-last-work', target);
     localStorage.setItem('mpv2-mode', 'project');
-    location.href = withRole('dept.html?dept=' + encodeURIComponent(deptId || 'disclosure'));
+    location.href = withRole(target);
   }
 
   function wireProfessionalPage() {
@@ -319,6 +360,25 @@
     }).join('');
     grid.querySelectorAll('[data-go-dept]').forEach(btn => {
       btn.addEventListener('click', () => goWorkDept(btn.dataset.goDept));
+    });
+    // Legal exits: must setMode(project) before navigating — no studio bounce
+    document.querySelectorAll('[data-exit-pro]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = a.getAttribute('href') || lastWorkHref('company.html');
+        exitProfessional(href);
+      });
+    });
+    document.querySelectorAll('.brand[data-keep-role], .notice-button').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (a.classList.contains('notice-button')) {
+          exitProfessional('pending.html?dept=' + pendingDeptForRole());
+          return;
+        }
+        exitProfessional(a.getAttribute('href') || 'home.html');
+      }, true);
     });
   }
 
@@ -388,8 +448,30 @@
     document.querySelectorAll('a[data-keep-role]').forEach(a => {
       a.addEventListener('click', (e) => {
         e.preventDefault();
+        // From capability page, any keep-role nav is a legal exit → project first
+        if ((document.body.dataset.page || '') === 'professional') {
+          exitProfessional(a.getAttribute('href'));
+          return;
+        }
         location.href = withRole(a.getAttribute('href'));
       });
+    });
+    applyBellByRole(role());
+    rememberLastWork();
+  }
+
+  function applyBellByRole(r) {
+    const dept = pendingDeptForRole(r);
+    const href = 'pending.html?dept=' + dept;
+    document.querySelectorAll('a.notice-button').forEach(a => {
+      a.setAttribute('href', href);
+    });
+    // Sidebar pending links that are role-default (enterprise 待你确认 / agency 客户确认)
+    document.querySelectorAll('nav.main-nav a[href*="pending.html"]').forEach(a => {
+      const label = (a.textContent || '').trim();
+      if (label === '待你确认' || label === '客户确认') {
+        a.setAttribute('href', href);
+      }
     });
   }
 
@@ -908,8 +990,8 @@
       if (echo) echo.textContent = plan.echo;
       if (breakdown) breakdown.innerHTML = renderBreakdownHTML(plan);
       if (cont) {
-        // After login, land on plan step with goal already stored
-        cont.href = 'login.html';
+        // After login, land on plan step with goal already stored (session + URL)
+        cont.href = 'login.html?afterGoal=1';
         cont.dataset.afterGoal = '1';
       }
       idle.classList.add('hidden');
@@ -1005,8 +1087,31 @@
       return plan;
     }
 
-    if (step === 'plan' || step === 'execute') {
-      fillPlanUI(goalText);
+    if (step === 'plan' || step === 'execute' || step === 'confirm' || step === 'relay') {
+      const plan = fillPlanUI(goalText);
+      // confirm / relay: drive links from plan.dept — no hardcoded disclosure
+      if (step === 'confirm' || step === 'relay') {
+        const deptId = (getDelegation() || {}).dept || plan.deptId || 'disclosure';
+        const dept = DEPTS[deptId] || DEPTS.disclosure;
+        const confirmGo = document.getElementById('confirm-go-btn');
+        const confirmCopy = document.getElementById('confirm-copy');
+        if (confirmCopy) {
+          confirmCopy.textContent = dept.name + '已交卷，等待你确认「' + dept.confirmType + '」。';
+        }
+        if (confirmGo) {
+          confirmGo.href = withRole('pending.html?dept=' + dept.id);
+          confirmGo.textContent = '去确认 · ' + dept.name + ' →';
+        }
+        const relayCopy = document.getElementById('relay-copy');
+        const relayGo = document.getElementById('relay-go-btn');
+        if (relayCopy) {
+          relayCopy.textContent = '「' + dept.confirmType + '」已通过。查看交付快照，并由' + dept.name + '接力下一站。';
+        }
+        if (relayGo) {
+          relayGo.href = withRole('company.html');
+          relayGo.textContent = '回公司看快照与接力 →';
+        }
+      }
     }
 
     const startBtn = document.querySelector('[data-to-plan]');
@@ -1043,7 +1148,8 @@
       e.preventDefault();
       const goal = (document.getElementById(inputId) || {}).value || '';
       if (!goal.trim()) { toast('请先填写业务目标'); return; }
-      setDelegation({ goal: goal.trim(), step: 'plan', dept: 'disclosure' });
+      const plan = planFromGoal(goal.trim());
+      setDelegation({ goal: plan.goal, step: 'plan', dept: plan.deptId });
       location.href = withRole('delegate.html?step=plan');
     });
   }
@@ -1076,7 +1182,8 @@
 
   window.MPV2 = {
     DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, toast, withRole,
-    getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept,
+    getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
+    pendingDeptForRole, applyBellByRole, lastWorkHref,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence,
     renderExperts, renderExpertFaces, renderProfExperts, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
   };

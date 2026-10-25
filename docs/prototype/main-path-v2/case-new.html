@@ -64,11 +64,12 @@
     <label>可选 · 交办业务目标（持续委托）
       <textarea id="case-goal" rows="3" placeholder="例如：整理一项研发成果，评估如何保护"></textarea>
     </label>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
       <button class="btn btn-ink" type="submit" id="create-only">创建并进公司 →</button>
-      <button class="btn btn-primary" type="button" id="create-delegate">创建并开始持续委托 →</button>
-      <a class="btn btn-ghost" href="home.html" data-keep-role>取消</a>
+      <button class="btn btn-secondary" type="button" id="create-delegate">创建并开始持续委托 →</button>
+      <a class="weak-link" href="home.html" data-keep-role>取消</a>
     </div>
+    <p class="primary-cta-note" style="margin-top:10px">主按钮进本案公司；次级才走顾言委托。</p>
   </form>
   <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -81,7 +82,8 @@
       const name = document.getElementById('case-name').value.trim();
       const goal = document.getElementById('case-goal').value.trim() || name;
       if (!name) { MPV2.toast('请填写案名'); return; }
-      MPV2.setDelegation({ goal, step: 'plan', dept: 'disclosure' });
+      const plan = MPV2.planFromGoal(goal);
+      MPV2.setDelegation({ goal: plan.goal, step: 'plan', dept: plan.deptId });
       MPV2.setHasCase(true); location.href = MPV2.withRole('delegate.html?step=plan');
     });
   });

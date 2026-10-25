@@ -8,7 +8,7 @@
 <body data-page="professional">
 <div class="app-shell">
 <header class="topbar">
-  <a class="brand" href="home.html" data-keep-role aria-label="返回首页">
+  <a class="brand" href="home.html" data-keep-role data-exit-pro aria-label="返回工作首页">
     <span class="brand-mark">虚</span>
     <span class="brand-copy"><strong>虚拟知产公司</strong><small>VIRTUAL IP COMPANY</small></span>
   </a>
@@ -33,28 +33,14 @@
   </div>
 </header>
 <div class="app-main">
-<aside class="sidebar">
-  <div class="workspace-label" data-show-role="enterprise">澄明科技有限公司<span>研发负责人工作区</span></div>
-  <div class="workspace-label hidden" data-show-role="agency">衡知专利代理事务所<span>代理师工作区</span></div>
-  <nav class="main-nav" data-show-role="enterprise">
-    <a href="home.html" data-keep-role>工作首页</a>
-    <a href="company.html" data-keep-role>本公司</a>
-    <a href="cases.html" data-keep-role>项目与对象</a>
-    <a href="pending.html?dept=disclosure" data-keep-role>待你确认</a>
+<aside class="sidebar sidebar-pro-exit" aria-label="合法出口">
+  <div class="workspace-label">专业能力 / 编制<span>本页不进作业台</span></div>
+  <nav class="main-nav">
+    <a href="company.html" data-exit-pro>← 回公司干活</a>
+    <a href="home.html" data-exit-pro>工作首页</a>
   </nav>
-  <nav class="main-nav hidden" data-show-role="agency">
-    <a href="home.html" data-keep-role>工作首页</a>
-    <a href="cases.html" data-keep-role>客户与案件</a>
-    <a href="company.html" data-keep-role>本案公司</a>
-    <a href="pending.html?dept=oa" data-keep-role>客户确认</a>
-  </nav>
-  <div class="sidebar-section">
-    <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
-    <a class="side-project" href="dept.html?dept=disclosure" data-keep-role><span class="project-glyph">MP</span><span><strong>磁驱泵智能控制</strong><small>交底书完善中</small></span></a>
-    <a class="side-project" href="dept.html?dept=oa" data-keep-role><span class="project-glyph muted">MS</span><span><strong>低能耗膜分离工艺</strong><small>第一次 OA 答复</small></span></a>
-  </div>
   <div class="sidebar-bottom">
-    <div class="human-guard"><span>⛨</span><span><strong>关键节点，人来决策</strong><small>专家出建议稿 · 你来拍板</small></span></div>
+    <div class="human-guard"><span>⛨</span><span><strong>去干活先回项目档</strong><small>点卡片「去该部干活」或左侧出口</small></span></div>
   </div>
 </aside>
 <main class="content content-professional">
@@ -66,7 +52,7 @@
       <p class="page-sub">七部各负一职：看清职责与在岗专家。点卡片上的「去该部干活」才进三栏作业台。本案：磁驱泵智能控制系统。</p>
     </div>
     <div class="prof-hero-side">
-      <a class="weak-link" href="company.html" data-keep-role>← 回公司首页</a>
+      <a class="btn btn-ink" href="company.html" data-exit-pro>← 回公司干活</a>
       <span class="prof-hint">本页不改交卷正文 · 不设齐套闸</span>
     </div>
   </header>

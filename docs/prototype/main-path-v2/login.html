@@ -29,7 +29,19 @@
   }));
   document.getElementById('go').addEventListener('click', () => {
     localStorage.setItem('mpv2-role', r);
-    location.href = 'home.html?role=' + r;
+    localStorage.setItem('mpv2-mode', 'project');
+    let dest = 'home.html?role=' + r;
+    try {
+      const d = JSON.parse(sessionStorage.getItem('mpv2-delegation') || 'null');
+      if (d && d.goal) {
+        dest = 'delegate.html?step=plan&role=' + r;
+      }
+    } catch (e) {}
+    const params = new URLSearchParams(location.search);
+    if (params.get('afterGoal') === '1') {
+      dest = 'delegate.html?step=plan&role=' + r;
+    }
+    location.href = dest;
   });
   </script>
 </body></html>

@@ -1501,3 +1501,11 @@ body[data-page="professional"] .tier-cue { display: inline-flex; }
   flex: 0 0 auto; margin: 0 10px 8px; padding-top: 4px;
   border-top: 1px solid var(--line);
 }
+
+
+/* —— Professional capability page: legal exits only, no work-sidebar trap —— */
+body[data-page="professional"] .sidebar-pro-exit .side-project { display: none; }
+body[data-page="professional"] .sidebar-pro-exit .main-nav a {
+  font-weight: 600;
+}
+html[data-mode="studio"] body[data-page="professional"] .sidebar-section { display: none; }
