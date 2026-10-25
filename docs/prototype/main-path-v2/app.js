@@ -133,7 +133,7 @@
   /* Drawer / generic list: planned staffing; ≤3 upper cap; 0→空态; never pad */
   function renderExperts(names) {
     const list = (names || []).slice(0, 3);
-    if (!list.length) return '<p class="experts-empty">本部门暂无专家编制</p>';
+    if (!list.length) return '<p class="experts-empty">本部门暂无专家岗</p>';
     return list.map((e, i) => {
       const m = expertMeta(e, i);
       return '<div class="expert-row">' +
@@ -147,7 +147,7 @@
   function renderRailExperts(names, dept) {
     const list = (names || []).slice(0, 3);
     if (!list.length) {
-      return '<p class="experts-empty">本部门暂无专家编制</p>';
+      return '<p class="experts-empty">本部门暂无专家岗</p>';
     }
     return list.map((e, i) => {
       const m = expertMeta(e, i);
@@ -401,6 +401,7 @@
     history.replaceState(null, '', u.toString());
     applyRoleUI(r);
     applyBellByRole(r);
+    document.querySelectorAll('details.avatar-menu[open]').forEach(function (d) { d.open = false; });
   }
 
   function tierCueLabel(m) {
@@ -1033,7 +1034,7 @@
       list.dataset.built = '1';
       list.innerHTML = dept.check.map((c, i) => checklistItemHtml(c, i, dept)).join('');
     });
-    /* Rail: actual 编制 — no pad / no hard ≤3 */
+    /* Rail: actual staffing — no pad / no hard ≤3 */
     const expertHtml = renderRailExperts(dept.experts, dept);
     document.querySelectorAll('[data-experts]').forEach(el => { el.innerHTML = expertHtml; });
     document.querySelectorAll('[data-current-task]').forEach(el => {

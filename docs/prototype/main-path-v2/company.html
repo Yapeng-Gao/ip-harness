@@ -19,19 +19,26 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
-    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
-    <a class="weak-link" href="welcome.html">官网</a>
+    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
-    <div class="mode-switch" aria-label="使用深度">
+    <div class="mode-switch mode-switch-quiet" aria-label="使用深度">
       <button type="button" data-mode="assistant">助手</button>
       <button type="button" data-mode="project" class="active">项目</button>
       <button type="button" data-mode="studio">专业</button>
     </div>
-    <div class="role-switch" aria-label="切换角色">
-      <button type="button" data-role="enterprise" class="active">企业研发</button>
-      <button type="button" data-role="agency">代理所</button>
-    </div>
-    <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="陈" width="30" height="30">
+    <details class="avatar-menu">
+      <summary class="avatar-menu-sum" aria-label="账户与角色">
+        <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="" width="30" height="30">
+      </summary>
+      <div class="avatar-menu-panel" role="menu">
+        <div class="avatar-menu-label">角色</div>
+        <div class="role-switch" aria-label="切换角色">
+          <button type="button" data-role="enterprise" class="active">企业研发</button>
+          <button type="button" data-role="agency">代理所</button>
+        </div>
+        <a class="avatar-menu-link" href="welcome.html">官网</a>
+      </div>
+    </details>
   </div>
 </header>
 <div class="app-main">
@@ -70,7 +77,7 @@
 
   <p class="kicker">一案一公司</p>
   <h1 class="page-title">磁驱泵智能控制系统</h1>
-  <p class="page-sub" data-show-mode="project">本案：尽快申下来。当前在交底部 · 交底书 V3 未齐套 · 距可递交还 5 站。</p>
+  <p class="page-sub" data-show-mode="project">尽快申下来。当前交底部 · 缺权属声明 · 距可递交还 5 站。</p>
   <p class="page-sub hidden" data-show-mode="assistant">以顾言委托与待确认为主；七部地图已收起，需要时可唤回。</p>
 
   <!-- 案况一句：状态 / 下一拍板 / 齐套缺口 -->
@@ -82,6 +89,24 @@
     </div>
     <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role>去当前部门 →</a>
   </section>
+
+  <section class="case-progress-strip" aria-label="主链进度 · 当前站到可递交">
+    <div class="case-progress-head">
+      <span class="kicker">主链进度 · 申请链</span>
+      <strong>当前站：交底部 → 距可递交还 5 站</strong>
+      <span class="case-progress-hint">服务办申请，不是组织图</span>
+    </div>
+    <ol class="case-progress-track" aria-label="交底到递交">
+      <li class="is-current"><a href="dept.html?dept=disclosure" data-keep-role>交底</a></li>
+      <li><a href="dept.html?dept=research" data-keep-role>查新</a></li>
+      <li><a href="dept.html?dept=intake" data-keep-role>立项</a></li>
+      <li><a href="dept.html?dept=draft" data-keep-role>撰写</a></li>
+      <li><a href="dept.html?dept=figure" data-keep-role>附图</a></li>
+      <li class="is-goal"><a href="dept.html?dept=filing" data-keep-role>可递交</a></li>
+      <li class="is-later"><a href="dept.html?dept=oa" data-keep-role>答复</a></li>
+    </ol>
+  </section>
+
 
   <!-- 助手模式：顾言对话工作区 -->
   <section class="company-assist-stage" data-show-mode="assistant" aria-label="顾言对话工作区">
@@ -105,7 +130,8 @@
     </div>
   </section>
 
-  <!-- 现在需要我处理（三档都有，≥1 可点） -->
+  <details class="company-fold" data-company-fold="need-me">
+    <summary>现在需要我处理 <span>· 待确认 / 待接力</span></summary>
   <section class="company-need-me need-me" aria-label="现在需要我处理">
     <div class="need-me-head">
       <div>
@@ -142,19 +168,22 @@
       <span class="weak-link">查看 →</span>
     </a>
   </section>
+  </details>
 
-  <!-- 项目/专业：顾言次级入口（助手模式已有对话区，此处隐藏避免重复） -->
+  <details class="company-fold" data-company-fold="delegate">
+    <summary>顾言 · 说一句目标 <span>· 持续委托</span></summary>
   <section class="company-delegate-rail" data-show-mode="project" aria-label="顾言持续委托">
     <div class="lead-row" style="gap:12px;margin:0">
       <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="36" height="36">
       <div style="flex:1;min-width:0">
-        <span class="kicker">次级 · 持续委托</span>
+        <span class="kicker">持续委托</span>
         <h2 style="font-size:15px;margin:2px 0 4px">顾言 · 说一句目标</h2>
         <p style="margin:0;font-size:12px;color:var(--ink-3)">不压过七部导航；用于把一句话目标拆进部门。</p>
       </div>
       <a class="btn btn-secondary" href="delegate.html?step=goal" data-keep-role>打开委托 →</a>
     </div>
   </section>
+  </details>
 
   <div class="snapshot-card hidden" data-company-snapshot>
     <h3>交付快照 · 最近一次确认</h3>
@@ -166,7 +195,7 @@
           <span class="artifact-preview-kicker">已确认交卷物 · 正文摘要</span>
           <strong data-snap-preview-title></strong>
         </div>
-        <a class="weak-link" href="dept.html?gate=1" data-snap-pending-link data-keep-role>回看工作台右栏 →</a>
+        <a class="weak-link" href="dept.html?gate=1" data-snap-pending-link data-keep-role>回工作台确认 →</a>
       </div>
       <div class="artifact-preview-scroll document" data-snap-body></div>
     </section>
@@ -177,29 +206,15 @@
     <button class="btn btn-secondary" type="button" style="margin-left:10px" onclick="MPV2.setMode('project')">唤回七部地图</button>
   </div>
 
-  <section class="case-progress-strip" aria-label="主链进度 · 当前站到可递交">
-    <div class="case-progress-head">
-      <span class="kicker">主链进度 · 申请链</span>
-      <strong>当前站：交底部 → 距可递交还 5 站</strong>
-      <span class="case-progress-hint">服务办申请，不是组织图</span>
-    </div>
-    <ol class="case-progress-track" aria-label="交底到递交">
-      <li class="is-current"><a href="dept.html?dept=disclosure" data-keep-role>交底</a></li>
-      <li><a href="dept.html?dept=research" data-keep-role>查新</a></li>
-      <li><a href="dept.html?dept=intake" data-keep-role>立项</a></li>
-      <li><a href="dept.html?dept=draft" data-keep-role>撰写</a></li>
-      <li><a href="dept.html?dept=figure" data-keep-role>附图</a></li>
-      <li class="is-goal"><a href="dept.html?dept=filing" data-keep-role>可递交</a></li>
-      <li class="is-later"><a href="dept.html?dept=oa" data-keep-role>答复</a></li>
-    </ol>
-  </section>
 
+  <details class="company-fold" data-company-fold="depts">
+    <summary>七部交卷地图 <span>· 需要时展开</span></summary>
   <div class="dept-map-wrap" style="margin-top:18px">
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:12px;flex-wrap:wrap">
       <div>
         <span class="kicker">七部 · 交卷导航</span>
         <h2 style="margin:4px 0 0;font-size:16px">现在交哪一卷</h2>
-        <a class="weak-link" href="professional.html" data-keep-role data-go-professional style="display:inline-block;margin-top:6px">看专业能力 / 编制 →</a>
+        <a class="weak-link" href="professional.html" data-keep-role data-go-professional style="display:inline-block;margin-top:6px">各部门能干什么 →</a>
       </div>
       <a class="weak-link" href="dept.html?dept=disclosure" data-keep-role>当前部 · 交底部</a>
     </div>
@@ -230,6 +245,7 @@
       </div>
     </details>
   </div>
+  </details>
 </main>
 </div>
 </div>

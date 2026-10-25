@@ -42,19 +42,26 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
-    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
-    <a class="weak-link" href="welcome.html">官网</a>
+    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
-    <div class="mode-switch" aria-label="使用深度">
+    <div class="mode-switch mode-switch-quiet" aria-label="使用深度">
       <button type="button" data-mode="assistant">助手</button>
       <button type="button" data-mode="project" class="active">项目</button>
       <button type="button" data-mode="studio">专业</button>
     </div>
-    <div class="role-switch" aria-label="切换角色">
-      <button type="button" data-role="enterprise" class="active">企业研发</button>
-      <button type="button" data-role="agency">代理所</button>
-    </div>
-    <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="陈" width="30" height="30">
+    <details class="avatar-menu">
+      <summary class="avatar-menu-sum" aria-label="账户与角色">
+        <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="" width="30" height="30">
+      </summary>
+      <div class="avatar-menu-panel" role="menu">
+        <div class="avatar-menu-label">角色</div>
+        <div class="role-switch" aria-label="切换角色">
+          <button type="button" data-role="enterprise" class="active">企业研发</button>
+          <button type="button" data-role="agency">代理所</button>
+        </div>
+        <a class="avatar-menu-link" href="welcome.html">官网</a>
+      </div>
+    </details>
   </div>
 </header>
 <div class="app-main">
@@ -140,7 +147,7 @@
         <span class="editor-save-state" data-save-state>已保存</span>
       </div>
 
-      <!-- 企业简版重心（两工作台 B）：事项 / 已确认事实 / 待决策 — 同屏，非文书/协同双视图 -->
+      <!-- 企业简版：事项 / 已确认事实 / 待决策 -->
       <div class="editor-lite-focus" data-lite-strip aria-label="企业简版要点（文书在下）">
         <div class="lite-col">
           <h3>事项</h3>
@@ -201,7 +208,7 @@
       </div>
     </section>
 
-    <!-- 右栏序：部门身份 → 专家编制 → 缺项推进/齐套闸 → 本部门对话（瘦） -->
+    <!-- 右栏：身份 → 缺项/确认 → 专家(折) → 对话 → 契约(折) -->
     <aside class="pane chat-pane" data-gate-pane aria-label="对话与确认">
       <div class="right-stack">
         <div class="dept-id-strip" aria-label="本部门身份">
@@ -212,20 +219,7 @@
           <p class="node-tip-goal" data-goal-context hidden></p>
         </div>
 
-        <section class="rail-experts" aria-label="本部门专家编制">
-          <div class="rail-sec-label">本部门专家 · 建议稿</div>
-          <div data-experts></div>
-        </section>
-
         <div class="gate-box" id="gate-box">
-          <div class="pane-head rail-sec-label" style="padding:0 0 8px;border:0">缺项怎么推 · 齐套</div>
-          <div class="checklist" data-checklist></div>
-          <p class="missing" data-missing-live>缺项：权属声明</p>
-          <p class="gate-meta">齐套 <span class="tabular" data-check-count>0 / 4</span> · 未齐套交卷禁用</p>
-          <button class="handoff-button" type="button" data-submit-gate disabled>
-            <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏右栏拍板</small></span>
-          </button>
-
           <div class="confirm-rail" data-confirm-rail hidden>
             <div class="pane-head" style="padding:0 0 8px;border:0">待你确认</div>
             <p class="confirm-rail-title" data-pending-title>确认交底书可接力</p>
@@ -239,14 +233,29 @@
             </div>
             <p class="confirm-rail-note">建议稿 ≠ 确认。中栏须见交卷物正文才可点通过。</p>
           </div>
+
+          <div class="pane-head rail-sec-label" style="padding:0 0 8px;border:0">缺项下一步 · 齐套</div>
+          <div class="checklist" data-checklist></div>
+          <p class="missing" data-missing-live>缺项：权属声明</p>
+          <p class="gate-meta">齐套 <span class="tabular" data-check-count>0 / 4</span> · 未齐套交卷禁用</p>
+          <button class="handoff-button" type="button" data-submit-gate disabled>
+            <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏拍板</small></span>
+          </button>
         </div>
+
+        <details class="rail-collapse rail-experts-fold">
+          <summary>本部门专家 · 建议稿</summary>
+          <section class="rail-experts" aria-label="本部门专家">
+            <div data-experts></div>
+          </section>
+        </details>
 
         <div class="rail-chat-block">
           <div class="rail-sec-label">本部门执行助手</div>
           <div class="chat-bits" data-chat-feed>
             <div class="chat-bubble">
               <strong>本部门执行助手</strong>
-              主聊对象是我。专家只出建议稿，不另开私聊。齐套后右栏露通过/驳回 · 类型：<span data-confirm-type>技术事实</span>。
+              主聊对象是我。专家只出建议稿，不另开私聊。齐套后露出通过/驳回 · 类型：<span data-confirm-type>技术事实</span>。
             </div>
           </div>
           <form class="chat-compose" id="dept-chat-form" autocomplete="off">
@@ -270,7 +279,7 @@
     </aside>
   </div>
 
-  <!-- 极简进度一行：无第二套齐套 CTA（主 CTA 仅右栏闸） -->
+  <!-- 极简进度一行 -->
   <div class="task-strip-minimal" aria-label="当前节点进度">
     <span>当前 · <strong data-current-task>补齐权属声明后交卷</strong></span>
     <span>齐套 <strong class="tabular" data-check-count>0 / 4</strong></span>

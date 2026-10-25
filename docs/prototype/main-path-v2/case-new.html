@@ -17,19 +17,26 @@
     <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
   </div>
   <div class="topbar-actions">
-    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
-    <a class="weak-link" href="welcome.html">官网</a>
-    <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role>🔔<span></span></a>
-    <div class="mode-switch">
+    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
+    <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
+    <div class="mode-switch mode-switch-quiet" aria-label="使用深度">
       <button type="button" data-mode="assistant">助手</button>
       <button type="button" data-mode="project" class="active">项目</button>
       <button type="button" data-mode="studio">专业</button>
     </div>
-    <div class="role-switch">
-      <button type="button" data-role="enterprise" class="active">企业研发</button>
-      <button type="button" data-role="agency">代理所</button>
-    </div>
-    <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="陈" width="30" height="30">
+    <details class="avatar-menu">
+      <summary class="avatar-menu-sum" aria-label="账户与角色">
+        <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="" width="30" height="30">
+      </summary>
+      <div class="avatar-menu-panel" role="menu">
+        <div class="avatar-menu-label">角色</div>
+        <div class="role-switch" aria-label="切换角色">
+          <button type="button" data-role="enterprise" class="active">企业研发</button>
+          <button type="button" data-role="agency">代理所</button>
+        </div>
+        <a class="avatar-menu-link" href="welcome.html">官网</a>
+      </div>
+    </details>
   </div>
 </header>
 <div class="app-main">
@@ -63,7 +70,7 @@
 <main class="content">
 
   <p class="kicker">开案子</p>
-  <h1 class="page-title">立一条业务线</h1>
+  <h1 class="page-title">开新案子</h1>
   <p class="page-sub">尽快申下来 · 虚拟知产公司。创建后进公司首页再「去当前部门」。可顺手向知产负责人交办。</p>
   <form class="form-stack" id="new-case" onsubmit="return false;">
     <label>案名 / 技术主题<input id="case-name" required placeholder="例如：磁驱泵智能控制系统"></label>

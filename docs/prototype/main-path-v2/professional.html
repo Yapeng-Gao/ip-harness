@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>专业能力 / 编制 · 虚拟知产公司</title>
+<title>各部门能干什么 · 虚拟知产公司</title>
 <link rel="stylesheet" href="shell.css">
 </head>
 <body data-page="professional">
@@ -18,24 +18,31 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
-    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
-    <a class="weak-link" href="welcome.html">官网</a>
+    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
-    <div class="mode-switch" aria-label="使用深度">
+    <div class="mode-switch mode-switch-quiet" aria-label="使用深度">
       <button type="button" data-mode="assistant">助手</button>
-      <button type="button" data-mode="project">项目</button>
-      <button type="button" data-mode="studio" class="active">专业</button>
+      <button type="button" data-mode="project" class="active">项目</button>
+      <button type="button" data-mode="studio">专业</button>
     </div>
-    <div class="role-switch" aria-label="切换角色">
-      <button type="button" data-role="enterprise" class="active">企业研发</button>
-      <button type="button" data-role="agency">代理所</button>
-    </div>
-    <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="陈" width="30" height="30">
+    <details class="avatar-menu">
+      <summary class="avatar-menu-sum" aria-label="账户与角色">
+        <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="" width="30" height="30">
+      </summary>
+      <div class="avatar-menu-panel" role="menu">
+        <div class="avatar-menu-label">角色</div>
+        <div class="role-switch" aria-label="切换角色">
+          <button type="button" data-role="enterprise" class="active">企业研发</button>
+          <button type="button" data-role="agency">代理所</button>
+        </div>
+        <a class="avatar-menu-link" href="welcome.html">官网</a>
+      </div>
+    </details>
   </div>
 </header>
 <div class="app-main">
 <aside class="sidebar sidebar-pro-exit" aria-label="合法出口">
-  <div class="workspace-label">专业能力 / 编制<span>本页不进作业台</span></div>
+  <div class="workspace-label">各部门能干什么<span>本页不进作业台</span></div>
   <nav class="main-nav">
     <a href="company.html" data-exit-pro>← 回公司干活</a>
     <a href="home.html" data-exit-pro>工作首页</a>
@@ -48,8 +55,8 @@
 
   <header class="prof-hero">
     <div class="prof-hero-copy">
-      <p class="kicker">能力与编制</p>
-      <h1 class="page-title">专业能力 / 编制</h1>
+      <p class="kicker">各部门能干什么</p>
+      <h1 class="page-title">各部门能干什么</h1>
       <p class="page-sub">七部各负一职：看清职责与在岗专家。点卡片上的「去该部干活」才进三栏作业台。本案：磁驱泵智能控制系统。</p>
     </div>
     <div class="prof-hero-side">
@@ -73,7 +80,7 @@
     </div>
   </details>
 
-  <p class="prof-footnote">编制轻量可看；深度配置不在本页。点「去该部干活」才进三栏作业台。</p>
+  <p class="prof-footnote">这里只看各部门能干什么；深度配置不在本页。点「去该部干活」才进三栏作业台。</p>
 
 </main>
 </div>

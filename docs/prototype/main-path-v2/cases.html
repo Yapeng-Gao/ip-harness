@@ -18,19 +18,26 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
-    <a class="weak-link" href="docket.html" data-keep-role>期限</a>
-    <a class="weak-link" href="welcome.html">官网</a>
-    <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role>🔔<span></span></a>
-    <div class="mode-switch">
+    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
+    <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
+    <div class="mode-switch mode-switch-quiet" aria-label="使用深度">
       <button type="button" data-mode="assistant">助手</button>
       <button type="button" data-mode="project" class="active">项目</button>
       <button type="button" data-mode="studio">专业</button>
     </div>
-    <div class="role-switch">
-      <button type="button" data-role="enterprise" class="active">企业研发</button>
-      <button type="button" data-role="agency">代理所</button>
-    </div>
-    <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="陈" width="30" height="30">
+    <details class="avatar-menu">
+      <summary class="avatar-menu-sum" aria-label="账户与角色">
+        <img class="avatar avatar-photo" src="assets/portraits/chen.png" alt="" width="30" height="30">
+      </summary>
+      <div class="avatar-menu-panel" role="menu">
+        <div class="avatar-menu-label">角色</div>
+        <div class="role-switch" aria-label="切换角色">
+          <button type="button" data-role="enterprise" class="active">企业研发</button>
+          <button type="button" data-role="agency">代理所</button>
+        </div>
+        <a class="avatar-menu-link" href="welcome.html">官网</a>
+      </div>
+    </details>
   </div>
 </header>
 <div class="app-main">
@@ -110,7 +117,7 @@
 
   <div class="empty-state hidden" data-cases-empty aria-live="polite">
     <strong>还没有案子</strong>
-    <p>立一条业务线后，会出现在案盘；再从公司首页进工作台。</p>
+    <p>开新案子后，会出现在案盘；再从公司首页进工作台。</p>
     <a class="btn btn-ink" href="case-new.html" data-keep-role>开案子 →</a>
   </div>
 </main></div></div><script src="app.js"></script></body></html>
