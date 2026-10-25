@@ -988,6 +988,63 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
   background: var(--ink); color: var(--paper); text-align: left;
 }
 .handoff-button strong { display: block; font-size: 13px; }
+
+/* Workbench right-rail confirm gate (G2落点；废独立确认页) */
+.confirm-rail {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+.confirm-rail.is-open { display: block; }
+.confirm-rail-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--ink);
+  line-height: 1.35;
+}
+.confirm-rail-q {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.45;
+}
+.confirm-rail-detail {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+.confirm-rail-blind {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+.confirm-rail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.confirm-rail-actions .btn { width: 100%; justify-content: center; }
+.confirm-rail-note {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--ink-3);
+  line-height: 1.45;
+}
+.handoff-button.is-submitted {
+  opacity: .7;
+  background: var(--paper-2, #f3f1ec);
+}
+.chat-pane.gate-focus .confirm-rail {
+  outline: 1px solid color-mix(in oklch, var(--ink) 18%, transparent);
+  border-radius: 6px;
+  padding: 10px 8px 8px;
+  background: color-mix(in oklch, var(--paper) 92%, var(--ink) 4%);
+}
+
 .handoff-button small { color: oklch(0.75 0.005 60); font-size: 10px; }
 .collab-panel { padding: 16px 18px; }
 .collab-panel h3 { margin: 0 0 8px; font-size: 14px; }
@@ -1369,7 +1426,7 @@ html[data-mode="project"] .cases-table .row {
 .primary-zone .secondary-delegate .goal-form { margin-top: 8px; }
 .primary-zone .secondary-delegate .chips { margin-top: 8px; }
 
-/* —— 部门台三栏权重（左~200 / 中1fr / 右~260–280）· 助手也必须保中栏文书 —— */
+/* —— 工作台三栏权重（左~200 / 中1fr / 右~260–280）· 助手也必须保中栏文书 —— */
 html[data-mode="assistant"] .workbench[data-tier-workbench]:not(.fold-left) {
   grid-template-columns: 160px minmax(0,1fr) 270px;
 }
@@ -1415,7 +1472,7 @@ html[data-mode="assistant"] .company-need-me {
 }
 
 
-/* —— 部门台：全局侧栏默认藏（助手/项目/专业），保住一屏三栏；回公司走底条/顶栏 —— */
+/* —— 工作台：全局侧栏默认藏（助手/项目/专业），保住一屏三栏；回公司走底条/顶栏 —— */
 body[data-page="dept"] .sidebar { display: none !important; }
 
 /* lead-workbench tip / status pills: off first screen (re-enable by removing rule) */
@@ -1571,7 +1628,7 @@ html[data-role="enterprise"] .workbench:not(.fold-left) {
 }
 body[data-page="professional"] .tier-cue { display: inline-flex; }
 
-/* 部门台右栏：节点一句（默认露） */
+/* 工作台右栏：节点一句（默认露） */
 .node-tip {
   padding: 10px 12px 8px; border-bottom: 1px solid var(--line);
   background: var(--warm-paper); flex: 0 0 auto;

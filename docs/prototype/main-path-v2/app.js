@@ -181,6 +181,42 @@
   function pendingDeptForRole(r) {
     return (r || role()) === 'agency' ? 'oa' : 'disclosure';
   }
+  function gateHref(deptId) {
+    const id = deptId || pendingDeptForRole();
+    return 'dept.html?dept=' + id + '&gate=1';
+  }
+  function prevDeptId(deptId) {
+    const i = DEPT_ORDER.indexOf(deptId);
+    return i > 0 ? DEPT_ORDER[i - 1] : null;
+  }
+  function nextDeptId(deptId) {
+    const d = DEPTS[deptId];
+    if (d && d.next) return d.next;
+    const i = DEPT_ORDER.indexOf(deptId);
+    return i >= 0 && i < DEPT_ORDER.length - 1 ? DEPT_ORDER[i + 1] : null;
+  }
+  function getSubmitted(deptId) {
+    try {
+      const all = JSON.parse(sessionStorage.getItem('mpv2-submitted') || '{}');
+      return !!all[deptId];
+    } catch { return false; }
+  }
+  function setSubmitted(deptId, on) {
+    let all = {};
+    try { all = JSON.parse(sessionStorage.getItem('mpv2-submitted') || '{}'); } catch { all = {}; }
+    if (on) all[deptId] = true; else delete all[deptId];
+    sessionStorage.setItem('mpv2-submitted', JSON.stringify(all));
+  }
+  function centerDeliverableVisible() {
+    const editor = document.getElementById('dept-editor');
+    if (!editor) return false;
+    const text = (editor.innerText || '').replace(/\s+/g, ' ').trim();
+    if (text.length < 40) return false;
+    const rect = editor.getBoundingClientRect();
+    if (rect.width < 120 || rect.height < 80) return false;
+    // Must be in layout (not display:none ancestor)
+    return !!(editor.offsetParent || editor.getClientRects().length);
+  }
   function rememberLastWork() {
     const page = document.body.dataset.page || '';
     if (WORK_PAGES.indexOf(page) === -1) return;
@@ -379,7 +415,7 @@
         e.preventDefault();
         e.stopImmediatePropagation();
         if (a.classList.contains('notice-button')) {
-          exitProfessional('pending.html?dept=' + pendingDeptForRole());
+          exitProfessional(gateHref(pendingDeptForRole()));
           return;
         }
         exitProfessional(a.getAttribute('href') || 'home.html');
@@ -467,12 +503,12 @@
 
   function applyBellByRole(r) {
     const dept = pendingDeptForRole(r);
-    const href = 'pending.html?dept=' + dept;
+    const href = gateHref(dept);
     document.querySelectorAll('a.notice-button').forEach(a => {
       a.setAttribute('href', href);
     });
-    // Sidebar pending links that are role-default (enterprise 待你确认 / agency 客户确认)
-    document.querySelectorAll('nav.main-nav a[href*="pending.html"]').forEach(a => {
+    // Sidebar 「待你确认 / 客户确认」→ 工作台右栏闸（非独立确认页）
+    document.querySelectorAll('nav.main-nav a').forEach(a => {
       const label = (a.textContent || '').trim();
       if (label === '待你确认' || label === '客户确认') {
         a.setAttribute('href', href);
@@ -510,10 +546,10 @@
       const hint = document.querySelector('[data-next-hint]');
       if (hint) {
         if (all) {
-          hint.innerHTML = '<strong>下一步：</strong>齐套已完成 — 点击右侧「交卷 · 送待你确认」，到确认页由你拍板。';
+          hint.innerHTML = '<strong>下一步：</strong>齐套已完成 — 点击右侧「交卷 · 待你确认」，同屏右栏通过/驳回。';
           hint.classList.add('is-ready');
         } else {
-          hint.innerHTML = '<strong>下一步：</strong>在右侧勾选齐套清单（含' + (dept.missing || '缺项') + '）→ 启用交卷。拍板在确认页，不在本台自批。';
+          hint.innerHTML = '<strong>下一步：</strong>在右侧勾选齐套清单（含' + (dept.missing || '缺项') + '）→ 启用交卷。拍板在右栏，不在本台自批。';
           hint.classList.remove('is-ready');
         }
       }
@@ -529,7 +565,9 @@
         d.dept = dept.id;
         setDelegation(d);
       }
-      location.href = withRole('pending.html?dept=' + dept.id);
+      setSubmitted(dept.id, true);
+      revealConfirmRail(dept, { focus: true });
+      toast('已交卷 · 请对照中栏交卷物在右栏拍板');
     });
   }
 
@@ -620,6 +658,173 @@
       el.hidden = false;
       el.textContent = '为你的目标：' + short;
     });
+  }
+
+
+  function revealConfirmRail(dept, opts) {
+    opts = opts || {};
+    const rail = document.querySelector('[data-confirm-rail]');
+    const submit = document.querySelector('[data-submit-gate]');
+    if (!rail) return;
+    rail.hidden = false;
+    rail.classList.add('is-open');
+    document.querySelectorAll('[data-pending-title]').forEach(el => { el.textContent = dept.pendingTitle; });
+    document.querySelectorAll('[data-pending-fact]').forEach(el => { el.textContent = dept.pendingFact; });
+    document.querySelectorAll('[data-pending-detail]').forEach(el => { el.textContent = dept.pendingDetail; });
+    document.querySelectorAll('[data-confirm-type]').forEach(el => { el.textContent = dept.confirmType; });
+    if (submit) {
+      submit.setAttribute('disabled', 'disabled');
+      submit.classList.add('is-disabled', 'is-submitted');
+      const strong = submit.querySelector('strong');
+      const small = submit.querySelector('small');
+      if (strong) strong.textContent = '已交卷 · 待你确认';
+      if (small) small.textContent = '同屏右栏拍板 · 勿另开页';
+    }
+    const prevBtn = document.querySelector('[data-rail-prev]');
+    if (prevBtn) {
+      const prev = prevDeptId(dept.id);
+      prevBtn.hidden = !prev;
+      if (prev && DEPTS[prev]) prevBtn.textContent = '退回上一部 · ' + DEPTS[prev].name;
+    }
+    syncBlindConfirm();
+    if (opts.focus) {
+      try { rail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (_) {}
+      const pane = document.querySelector('[data-gate-pane]');
+      if (pane) pane.classList.add('gate-focus');
+    }
+  }
+
+  function syncBlindConfirm() {
+    const pass = document.querySelector('[data-rail-pass]');
+    const hint = document.querySelector('[data-confirm-blind-hint]');
+    if (!pass) return;
+    const ok = centerDeliverableVisible();
+    if (ok) {
+      pass.removeAttribute('disabled');
+      pass.classList.remove('is-disabled');
+      if (hint) hint.hidden = true;
+    } else {
+      pass.setAttribute('disabled', 'disabled');
+      pass.classList.add('is-disabled');
+      if (hint) hint.hidden = false;
+    }
+  }
+
+  function wireRailGate(dept) {
+    const pass = document.querySelector('[data-rail-pass]');
+    const reject = document.querySelector('[data-rail-reject]');
+    const prevBtn = document.querySelector('[data-rail-prev]');
+    if (pass) {
+      pass.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (pass.hasAttribute('disabled')) {
+          toast('先看中栏交卷物');
+          const editor = document.getElementById('dept-editor');
+          if (editor) try { editor.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {}
+          return;
+        }
+        if (!centerDeliverableVisible()) {
+          syncBlindConfirm();
+          toast('先看中栏交卷物');
+          return;
+        }
+        const evidence = pendingEvidenceFor(dept);
+        const snapshot = {
+          dept: dept.id,
+          deptName: dept.name,
+          deliverable: dept.deliverable,
+          fact: dept.pendingFact,
+          confirmType: dept.confirmType,
+          at: new Date().toISOString(),
+          next: dept.next,
+          bodyTitle: evidence.primary.title,
+          bodyHtml: evidence.primary.html
+        };
+        setSnapshot(snapshot);
+        setSubmitted(dept.id, false); // cleared after pass
+        const d = getDelegation();
+        if (d) {
+          d.step = 'relay';
+          d.lastDept = dept.id;
+          d.next = dept.next;
+          setDelegation(d);
+        }
+        const nxt = nextDeptId(dept.id);
+        if (nxt) {
+          toast('已通过 · 接力' + (DEPTS[nxt] ? DEPTS[nxt].name : '下一部'));
+          localStorage.setItem('mpv2-mode', 'project');
+          localStorage.setItem('mpv2-last-work', 'dept.html?dept=' + nxt);
+          location.href = withRole('dept.html?dept=' + nxt);
+        } else {
+          toast('已通过 · 本案主链收尾');
+          location.href = withRole('company.html?snapshot=1');
+        }
+      });
+    }
+    if (reject) {
+      reject.addEventListener('click', (e) => {
+        e.preventDefault();
+        setSubmitted(dept.id, false);
+        const rail = document.querySelector('[data-confirm-rail]');
+        if (rail) { rail.hidden = true; rail.classList.remove('is-open'); }
+        const submit = document.querySelector('[data-submit-gate]');
+        if (submit) {
+          submit.classList.remove('is-submitted');
+          const strong = submit.querySelector('strong');
+          const small = submit.querySelector('small');
+          if (strong) strong.textContent = '交卷 · 待你确认';
+          if (small) small.textContent = '齐套后可点 · 同屏右栏拍板';
+          // re-enable only if checklist still all checked
+          const box = document.querySelector('[data-checklist]');
+          if (box) {
+            const list = [...box.querySelectorAll('input[type=checkbox]')];
+            const all = list.length > 0 && list.every(i => i.checked);
+            if (all) {
+              submit.removeAttribute('disabled');
+              submit.classList.remove('is-disabled');
+            }
+          }
+        }
+        const d = getDelegation();
+        if (d) { d.step = 'execute'; setDelegation(d); }
+        toast('已驳回 · 请本台补齐后再交卷');
+      });
+    }
+    if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const prev = prevDeptId(dept.id);
+        if (!prev) { toast('已无上一部可退'); return; }
+        setSubmitted(dept.id, false);
+        toast('退回 · ' + (DEPTS[prev] ? DEPTS[prev].name : '上一部'));
+        localStorage.setItem('mpv2-mode', 'project');
+        location.href = withRole('dept.html?dept=' + prev);
+      });
+    }
+    // Re-check blind confirm when editor mutates / resize
+    const editor = document.getElementById('dept-editor');
+    if (editor) {
+      editor.addEventListener('input', syncBlindConfirm);
+    }
+    window.addEventListener('resize', syncBlindConfirm);
+  }
+
+  function ensureGateDeepLink(dept) {
+    const want = qs('gate') === '1';
+    if (!want && !getSubmitted(dept.id)) return;
+    // Deep-link / 铃铛「去确认」：强制项目档，齐套勾齐并露出右栏闸
+    localStorage.setItem('mpv2-mode', 'project');
+    applyModeUI('project');
+    const box = document.querySelector('[data-checklist]');
+    if (box) {
+      box.querySelectorAll('input[type=checkbox]').forEach(i => { i.checked = true; });
+      // re-sync submit enabled state then mark submitted
+      box.querySelectorAll('input[type=checkbox]').forEach(i => {
+        i.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    }
+    setSubmitted(dept.id, true);
+    revealConfirmRail(dept, { focus: true });
   }
 
   function wireDeptPage() {
@@ -887,12 +1092,24 @@
         if (!text) return;
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble';
-        bubble.innerHTML = '<strong>我 → 顾言</strong>' + text.replace(/</g, '&lt;');
+        bubble.innerHTML = '<strong>我 → 本部门执行助手</strong>' + text.replace(/</g, '&lt;');
         feed.appendChild(bubble);
         chatInput.value = '';
         toast('已纳入本节点指令（演示）');
       });
     }
+
+    // Fill pending title/detail for rail
+    document.querySelectorAll('[data-pending-title]').forEach(el => { el.textContent = dept.pendingTitle; });
+    document.querySelectorAll('[data-pending-detail]').forEach(el => { el.textContent = dept.pendingDetail; });
+
+    wireRailGate(dept);
+    // Restore submitted state or honor ?gate=1 deep-link from bell / 去确认
+    if (getSubmitted(key) || qs('gate') === '1') {
+      ensureGateDeepLink(dept);
+    }
+    // After center doc activated, re-check blind rule
+    setTimeout(syncBlindConfirm, 50);
   }
 
   function pendingEvidenceFor(dept) {
@@ -942,7 +1159,10 @@
   }
 
   function wirePending() {
-    const key = qs('dept') || 'disclosure';
+    // Soft redirect: independent confirm page retired — deep-link workbench rail gate
+    const key = qs('dept') || pendingDeptForRole();
+    location.replace(withRole(gateHref(key)));
+    return;
     const dept = DEPTS[key] || DEPTS.disclosure;
     const fill = (sel, text) => {
       document.querySelectorAll(sel).forEach(el => { el.textContent = text; });
@@ -993,7 +1213,7 @@
       openDept.className = 'evidence-chip';
       openDept.setAttribute('data-kind', 'link');
       openDept.href = withRole('dept.html?dept=' + dept.id);
-      openDept.textContent = '部门台全文 →';
+      openDept.textContent = '工作台全文 →';
       chipHost.appendChild(openDept);
     }
     showPreview(evidence.chips[0]);
@@ -1090,7 +1310,7 @@
         }
       }
       const link = slot.querySelector('[data-snap-pending-link]');
-      if (link && snap.dept) link.href = withRole('pending.html?dept=' + snap.dept);
+      if (link && snap.dept) link.href = withRole(gateHref(snap.dept));
     }
     wireCompanyDeptFaces();
     wireCompanyDrawer();
@@ -1314,7 +1534,7 @@
       const delHint = document.getElementById('plan-deliverable-hint');
       if (delName) delName.textContent = plan.dept.deliverable;
       if (delHint) {
-        delHint.textContent = '确认计划后直接打开' + plan.dept.name + '三栏台，中栏可见「' + plan.dept.deliverable + '」';
+        delHint.textContent = '确认计划后直接打开' + plan.dept.name + '工作台，中栏可见「' + plan.dept.deliverable + '」';
       }
       if (list) {
         list.innerHTML = plan.chain.map(function (node, i) {
@@ -1337,7 +1557,7 @@
       if (ee) ee.textContent = '为你的目标：「' + plan.goal + '」';
       if (eg) {
         eg.href = withRole('dept.html?dept=' + plan.deptId);
-        eg.textContent = '打开' + plan.dept.name + ' · 看「' + plan.dept.deliverable + '」→';
+        eg.textContent = '打开' + plan.dept.name + '工作台 · 看「' + plan.dept.deliverable + '」→';
       }
       return plan;
     }
@@ -1354,8 +1574,8 @@
           confirmCopy.textContent = dept.name + '已交卷，等待你确认「' + dept.confirmType + '」。';
         }
         if (confirmGo) {
-          confirmGo.href = withRole('pending.html?dept=' + dept.id);
-          confirmGo.textContent = '去确认 · ' + dept.name + ' →';
+          confirmGo.href = withRole(gateHref(dept.id));
+          confirmGo.textContent = '去工作台拍板 · ' + dept.name + ' →';
         }
         const relayCopy = document.getElementById('relay-copy');
         const relayGo = document.getElementById('relay-go-btn');
@@ -1455,7 +1675,7 @@
   window.MPV2 = {
     DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
-    pendingDeptForRole, applyBellByRole, lastWorkHref,
+    pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold,
     renderExperts, renderExpertFaces, renderProfExperts, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo
   };
@@ -1475,8 +1695,8 @@
       });
     });
     if (page === 'welcome') { wireWelcomeShelf(); wireWelcomeGoalDemo(); }
+    if (page === 'pending') { wirePending(); return; }
     if (page === 'dept') wireDeptPage();
-    if (page === 'pending') wirePending();
     if (page === 'delegate') wireDelegate();
     if (page === 'home') wireHome();
     if (page === 'company') wireCompanyPage();

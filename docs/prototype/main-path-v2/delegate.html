@@ -18,7 +18,7 @@
   </div>
   <div class="topbar-actions">
     <a class="weak-link" href="welcome.html">官网</a>
-    <a class="icon-btn notice-button" href="pending.html?dept=disclosure" data-keep-role aria-label="待确认">🔔<span></span></a>
+    <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch" aria-label="使用深度">
       <button type="button" data-mode="assistant">助手</button>
       <button type="button" data-mode="project" class="active">项目</button>
@@ -39,13 +39,13 @@
     <a class="active" href="home.html" data-keep-role>工作首页</a>
     <a class="" href="company.html" data-keep-role>本公司</a>
     <a class="" href="cases.html" data-keep-role>项目与对象</a>
-    <a class="" href="pending.html?dept=disclosure" data-keep-role>待你确认</a>
+    <a class="" href="dept.html?dept=disclosure&gate=1" data-keep-role>待你确认</a>
   </nav>
   <nav class="main-nav hidden" data-show-role="agency">
     <a class="active" href="home.html" data-keep-role>工作首页</a>
     <a class="" href="cases.html" data-keep-role>客户与案件</a>
     <a class="" href="company.html" data-keep-role>本案公司</a>
-    <a class="" href="pending.html?dept=oa" data-keep-role>客户确认</a>
+    <a class="" href="dept.html?dept=oa&gate=1" data-keep-role>客户确认</a>
   </nav>
   <div class="sidebar-section">
     <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
@@ -60,12 +60,12 @@
 
   <p class="kicker">知产负责人 · 持续委托</p>
   <h1 class="page-title">跟顾言说目标</h1>
-  <p class="page-sub">说一句要推进什么 → 确认计划 → 直接进部门台看交卷物 → 齐套后你拍板。</p>
+  <p class="page-sub">说一句要推进什么 → 确认计划 → 直接进工作台看交卷物 → 齐套后你拍板。</p>
 
   <div class="steps" aria-label="委托进度">
     <div class="step" data-step="goal"><strong>1 提目标</strong>交办业务目标</div>
     <div class="step" data-step="plan"><strong>2 计划可调</strong>确认部门顺序</div>
-    <div class="step" data-step="execute"><strong>3 干活见交卷物</strong>部门台中栏</div>
+    <div class="step" data-step="execute"><strong>3 干活见交卷物</strong>工作台中栏</div>
     <div class="step" data-step="confirm"><strong>4 确认</strong>人来拍板</div>
     <div class="step" data-step="relay"><strong>5 接力</strong>交付快照</div>
   </div>
@@ -101,7 +101,7 @@
     <div class="plan-deliverable-hero" id="plan-deliverable-hero" aria-label="本关交卷物">
       <span class="plan-deliverable-kicker">产出 · 本关交卷物</span>
       <strong id="plan-deliverable-name">技术交底书 V3</strong>
-      <small id="plan-deliverable-hint">确认计划后直接打开部门台，中栏即可看到并编辑本文书</small>
+      <small id="plan-deliverable-hint">确认计划后直接打开工作台，中栏即可看到并编辑本文书</small>
     </div>
     <div class="demo-breakdown plan-breakdown" id="plan-breakdown">
       <article>
@@ -139,25 +139,25 @@
   </section>
 
   <section class="goal-panel hidden" data-panel="execute">
-    <p class="kicker">正在打开部门台</p>
+    <p class="kicker">正在打开工作台</p>
     <h2 id="exec-title" style="margin:4px 0 8px;font-size:18px">交底部已接手</h2>
     <p id="exec-goal-echo" class="plan-goal-echo"></p>
-    <p class="exec-skip-note">真干活在部门台中栏看交卷物；本页不停留。若未自动跳转，请点下方按钮。</p>
+    <p class="exec-skip-note">真干活在工作台中栏看交卷物；本页不停留。若未自动跳转，请点下方按钮。</p>
     <div class="exec-progress" id="exec-progress" hidden>
       <div class="exec-row done"><span>01</span><div><strong>已分派</strong><small>目标已落到部门与本案</small></div></div>
-      <div class="exec-row current"><span>02</span><div><strong>齐套进行中</strong><small>在部门台右栏勾选</small></div></div>
-      <div class="exec-row"><span>03</span><div><strong>待你确认</strong><small>交卷后到确认页拍板</small></div></div>
+      <div class="exec-row current"><span>02</span><div><strong>齐套进行中</strong><small>在工作台右栏勾选</small></div></div>
+      <div class="exec-row"><span>03</span><div><strong>待你确认</strong><small>交卷后到工作台右栏拍板</small></div></div>
     </div>
     <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-      <a class="btn btn-ink" id="exec-go-btn" href="dept.html?dept=disclosure" data-keep-role>打开部门台 · 看交卷物 →</a>
+      <a class="btn btn-ink" id="exec-go-btn" href="dept.html?dept=disclosure" data-keep-role>打开工作台 · 看交卷物 →</a>
       <a class="btn btn-ghost" href="delegate.html?step=plan" data-keep-role>回看计划</a>
     </div>
   </section>
 
   <section class="goal-panel hidden" data-panel="confirm">
-    <p class="kicker">拍板在确认页</p>
+    <p class="kicker">拍板在工作台右栏</p>
     <p id="confirm-copy">已交卷，等待确认。委托页不代替拍板。</p>
-    <a class="btn btn-ink" id="confirm-go-btn" href="pending.html?dept=disclosure" data-keep-role>去确认页 →</a>
+    <a class="btn btn-ink" id="confirm-go-btn" href="dept.html?dept=disclosure&gate=1" data-keep-role>去工作台右栏 →</a>
   </section>
 
   <section class="goal-panel hidden" data-panel="relay">

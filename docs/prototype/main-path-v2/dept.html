@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>部门台 · 虚拟知产公司</title>
+<title>工作台 · 虚拟知产公司</title>
 <link rel="stylesheet" href="shell.css">
 </head>
 <body data-page="dept" data-reload-on-role="1">
@@ -19,7 +19,7 @@
   </div>
   <div class="topbar-actions">
     <a class="weak-link" href="welcome.html">官网</a>
-    <a class="icon-btn notice-button" href="pending.html?dept=disclosure" data-keep-role aria-label="待确认">🔔<span></span></a>
+    <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch" aria-label="使用深度">
       <button type="button" data-mode="assistant">助手</button>
       <button type="button" data-mode="project" class="active">项目</button>
@@ -40,13 +40,13 @@
     <a class="" href="home.html" data-keep-role>工作首页</a>
     <a class="active" href="company.html" data-keep-role>本公司</a>
     <a class="" href="cases.html" data-keep-role>项目与对象</a>
-    <a class="" href="pending.html?dept=disclosure" data-keep-role>待你确认</a>
+    <a class="" href="dept.html?dept=disclosure&gate=1" data-keep-role>待你确认</a>
   </nav>
   <nav class="main-nav hidden" data-show-role="agency">
     <a class="" href="home.html" data-keep-role>工作首页</a>
     <a class="" href="cases.html" data-keep-role>客户与案件</a>
     <a class="active" href="company.html" data-keep-role>本案公司</a>
-    <a class="" href="pending.html?dept=oa" data-keep-role>客户确认</a>
+    <a class="" href="dept.html?dept=oa&gate=1" data-keep-role>客户确认</a>
   </nav>
   <div class="sidebar-section">
     <div class="sidebar-heading"><span>进行中</span><a href="case-new.html" data-keep-role>＋</a></div>
@@ -171,7 +171,7 @@
     </section>
 
     <!-- 右：默认只露节点一句 + 本部门对话 + 齐套 + 单闸；专家/契约折叠 -->
-    <aside class="pane chat-pane" data-gate-pane aria-label="对话与确认">
+    <aside class="pane chat-pane" data-gate-pane aria-label="对话与右栏闸">
       <div class="right-stack">
         <div class="node-tip" aria-label="本节点一句">
           <span class="node-tip-dept" data-dept-name>交底部</span>
@@ -185,13 +185,13 @@
             权属声明仍缺。建议由法务出具模板后你确认——建议稿 ≠ 确认。
           </div>
           <div class="chat-bubble">
-            <strong>顾言 · 知产负责人</strong>
-            齐套后我会把本关送「待你确认」。类型：<span data-confirm-type>技术事实</span>。
+            <strong>本部门执行助手</strong>
+            齐套交卷后，右栏露出通过/驳回。类型：<span data-confirm-type>技术事实</span>。请先看中栏交卷物再拍板。
           </div>
         </div>
 
         <form class="chat-compose" id="dept-chat-form" autocomplete="off">
-          <input id="dept-chat-input" type="text" placeholder="跟顾言说一句… 或交办本节点" aria-label="对话输入">
+          <input id="dept-chat-input" type="text" placeholder="跟本部门执行助手说一句…" aria-label="对话输入">
           <button class="btn btn-ink btn-sm" type="submit">发送</button>
         </form>
 
@@ -201,8 +201,22 @@
           <p class="missing" data-missing-live>缺项：权属声明</p>
           <p class="gate-meta">齐套 <span class="tabular" data-check-count>0 / 4</span> · 未齐套交卷禁用</p>
           <button class="handoff-button" type="button" data-submit-gate disabled>
-            <span><strong>交卷 · 送待你确认</strong><small>齐套后可点 · 拍板在确认页</small></span>
+            <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏右栏拍板</small></span>
           </button>
+
+          <div class="confirm-rail" data-confirm-rail hidden>
+            <div class="pane-head" style="padding:0 0 8px;border:0">待你确认 · 右栏闸</div>
+            <p class="confirm-rail-title" data-pending-title>确认交底书可接力</p>
+            <p class="confirm-rail-q" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
+            <p class="confirm-rail-detail" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
+            <p class="confirm-rail-blind" data-confirm-blind-hint hidden>先看中栏交卷物</p>
+            <div class="confirm-rail-actions">
+              <button class="btn btn-ink" type="button" data-rail-pass>通过 → 下一部</button>
+              <button class="btn btn-secondary" type="button" data-rail-reject>驳回 · 本台补齐</button>
+              <button class="btn btn-ghost" type="button" data-rail-prev>退回上一部</button>
+            </div>
+            <p class="confirm-rail-note">建议稿 ≠ 确认。中栏须见交卷物正文才可点通过。</p>
+          </div>
         </div>
 
         <details class="rail-collapse node-contract">
