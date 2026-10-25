@@ -895,6 +895,52 @@
     }
   }
 
+  function pendingEvidenceFor(dept) {
+    const primary = deliverableStubFor(dept);
+    const chips = [
+      { id: 'primary', label: dept.deliverable.replace(/^技术/, '') || dept.deliverable, title: primary.title, html: primary.html }
+    ];
+    if (dept.id === 'disclosure') {
+      chips.push({
+        id: 'ownership',
+        label: '权属声明',
+        title: '权属声明（与交底一并确认）',
+        html:
+          '<p class="doc-lead">职务发明权属声明 · 本关拍板依据之一。</p>' +
+          '<h2>一、发明人</h2><p>陈宇等（演示可改）。</p>' +
+          '<h2>二、权属归属</h2>' +
+          '<p>本申请相关技术成果归<strong>澄明科技有限公司</strong>所有，发明人确认无职务发明争议。</p>' +
+          '<h2>三、与交底书关系</h2>' +
+          '<p>权属齐套后，交底书方可作为申请文件部输入。本页决策问句即针对本节。</p>'
+      });
+      chips.push({
+        id: 'interview',
+        label: '访谈纪要 10-20',
+        title: '访谈纪要 10-20',
+        html:
+          '<p class="doc-lead">2026-10-20 技术访谈纪要 · 磁驱泵智能控制。</p>' +
+          '<h2>参与人</h2><p>陈宇（研发）、交底书撰写专家、顾言。</p>' +
+          '<h2>关键事实</h2>' +
+          '<p>1. MP-300 三点校验已在产线验证。</p>' +
+          '<p>2. 超调问题出现在负载阶跃场景。</p>' +
+          '<p>3. 权属需法务出模板后由负责人确认。</p>'
+      });
+    } else {
+      chips.push({
+        id: 'checklist',
+        label: '齐套已勾齐',
+        title: dept.deliverable + ' · 齐套说明',
+        html:
+          '<p class="doc-lead">本关齐套项已齐，可对照中栏交卷物正文拍板。</p>' +
+          '<h2>齐套项</h2><ul>' +
+          (dept.check || []).map(function (c) { return '<li>' + c + '</li>'; }).join('') +
+          '</ul>' +
+          '<p class="fact-highlight">缺项曾标：' + (dept.missing || '—') + '<span>现已勾齐（演示）</span></p>'
+      });
+    }
+    return { primary: primary, chips: chips };
+  }
+
   function wirePending() {
     const key = qs('dept') || 'disclosure';
     const dept = DEPTS[key] || DEPTS.disclosure;
@@ -908,6 +954,52 @@
     fill('[data-pending-fact]', dept.pendingFact);
     fill('[data-pending-detail]', dept.pendingDetail);
     fill('[data-confirm-type]', dept.confirmType);
+
+    const evidence = pendingEvidenceFor(dept);
+    const preview = document.querySelector('[data-artifact-preview]');
+    const previewTitle = document.querySelector('[data-preview-title]');
+    const chipHost = document.querySelector('[data-evidence-chips]');
+    let activeBody = evidence.primary.html;
+    let activeTitle = evidence.primary.title;
+
+    function showPreview(chip) {
+      activeBody = chip.html;
+      activeTitle = chip.title;
+      if (previewTitle) previewTitle.textContent = chip.title;
+      if (preview) {
+        preview.innerHTML = '<h1>' + chip.title + '</h1>' + chip.html;
+        preview.scrollTop = 0;
+      }
+      if (chipHost) {
+        chipHost.querySelectorAll('.evidence-chip').forEach(function (btn) {
+          btn.classList.toggle('active', btn.getAttribute('data-ev') === chip.id);
+        });
+      }
+    }
+
+    if (chipHost) {
+      chipHost.innerHTML = '';
+      evidence.chips.forEach(function (chip, idx) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'evidence-chip' + (idx === 0 ? ' active' : '');
+        btn.setAttribute('data-ev', chip.id);
+        btn.textContent = chip.label;
+        btn.addEventListener('click', function () { showPreview(chip); });
+        chipHost.appendChild(btn);
+      });
+      // Open in dept with this artifact
+      const openDept = document.createElement('a');
+      openDept.className = 'evidence-chip';
+      openDept.setAttribute('data-kind', 'link');
+      openDept.href = withRole('dept.html?dept=' + dept.id);
+      openDept.textContent = '部门台全文 →';
+      chipHost.appendChild(openDept);
+    }
+    showPreview(evidence.chips[0]);
+
+    const openInDept = document.querySelector('[data-open-in-dept]');
+    if (openInDept) openInDept.href = withRole('dept.html?dept=' + dept.id);
 
     const back = document.querySelector('[data-reject-link]');
     if (back) {
@@ -932,7 +1024,9 @@
           fact: dept.pendingFact,
           confirmType: dept.confirmType,
           at: new Date().toISOString(),
-          next: dept.next
+          next: dept.next,
+          bodyTitle: evidence.primary.title,
+          bodyHtml: evidence.primary.html
         };
         setSnapshot(snapshot);
         const d = getDelegation();
@@ -949,6 +1043,10 @@
           snap.querySelector('[data-snap-deliverable]').textContent = dept.deliverable;
           snap.querySelector('[data-snap-fact]').textContent = dept.pendingFact;
           snap.querySelector('[data-snap-next]').textContent = nextName;
+          const snapTitle = snap.querySelector('[data-snap-preview-title]');
+          const snapBody = snap.querySelector('[data-snap-body]');
+          if (snapTitle) snapTitle.textContent = evidence.primary.title;
+          if (snapBody) snapBody.innerHTML = '<h1>' + evidence.primary.title + '</h1>' + evidence.primary.html;
           const goNext = snap.querySelector('[data-relay-next]');
           if (goNext) {
             if (dept.next) {
@@ -959,6 +1057,7 @@
               goNext.textContent = '回公司首页';
             }
           }
+          try { snap.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (_) {}
         } else {
           location.href = withRole('company.html?snapshot=1');
         }
@@ -976,6 +1075,22 @@
       slot.querySelector('[data-snap-dept]').textContent = snap.deptName || '';
       slot.querySelector('[data-snap-deliverable]').textContent = snap.deliverable || '';
       slot.querySelector('[data-snap-fact]').textContent = snap.fact || '';
+      const titleEl = slot.querySelector('[data-snap-preview-title]');
+      const bodyEl = slot.querySelector('[data-snap-body]');
+      const title = snap.bodyTitle || snap.deliverable || '';
+      if (titleEl) titleEl.textContent = title;
+      if (bodyEl) {
+        if (snap.bodyHtml) {
+          bodyEl.innerHTML = '<h1>' + title + '</h1>' + snap.bodyHtml;
+        } else {
+          const dept = DEPTS[snap.dept] || DEPTS.disclosure;
+          const stub = deliverableStubFor(dept);
+          bodyEl.innerHTML = '<h1>' + stub.title + '</h1>' + stub.html;
+          if (titleEl) titleEl.textContent = stub.title;
+        }
+      }
+      const link = slot.querySelector('[data-snap-pending-link]');
+      if (link && snap.dept) link.href = withRole('pending.html?dept=' + snap.dept);
     }
     wireCompanyDeptFaces();
     wireCompanyDrawer();

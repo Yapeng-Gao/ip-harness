@@ -58,9 +58,9 @@
 </aside>
 <main class="content">
 
-  <p class="kicker">确认页 · G2 / G3</p>
+  <p class="kicker">确认页 · 先读再拍板</p>
   <h1 class="page-title">待你确认</h1>
-  <p class="page-sub">这是拍板，不是下一步。通过后可见交付快照；驳回回流当前部补齐。</p>
+  <p class="page-sub">先看本关交卷物正文，再决定通过或驳回。拍板不是下一步；驳回回流当前部补齐。</p>
 
   <article class="pending-card" data-pending-card>
     <header>
@@ -69,18 +69,35 @@
       <p style="margin:0;color:var(--ink-3);font-size:13px"><span data-dept-name>交底部</span> · 交卷物 <strong data-deliverable>技术交底书 V3</strong></p>
     </header>
     <div class="body">
-      <p style="margin:0 0 10px;font-size:15px;font-weight:600" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
-      <p style="margin:0 0 14px;color:var(--ink-2);font-size:13px;line-height:1.65" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
-      <div style="border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--warm-paper);font-size:12px;color:var(--ink-2)">
-        <strong style="display:block;color:var(--ink);margin-bottom:4px">依据 / 版本</strong>
-        交底书 V3 · 访谈纪要 10-20 · 齐套已勾齐（入口侧 G1 已过）
+      <p class="pending-question" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
+      <p class="pending-detail" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
+
+      <div class="evidence-bar" data-evidence-bar>
+        <strong>依据 / 版本</strong>
+        <div class="evidence-chips" data-evidence-chips>
+          <!-- filled by app.js -->
+        </div>
       </div>
-      <p style="margin:14px 0 0;font-size:12px;color:var(--ink-3)">专家建议稿标「非签字」。质检勾选 ≠ 确认权。起草人不得自批。</p>
+
+      <section class="artifact-preview" aria-label="本关交卷物预览">
+        <div class="artifact-preview-head">
+          <div>
+            <span class="artifact-preview-kicker">本关交卷物 · 可读正文</span>
+            <strong data-preview-title>技术交底书 V3</strong>
+          </div>
+          <a class="weak-link" href="dept.html?dept=disclosure" data-open-in-dept data-keep-role>在部门台打开 →</a>
+        </div>
+        <div class="artifact-preview-scroll document" data-artifact-preview tabindex="0">
+          <!-- filled by app.js with same sample body as dept center -->
+        </div>
+      </section>
+
+      <p class="pending-note">专家建议稿标「非签字」。质检勾选 ≠ 确认权。起草人不得自批。先读上方正文，再点通过或驳回。</p>
     </div>
     <div class="pending-actions">
       <button class="btn btn-ink" type="button" data-pass-link>通过 → 移交并出示快照</button>
       <button class="btn btn-secondary" type="button" data-reject-link>驳回 → 回流补齐</button>
-      <button class="btn btn-danger" type="button" disabled title="G2：起草人不得自批">自批（禁用）</button>
+      <button class="btn btn-danger" type="button" disabled title="起草人不得自批">自批（禁用）</button>
     </div>
   </article>
 
@@ -90,6 +107,15 @@
     <p>交卷摘要：<strong data-snap-deliverable></strong></p>
     <p>已确认事实：<span data-snap-fact></span></p>
     <p>下一部门：<strong data-snap-next></strong></p>
+    <section class="artifact-preview artifact-preview-snap" aria-label="已确认交卷物摘要">
+      <div class="artifact-preview-head">
+        <div>
+          <span class="artifact-preview-kicker">已确认交卷物 · 正文摘要</span>
+          <strong data-snap-preview-title></strong>
+        </div>
+      </div>
+      <div class="artifact-preview-scroll document" data-snap-body></div>
+    </section>
     <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
       <a class="btn btn-ink" href="#" data-relay-next>接力 → 下一部</a>
       <a class="btn btn-secondary" href="company.html" data-keep-role>回公司首页（快照保留）</a>
