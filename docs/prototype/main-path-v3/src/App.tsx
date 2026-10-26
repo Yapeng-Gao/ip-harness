@@ -4,7 +4,7 @@ import {
   PanelLeft, ArrowRight, ArrowUp, ArrowUpRight, Bell, BookOpen, BriefcaseBusiness,
   Building2, Cable, Check, CheckCircle2, ChevronDown, ChevronRight,
   CircleAlert, CircleHelp, Clock3, FileCheck2, FileClock,
-  Files, FileText, FlaskConical, FolderKanban, GitBranch, Library,
+  Files, FileText, FlaskConical, GitBranch, Library,
   Download, Menu, MessageSquareText, MoreHorizontal, Network, Paperclip, PenLine, Plus,
   Rocket, Search, Send, Settings2, ShieldCheck, Sparkles, Stamp, Upload, X,
 } from 'lucide-react'
@@ -170,7 +170,7 @@ export default function App() {
   const [leadInput, setLeadInput] = useState('')
   const [leadRequest, setLeadRequest] = useState('')
   const [studioTab, setStudioTab] = useState<StudioTab>('department')
-  const [leftPaneOpen, setLeftPaneOpen] = useState(false)
+  const [leftPaneOpen, setLeftPaneOpen] = useState(true)
   const [studioAdvancedOpen, setStudioAdvancedOpen] = useState(false)
   const [mcpEnabled, setMcpEnabled] = useState(['专利文献检索', '案件与期限管理'])
   const [prompt, setPrompt] = useState('先核对输入事实与证据来源，再开始起草。不得补造技术效果；涉及保护范围、法律结论和对外递交时，必须提交真实人员确认。')
@@ -223,7 +223,7 @@ export default function App() {
     setWorkContext(context)
     const fresh = opts?.fresh === true
     if (fresh) setHandedOff(false)
-    setLeftPaneOpen(false)
+    setLeftPaneOpen(true)
     setActiveDoc(oa ? '意见陈述书' : context === 'storage' ? '权利要求草案' : (!fresh && handedOff) ? '权利要求草案' : (fresh ? '交底书草稿' : '交底书'))
     setActiveDept(opts?.deptId ?? (oa ? 'oa' : context === 'storage' ? 'quality' : (!fresh && handedOff) ? 'drafting' : 'disclosure'))
     setActiveProjectCode(oa ? 'CN202610483217.6' : context === 'storage' ? 'CN202610512086.4' : 'RD-2026-017')
@@ -428,7 +428,7 @@ export default function App() {
   }
   const advanceFreshProcess = () => {
     if (!workFresh) {
-      notify('演示项目已有过程资产，可展开卷宗查看输入 / 过程 / 产物')
+      notify('演示项目已有过程资产，可从左栏查看输入 / 过程 / 产物')
       return
     }
     const inputCount = docket.filter(d => d.bucket === 'input').length
@@ -600,10 +600,8 @@ export default function App() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
-  const enterpriseNav = [
-    { id: 'projects' as View, label: '项目与对象', icon: FolderKanban, count: 5 },
-    { id: 'assets' as View, label: '专利资产', icon: Library },
-  ]
+  // 工作台态壳侧栏不再放「项目与对象 / 专利资产」；列表从首页「全部项目」或顶栏返回进入
+  const enterpriseNav: { id: View; label: string; icon: typeof Library; count?: number }[] = []
   const agencyNav = [
     { id: 'clients' as View, label: '客户与案件', icon: BriefcaseBusiness, count: 12 },
   ]
@@ -899,13 +897,13 @@ export default function App() {
           <div className="editor-pane">
             <div className="editor-tabs" role="tablist">{workTabs.map(doc => <button key={doc} role="tab" aria-selected={activeDoc === doc} className={activeDoc === doc ? 'active' : ''} onClick={() => setActiveDoc(doc)}>{doc}{activeDoc === doc && <span />}</button>)}<button className="icon-btn" onClick={() => setModal('new')} aria-label="新建文件"><Plus size={16} /></button></div>
             <div className="editor-toolbar"><div><button onClick={() => notify('已切换为编辑模式')}><PenLine size={15} />编辑</button><button onClick={() => notify('批注模式已开启')}><MessageSquareText size={15} />批注</button><button onClick={() => notify('版本对比已生成')}>对比版本</button><button type="button" onClick={() => downloadDemo(`${activeDoc}.pdf`)}><Download size={15} />下载</button></div><span className={saved ? '' : 'editing'}>{saved ? <><Check size={13} />已保存</> : '编辑中'}</span></div>
-            {role === 'enterprise' && <div className="lead-workbench"><Avatar name="顾" small /><div><strong>顾言 · 知产负责人</strong><p>{oaMode ? 'OA 答复部已拆解争议并准备答复文本。你只需确认修改范围与实际生产方案。' : storageMode ? '申请文件部与质量审查部正在核查文本一致性。我会汇总问题，再请你确认申请策略。' : workFresh ? (workPlanIndex === 0 ? '卷宗还是空的。用中栏「上传」或右栏附件补输入材料，再点「推进专家动作」看专家如何产出。' : workPlanIndex < 3 ? '专家动作正在写入过程资产；中栏会在撰写步出现草稿。' : '交卷物已入产物栏，请在确认闸拍板后再接力。') : handedOff ? '申请文件部已接手。我会汇总权利要求与说明书进展，涉及保护范围时再请你决策。' : '交底书部正在完善文本。中文书 · 右确认闸同屏；需要卷宗时点顶栏展开。你只需处理标出的技术事实。'}</p></div><Status tone="orange">主舞台 + 确认闸</Status></div>}
+            {role === 'enterprise' && <div className="lead-workbench"><Avatar name="顾" small /><div><strong>顾言 · 知产负责人</strong><p>{oaMode ? 'OA 答复部已拆解争议并准备答复文本。你只需确认修改范围与实际生产方案。' : storageMode ? '申请文件部与质量审查部正在核查文本一致性。我会汇总问题，再请你确认申请策略。' : workFresh ? (workPlanIndex === 0 ? '卷宗还是空的。用中栏「上传」或右栏附件补输入材料，再点「推进专家动作」看专家如何产出。' : workPlanIndex < 3 ? '专家动作正在写入过程资产；中栏会在撰写步出现草稿。' : '交卷物已入产物栏，请在确认闸拍板后再接力。') : handedOff ? '申请文件部已接手。我会汇总权利要求与说明书进展，涉及保护范围时再请你决策。' : '交底书部正在完善文本。左卷宗 · 中文书 · 右确认闸同屏。你只需处理标出的技术事实。'}</p></div><Status tone="orange">三栏工作台</Status></div>}
             <div className="document-scroll">
               {oaMode ? <AgencyDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : storageMode ? <StorageDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : workFresh && workPlanIndex < 2 ? (
                 <article className="document document-empty">
                   <div className="doc-meta"><span>交底书 · 尚未形成</span><Status tone="orange">空卷宗起步</Status></div>
                   <h1>中间稿还没出现</h1>
-                  <p className="doc-lead">确认计划后从空材料开始。先上传交底 / 图纸 / 试验记录，再推进专家动作；过程稿进入过程资产，交卷物进入产物（可从顶栏展开卷宗查看）。</p>
+                  <p className="doc-lead">确认计划后从空材料开始。先上传交底 / 图纸 / 试验记录，再推进专家动作；过程稿进入过程资产，交卷物进入产物（左栏卷宗可查看）。</p>
                   <div className="empty-doc-steps">
                     <div><span>01</span><strong>补输入</strong><small>上传交底 / 图纸</small></div>
                     <div><span>02</span><strong>专家动作</strong><small>访谈列缺口 → 纪要</small></div>
@@ -1088,7 +1086,7 @@ export default function App() {
       <section><span className="guide-number">02</span><div><h3>首页、项目、部门，共享同一业务底座</h3><p>首页：顾言委托、跨案待办与消息；项目：对象列表与工作台；部门：花名册 + 工作室配置（Skill、提示词、MCP）。协同消息从首页「全部消息」或顶栏通知进入，不做首页双强调、不做第四主 tab。切换模式不会另建项目或丢失版本。</p></div></section>
       <section><span className="guide-number">03</span><div><h3>两条业务主线，多种对象独立推进</h3><p>权利形成线覆盖创新、挖掘、布局、申请、审查与运营；风险防控线覆盖产品拆解、FTO、比对和规避。研发项目、申请案件、产品风险与专利资产分别管理状态，可关联、并行、回退或重开。</p></div></section>
       <section><span className="guide-number">04</span><div><h3>三类空间，按权限接力</h3><p>企业私有、代理所私有和双方共享空间相互隔离。部门只继承本任务所需的事实、证据、版本与决策；跨组织交付绑定版本、交付人、时间、可见范围和确认记录。</p></div></section>
-      <section><span className="guide-number">05</span><div><h3>一屏三栏工作台，确认控制流程</h3><p>工作台默认中主舞台 + 右协同确认闸；卷宗栏可按需从顶栏展开。首页计划卡展示建议部门、交卷物、齐套要点、确认类型与可调接力链（链首决定进哪部）；确认后立刻进入链首工作台。技术事实确认后还要确认节点交付，再由你决定是否接力，不会自动递交。</p></div></section>
+      <section><span className="guide-number">05</span><div><h3>一屏三栏工作台，确认控制流程</h3><p>工作台一屏三栏：左卷宗（输入/过程/产物）· 中文书 · 右协同确认闸。首页计划卡展示建议部门、交卷物、齐套要点、确认类型与可调接力链（链首决定进哪部）；确认后立刻进入链首工作台。技术事实确认后还要确认节点交付，再由你决定是否接力，不会自动递交。</p></div></section>
       <div className="guide-demo"><strong>建议这样体验原型</strong><div><button onClick={() => { switchRole('enterprise'); switchMode('assistant'); setModal(null) }}>企业首页</button><ArrowRight size={15} /><button onClick={() => { switchRole('enterprise'); switchMode('project'); setModal(null) }}>项目列表</button><ArrowRight size={15} /><button onClick={() => { switchMode('studio'); setModal(null) }}>部门</button><ArrowRight size={15} /><button onClick={() => { switchRole('agency'); openWorkbench(true); setModal(null) }}>代理所 OA 工作台</button></div></div>
     </div></Modal>}
   </div>
