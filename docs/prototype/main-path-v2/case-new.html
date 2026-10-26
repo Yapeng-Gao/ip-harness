@@ -12,10 +12,7 @@
     <span class="brand-mark">虚</span>
     <span class="brand-copy"><strong>虚拟知产公司</strong><small>VIRTUAL IP COMPANY</small></span>
   </a>
-  <div class="topbar-context">
-    <span class="context-label">当前项目</span>
-    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
-  </div>
+  <div class="topbar-context topbar-context-cross" data-shell="cross" aria-hidden="true"></div>
   <div class="topbar-actions">
     <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
@@ -90,7 +87,7 @@
     document.getElementById('new-case').addEventListener('submit', (e) => {
       e.preventDefault();
       if (!document.getElementById('case-name').value.trim()) return;
-      MPV2.setHasCase(true); location.href = MPV2.withRole('company.html');
+      MPV2.setHasCase(true); MPV2.setActiveCase('mp'); location.href = MPV2.withRole('company.html');
     });
     document.getElementById('create-delegate').addEventListener('click', () => {
       const name = document.getElementById('case-name').value.trim();
@@ -98,7 +95,7 @@
       if (!name) { MPV2.toast('请填写案名'); return; }
       const plan = MPV2.planFromGoal(goal);
       MPV2.setDelegation({ goal: plan.goal, step: 'plan', dept: plan.deptId });
-      MPV2.setHasCase(true); location.href = MPV2.withRole('delegate.html?step=plan');
+      MPV2.setHasCase(true); MPV2.setActiveCase('mp'); location.href = MPV2.withRole('delegate.html?step=plan');
     });
   });
   </script>

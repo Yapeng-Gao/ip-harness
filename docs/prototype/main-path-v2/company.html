@@ -13,9 +13,19 @@
     <span class="brand-copy"><strong>虚拟知产公司</strong><small>VIRTUAL IP COMPANY</small></span>
     <span class="brand-goal">尽快把专利申下来</span>
   </a>
-  <div class="topbar-context">
-    <span class="context-label">当前项目</span>
-    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
+  <div class="topbar-context" data-shell="case">
+    <details class="case-switcher" data-case-switcher>
+      <summary class="case-switcher-sum" aria-label="切换案子">
+        <span class="case-switcher-name" data-active-case-name>磁驱泵智能控制系统</span>
+        <span class="case-switcher-caret" aria-hidden="true">▾</span>
+      </summary>
+      <div class="case-switcher-panel" role="menu">
+        <div class="case-switcher-label">最近</div>
+        <div class="case-switcher-recent" data-case-recent></div>
+        <a class="case-switcher-item" href="cases.html" data-keep-role data-switch-all role="menuitem">全部案子</a>
+        <a class="case-switcher-item case-switcher-new" href="case-new.html" data-keep-role data-switch-new role="menuitem">开新案子</a>
+      </div>
+    </details>
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
@@ -76,18 +86,21 @@
 <main class="content">
 
   <p class="kicker">一案一公司</p>
-  <h1 class="page-title">磁驱泵智能控制系统</h1>
-  <p class="page-sub" data-show-mode="project">尽快申下来。当前交底部 · 缺权属声明 · 距可递交还 5 站。</p>
+  <h1 class="page-title" data-active-case-title>磁驱泵智能控制系统</h1>
+  <p class="page-sub" data-show-mode="project" data-case-sub>尽快申下来。当前交底部 · 缺权属声明 · 距可递交还 5 站。</p>
   <p class="page-sub hidden" data-show-mode="assistant">以顾言委托与待确认为主；七部地图已收起，需要时可唤回。</p>
 
-  <!-- 案况一句：状态 / 下一拍板 / 齐套缺口 -->
-  <section class="case-status-strip" aria-label="本案状态">
+  <!-- 告知义务：卡点 / 下一步 / 谁在干 -->
+  <section class="case-status-strip" aria-label="本案状态" data-case-inform>
     <div class="case-status-main">
       <span class="tag"><span class="tag-dot"></span>交底部 · 进行中</span>
-      <strong>下一拍板：权属是否归澄明科技</strong>
-      <span class="case-status-gap">齐套缺口 · 缺权属声明 · 阻塞接力</span>
+      <ul class="case-inform-list">
+        <li><span class="case-inform-k">卡点</span><strong data-case-block>缺权属声明，阻塞交卷</strong></li>
+        <li><span class="case-inform-k">下一步</span><strong data-case-next>补齐权属并送确认</strong></li>
+        <li><span class="case-inform-k">谁在干</span><strong data-case-who>权属核验专家在办 · 待你确认</strong></li>
+      </ul>
     </div>
-    <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role>去当前部门 →</a>
+    <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role data-case-go-dept>去当前部门 →</a>
   </section>
 
   <section class="case-progress-strip" aria-label="主链进度 · 当前站到可递交">

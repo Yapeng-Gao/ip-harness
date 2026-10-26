@@ -12,11 +12,7 @@
     <span class="brand-mark">虚</span>
     <span class="brand-copy"><strong>虚拟知产公司</strong><small>VIRTUAL IP COMPANY</small></span>
   </a>
-  <div class="topbar-context">
-    <span class="context-label">当前项目</span>
-    <button class="context-button" type="button">磁驱泵智能控制系统 ▾</button>
-    <span class="tier-cue" data-tier-cue aria-live="polite"></span>
-  </div>
+  <div class="topbar-context topbar-context-cross" data-shell="cross" aria-hidden="true"></div>
   <div class="topbar-actions">
     <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
@@ -73,7 +69,7 @@
   <p class="kicker" data-show-role="agency">案盘</p>
   <p class="kicker hidden" data-show-role="enterprise">我的案子</p>
   <h1 class="page-title">进行中的案子</h1>
-  <p class="page-sub" data-show-mode="project">跨案清单：卡住哪、谁待确认、期限红点。点行进本案公司，再进工作台。</p>
+  <p class="page-sub" data-show-mode="project">跨案清单：卡点、下一步、谁在干、期限红点。点行进本案公司，再进工作台。</p>
   <p class="page-sub hidden" data-show-mode="assistant">侧栏已收起；案盘保留，便于从这里进案。</p>
 
   <div class="cases-toolbar">
@@ -86,31 +82,41 @@
     </div>
   </div>
 
-  <div class="cases-table" data-cases-list>
-    <div class="head"><span>案子 / 客户</span><span>当前部门</span><span>状态</span><span>期限</span><span></span></div>
-    <a class="row" href="company.html" data-keep-role data-case-status="pending" data-case-deadline="today" style="color:inherit">
-      <span><strong>磁驱泵智能控制</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
-      <span>交底部</span><span><span class="tag"><span class="tag-dot"></span>待确认</span></span>
+  <div class="cases-table cases-table-inform" data-cases-list>
+    <div class="head"><span>案子 / 客户</span><span>卡点</span><span>下一步</span><span>谁在干</span><span>期限</span><span></span></div>
+    <a class="row" href="company.html" data-keep-role data-case-id="mp" data-case-status="pending" data-case-deadline="today" style="color:inherit">
+      <span><strong>磁驱泵智能控制</strong><br><small style="color:var(--ink-3)">澄明科技 · 交底部</small></span>
+      <span>缺权属声明，阻塞交卷</span>
+      <span>补齐权属并送确认</span>
+      <span>权属核验专家在办 · 待你确认</span>
       <span class="deadline-cell"><span class="urgency-dot today" title="今日到期"></span>今天 14:30</span><span class="weak-link">本案公司 →</span>
     </a>
-    <a class="row" href="company.html" data-keep-role data-case-status="pending" data-case-deadline="soon" style="color:inherit">
-      <span><strong>低能耗膜分离工艺</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
-      <span>审查答复</span><span><span class="tag"><span class="tag-dot"></span>商业与风险决策</span></span>
+    <a class="row" href="company.html" data-keep-role data-case-id="ms" data-case-status="pending" data-case-deadline="soon" style="color:inherit">
+      <span><strong>低能耗膜分离工艺</strong><br><small style="color:var(--ink-3)">澄明科技 · 审查答复</small></span>
+      <span>企业确认意见未齐</span>
+      <span>确认答复策略</span>
+      <span>林岚 · 代理师等复核</span>
       <span class="deadline-cell"><span class="urgency-dot soon" title="即将到期"></span>剩余 18 天</span><span class="weak-link">本案公司 →</span>
     </a>
-    <a class="row" href="company.html" data-keep-role data-case-status="active" data-case-deadline="today" style="color:inherit">
-      <span><strong>模块化储能热管理</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
-      <span>撰写部</span><span><span class="tag tag-ink"><span class="tag-dot"></span>齐套中</span></span>
+    <a class="row" href="company.html" data-keep-role data-case-id="es" data-case-status="active" data-case-deadline="today" style="color:inherit">
+      <span><strong>模块化储能热管理</strong><br><small style="color:var(--ink-3)">澄明科技 · 撰写部</small></span>
+      <span>权项树未齐</span>
+      <span>补齐权项树后交卷</span>
+      <span>权利要求专家在办</span>
       <span class="deadline-cell"><span class="urgency-dot today" title="今日到期"></span>今天 17:00</span><span class="weak-link">本案公司 →</span>
     </a>
-    <a class="row" href="company.html" data-keep-role data-case-status="active" data-case-deadline="soon" style="color:inherit">
-      <span><strong>微型气泵密封结构</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
-      <span>递交与程序</span><span><span class="tag tag-green"><span class="tag-dot"></span>可递交</span></span>
+    <a class="row" href="company.html" data-keep-role data-case-id="ap" data-case-status="active" data-case-deadline="soon" style="color:inherit">
+      <span><strong>微型气泵密封结构</strong><br><small style="color:var(--ink-3)">澄明科技 · 递交与程序</small></span>
+      <span>等授权人确认</span>
+      <span>授权人确认后对外递交</span>
+      <span>流程事务专家待命</span>
       <span class="deadline-cell"><span class="urgency-dot soon"></span>明天 10:00</span><span class="weak-link">本案公司 →</span>
     </a>
-    <a class="row" href="company.html" data-keep-role data-case-status="active" data-case-deadline="ok" style="color:inherit">
-      <span><strong>车载热泵阀体</strong><br><small style="color:var(--ink-3)">澄明科技</small></span>
-      <span>查新部</span><span><span class="tag tag-ink"><span class="tag-dot"></span>检索中</span></span>
+    <a class="row" href="company.html" data-keep-role data-case-id="hp" data-case-status="active" data-case-deadline="ok" style="color:inherit">
+      <span><strong>车载热泵阀体</strong><br><small style="color:var(--ink-3)">澄明科技 · 查新部</small></span>
+      <span>结论稿未齐</span>
+      <span>写完结论稿再送立项</span>
+      <span>检索分析专家在办</span>
       <span class="deadline-cell"><span class="urgency-dot"></span>本周五</span><span class="weak-link">本案公司 →</span>
     </a>
   </div>

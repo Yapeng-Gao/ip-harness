@@ -434,6 +434,27 @@
     if (!raw || WORK_PAGES.indexOf(base) === -1) return fallback || 'company.html';
     return raw;
   }
+  /* Demo case catalog — 项目≈案；告知卡点/下一步/谁在干 */
+  const CASES = [
+    { id: 'mp', name: '磁驱泵智能控制系统', short: '磁驱泵智能控制', glyph: 'MP', dept: 'disclosure', deptName: '交底部',
+      block: '缺权属声明，阻塞交卷', next: '补齐权属并送确认', who: '权属核验专家在办 · 待你确认',
+      status: 'pending', deadline: 'today', client: '澄明科技', progress: '距可递交还 5 站' },
+    { id: 'ms', name: '低能耗膜分离工艺', short: '低能耗膜分离工艺', glyph: 'MS', dept: 'oa', deptName: '审查答复',
+      block: '企业确认意见未齐', next: '确认答复策略', who: '林岚 · 代理师等复核',
+      status: 'pending', deadline: 'soon', client: '澄明科技', progress: '答复策略待拍板' },
+    { id: 'es', name: '模块化储能热管理', short: '模块化储能热管理', glyph: 'ES', dept: 'draft', deptName: '撰写部',
+      block: '权项树未齐', next: '补齐权项树后交卷', who: '权利要求专家在办',
+      status: 'active', deadline: 'today', client: '澄明科技', progress: '距可递交还 2 站' },
+    { id: 'ap', name: '微型气泵密封结构', short: '微型气泵密封结构', glyph: 'AP', dept: 'filing', deptName: '递交与程序',
+      block: '等授权人确认', next: '授权人确认后对外递交', who: '流程事务专家待命',
+      status: 'active', deadline: 'soon', client: '澄明科技', progress: '可递交前一拍' },
+    { id: 'hp', name: '车载热泵阀体', short: '车载热泵阀体', glyph: 'HP', dept: 'research', deptName: '查新部',
+      block: '结论稿未齐', next: '写完结论稿再送立项', who: '检索分析专家在办',
+      status: 'active', deadline: 'ok', client: '澄明科技', progress: '距可递交还 4 站' }
+  ];
+  const CASE_SHELL_PAGES = ['company', 'dept', 'professional'];
+  const CROSS_CASE_PAGES = ['home', 'cases', 'case-new'];
+
   function hasCase() {
     if (qs('nocase') === '1') return false;
     if (qs('hascase') === '1') return true;
@@ -442,6 +463,7 @@
   }
   function setHasCase(on) {
     localStorage.setItem('mpv2-has-case', on ? '1' : '0');
+    if (!on) localStorage.setItem('mpv2-active-case', '');
     applyHasCaseUI();
   }
   function applyHasCaseUI() {
@@ -451,6 +473,51 @@
       const want = el.dataset.homeCase; // has | none
       el.classList.toggle('hidden', want === 'has' ? !on : on);
     });
+  }
+  function getCase(id) {
+    return CASES.find(c => c.id === id) || null;
+  }
+  function activeCaseId() {
+    if (qs('nocase') === '1') return '';
+    if (qs('noactive') === '1') return '';
+    const fromQs = qs('case');
+    if (fromQs && getCase(fromQs)) return fromQs;
+    const v = localStorage.getItem('mpv2-active-case');
+    if (v === '') return '';
+    if (v && getCase(v)) return v;
+    // default demo: first case when has cases
+    return hasCase() ? 'mp' : '';
+  }
+  function activeCase() {
+    return getCase(activeCaseId());
+  }
+  function setActiveCase(id) {
+    if (!id) {
+      localStorage.setItem('mpv2-active-case', '');
+      return;
+    }
+    if (!getCase(id)) return;
+    localStorage.setItem('mpv2-active-case', id);
+    localStorage.setItem('mpv2-has-case', '1');
+  }
+  function projectLandingHref() {
+    if (!hasCase()) return 'case-new.html';
+    const id = activeCaseId();
+    if (id && getCase(id)) return 'company.html';
+    return 'cases.html';
+  }
+  function syncActiveCaseQuery() {
+    if (qs('nocase') === '1') {
+      localStorage.setItem('mpv2-has-case', '0');
+      localStorage.setItem('mpv2-active-case', '');
+    }
+    if (qs('hascase') === '1') localStorage.setItem('mpv2-has-case', '1');
+    if (qs('noactive') === '1') localStorage.setItem('mpv2-active-case', '');
+    const c = qs('case');
+    if (c && getCase(c)) {
+      localStorage.setItem('mpv2-active-case', c);
+      localStorage.setItem('mpv2-has-case', '1');
+    }
   }
   function withRole(href) {
     const u = new URL(href, location.href);
@@ -539,20 +606,48 @@
   }
   function setMode(m) {
     const page = document.body.dataset.page || '';
-    if (m === 'studio' && page !== 'professional') {
-      rememberLastWork();
-      localStorage.setItem('mpv2-mode', 'studio');
-      location.href = withRole('professional.html');
+    if (m === 'project') {
+      localStorage.setItem('mpv2-mode', 'project');
+      // Already on case-shell workbench (company/dept): stay, soft apply
+      if (page === 'company' || page === 'dept') {
+        applyModeUI('project');
+        return;
+      }
+      if (page === 'professional') {
+        location.href = withRole(activeCaseId() ? (lastWorkHref('company.html')) : projectLandingHref());
+        return;
+      }
+      // Cross-case or other: 项目 tab 三态着陆
+      location.href = withRole(projectLandingHref());
       return;
     }
-    if (m !== 'studio' && page === 'professional') {
-      localStorage.setItem('mpv2-mode', m);
-      if (m === 'assistant') {
+    if (m === 'studio') {
+      // 专业须带案：无活跃案不得假编制
+      if (!hasCase() || !activeCaseId()) {
+        toast('专业须先有案：请先打开或开一个案子');
+        localStorage.setItem('mpv2-mode', 'project');
+        location.href = withRole(projectLandingHref());
+        return;
+      }
+      if (page !== 'professional') {
+        rememberLastWork();
+        localStorage.setItem('mpv2-mode', 'studio');
+        location.href = withRole('professional.html');
+        return;
+      }
+      localStorage.setItem('mpv2-mode', 'studio');
+      applyModeUI('studio');
+      return;
+    }
+    // assistant：不假锁当前案——跨案薄入口；顶栏无「当前项目」
+    if (m === 'assistant') {
+      localStorage.setItem('mpv2-mode', 'assistant');
+      if (page === 'professional') {
         location.href = withRole('home.html');
         return;
       }
-      // project: restore last work surface to avoid studio↔pro bounce
-      location.href = withRole(lastWorkHref('company.html'));
+      // home / company / cases：同页助手态；跨案面顶栏已无案锁
+      applyModeUI('assistant');
       return;
     }
     localStorage.setItem('mpv2-mode', m);
@@ -567,11 +662,88 @@
 
   function ensureProfessionalLanding() {
     const page = document.body.dataset.page || '';
+    if (page === 'professional') {
+      // 专业须带案：直开 professional 无活跃案 → 先落到有案语境
+      if (!hasCase() || !activeCaseId()) {
+        localStorage.setItem('mpv2-mode', 'project');
+        location.replace(withRole(projectLandingHref()));
+        return true;
+      }
+      return false;
+    }
     if (mode() === 'studio' && WORK_PAGES.indexOf(page) !== -1) {
+      if (!hasCase() || !activeCaseId()) {
+        localStorage.setItem('mpv2-mode', 'project');
+        location.replace(withRole(projectLandingHref()));
+        return true;
+      }
       location.replace(withRole('professional.html'));
       return true;
     }
     return false;
+  }
+
+  function wireCaseSwitcher() {
+    const page = document.body.dataset.page || '';
+    const isCaseShell = CASE_SHELL_PAGES.indexOf(page) !== -1;
+    // Cross-case: strip any leftover fake lock (defense in depth)
+    if (CROSS_CASE_PAGES.indexOf(page) !== -1) {
+      document.querySelectorAll('.topbar-context .context-label, .topbar-context .context-button').forEach(el => el.remove());
+    }
+    if (!isCaseShell) return;
+    const c = activeCase();
+    if (!c) {
+      // case shell without active → bounce to landing
+      location.replace(withRole(projectLandingHref()));
+      return;
+    }
+    document.querySelectorAll('[data-active-case-name]').forEach(el => {
+      el.textContent = c.name;
+    });
+    document.querySelectorAll('[data-active-case-title]').forEach(el => {
+      el.textContent = c.name;
+    });
+    document.querySelectorAll('[data-case-block]').forEach(el => { el.textContent = c.block; });
+    document.querySelectorAll('[data-case-next]').forEach(el => { el.textContent = c.next; });
+    document.querySelectorAll('[data-case-who]').forEach(el => { el.textContent = c.who; });
+    document.querySelectorAll('[data-case-sub]').forEach(el => {
+      el.textContent = '尽快申下来。当前' + c.deptName + ' · ' + c.block + ' · ' + c.progress + '。';
+    });
+    document.querySelectorAll('[data-case-go-dept]').forEach(a => {
+      a.setAttribute('href', 'dept.html?dept=' + c.dept);
+    });
+    const recent = document.querySelector('[data-case-recent]');
+    if (recent) {
+      const recentIds = [c.id].concat(CASES.map(x => x.id).filter(id => id !== c.id)).slice(0, 4);
+      recent.innerHTML = recentIds.map(id => {
+        const item = getCase(id);
+        const on = id === c.id ? ' is-active' : '';
+        return '<button type="button" class="case-switcher-item' + on + '" data-switch-case="' + id + '" role="menuitem">' +
+          '<strong>' + item.short + '</strong><small>' + item.deptName + ' · ' + item.block + '</small></button>';
+      }).join('');
+      recent.querySelectorAll('[data-switch-case]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setActiveCase(btn.dataset.switchCase);
+          localStorage.setItem('mpv2-mode', 'project');
+          location.href = withRole('company.html');
+        });
+      });
+    }
+    document.querySelectorAll('[data-switch-all]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        // 全部 → 案盘；不强制清 active（再点项目仍可回公司）
+        localStorage.setItem('mpv2-mode', 'project');
+        location.href = withRole('cases.html');
+      });
+    });
+    document.querySelectorAll('[data-switch-new]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.setItem('mpv2-mode', 'project');
+        location.href = withRole('case-new.html');
+      });
+    });
   }
 
   function goWorkDept(deptId) {
@@ -667,12 +839,12 @@
 
   function wireShell() {
     if (qs('role')) localStorage.setItem('mpv2-role', qs('role'));
-    if (qs('nocase') === '1') localStorage.setItem('mpv2-has-case', '0');
-    if (qs('hascase') === '1') localStorage.setItem('mpv2-has-case', '1');
+    syncActiveCaseQuery();
     ensureBrandGoal();
     applyRoleUI(role());
     applyModeUI(mode());
     applyHasCaseUI();
+    wireCaseSwitcher();
     document.querySelectorAll('.role-switch button').forEach(btn => {
       btn.addEventListener('click', () => {
         setRole(btn.dataset.role);
@@ -2164,6 +2336,11 @@
     const list = document.querySelector('[data-cases-list]');
     const empty = document.querySelector('[data-cases-empty]');
     if (!list) return;
+    list.querySelectorAll('a.row[data-case-id]').forEach(row => {
+      row.addEventListener('click', () => {
+        if (row.dataset.caseId) setActiveCase(row.dataset.caseId);
+      });
+    });
     const rows = () => [...list.querySelectorAll('a.row')];
     function apply(f) {
       let visible = 0;
@@ -2234,7 +2411,9 @@
   }
 
   window.MPV2 = {
-    DEPTS, DEPT_ORDER, role, setRole, mode, setMode, hasCase, setHasCase, qs, normalizeDeptId, deptFromQuery, toast, withRole,
+    DEPTS, DEPT_ORDER, CASES, role, setRole, mode, setMode, hasCase, setHasCase,
+    activeCaseId, activeCase, setActiveCase, getCase, projectLandingHref,
+    qs, normalizeDeptId, deptFromQuery, toast, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
@@ -2251,6 +2430,11 @@
     document.querySelectorAll('[data-go-professional]').forEach(a => {
       a.addEventListener('click', (e) => {
         e.preventDefault();
+        if (!hasCase() || !activeCaseId()) {
+          toast('专业须先有案：请先打开或开一个案子');
+          location.href = withRole(projectLandingHref());
+          return;
+        }
         localStorage.setItem('mpv2-mode', 'studio');
         location.href = withRole(a.getAttribute('href') || 'professional.html');
       });

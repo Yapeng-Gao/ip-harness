@@ -1316,6 +1316,14 @@ html[data-mode="studio"] .tier-cue:not(.inline)::before { content: none; }
   display: grid; grid-template-columns: 1.6fr 1fr .9fr .8fr .7fr; gap: 8px;
   padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 13px; align-items: center;
 }
+.cases-table-inform .row, .cases-table-inform .head {
+  grid-template-columns: 1.35fr 1.15fr 1.1fr 1.15fr .75fr .55fr;
+}
+.cases-table-inform .row > span:nth-child(2),
+.cases-table-inform .row > span:nth-child(3),
+.cases-table-inform .row > span:nth-child(4) {
+  font-size: 12px; color: var(--ink-2); line-height: 1.35;
+}
 .cases-table .head { background: var(--warm-paper); color: var(--ink-3); font-size: 11px; font-weight: 600; }
 .cases-table .row:last-child { border-bottom: 0; }
 .cases-table .row:hover { background: var(--warm-paper); }
@@ -1666,6 +1674,12 @@ html[data-mode="assistant"] .cases-table .row,
 html[data-mode="project"] .cases-table .head,
 html[data-mode="project"] .cases-table .row {
   grid-template-columns: 1.6fr 1fr .9fr .8fr .7fr;
+}
+html[data-mode="assistant"] .cases-table-inform .head,
+html[data-mode="assistant"] .cases-table-inform .row,
+html[data-mode="project"] .cases-table-inform .head,
+html[data-mode="project"] .cases-table-inform .row {
+  grid-template-columns: 1.35fr 1.15fr 1.1fr 1.15fr .75fr .55fr;
 }
 
 .primary-zone .entry-primary-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -3298,3 +3312,66 @@ html[data-mode="assistant"] body[data-page="dept"] #dept-editor {
 @media (prefers-reduced-motion: reduce) {
   .gap-chip, .expert-more-btn, .expert-rail-btn { transition: none; }
 }
+
+
+/* —— 案级壳真切换器 · 跨案面禁「当前项目」 —— */
+.topbar-context-cross { min-height: 1px; }
+.case-switcher { position: relative; max-width: min(360px, 42vw); }
+.case-switcher-sum {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  min-height: 40px; padding: 6px 10px; margin: 0; border-radius: 8px;
+  border: 1px solid transparent; background: transparent; color: var(--ink);
+  font-size: 13px; font-weight: 600; max-width: 100%;
+}
+.case-switcher-sum::-webkit-details-marker { display: none; }
+.case-switcher-sum:hover { background: var(--warm-paper); border-color: var(--line); }
+.case-switcher[open] > .case-switcher-sum {
+  background: var(--warm-paper); border-color: var(--line);
+}
+.case-switcher-sum:active { transform: scale(0.96); }
+.case-switcher-name {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;
+}
+.case-switcher-caret { color: var(--ink-3); font-size: 11px; flex: 0 0 auto; }
+.case-switcher-panel {
+  position: absolute; left: 0; top: calc(100% + 6px); z-index: 50;
+  min-width: 280px; max-width: 360px; padding: 10px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(20,20,20,.1);
+}
+.case-switcher-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  color: var(--ink-3); margin: 2px 6px 6px; text-transform: uppercase;
+}
+.case-switcher-recent { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+.case-switcher-item {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  width: 100%; text-align: left; border: 0; background: transparent;
+  color: var(--ink); padding: 10px 12px; border-radius: 8px;
+  font-size: 13px; min-height: 40px; cursor: pointer; text-decoration: none;
+}
+.case-switcher-item strong { font-weight: 600; }
+.case-switcher-item small { color: var(--ink-3); font-size: 11px; line-height: 1.3; }
+.case-switcher-item:hover { background: var(--warm-paper); }
+.case-switcher-item:active { transform: scale(0.96); }
+.case-switcher-item.is-active {
+  background: var(--warm-paper); box-shadow: inset 3px 0 0 var(--ink);
+}
+a.case-switcher-item {
+  border-top: 1px solid var(--line); margin-top: 4px; border-radius: 0 0 8px 8px;
+  justify-content: center; font-weight: 500; color: var(--ink-2);
+}
+a.case-switcher-new { font-weight: 600; color: var(--ink); }
+
+/* 公司告知义务三句 */
+.case-inform-list {
+  list-style: none; margin: 6px 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.case-inform-list li {
+  display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 8px; align-items: baseline;
+}
+.case-inform-k {
+  font-size: 11px; font-weight: 700; color: var(--ink-3); letter-spacing: .04em;
+}
+.case-inform-list strong { font-size: 13px; font-weight: 600; color: var(--ink); }
