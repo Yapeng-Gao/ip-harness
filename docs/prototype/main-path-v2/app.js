@@ -932,15 +932,18 @@
       const light = loadProfLight();
       const duty = (light[d.id] && light[d.id].duty) || (d.pitch || '');
       const faces = renderProfExperts(d.experts, d.id);
+      const nExp = (d.experts || []).length;
+      const staffLabel = nExp ? ('编制 ' + nExp + ' 人') : '编制待配';
       return '<article class="prof-card" data-dept="' + d.id + '">' +
         '<div class="prof-card-head">' +
           '<span class="prof-code">' + d.code + '</span>' +
           '<h2 class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="name" data-dept="' + d.id + '" aria-label="部名">' + d.name + '</h2>' +
+          '<span class="prof-staff-badge">' + staffLabel + '</span>' +
         '</div>' +
         '<p class="prof-deliverable">交卷物 · ' + d.deliverable + '</p>' +
         '<p class="prof-duty prof-edit" contenteditable="true" spellcheck="false" data-prof-field="duty" data-dept="' + d.id + '" aria-label="职责一句">' + duty + '</p>' +
         '<div class="prof-experts" aria-label="' + d.name + '专家">' + faces + '</div>' +
-        '<p class="prof-light-hint">可轻改岗名 / 职责一句 / 占位 · 禁技能墙</p>' +
+        '<p class="prof-light-hint">可轻改岗名 / 职责一句 / 占位。进阶配置默认收折。</p>' +
         '<button type="button" class="btn btn-ink prof-go" data-go-dept="' + d.id + '">去该部干活 →</button>' +
         '</article>';
     }).join('');
@@ -2789,16 +2792,13 @@
     wireCompanySnapshot();
     renderCompanyCasesStrip();
     syncCompanyNeedMeFromCase();
-    /* A5 · 公司首访默认展开「现在需要我处理」；回访保持用户折叠态 */
+    /* A5 + a0cfd0b 做满：默认展开主路径（need-me）与七部地图，禁三折全关空折页；案列表已在折外 */
     try {
-      const fold = document.querySelector('[data-company-fold="need-me"]');
-      const seen = localStorage.getItem('mpv2-company-visited');
-      if (fold) {
-        if (!seen) {
-          fold.open = true;
-          localStorage.setItem('mpv2-company-visited', '1');
-        }
-      }
+      const need = document.querySelector('[data-company-fold="need-me"]');
+      const depts = document.querySelector('[data-company-fold="depts"]');
+      if (need) need.open = true;
+      if (depts) depts.open = true;
+      localStorage.setItem('mpv2-company-visited', '1');
     } catch (_) {}
   }
 

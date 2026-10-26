@@ -72,7 +72,7 @@
   <p class="kicker">一案一公司</p>
   <h1 class="page-title" data-active-case-title>磁驱泵智能控制系统</h1>
   <p class="page-sub" data-show-mode="project" data-case-sub>尽快申下来。当前交底部 · 缺权属声明 · 距可递交还 5 站。</p>
-  <p class="page-sub hidden" data-show-mode="assistant">以顾言委托与待确认为主；七部地图已收起，需要时可唤回。</p>
+  <p class="page-sub hidden" data-show-mode="assistant">委托、进行中目标与待接力。七部地图可唤回。</p>
 
   <!-- 告知义务：卡点 / 下一步 / 谁在干 -->
   <section class="case-status-strip" aria-label="本案状态" data-case-inform>
@@ -121,14 +121,14 @@
   </section>
 
 
-  <!-- 助手模式：顾言对话工作区 -->
-  <section class="company-assist-stage" data-show-mode="assistant" aria-label="顾言对话工作区">
+  <!-- 助手模式：委托 + 本案进行中 / 待接力 -->
+  <section class="company-assist-stage" data-show-mode="assistant" aria-label="顾言委托工作区">
     <div class="lead-row" style="gap:12px;margin-bottom:12px">
       <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="44" height="44">
       <div>
-        <span class="kicker">对话工作区</span>
+        <span class="kicker">委托区</span>
         <h2 style="margin:2px 0 4px;font-size:18px">顾言 · 本案持续委托</h2>
-        <p style="margin:0;font-size:13px;color:var(--ink-3)">说目标 → 拆交办。七部地图已收起，仍可从下方事项进部门干活。</p>
+        <p style="margin:0;font-size:13px;color:var(--ink-3)">说目标 → 拆交办。下方可见进行中与待接力；七部地图可唤回。</p>
       </div>
     </div>
     <form id="company-lead-form" class="goal-form">
@@ -141,9 +141,54 @@
       <button type="button" data-company-fill="把交底书 V3 齐套后接力查新">齐套后接力</button>
       <button type="button" data-company-fill="核对技术方案关键特征是否完整">核对关键特征</button>
     </div>
+    <div class="assist-board" aria-label="本案进行中与待接力">
+      <section class="assist-panel" aria-labelledby="co-assist-goals-h">
+        <div class="assist-panel-head">
+          <div>
+            <span class="kicker">进行中</span>
+            <h3 id="co-assist-goals-h">进行中目标</h3>
+          </div>
+        </div>
+        <a class="assist-item" href="dept.html?dept=disclosure" data-keep-role>
+          <span class="assist-item-ord">01</span>
+          <span>
+            <span class="tag tag-ink"><span class="tag-dot"></span>进行中</span>
+            <strong>交底齐套 · 补齐权属声明</strong>
+            <small>本案交底部 · 阻塞交卷</small>
+          </span>
+          <span class="weak-link">去干活 →</span>
+        </a>
+      </section>
+      <section class="assist-panel" aria-labelledby="co-assist-relay-h">
+        <div class="assist-panel-head">
+          <div>
+            <span class="kicker">待接力</span>
+            <h3 id="co-assist-relay-h">可点进干活</h3>
+          </div>
+        </div>
+        <a class="assist-item" href="dept.html?dept=disclosure&gate=1" data-keep-role>
+          <span class="assist-item-ord">01</span>
+          <span>
+            <span class="tag"><span class="tag-dot"></span>待你确认</span>
+            <strong>权属是否归澄明科技</strong>
+            <small>拍板在工作台右栏</small>
+          </span>
+          <span class="weak-link">去确认 →</span>
+        </a>
+        <a class="assist-item" href="dept.html?dept=research" data-keep-role>
+          <span class="assist-item-ord">02</span>
+          <span>
+            <span class="tag tag-green"><span class="tag-dot"></span>可接力</span>
+            <strong>齐套后 → 查新部</strong>
+            <small>下一站待命</small>
+          </span>
+          <span class="weak-link">去接力 →</span>
+        </a>
+      </section>
+    </div>
   </section>
 
-  <details class="company-fold" data-company-fold="need-me">
+  <details class="company-fold" data-company-fold="need-me" open>
     <summary>现在需要我处理 <span>· 待确认 / 待接力</span></summary>
   <section class="company-need-me need-me" aria-label="现在需要我处理">
     <div class="need-me-head">
@@ -225,8 +270,8 @@
   </div>
 
 
-  <details class="company-fold" data-company-fold="depts">
-    <summary>七部交卷地图 <span>· 需要时展开</span></summary>
+  <details class="company-fold" data-company-fold="depts" open>
+    <summary>七部交卷地图 <span>· 当前站高亮</span></summary>
   <div class="dept-map-wrap" style="margin-top:18px">
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:12px;flex-wrap:wrap">
       <div>

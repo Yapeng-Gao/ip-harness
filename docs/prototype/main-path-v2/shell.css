@@ -3681,3 +3681,118 @@ html[data-mode="assistant"] .company-cases-strip {
 .case-switcher-sum[aria-expanded="true"] {
   background: var(--warm-paper);
 }
+
+
+/* —— 三 tab 做满 · 助手：进行中目标 / 待接力 —— */
+.assist-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.assist-panel {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  padding: 12px 12px 8px;
+  min-height: 140px;
+  box-shadow: var(--shadow-rest);
+}
+.assist-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.assist-panel-head h3 {
+  margin: 2px 0 0;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.assist-panel-head .text-btn { font-size: 11px; color: var(--ink-3); }
+.assist-item {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 4px;
+  border-top: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+  min-height: 44px;
+  border-radius: 6px;
+  transition-property: background-color;
+  transition-duration: 120ms;
+  transition-timing-function: ease-out;
+}
+.assist-item:first-of-type { border-top: 0; }
+.assist-item:hover { background: var(--warm-paper); }
+.assist-item:active { transform: scale(0.99); }
+.assist-item:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.assist-item-ord {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.assist-item strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.assist-item small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.assist-item .weak-link { font-size: 12px; white-space: nowrap; }
+.assist-item .tag { margin-top: 0; }
+
+html[data-mode="assistant"] .assist-dialog-stage .assist-board,
+html[data-mode="assistant"] .company-assist-stage .assist-board {
+  display: grid;
+}
+
+/* —— 三 tab 做满 · 专业编制卡片饱满 —— */
+.prof-staff-badge {
+  margin-left: auto;
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  background: var(--warm-paper);
+  border: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+.prof-card {
+  min-height: 280px;
+}
+.prof-card .prof-go {
+  min-height: 40px;
+}
+.prof-experts {
+  max-height: 168px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.prof-card-head {
+  flex-wrap: wrap;
+}
+
+/* 助手态：七部折壳随地图一并收起，避免空 summary */
+html[data-mode="assistant"] [data-company-fold="depts"] { display: none; }

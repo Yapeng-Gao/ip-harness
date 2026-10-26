@@ -56,16 +56,16 @@
     <h1 class="page-title">早上好，陈宇。</h1>
     <p class="page-sub" data-show-mode="project" data-home-case="has">有缺口时，先点下方大卡去处理。选案或开新案子用弱链即可。</p>
     <p class="page-sub hidden" data-show-mode="project" data-home-case="none">还没有进行中的案子。先开新案子，再进公司推进。</p>
-    <p class="page-sub hidden" data-show-mode="assistant">助手态以顾言交办为主。进公司或开案子用下方弱链。</p>
+    <p class="page-sub hidden" data-show-mode="assistant">委托、进行中目标与待接力。点条目进部门干活；进公司或开案子用弱链。</p>
 
-    <!-- 助手模式：对话工作区 -->
-    <section class="assist-dialog-stage" data-show-mode="assistant" aria-label="顾言对话工作区">
+    <!-- 助手模式：委托 + 进行中目标 / 待接力（不只聊天框） -->
+    <section class="assist-dialog-stage" data-show-mode="assistant" aria-label="顾言委托工作区">
       <div class="lead-row">
         <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="48" height="48">
         <div>
-          <span class="kicker">对话工作区</span>
+          <span class="kicker">委托区</span>
           <h2>顾言 · 说一句目标</h2>
-          <p>提目标 → 计划可调 → 部门执行 → 确认 → 接力。需要进公司时用下方其他入口。</p>
+          <p>提目标 → 计划可调 → 部门执行 → 确认 → 接力。下方可看进行中与待接力。</p>
         </div>
       </div>
       <form id="lead-form-assist" class="goal-form">
@@ -79,6 +79,74 @@
         <button type="button" data-fill-assist="新产品上市前排查 FTO 风险">上市风险排查</button>
         <button type="button" data-fill-assist="收到第一次审查意见，需要答复策略">审查答复</button>
       </div>
+
+      <div class="assist-board" aria-label="进行中与待接力">
+        <section class="assist-panel" aria-labelledby="assist-goals-h">
+          <div class="assist-panel-head">
+            <div>
+              <span class="kicker">进行中</span>
+              <h3 id="assist-goals-h">进行中目标</h3>
+            </div>
+            <a class="text-btn" href="delegate.html?step=plan" data-keep-role>委托计划 →</a>
+          </div>
+          <a class="assist-item" href="dept.html?dept=disclosure" data-keep-role>
+            <span class="assist-item-ord">01</span>
+            <span>
+              <span class="tag tag-ink"><span class="tag-dot"></span>进行中</span>
+              <strong>交底齐套 · 补齐权属声明</strong>
+              <small>【磁驱泵】交底部在办 · 缺权属声明</small>
+            </span>
+            <span class="weak-link">去干活 →</span>
+          </a>
+          <a class="assist-item" href="dept.html?dept=oa" data-keep-role>
+            <span class="assist-item-ord">02</span>
+            <span>
+              <span class="tag"><span class="tag-dot"></span>跟进中</span>
+              <strong>审查答复 · 等客户确认策略</strong>
+              <small>【膜分离】审查答复部</small>
+            </span>
+            <span class="weak-link">去干活 →</span>
+          </a>
+        </section>
+
+        <section class="assist-panel" aria-labelledby="assist-relay-h">
+          <div class="assist-panel-head">
+            <div>
+              <span class="kicker">待接力</span>
+              <h3 id="assist-relay-h">可点进干活</h3>
+            </div>
+            <a class="text-btn" href="dept.html?dept=disclosure&gate=1" data-keep-role>全部 →</a>
+          </div>
+          <a class="assist-item" href="dept.html?dept=disclosure&gate=1" data-keep-role>
+            <span class="assist-item-ord">01</span>
+            <span>
+              <span class="tag"><span class="tag-dot"></span>待你确认</span>
+              <strong>【磁驱泵】交底书 V3 · 权属是否归澄明</strong>
+              <small>齐套后拍板 · 工作台右栏</small>
+            </span>
+            <span class="weak-link">去确认 →</span>
+          </a>
+          <a class="assist-item" href="dept.html?dept=research" data-keep-role>
+            <span class="assist-item-ord">02</span>
+            <span>
+              <span class="tag tag-green"><span class="tag-dot"></span>可接力</span>
+              <strong>【磁驱泵】齐套后 → 查新部</strong>
+              <small>上一部确认通过后自动可进</small>
+            </span>
+            <span class="weak-link">去接力 →</span>
+          </a>
+          <a class="assist-item" href="company.html" data-keep-role>
+            <span class="assist-item-ord">03</span>
+            <span>
+              <span class="tag tag-green"><span class="tag-dot"></span>可接力</span>
+              <strong>【膜分离】可看审查答复进度</strong>
+              <small>同公司另一案</small>
+            </span>
+            <span class="weak-link">打开 →</span>
+          </a>
+        </section>
+      </div>
+
       <p class="primary-cta-note">其他入口：
         <a class="weak-link" href="company.html" data-keep-role>进入本公司</a> ·
         <a class="weak-link" href="case-new.html" data-keep-role>开案子</a> ·
@@ -178,18 +246,76 @@
     <h1 class="page-title">上午好，林岚。</h1>
     <p class="page-sub" data-show-mode="project" data-home-case="has">有缺口：先点大卡去处理。案盘在下方其他入口。</p>
     <p class="page-sub hidden" data-show-mode="project" data-home-case="none">还没有案子。先开新案子或进案盘。</p>
-    <p class="page-sub hidden" data-show-mode="assistant">以顾言交办为主；需要看期限时从下方进案盘。</p>
+    <p class="page-sub hidden" data-show-mode="assistant">委托、进行中目标与待接力。需要看期限时从下方进案盘。</p>
 
-    <section class="assist-dialog-stage" data-show-mode="assistant" aria-label="顾言对话工作区">
+    <section class="assist-dialog-stage" data-show-mode="assistant" aria-label="顾言委托工作区">
       <div class="lead-row">
         <img class="avatar avatar-photo" src="assets/portraits/guyan.png" alt="" width="48" height="48">
         <div>
-          <span class="kicker">对话工作区</span>
+          <span class="kicker">委托区</span>
           <h2>顾言 · 交办目标</h2>
-          <p>把一句话目标拆进部门；需要看期限时从下方进案盘。</p>
+          <p>把一句话目标拆进部门。下方可看进行中与待接力。</p>
         </div>
       </div>
       <p style="margin:12px 0 0"><a class="btn btn-ink" href="delegate.html?step=goal" data-keep-role>打开顾言委托 →</a></p>
+
+      <div class="assist-board" aria-label="进行中与待接力">
+        <section class="assist-panel" aria-labelledby="assist-goals-ag-h">
+          <div class="assist-panel-head">
+            <div>
+              <span class="kicker">进行中</span>
+              <h3 id="assist-goals-ag-h">进行中目标</h3>
+            </div>
+          </div>
+          <a class="assist-item" href="dept.html?dept=oa" data-keep-role>
+            <span class="assist-item-ord">01</span>
+            <span>
+              <span class="tag tag-ink"><span class="tag-dot"></span>进行中</span>
+              <strong>审查答复 · 策略稿待客户确认</strong>
+              <small>【膜分离】审查答复部</small>
+            </span>
+            <span class="weak-link">去干活 →</span>
+          </a>
+          <a class="assist-item" href="dept.html?dept=filing" data-keep-role>
+            <span class="assist-item-ord">02</span>
+            <span>
+              <span class="tag"><span class="tag-dot"></span>跟进中</span>
+              <strong>递交前 · 授权人确认</strong>
+              <small>【储能热管理】递交与程序</small>
+            </span>
+            <span class="weak-link">去干活 →</span>
+          </a>
+        </section>
+
+        <section class="assist-panel" aria-labelledby="assist-relay-ag-h">
+          <div class="assist-panel-head">
+            <div>
+              <span class="kicker">待接力</span>
+              <h3 id="assist-relay-ag-h">可点进干活</h3>
+            </div>
+            <a class="text-btn" href="dept.html?dept=oa&gate=1" data-keep-role>全部 →</a>
+          </div>
+          <a class="assist-item" href="dept.html?dept=oa&gate=1" data-keep-role>
+            <span class="assist-item-ord">01</span>
+            <span>
+              <span class="tag"><span class="tag-dot"></span>待客户确认</span>
+              <strong>【膜分离】审查答复 · 策略是否按此递</strong>
+              <small>拍板在工作台右栏</small>
+            </span>
+            <span class="weak-link">去确认 →</span>
+          </a>
+          <a class="assist-item" href="dept.html?dept=disclosure" data-keep-role>
+            <span class="assist-item-ord">02</span>
+            <span>
+              <span class="tag tag-green"><span class="tag-dot"></span>可接力</span>
+              <strong>【磁驱泵】可接力 → 交底部完善</strong>
+              <small>客户已补充技术说明</small>
+            </span>
+            <span class="weak-link">去工作台 →</span>
+          </a>
+        </section>
+      </div>
+
       <p class="primary-cta-note">其他入口：
         <a class="weak-link" href="cases.html" data-keep-role>进入案盘</a> ·
         <a class="weak-link" href="dept.html?dept=oa&gate=1" data-keep-role>客户待确认</a>
