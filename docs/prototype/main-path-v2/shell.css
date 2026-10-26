@@ -3793,6 +3793,34 @@ html[data-mode="assistant"] .company-assist-stage .assist-board {
 .prof-card-head {
   flex-wrap: wrap;
 }
+.prof-status {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px;
+  margin: 0; padding: 8px 10px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--warm-paper);
+  text-decoration: none; color: inherit; cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+.prof-status:hover {
+  border-color: var(--line-strong);
+  background: var(--paper);
+}
+.prof-status.is-gap {
+  border-color: rgba(180, 90, 40, .35);
+  background: rgba(180, 90, 40, .06);
+}
+.prof-status.is-idle { opacity: .85; }
+.prof-status-kicker {
+  flex: 0 0 auto; font-size: 11px; font-weight: 700;
+  letter-spacing: .04em; color: var(--ink-3);
+}
+.prof-status-text {
+  flex: 1 1 140px; font-size: 12px; line-height: 1.45; color: var(--ink-2);
+}
+.prof-status-go {
+  flex: 0 0 auto; font-size: 12px; font-weight: 600; color: var(--accent);
+  text-decoration: underline; text-underline-offset: 2px;
+}
+
 
 /* 助手态：七部折壳随地图一并收起，避免空 summary */
 html[data-mode="assistant"] [data-company-fold="depts"] { display: none; }

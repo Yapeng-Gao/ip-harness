@@ -705,12 +705,6 @@
     const page = document.body.dataset.page || '';
     if (m === 'project') {
       localStorage.setItem('mpv2-mode', 'project');
-      // E2E-A: 已在 home 再点「项目」= 同页切回项目态（可拉缺口大卡），勿跳公司
-      if (page === 'home') {
-        applyModeUI('project');
-        syncHomeSurfacesFromCase();
-        return;
-      }
       // Already on case-shell workbench (company/dept): stay, soft apply
       if (page === 'company' || page === 'dept') {
         applyModeUI('project');
@@ -720,7 +714,9 @@
         location.href = withRole(activeCaseId() ? (lastWorkHref('company.html')) : projectLandingHref());
         return;
       }
-      // 首次着陆 / 从别处进项目：三态着陆（有活跃→公司 / 有案无活跃→案盘 / 无案→开案子）
+      // e9053b5 / a386f19：点「项目」一律三态着陆（含从 home）
+      // 有活跃→公司做满页 / 有案无活跃→案盘 / 无案→开案子
+      // 取消「有活跃时停 home 项目态」
       location.href = withRole(projectLandingHref());
       return;
     }
@@ -924,6 +920,26 @@
     location.href = withRole(target);
   }
 
+  function profStatusForDept(deptId) {
+    const cur = activeCase();
+    if (cur && cur.dept === deptId) {
+      return {
+        kind: 'gap',
+        text: (cur.block || '有缺口待处理') + (cur.next ? (' · ' + cur.next) : ''),
+        caseShort: cur.short || cur.name || ''
+      };
+    }
+    const hit = allCases().find(c => c && c.dept === deptId);
+    if (hit) {
+      return {
+        kind: 'other',
+        text: (hit.block || '有在办') + (hit.next ? (' · ' + hit.next) : ''),
+        caseShort: hit.short || hit.name || ''
+      };
+    }
+    return { kind: 'idle', text: '暂无在办 · 可进部查看', caseShort: '' };
+  }
+
   function wireProfessionalPage() {
     const grid = document.getElementById('prof-capability-grid');
     if (!grid) return;
@@ -934,6 +950,11 @@
       const faces = renderProfExperts(d.experts, d.id);
       const nExp = (d.experts || []).length;
       const staffLabel = nExp ? ('编制 ' + nExp + ' 人') : '编制待配';
+      const st = profStatusForDept(d.id);
+      const statusLead = st.caseShort
+        ? ('【' + st.caseShort + '】' + st.text)
+        : st.text;
+      const statusCls = 'prof-status' + (st.kind === 'gap' ? ' is-gap' : (st.kind === 'idle' ? ' is-idle' : ''));
       return '<article class="prof-card" data-dept="' + d.id + '">' +
         '<div class="prof-card-head">' +
           '<span class="prof-code">' + d.code + '</span>' +
@@ -942,13 +963,21 @@
         '</div>' +
         '<p class="prof-deliverable">交卷物 · ' + d.deliverable + '</p>' +
         '<p class="prof-duty prof-edit" contenteditable="true" spellcheck="false" data-prof-field="duty" data-dept="' + d.id + '" aria-label="职责一句">' + duty + '</p>' +
+        '<a class="' + statusCls + '" href="dept.html?dept=' + encodeURIComponent(d.id) + '" data-go-dept="' + d.id + '" aria-label="' + d.name + '当前在办或缺口">' +
+          '<span class="prof-status-kicker">当前在办/缺口</span>' +
+          '<span class="prof-status-text">' + statusLead + '</span>' +
+          '<span class="prof-status-go">去干活 →</span>' +
+        '</a>' +
         '<div class="prof-experts" aria-label="' + d.name + '专家">' + faces + '</div>' +
         '<p class="prof-light-hint">可轻改岗名 / 职责一句 / 占位。进阶配置默认收折。</p>' +
         '<button type="button" class="btn btn-ink prof-go" data-go-dept="' + d.id + '">去该部干活 →</button>' +
         '</article>';
     }).join('');
     grid.querySelectorAll('[data-go-dept]').forEach(btn => {
-      btn.addEventListener('click', () => goWorkDept(btn.dataset.goDept));
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        goWorkDept(btn.dataset.goDept);
+      });
     });
     wireProfLightEdit(grid);
     // Legal exits: must setMode(project) before navigating — no studio bounce
@@ -2837,7 +2866,11 @@
     if (page === 'pending') { wirePending(); return; }
     if (page === 'dept') wireDeptPage();
     if (page === 'delegate') wireDelegate();
-    if (page === 'home') wireHome();
+    if (page === 'home') {
+      // home 仅助手主叙事；点「项目」已一律三态离页，勿在 home 停留项目态
+      if (mode() === 'project') localStorage.setItem('mpv2-mode', 'assistant');
+      wireHome();
+    }
     if (page === 'company') wireCompanyPage();
     if (page === 'professional') wireProfessionalPage();
     if (page === 'docket') wireDocketPage();
