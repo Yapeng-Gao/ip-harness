@@ -177,7 +177,7 @@ export default function App() {
     if (next === 'studio') setView('studio')
     else if (next === 'project') setView(role === 'enterprise' ? 'projects' : 'clients')
     else setView('home')
-    setMobileNav(false); setNoticeOpen(false)
+    setMobileNav(false); setNoticeOpen(false); setHomeMsgFocus(false); setProjectPickerOpen(false)
   }
   const openWorkbench = (oa = false, context: WorkContext = 'magnetic') => {
     setWorkContext(context)
@@ -227,6 +227,8 @@ export default function App() {
       ? { glyph: 'ES', name: '模块化储能热管理装置', code: 'CN202610512086.4', status: '申请文件质检', object: '申请案件状态' }
       : { glyph: 'MP', name: '磁驱泵智能控制系统', code: 'RD-2026-017', status: handedOff ? '申请文件起草' : '交底书完善', object: '研发项目状态' }
   const activeProject = projects.find(p => p.code === activeProjectCode) ?? null
+  // 跨案面（首页/部门）不挂顶栏当前项目；真切换器只在项目列表壳 / 工作台（及代理端客户与案件）
+  const showProjectPicker = view === 'workbench' || view === 'projects' || view === 'clients'
   const contextLabel = view === 'workbench'
     ? (oaMode || storageMode ? '当前案件' : '当前项目')
     : role === 'enterprise' ? '当前项目' : '当前客户'
@@ -362,7 +364,7 @@ export default function App() {
       <button className="brand" onClick={() => navigate('home')} aria-label="返回首页">
         <span className="brand-mark">知</span><span className="brand-copy"><strong>知产公司</strong><small>IP COMPANY</small></span>
       </button>
-      <div className="topbar-context">
+      {showProjectPicker && <div className="topbar-context">
         <span className="context-label">{contextLabel}</span>
         <div className="context-picker">
           <button
@@ -396,7 +398,7 @@ export default function App() {
             </div>
           </div>}
         </div>
-      </div>
+      </div>}
       <div className="topbar-actions">
         <button className="search-trigger" onClick={() => setSearchOpen(true)}><Search size={16} /><span>搜索项目、文件或部门</span><kbd>⌘ K</kbd></button>
         <button className="app-site-link" onClick={() => setSurface('site')}>官网</button><button className="icon-btn help-btn" onClick={() => setModal('guide')} aria-label="产品与原型导览"><CircleHelp size={19} /></button>
