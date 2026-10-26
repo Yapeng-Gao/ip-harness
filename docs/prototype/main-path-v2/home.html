@@ -5,7 +5,7 @@
 <title>工作首页 · 虚拟知产公司</title>
 <link rel="stylesheet" href="shell.css">
 </head>
-<body data-page="home" >
+<body data-page="home" data-home="thin-entry">
 <div class="app-shell">
 <header class="topbar">
   <a class="brand" href="home.html" data-keep-role aria-label="返回首页">
@@ -17,8 +17,8 @@
     <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch mode-switch-quiet" aria-label="助手、项目与专业">
-      <button type="button" data-mode="assistant">助手</button>
-      <button type="button" data-mode="project" class="active">项目</button>
+      <button type="button" data-mode="assistant" class="active">助手</button>
+      <button type="button" data-mode="project">项目</button>
       <button type="button" data-mode="studio">专业</button>
     </div>
     <details class="avatar-menu">
@@ -146,7 +146,7 @@
         </section>
       </div>
 
-      <p class="primary-cta-note">其他入口：
+      <p class="primary-cta-note" data-testid="home-secondary-actions">其他入口：
         <a class="weak-link" href="company.html" data-keep-role>进入本公司</a> ·
         <a class="weak-link" href="case-new.html" data-keep-role>开案子</a> ·
         <a class="weak-link" href="cases.html" data-keep-role>全部案子</a>

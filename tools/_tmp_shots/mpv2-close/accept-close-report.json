@@ -1,0 +1,86 @@
+{
+  "passN": 17,
+  "failN": 0,
+  "notes": [
+    "PASS L_login_assistant: login→home 助手高亮",
+    "PASS L_no_gap_card: home 无墨色缺口大卡",
+    "PASS L_weak_links: 弱链可见",
+    "PASS A1_home_assistant: home 强制助手态",
+    "PASS A1_project_active: 有活跃→company",
+    "PASS A1_company_gap_cta: 唯一缺口主 CTA: 卡点 · 去当前部门 →",
+    "PASS A1_depts_folded: 七部默认折",
+    "PASS A1_need_one: 有缺口 need-me 只开一条",
+    "PASS A1_company_fill: 公司案况可见",
+    "PASS A2_project_noactive: 有案无活跃→cases",
+    "PASS A3_project_none: 无案→case-new",
+    "PASS B_prof_status: 专业卡在办/缺口 ×7",
+    "PASS B_mcp_folded: 技能/MCP 默认收折",
+    "PASS C_home_assistant_only: home 仅助手叙事·无缺口大卡",
+    "PASS D_right_rail: 右栏/齐套闸可见",
+    "PASS D_workbench: 工作台三栏/composer",
+    "PASS E_three_tabs: assistant:助手, project:项目, studio:专业"
+  ],
+  "evidence": {
+    "L_login": {
+      "mode": "assistant",
+      "asstActive": true,
+      "hasGapCard": false,
+      "inkGapLike": [],
+      "weak": true,
+      "url": "http://127.0.0.1:8766/home.html?role=enterprise"
+    },
+    "A1_homeModeForced": "assistant",
+    "A1_url": "http://127.0.0.1:8766/company.html?role=enterprise",
+    "A1_company": {
+      "hasCta": true,
+      "ctaText": "卡点 · 去当前部门 →",
+      "gapCtaCount": 1,
+      "inkCtas": [
+        "卡点 · 去当前部门 →",
+        "交给顾言 →"
+      ],
+      "needOpen": true,
+      "deptsOpen": false,
+      "needItems": 1,
+      "hasCaseStrip": true,
+      "hasDeptGrid": true,
+      "textHead": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 磁驱泵智能控制系统 ▾ 期限 🔔 助手 项目 专业 一案一公司 磁驱泵智能控制系统 委托、进行中目标与待接力。七部地图可唤回。 交底部 · 进行中 卡点 缺权属声明，阻塞交卷 下一步 补齐权属并送确认 谁在干 权属核验专家在办 · 待你确认 卡点 · 去当前部门 → 主链进度 · 申请链 当前站：交底部 → 距可递交还 5 站 服务办申请，不是组织图 交"
+    },
+    "A2_url": "http://127.0.0.1:8766/cases.html?role=enterprise",
+    "A3_url": "http://127.0.0.1:8766/case-new.html?role=enterprise",
+    "B_prof": {
+      "kickers": [
+        "当前在办/缺口",
+        "当前在办/缺口",
+        "当前在办/缺口"
+      ],
+      "kickerCount": 7,
+      "mcpOpen": false,
+      "mcpSummary": "进阶 · 技能 / MCP · 默认收折",
+      "hasGo": 14
+    },
+    "C_home": {
+      "asstSub": true,
+      "projSub": false,
+      "gapCard": false,
+      "asstActive": true,
+      "hasWeak": true,
+      "noCompanyFill": true,
+      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 期限 🔔 助手 项目 专业 登录后 早上好，陈宇。 委托、进行中目标与待接力。点条目进部门干活；进公司或开案子用弱链。 委托区 顾言 · 说一句目标 提目标 → 计划可调 → 部门执行 → 确认 → 接力。下方可看进行中与待接力。 交给顾言 → 快速交办 交底齐套 开案保护 上市风险排查 审查答复 进行中 进行"
+    },
+    "D_dept": {
+      "hasRight": true,
+      "hasComposer": false,
+      "has缺项或禁用": true,
+      "has拍板": true,
+      "threeCol": true,
+      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 磁驱泵智能控制系统 ▾ 期限 🔔 助手 项目 专业 本案目录 收折 MP 磁驱泵智能控制 撰写部 交卷物 · 撰写部 权利要求草案 V1 权属声明（缺） 材料 访谈纪要 10-20 前序检索摘要 附图草图 F1 对比文献包 R2 确认记录 · 技术事实 已确认事实 卷宗 12 份 缺权属声明 · 阻塞接力 权利要求草案 V1 权属声明 访谈纪要 编辑 批"
+    },
+    "E_tabs": [
+      "assistant:助手",
+      "project:项目",
+      "studio:专业"
+    ]
+  },
+  "at": "2026-10-26T07:12:52.126Z"
+}

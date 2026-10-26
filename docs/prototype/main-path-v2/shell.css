@@ -3824,3 +3824,13 @@ html[data-mode="assistant"] .company-assist-stage .assist-board {
 
 /* 助手态：七部折壳随地图一并收起，避免空 summary */
 html[data-mode="assistant"] [data-company-fold="depts"] { display: none; }
+
+
+/* 收口：公司页唯一缺口墨色主 CTA */
+.case-status-strip [data-testid="company-gap-cta"] {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.company-fold[data-company-fold="depts"]:not([open]) > summary {
+  color: var(--ink-2);
+}

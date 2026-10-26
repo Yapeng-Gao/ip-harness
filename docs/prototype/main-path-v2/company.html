@@ -71,7 +71,7 @@
 
   <p class="kicker">一案一公司</p>
   <h1 class="page-title" data-active-case-title>磁驱泵智能控制系统</h1>
-  <p class="page-sub" data-show-mode="project" data-case-sub>尽快申下来。当前交底部 · 缺权属声明 · 距可递交还 5 站。</p>
+  <p class="page-sub" data-show-mode="project" data-case-sub>尽快申下来。卡点在交底部 · 点下方墨色按钮去补齐。</p>
   <p class="page-sub hidden" data-show-mode="assistant">委托、进行中目标与待接力。七部地图可唤回。</p>
 
   <!-- 告知义务：卡点 / 下一步 / 谁在干 -->
@@ -84,7 +84,7 @@
         <li><span class="case-inform-k">谁在干</span><strong data-case-who>权属核验专家在办 · 待你确认</strong></li>
       </ul>
     </div>
-    <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role data-case-go-dept>去当前部门 →</a>
+    <a class="btn btn-ink" href="dept.html?dept=disclosure" data-keep-role data-case-go-dept data-testid="company-gap-cta" aria-label="卡点：去当前部门补齐">卡点 · 去当前部门 →</a>
   </section>
 
   <!-- 清菜单墙≠藏案列表：本案 + 最近案 / 全部显眼入口（禁侧栏墙回潮） -->
@@ -188,42 +188,23 @@
     </div>
   </section>
 
-  <details class="company-fold" data-company-fold="need-me" open>
-    <summary>现在需要我处理 <span>· 待确认 / 待接力</span></summary>
-  <section class="company-need-me need-me" aria-label="现在需要我处理">
+  <details class="company-fold" data-company-fold="need-me" data-gap-open="1">
+    <summary>现在需要我处理 <span>· 有缺口时只开一条主卡点</span></summary>
+  <section class="company-need-me need-me need-me-muted" aria-label="现在需要我处理">
     <div class="need-me-head">
       <div>
         <span class="kicker">现在需要我处理</span>
-        <h2>待确认 / 待接力</h2>
+        <h2>主卡点</h2>
       </div>
-      <a class="text-btn" href="dept.html?dept=disclosure&gate=1" data-keep-role>全部 →</a>
     </div>
-    <a class="rail-item" href="dept.html?dept=disclosure" data-keep-role>
+    <a class="rail-item" href="dept.html?dept=disclosure" data-keep-role data-company-need-primary>
       <span class="rail-ord">01</span>
       <span>
         <span class="tag tag-ink"><span class="tag-dot"></span>齐套缺口</span>
-        <strong>交底书 V3 · 缺权属声明 · 去当前部门补齐</strong>
-        <small>未齐套不能交卷 · 阻塞接力</small>
+        <strong>交底书 V3 · 缺权属声明</strong>
+        <small>主 CTA 在上方「卡点 · 去当前部门」</small>
       </span>
-      <span class="weak-link">去当前部门 →</span>
-    </a>
-    <a class="rail-item" href="dept.html?dept=disclosure&gate=1" data-keep-role>
-      <span class="rail-ord">02</span>
-      <span>
-        <span class="tag"><span class="tag-dot"></span>确认预告</span>
-        <strong>齐套后将待你确认：权属是否归澄明科技</strong>
-        <small>确认入口 · 齐套完成后启用</small>
-      </span>
-      <span class="weak-link">预览确认 →</span>
-    </a>
-    <a class="rail-item" href="dept.html?dept=oa" data-keep-role data-show-mode="project">
-      <span class="rail-ord">03</span>
-      <span>
-        <span class="tag tag-green"><span class="tag-dot"></span>待接力</span>
-        <strong>【膜分离】可看审查答复进度</strong>
-        <small>同公司另一案 · 专业/项目可见</small>
-      </span>
-      <span class="weak-link">查看 →</span>
+      <span class="weak-link">同上 →</span>
     </a>
   </section>
   </details>
@@ -270,7 +251,7 @@
   </div>
 
 
-  <details class="company-fold" data-company-fold="depts" open>
+  <details class="company-fold" data-company-fold="depts">
     <summary>七部交卷地图 <span>· 当前站高亮</span></summary>
   <div class="dept-map-wrap" style="margin-top:18px">
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:12px;flex-wrap:wrap">

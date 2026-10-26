@@ -12,7 +12,7 @@
       <span class="brand-copy"><strong>虚拟知产公司</strong><small>SIGN IN</small></span>
     </a>
     <h1>选择身份</h1>
-    <p>登录后先到薄入口。企业有案可进公司、无案开案子；代理进案盘。</p>
+    <p>登录后先到工作首页（助手）。点「项目」再进公司 / 案盘 / 开案子。</p>
     <div class="role-pick" id="role-pick">
       <button type="button" data-role="enterprise" class="active"><strong>企业研发</strong><small>澄明科技 · 陈宇</small></button>
       <button type="button" data-role="agency"><strong>代理所</strong><small>衡知专利 · 林岚</small></button>
@@ -29,7 +29,7 @@
   }));
   document.getElementById('go').addEventListener('click', () => {
     localStorage.setItem('mpv2-role', r);
-    localStorage.setItem('mpv2-mode', 'project');
+    localStorage.setItem('mpv2-mode', 'assistant');
     let dest = 'home.html?role=' + r;
     try {
       const d = JSON.parse(sessionStorage.getItem('mpv2-delegation') || 'null');

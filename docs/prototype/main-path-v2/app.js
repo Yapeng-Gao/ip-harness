@@ -2735,11 +2735,16 @@
     if (!c) return;
     const work = 'dept.html?dept=' + encodeURIComponent(c.dept);
     const gate = work + '&gate=1';
-    document.querySelectorAll('.company-need-me a.text-btn, .company-need-me a.rail-item').forEach((a, i) => {
-      // keep third "另一案" row if marked data-show-mode only as project peek — leave index 2
-      if (i >= 2) return;
+    // Unique ink gap CTA on case-status strip
+    document.querySelectorAll('[data-testid="company-gap-cta"], [data-case-go-dept]').forEach(a => {
+      a.setAttribute('href', work);
+    });
+    document.querySelectorAll('.company-need-me a.rail-item, .company-need-me a.text-btn').forEach((a, i) => {
       a.setAttribute('href', i === 0 ? work : gate);
     });
+    document.querySelectorAll('[data-case-block]').forEach(el => { el.textContent = c.block || el.textContent; });
+    document.querySelectorAll('[data-case-next]').forEach(el => { if (c.next) el.textContent = c.next; });
+    document.querySelectorAll('[data-case-who]').forEach(el => { if (c.who) el.textContent = c.who; });
     document.querySelectorAll('.dept-map-wrap > div > a.weak-link[href*="dept.html"]').forEach(a => {
       if ((a.textContent || '').indexOf('当前部') !== -1) {
         a.setAttribute('href', work);
@@ -2821,12 +2826,15 @@
     wireCompanySnapshot();
     renderCompanyCasesStrip();
     syncCompanyNeedMeFromCase();
-    /* A5 + a0cfd0b 做满：默认展开主路径（need-me）与七部地图，禁三折全关空折页；案列表已在折外 */
+    /* 收口：缺口主 CTA 在案况条；有缺口时 need-me 只开一条主卡点；七部默认折 */
     try {
       const need = document.querySelector('[data-company-fold="need-me"]');
       const depts = document.querySelector('[data-company-fold="depts"]');
-      if (need) need.open = true;
-      if (depts) depts.open = true;
+      const delegate = document.querySelector('[data-company-fold="delegate"]');
+      const hasGap = !!(activeCase() && activeCase().block);
+      if (need) need.open = !!hasGap; // 有缺口只开 need-me（内仅一条主卡点）
+      if (depts) depts.open = false;
+      if (delegate) delegate.open = false;
       localStorage.setItem('mpv2-company-visited', '1');
     } catch (_) {}
   }
@@ -2847,6 +2855,11 @@
     const page = document.body.dataset.page;
     // Capability page always owns 专业档（顶栏选中态）
     if (page === 'professional') localStorage.setItem('mpv2-mode', 'studio');
+    // home 登录/回访一律助手（须在 wireShell 前，顶栏高亮才对）
+    if (page === 'home') localStorage.setItem('mpv2-mode', 'assistant');
+    // 从项目三态进公司时视为项目档
+    if (page === 'company' && mode() !== 'assistant') localStorage.setItem('mpv2-mode', 'project');
+    if (page === 'dept') localStorage.setItem('mpv2-mode', 'project');
     wireShell();
     injectGuyanPresence();
     document.querySelectorAll('[data-go-professional]').forEach(a => {
@@ -2867,8 +2880,6 @@
     if (page === 'dept') wireDeptPage();
     if (page === 'delegate') wireDelegate();
     if (page === 'home') {
-      // home 仅助手主叙事；点「项目」已一律三态离页，勿在 home 停留项目态
-      if (mode() === 'project') localStorage.setItem('mpv2-mode', 'assistant');
       wireHome();
     }
     if (page === 'company') wireCompanyPage();
