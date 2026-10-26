@@ -3,7 +3,7 @@ import {
   ArrowLeft, ArrowRight, ArrowUpRight, Bell, BookOpen, BriefcaseBusiness,
   Building2, Cable, Check, CheckCircle2, ChevronDown, ChevronRight,
   CircleAlert, CircleHelp, Clock3, FileCheck2, FileClock,
-  Files, FileText, FlaskConical, FolderKanban, GitBranch, Inbox, LayoutDashboard, Library,
+  Files, FileText, FlaskConical, FolderKanban, GitBranch, Library,
   Menu, MessageSquareText, MoreHorizontal, Network, Paperclip, PenLine, Plus,
   Rocket, Search, Send, Settings2, ShieldCheck, Sparkles, Stamp, X,
 } from 'lucide-react'
@@ -92,7 +92,7 @@ function MarketingSite({ onEnter, onLogin }: { onEnter: () => void; onLogin: () 
     <header className="site-nav"><button className="brand site-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><span className="brand-mark">知</span><span className="brand-copy"><strong>知产公司</strong><small>IP COMPANY</small></span></button><nav><button onClick={() => scrollTo('how-it-works')}>如何工作</button><button onClick={() => scrollTo('business-lines')}>业务能力</button><button onClick={() => scrollTo('trust-system')}>可信机制</button></nav><div><button className="site-login" onClick={onLogin}>登录</button><button className="btn btn-ink" onClick={onEnter}>体验产品<ArrowRight size={15} /></button></div></header>
     <main>
       <section className="site-hero"><div className="site-hero-copy"><span className="site-eyebrow"><span />给研发企业一家虚拟知产公司</span><h1>把知产工作，<br />交给一家公司。</h1><p>一个知产负责人持续接受委托，多个专业部门按节点接力。执行过程看得见，每份交付有依据、有复核、由你确认。</p><div className="site-hero-actions"><button className="btn btn-primary" onClick={onEnter}>进入产品体验<ArrowRight size={16} /></button><button className="btn site-text-button" onClick={() => scrollTo('how-it-works')}>看一次部门接力<ChevronRight size={16} /></button></div><small>中国发明专利为主，兼容实用新型 · 企业研发与代理所双端</small></div>
-        <div className="hero-product" aria-label="知产公司产品界面示意"><div className="hero-product-bar"><span><i /><i /><i /></span><strong>我的知产公司</strong><em>演示项目</em></div><div className="hero-product-body"><aside><span className="project-glyph">MP</span><strong>磁驱泵智能控制</strong><small>RD-2026-017</small><div><span className="active">公司首页</span><span>项目与对象</span><span>专利资产</span><span>部门与专家</span></div></aside><section><div className="hero-lead"><Avatar name="顾" /><div><strong>顾言 · 知产负责人</strong><p>交底书部已完成文本，现有一项技术事实需要你确认。</p></div></div><div className="hero-flow"><span className="done"><Check size={12} />挖掘布局</span><i /><span className="active">交底形成</span><i /><span>申请文件</span><i /><span>质量审查</span></div><div className="hero-task"><span className="section-kicker">当前负责部门</span><h3>交底书部</h3><div><Avatar name="访" small /><span><strong>技术访谈专家</strong><small>6 项访谈整理已完成</small></span><Status tone="green">已完成</Status></div><div><Avatar name="写" small /><span><strong>交底书撰写专家</strong><small>V4 等待测试事实确认</small></span><Status tone="orange">进行中</Status></div></div></section><aside className="hero-confirm"><Status tone="orange">需要你确认</Status><h3>异常识别测试数据是否与记录一致？</h3><p>影响交底书 V4 的技术效果记载。</p><span><FileText size={14} />交底书 V3 · 三、技术效果</span><button onClick={onEnter}>查看依据并确认<ArrowRight size={13} /></button></aside></div></div>
+        <div className="hero-product" aria-label="知产公司产品界面示意"><div className="hero-product-bar"><span><i /><i /><i /></span><strong>我的知产公司</strong><em>演示项目</em></div><div className="hero-product-body"><aside><span className="project-glyph">MP</span><strong>磁驱泵智能控制</strong><small>RD-2026-017</small><div><span className="active">首页</span><span>项目</span><span>部门</span><span>专利资产</span></div></aside><section><div className="hero-lead"><Avatar name="顾" /><div><strong>顾言 · 知产负责人</strong><p>交底书部已完成文本，现有一项技术事实需要你确认。</p></div></div><div className="hero-flow"><span className="done"><Check size={12} />挖掘布局</span><i /><span className="active">交底形成</span><i /><span>申请文件</span><i /><span>质量审查</span></div><div className="hero-task"><span className="section-kicker">当前负责部门</span><h3>交底书部</h3><div><Avatar name="访" small /><span><strong>技术访谈专家</strong><small>6 项访谈整理已完成</small></span><Status tone="green">已完成</Status></div><div><Avatar name="写" small /><span><strong>交底书撰写专家</strong><small>V4 等待测试事实确认</small></span><Status tone="orange">进行中</Status></div></div></section><aside className="hero-confirm"><Status tone="orange">需要你确认</Status><h3>异常识别测试数据是否与记录一致？</h3><p>影响交底书 V4 的技术效果记载。</p><span><FileText size={14} />交底书 V3 · 三、技术效果</span><button onClick={onEnter}>查看依据并确认<ArrowRight size={13} /></button></aside></div></div>
       </section>
 
       <section className="site-problem"><span className="site-section-index">01 / 为什么是一家公司</span><div><h2>你缺的不是又一个写作工具，<br />而是有人把整件事持续负责下去。</h2><div className="problem-lines"><p><span>研发人员</span>不必先懂专利流程，也不必学习如何搭建 Agent。</p><p><span>专业团队</span>不必在聊天、文件和邮件里反复寻找事实与版本。</p><p><span>企业负责人</span>不必盯着每个任务，只需处理关键事实、风险与决策。</p></div></div></section>
@@ -101,7 +101,7 @@ function MarketingSite({ onEnter, onLogin }: { onEnter: () => void; onLogin: () 
 
       <section className="site-business" id="business-lines"><div className="site-section-head dark-text"><div><span className="site-section-index">03 / 两条业务主线</span><h2>既形成自己的权利，<br />也管理实施他人的风险。</h2></div></div><div className="business-track"><span>01</span><div><h3>权利形成</h3><p>创新启发 → 专利挖掘 → 布局策略 → 技术交底 → 可专利性检索 → 申请文件 → 质量审查 → OA 答复 → 授权运营</p></div><button onClick={onEnter}>从研发成果开始<ArrowUpRight size={16} /></button></div><div className="business-track"><span>02</span><div><h3>风险防控</h3><p>产品拆解 → FTO 检索 → 有效权利要求比对 → 风险分级 → 规避设计／无效评估／许可 → 变更复核</p></div><button onClick={onEnter}>从产品上市开始<ArrowUpRight size={16} /></button></div><p className="business-note"><CircleAlert size={17} />可专利性检索回答“能否获得专利”；FTO 回答“特定产品、地区和时间实施，是否可能落入他人权利要求”。两者不会混为一谈。</p></section>
 
-      <section className="site-audience"><div className="audience-intro"><span className="site-section-index">04 / 双端与三种深度</span><h2>同一家公司，<br />适合不同的工作方式。</h2></div><div className="audience-columns"><section><Building2 size={25} /><h3>企业研发端</h3><p>只面对顾言和必须处理的事项。技术事实、保护范围和风险由你确认，专业过程按需展开。</p><span>事项 · 事实 · 决策 · 资产</span></section><section><BriefcaseBusiness size={25} /><h3>代理所端</h3><p>以期限、卷宗、证据和文书组织专业生产，保留内部质检与客户交付的权限边界。</p><span>案件 · 文书 · 复核 · 交付</span></section></div><div className="depth-line"><div><strong>助手</strong><span>只说业务目标</span></div><ArrowRight size={18} /><div><strong>项目</strong><span>选择部门与专家</span></div><ArrowRight size={18} /><div><strong>专业</strong><span>配置 Skill、提示词与 MCP</span></div></div></section>
+      <section className="site-audience"><div className="audience-intro"><span className="site-section-index">04 / 双端与三种深度</span><h2>同一家公司，<br />适合不同的工作方式。</h2></div><div className="audience-columns"><section><Building2 size={25} /><h3>企业研发端</h3><p>只面对顾言和必须处理的事项。技术事实、保护范围和风险由你确认，专业过程按需展开。</p><span>事项 · 事实 · 决策 · 资产</span></section><section><BriefcaseBusiness size={25} /><h3>代理所端</h3><p>以期限、卷宗、证据和文书组织专业生产，保留内部质检与客户交付的权限边界。</p><span>案件 · 文书 · 复核 · 交付</span></section></div><div className="depth-line"><div><strong>首页</strong><span>委托与跨案待办</span></div><ArrowRight size={18} /><div><strong>项目</strong><span>对象列表与工作台</span></div><ArrowRight size={18} /><div><strong>部门</strong><span>花名册与工作室配置</span></div></div></section>
 
       <section className="site-trust" id="trust-system"><span className="site-section-index">05 / 可信交付</span><h2>专业，不来自角色数量。<br />来自每一步都能被核查。</h2><div className="trust-grid"><div><strong>01</strong><h3>执行可见</h3><p>展示任务、动作摘要和产出，不展示模型原始思维过程。</p></div><div><strong>02</strong><h3>依据可追</h3><p>结论关联事实、证据、文书位置和具体版本。</p></div><div><strong>03</strong><h3>权限受控</h3><p>三类空间隔离，跨组织只共享确认的交付快照。</p></div><div><strong>04</strong><h3>人来决策</h3><p>AI 起草与辅助判断，真实人员复核，关键节点由人确认。</p></div></div></section>
 
@@ -136,6 +136,7 @@ export default function App() {
   const [projectFilter, setProjectFilter] = useState('')
   const [objectFilter, setObjectFilter] = useState<'全部对象' | ObjectKind>('全部对象')
   const [noticeOpen, setNoticeOpen] = useState(false)
+  const [homeMsgFocus, setHomeMsgFocus] = useState(false)
   const [showProcess, setShowProcess] = useState(false)
   const [workContext, setWorkContext] = useState<WorkContext>('magnetic')
   const [leadInput, setLeadInput] = useState('')
@@ -151,13 +152,29 @@ export default function App() {
 
   const notify = (text: string) => { setToast(text); window.setTimeout(() => setToast(''), 2800) }
   const navigate = (next: View) => {
-    if (!['home', 'studio'].includes(next)) setMode('project')
-    setView(next); setMobileNav(false); setNoticeOpen(false)
+    if (next === 'messages') {
+      setMode('assistant')
+      setView('home')
+      setHomeMsgFocus(true)
+      setMobileNav(false); setNoticeOpen(false)
+      return
+    }
+    if (next === 'departments' || next === 'studio') {
+      setMode('studio')
+      setView('studio')
+      setMobileNav(false); setNoticeOpen(false)
+      return
+    }
+    if (next === 'home') setMode('assistant')
+    else if (!['home', 'studio'].includes(next)) setMode('project')
+    setView(next); setMobileNav(false); setNoticeOpen(false); setHomeMsgFocus(false)
   }
   const switchMode = (next: Mode) => {
     if (firstRun && next !== 'assistant') { setFirstRun(false); notify('已切换至已有工作演示') }
     setMode(next)
-    setView(next === 'studio' ? 'studio' : 'home')
+    if (next === 'studio') setView('studio')
+    else if (next === 'project') setView(role === 'enterprise' ? 'projects' : 'clients')
+    else setView('home')
     setMobileNav(false); setNoticeOpen(false)
   }
   const openWorkbench = (oa = false, context: WorkContext = 'magnetic') => {
@@ -279,21 +296,20 @@ export default function App() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
+  useEffect(() => {
+    if (homeMsgFocus && view === 'home') {
+      window.requestAnimationFrame(() => document.getElementById('home-messages')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    }
+  }, [homeMsgFocus, view])
 
   const enterpriseNav = [
-    { id: 'home' as View, label: '公司首页', icon: LayoutDashboard },
     { id: 'projects' as View, label: '项目与对象', icon: FolderKanban, count: 5 },
     { id: 'assets' as View, label: '专利资产', icon: Library },
-    { id: 'departments' as View, label: '部门与专家', icon: Network },
-    { id: 'messages' as View, label: '协同消息', icon: Inbox, count: 3 },
   ]
   const agencyNav = [
-    { id: 'home' as View, label: '工作首页', icon: LayoutDashboard },
     { id: 'clients' as View, label: '客户与案件', icon: BriefcaseBusiness, count: 12 },
-    { id: 'departments' as View, label: '专业团队', icon: Network },
-    { id: 'messages' as View, label: '客户协同', icon: Inbox, count: 5 },
   ]
-  const nav = [...(role === 'enterprise' ? enterpriseNav : agencyNav), ...(mode === 'studio' ? [{ id: 'studio' as View, label: '专业工作室', icon: Settings2 }] : [])]
+  const nav = role === 'enterprise' ? enterpriseNav : agencyNav
 
   const sendChat = () => {
     if (!message.trim()) return
@@ -312,7 +328,7 @@ export default function App() {
 
   return <div className={`app-shell ${firstRun && view === 'home' ? 'first-run-shell' : ''}`}>
     <header className="topbar">
-      {mode !== 'assistant' && <button className="mobile-menu icon-btn" onClick={() => setMobileNav(true)} aria-label="打开导航"><Menu size={20} /></button>}
+      {mode === 'project' && <button className="mobile-menu icon-btn" onClick={() => setMobileNav(true)} aria-label="打开导航"><Menu size={20} /></button>}
       <button className="brand" onClick={() => navigate('home')} aria-label="返回首页">
         <span className="brand-mark">知</span><span className="brand-copy"><strong>知产公司</strong><small>IP COMPANY</small></span>
       </button>
@@ -332,7 +348,7 @@ export default function App() {
           </div>}
         </div>
         <div className="mode-switch" aria-label="切换使用模式">
-          {([['assistant', '助手'], ['project', '项目'], ['studio', '专业']] as const).map(([id, label]) => <button key={id} className={mode === id ? 'active' : ''} onClick={() => switchMode(id)}>{label}</button>)}
+          {([['assistant', '首页'], ['project', '项目'], ['studio', '部门']] as const).map(([id, label]) => <button key={id} className={mode === id ? 'active' : ''} aria-pressed={mode === id} onClick={() => switchMode(id)}>{label}</button>)}
         </div>
         <div className="role-switch" aria-label="切换原型角色">
           <button className={role === 'enterprise' ? 'active' : ''} onClick={() => switchRole('enterprise')}>企业研发</button>
@@ -343,8 +359,8 @@ export default function App() {
     </header>
 
     <div className="app-main">
-      {mobileNav && mode !== 'assistant' && <div className="mobile-scrim" onClick={() => setMobileNav(false)} />}
-      {mode !== 'assistant' && <aside className={`sidebar ${mobileNav ? 'mobile-open' : ''}`}>
+      {mobileNav && mode === 'project' && <div className="mobile-scrim" onClick={() => setMobileNav(false)} />}
+      {mode === 'project' && <aside className={`sidebar ${mobileNav ? 'mobile-open' : ''}`}>
         <div className="mobile-sidebar-head"><strong>工作导航</strong><button className="icon-btn" onClick={() => setMobileNav(false)}><X size={18} /></button></div>
         <div className="workspace-label">{role === 'enterprise' ? '澄明科技有限公司' : '衡知专利代理事务所'}<span>{role === 'enterprise' ? '研发负责人工作区' : '代理师工作区'}</span></div>
         <nav className="main-nav">
@@ -361,11 +377,11 @@ export default function App() {
         </div>
       </aside>}
 
-      <main className={`content ${view === 'workbench' ? 'content-workbench' : ''} ${mode === 'assistant' ? 'content-assistant' : ''}`}>
+      <main className={`content ${view === 'workbench' ? 'content-workbench' : ''} ${mode === 'assistant' || mode === 'studio' ? 'content-assistant' : ''}`}>
         {view === 'home' && (role === 'enterprise' ? <>
           <section className="home-intro company-home-intro">
-            <div><p className="date-line">{firstRun ? '你的虚拟知产公司 · 从第一件事开始' : mode === 'assistant' ? '公司首页 · 顾言统一组织，你只做关键确认' : '公司首页 · 跨项目工作与业务对象总览'}</p><h1>{firstRun ? <>你好，陈宇。<br />我是顾言，你的知产负责人。</> : <>早上好，陈宇。<br />今天有 3 件事需要你处理。</>}</h1></div>
-            {mode === 'project' && !firstRun && <button className="btn btn-primary" onClick={() => setModal('new')}><Plus size={17} />启动新项目</button>}
+            <div><p className="date-line">{firstRun ? '你的虚拟知产公司 · 从第一件事开始' : '首页 · 顾言统一组织，你只处理关键确认与消息'}</p><h1>{firstRun ? <>你好，陈宇。<br />我是顾言，你的知产负责人。</> : <>早上好，陈宇。<br />今天有 3 件事需要你处理。</>}</h1></div>
+            {!firstRun && <button className="btn btn-secondary" onClick={() => setModal('new')}><Plus size={17} />启动新项目</button>}
           </section>
           <section className="lead-card" aria-label="知产负责人统一入口">
             <div className="lead-identity"><Avatar name="顾" /><div><span className="section-kicker">统一委托入口</span><h2>顾言</h2><p>{firstRun ? '不用先选部门或学习专利流程，直接告诉我你的业务目标。' : '新目标或全公司指令都从这里开始；项目内指令请进入具体项目。'}</p></div></div>
@@ -385,8 +401,17 @@ export default function App() {
             <aside className="first-run-steps"><span className="section-kicker">开始之后</span>{[['01', '先看计划', '知道哪个部门负责、会交付什么'], ['02', '只补必要事实', '不需要一次性整理全部研发资料'], ['03', '确认再接力', '未经确认，不自动共享或对外递交']].map(s => <div key={s[0]}><span>{s[0]}</span><p><strong>{s[1]}</strong><small>{s[2]}</small></p></div>)}<button className="text-btn" onClick={() => setFirstRun(false)}>查看已有工作演示<ArrowRight size={14} /></button></aside>
           </section> : <>
           <section className="company-attention" aria-label="现在需要我处理">
-            <div className="company-section-head"><div><span className="section-kicker">现在需要我处理</span><h2>按期限与流程影响排序</h2></div><button className="text-btn" onClick={() => navigate('messages')}>全部确认与协同<ArrowRight size={14} /></button></div>
+            <div className="company-section-head"><div><span className="section-kicker">现在需要我处理</span><h2>按期限与流程影响排序</h2></div><button className="text-btn" onClick={() => navigate('messages')}>全部消息<ArrowRight size={14} /></button></div>
             <div className="attention-list"><button onClick={() => openWorkbench(false)}><span className="attention-order">01</span><span><Status tone="orange">技术事实 · 阻塞接力</Status><strong>{handedOff ? '独权是否覆盖 MP-300 量产方案？' : '异常识别测试数据是否与记录一致？'}</strong><small>磁驱泵智能控制系统 · 今天 14:30</small></span><span className="attention-action">查看依据<ArrowRight size={14} /></span></button><button onClick={() => openWorkbench(false, 'storage')}><span className="attention-order">02</span><span><Status tone="orange">申请策略 · 等待确认</Status><strong>确认装置与方法双层保护是否覆盖量产方案</strong><small>模块化储能热管理装置 · 今天 17:00</small></span><span className="attention-action">进入复核<ArrowRight size={14} /></span></button><button onClick={() => { setActiveDept('risk'); setModal('task') }}><span className="attention-order">03</span><span><Status tone="red">风险决策 · 上市前</Status><strong>高速视觉检测设备发现 1 件高相关权利要求</strong><small>FTO-2026-009 · 11 月 03 日前</small></span><span className="attention-action">查看选项<ArrowRight size={14} /></span></button></div>
+          </section>
+
+          <section className={`company-messages ${homeMsgFocus ? 'home-msg-focus' : ''}`} id="home-messages" aria-label="待你处理的消息">
+            <div className="company-section-head"><div><span className="section-kicker">待你处理 · 消息</span><h2>{role === 'enterprise' ? '协同消息' : '客户协同'}</h2></div><button className="text-btn" onClick={() => setHomeMsgFocus(false)}>收起强调</button></div>
+            <div className="home-msg-list">{[
+              ['林岚 · 代理师', '请确认 D1 是否对应你们旧款产品', '磁驱泵智能控制系统', '10:31', 0],
+              ['申请文件部', '权利要求草案已形成，等待你确认保护层次', '模块化储能热管理', '昨天', 1],
+              ['风险排查部', '发现 1 件高风险专利，建议安排技术比对', '高速视觉检测设备', '周二', 2],
+            ].map((m) => <button key={String(m[0])} onClick={() => { setSelectedMessage(Number(m[4])); if (Number(m[4]) === 2) { setActiveDept('risk'); setModal('task') } else openWorkbench(false, Number(m[4]) === 1 ? 'storage' : 'magnetic') }}><Avatar name={String(m[0])} human={Number(m[4]) === 0} /><span><strong>{m[0]}</strong><small>{m[1]}</small><em>{m[2]} · {m[3]}</em></span><ChevronRight size={15} /></button>)}</div>
           </section>
 
           <section className="company-work" aria-label="公司正在推进">
@@ -400,22 +425,22 @@ export default function App() {
           </div>
           </>}
 
-          {mode === 'project' && !firstRun && <section className="company-strip">
-            <div className="section-head"><div><span className="section-kicker">第二层 · 你的虚拟知产团队</span><h2>10 个部门，围绕业务目标接力</h2></div><button className="text-btn" onClick={() => navigate('departments')}>管理部门与专家<ArrowRight size={15} /></button></div>
-            <div className="department-row">{departments.slice(0, 6).map((d, i) => <button key={d.id} onClick={() => { setActiveDept(d.id); navigate('departments') }}><span>{String(i + 1).padStart(2, '0')}</span><strong>{d.name}</strong><small>{d.output}</small></button>)}</div>
+          {!firstRun && <section className="company-strip">
+            <div className="section-head"><div><span className="section-kicker">编制与能力</span><h2>10 个部门，围绕业务目标接力</h2></div><button className="text-btn" onClick={() => switchMode('studio')}>打开部门<ArrowRight size={15} /></button></div>
+            <div className="department-row">{departments.slice(0, 6).map((d, i) => <button key={d.id} onClick={() => { setActiveDept(d.id); switchMode('studio') }}><span>{String(i + 1).padStart(2, '0')}</span><strong>{d.name}</strong><small>{d.output}</small></button>)}</div>
           </section>}
         </> : <>
           <section className="home-intro agency-intro">
-            <div><p className="date-line">{mode === 'assistant' ? '助手模式 · 顾言汇总期限、案件与客户确认' : '项目模式 · 代理师专业工作区'}</p><h1>上午好，林岚。<br />先处理期限，再推进交付。</h1></div>
-            {mode === 'project' && <button className="btn btn-primary" onClick={() => setModal('new')}><Plus size={17} />新建案件</button>}
+            <div><p className="date-line">{'首页 · 顾言汇总期限、案件与客户确认'}</p><h1>上午好，林岚。<br />先处理期限，再推进交付。</h1></div>
+            <button className="btn btn-secondary" onClick={() => setModal('new')}><Plus size={17} />新建案件</button>
           </section>
           <section className="lead-card" aria-label="代理所知产负责人统一入口">
             <div className="lead-identity"><Avatar name="顾" /><div><span className="section-kicker">你的知产负责人</span><h2>顾言</h2><p>我帮你安排案件优先级、组织专业团队，并汇总客户确认。</p></div></div>
             <div className="lead-command"><form onSubmit={submitLead}><input value={leadInput} onChange={e => setLeadInput(e.target.value)} placeholder="例如：先处理今天到期的质检，并汇总客户待确认事项" aria-label="告诉知产负责人你的目标" /><button className="btn btn-ink" type="submit" disabled={!leadInput.trim()}>交给顾言<Send size={14} /></button></form><div className="lead-suggestions"><span>可以这样开始</span>{['整理今日 OA 期限', '查看客户待确认', '继续储能案件质检'].map(text => <button key={text} onClick={() => setLeadInput(text)}>{text}</button>)}</div>{leadRequest && <div className="lead-response"><CheckCircle2 size={17} /><div><strong>已按期限与交付风险重排工作</strong><p>优先处理储能案件质检，再推进 OA 答复；需要客户决策的事项会单独汇总。</p></div><button className="btn btn-secondary" onClick={() => openWorkbench(false, 'storage')}>进入最优先案件<ArrowRight size={14} /></button></div>}</div>
           </section>
-          {mode === 'project' && <section className="metric-strip">
+          <section className="metric-strip">
             <div><small>今日待办</small><strong>8</strong><span>2 项临近内部期限</span></div><div><small>进行中案件</small><strong>26</strong><span>覆盖 7 家客户</span></div><div><small>待客户确认</small><strong>5</strong><span>平均等待 1.4 天</span></div><div><small>本月已交付</small><strong>17</strong><span>质检通过率 94%</span></div>
-          </section>}
+          </section>
           <div className="agency-grid">
             <section className="work-queue">
               <div className="section-head"><div><span className="section-kicker">优先级队列</span><h2>现在最该处理的案件</h2></div><button className="text-btn" onClick={() => navigate('clients')}>全部案件<ArrowRight size={15} /></button></div>
@@ -428,16 +453,16 @@ export default function App() {
               ].map((r, i) => <button className="queue-row" key={String(r[0])} onClick={() => { if (i === 2) { setActiveDept('risk'); setModal('task') } else if (i === 3) notify('授权登记核查已加入今日待办'); else openWorkbench(i === 0, i === 1 ? 'storage' : 'magnetic') }}><span><strong>{r[0]}</strong><small>{r[1]}</small></span><span>{r[2]}</span><span className={i === 1 ? 'urgent' : ''}><Clock3 size={14} />{r[3]}</span><span><Avatar name={String(r[4])} small human />{r[4]}</span><ChevronRight size={16} /></button>)}
             </section>
             <aside className="client-pulse">
-              <div className="section-head"><div><span className="section-kicker">客户协同</span><h2>等待与反馈</h2></div></div>
+              <div className="section-head" id="home-messages"><div><span className="section-kicker">待你处理 · 消息</span><h2>客户协同</h2></div></div>
               <div className="pulse-item"><Avatar name="陈" human /><div><strong>陈宇补充了技术说明</strong><p>磁驱泵智能控制系统 · 25 分钟前</p><button onClick={() => openWorkbench(false)}>查看并继续撰写<ArrowRight size={14} /></button></div></div>
               <div className="pulse-item"><Avatar name="周" human /><div><strong>周敏确认了答复策略</strong><p>低能耗膜分离工艺 · 昨天</p><button onClick={() => openWorkbench(true)}>进入 OA 答复<ArrowRight size={14} /></button></div></div>
               <div className="pulse-item"><Avatar name="许" human /><div><strong>许清上传了产品结构图</strong><p>高速视觉检测设备 · 昨天</p><button onClick={() => notify('附件已加入 FTO 案件卷宗')}>加入案件卷宗<Plus size={14} /></button></div></div>
             </aside>
           </div>
-          {mode === 'project' && <section className="delivery-board">
+          <section className="delivery-board">
             <div className="section-head"><div><span className="section-kicker">交付质量</span><h2>每个交付物都有复核人与依据</h2></div></div>
             <div className="delivery-line"><span>部门起草</span><ArrowRight size={17} /><span>交叉质检</span><ArrowRight size={17} /><span>代理师复核</span><ArrowRight size={17} /><span>客户确认</span><ArrowRight size={17} /><span>签署递交</span></div>
-          </section>}
+          </section>
         </>)}
 
         {view === 'workbench' && <section className="workspace-frame">
@@ -536,7 +561,16 @@ export default function App() {
           </div>
         </ListPage>}
 
-        {view === 'studio' && <ListPage title="专业工作室" subtitle="把职责、方法、行为约束和外部工具组装成可复用部门；先试运行，再发布给项目使用。" action="新建专家" onAction={() => setModal('expert')}>
+        {view === 'studio' && <ListPage title="部门" subtitle="花名册管编制；工作室配置 Skill、提示词与 MCP。同一页完成，不再分两个入口。" action="添加专家" onAction={() => setModal('expert')}>
+          <section className="dept-roster-section" aria-label="部门花名册">
+            <div className="company-section-head"><div><span className="section-kicker">花名册</span><h2>{role === 'enterprise' ? '部门与专家' : '专业团队'}</h2></div><Status tone="green">10 个部门</Status></div>
+            <div className="department-layout roster-compact">
+              <div className="department-list">{departments.map(d => <button key={d.id} className={activeDept === d.id ? 'active' : ''} onClick={() => { setActiveDept(d.id); setStudioTab('department') }}><span className="dept-stage">{d.stage}</span><div><strong>{d.name}</strong><p>{d.desc}</p><small>{d.experts.length + (activeDept === d.id ? customExperts.length : 0)} 位专家 · 交付{d.output}</small></div><ChevronRight size={17} /></button>)}</div>
+              <aside className="department-detail"><span className="section-kicker">{currentDept.stage}节点</span><h2>{currentDept.name}</h2><p>{currentDept.desc}</p><div className="dept-io"><div><small>接收</small><strong>项目事实、上一节点交付物</strong></div><ArrowRight size={17} /><div><small>交付</small><strong>{currentDept.output}</strong></div></div><h3>部门成员</h3>{currentDept.experts.map((e, i) => <div className="expert-row" key={e}><Avatar name={e} /><div><strong>{e}</strong><small>{i === 0 ? '主责 · 自动接收本节点任务' : '协作 · 按需参与交叉核查'}</small></div><button className="icon-btn" onClick={() => notify(`${e}的工作说明已打开`)}><Settings2 size={16} /></button></div>)}{customExperts.map(e => <div className="expert-row" key={e}><Avatar name={e} human /><div><strong>{e}</strong><small>自定义专家 · 按需参与</small></div><Status tone="green">已加入</Status></div>)}<button className="add-expert" onClick={() => setModal('expert')}><Plus size={16} />添加或自定义专家</button><div className="department-rule"><ShieldCheck size={18} /><p><strong>按需继承，不越权共享</strong><br />下一部门只继承本任务所需的事实、证据、版本与决策。</p></div><button className="btn btn-ink full-btn" onClick={() => setModal('task')}>给{currentDept.name}交办任务<ArrowRight size={15} /></button></aside>
+            </div>
+          </section>
+          <section className="dept-studio-section" aria-label="工作室配置">
+            <div className="company-section-head" style={{ marginTop: 28, marginBottom: 14 }}><div><span className="section-kicker">工作室配置</span><h2>Skill · 提示词 · MCP · 发布</h2></div></div>
           <div className="studio-layout">
             <aside className="studio-departments"><div className="studio-side-head"><span>部门模板</span><button onClick={() => notify('已创建部门草稿')} aria-label="新建部门"><Plus size={15} /></button></div>{departments.map(d => <button key={d.id} className={activeDept === d.id ? 'active' : ''} onClick={() => { setActiveDept(d.id); setTestPassed(false); setPublished(false) }}><span><strong>{d.name}</strong><small>{d.id === 'disclosure' ? '团队模板 · V1.3' : '组织模板 · V1.0'}</small></span><ChevronRight size={15} /></button>)}</aside>
             <section className="studio-main">
@@ -552,6 +586,7 @@ export default function App() {
               </div>
             </section>
           </div>
+          </section>
         </ListPage>}
 
         {view === 'messages' && <ListPage title={role === 'enterprise' ? '协同消息' : '客户协同'} subtitle="讨论始终关联项目、文档和决策，不再散落在即时通讯里。" action="发起协同" onAction={() => setModal('task')}>
@@ -589,12 +624,12 @@ export default function App() {
     {modal === 'review' && <Modal title="确认本节点决策" subtitle="系统把专业内容翻译成需要你判断的事项，并保留确认记录。" onClose={() => setModal(null)}><div className="review-summary"><span className="section-kicker">建议方案</span><h3>{view === 'workbench' && oaMode ? '采用“有限修改 + 创造性争辩”答复策略' : view === 'workbench' && storageMode ? '确认装置与方法权利要求层次，完成质检后进入递交复核' : '核心控制方法申请发明，关键结构同步申请实用新型'}</h3><p>{view === 'workbench' && oaMode ? '独立权利要求仅并入“基于温差动态调整清洗时长”特征，保留其余参数在从属权利要求中。' : view === 'workbench' && storageMode ? '独立权利要求保留分流控制的核心组合，具体阈值置于从属权利要求；两项文本一致性问题由代理师继续复核。' : '兼顾授权前景、保护范围和上市节奏。申请文件部将分别组织权利要求，避免简单重复。'}</p></div><div className="review-options"><label><input type="radio" name="decision" defaultChecked /><span><strong>采纳部门建议</strong><small>进入下一节点，由代理师继续复核</small></span></label><label><input type="radio" name="decision" /><span><strong>需要补充讨论</strong><small>保留当前节点，并发起项目内协同</small></span></label></div><div className="modal-actions"><button className="btn btn-secondary" onClick={() => setModal(null)}>稍后决定</button><button className="btn btn-primary" onClick={() => { setModal(null); notify('决策已确认并写入项目记录') }}>确认决策</button></div></Modal>}
 
     {modal === 'guide' && <Modal title="产品逻辑与原型导览" subtitle="一家公司、一个负责人、三种使用深度。模式只改变可见能力，不改变项目数据。" wide onClose={() => setModal(null)}><div className="guide-body">
-      <section><span className="guide-number">01</span><div><h3>官网、登录、公司首页与项目执行分工</h3><p>官网解释产品价值，登录进入对应空间，公司首页组织跨项目工作；协同与文书工作区完成具体节点。首次空状态与已有工作演示明确区分。</p></div></section>
-      <section><span className="guide-number">02</span><div><h3>助手、项目、专业，共享同一业务底座</h3><p>助手模式只面对顾言、当前事项、待确认和交付物；项目模式可新建项目、选择部门与预设专家；专业模式开放专家、Skill、提示词、MCP 与部门发布。切换模式不会另建项目或丢失版本。</p></div></section>
+      <section><span className="guide-number">01</span><div><h3>官网、登录、首页与项目执行分工</h3><p>官网解释产品价值，登录进入对应空间；首页承接委托与跨案待办（含消息）；项目管对象与工作台；部门管花名册与工作室。首次空状态与已有工作演示明确区分。</p></div></section>
+      <section><span className="guide-number">02</span><div><h3>首页、项目、部门，共享同一业务底座</h3><p>首页：顾言委托、跨案待办与消息；项目：对象列表与工作台；部门：花名册 + 工作室配置（Skill、提示词、MCP）。协同消息收在首页次区，不做第四主 tab。切换模式不会另建项目或丢失版本。</p></div></section>
       <section><span className="guide-number">03</span><div><h3>两条业务主线，多种对象独立推进</h3><p>权利形成线覆盖创新、挖掘、布局、申请、审查与运营；风险防控线覆盖产品拆解、FTO、比对和规避。研发项目、申请案件、产品风险与专利资产分别管理状态，可关联、并行、回退或重开。</p></div></section>
       <section><span className="guide-number">04</span><div><h3>三类空间，按权限接力</h3><p>企业私有、代理所私有和双方共享空间相互隔离。部门只继承本任务所需的事实、证据、版本与决策；跨组织交付绑定版本、交付人、时间、可见范围和确认记录。</p></div></section>
       <section><span className="guide-number">05</span><div><h3>协同与文书双视图，确认控制流程</h3><p>协同工作视图呈现顾言计划、部门分工、专家任务、连续指令、交付依据和确认分支；文书工作视图保留卷宗、版本与编辑。技术事实确认后还要确认节点交付，再由用户决定是否接力，不会自动递交。</p></div></section>
-      <div className="guide-demo"><strong>建议这样体验原型</strong><div><button onClick={() => { switchRole('enterprise'); switchMode('assistant'); setModal(null) }}>企业负责人助手</button><ArrowRight size={15} /><button onClick={() => { switchRole('enterprise'); switchMode('project'); setModal(null) }}>项目与部门</button><ArrowRight size={15} /><button onClick={() => { switchMode('studio'); setModal(null) }}>专业工作室</button><ArrowRight size={15} /><button onClick={() => { switchRole('agency'); openWorkbench(true); setModal(null) }}>代理所 OA 工作台</button></div></div>
+      <div className="guide-demo"><strong>建议这样体验原型</strong><div><button onClick={() => { switchRole('enterprise'); switchMode('assistant'); setModal(null) }}>企业首页</button><ArrowRight size={15} /><button onClick={() => { switchRole('enterprise'); switchMode('project'); setModal(null) }}>项目列表</button><ArrowRight size={15} /><button onClick={() => { switchMode('studio'); setModal(null) }}>部门</button><ArrowRight size={15} /><button onClick={() => { switchRole('agency'); openWorkbench(true); setModal(null) }}>代理所 OA 工作台</button></div></div>
     </div></Modal>}
   </div>
 }
