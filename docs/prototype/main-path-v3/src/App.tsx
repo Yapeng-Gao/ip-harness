@@ -16,7 +16,6 @@ type StudioTab = 'department' | 'experts' | 'skills' | 'prompt' | 'mcp' | 'relea
 type ModalType = 'new' | 'handoff' | 'expert' | 'guide' | 'task' | 'review' | null
 type ObjectKind = '研发项目' | '申请案件' | '产品风险'
 type WorkContext = 'magnetic' | 'storage'
-type WorkView = 'collaboration' | 'document'
 
 type DocketBucket = 'input' | 'process' | 'output'
 type DocketItem = { id: string; name: string; bucket: DocketBucket; note: string; source: 'seed' | 'upload' }
@@ -166,7 +165,6 @@ export default function App() {
   const [messagesOpen, setMessagesOpen] = useState(false)
   const [activeProjectCode, setActiveProjectCode] = useState<string | null>('RD-2026-017')
   const [projectPickerOpen, setProjectPickerOpen] = useState(false)
-  const [showProcess, setShowProcess] = useState(false)
   const [workContext, setWorkContext] = useState<WorkContext>('magnetic')
   const [leadInput, setLeadInput] = useState('')
   const [leadRequest, setLeadRequest] = useState('')
@@ -175,7 +173,8 @@ export default function App() {
   const [prompt, setPrompt] = useState('先核对输入事实与证据来源，再开始起草。不得补造技术效果；涉及保护范围、法律结论和对外递交时，必须提交真实人员确认。')
   const [testPassed, setTestPassed] = useState(false)
   const [published, setPublished] = useState(false)
-  const [workView, setWorkView] = useState<WorkView>('collaboration')
+  const [planWalk, setPlanWalk] = useState<null | { kind: 'new' | 'oa'; step: number }>(null)
+  const [workPlanIndex, setWorkPlanIndex] = useState(2)
   const [factConfirmed, setFactConfirmed] = useState(false)
   const [nodeConfirmed, setNodeConfirmed] = useState(false)
   const [docket, setDocket] = useState<DocketItem[]>(seedDocket)
@@ -214,14 +213,17 @@ export default function App() {
     else setView('home')
     setMobileNav(false); setNoticeOpen(false); setMessagesOpen(false); setProjectPickerOpen(false)
   }
-  const openWorkbench = (oa = false, context: WorkContext = 'magnetic') => {
+  const openWorkbench = (oa = false, context: WorkContext = 'magnetic', opts?: { planIndex?: number; fresh?: boolean }) => {
     setWorkContext(context)
-    setActiveDoc(oa ? '意见陈述书' : context === 'storage' ? '权利要求草案' : handedOff ? '权利要求草案' : '交底书 V3')
-    setActiveDept(oa ? 'oa' : context === 'storage' ? 'quality' : handedOff ? 'drafting' : 'disclosure')
+    const fresh = opts?.fresh === true
+    if (fresh) setHandedOff(false)
+    setActiveDoc(oa ? '意见陈述书' : context === 'storage' ? '权利要求草案' : (!fresh && handedOff) ? '权利要求草案' : '交底书 V3')
+    setActiveDept(oa ? 'oa' : context === 'storage' ? 'quality' : (!fresh && handedOff) ? 'drafting' : 'disclosure')
     setActiveProjectCode(oa ? 'CN202610483217.6' : context === 'storage' ? 'CN202610512086.4' : 'RD-2026-017')
     setFactConfirmed(false)
     setNodeConfirmed(false)
-    setWorkView('collaboration')
+    setWorkPlanIndex(opts?.planIndex ?? (fresh ? 0 : 2))
+    setPlanWalk(null)
     setProjectPickerOpen(false)
     navigate('workbench')
   }
@@ -247,13 +249,11 @@ export default function App() {
   }
   const openDocument = (doc?: string) => {
     if (doc) setActiveDoc(doc)
-    setWorkView('document')
     navigate('workbench')
   }
-  const switchRole = (next: Role) => { setRole(next); navigate(mode === 'studio' ? 'studio' : 'home'); setHandedOff(false); setChat([]); setShowProcess(false); setFactConfirmed(false); setNodeConfirmed(false) }
+  const switchRole = (next: Role) => { setRole(next); navigate(mode === 'studio' ? 'studio' : 'home'); setHandedOff(false); setChat([]); setFactConfirmed(false); setNodeConfirmed(false) }
   const currentDept = departments.find(d => d.id === activeDept) ?? departments[4]
   const oaMode = agencyTabs.includes(activeDoc)
-  const processVisible = role === 'agency' || showProcess
   const storageMode = workContext === 'storage' && !oaMode
   const workTabs = oaMode ? agencyTabs : storageMode ? storageTabs : docTabs
   const workMeta = oaMode
@@ -286,11 +286,35 @@ export default function App() {
     e.preventDefault()
     if (leadInput.trim()) setLeadRequest(leadInput.trim())
   }
+  const planWalkSteps = leadPlan.kind === 'oa'
+    ? [
+        ['核对通知书与期限', '先对齐审查意见、申请文本与答复截止日，确认本节点目标。'],
+        ['比对 D1 / D2 证据', '拆解争议特征，形成证据比对与修改空间判断。'],
+        ['形成修改与争辩策略', '产出意见陈述与权利要求修改对照，等待事实确认。'],
+        ['代理师复核并交付', '真实人员复核后进入工作台，由你确认再接力。'],
+      ]
+    : [
+        ['读取研发资料', '整理交底、图纸与实验记录，归入项目输入材料。'],
+        ['访谈补齐技术事实', '技术访谈专家追问关键效果与工况，标出待你确认的事实。'],
+        ['检索对照与撰写', '对照检索完善交底书，形成可供申请文件部接手的版本。'],
+        ['研发确认并接力', '你确认技术事实与节点交付后，按权限交给下一部门。'],
+      ]
   const startLeadPlan = () => {
     setFirstRun(false)
-    if (leadPlan.kind === 'risk') { setActiveDept('risk'); setModal('task') }
-    else if (leadPlan.kind === 'oa') openWorkbench(true)
-    else openWorkbench(false)
+    if (leadPlan.kind === 'risk') { setActiveDept('risk'); setModal('task'); return }
+    setPlanWalk({ kind: leadPlan.kind === 'oa' ? 'oa' : 'new', step: 0 })
+    notify(leadPlan.kind === 'oa' ? '已确认 OA 计划，请逐步走完四步' : '已确认计划，请逐步走完四步后再进入工作台')
+  }
+  const advancePlanWalk = () => {
+    if (!planWalk) return
+    if (planWalk.step < 3) {
+      setPlanWalk({ ...planWalk, step: planWalk.step + 1 })
+      notify(`第 ${planWalk.step + 2} 步：${planWalkSteps[planWalk.step + 1][0]}`)
+      return
+    }
+    const oa = planWalk.kind === 'oa'
+    notify('四步计划已完成，进入工作台')
+    openWorkbench(oa, 'magnetic', { planIndex: 0, fresh: true })
   }
   const filteredProjects = projects.filter(p =>
     (objectFilter === '全部对象' || p.kind === objectFilter) &&
@@ -548,7 +572,12 @@ export default function App() {
             <div className="lead-command">
               <form onSubmit={submitLead}><input name="lead_goal" autoComplete="off" value={leadInput} onChange={e => setLeadInput(e.target.value)} placeholder={firstRun ? '例如：我们有一项磁驱泵控制技术，想评估如何保护…' : '交办新目标，或告诉顾言调整工作区优先级…'} aria-label="告诉知产负责人你的目标" /><button className="btn btn-ink" type="submit" disabled={!leadInput.trim()}>交给顾言<Send size={14} /></button></form>
               <div className="lead-suggestions"><span>{firstRun ? '从常见目标开始' : '快速交办'}</span>{['整理一项研发成果', '新产品上市前排查风险', '收到审查意见'].map(text => <button key={text} onClick={() => setLeadInput(text)}>{text}</button>)}</div>
-              {leadRequest && <div className="lead-response"><CheckCircle2 size={17} /><div><strong>已理解，建议由{leadPlan.dept}先接手</strong><p>{leadPlan.text} 我会汇总进展，只在需要技术事实或商业决策时找你。</p></div><button className="btn btn-secondary" onClick={startLeadPlan}>确认计划并开始<ArrowRight size={14} /></button></div>}
+              {leadRequest && !planWalk && <div className="lead-response"><CheckCircle2 size={17} /><div><strong>已理解，建议由{leadPlan.dept}先接手</strong><p>{leadPlan.text} 我会汇总进展，只在需要技术事实或商业决策时找你。</p></div><button className="btn btn-secondary" onClick={startLeadPlan}>确认计划并开始<ArrowRight size={14} /></button></div>}
+              {planWalk && <div className="plan-walk" aria-label="计划四步">
+                <div className="plan-walk-head"><CheckCircle2 size={17} /><div><strong>计划已确认 · {leadPlan.dept}负责</strong><p>请逐步走完四步；完成后进入工作台，不会跳到中段演示。</p></div></div>
+                <div className="plan-sequence plan-walk-sequence">{planWalkSteps.map((s, i) => <div key={s[0]} className={i < planWalk.step ? 'done' : i === planWalk.step ? 'active' : ''}><span>{i < planWalk.step ? <Check size={12} /> : i + 1}</span><strong>{s[0]}</strong>{i < planWalkSteps.length - 1 && <ArrowRight size={13} />}</div>)}</div>
+                <div className="plan-walk-body"><span className="section-kicker">第 {planWalk.step + 1} / 4 步</span><h3>{planWalkSteps[planWalk.step][0]}</h3><p>{planWalkSteps[planWalk.step][1]}</p><div className="plan-walk-actions"><button type="button" className="btn btn-secondary" onClick={() => { setPlanWalk(null); notify('已取消计划推进，可重新确认') }}>取消</button><button type="button" className="btn btn-ink" onClick={advancePlanWalk}>{planWalk.step < 3 ? <>下一步<ArrowRight size={14} /></> : <>完成并进入工作台<ArrowRight size={14} /></>}</button></div></div>
+              </div>}
             </div>
           </section>
 
@@ -568,7 +597,7 @@ export default function App() {
 
           <section className="company-work" aria-label="正在推进">
             <div className="company-section-head"><div><span className="section-kicker">正在推进</span><h2>4 个业务对象，3 个部门正在执行</h2></div><button className="text-btn" onClick={() => navigate('projects')}>全部项目与对象<ArrowRight size={14} /></button></div>
-            <div className="company-work-grid"><button onClick={() => openWorkbench(false)}><div><span className="project-glyph">MP</span><Status tone="orange">等待你确认</Status></div><h3>磁驱泵智能控制系统</h3><p>{handedOff ? '申请文件部 · 申请文件起草' : '交底书部 · 交底事实完善'}</p><dl><div><dt>下一交付</dt><dd>{handedOff ? '权利要求草案 V1' : '交底书 V4'}</dd></div><div><dt>当前阻塞</dt><dd>1 项技术事实</dd></div></dl><span className="work-enter">进入协同工作<ArrowRight size={14} /></span></button><button onClick={() => openWorkbench(true)}><div><span className="project-glyph muted">MS</span><Status tone="red">剩余 18 天</Status></div><h3>低能耗膜分离清洗控制方法</h3><p>OA 答复部 · 答复策略形成</p><dl><div><dt>下一交付</dt><dd>意见陈述书 V2</dd></div><div><dt>当前状态</dt><dd>代理师复核前</dd></div></dl><span className="work-enter">进入 OA 答复<ArrowRight size={14} /></span></button><button onClick={() => openWorkbench(false, 'storage')}><div><span className="project-glyph muted">ES</span><Status tone="green">质检进行中</Status></div><h3>模块化储能热管理装置</h3><p>质量审查部 · 申请文件质检</p><dl><div><dt>下一交付</dt><dd>质检快照 Q2</dd></div><div><dt>遗留问题</dt><dd>2 项文本一致性</dd></div></dl><span className="work-enter">进入质量审查<ArrowRight size={14} /></span></button></div>
+            <div className="company-work-grid"><button onClick={() => openWorkbench(false)}><div><span className="project-glyph">MP</span><Status tone="orange">等待你确认</Status></div><h3>磁驱泵智能控制系统</h3><p>{handedOff ? '申请文件部 · 申请文件起草' : '交底书部 · 交底事实完善'}</p><dl><div><dt>下一交付</dt><dd>{handedOff ? '权利要求草案 V1' : '交底书 V4'}</dd></div><div><dt>当前阻塞</dt><dd>1 项技术事实</dd></div></dl><span className="work-enter">进入工作台<ArrowRight size={14} /></span></button><button onClick={() => openWorkbench(true)}><div><span className="project-glyph muted">MS</span><Status tone="red">剩余 18 天</Status></div><h3>低能耗膜分离清洗控制方法</h3><p>OA 答复部 · 答复策略形成</p><dl><div><dt>下一交付</dt><dd>意见陈述书 V2</dd></div><div><dt>当前状态</dt><dd>代理师复核前</dd></div></dl><span className="work-enter">进入 OA 答复<ArrowRight size={14} /></span></button><button onClick={() => openWorkbench(false, 'storage')}><div><span className="project-glyph muted">ES</span><Status tone="green">质检进行中</Status></div><h3>模块化储能热管理装置</h3><p>质量审查部 · 申请文件质检</p><dl><div><dt>下一交付</dt><dd>质检快照 Q2</dd></div><div><dt>遗留问题</dt><dd>2 项文本一致性</dd></div></dl><span className="work-enter">进入质量审查<ArrowRight size={14} /></span></button></div>
           </section>
 
           <div className="company-bottom-grid">
@@ -620,10 +649,10 @@ export default function App() {
         {view === 'workbench' && <section className="workspace-frame">
           <header className="workspace-switchbar">
             <div className="workspace-title"><button className="icon-btn" onClick={() => navigate(role === 'enterprise' ? 'projects' : 'clients')} aria-label="返回列表"><ArrowLeft size={17} /></button><span className="project-glyph">{workMeta.glyph}</span><div><strong>{workMeta.name}</strong><small>{workMeta.code} · {collab.department}</small></div></div>
-            <div className="work-view-switch" role="group" aria-label="切换工作视图"><button className={workView === 'collaboration' ? 'active' : ''} aria-pressed={workView === 'collaboration'} onClick={() => setWorkView('collaboration')}><Network size={15} />协同工作</button><button className={workView === 'document' ? 'active' : ''} aria-pressed={workView === 'document'} onClick={() => setWorkView('document')}><FileText size={15} />文书工作</button></div>
+            <div className="workspace-plan-strip" aria-label="本节点四步进度">{collab.plan.map((step, i) => <div key={step} className={i < workPlanIndex ? 'done' : i === workPlanIndex ? 'active' : ''}><span>{i < workPlanIndex ? <Check size={11} /> : i + 1}</span><strong>{step}</strong></div>)}</div>
             <div className="workspace-live"><span className="live-dot" /><span><strong>{nodeConfirmed ? '本节点已确认' : collab.node}</strong><small>{nodeConfirmed ? `等待交给${collab.nextDept}` : '顾言持续协调中'}</small></span></div>
           </header>
-          {workView === 'document' ? <section className={`workbench ${processVisible ? '' : 'workbench-simple'}`}>
+          <section className="workbench">
           <aside className="file-pane">
             <div className="pane-top"><button className="back-link" onClick={() => navigate(role === 'enterprise' ? 'projects' : 'clients')}><ArrowLeft size={15} />{role === 'enterprise' ? '项目中心' : '案件列表'}</button><button className="icon-btn" onClick={() => notify('项目设置已打开')} aria-label="项目设置"><Settings2 size={16} /></button></div>
             <div className="file-project"><span className="project-glyph">{workMeta.glyph}</span><div><strong>{workMeta.name}</strong><small>{workMeta.code}</small></div></div>
@@ -661,55 +690,39 @@ export default function App() {
           </aside>
 
           <div className="editor-pane">
-            <div className="editor-tabs">{workTabs.map(doc => <button key={doc} className={activeDoc === doc ? 'active' : ''} onClick={() => setActiveDoc(doc)}>{doc}{activeDoc === doc && <span />}</button>)}<button className="icon-btn" onClick={() => setModal('new')} aria-label="新建文件"><Plus size={16} /></button></div>
+            <div className="editor-tabs" role="tablist">{workTabs.map(doc => <button key={doc} role="tab" aria-selected={activeDoc === doc} className={activeDoc === doc ? 'active' : ''} onClick={() => setActiveDoc(doc)}>{doc}{activeDoc === doc && <span />}</button>)}<button className="icon-btn" onClick={() => setModal('new')} aria-label="新建文件"><Plus size={16} /></button></div>
             <div className="editor-toolbar"><div><button onClick={() => notify('已切换为编辑模式')}><PenLine size={15} />编辑</button><button onClick={() => notify('批注模式已开启')}><MessageSquareText size={15} />批注</button><button onClick={() => notify('版本对比已生成')}>对比版本</button><button type="button" onClick={() => downloadDemo(`${activeDoc}.pdf`)}><Download size={15} />下载</button></div><span className={saved ? '' : 'editing'}>{saved ? <><Check size={13} />已保存</> : '编辑中'}</span></div>
-            {role === 'enterprise' && <div className="lead-workbench"><Avatar name="顾" small /><div><strong>顾言 · 知产负责人</strong><p>{oaMode ? 'OA 答复部已拆解争议并准备答复文本。你只需确认修改范围与实际生产方案。' : storageMode ? '申请文件部与质量审查部正在核查文本一致性。我会汇总问题，再请你确认申请策略。' : handedOff ? '申请文件部已接手。我会汇总权利要求与说明书进展，涉及保护范围时再请你决策。' : '交底书部正在完善文本。我已把专业任务留在后台，你只需处理 2 处技术事实。'}</p></div><button className={`process-toggle ${showProcess ? 'active' : ''}`} onClick={() => setShowProcess(v => !v)}><Network size={14} />{showProcess ? '收起专业过程' : '查看专业过程'}</button></div>}
+            {role === 'enterprise' && <div className="lead-workbench"><Avatar name="顾" small /><div><strong>顾言 · 知产负责人</strong><p>{oaMode ? 'OA 答复部已拆解争议并准备答复文本。你只需确认修改范围与实际生产方案。' : storageMode ? '申请文件部与质量审查部正在核查文本一致性。我会汇总问题，再请你确认申请策略。' : workPlanIndex === 0 ? '计划四步已走完，现在从读取材料开始。左栏可补输入，右侧确认闸与对话同屏。' : handedOff ? '申请文件部已接手。我会汇总权利要求与说明书进展，涉及保护范围时再请你决策。' : '交底书部正在完善文本。左卷宗 · 中文书 · 右确认闸同屏，你只需处理标出的技术事实。'}</p></div><Status tone="orange">一屏三栏</Status></div>}
             <div className="document-scroll">
               {oaMode ? <AgencyDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : storageMode ? <StorageDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : <EnterpriseDocument doc={activeDoc} onEdit={() => setSaved(false)} />}
             </div>
             <div className="editor-footer"><span>{saved ? `内容已同步至${oaMode || storageMode ? '案件卷宗' : '项目事实库'}` : '有未保存修改'}</span><div><button className="btn btn-secondary" onClick={() => { setSaved(true); notify('新版本已保存') }}>保存版本</button><button className="btn btn-ink" onClick={() => setModal('review')}><Stamp size={15} />{role === 'enterprise' ? '提交确认' : '提交质检'}</button></div></div>
           </div>
 
-          {processVisible && <aside className="department-pane">
-            <div className="department-head"><div><span className="section-kicker">{role === 'enterprise' ? '专业过程 · 顾言协调' : '当前负责部门'}</span><h3>{oaMode ? 'OA 答复部' : handedOff && !storageMode ? '申请文件部' : currentDept.name}</h3></div><button className="icon-btn" onClick={() => navigate('departments')} aria-label="查看部门与专家"><MoreHorizontal size={18} /></button></div>
+          <aside className="department-pane">
+            <div className="department-head"><div><span className="section-kicker">{role === 'enterprise' ? '协同 · 确认闸' : '当前负责部门'}</span><h3>{oaMode ? 'OA 答复部' : handedOff && !storageMode ? '申请文件部' : currentDept.name}</h3></div><button className="icon-btn" onClick={() => navigate('departments')} aria-label="查看部门与专家"><MoreHorizontal size={18} /></button></div>
             <div className="working-team">
-              {(oaMode ? ['策', '辩', '林'] : handedOff || storageMode ? ['权', '说', '质'] : ['访', '检', '林']).map((n, i) => <div key={n}><Avatar name={n} human={i === 2} small /><span><strong>{oaMode ? ['OA 策略专家', '创造性争辩专家', '林岚 · 复核'][i] : handedOff || storageMode ? ['权利要求专家', '说明书撰写专家', '质量审查专家'][i] : ['技术访谈专家', '交底书撰写专家', '林岚 · 代理师'][i]}</strong><small>{i === 2 ? '等待最终复核' : '已完成本节点任务'}</small></span><CheckCircle2 size={15} /></div>)}
+              {(oaMode ? ['策', '辩', '林'] : handedOff || storageMode ? ['权', '说', '质'] : ['访', '检', '林']).map((n, i) => <div key={n}><Avatar name={n} human={i === 2} small /><span><strong>{oaMode ? ['OA 策略专家', '创造性争辩专家', '林岚 · 复核'][i] : handedOff || storageMode ? ['权利要求专家', '说明书撰写专家', '质量审查专家'][i] : ['技术访谈专家', '交底书撰写专家', '林岚 · 代理师'][i]}</strong><small>{i === 2 ? '等待最终复核' : workPlanIndex === 0 && i === 0 ? '正在读取材料' : '已完成本节点任务'}</small></span><CheckCircle2 size={15} /></div>)}
             </div>
-            <div className="department-progress"><div><span>本节点任务</span><strong>{handedOff ? '2 / 5' : '4 / 6'}</strong></div><div className="progress-track"><span style={{ width: handedOff ? '40%' : '67%' }} /></div></div>
+            <section className="rail-confirm">
+              <div className="pane-section-title"><span>确认控制点</span><small>2 步</small></div>
+              <div className={`confirm-step compact ${factConfirmed ? 'confirmed' : 'active'}`}><div className="confirm-step-head"><span>{factConfirmed ? <Check size={13} /> : '1'}</span><div><strong>技术事实确认</strong><small>{collab.factTitle}</small></div></div>
+                {!factConfirmed && <div className="confirm-actions"><button type="button" className="btn btn-secondary full-btn" onClick={() => openFilePicker('docket')}><Upload size={14} />补材料</button><button className="btn btn-secondary full-btn" onClick={() => { setFactConfirmed(true); notify('技术事实已确认，并绑定当前文书版本') }}>确认事实</button></div>}
+              </div>
+              <div className={`confirm-step compact ${nodeConfirmed ? 'confirmed' : factConfirmed ? 'active' : 'locked'}`}><div className="confirm-step-head"><span>{nodeConfirmed ? <Check size={13} /> : '2'}</span><div><strong>节点交付确认</strong><small>{collab.deliverable}</small></div></div>
+                <button className="btn btn-primary full-btn" disabled={!factConfirmed || nodeConfirmed} onClick={() => { setNodeConfirmed(true); notify('本节点已确认，接力包已准备') }}>{nodeConfirmed ? <><Check size={14} />本节点已确认</> : '确认本节点交付'}</button>
+              </div>
+              <div className="rail-delivery-row"><button type="button" className="evidence-link rail-delivery" onClick={() => { setActiveDoc(collab.deliverableDoc); notify(`已打开${collab.deliverable}`) }}><FileText size={14} /><span><strong>{collab.deliverable}</strong><small>中栏文书</small></span></button><button type="button" className="icon-btn" aria-label="下载交付物" onClick={() => downloadDemo(`${collab.deliverable}.pdf`)}><Download size={14} /></button></div>
+            </section>
             <div className="department-feed">
-              <div className="feed-item"><Avatar name={oaMode ? '策' : '访'} small /><div><p><strong>{oaMode ? 'OA 策略专家' : '技术访谈专家'}</strong><time>10:24</time></p><p>{oaMode ? '已将审查员争议拆解为 3 个特征组，D1 并未直接给出闭环清洗条件。' : '我把“响应更快”改写成了可验证的技术效果，还需要你确认测试条件。'}</p><button onClick={() => notify('已定位到文档对应段落')}>定位到文档<ArrowUpRight size={13} /></button></div></div>
+              <div className="feed-item"><Avatar name={oaMode ? '策' : '访'} small /><div><p><strong>{oaMode ? 'OA 策略专家' : '技术访谈专家'}</strong><time>10:24</time></p><p>{workPlanIndex === 0 && !oaMode ? '已开始读取你确认计划时关联的研发资料，缺失项会标在确认闸。' : oaMode ? '已将审查员争议拆解为 3 个特征组，D1 并未直接给出闭环清洗条件。' : '我把“响应更快”改写成了可验证的技术效果，还需要你确认测试条件。'}</p><button onClick={() => notify('已定位到文档对应段落')}>定位到文档<ArrowUpRight size={13} /></button></div></div>
               <div className="feed-item"><Avatar name="林" human small /><div><p><strong>林岚 · 代理师</strong><time>10:31</time></p><p>{oaMode ? '先保留方法权利要求的层次，不急于加入全部参数。请确认实际生产是否采用该范围。' : '从申请策略看，建议保留“异常评分自适应修正”这一层。它可能是后续答复创造性的关键。'}</p></div></div>
               {chat.map((c, i) => <div className="feed-item own" key={i}><Avatar name="我" human small /><div><p><strong>我</strong><time>刚刚</time></p><p>{c}</p></div></div>)}
             </div>
             <div className="department-compose"><div><textarea name="dept_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="用自然语言交办或补充说明…" rows={2} aria-label="向部门交办" /><button type="button" onClick={() => openFilePicker('compose')} aria-label="添加附件，支持 PDF、Word、图片与常见图纸"><Paperclip size={16} /></button></div>{composeFiles.length > 0 && <ul className="attach-chip-list" aria-label="待发送附件">{composeFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setComposeFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}<div><span>Enter 发送 · {FILE_ACCEPT_HINT}</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div></div>
             <button className="handoff-button" onClick={() => setModal('handoff')}><GitBranch size={16} /><span><strong>{oaMode ? role === 'agency' ? '交付客户确认' : '确认答复策略' : storageMode ? role === 'agency' ? '交付客户确认' : '确认质检与申请文件' : role === 'agency' ? '交付客户确认' : handedOff ? '查看接力记录' : '让下一部门继续'}</strong><small>{oaMode ? role === 'agency' ? '生成带版本与权限的交付快照' : '确认后回传代理所并保留记录' : storageMode ? role === 'agency' ? '生成质检版本与申请策略交付快照' : '质检版本与申请策略一并确认' : role === 'agency' ? '仅共享指定交付物与确认事项' : handedOff ? '交底书部 → 申请文件部' : '按权限继承所需事实、证据与版本'}</small></span><ArrowRight size={16} /></button>
-          </aside>}
-          </section> : <section className="collaboration-workspace">
-            <aside className="node-pane">
-              <div className="node-pane-head"><span className="section-kicker">当前业务节点</span><h2>{collab.node}</h2><p>{collab.goal}</p></div>
-              <div className="node-scope"><ShieldCheck size={15} /><span><strong>{scopeText.split(' · ')[0]}</strong><small>{scopeText.split(' · ')[1]}</small></span></div>
-              <div className="node-path"><div className="pane-section-title"><span>节点路径</span><small>{collab.nodes.filter(n => n[1] === 'done').length} 已完成</small></div>{collab.nodes.map((node, i) => <div key={node[0]} className={`node-step ${node[1]}`}><span>{node[1] === 'done' ? <Check size={12} /> : i + 1}</span><div><strong>{node[0]}</strong><small>{node[1] === 'done' ? '交付已归档' : node[1] === 'active' ? `${collab.department}负责` : '等待接力条件满足'}</small></div>{node[1] === 'active' && <Status tone="orange">当前</Status>}</div>)}</div>
-              <div className="node-contract"><div className="pane-section-title"><span>本节点工作契约</span></div><dl><div><dt>负责部门</dt><dd>{collab.department}</dd></div><div><dt>输入依据</dt><dd>{oaMode ? '通知书、申请文本、D1 / D2' : storageMode ? '申请文件 V4、检索 R1、量产事实' : handedOff ? '交底书 V4、检索 R2、确认决策' : '研发资料、访谈记录、检索 R2'}</dd></div><div><dt>节点交付</dt><dd>{collab.deliverable}</dd></div><div><dt>接力条件</dt><dd>事实确认、专业复核、版本归档</dd></div></dl></div>
-              <button className="node-settings" onClick={() => setModal('task')}><Settings2 size={15} />调整本节点目标与参与部门<ChevronRight size={14} /></button>
-            </aside>
-
-            <div className="collab-main">
-              <div className="collab-scroll">
-                <section className="gu-plan-block"><div className="gu-plan-head"><Avatar name="顾" /><div><span className="section-kicker">知产负责人 · 持续协调</span><h2>顾言的工作计划</h2></div><button className="btn btn-secondary" onClick={() => setModal('task')}>调整计划</button></div><p>{oaMode ? '我会先把争议、证据和修改依据对齐，再让代理师复核。涉及实际生产方案和答复范围时，我会带着具体依据找你。' : storageMode ? '我会让质量审查部完成文本核查，再把影响量产覆盖和申请策略的事项交给你确认。' : handedOff ? '交底事实已按权限继承。我会组织申请文件部形成权利要求和说明书，只有保护范围与申请策略需要你决策。' : '我会组织交底书部补齐事实、完成检索对照和撰写。你不需要盯每个专家，只需确认我标出的技术事实。'}</p><div className="plan-sequence">{collab.plan.map((step, i) => <div key={step} className={i < 2 ? 'done' : i === 2 ? 'active' : ''}><span>{i < 2 ? <Check size={12} /> : i + 1}</span><strong>{step}</strong>{i < collab.plan.length - 1 && <ArrowRight size={13} />}</div>)}</div></section>
-
-                <section className="expert-task-board"><div className="collab-section-head"><div><span className="section-kicker">部门执行</span><h2>{collab.department} · 谁正在做什么</h2></div><Status tone="orange">3 个角色</Status></div><div className="expert-task-list">{collab.tasks.map((task, i) => <article key={task[0]}><Avatar name={task[0]} human={i === 2} /><div><div><strong>{task[0]}</strong><span>{task[1]}</span></div><p>{task[3]}</p><footer><Status tone={task[2] === '已完成' ? 'green' : task[2] === '进行中' ? 'orange' : 'neutral'}>{task[2]}</Status><button onClick={() => setMessage(`请${task[0]}说明当前结论的依据，并列出还需要我补充的内容。`)}>追问依据</button>{i < 2 && <button onClick={() => openDocument(i === 0 ? collab.deliverableDoc : collab.evidenceDoc)}>查看产出<ArrowUpRight size={12} /></button>}</footer></div></article>)}</div></section>
-
-                <section className="collab-feed"><div className="collab-section-head"><div><span className="section-kicker">动作与沟通</span><h2>项目内连续记录</h2></div><button className="text-btn" onClick={() => notify('已暂停当前节点的新任务，已有版本保留')}>暂停节点</button></div><div className="collab-event"><span className="event-time">10:24</span><div><p><strong>{collab.tasks[0][0]}</strong> {collab.tasks[0][3]}</p><button onClick={() => openDocument(collab.deliverableDoc)}>定位到交付物<ArrowUpRight size={12} /></button></div></div><div className="collab-event"><span className="event-time">10:31</span><div><p><strong>林岚 · 专利代理师</strong> {oaMode ? '建议保留修改层次，先确认实际生产控制逻辑，再确定最终答复口径。' : storageMode ? '两项遗留问题不影响继续核查，但保护范围需要企业研发与代理师共同确认。' : handedOff ? '独权暂不加入具体阈值，避免不必要缩小保护范围；仍需确认量产方案。' : '建议保留“异常评分自适应修正”这一层，可能是后续答复创造性的关键。'}</p></div></div>{chat.map((c, i) => <div className="collab-event own" key={`${c}-${i}`}><span className="event-time">刚刚</span><div><p><strong>我 → 顾言</strong> {c}</p><small>已纳入当前项目指令，部门会在本线程回复</small></div></div>)}</section>
-              </div>
-              <form className="collab-compose" onSubmit={e => { e.preventDefault(); sendChat() }}><div><Avatar name="顾" small /><textarea name="collab_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="在当前项目中向顾言或部门交办：补充事实、调整目标、追问依据…" rows={2} aria-label="向顾言交办" /><button type="button" className="icon-btn" onClick={() => openFilePicker('compose')} aria-label="添加项目附件，支持 PDF、Word、图片与常见图纸"><Paperclip size={16} /></button></div>{composeFiles.length > 0 && <ul className="attach-chip-list" aria-label="已关联附件">{composeFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setComposeFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}<footer><div><button type="button" onClick={() => setMessage('请汇总当前节点还缺哪些事实和依据。')}>还缺什么</button><button type="button" onClick={() => setMessage('请调整工作计划，并说明对交付和期限的影响。')}>调整计划</button><button type="button" onClick={() => setMessage(`请让${collab.department}退回上一版本重新核查。`)}>退回核查</button><button type="button" onClick={() => openFilePicker('compose')}><Paperclip size={12} />补材料</button></div><button className="btn btn-ink" type="submit" disabled={!message.trim()}>发送给顾言<Send size={14} /></button></footer></form>
-            </div>
-
-            <aside className="delivery-confirm-pane">
-              <section className="current-delivery"><div className="pane-section-title"><span>当前交付物</span><Status tone={nodeConfirmed ? 'green' : 'orange'}>{nodeConfirmed ? '已确认' : '待确认'}</Status></div><button className="delivery-file" onClick={() => openDocument(collab.deliverableDoc)}><FileText size={21} /><span><strong>{collab.deliverable}</strong><small>{collab.deliverableNote}</small></span><ArrowUpRight size={15} /></button><button type="button" className="btn btn-secondary full-btn delivery-download" onClick={() => downloadDemo(`${collab.deliverable}.pdf`)}><Download size={14} />下载当前交付物（演示）</button><button className="evidence-link" onClick={() => openDocument(collab.evidenceDoc)}><BookOpen size={14} /><span><strong>{collab.evidence}</strong><small>查看来源、段落和核查记录</small></span><ChevronRight size={14} /></button></section>
-              <section className="confirmation-flow"><div className="pane-section-title"><span>确认控制点</span><small>2 步</small></div><div className={`confirm-step ${factConfirmed ? 'confirmed' : 'active'}`}><div className="confirm-step-head"><span>{factConfirmed ? <Check size={13} /> : '1'}</span><div><strong>技术事实确认</strong><small>{factConfirmed ? '已写入项目确认记录' : '由你确认，AI 不代替判断'}</small></div></div><h3>{collab.factTitle}</h3><p>{collab.factDetail}</p><button className="source-link" onClick={() => openDocument(collab.sourceDoc)}><FileText size={13} />{collab.source}<ArrowUpRight size={13} /></button><div className="impact-note"><CircleAlert size={14} /><p>{collab.impact}</p></div><div className="confirm-actions"><button type="button" className="btn btn-secondary full-btn" onClick={() => openFilePicker('docket')} disabled={factConfirmed}><Upload size={14} />补材料</button><button className="btn btn-secondary full-btn" disabled={factConfirmed} onClick={() => { setFactConfirmed(true); notify('技术事实已确认，并绑定当前文书版本') }}>{factConfirmed ? <><Check size={14} />事实已确认</> : '确认事实与当前版本一致'}</button></div><p className="attach-hint">{FILE_ACCEPT_HINT} · 关联当前项目与节点，归入输入材料</p></div><div className={`confirm-step ${nodeConfirmed ? 'confirmed' : factConfirmed ? 'active' : 'locked'}`}><div className="confirm-step-head"><span>{nodeConfirmed ? <Check size={13} /> : '2'}</span><div><strong>节点交付确认</strong><small>{nodeConfirmed ? '交付版本与确认记录已归档' : factConfirmed ? '可以确认本节点交付' : '先完成技术事实确认'}</small></div></div><p>确认对象：{collab.deliverable}。确认只推进当前节点，不代表同意对外递交。</p><button className="btn btn-primary full-btn" disabled={!factConfirmed || nodeConfirmed} onClick={() => { setNodeConfirmed(true); notify('本节点已确认，接力包已准备') }}>{nodeConfirmed ? <><Check size={14} />本节点已确认</> : '确认本节点交付'}</button></div></section>
-              {nodeConfirmed ? <section className="next-action-panel"><GitBranch size={19} /><div><strong>接力条件已满足</strong><p>所需事实、证据、当前版本和确认记录将按权限继承；不共享无关草稿。</p></div><button className="btn btn-ink full-btn" onClick={() => { if (!oaMode && !storageMode && !handedOff) { setHandedOff(true); setActiveDept('drafting'); setActiveDoc('权利要求草案'); setFactConfirmed(false); setNodeConfirmed(false); notify('申请文件部已接手，已切换至新节点') } else setModal('handoff') }}>{oaMode || storageMode ? '进入交付与递交前确认' : handedOff ? '查看部门接力安排' : `交给${collab.nextDept}`}<ArrowRight size={14} /></button></section> : <section className="return-panel"><strong>结论不合适？</strong><p>退回报部门补充，当前版本、依据和意见都会保留。</p><button className="btn btn-secondary full-btn" onClick={() => { setNodeConfirmed(false); setMessage(`请${collab.department}根据我的反馈补充并重新提交：`) ; notify('已退回部门，等待你补充具体意见') }}>退回部门补充</button></section>}
-            </aside>
-          </section>}
+          </aside>
+          </section>
         </section>}
 
         {view === 'projects' && <ListPage title="项目与业务对象" subtitle="研发项目、申请案件与产品风险分别管理状态，可以关联、并行、回退或重开；专利资产独立沉淀。" action="新建项目" onAction={() => setModal('new')}>
@@ -819,7 +832,7 @@ export default function App() {
       <section><span className="guide-number">02</span><div><h3>首页、项目、部门，共享同一业务底座</h3><p>首页：顾言委托、跨案待办与消息；项目：对象列表与工作台；部门：花名册 + 工作室配置（Skill、提示词、MCP）。协同消息从首页「全部消息」或顶栏通知进入，不做首页双强调、不做第四主 tab。切换模式不会另建项目或丢失版本。</p></div></section>
       <section><span className="guide-number">03</span><div><h3>两条业务主线，多种对象独立推进</h3><p>权利形成线覆盖创新、挖掘、布局、申请、审查与运营；风险防控线覆盖产品拆解、FTO、比对和规避。研发项目、申请案件、产品风险与专利资产分别管理状态，可关联、并行、回退或重开。</p></div></section>
       <section><span className="guide-number">04</span><div><h3>三类空间，按权限接力</h3><p>企业私有、代理所私有和双方共享空间相互隔离。部门只继承本任务所需的事实、证据、版本与决策；跨组织交付绑定版本、交付人、时间、可见范围和确认记录。</p></div></section>
-      <section><span className="guide-number">05</span><div><h3>协同与文书双视图，确认控制流程</h3><p>协同工作视图呈现顾言计划、部门分工、专家任务、连续指令、交付依据和确认分支；文书工作视图保留卷宗、版本与编辑。技术事实确认后还要确认节点交付，再由用户决定是否接力，不会自动递交。</p></div></section>
+      <section><span className="guide-number">05</span><div><h3>一屏三栏工作台，确认控制流程</h3><p>工作台固定同屏三栏：左卷宗与过程资产、中可编文书、右协同对话与确认闸。首页「确认计划」后先逐步走完四步，再进入工作台。技术事实确认后还要确认节点交付，再由你决定是否接力，不会自动递交。</p></div></section>
       <div className="guide-demo"><strong>建议这样体验原型</strong><div><button onClick={() => { switchRole('enterprise'); switchMode('assistant'); setModal(null) }}>企业首页</button><ArrowRight size={15} /><button onClick={() => { switchRole('enterprise'); switchMode('project'); setModal(null) }}>项目列表</button><ArrowRight size={15} /><button onClick={() => { switchMode('studio'); setModal(null) }}>部门</button><ArrowRight size={15} /><button onClick={() => { switchRole('agency'); openWorkbench(true); setModal(null) }}>代理所 OA 工作台</button></div></div>
     </div></Modal>}
   </div>
