@@ -4,30 +4,31 @@
 
 @layer base {
   :root {
-    --background: 40 20% 99%;
-    --foreground: 30 3% 10%;
-    --card: 40 20% 99%;
-    --card-foreground: 30 3% 10%;
-    --popover: 40 20% 99%;
-    --popover-foreground: 30 3% 10%;
-    --primary: 22 100% 48%;
-    --primary-foreground: 30 3% 10%;
-    --secondary: 40 14% 95%;
-    --secondary-foreground: 30 3% 15%;
-    --muted: 40 14% 95%;
-    --muted-foreground: 30 2% 42%;
-    --accent: 40 14% 95%;
-    --accent-foreground: 30 3% 15%;
-    --destructive: 5 70% 45%;
-    --destructive-foreground: 40 20% 99%;
-    --border: 40 7% 88%;
-    --input: 40 7% 88%;
-    --ring: 22 100% 48%;
+    /* High-knowledge editorial: cool paper, slate ink, no orange brand */
+    --background: 40 12% 98.5%;
+    --foreground: 220 18% 14%;
+    --card: 40 12% 98.5%;
+    --card-foreground: 220 18% 14%;
+    --popover: 40 12% 98.5%;
+    --popover-foreground: 220 18% 14%;
+    --primary: 220 16% 18%;
+    --primary-foreground: 40 12% 98.5%;
+    --secondary: 40 8% 95%;
+    --secondary-foreground: 220 14% 22%;
+    --muted: 40 8% 95%;
+    --muted-foreground: 220 8% 42%;
+    --accent: 40 8% 95%;
+    --accent-foreground: 220 14% 22%;
+    --destructive: 8 55% 42%;
+    --destructive-foreground: 40 12% 98.5%;
+    --border: 40 6% 88%;
+    --input: 40 6% 88%;
+    --ring: 220 14% 28%;
     --radius: 0.375rem;
   }
 
   * { @apply border-border; }
-  html { background: oklch(0.985 0.002 85); }
+  html { background: oklch(0.985 0.004 95); }
   body {
     @apply bg-background text-foreground;
     margin: 0;
