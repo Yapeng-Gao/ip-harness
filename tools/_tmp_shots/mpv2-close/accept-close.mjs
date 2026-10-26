@@ -1,5 +1,5 @@
 /**
- * 主路径 v2 收口验收 —— 缺口主 CTA 只落公司 / 登录助手 / 三态 / 右栏
+ * 主路径 v2 收口验收 —— 缺口主 CTA 只落公司 / 登录助手 / 三态 / 右栏 / 专业无案空态
  */
 import { chromium } from 'playwright'
 import fs from 'node:fs'
@@ -244,6 +244,60 @@ async function main() {
     const joined = tabs.join('|')
     if (/assistant/.test(joined) && /project/.test(joined) && /studio/.test(joined)) pass('E_three_tabs', tabs.join(', '))
     else fail('E_three_tabs', joined)
+    await page.close()
+  }
+
+
+  // ---- F: 专业无案诚实空态（勿假编制满屏） ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: false, active: '', mode: 'studio' })
+    await page.goto(`${BASE}/professional.html?role=enterprise&nocase=1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(500)
+    const empty = await page.evaluate(() => {
+      const box = document.querySelector('[data-testid="prof-empty"], [data-prof-empty]')
+      const boxVisible = !!(box && !box.classList.contains('hidden'))
+      const grid = document.querySelector('#prof-capability-grid, [data-prof-grid]')
+      const gridHidden = !grid || grid.classList.contains('hidden') || grid.children.length === 0
+      const cards = document.querySelectorAll('.prof-card').length
+      const mcp = document.querySelector('#prof-skills-mcp')
+      const mcpHidden = !mcp || mcp.classList.contains('hidden')
+      const t = (box && box.innerText) || ''
+      const hasGuide = /案盘|开新|开案子|先有案|未选/.test(t) || !!document.querySelector('[data-prof-empty] a[href*="cases"], [data-prof-empty] a[href*="case-new"]')
+      return { boxVisible, gridHidden, cards, mcpHidden, hasGuide, head: t.slice(0, 160).replace(/\s+/g, ' ') }
+    })
+    evidence.F_prof_empty = empty
+    if (empty.boxVisible && empty.cards === 0 && empty.hasGuide) pass('F_prof_empty', '无案专业空态+引导')
+    else fail('F_prof_empty', JSON.stringify(empty))
+    if (empty.gridHidden || empty.cards === 0) pass('F_no_fake_roster', '无假编制满屏')
+    else fail('F_no_fake_roster', JSON.stringify(empty))
+    await shot(page, 'F-professional-empty.png')
+    await page.close()
+  }
+
+  // ---- G: dept 缺项 chip 突出一条 + 白话 ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'project' })
+    await page.goto(`${BASE}/dept.html?role=enterprise&case=c1&dept=disclosure`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(500)
+    const chip = await page.evaluate(() => {
+      const el = document.querySelector('[data-testid="dept-gap-chip"], .gap-chip.is-current-gap, .gap-chip')
+      const t = document.body.innerText
+      return {
+        hasChip: !!el,
+        isCurrent: !!(el && el.classList.contains('is-current-gap')),
+        label: el ? el.textContent.replace(/\s+/g, ' ').trim() : '',
+        vernacular: /还缺|已齐|还不能交出去|交出去/.test(t),
+        no旧词堆砌: !/未齐套交卷禁用/.test(t),
+      }
+    })
+    evidence.G_chip = chip
+    if (chip.hasChip && chip.isCurrent) pass('G_gap_chip_current', chip.label)
+    else fail('G_gap_chip_current', JSON.stringify(chip))
+    if (chip.vernacular && chip.no旧词堆砌) pass('G_dept_vernacular', 'dept 白话')
+    else fail('G_dept_vernacular', JSON.stringify(chip))
+    await shot(page, 'G-dept-gap-chip.png')
     await page.close()
   }
 

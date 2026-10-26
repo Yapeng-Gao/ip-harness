@@ -3834,3 +3834,27 @@ html[data-mode="assistant"] [data-company-fold="depts"] { display: none; }
 .company-fold[data-company-fold="depts"]:not([open]) > summary {
   color: var(--ink-2);
 }
+
+
+/* 专业无案诚实空态 */
+.prof-empty {
+  margin: 8px 0 24px;
+  padding: 28px 24px;
+  border: 1px dashed var(--line, #d6d3cd);
+  border-radius: 14px;
+  background: var(--paper-2, #f7f5f0);
+  max-width: 520px;
+}
+.prof-empty h2 { margin: 6px 0 8px; font-size: 20px; }
+.prof-empty p { margin: 0 0 10px; color: var(--ink-2); font-size: 14px; line-height: 1.55; }
+.prof-empty-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 14px !important; }
+
+/* 缺项 chip：默认突出当前一条 */
+.gap-chip.is-current-gap {
+  box-shadow: 0 0 0 2px rgba(28, 25, 23, 0.18);
+  background: #fff;
+  font-weight: 600;
+}
+.gap-chip.is-current-gap .gap-chip-dot {
+  background: var(--ink, #1c1917);
+}

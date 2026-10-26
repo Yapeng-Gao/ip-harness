@@ -157,17 +157,17 @@
             <span>版本草稿 · 可编辑</span>
           </div>
           <h1 data-deliverable>技术交底书 V3</h1>
-          <p class="doc-lead">本关交卷物 · 可直接编辑技术方案与关键特征。</p>
+          <p class="doc-lead">本关要交的材料 · 可直接改技术方案与关键特征。</p>
           <h2>一、技术领域</h2>
           <p>一种磁驱泵智能控制系统，涉及流量—转速闭环与故障预判，适用于工业磁驱泵产线。</p>
           <h2>二、背景问题</h2>
-          <p>现有方案在负载突变时超调明显，且缺少可验证的替代实施方式描述，影响交底齐套与后续查新。</p>
+          <p>现有方案在负载突变时超调明显，且缺少可验证的替代实施方式描述，影响交底材料是否齐全，也会拖到后面查新。</p>
           <h2>三、技术方案</h2>
           <p>1. 双环控制：外环流量、内环转速；采样周期可配置。</p>
           <p>2. 故障特征库：振动频谱阈值触发降功率保护。</p>
           <p class="fact-highlight">3. 量产标定流程：MP-300 线体工装三点校验。<span>已确认事实 · 可编辑标注</span></p>
           <h2>四、技术效果</h2>
-          <p>负载阶跃下超调降低；可复现实验记录见附件。权属声明齐套后可交卷送确认。</p>
+          <p>负载阶跃下超调降低；可复现实验记录见附件。权属声明补齐后，才能交出去给你确认。</p>
           <div class="doc-comment">
             <strong>专家批注 · 交底书撰写专家</strong>
             <p>权属声明仍缺。建议由法务出具模板后你确认——建议稿 ≠ 确认。</p>
@@ -200,10 +200,10 @@
         <!-- L3/L4 消息流主高；聊头顶缺项 chip → 抽屉 -->
         <div class="rail-chat-block" data-chat-block data-chat-session="leader">
           <div class="rail-gap-chip-row" id="gate-box">
-            <button type="button" class="gap-chip" data-gap-bar aria-expanded="false" aria-controls="gap-drawer" aria-haspopup="dialog">
+            <button type="button" class="gap-chip is-current-gap" data-gap-bar data-testid="dept-gap-chip" aria-expanded="false" aria-controls="gap-drawer" aria-haspopup="dialog">
               <span class="gap-chip-dot" aria-hidden="true"></span>
-              <span class="gap-chip-label" data-missing-live>缺项：权属声明</span>
-              <span class="gap-chip-meta">齐套 <span class="tabular" data-check-count>0 / 4</span></span>
+              <span class="gap-chip-label" data-missing-live>还缺：权属声明</span>
+              <span class="gap-chip-meta">已齐 <span class="tabular" data-check-count>0 / 4</span></span>
             </button>
           </div>
           <div class="rail-chat-head">
@@ -216,7 +216,7 @@
           <div class="chat-bits" data-chat-feed>
             <div class="chat-bubble">
               <strong>本部门负责人</strong>
-              我是本部门负责人，调度专家把本站做完。缺项推进、齐套交卷找我。要点开某专家可 1:1；确认类型：<span data-confirm-type>技术事实</span>。
+              我是本部门负责人，调度专家把本站做完。缺什么、怎么交出去找我。要点开某专家可 1:1；确认类型：<span data-confirm-type>技术事实</span>。
             </div>
           </div>
         </div>
@@ -234,9 +234,9 @@
             <dt>负责</dt><dd data-dept-name>交底部</dd>
             <dt>输入</dt><dd>访谈纪要 · 已确认技术事实</dd>
             <dt>交付</dt><dd data-deliverable>技术交底书 V3</dd>
-            <dt>接力</dt><dd>齐套 + 确认通过 → 查新</dd>
+            <dt>接力</dt><dd>材料齐了、你点头通过 → 查新</dd>
             <dt>确认点</dt><dd>技术事实 · 权属归属</dd>
-            <dt>完成</dt><dd>可接力的交底书齐套交卷</dd>
+            <dt>完成</dt><dd>交底书齐了再交出去</dd>
           </dl>
         </details>
         <a class="guyan-thin-link" href="delegate.html" data-keep-role>顾言 · 跨部 / 改目标</a>
@@ -246,7 +246,7 @@
           <button type="button" class="gap-drawer-scrim" data-gap-close aria-label="关闭缺项抽屉"></button>
           <div class="gap-drawer-sheet" role="dialog" aria-modal="true" aria-labelledby="gap-drawer-title">
             <header class="gap-drawer-head">
-              <strong id="gap-drawer-title">缺项与交卷</strong>
+              <strong id="gap-drawer-title">还缺什么 · 交出去</strong>
               <button type="button" class="text-btn gap-drawer-close" data-gap-close>关闭</button>
             </header>
             <div class="gap-drawer-body">
@@ -255,21 +255,21 @@
                 <p class="confirm-rail-title" data-pending-title>确认交底书可接力</p>
                 <p class="confirm-rail-q" data-pending-fact>权属是否归澄明科技，且无职务发明争议？</p>
                 <p class="confirm-rail-detail" data-pending-detail>影响交底书是否可作为申请文件部输入；确认后形成交付快照。</p>
-                <p class="confirm-rail-blind" data-confirm-blind-hint hidden>先看中栏交卷物</p>
+                <p class="confirm-rail-blind" data-confirm-blind-hint hidden>先看中间这份材料</p>
                 <div class="confirm-rail-actions">
                   <button class="btn btn-ink" type="button" data-rail-pass>通过 → 下一部</button>
                   <button class="btn btn-secondary" type="button" data-rail-reject>驳回 · 本台补齐</button>
                   <button class="btn btn-ghost" type="button" data-rail-prev>退回上一部</button>
                 </div>
-                <p class="confirm-rail-note">建议稿 ≠ 确认。中栏须见交卷物正文才可点通过。</p>
+                <p class="confirm-rail-note">这是建议稿，还不是定案。先看中间正文，再点通过。</p>
               </div>
 
-              <div class="rail-sec-label">缺项 · 事项下一步</div>
+              <div class="rail-sec-label">还缺 · 下一步</div>
               <div class="checklist" data-checklist></div>
               <button type="button" class="checklist-done-toggle text-btn" data-toggle-done hidden>已齐项</button>
-              <p class="gate-meta">未齐套交卷禁用</p>
+              <p class="gate-meta">材料未齐，还不能交出去</p>
               <button class="handoff-button" type="button" data-submit-gate disabled>
-                <span><strong>交卷 · 待你确认</strong><small>齐套后可点 · 同屏拍板</small></span>
+                <span><strong>交出去 · 等你确认</strong><small>材料齐了才能点 · 就在这边确认</small></span>
               </button>
             </div>
           </div>
@@ -280,8 +280,8 @@
 
   <!-- 极简进度一行 -->
   <div class="task-strip-minimal" aria-label="当前节点进度">
-    <span>当前 · <strong data-current-task>补齐权属声明后交卷</strong></span>
-    <span>齐套 <strong class="tabular" data-check-count>0 / 4</strong></span>
+    <span>当前 · <strong data-current-task>补齐权属声明后再交出去</strong></span>
+    <span>已齐 <strong class="tabular" data-check-count>0 / 4</strong></span>
     <a class="weak-link" href="company.html" data-keep-role style="margin-left:auto">回公司</a>
   </div>
 </main>

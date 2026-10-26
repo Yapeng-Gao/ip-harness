@@ -721,15 +721,7 @@
       return;
     }
     if (m === 'studio') {
-      // 专业须带案：无活跃案不得假编制；toast 须可见后再跳
-      if (!hasCase() || !activeCaseId()) {
-        localStorage.setItem('mpv2-mode', 'project');
-        applyModeUI('project');
-        toastThen('专业须先有案：请先打开或开一个案子', function () {
-          location.href = withRole(projectLandingHref());
-        }, 1300);
-        return;
-      }
+      // 无活跃案 → 专业页诚实空态（不假编制满屏）
       if (page !== 'professional') {
         rememberLastWork();
         localStorage.setItem('mpv2-mode', 'studio');
@@ -765,26 +757,15 @@
     const page = document.body.dataset.page || '';
     syncActiveCaseQuery();
     if (page === 'professional') {
-      // 专业须带案：直开 professional 无活跃案 → toast 可见后再落到有案语境
+      // 无活跃案：留在本页诚实空态（勿假编制满屏、勿立刻踢走）
       if (!hasCase() || !activeCaseId()) {
-        localStorage.setItem('mpv2-mode', 'project');
-        const dest = withRole(projectLandingHref());
-        toastThen('专业须先有案：请先打开或开一个案子', function () {
-          location.replace(dest);
-        }, 1300);
-        return true;
+        localStorage.setItem('mpv2-mode', 'studio');
+        return false;
       }
       return false;
     }
     if (mode() === 'studio' && WORK_PAGES.indexOf(page) !== -1) {
-      if (!hasCase() || !activeCaseId()) {
-        localStorage.setItem('mpv2-mode', 'project');
-        const dest = withRole(projectLandingHref());
-        toastThen('专业须先有案：请先打开或开一个案子', function () {
-          location.replace(dest);
-        }, 1300);
-        return true;
-      }
+      // 作业面误带 studio：带回专业页（无案则空态）
       location.replace(withRole('professional.html'));
       return true;
     }
@@ -813,7 +794,11 @@
     if (!isCaseShell) return;
     const c = activeCase();
     if (!c) {
-      // case shell without active → bounce to landing (logistics already handled above)
+      // 专业页无活跃案：留空态，勿踢走；其它案级壳仍回三态着陆
+      if (page === 'professional') {
+        document.querySelectorAll('[data-active-case-name]').forEach(el => { el.textContent = '未选案子'; });
+        return;
+      }
       if (!isLogistics) location.replace(withRole(projectLandingHref()));
       return;
     }
@@ -940,9 +925,37 @@
     return { kind: 'idle', text: '暂无在办 · 可进部查看', caseShort: '' };
   }
 
+  function applyProfessionalEmptyState() {
+    const empty = !hasCase() || !activeCaseId();
+    document.documentElement.dataset.profEmpty = empty ? '1' : '0';
+    document.querySelectorAll('[data-prof-empty]').forEach(el => el.classList.toggle('hidden', !empty));
+    document.querySelectorAll('[data-prof-grid], #prof-capability-grid').forEach(el => el.classList.toggle('hidden', empty));
+    document.querySelectorAll('#prof-skills-mcp, #prof-more-depts, .prof-footnote, .prof-hero-side').forEach(el => {
+      el.classList.toggle('hidden', empty);
+    });
+    document.querySelectorAll('[data-prof-sub-hascase]').forEach(el => el.classList.toggle('hidden', empty));
+    document.querySelectorAll('[data-prof-sub-nocase]').forEach(el => el.classList.toggle('hidden', !empty));
+    // case switcher name honesty
+    if (empty) {
+      document.querySelectorAll('[data-active-case-name]').forEach(el => { el.textContent = '未选案子'; });
+    }
+    return empty;
+  }
+
   function wireProfessionalPage() {
     const grid = document.getElementById('prof-capability-grid');
     if (!grid) return;
+    if (applyProfessionalEmptyState()) {
+      document.querySelectorAll('[data-exit-pro], [data-prof-empty] a[data-keep-role]').forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const href = a.getAttribute('href') || 'cases.html';
+          localStorage.setItem('mpv2-mode', 'project');
+          location.href = withRole(href);
+        });
+      });
+      return;
+    }
     grid.innerHTML = DEPT_ORDER.map(key => {
       const d = DEPTS[key];
       const light = loadProfLight();
@@ -1194,7 +1207,7 @@
         count.textContent = checked + ' / ' + list.length;
       });
       document.querySelectorAll('[data-missing-live]').forEach(miss => {
-        miss.textContent = all ? '齐套完成，可交卷' : ('缺项：' + (dept.missing || '未勾选项'));
+        miss.textContent = all ? '材料齐了，可以交出去' : ('还缺：' + (dept.missing || '未勾选项'));
       });
       /* Per-row: unchecked → show 点哪推进；checked → hide actions */
       list.forEach(inp => {
@@ -1295,7 +1308,7 @@
       html: bodies[dept.id] || (
         '<p class="doc-lead">' + title + '（本关交卷物，可编辑）。</p>' +
         '<h2>正文</h2><p>' + (dept.pitch || '') + '</p>' +
-        '<p class="fact-highlight">缺项：' + (dept.missing || '—') + '<span>齐套后可交卷</span></p>'
+        '<p class="fact-highlight">还缺：' + (dept.missing || '—') + '<span>齐了再交出去</span></p>'
       )
     };
   }
@@ -2865,12 +2878,6 @@
     document.querySelectorAll('[data-go-professional]').forEach(a => {
       a.addEventListener('click', (e) => {
         e.preventDefault();
-        if (!hasCase() || !activeCaseId()) {
-          toastThen('专业须先有案：请先打开或开一个案子', function () {
-            location.href = withRole(projectLandingHref());
-          }, 1300);
-          return;
-        }
         localStorage.setItem('mpv2-mode', 'studio');
         location.href = withRole(a.getAttribute('href') || 'professional.html');
       });

@@ -1,5 +1,5 @@
 {
-  "passN": 17,
+  "passN": 21,
   "failN": 0,
   "notes": [
     "PASS L_login_assistant: login→home 助手高亮",
@@ -18,7 +18,11 @@
     "PASS C_home_assistant_only: home 仅助手叙事·无缺口大卡",
     "PASS D_right_rail: 右栏/齐套闸可见",
     "PASS D_workbench: 工作台三栏/composer",
-    "PASS E_three_tabs: assistant:助手, project:项目, studio:专业"
+    "PASS E_three_tabs: assistant:助手, project:项目, studio:专业",
+    "PASS F_prof_empty: 无案专业空态+引导",
+    "PASS F_no_fake_roster: 无假编制满屏",
+    "PASS G_gap_chip_current: 还缺：权属声明 已齐 3 / 4",
+    "PASS G_dept_vernacular: dept 白话"
   ],
   "evidence": {
     "L_login": {
@@ -80,7 +84,22 @@
       "assistant:助手",
       "project:项目",
       "studio:专业"
-    ]
+    ],
+    "F_prof_empty": {
+      "boxVisible": true,
+      "gridHidden": true,
+      "cards": 0,
+      "mcpHidden": true,
+      "hasGuide": true,
+      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 未选案子 ▾ 专业 期限 🔔 助手 项目 专业 各部门能干什么 本页不进作业台 ← 回公司 ⛨ 去干活先回项目档 点卡片「去该部干活」进工作台 各部门能干什么 各部门能干什么 专业须先有案子。还没有活跃案时，这里不展示假编制。 专业须带"
+    },
+    "G_chip": {
+      "hasChip": true,
+      "isCurrent": true,
+      "label": "还缺：权属声明 已齐 3 / 4",
+      "vernacular": true,
+      "no旧词堆砌": true
+    }
   },
-  "at": "2026-10-26T07:12:52.126Z"
+  "at": "2026-10-26T07:19:18.802Z"
 }

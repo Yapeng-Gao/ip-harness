@@ -71,7 +71,8 @@
     <div class="prof-hero-copy">
       <p class="kicker">各部门能干什么</p>
       <h1 class="page-title">各部门能干什么</h1>
-      <p class="page-sub">各部门编制与职责一眼看清。每卡可见当前在办/缺口，点行或「去该部干活」进工作台。岗名 / 职责 / 占位可轻改；技能与工具默认收折。</p>
+      <p class="page-sub" data-prof-sub-hascase>各部门编制与职责一眼看清。每卡可见当前在办/缺口，点行或「去该部干活」进工作台。岗名 / 职责 / 占位可轻改；技能与工具默认收折。</p>
+      <p class="page-sub hidden" data-prof-sub-nocase>专业须先有案子。还没有活跃案时，这里不展示假编制。</p>
     </div>
     <div class="prof-hero-side">
       <a class="btn btn-ink" href="company.html" data-exit-pro>← 回公司干活</a>
@@ -79,7 +80,18 @@
     </div>
   </header>
 
-  <div class="prof-grid" id="prof-capability-grid" aria-label="七部专业能力"></div>
+
+  <section class="prof-empty hidden" data-prof-empty data-testid="prof-empty" aria-label="专业须先有案">
+    <p class="kicker">专业须带案</p>
+    <h2>先打开或开一个案子</h2>
+    <p>没有活跃案时，不展示各部门编制墙。选好案子后再看在办 / 缺口。</p>
+    <p class="prof-empty-actions">
+      <a class="btn btn-ink" href="cases.html" data-keep-role data-exit-pro>去案盘选案 →</a>
+      <a class="weak-link" href="case-new.html" data-keep-role data-exit-pro>开新案子</a>
+    </p>
+  </section>
+
+  <div class="prof-grid" id="prof-capability-grid" aria-label="七部专业能力" data-prof-grid></div>
 
   
   <details class="prof-advanced" id="prof-skills-mcp">
