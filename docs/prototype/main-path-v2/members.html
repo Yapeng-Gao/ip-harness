@@ -28,12 +28,11 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
-    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch mode-switch-quiet" aria-label="助手、项目与专业">
-      <button type="button" data-mode="assistant">助手</button>
-      <button type="button" data-mode="project" class="active">项目</button>
-      <button type="button" data-mode="studio">专业</button>
+      <button type="button" data-mode="assistant" aria-pressed="false">助手</button>
+      <button type="button" data-mode="project" class="active" aria-pressed="true">项目</button>
+      <button type="button" data-mode="studio" aria-pressed="false">专业</button>
     </div>
     <details class="avatar-menu">
       <summary class="avatar-menu-sum" aria-label="账户与角色">
@@ -42,10 +41,10 @@
       <div class="avatar-menu-panel" role="menu">
         <div class="avatar-menu-label">角色</div>
         <div class="role-switch" aria-label="切换角色">
-          <button type="button" data-role="enterprise" class="active">企业研发</button>
-          <button type="button" data-role="agency">代理所</button>
+          <button type="button" data-role="enterprise" class="active" aria-pressed="true">企业研发</button>
+          <button type="button" data-role="agency" aria-pressed="false">代理所</button>
         </div>
-        <div class="avatar-menu-label">后勤</div>
+        <div class="avatar-menu-label">设置与后勤</div>
         <a class="avatar-menu-link" href="docket.html" data-keep-role>期限</a>
         <a class="avatar-menu-link" href="billing.html" data-keep-role>账单</a>
         <a class="avatar-menu-link" href="members.html" data-keep-role>成员</a>
@@ -76,7 +75,7 @@
   <div class="members-toolbar">
     <button class="btn btn-ink" type="button" data-toast="已打开邀请（演示）">邀请成员</button>
     <button class="btn btn-secondary" type="button" data-toast="角色已保存（演示）">保存角色</button>
-    <a class="weak-link" href="#" data-toast="已打开：谁能确认哪些闸（演示）">查看决策权说明</a>
+    <button type="button" class="text-btn" data-toast="已打开：谁能确认哪些闸（演示）">查看决策权说明</button>
   </div>
 
   <div class="members-list" aria-label="成员列表" data-members-list>
@@ -96,7 +95,7 @@
         <span class="tag"><span class="tag-dot"></span>代理人</span>
         <small>可确认：专业复核（代理侧）；不可代企业签对外递交</small>
       </div>
-      <button class="text-btn" type="button" data-toast="移除成员（演示）">移除</button>
+      <button class="text-btn" type="button" data-remove-member>移除</button>
     </article>
     <article class="member-row">
       <img class="avatar avatar-photo" src="assets/portraits/expert1.png" alt="" width="36" height="36">
@@ -105,7 +104,7 @@
         <span class="tag"><span class="tag-dot"></span>发明人</span>
         <small>可确认：技术事实（本技术方案相关）；无对外递交权</small>
       </div>
-      <button class="text-btn" type="button" data-toast="移除成员（演示）">移除</button>
+      <button class="text-btn" type="button" data-remove-member>移除</button>
     </article>
     <article class="member-row">
       <img class="avatar avatar-photo" src="assets/portraits/expert5.png" alt="" width="36" height="36">
@@ -114,7 +113,7 @@
         <span class="tag"><span class="tag-dot"></span>授权人</span>
         <small>可确认：对外交付 / 递交（最终对外动作）</small>
       </div>
-      <button class="text-btn" type="button" data-toast="移除成员（演示）">移除</button>
+      <button class="text-btn" type="button" data-remove-member>移除</button>
     </article>
   </div>
 

@@ -14,12 +14,11 @@
   </a>
   <div class="topbar-context topbar-context-cross" data-shell="cross" aria-hidden="true"></div>
   <div class="topbar-actions">
-    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch mode-switch-quiet" aria-label="助手、项目与专业">
-      <button type="button" data-mode="assistant">助手</button>
-      <button type="button" data-mode="project" class="active">项目</button>
-      <button type="button" data-mode="studio">专业</button>
+      <button type="button" data-mode="assistant" aria-pressed="false">助手</button>
+      <button type="button" data-mode="project" class="active" aria-pressed="true">项目</button>
+      <button type="button" data-mode="studio" aria-pressed="false">专业</button>
     </div>
     <details class="avatar-menu">
       <summary class="avatar-menu-sum" aria-label="账户与角色">
@@ -28,10 +27,10 @@
       <div class="avatar-menu-panel" role="menu">
         <div class="avatar-menu-label">角色</div>
         <div class="role-switch" aria-label="切换角色">
-          <button type="button" data-role="enterprise" class="active">企业研发</button>
-          <button type="button" data-role="agency">代理所</button>
+          <button type="button" data-role="enterprise" class="active" aria-pressed="true">企业研发</button>
+          <button type="button" data-role="agency" aria-pressed="false">代理所</button>
         </div>
-        <div class="avatar-menu-label">后勤</div>
+        <div class="avatar-menu-label">设置与后勤</div>
         <a class="avatar-menu-link" href="docket.html" data-keep-role>期限</a>
         <a class="avatar-menu-link" href="billing.html" data-keep-role>账单</a>
         <a class="avatar-menu-link" href="members.html" data-keep-role>成员</a>
@@ -54,11 +53,11 @@
   <p class="kicker">开案子</p>
   <h1 class="page-title">开新案子</h1>
   <p class="page-sub">填短一点就能开。创建后进公司页，再「去当前部门」。目标可选。</p>
-  <form class="form-stack" id="new-case" onsubmit="return false;">
-    <label>案名<input id="case-name" required placeholder="例如：磁驱泵智能控制系统"></label>
-    <label>本单位 / 客户<input placeholder="澄明科技有限公司" value="澄明科技有限公司"></label>
+  <form class="form-stack" id="new-case" onsubmit="return false;" autocomplete="off">
+    <label>案名<input id="case-name" name="case-name" required autocomplete="off" placeholder="例如：磁驱泵智能控制系统"></label>
+    <label>本单位 / 客户<input name="org" autocomplete="off" placeholder="澄明科技有限公司" value="澄明科技有限公司"></label>
     <label>一句话目标（可选）
-      <textarea id="case-goal" rows="2" placeholder="例如：整理一项研发成果，评估如何保护"></textarea>
+      <textarea id="case-goal" name="case-goal" rows="2" autocomplete="off" placeholder="例如：整理一项研发成果，评估如何保护"></textarea>
     </label>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
       <button class="btn btn-ink" type="submit" id="create-only">创建并进公司 →</button>

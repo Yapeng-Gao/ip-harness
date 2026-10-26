@@ -28,12 +28,11 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
-    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch mode-switch-quiet" aria-label="助手、项目与专业">
-      <button type="button" data-mode="assistant">助手</button>
-      <button type="button" data-mode="project">项目</button>
-      <button type="button" data-mode="studio" class="active">专业</button>
+      <button type="button" data-mode="assistant" aria-pressed="false">助手</button>
+      <button type="button" data-mode="project" aria-pressed="false">项目</button>
+      <button type="button" data-mode="studio" class="active" aria-pressed="true">专业</button>
     </div>
     <details class="avatar-menu">
       <summary class="avatar-menu-sum" aria-label="账户与角色">
@@ -42,10 +41,10 @@
       <div class="avatar-menu-panel" role="menu">
         <div class="avatar-menu-label">角色</div>
         <div class="role-switch" aria-label="切换角色">
-          <button type="button" data-role="enterprise" class="active">企业研发</button>
-          <button type="button" data-role="agency">代理所</button>
+          <button type="button" data-role="enterprise" class="active" aria-pressed="true">企业研发</button>
+          <button type="button" data-role="agency" aria-pressed="false">代理所</button>
         </div>
-        <div class="avatar-menu-label">后勤</div>
+        <div class="avatar-menu-label">设置与后勤</div>
         <a class="avatar-menu-link" href="docket.html" data-keep-role>期限</a>
         <a class="avatar-menu-link" href="billing.html" data-keep-role>账单</a>
         <a class="avatar-menu-link" href="members.html" data-keep-role>成员</a>
@@ -109,13 +108,13 @@
   <details class="more-depts" id="prof-more-depts">
     <summary>更多部门 <span>（默认折叠）</span></summary>
     <div class="more-depts-grid" aria-label="更多部门目录">
-      <a class="more-dept-stub" href="#" data-toast="创新激发部 · 即将开放">创新激发部<small>方向清单</small></a>
-      <a class="more-dept-stub" href="#" data-toast="挖掘部 · 即将开放">挖掘部<small>挖掘报告</small></a>
-      <a class="more-dept-stub" href="#" data-toast="自由实施部 · 即将开放">自由实施部<small>FTO · 不挡申请</small></a>
-      <a class="more-dept-stub" href="#" data-toast="布局办 · 即将开放">布局办<small>布局图</small></a>
-      <a class="more-dept-stub" href="#" data-toast="维持部 · 即将开放">维持部<small>年费 / 权利维持</small></a>
-      <a class="more-dept-stub" href="#" data-toast="终止与恢复 · 即将开放">终止与恢复<small>资产状态</small></a>
-      <a class="more-dept-stub" href="#" data-toast="运用 / 监控 / 国际等 · 即将开放">运用 · 监控 · 国际…<small>扩展目录</small></a>
+      <button type="button" class="more-dept-stub" data-toast="创新激发部 · 即将开放">创新激发部<small>方向清单</small></button>
+      <button type="button" class="more-dept-stub" data-toast="挖掘部 · 即将开放">挖掘部<small>挖掘报告</small></button>
+      <button type="button" class="more-dept-stub" data-toast="自由实施部 · 即将开放">自由实施部<small>FTO · 不挡申请</small></button>
+      <button type="button" class="more-dept-stub" data-toast="布局办 · 即将开放">布局办<small>布局图</small></button>
+      <button type="button" class="more-dept-stub" data-toast="维持部 · 即将开放">维持部<small>年费 / 权利维持</small></button>
+      <button type="button" class="more-dept-stub" data-toast="终止与恢复 · 即将开放">终止与恢复<small>资产状态</small></button>
+      <button type="button" class="more-dept-stub" data-toast="运用 / 监控 / 国际等 · 即将开放">运用 · 监控 · 国际…<small>扩展目录</small></button>
     </div>
   </details>
 

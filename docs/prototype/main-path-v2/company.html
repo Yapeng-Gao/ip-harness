@@ -29,12 +29,11 @@
     <span class="tier-cue" data-tier-cue aria-live="polite"></span>
   </div>
   <div class="topbar-actions">
-    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch mode-switch-quiet" aria-label="助手、项目与专业">
-      <button type="button" data-mode="assistant">助手</button>
-      <button type="button" data-mode="project" class="active">项目</button>
-      <button type="button" data-mode="studio">专业</button>
+      <button type="button" data-mode="assistant" aria-pressed="false">助手</button>
+      <button type="button" data-mode="project" class="active" aria-pressed="true">项目</button>
+      <button type="button" data-mode="studio" aria-pressed="false">专业</button>
     </div>
     <details class="avatar-menu">
       <summary class="avatar-menu-sum" aria-label="账户与角色">
@@ -43,10 +42,10 @@
       <div class="avatar-menu-panel" role="menu">
         <div class="avatar-menu-label">角色</div>
         <div class="role-switch" aria-label="切换角色">
-          <button type="button" data-role="enterprise" class="active">企业研发</button>
-          <button type="button" data-role="agency">代理所</button>
+          <button type="button" data-role="enterprise" class="active" aria-pressed="true">企业研发</button>
+          <button type="button" data-role="agency" aria-pressed="false">代理所</button>
         </div>
-        <div class="avatar-menu-label">后勤</div>
+        <div class="avatar-menu-label">设置与后勤</div>
         <a class="avatar-menu-link" href="docket.html" data-keep-role>期限</a>
         <a class="avatar-menu-link" href="billing.html" data-keep-role>账单</a>
         <a class="avatar-menu-link" href="members.html" data-keep-role>成员</a>
@@ -132,7 +131,7 @@
       </div>
     </div>
     <form id="company-lead-form" class="goal-form">
-      <input id="company-lead-input" name="goal" placeholder="例如：补齐权属声明并送确认" aria-label="业务目标" required>
+      <input id="company-lead-input" name="goal" placeholder="例如：补齐权属声明并送确认" aria-label="业务目标" required autocomplete="off">
       <button class="btn btn-ink" type="submit">交给顾言 →</button>
     </form>
     <div class="chips">
@@ -298,18 +297,18 @@
     <details class="more-depts" id="more-depts">
       <summary>更多部门 <span>（默认折叠 · 不扩七部）</span></summary>
       <div class="more-depts-grid" aria-label="更多部门目录">
-        <a class="more-dept-stub" href="#" data-toast="创新激发部 · 即将开放">创新激发部<small>方向清单</small></a>
-        <a class="more-dept-stub" href="#" data-toast="挖掘部 · 即将开放">挖掘部<small>挖掘报告</small></a>
-        <a class="more-dept-stub" href="#" data-toast="自由实施部 · 即将开放">自由实施部<small>FTO · 不挡申请</small></a>
-        <a class="more-dept-stub" href="#" data-toast="布局办 · 即将开放">布局办<small>布局图</small></a>
-        <a class="more-dept-stub" href="#" data-toast="维持部 · 即将开放">维持部<small>年费 / 权利维持</small></a>
-        <a class="more-dept-stub" href="#" data-toast="终止与恢复 · 即将开放">终止与恢复<small>资产状态</small></a>
-        <a class="more-dept-stub" href="#" data-toast="运用部 · 即将开放">运用部<small>转化</small></a>
-        <a class="more-dept-stub" href="#" data-toast="监控部 · 即将开放">监控部<small>监控</small></a>
-        <a class="more-dept-stub" href="#" data-toast="国际部 · 即将开放">国际部<small>PCT</small></a>
-        <a class="more-dept-stub" href="#" data-toast="无效部 · 即将开放">无效部<small>无效</small></a>
-        <a class="more-dept-stub" href="#" data-toast="诉讼与维权 · 即将开放">诉讼与维权<small>维权</small></a>
-        <a class="more-dept-stub" href="#" data-toast="权利比对台账 · 即将开放">权利比对台账<small>工具 · 非部门</small></a>
+        <button type="button" class="more-dept-stub" data-toast="创新激发部 · 即将开放">创新激发部<small>方向清单</small></button>
+        <button type="button" class="more-dept-stub" data-toast="挖掘部 · 即将开放">挖掘部<small>挖掘报告</small></button>
+        <button type="button" class="more-dept-stub" data-toast="自由实施部 · 即将开放">自由实施部<small>FTO · 不挡申请</small></button>
+        <button type="button" class="more-dept-stub" data-toast="布局办 · 即将开放">布局办<small>布局图</small></button>
+        <button type="button" class="more-dept-stub" data-toast="维持部 · 即将开放">维持部<small>年费 / 权利维持</small></button>
+        <button type="button" class="more-dept-stub" data-toast="终止与恢复 · 即将开放">终止与恢复<small>资产状态</small></button>
+        <button type="button" class="more-dept-stub" data-toast="运用部 · 即将开放">运用部<small>转化</small></button>
+        <button type="button" class="more-dept-stub" data-toast="监控部 · 即将开放">监控部<small>监控</small></button>
+        <button type="button" class="more-dept-stub" data-toast="国际部 · 即将开放">国际部<small>PCT</small></button>
+        <button type="button" class="more-dept-stub" data-toast="无效部 · 即将开放">无效部<small>无效</small></button>
+        <button type="button" class="more-dept-stub" data-toast="诉讼与维权 · 即将开放">诉讼与维权<small>维权</small></button>
+        <button type="button" class="more-dept-stub" data-toast="权利比对台账 · 即将开放">权利比对台账<small>工具 · 非部门</small></button>
       </div>
     </details>
   </div>
@@ -331,7 +330,7 @@
       <div data-drawer-experts></div>
     </div>
     <div class="drawer-actions">
-      <a class="btn btn-ink" href="#" data-drawer-go>让该部开工 →</a>
+      <button type="button" class="btn btn-ink" data-drawer-go>让该部开工 →</button>
       <button class="btn btn-ghost" type="button" data-drawer-close>关闭</button>
     </div>
   </aside>

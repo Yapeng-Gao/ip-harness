@@ -45,12 +45,11 @@
   </a>
     <div class="topbar-context topbar-context-cross" data-shell="cross" aria-hidden="true"></div>
   <div class="topbar-actions">
-    <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
     <div class="mode-switch mode-switch-quiet" aria-label="助手、项目与专业">
-      <button type="button" data-mode="assistant">助手</button>
-      <button type="button" data-mode="project" class="active">项目</button>
-      <button type="button" data-mode="studio">专业</button>
+      <button type="button" data-mode="assistant" aria-pressed="false">助手</button>
+      <button type="button" data-mode="project" class="active" aria-pressed="true">项目</button>
+      <button type="button" data-mode="studio" aria-pressed="false">专业</button>
     </div>
     <details class="avatar-menu">
       <summary class="avatar-menu-sum" aria-label="账户与角色">
@@ -59,10 +58,10 @@
       <div class="avatar-menu-panel" role="menu">
         <div class="avatar-menu-label">角色</div>
         <div class="role-switch" aria-label="切换角色">
-          <button type="button" data-role="enterprise" class="active">企业研发</button>
-          <button type="button" data-role="agency">代理所</button>
+          <button type="button" data-role="enterprise" class="active" aria-pressed="true">企业研发</button>
+          <button type="button" data-role="agency" aria-pressed="false">代理所</button>
         </div>
-        <div class="avatar-menu-label">后勤</div>
+        <div class="avatar-menu-label">设置与后勤</div>
         <a class="avatar-menu-link" href="docket.html" data-keep-role>期限</a>
         <a class="avatar-menu-link" href="billing.html" data-keep-role>账单</a>
         <a class="avatar-menu-link" href="members.html" data-keep-role>成员</a>
@@ -102,7 +101,7 @@
       </div>
     </div>
     <label>你的目标
-      <textarea id="goal-input" rows="3" placeholder="例如：下周要交这件的权属声明"></textarea>
+      <textarea id="goal-input" name="goal" rows="3" autocomplete="off" placeholder="例如：下周要交这件的权属声明"></textarea>
     </label>
     <div class="chips">
       <span>示例</span>
@@ -153,7 +152,7 @@
       <li><span class="ord">3</span><div><strong>立项部</strong>出保护策略与报价<small>产出：立项决议；关口：商业与风险决策</small></div></li>
     </ul>
     <label style="margin-top:12px">计划备注（可调）
-      <textarea id="plan-note" rows="2" placeholder="例如：优先补权属，访谈安排在本周内"></textarea>
+      <textarea id="plan-note" name="plan-note" rows="2" autocomplete="off" placeholder="例如：优先补权属，访谈安排在本周内"></textarea>
     </label>
     <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-ink" type="button" data-to-dept id="plan-go-btn">确认并打开交卷物 →</button>

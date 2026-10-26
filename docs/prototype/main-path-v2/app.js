@@ -679,7 +679,9 @@
       el.textContent = r === 'agency' ? '代理所' : '企业研发';
     });
     document.querySelectorAll('.role-switch button').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.role === r);
+      const on = btn.dataset.role === r;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     document.querySelectorAll('[data-show-role]').forEach(el => {
       const hide = el.dataset.showRole !== r;
@@ -738,7 +740,9 @@
     document.documentElement.dataset.tier = m; // alias for screenshots / CSS
     document.body.dataset.mode = m;
     document.querySelectorAll('.mode-switch button').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.mode === m);
+      const on = btn.dataset.mode === m;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     document.querySelectorAll('[data-tier-cue]').forEach(el => {
       // outward cue = 专业 (capability page; not density-on-same-page)
@@ -1223,6 +1227,115 @@
     });
   }
 
+  /* members · 移除：确认小对话框 + 撤销窗，禁止纯 toast 冒充完成 */
+  function wireMemberRemove() {
+    if (document.body.dataset.page !== 'members') return;
+    if (document.documentElement.dataset.memberRemoveWired) return;
+    document.documentElement.dataset.memberRemoveWired = '1';
+    let undoTimer = null;
+    let pendingRow = null;
+
+    function ensureConfirm() {
+      let dlg = document.getElementById('member-remove-dialog');
+      if (dlg) return dlg;
+      dlg = document.createElement('div');
+      dlg.id = 'member-remove-dialog';
+      dlg.className = 'member-remove-dialog';
+      dlg.setAttribute('hidden', '');
+      dlg.innerHTML =
+        '<div class="member-remove-scrim" data-mr-cancel></div>' +
+        '<div class="member-remove-panel" role="dialog" aria-modal="true" aria-labelledby="member-remove-title">' +
+        '<p class="kicker">成员</p>' +
+        '<h2 id="member-remove-title" style="margin:4px 0 8px;font-size:16px">移除该成员？</h2>' +
+        '<p class="page-sub" data-mr-name style="margin:0 0 14px"></p>' +
+        '<div class="drawer-actions" style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button type="button" class="btn btn-danger" data-mr-confirm>确认移除</button>' +
+        '<button type="button" class="btn btn-ghost" data-mr-cancel>取消</button>' +
+        '</div></div>';
+      document.body.appendChild(dlg);
+      return dlg;
+    }
+    function ensureUndo() {
+      let bar = document.getElementById('member-remove-undo');
+      if (bar) return bar;
+      bar = document.createElement('div');
+      bar.id = 'member-remove-undo';
+      bar.className = 'member-remove-undo';
+      bar.setAttribute('role', 'status');
+      bar.setAttribute('aria-live', 'polite');
+      bar.setAttribute('hidden', '');
+      bar.innerHTML = '<span data-mr-undo-text>已移除</span> <button type="button" class="text-btn" data-mr-undo>撤销</button>';
+      document.body.appendChild(bar);
+      return bar;
+    }
+    function openConfirm(row) {
+      const dlg = ensureConfirm();
+      const name = (row.querySelector('.member-main strong') || {}).textContent || '该成员';
+      const nameEl = dlg.querySelector('[data-mr-name]');
+      if (nameEl) nameEl.textContent = '将移除「' + name + '」。确认后可在几秒内撤销。';
+      dlg.dataset.rowId = String(Date.now());
+      pendingRow = row;
+      dlg.removeAttribute('hidden');
+      const focusBtn = dlg.querySelector('[data-mr-cancel]');
+      setTimeout(function () { try { if (focusBtn) focusBtn.focus(); } catch (_) {} }, 0);
+    }
+    function closeConfirm() {
+      const dlg = document.getElementById('member-remove-dialog');
+      if (dlg) dlg.setAttribute('hidden', '');
+    }
+    function doRemove() {
+      if (!pendingRow || !pendingRow.parentNode) { closeConfirm(); return; }
+      const row = pendingRow;
+      const parent = row.parentNode;
+      const next = row.nextSibling;
+      const name = (row.querySelector('.member-main strong') || {}).textContent || '成员';
+      row.remove();
+      closeConfirm();
+      pendingRow = null;
+      const bar = ensureUndo();
+      const txt = bar.querySelector('[data-mr-undo-text]');
+      if (txt) txt.textContent = '已移除「' + name + '」';
+      bar.removeAttribute('hidden');
+      clearTimeout(undoTimer);
+      const undoBtn = bar.querySelector('[data-mr-undo]');
+      function finish() {
+        bar.setAttribute('hidden', '');
+        undoTimer = null;
+      }
+      function onUndo() {
+        clearTimeout(undoTimer);
+        if (next && next.parentNode === parent) parent.insertBefore(row, next);
+        else parent.appendChild(row);
+        finish();
+        toast('已撤销移除');
+      }
+      undoBtn.onclick = onUndo;
+      undoTimer = setTimeout(finish, 5000);
+    }
+    document.querySelectorAll('[data-remove-member]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const row = btn.closest('.member-row');
+        if (row) openConfirm(row);
+      });
+    });
+    document.addEventListener('click', function (e) {
+      const t = e.target;
+      if (!t || !t.closest) return;
+      if (t.closest('[data-mr-cancel]')) { closeConfirm(); pendingRow = null; }
+      if (t.closest('[data-mr-confirm]')) doRemove();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      const dlg = document.getElementById('member-remove-dialog');
+      if (dlg && !dlg.hasAttribute('hidden')) {
+        e.preventDefault();
+        closeConfirm();
+        pendingRow = null;
+      }
+    });
+  }
+
   function wireShell() {
     if (qs('role')) localStorage.setItem('mpv2-role', qs('role'));
     syncActiveCaseQuery();
@@ -1254,6 +1367,7 @@
         toast(el.dataset.toast);
       });
     });
+    wireMemberRemove();
     // rewrite internal links to keep role
     document.querySelectorAll('a[data-keep-role]').forEach(a => {
       a.addEventListener('click', (e) => {
@@ -2401,7 +2515,11 @@
       drawer.querySelector('[data-drawer-status]').textContent = status;
       drawer.querySelector('[data-drawer-experts]').innerHTML = renderExperts(dept.experts);
       const go = drawer.querySelector('[data-drawer-go]');
-      if (go) go.href = withRole('dept.html?dept=' + dept.id);
+      if (go) {
+        const href = withRole('dept.html?dept=' + dept.id);
+        go.dataset.href = href;
+        if (go.tagName === 'A') go.setAttribute('href', href);
+      }
       lastTrigger = trigger || document.activeElement;
       drawer.classList.add('open');
       drawer.setAttribute('aria-hidden', 'false');
@@ -2442,10 +2560,11 @@
     }
     const go = drawer.querySelector('[data-drawer-go]');
     if (go) {
-      if (!go.hasAttribute('tabindex')) go.setAttribute('tabindex', '0');
+      if (go.tagName !== 'A' && !go.hasAttribute('tabindex')) go.setAttribute('tabindex', '0');
       go.addEventListener('click', (e) => {
-        e.preventDefault();
-        location.href = go.getAttribute('href');
+        if (go.tagName === 'A') e.preventDefault();
+        const href = go.dataset.href || go.getAttribute('href');
+        if (href && href !== '#') location.href = href;
       });
     }
   }

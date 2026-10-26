@@ -13,9 +13,9 @@
     </a>
     <h1>选择身份</h1>
     <p>登录后先到工作首页（助手）。点「项目」再进公司 / 案盘 / 开案子。</p>
-    <div class="role-pick" id="role-pick">
-      <button type="button" data-role="enterprise" class="active"><strong>企业研发</strong><small>澄明科技 · 陈宇</small></button>
-      <button type="button" data-role="agency"><strong>代理所</strong><small>衡知专利 · 林岚</small></button>
+    <div class="role-pick" id="role-pick" role="radiogroup" aria-label="选择身份">
+      <button type="button" role="radio" data-role="enterprise" class="active" aria-checked="true" aria-pressed="true"><strong>企业研发</strong><small>澄明科技 · 陈宇</small></button>
+      <button type="button" role="radio" data-role="agency" aria-checked="false" aria-pressed="false"><strong>代理所</strong><small>衡知专利 · 林岚</small></button>
     </div>
     <button class="btn btn-ink" type="button" id="go" style="width:100%">进入工作入口 →</button>
     <p style="margin-top:14px;font-size:12px"><a class="weak-link" href="welcome.html">← 返回宣传站</a></p>
@@ -25,7 +25,12 @@
   let r = 'enterprise';
   document.querySelectorAll('#role-pick button').forEach(b => b.addEventListener('click', () => {
     r = b.dataset.role;
-    document.querySelectorAll('#role-pick button').forEach(x => x.classList.toggle('active', x === b));
+    document.querySelectorAll('#role-pick button').forEach(x => {
+      const on = x === b;
+      x.classList.toggle('active', on);
+      x.setAttribute('aria-pressed', on ? 'true' : 'false');
+      x.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
   }));
   document.getElementById('go').addEventListener('click', () => {
     localStorage.setItem('mpv2-role', r);
