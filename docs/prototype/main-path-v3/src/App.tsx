@@ -144,7 +144,7 @@ export default function App() {
   const [projectFilter, setProjectFilter] = useState('')
   const [objectFilter, setObjectFilter] = useState<'全部对象' | ObjectKind>('全部对象')
   const [noticeOpen, setNoticeOpen] = useState(false)
-  const [homeMsgFocus, setHomeMsgFocus] = useState(false)
+  const [messagesOpen, setMessagesOpen] = useState(false)
   const [activeProjectCode, setActiveProjectCode] = useState<string | null>('RD-2026-017')
   const [projectPickerOpen, setProjectPickerOpen] = useState(false)
   const [showProcess, setShowProcess] = useState(false)
@@ -166,7 +166,7 @@ export default function App() {
     if (next === 'messages') {
       setMode('assistant')
       setView('home')
-      setHomeMsgFocus(true)
+      setMessagesOpen(true)
       setMobileNav(false); setNoticeOpen(false)
       return
     }
@@ -178,7 +178,7 @@ export default function App() {
     }
     if (next === 'home') setMode('assistant')
     else if (!['home', 'studio'].includes(next)) setMode('project')
-    setView(next); setMobileNav(false); setNoticeOpen(false); setHomeMsgFocus(false)
+    setView(next); setMobileNav(false); setNoticeOpen(false); setMessagesOpen(false)
   }
   const switchMode = (next: Mode) => {
     if (firstRun && next !== 'assistant') { setFirstRun(false); notify('已切换至已有工作演示') }
@@ -186,7 +186,7 @@ export default function App() {
     if (next === 'studio') setView('studio')
     else if (next === 'project') setView(role === 'enterprise' ? 'projects' : 'clients')
     else setView('home')
-    setMobileNav(false); setNoticeOpen(false); setHomeMsgFocus(false); setProjectPickerOpen(false)
+    setMobileNav(false); setNoticeOpen(false); setMessagesOpen(false); setProjectPickerOpen(false)
   }
   const openWorkbench = (oa = false, context: WorkContext = 'magnetic') => {
     setWorkContext(context)
@@ -336,12 +336,6 @@ export default function App() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
-  useEffect(() => {
-    if (homeMsgFocus && view === 'home') {
-      window.requestAnimationFrame(() => document.getElementById('home-messages')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
-    }
-  }, [homeMsgFocus, view])
-
   const enterpriseNav = [
     { id: 'projects' as View, label: '项目与对象', icon: FolderKanban, count: 5 },
     { id: 'assets' as View, label: '专利资产', icon: Library },
@@ -471,18 +465,10 @@ export default function App() {
             <aside className="first-run-steps"><span className="section-kicker">开始之后</span>{[['01', '先看计划', '知道哪个部门负责、会交付什么'], ['02', '只补必要事实', '不需要一次性整理全部研发资料'], ['03', '确认再接力', '未经确认，不自动共享或对外递交']].map(s => <div key={s[0]}><span>{s[0]}</span><p><strong>{s[1]}</strong><small>{s[2]}</small></p></div>)}<button className="text-btn" onClick={() => { setFirstRun(false); setActiveProjectCode(v => v ?? 'RD-2026-017') }}>查看已有工作演示<ArrowRight size={14} /></button></aside>
           </section> : <>
           <section className="company-attention" aria-label="现在需要我处理">
-            <div className="company-section-head"><div><span className="section-kicker">现在需要我处理</span><h2>按期限与流程影响排序</h2></div><button className="text-btn" onClick={() => navigate('messages')}>全部消息<ArrowRight size={14} /></button></div>
+            <div className="company-section-head"><div><span className="section-kicker">现在需要我处理</span><h2>按期限与流程影响排序</h2></div><button className="text-btn" onClick={() => navigate('messages')} aria-label="全部消息，3 条未读">全部消息 · 3<ArrowRight size={14} /></button></div>
             <div className="attention-list"><button onClick={() => openWorkbench(false)}><span className="attention-order">01</span><span><Status tone="orange">技术事实 · 阻塞接力</Status><strong>{handedOff ? '独权是否覆盖 MP-300 量产方案？' : '异常识别测试数据是否与记录一致？'}</strong><small>磁驱泵智能控制系统 · 今天 14:30</small></span><span className="attention-action">查看依据<ArrowRight size={14} /></span></button><button onClick={() => openWorkbench(false, 'storage')}><span className="attention-order">02</span><span><Status tone="orange">申请策略 · 等待确认</Status><strong>确认装置与方法双层保护是否覆盖量产方案</strong><small>模块化储能热管理装置 · 今天 17:00</small></span><span className="attention-action">进入复核<ArrowRight size={14} /></span></button><button onClick={() => { setActiveDept('risk'); setModal('task') }}><span className="attention-order">03</span><span><Status tone="red">风险决策 · 上市前</Status><strong>高速视觉检测设备发现 1 件高相关权利要求</strong><small>FTO-2026-009 · 11 月 03 日前</small></span><span className="attention-action">查看选项<ArrowRight size={14} /></span></button></div>
           </section>
 
-          <section className={`company-messages ${homeMsgFocus ? 'home-msg-focus' : ''}`} id="home-messages" aria-label="待你处理的消息">
-            <div className="company-section-head"><div><span className="section-kicker">待你处理 · 消息</span><h2>{role === 'enterprise' ? '协同消息' : '客户协同'}</h2></div><button className="text-btn" onClick={() => setHomeMsgFocus(false)}>收起强调</button></div>
-            <div className="home-msg-list">{[
-              ['林岚 · 代理师', '请确认 D1 是否对应你们旧款产品', '磁驱泵智能控制系统', '10:31', 0],
-              ['申请文件部', '权利要求草案已形成，等待你确认保护层次', '模块化储能热管理', '昨天', 1],
-              ['风险排查部', '发现 1 件高风险专利，建议安排技术比对', '高速视觉检测设备', '周二', 2],
-            ].map((m) => <button key={String(m[0])} onClick={() => { if (Number(m[4]) === 2) { setActiveDept('risk'); setModal('task') } else openWorkbench(false, Number(m[4]) === 1 ? 'storage' : 'magnetic') }}><Avatar name={String(m[0])} human={Number(m[4]) === 0} /><span><strong>{m[0]}</strong><small>{m[1]}</small><em>{m[2]} · {m[3]}</em></span><ChevronRight size={15} /></button>)}</div>
-          </section>
 
           <section className="company-work" aria-label="公司正在推进">
             <div className="company-section-head"><div><span className="section-kicker">公司正在推进</span><h2>4 个业务对象，3 个部门正在执行</h2></div><button className="text-btn" onClick={() => navigate('projects')}>全部项目与对象<ArrowRight size={14} /></button></div>
@@ -686,9 +672,17 @@ export default function App() {
 
     {modal === 'review' && <Modal title="确认本节点决策" subtitle="系统把专业内容翻译成需要你判断的事项，并保留确认记录。" onClose={() => setModal(null)}><div className="review-summary"><span className="section-kicker">建议方案</span><h3>{view === 'workbench' && oaMode ? '采用“有限修改 + 创造性争辩”答复策略' : view === 'workbench' && storageMode ? '确认装置与方法权利要求层次，完成质检后进入递交复核' : '核心控制方法申请发明，关键结构同步申请实用新型'}</h3><p>{view === 'workbench' && oaMode ? '独立权利要求仅并入“基于温差动态调整清洗时长”特征，保留其余参数在从属权利要求中。' : view === 'workbench' && storageMode ? '独立权利要求保留分流控制的核心组合，具体阈值置于从属权利要求；两项文本一致性问题由代理师继续复核。' : '兼顾授权前景、保护范围和上市节奏。申请文件部将分别组织权利要求，避免简单重复。'}</p></div><div className="review-options"><label><input type="radio" name="decision" defaultChecked /><span><strong>采纳部门建议</strong><small>进入下一节点，由代理师继续复核</small></span></label><label><input type="radio" name="decision" /><span><strong>需要补充讨论</strong><small>保留当前节点，并发起项目内协同</small></span></label></div><div className="modal-actions"><button className="btn btn-secondary" onClick={() => setModal(null)}>稍后决定</button><button className="btn btn-primary" onClick={() => { setModal(null); notify('决策已确认并写入项目记录') }}>确认决策</button></div></Modal>}
 
+    {messagesOpen && <Modal title="全部消息" subtitle="来自代理师与部门的会话。首页只强调待办，消息从这里进入。" onClose={() => setMessagesOpen(false)}>
+      <div className="home-msg-list messages-modal-list">{[
+        ['林岚 · 代理师', '请确认 D1 是否对应你们旧款产品', '磁驱泵智能控制系统', '10:31', 0],
+        ['申请文件部', '权利要求草案已形成，等待你确认保护层次', '模块化储能热管理', '昨天', 1],
+        ['风险排查部', '发现 1 件高风险专利，建议安排技术比对', '高速视觉检测设备', '周二', 2],
+      ].map((m) => <button key={String(m[0])} onClick={() => { setMessagesOpen(false); if (Number(m[4]) === 2) { setActiveDept('risk'); setModal('task') } else openWorkbench(false, Number(m[4]) === 1 ? 'storage' : 'magnetic') }}><Avatar name={String(m[0])} human={Number(m[4]) === 0} /><span><strong>{m[0]}</strong><small>{m[1]}</small><em>{m[2]} · {m[3]}</em></span><ChevronRight size={15} /></button>)}</div>
+    </Modal>}
+
     {modal === 'guide' && <Modal title="产品逻辑与原型导览" subtitle="一家公司、一个负责人、三种使用深度。模式只改变可见能力，不改变项目数据。" wide onClose={() => setModal(null)}><div className="guide-body">
       <section><span className="guide-number">01</span><div><h3>官网、登录、首页与项目执行分工</h3><p>官网解释产品价值，登录进入对应空间；首页承接委托与跨案待办（含消息）；项目管对象与工作台；部门管花名册与工作室。首次空状态与已有工作演示明确区分。</p></div></section>
-      <section><span className="guide-number">02</span><div><h3>首页、项目、部门，共享同一业务底座</h3><p>首页：顾言委托、跨案待办与消息；项目：对象列表与工作台；部门：花名册 + 工作室配置（Skill、提示词、MCP）。协同消息收在首页次区，不做第四主 tab。切换模式不会另建项目或丢失版本。</p></div></section>
+      <section><span className="guide-number">02</span><div><h3>首页、项目、部门，共享同一业务底座</h3><p>首页：顾言委托、跨案待办与消息；项目：对象列表与工作台；部门：花名册 + 工作室配置（Skill、提示词、MCP）。协同消息从首页「全部消息」或顶栏通知进入，不做首页双强调、不做第四主 tab。切换模式不会另建项目或丢失版本。</p></div></section>
       <section><span className="guide-number">03</span><div><h3>两条业务主线，多种对象独立推进</h3><p>权利形成线覆盖创新、挖掘、布局、申请、审查与运营；风险防控线覆盖产品拆解、FTO、比对和规避。研发项目、申请案件、产品风险与专利资产分别管理状态，可关联、并行、回退或重开。</p></div></section>
       <section><span className="guide-number">04</span><div><h3>三类空间，按权限接力</h3><p>企业私有、代理所私有和双方共享空间相互隔离。部门只继承本任务所需的事实、证据、版本与决策；跨组织交付绑定版本、交付人、时间、可见范围和确认记录。</p></div></section>
       <section><span className="guide-number">05</span><div><h3>协同与文书双视图，确认控制流程</h3><p>协同工作视图呈现顾言计划、部门分工、专家任务、连续指令、交付依据和确认分支；文书工作视图保留卷宗、版本与编辑。技术事实确认后还要确认节点交付，再由用户决定是否接力，不会自动递交。</p></div></section>

@@ -1201,6 +1201,8 @@ kbd { font-family: inherit; font-size: 10px; border: 1px solid var(--line); bord
 .company-messages { margin-top: 30px; }
 .company-messages.home-msg-focus { outline: 2px solid color-mix(in oklch, var(--accent) 55%, transparent); outline-offset: 6px; border-radius: 8px; }
 .home-msg-list { display: flex; flex-direction: column; gap: 8px; }
+.messages-modal-list { padding: 8px 16px 20px; }
+.messages-modal-list > button { border-left: 0; border-right: 0; border-radius: 0; }
 .home-msg-list > button { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: inherit; transition: background .18s, border-color .18s; min-height: 40px; }
 .home-msg-list > button:hover { background: oklch(0.965 0.01 85); border-color: color-mix(in oklch, var(--accent) 35%, var(--line)); }
 .home-msg-list > button span { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
