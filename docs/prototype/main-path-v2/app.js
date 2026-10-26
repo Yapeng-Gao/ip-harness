@@ -309,16 +309,60 @@
     }).join('');
   }
 
-  /* Professional capability cards: avatar + name + one-line role */
-  function renderProfExperts(names) {
-    return (names || []).slice(0, 3).map((e, i) => {
+  /* Professional light配 — 岗名/职责一句/占位可轻改；禁技能墙 */
+  function loadProfLight() {
+    try { return JSON.parse(localStorage.getItem('mpv2-prof-light') || '{}'); }
+    catch (e) { return {}; }
+  }
+  function saveProfLight(obj) {
+    localStorage.setItem('mpv2-prof-light', JSON.stringify(obj || {}));
+  }
+  function wireProfLightEdit(root) {
+    if (!root) return;
+    root.querySelectorAll('.prof-edit').forEach(el => {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+      });
+      el.addEventListener('blur', () => {
+        const dept = el.dataset.dept || ((el.closest('[data-prof-expert]') || el.closest('.prof-card') || {}).dataset || {}).dept;
+        if (!dept) return;
+        const field = el.dataset.profField;
+        const val = (el.textContent || '').trim();
+        const light = loadProfLight();
+        if (!light[dept]) light[dept] = {};
+        if (field === 'duty' || field === 'name') {
+          light[dept][field] = val;
+        } else if (field === 'title' || field === 'role') {
+          const wrap = el.closest('[data-prof-expert]');
+          const idx = wrap ? wrap.dataset.idx : null;
+          if (idx == null) return;
+          if (!light[dept].experts) light[dept].experts = {};
+          if (!light[dept].experts[idx]) light[dept].experts[idx] = {};
+          light[dept].experts[idx][field] = val;
+        }
+        saveProfLight(light);
+      });
+    });
+  }
+
+  function renderProfExperts(names, deptId) {
+    const light = loadProfLight();
+    const overrides = (light[deptId] && light[deptId].experts) || {};
+    // 按实际编制展示（交底部约 5–6）；禁凑编墙，不截成技能配置
+    return (names || []).map((e, i) => {
       const m = expertMeta(e, i);
       const parts = m.name.split(/\s*·\s*/);
-      const title = parts[0];
-      const role = parts[1] || (m.human ? '在岗复核 · 建议稿≠确认' : '本节点专岗 · 出建议稿');
-      return '<div class="prof-expert">' +
+      const title0 = parts[0];
+      const role0 = parts[1] || (m.human ? '在岗复核 · 建议稿≠确认' : '本节点专岗 · 出建议稿');
+      const ov = overrides[i] || {};
+      const title = ov.title || title0;
+      const role = ov.role || role0;
+      return '<div class="prof-expert" data-prof-expert data-dept="' + deptId + '" data-idx="' + i + '">' +
         '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="32" height="32">' +
-        '<span><strong>' + title + '</strong><small>' + role + '</small></span></div>';
+        '<span>' +
+          '<strong class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="title" aria-label="岗名">' + title + '</strong>' +
+          '<small class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="role" aria-label="占位一句">' + role + '</small>' +
+        '</span></div>';
     }).join('');
   }
 
@@ -453,7 +497,8 @@
       status: 'active', deadline: 'ok', client: '澄明科技', progress: '距可递交还 4 站' }
   ];
   const CASE_SHELL_PAGES = ['company', 'dept', 'professional'];
-  const CROSS_CASE_PAGES = ['home', 'cases', 'case-new'];
+  const LOGISTICS_PAGES = ['billing', 'members', 'docket'];
+  const CROSS_CASE_PAGES = ['home', 'cases', 'case-new', 'delegate'];
 
   function hasCase() {
     if (qs('nocase') === '1') return false;
@@ -685,18 +730,53 @@
 
   function wireCaseSwitcher() {
     const page = document.body.dataset.page || '';
-    const isCaseShell = CASE_SHELL_PAGES.indexOf(page) !== -1;
-    // Cross-case: strip any leftover fake lock (defense in depth)
-    if (CROSS_CASE_PAGES.indexOf(page) !== -1) {
+    const isLogistics = LOGISTICS_PAGES.indexOf(page) !== -1;
+    const hasActive = !!activeCaseId();
+    const isCaseShell = CASE_SHELL_PAGES.indexOf(page) !== -1 || (isLogistics && hasActive);
+    const isCross = CROSS_CASE_PAGES.indexOf(page) !== -1 || (isLogistics && !hasActive);
+
+    // Cross-case / logistics-no-active: strip fake lock & switcher (禁假「当前项目」)
+    if (isCross) {
+      document.querySelectorAll('.topbar-context').forEach(ctx => {
+        ctx.innerHTML = '';
+        ctx.classList.add('topbar-context-cross');
+        ctx.setAttribute('data-shell', 'cross');
+        ctx.setAttribute('aria-hidden', 'true');
+      });
       document.querySelectorAll('.topbar-context .context-label, .topbar-context .context-button').forEach(el => el.remove());
+      if (isLogistics && !hasActive) return; // stay on logistics as cross-case peripheral
     }
+
     if (!isCaseShell) return;
     const c = activeCase();
     if (!c) {
-      // case shell without active → bounce to landing
-      location.replace(withRole(projectLandingHref()));
+      // case shell without active → bounce to landing (logistics already handled above)
+      if (!isLogistics) location.replace(withRole(projectLandingHref()));
       return;
     }
+    // Ensure logistics pages show real switcher markup if JS stripped earlier in same session
+    document.querySelectorAll('.topbar-context[data-shell="cross"]').forEach(ctx => {
+      // rebuild switcher for logistics when active
+      if (!isLogistics) return;
+      ctx.classList.remove('topbar-context-cross');
+      ctx.removeAttribute('aria-hidden');
+      ctx.setAttribute('data-shell', 'case');
+      ctx.innerHTML =
+        '<details class="case-switcher" data-case-switcher>' +
+          '<summary class="case-switcher-sum" aria-label="切换案子">' +
+            '<span class="case-switcher-name" data-active-case-name></span>' +
+            '<span class="case-switcher-caret" aria-hidden="true">▾</span>' +
+          '</summary>' +
+          '<div class="case-switcher-panel" role="menu">' +
+            '<div class="case-switcher-label">最近</div>' +
+            '<div class="case-switcher-recent" data-case-recent></div>' +
+            '<a class="case-switcher-item" href="cases.html" data-keep-role data-switch-all role="menuitem">全部案子</a>' +
+            '<a class="case-switcher-item case-switcher-new" href="case-new.html" data-keep-role data-switch-new role="menuitem">开新案子</a>' +
+          '</div>' +
+        '</details>' +
+        '<span class="tier-cue" data-tier-cue aria-live="polite"></span>';
+    });
+
     document.querySelectorAll('[data-active-case-name]').forEach(el => {
       el.textContent = c.name;
     });
@@ -732,7 +812,6 @@
     document.querySelectorAll('[data-switch-all]').forEach(a => {
       a.addEventListener('click', (e) => {
         e.preventDefault();
-        // 全部 → 案盘；不强制清 active（再点项目仍可回公司）
         localStorage.setItem('mpv2-mode', 'project');
         location.href = withRole('cases.html');
       });
@@ -746,6 +825,7 @@
     });
   }
 
+
   function goWorkDept(deptId) {
     const target = 'dept.html?dept=' + encodeURIComponent(normalizeDeptId(deptId || 'disclosure'));
     localStorage.setItem('mpv2-last-work', target);
@@ -758,21 +838,25 @@
     if (!grid) return;
     grid.innerHTML = DEPT_ORDER.map(key => {
       const d = DEPTS[key];
-      const faces = renderProfExperts(d.experts);
+      const light = loadProfLight();
+      const duty = (light[d.id] && light[d.id].duty) || (d.pitch || '');
+      const faces = renderProfExperts(d.experts, d.id);
       return '<article class="prof-card" data-dept="' + d.id + '">' +
         '<div class="prof-card-head">' +
           '<span class="prof-code">' + d.code + '</span>' +
-          '<h2>' + d.name + '</h2>' +
+          '<h2 class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="name" data-dept="' + d.id + '" aria-label="部名">' + d.name + '</h2>' +
         '</div>' +
         '<p class="prof-deliverable">交卷物 · ' + d.deliverable + '</p>' +
-        '<p class="prof-duty">' + (d.pitch || '') + '</p>' +
+        '<p class="prof-duty prof-edit" contenteditable="true" spellcheck="false" data-prof-field="duty" data-dept="' + d.id + '" aria-label="职责一句">' + duty + '</p>' +
         '<div class="prof-experts" aria-label="' + d.name + '专家">' + faces + '</div>' +
+        '<p class="prof-light-hint">可轻改岗名 / 职责一句 / 占位 · 禁技能墙</p>' +
         '<button type="button" class="btn btn-ink prof-go" data-go-dept="' + d.id + '">去该部干活 →</button>' +
         '</article>';
     }).join('');
     grid.querySelectorAll('[data-go-dept]').forEach(btn => {
       btn.addEventListener('click', () => goWorkDept(btn.dataset.goDept));
     });
+    wireProfLightEdit(grid);
     // Legal exits: must setMode(project) before navigating — no studio bounce
     document.querySelectorAll('[data-exit-pro]').forEach(a => {
       a.addEventListener('click', (e) => {
@@ -2417,7 +2501,7 @@
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
-    renderExperts, renderRailExperts, renderExpertFaces, renderProfExperts, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo, gapActionsFor
+    renderExperts, renderRailExperts, renderExpertFaces, renderProfExperts, wireProfLightEdit, loadProfLight, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo, gapActionsFor
   };
 
   document.addEventListener('DOMContentLoaded', () => {

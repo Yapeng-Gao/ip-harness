@@ -3375,3 +3375,89 @@ a.case-switcher-new { font-weight: 600; color: var(--ink); }
   font-size: 11px; font-weight: 700; color: var(--ink-3); letter-spacing: .04em;
 }
 .case-inform-list strong { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+
+/* —— 执行层清场：侧栏瘦身 / 禁菜单墙 / 专业轻配 / 后勤回链 —— */
+.sidebar-slim {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.sidebar-slim .main-nav-slim {
+  padding: 8px 10px 4px;
+  gap: 4px;
+}
+.sidebar-slim .side-back,
+.sidebar-slim .side-back-weak {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--ink-2);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.sidebar-slim .side-back {
+  font-weight: 600;
+  color: var(--ink);
+}
+.sidebar-slim .side-back:hover,
+.sidebar-slim .side-back-weak:hover {
+  background: oklch(0.925 0.014 85);
+  color: var(--ink);
+}
+.sidebar-slim .side-back-weak {
+  color: var(--ink-3);
+  font-size: 11px;
+}
+.sidebar-slim .sidebar-bottom {
+  margin-top: auto;
+}
+.sidebar-slim .logistics-nav,
+.sidebar-slim .side-project,
+.sidebar-slim .sidebar-heading {
+  display: none;
+}
+.logistics-return {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.logistics-return .weak-link { margin: 0 2px; }
+
+/* 专业轻配 */
+.prof-edit {
+  outline: none;
+  border-radius: 4px;
+  transition: background .15s ease, box-shadow .15s ease;
+}
+.prof-edit:hover {
+  background: oklch(0.96 0.01 85);
+}
+.prof-edit:focus {
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--line);
+}
+h2.prof-edit { display: inline; font: inherit; font-size: inherit; font-weight: 650; margin: 0; }
+.prof-duty.prof-edit { min-height: 1.4em; }
+.prof-expert .prof-edit[data-prof-field="title"] {
+  display: block;
+  font-weight: 600;
+  font-size: 12px;
+}
+.prof-expert .prof-edit[data-prof-field="role"] {
+  display: block;
+  color: var(--ink-3);
+  font-size: 11px;
+}
+.prof-light-hint {
+  margin: 6px 0 10px;
+  font-size: 10px;
+  color: var(--ink-3);
+  letter-spacing: 0.02em;
+}
+body[data-page="professional"] .sidebar-pro-exit .main-nav a.side-back {
+  font-weight: 600;
+}
