@@ -30,7 +30,7 @@
   <div class="topbar-actions">
     <a class="weak-link topbar-quiet" href="docket.html" data-keep-role>期限</a>
     <a class="icon-btn notice-button" href="dept.html?dept=disclosure&gate=1" data-keep-role aria-label="待确认">🔔<span></span></a>
-    <div class="mode-switch mode-switch-quiet" aria-label="使用深度">
+    <div class="mode-switch mode-switch-quiet" aria-label="助手、项目与专业">
       <button type="button" data-mode="assistant">助手</button>
       <button type="button" data-mode="project">项目</button>
       <button type="button" data-mode="studio" class="active">专业</button>
@@ -49,6 +49,7 @@
         <a class="avatar-menu-link" href="docket.html" data-keep-role>期限</a>
         <a class="avatar-menu-link" href="billing.html" data-keep-role>账单</a>
         <a class="avatar-menu-link" href="members.html" data-keep-role>成员</a>
+        <a class="avatar-menu-link" href="confirm-log.html" data-keep-role>确认记录</a>
         <a class="avatar-menu-link" href="welcome.html">官网</a>
       </div>
     </details>
@@ -80,20 +81,33 @@
 
   <div class="prof-grid" id="prof-capability-grid" aria-label="七部专业能力"></div>
 
-  <details class="more-depts" id="prof-more-depts">
-    <summary>更多部门 <span>（默认折叠）</span></summary>
-    <div class="more-depts-grid" aria-label="更多部门目录">
-      <a class="more-dept-stub" href="#" data-toast="创新激发部 · 后置 stub">创新激发部<small>方向清单</small></a>
-      <a class="more-dept-stub" href="#" data-toast="挖掘部 · 后置 stub">挖掘部<small>挖掘报告</small></a>
-      <a class="more-dept-stub" href="#" data-toast="自由实施部 · 后置 stub">自由实施部<small>FTO · 不挡申请</small></a>
-      <a class="more-dept-stub" href="#" data-toast="布局办 · 后置 stub">布局办<small>布局图</small></a>
-      <a class="more-dept-stub" href="#" data-toast="维持部 · 后置 stub">维持部<small>年费 / 权利维持</small></a>
-      <a class="more-dept-stub" href="#" data-toast="终止与恢复 · 后置 stub">终止与恢复<small>资产状态</small></a>
-      <a class="more-dept-stub" href="#" data-toast="运用 / 监控 / 国际等 · 后置">运用 · 监控 · 国际…<small>扩展目录</small></a>
+  
+  <details class="prof-advanced" id="prof-skills-mcp">
+    <summary>进阶 · 技能 / MCP <span>· 默认收折</span></summary>
+    <div class="prof-advanced-body">
+      <p class="prof-advanced-lead">可选轻量配置，不挡主路径。主操作仍是各部「去该部干活」。</p>
+      <ul class="prof-advanced-list">
+        <li><strong>技能</strong> · 本节点常用提示词包（演示） <button type="button" class="text-btn" data-toast="技能包 · 即将开放">配置</button></li>
+        <li><strong>MCP</strong> · 外部工具连接（演示） <button type="button" class="text-btn" data-toast="MCP 连接 · 即将开放">配置</button></li>
+      </ul>
+      <p class="prof-advanced-note">默认收折 · 非第一屏墙 · 不在此改交卷正文</p>
     </div>
   </details>
 
-  <p class="prof-footnote">轻配仅岗名 / 职责一句 / 占位；禁技能 / MCP / Prompt 墙。点「去该部干活」进工作台。</p>
+  <details class="more-depts" id="prof-more-depts">
+    <summary>更多部门 <span>（默认折叠）</span></summary>
+    <div class="more-depts-grid" aria-label="更多部门目录">
+      <a class="more-dept-stub" href="#" data-toast="创新激发部 · 即将开放">创新激发部<small>方向清单</small></a>
+      <a class="more-dept-stub" href="#" data-toast="挖掘部 · 即将开放">挖掘部<small>挖掘报告</small></a>
+      <a class="more-dept-stub" href="#" data-toast="自由实施部 · 即将开放">自由实施部<small>FTO · 不挡申请</small></a>
+      <a class="more-dept-stub" href="#" data-toast="布局办 · 即将开放">布局办<small>布局图</small></a>
+      <a class="more-dept-stub" href="#" data-toast="维持部 · 即将开放">维持部<small>年费 / 权利维持</small></a>
+      <a class="more-dept-stub" href="#" data-toast="终止与恢复 · 即将开放">终止与恢复<small>资产状态</small></a>
+      <a class="more-dept-stub" href="#" data-toast="运用 / 监控 / 国际等 · 即将开放">运用 · 监控 · 国际…<small>扩展目录</small></a>
+    </div>
+  </details>
+
+  <p class="prof-footnote">轻配主路径：岗名 / 职责一句 / 占位。技能 / MCP 见上方进阶（默认收折）。点「去该部干活」进工作台。</p>
 
 </main>
 </div>

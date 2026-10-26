@@ -500,7 +500,7 @@
       status: 'active', deadline: 'ok', client: '澄明科技', progress: '距可递交还 4 站' }
   ];
   const CASE_SHELL_PAGES = ['company', 'dept', 'professional'];
-  const LOGISTICS_PAGES = ['billing', 'members', 'docket'];
+  const LOGISTICS_PAGES = ['billing', 'members', 'docket', 'confirm-log'];
   const CROSS_CASE_PAGES = ['home', 'cases', 'case-new', 'delegate'];
 
   function hasCase() {
@@ -974,7 +974,14 @@
     if (!el) {
       el = document.createElement('div');
       el.className = 'toast-fixed';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      el.setAttribute('aria-atomic', 'true');
       document.body.appendChild(el);
+    } else {
+      if (!el.getAttribute('role')) el.setAttribute('role', 'status');
+      if (!el.getAttribute('aria-live')) el.setAttribute('aria-live', 'polite');
+      if (!el.getAttribute('aria-atomic')) el.setAttribute('aria-atomic', 'true');
     }
     el.textContent = text;
     el.classList.add('show');
@@ -1017,6 +1024,57 @@
     });
   }
 
+
+  /* A4 · 顶栏 details：Esc 关闭、方向键、aria-expanded 同步 */
+  function syncDetailsExpanded(details) {
+    if (!details) return;
+    const sum = details.querySelector('summary');
+    if (sum) sum.setAttribute('aria-expanded', details.open ? 'true' : 'false');
+  }
+  function wireTopbarDetails() {
+    const menus = document.querySelectorAll('details.avatar-menu, details.case-switcher');
+    menus.forEach(function (d) {
+      if (d.dataset.a11yWired) return;
+      d.dataset.a11yWired = '1';
+      syncDetailsExpanded(d);
+      d.addEventListener('toggle', function () { syncDetailsExpanded(d); });
+    });
+    if (document.documentElement.dataset.topbarDetailsEsc) return;
+    document.documentElement.dataset.topbarDetailsEsc = '1';
+    document.addEventListener('keydown', function (e) {
+      const openMenus = Array.prototype.slice.call(
+        document.querySelectorAll('details.avatar-menu[open], details.case-switcher[open]')
+      );
+      if (!openMenus.length) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        openMenus.forEach(function (d) {
+          d.open = false;
+          syncDetailsExpanded(d);
+          const sum = d.querySelector('summary');
+          if (sum) try { sum.focus(); } catch (_) {}
+        });
+        return;
+      }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Home' && e.key !== 'End') return;
+      const active = openMenus[openMenus.length - 1];
+      const items = Array.prototype.slice.call(
+        active.querySelectorAll('[role="menuitem"], .avatar-menu-panel .role-switch button, .avatar-menu-link, .case-switcher-item')
+      ).filter(function (el) {
+        return el.offsetParent !== null || el.getClientRects().length;
+      });
+      if (!items.length) return;
+      const cur = items.indexOf(document.activeElement);
+      let next = cur;
+      if (e.key === 'ArrowDown') next = cur < 0 ? 0 : (cur + 1) % items.length;
+      else if (e.key === 'ArrowUp') next = cur < 0 ? items.length - 1 : (cur - 1 + items.length) % items.length;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = items.length - 1;
+      e.preventDefault();
+      try { items[next].focus(); } catch (_) {}
+    });
+  }
+
   function wireShell() {
     if (qs('role')) localStorage.setItem('mpv2-role', qs('role'));
     syncActiveCaseQuery();
@@ -1025,6 +1083,7 @@
     applyModeUI(mode());
     applyHasCaseUI();
     wireCaseSwitcher();
+    wireTopbarDetails();
     document.querySelectorAll('.role-switch button').forEach(btn => {
       btn.addEventListener('click', () => {
         setRole(btn.dataset.role);
@@ -1634,20 +1693,36 @@
     document.querySelectorAll('[data-experts]').forEach(el => { el.innerHTML = expertHtml; });
 
     /* L3: 缺项=聊头顶 chip → 抽屉/sheet；禁发送下；禁两颗全宽 gap 常驻 */
+    let gapLastTrigger = null;
     function setGapPanelOpen(open, opts) {
       const bar = document.querySelector('[data-gap-bar]');
       const panel = document.querySelector('[data-gap-panel]');
       if (!bar || !panel) return;
       const on = !!open;
+      if (on) {
+        gapLastTrigger = (opts && opts.trigger) || document.activeElement || bar;
+      }
       panel.hidden = !on;
       bar.setAttribute('aria-expanded', on ? 'true' : 'false');
       const pane = document.querySelector('[data-gate-pane]');
       if (pane) pane.classList.toggle('gap-drawer-open', on);
-      if (on && opts && opts.scroll) {
-        try {
-          const sheet = panel.querySelector('.gap-drawer-sheet') || panel;
-          sheet.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } catch (e) {}
+      if (on) {
+        if (opts && opts.scroll) {
+          try {
+            const sheet = panel.querySelector('.gap-drawer-sheet') || panel;
+            sheet.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } catch (e) {}
+        }
+        const focusEl = panel.querySelector('[data-gap-close].gap-drawer-close')
+          || panel.querySelector('[data-rail-pass]')
+          || panel.querySelector('button, [href], input');
+        setTimeout(function () {
+          try { if (focusEl) focusEl.focus(); } catch (_) {}
+        }, 0);
+      } else if (gapLastTrigger && typeof gapLastTrigger.focus === 'function') {
+        const back = gapLastTrigger;
+        gapLastTrigger = null;
+        setTimeout(function () { try { back.focus(); } catch (_) {} }, 0);
       }
     }
     window.__mpv2SetGapPanelOpen = setGapPanelOpen;
@@ -1656,7 +1731,7 @@
       bar.dataset.wired = '1';
       bar.addEventListener('click', () => {
         const open = bar.getAttribute('aria-expanded') === 'true';
-        setGapPanelOpen(!open);
+        setGapPanelOpen(!open, { trigger: bar });
       });
     });
     document.querySelectorAll('[data-gap-close]').forEach(btn => {
@@ -1664,6 +1739,17 @@
       btn.dataset.wired = '1';
       btn.addEventListener('click', () => setGapPanelOpen(false));
     });
+    if (!document.documentElement.dataset.gapEscWired) {
+      document.documentElement.dataset.gapEscWired = '1';
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        const panel = document.querySelector('[data-gap-panel]');
+        if (panel && !panel.hidden) {
+          e.preventDefault();
+          setGapPanelOpen(false);
+        }
+      });
+    }
     document.querySelectorAll('[data-experts-more]').forEach(btn => {
       if (btn.dataset.wired) return;
       btn.dataset.wired = '1';
@@ -2162,7 +2248,8 @@
   function wireCompanyDrawer() {
     const drawer = document.getElementById('dept-drawer');
     if (!drawer) return;
-    const open = (key) => {
+    let lastTrigger = null;
+    const open = (key, trigger) => {
       const dept = DEPTS[key] || DEPTS.disclosure;
       drawer.querySelector('[data-drawer-name]').textContent = dept.name;
       drawer.querySelector('[data-drawer-deliverable]').textContent = dept.deliverable;
@@ -2171,26 +2258,47 @@
       drawer.querySelector('[data-drawer-experts]').innerHTML = renderExperts(dept.experts);
       const go = drawer.querySelector('[data-drawer-go]');
       if (go) go.href = withRole('dept.html?dept=' + dept.id);
+      lastTrigger = trigger || document.activeElement;
       drawer.classList.add('open');
       drawer.setAttribute('aria-hidden', 'false');
+      const focusEl = drawer.querySelector('[data-drawer-go]') || drawer.querySelector('.drawer-close') || drawer.querySelector('.drawer-panel');
+      setTimeout(function () {
+        try { if (focusEl) focusEl.focus(); } catch (_) {}
+      }, 0);
     };
     const close = () => {
+      if (!drawer.classList.contains('open')) return;
       drawer.classList.remove('open');
       drawer.setAttribute('aria-hidden', 'true');
+      const back = lastTrigger;
+      lastTrigger = null;
+      if (back && typeof back.focus === 'function') {
+        setTimeout(function () { try { back.focus(); } catch (_) {} }, 0);
+      }
     };
     document.querySelectorAll('[data-dept-open]').forEach(a => {
       a.addEventListener('click', (e) => {
         // open drawer instead of navigating immediately
         e.preventDefault();
         e.stopImmediatePropagation();
-        open(a.dataset.deptOpen);
+        open(a.dataset.deptOpen, a);
       }, true);
     });
     drawer.querySelectorAll('[data-drawer-close]').forEach(el => {
       el.addEventListener('click', close);
     });
+    if (!drawer.dataset.escWired) {
+      drawer.dataset.escWired = '1';
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && drawer.classList.contains('open')) {
+          e.preventDefault();
+          close();
+        }
+      });
+    }
     const go = drawer.querySelector('[data-drawer-go]');
     if (go) {
+      if (!go.hasAttribute('tabindex')) go.setAttribute('tabindex', '0');
       go.addEventListener('click', (e) => {
         e.preventDefault();
         location.href = go.getAttribute('href');
@@ -2681,6 +2789,17 @@
     wireCompanySnapshot();
     renderCompanyCasesStrip();
     syncCompanyNeedMeFromCase();
+    /* A5 · 公司首访默认展开「现在需要我处理」；回访保持用户折叠态 */
+    try {
+      const fold = document.querySelector('[data-company-fold="need-me"]');
+      const seen = localStorage.getItem('mpv2-company-visited');
+      if (fold) {
+        if (!seen) {
+          fold.open = true;
+          localStorage.setItem('mpv2-company-visited', '1');
+        }
+      }
+    } catch (_) {}
   }
 
   window.MPV2 = {
@@ -2689,7 +2808,7 @@
     qs, normalizeDeptId, deptFromQuery, toast, toastThen, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
-    wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
+    wireShell, wireTopbarDetails, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
     renderExperts, renderRailExperts, renderExpertFaces, renderProfExperts, wireProfLightEdit, loadProfLight, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo, gapActionsFor,
     syncHomeSurfacesFromCase, renderCompanyCasesStrip
   };
