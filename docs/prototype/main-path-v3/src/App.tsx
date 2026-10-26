@@ -131,12 +131,13 @@ export default function App() {
   const [customExperts, setCustomExperts] = useState<string[]>([])
   const [chat, setChat] = useState<string[]>([])
   const [message, setMessage] = useState('')
-  const [selectedMessage, setSelectedMessage] = useState(0)
   const [saved, setSaved] = useState(true)
   const [projectFilter, setProjectFilter] = useState('')
   const [objectFilter, setObjectFilter] = useState<'全部对象' | ObjectKind>('全部对象')
   const [noticeOpen, setNoticeOpen] = useState(false)
   const [homeMsgFocus, setHomeMsgFocus] = useState(false)
+  const [activeProjectCode, setActiveProjectCode] = useState<string | null>('RD-2026-017')
+  const [projectPickerOpen, setProjectPickerOpen] = useState(false)
   const [showProcess, setShowProcess] = useState(false)
   const [workContext, setWorkContext] = useState<WorkContext>('magnetic')
   const [leadInput, setLeadInput] = useState('')
@@ -152,6 +153,7 @@ export default function App() {
 
   const notify = (text: string) => { setToast(text); window.setTimeout(() => setToast(''), 2800) }
   const navigate = (next: View) => {
+    setProjectPickerOpen(false)
     if (next === 'messages') {
       setMode('assistant')
       setView('home')
@@ -181,14 +183,32 @@ export default function App() {
     setWorkContext(context)
     setActiveDoc(oa ? '意见陈述书' : context === 'storage' ? '权利要求草案' : handedOff ? '权利要求草案' : '交底书 V3')
     setActiveDept(oa ? 'oa' : context === 'storage' ? 'quality' : handedOff ? 'drafting' : 'disclosure')
+    setActiveProjectCode(oa ? 'CN202610483217.6' : context === 'storage' ? 'CN202610512086.4' : 'RD-2026-017')
     setFactConfirmed(false)
     setNodeConfirmed(false)
     setWorkView('collaboration')
+    setProjectPickerOpen(false)
     navigate('workbench')
   }
+  const selectActiveProject = (project: (typeof projects)[number]) => {
+    setActiveProjectCode(project.code)
+    setProjectPickerOpen(false)
+    if (project.kind === '产品风险') {
+      setActiveDept('risk')
+      notify(`已切换至 ${project.name}`)
+      return
+    }
+    const oa = project.stage.includes('OA')
+    const ctx: WorkContext = project.code === 'CN202610512086.4' || project.code === 'RD-2026-006' ? 'storage' : 'magnetic'
+    setWorkContext(oa ? 'magnetic' : ctx)
+    setActiveDoc(oa ? '意见陈述书' : ctx === 'storage' ? '权利要求草案' : handedOff ? '权利要求草案' : '交底书 V3')
+    setActiveDept(oa ? 'oa' : ctx === 'storage' ? 'quality' : handedOff ? 'drafting' : 'disclosure')
+    notify(`已切换至 ${project.name}`)
+  }
   const openProject = (project: (typeof projects)[number]) => {
+    setActiveProjectCode(project.code)
     if (project.kind === '产品风险') { setActiveDept('risk'); setModal('task'); return }
-    openWorkbench(project.stage.includes('OA'), project.code === 'CN202610512086.4' ? 'storage' : 'magnetic')
+    openWorkbench(project.stage.includes('OA'), project.code === 'CN202610512086.4' || project.code === 'RD-2026-006' ? 'storage' : 'magnetic')
   }
   const openDocument = (doc?: string) => {
     if (doc) setActiveDoc(doc)
@@ -206,6 +226,15 @@ export default function App() {
     : storageMode
       ? { glyph: 'ES', name: '模块化储能热管理装置', code: 'CN202610512086.4', status: '申请文件质检', object: '申请案件状态' }
       : { glyph: 'MP', name: '磁驱泵智能控制系统', code: 'RD-2026-017', status: handedOff ? '申请文件起草' : '交底书完善', object: '研发项目状态' }
+  const activeProject = projects.find(p => p.code === activeProjectCode) ?? null
+  const contextLabel = view === 'workbench'
+    ? (oaMode || storageMode ? '当前案件' : '当前项目')
+    : role === 'enterprise' ? '当前项目' : '当前客户'
+  const contextName = view === 'workbench'
+    ? workMeta.name
+    : activeProject
+      ? (role === 'agency' ? `澄明科技 · ${activeProject.name}` : activeProject.name)
+      : null
   const scopeText = oaMode && role === 'enterprise'
     ? '双方共享空间 · 代理所私有过程不可见'
     : role === 'agency'
@@ -324,23 +353,55 @@ export default function App() {
   const filteredSearch = searchItems.filter(i => `${i.title}${i.meta}`.toLowerCase().includes(search.toLowerCase()))
 
   if (surface === 'site') return <MarketingSite onEnter={() => setSurface('login')} onLogin={() => setSurface('login')} />
-  if (surface === 'login') return <LoginPage role={role} onRole={setRole} firstRun={firstRun} onFirstRun={setFirstRun} onBack={() => setSurface('site')} onEnter={() => { setSurface('app'); setMode('assistant'); setView('home'); setLeadRequest(''); setLeadInput('') }} />
+  if (surface === 'login') return <LoginPage role={role} onRole={setRole} firstRun={firstRun} onFirstRun={setFirstRun} onBack={() => setSurface('site')} onEnter={() => { setSurface('app'); setMode('assistant'); setView('home'); setLeadRequest(''); setLeadInput(''); setActiveProjectCode(firstRun ? null : 'RD-2026-017'); setProjectPickerOpen(false) }} />
 
   return <div className={`app-shell ${firstRun && view === 'home' ? 'first-run-shell' : ''}`}>
+    <a className="skip-link" href="#main-content">跳到主内容</a>
     <header className="topbar">
       {mode === 'project' && <button className="mobile-menu icon-btn" onClick={() => setMobileNav(true)} aria-label="打开导航"><Menu size={20} /></button>}
       <button className="brand" onClick={() => navigate('home')} aria-label="返回首页">
         <span className="brand-mark">知</span><span className="brand-copy"><strong>知产公司</strong><small>IP COMPANY</small></span>
       </button>
       <div className="topbar-context">
-        <span className="context-label">{view === 'workbench' ? (oaMode || storageMode ? '当前案件' : '当前项目') : role === 'enterprise' ? '当前项目' : '当前客户'}</span>
-        <button className="context-button" onClick={() => openWorkbench(role === 'agency')}>{view === 'workbench' ? workMeta.name : role === 'enterprise' ? '磁驱泵智能控制系统' : '澄明科技 · 低能耗膜分离工艺'}<ChevronDown size={14} /></button>
+        <span className="context-label">{contextLabel}</span>
+        <div className="context-picker">
+          <button
+            type="button"
+            className={`context-button ${!contextName ? 'context-empty' : ''}`}
+            aria-expanded={projectPickerOpen}
+            aria-haspopup="listbox"
+            aria-label={contextName ? `${contextLabel}：${contextName}` : `${contextLabel}：暂无活跃`}
+            onClick={() => { setNoticeOpen(false); setProjectPickerOpen(v => !v) }}
+          >
+            <span>{contextName ?? (firstRun ? '暂无活跃项目' : '选择项目')}</span>
+            <ChevronDown size={14} />
+          </button>
+          {projectPickerOpen && <div className="context-menu" role="listbox" aria-label="最近项目">
+            <div className="popover-title">{role === 'enterprise' ? '最近项目' : '最近案件'} <button type="button" onClick={() => setProjectPickerOpen(false)}>收起</button></div>
+            {(firstRun || !activeProjectCode) && <p className="context-empty-note">还没有活跃{role === 'enterprise' ? '项目' : '案件'}。可从列表选择，或新建后进入。</p>}
+            {projects.map(p => <button
+              key={p.code}
+              type="button"
+              role="option"
+              aria-selected={p.code === activeProjectCode}
+              className={p.code === activeProjectCode ? 'active' : ''}
+              onClick={() => selectActiveProject(p)}
+            >
+              <span><strong>{p.name}</strong><small>{p.kind} · {p.stage}</small></span>
+              {p.code === activeProjectCode && <Check size={14} />}
+            </button>)}
+            <div className="context-menu-foot">
+              <button type="button" onClick={() => { setProjectPickerOpen(false); switchMode('project') }}>打开{role === 'enterprise' ? '项目' : '案件'}列表</button>
+              <button type="button" onClick={() => { setProjectPickerOpen(false); setModal('new') }}>新建</button>
+            </div>
+          </div>}
+        </div>
       </div>
       <div className="topbar-actions">
         <button className="search-trigger" onClick={() => setSearchOpen(true)}><Search size={16} /><span>搜索项目、文件或部门</span><kbd>⌘ K</kbd></button>
         <button className="app-site-link" onClick={() => setSurface('site')}>官网</button><button className="icon-btn help-btn" onClick={() => setModal('guide')} aria-label="产品与原型导览"><CircleHelp size={19} /></button>
         <div className="notice-wrap">
-          <button className="icon-btn notice-button" onClick={() => setNoticeOpen(v => !v)} aria-label="通知"><Bell size={18} /><span /></button>
+          <button className="icon-btn notice-button" onClick={() => { setProjectPickerOpen(false); setNoticeOpen(v => !v) }} aria-label="通知"><Bell size={18} /><span /></button>
           {noticeOpen && <div className="notice-popover">
             <div className="popover-title">待办提醒 <button onClick={() => setNoticeOpen(false)}>收起</button></div>
             <button onClick={() => openWorkbench(role === 'agency')}><Clock3 size={16} /><span><strong>{role === 'enterprise' ? '交底书有 2 处待确认' : 'OA 答复期限剩余 18 天'}</strong><small>今天 14:30 前处理</small></span></button>
@@ -377,7 +438,7 @@ export default function App() {
         </div>
       </aside>}
 
-      <main className={`content ${view === 'workbench' ? 'content-workbench' : ''} ${mode === 'assistant' || mode === 'studio' ? 'content-assistant' : ''}`}>
+      <main id="main-content" className={`content ${view === 'workbench' ? 'content-workbench' : ''} ${mode === 'assistant' || mode === 'studio' ? 'content-assistant' : ''}`}>
         {view === 'home' && (role === 'enterprise' ? <>
           <section className="home-intro company-home-intro">
             <div><p className="date-line">{firstRun ? '你的虚拟知产公司 · 从第一件事开始' : '首页 · 顾言统一组织，你只处理关键确认与消息'}</p><h1>{firstRun ? <>你好，陈宇。<br />我是顾言，你的知产负责人。</> : <>早上好，陈宇。<br />今天有 3 件事需要你处理。</>}</h1></div>
@@ -398,7 +459,7 @@ export default function App() {
               ['产品上市前排查风险', '明确产品、地区和时间，再开展 FTO 分析', ShieldCheck],
               ['处理审查意见', '读取通知书与期限，组织答复策略和代理师复核', FileClock],
             ].map(([title, desc, Icon]) => <button key={String(title)} onClick={() => setLeadInput(String(title))}><Icon size={20} /><span><strong>{String(title)}</strong><small>{String(desc)}</small></span><ArrowUpRight size={16} /></button>)}</div></div>
-            <aside className="first-run-steps"><span className="section-kicker">开始之后</span>{[['01', '先看计划', '知道哪个部门负责、会交付什么'], ['02', '只补必要事实', '不需要一次性整理全部研发资料'], ['03', '确认再接力', '未经确认，不自动共享或对外递交']].map(s => <div key={s[0]}><span>{s[0]}</span><p><strong>{s[1]}</strong><small>{s[2]}</small></p></div>)}<button className="text-btn" onClick={() => setFirstRun(false)}>查看已有工作演示<ArrowRight size={14} /></button></aside>
+            <aside className="first-run-steps"><span className="section-kicker">开始之后</span>{[['01', '先看计划', '知道哪个部门负责、会交付什么'], ['02', '只补必要事实', '不需要一次性整理全部研发资料'], ['03', '确认再接力', '未经确认，不自动共享或对外递交']].map(s => <div key={s[0]}><span>{s[0]}</span><p><strong>{s[1]}</strong><small>{s[2]}</small></p></div>)}<button className="text-btn" onClick={() => { setFirstRun(false); setActiveProjectCode(v => v ?? 'RD-2026-017') }}>查看已有工作演示<ArrowRight size={14} /></button></aside>
           </section> : <>
           <section className="company-attention" aria-label="现在需要我处理">
             <div className="company-section-head"><div><span className="section-kicker">现在需要我处理</span><h2>按期限与流程影响排序</h2></div><button className="text-btn" onClick={() => navigate('messages')}>全部消息<ArrowRight size={14} /></button></div>
@@ -411,7 +472,7 @@ export default function App() {
               ['林岚 · 代理师', '请确认 D1 是否对应你们旧款产品', '磁驱泵智能控制系统', '10:31', 0],
               ['申请文件部', '权利要求草案已形成，等待你确认保护层次', '模块化储能热管理', '昨天', 1],
               ['风险排查部', '发现 1 件高风险专利，建议安排技术比对', '高速视觉检测设备', '周二', 2],
-            ].map((m) => <button key={String(m[0])} onClick={() => { setSelectedMessage(Number(m[4])); if (Number(m[4]) === 2) { setActiveDept('risk'); setModal('task') } else openWorkbench(false, Number(m[4]) === 1 ? 'storage' : 'magnetic') }}><Avatar name={String(m[0])} human={Number(m[4]) === 0} /><span><strong>{m[0]}</strong><small>{m[1]}</small><em>{m[2]} · {m[3]}</em></span><ChevronRight size={15} /></button>)}</div>
+            ].map((m) => <button key={String(m[0])} onClick={() => { if (Number(m[4]) === 2) { setActiveDept('risk'); setModal('task') } else openWorkbench(false, Number(m[4]) === 1 ? 'storage' : 'magnetic') }}><Avatar name={String(m[0])} human={Number(m[4]) === 0} /><span><strong>{m[0]}</strong><small>{m[1]}</small><em>{m[2]} · {m[3]}</em></span><ChevronRight size={15} /></button>)}</div>
           </section>
 
           <section className="company-work" aria-label="公司正在推进">
@@ -507,7 +568,7 @@ export default function App() {
               <div className="feed-item"><Avatar name="林" human small /><div><p><strong>林岚 · 代理师</strong><time>10:31</time></p><p>{oaMode ? '先保留方法权利要求的层次，不急于加入全部参数。请确认实际生产是否采用该范围。' : '从申请策略看，建议保留“异常评分自适应修正”这一层。它可能是后续答复创造性的关键。'}</p></div></div>
               {chat.map((c, i) => <div className="feed-item own" key={i}><Avatar name="我" human small /><div><p><strong>我</strong><time>刚刚</time></p><p>{c}</p></div></div>)}
             </div>
-            <div className="department-compose"><div><textarea value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="用自然语言交办或补充说明…" rows={2} /><button onClick={() => notify('附件选择器已打开')} aria-label="添加附件"><Paperclip size={16} /></button></div><div><span>Enter 发送</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div></div>
+            <div className="department-compose"><div><textarea name="dept_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="用自然语言交办或补充说明…" rows={2} aria-label="向部门交办" /><button onClick={() => notify('附件选择器已打开')} aria-label="添加附件"><Paperclip size={16} /></button></div><div><span>Enter 发送</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div></div>
             <button className="handoff-button" onClick={() => setModal('handoff')}><GitBranch size={16} /><span><strong>{oaMode ? role === 'agency' ? '交付客户确认' : '确认答复策略' : storageMode ? role === 'agency' ? '交付客户确认' : '确认质检与申请文件' : role === 'agency' ? '交付客户确认' : handedOff ? '查看接力记录' : '让下一部门继续'}</strong><small>{oaMode ? role === 'agency' ? '生成带版本与权限的交付快照' : '确认后回传代理所并保留记录' : storageMode ? role === 'agency' ? '生成质检版本与申请策略交付快照' : '质检版本与申请策略一并确认' : role === 'agency' ? '仅共享指定交付物与确认事项' : handedOff ? '交底书部 → 申请文件部' : '按权限继承所需事实、证据与版本'}</small></span><ArrowRight size={16} /></button>
           </aside>}
           </section> : <section className="collaboration-workspace">
@@ -527,7 +588,7 @@ export default function App() {
 
                 <section className="collab-feed"><div className="collab-section-head"><div><span className="section-kicker">动作与沟通</span><h2>项目内连续记录</h2></div><button className="text-btn" onClick={() => notify('已暂停当前节点的新任务，已有版本保留')}>暂停节点</button></div><div className="collab-event"><span className="event-time">10:24</span><div><p><strong>{collab.tasks[0][0]}</strong> {collab.tasks[0][3]}</p><button onClick={() => openDocument(collab.deliverableDoc)}>定位到交付物<ArrowUpRight size={12} /></button></div></div><div className="collab-event"><span className="event-time">10:31</span><div><p><strong>林岚 · 专利代理师</strong> {oaMode ? '建议保留修改层次，先确认实际生产控制逻辑，再确定最终答复口径。' : storageMode ? '两项遗留问题不影响继续核查，但保护范围需要企业研发与代理师共同确认。' : handedOff ? '独权暂不加入具体阈值，避免不必要缩小保护范围；仍需确认量产方案。' : '建议保留“异常评分自适应修正”这一层，可能是后续答复创造性的关键。'}</p></div></div>{chat.map((c, i) => <div className="collab-event own" key={`${c}-${i}`}><span className="event-time">刚刚</span><div><p><strong>我 → 顾言</strong> {c}</p><small>已纳入当前项目指令，部门会在本线程回复</small></div></div>)}</section>
               </div>
-              <form className="collab-compose" onSubmit={e => { e.preventDefault(); sendChat() }}><div><Avatar name="顾" small /><textarea value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="在当前项目中向顾言或部门交办：补充事实、调整目标、追问依据…" rows={2} /><button type="button" className="icon-btn" onClick={() => notify('附件将关联到当前项目与节点')} aria-label="添加项目附件"><Paperclip size={16} /></button></div><footer><div><button type="button" onClick={() => setMessage('请汇总当前节点还缺哪些事实和依据。')}>还缺什么</button><button type="button" onClick={() => setMessage('请调整工作计划，并说明对交付和期限的影响。')}>调整计划</button><button type="button" onClick={() => setMessage(`请让${collab.department}退回上一版本重新核查。`)}>退回核查</button></div><button className="btn btn-ink" type="submit" disabled={!message.trim()}>发送给顾言<Send size={14} /></button></footer></form>
+              <form className="collab-compose" onSubmit={e => { e.preventDefault(); sendChat() }}><div><Avatar name="顾" small /><textarea name="collab_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="在当前项目中向顾言或部门交办：补充事实、调整目标、追问依据…" rows={2} aria-label="向顾言交办" /><button type="button" className="icon-btn" onClick={() => notify('附件将关联到当前项目与节点')} aria-label="添加项目附件"><Paperclip size={16} /></button></div><footer><div><button type="button" onClick={() => setMessage('请汇总当前节点还缺哪些事实和依据。')}>还缺什么</button><button type="button" onClick={() => setMessage('请调整工作计划，并说明对交付和期限的影响。')}>调整计划</button><button type="button" onClick={() => setMessage(`请让${collab.department}退回上一版本重新核查。`)}>退回核查</button></div><button className="btn btn-ink" type="submit" disabled={!message.trim()}>发送给顾言<Send size={14} /></button></footer></form>
             </div>
 
             <aside className="delivery-confirm-pane">
@@ -578,9 +639,9 @@ export default function App() {
               <nav className="studio-tabs" aria-label="专业配置">{([['department', '部门组成'], ['experts', '专家定义'], ['skills', 'Skill'], ['prompt', '提示词'], ['mcp', 'MCP'], ['release', '测试与发布']] as const).map(([id, label]) => <button key={id} className={studioTab === id ? 'active' : ''} aria-pressed={studioTab === id} onClick={() => setStudioTab(id)}>{label}</button>)}</nav>
               <div className="studio-body">
                 {studioTab === 'department' && <div className="config-section"><div className="config-title"><div><h3>部门如何完成一次交付</h3><p>部门负责分工、接力、复核与验收，不是专家名单的简单集合。</p></div><button className="btn btn-secondary" onClick={() => setModal('expert')}><Plus size={14} />添加专家</button></div><div className="department-flow"><div><span>01</span><strong>主责专家起草</strong><small>读取本任务所需事实与证据</small></div><ArrowRight size={18} /><div><span>02</span><strong>协作专家核查</strong><small>按 Skill 执行检查与补充</small></div><ArrowRight size={18} /><div><span>03</span><strong>真实人员复核</strong><small>确认后形成{currentDept.output}</small></div></div>{currentDept.experts.map((e, i) => <div className="expert-row" key={e}><Avatar name={e} /><div><strong>{e}</strong><small>{i === 0 ? '主责 · 组织输入、起草与自检' : '协作 · 交叉核查与例外处理'}</small></div><button className="btn btn-secondary" onClick={() => setStudioTab('experts')}>配置职责</button></div>)}<div className="department-rule"><ShieldCheck size={18} /><p><strong>验收与权限</strong><br />交付必须绑定来源、版本和复核记录；跨组织仅共享确认快照。</p></div></div>}
-                {studioTab === 'experts' && <div className="config-section"><div className="config-title"><div><h3>专家定义</h3><p>专家定义“负责什么、不能做什么”，具体方法由 Skill 提供。</p></div><Status>个人草稿</Status></div><div className="config-form"><label>专家名称<input defaultValue={currentDept.experts[0]} /></label><label>职责与责任边界<textarea rows={4} defaultValue={`负责${currentDept.name}的主责任务；核验输入完整性，组织起草与自检。不得替代真实代理师作最终法律判断，不得补造技术事实。`} /></label><div className="form-two"><label>参与方式<select defaultValue="每个本部门任务均参与"><option>每个本部门任务均参与</option><option>按需参与</option><option>仅指定时参与</option></select></label><label>异常时升级给<select defaultValue="真实代理师"><option>真实代理师</option><option>知产负责人</option><option>企业研发负责人</option></select></label></div><div className="config-actions"><span>保存为草稿，不影响进行中的项目</span><button className="btn btn-ink" onClick={() => notify('专家定义已保存为个人草稿')}>保存专家草稿</button></div></div></div>}
+                {studioTab === 'experts' && <div className="config-section"><div className="config-title"><div><h3>专家定义</h3><p>专家定义“负责什么、不能做什么”，具体方法由 Skill 提供。</p></div><Status>个人草稿</Status></div><div className="config-form"><label>专家名称<input name="studio_expert_name" autoComplete="off" defaultValue={currentDept.experts[0]} /></label><label>职责与责任边界<textarea name="studio_expert_duty" autoComplete="off" rows={4} defaultValue={`负责${currentDept.name}的主责任务；核验输入完整性，组织起草与自检。不得替代真实代理师作最终法律判断，不得补造技术事实。`} /></label><div className="form-two"><label>参与方式<select name="studio_expert_mode" autoComplete="off" defaultValue="每个本部门任务均参与"><option>每个本部门任务均参与</option><option>按需参与</option><option>仅指定时参与</option></select></label><label>异常时升级给<select name="studio_expert_escalate" autoComplete="off" defaultValue="真实代理师"><option>真实代理师</option><option>知产负责人</option><option>企业研发负责人</option></select></label></div><div className="config-actions"><span>保存为草稿，不影响进行中的项目</span><button className="btn btn-ink" onClick={() => notify('专家定义已保存为个人草稿')}>保存专家草稿</button></div></div></div>}
                 {studioTab === 'skills' && <div className="config-section"><div className="config-title"><div><h3>绑定 Skill</h3><p>Skill 提供方法、流程、模板、规则和示例，可跨专家复用。</p></div><button className="btn btn-secondary" onClick={() => notify('Skill 模板库已打开')}><Library size={14} />从模板库添加</button></div><div className="skill-grid">{[['技术事实完整性核查', '检查问题、方案、效果与替代实施方式是否闭环', '团队模板 · V2.1'], ['交底书结构化撰写', '按中国发明专利交底结构组织内容与追问', '组织模板 · V3.4'], ['证据来源与引用检查', '确保结论能够回到文献、段落和检索日期', '组织模板 · V1.8']].map((s, i) => <article key={s[0]}><div><FileCheck2 size={18} /><Status tone={i === 0 ? 'orange' : 'green'}>{i === 0 ? '待更新' : '已绑定'}</Status></div><h4>{s[0]}</h4><p>{s[1]}</p><footer><span>{s[2]}</span><button onClick={() => notify(`${s[0]}配置已打开`)}>查看规则<ArrowUpRight size={13} /></button></footer></article>)}</div></div>}
-                {studioTab === 'prompt' && <div className="config-section"><div className="config-title"><div><h3>提示词与行为约束</h3><p>约束判断原则、表达方式和禁止事项，不把密钥或可变业务数据写进提示词。</p></div><Status>部门统一规则</Status></div><div className="prompt-editor"><div><span>system_prompt.md</span><small>草稿自动保存于本地演示</small></div><textarea value={prompt} onChange={e => { setPrompt(e.target.value); setTestPassed(false); setPublished(false) }} rows={9} aria-label="部门提示词" /><footer><span>{prompt.length} 字 · 继承组织安全规则</span><button className="btn btn-ink" onClick={() => notify('提示词草稿已保存')}>保存草稿</button></footer></div><div className="department-rule"><CircleAlert size={18} /><p><strong>优先级</strong><br />组织安全与权限规则 ＞ 部门规则 ＞ 专家个性约束 ＞ 单次任务说明。</p></div></div>}
+                {studioTab === 'prompt' && <div className="config-section"><div className="config-title"><div><h3>提示词与行为约束</h3><p>约束判断原则、表达方式和禁止事项，不把密钥或可变业务数据写进提示词。</p></div><Status>部门统一规则</Status></div><div className="prompt-editor"><div><span>system_prompt.md</span><small>草稿自动保存于本地演示</small></div><textarea name="studio_prompt" autoComplete="off" value={prompt} onChange={e => { setPrompt(e.target.value); setTestPassed(false); setPublished(false) }} rows={9} aria-label="部门提示词" /><footer><span>{prompt.length} 字 · 继承组织安全规则</span><button className="btn btn-ink" onClick={() => notify('提示词草稿已保存')}>保存草稿</button></footer></div><div className="department-rule"><CircleAlert size={18} /><p><strong>优先级</strong><br />组织安全与权限规则 ＞ 部门规则 ＞ 专家个性约束 ＞ 单次任务说明。</p></div></div>}
                 {studioTab === 'mcp' && <div className="config-section"><div className="config-title"><div><h3>MCP 数据与工具连接</h3><p>连接只提供必要能力；凭据由管理员保管，专家按任务获得最小权限。</p></div><button className="btn btn-secondary" onClick={() => notify('连接申请已提交管理员')}><Cable size={14} />申请新连接</button></div><div className="mcp-list">{[['专利文献检索', '只读 · 检索与文献正文', '组织已连接'], ['企业研发文档库', '只读 · 当前项目授权目录', '项目授权'], ['案件与期限管理', '读写 · 仅本部门负责案件', '组织已连接']].map(m => <div key={m[0]}><span className="mcp-icon"><Cable size={17} /></span><div><strong>{m[0]}</strong><small>{m[1]} · {m[2]}</small></div><button className={`toggle ${mcpEnabled.includes(m[0]) ? 'on' : ''}`} role="switch" aria-checked={mcpEnabled.includes(m[0])} aria-label={`${m[0]}连接`} onClick={() => { setMcpEnabled(v => v.includes(m[0]) ? v.filter(x => x !== m[0]) : [...v, m[0]]); setTestPassed(false); setPublished(false) }}><span /></button></div>)}</div><div className="department-rule"><ShieldCheck size={18} /><p><strong>最小权限与审计</strong><br />禁止把访问密钥写入提示词；所有外部读取、写入与交付动作保留调用记录。</p></div></div>}
                 {studioTab === 'release' && <div className="config-section"><div className="config-title"><div><h3>试运行、发布与回滚</h3><p>配置只有通过样例测试和权限检查，才能成为团队或组织模板。</p></div><Status tone={testPassed ? 'green' : 'orange'}>{testPassed ? '测试通过' : '待测试'}</Status></div><div className="release-grid"><div><FlaskConical size={20} /><h4>01 · 样例试运行</h4><p>使用“磁驱泵交底书 V3”验证输入读取、专家接力、输出结构和人工升级。</p><button className="btn btn-secondary" onClick={() => { setTestPassed(true); notify('3 个样例测试通过，权限检查通过') }}><FlaskConical size={14} />{testPassed ? '重新运行测试' : '运行 3 个样例'}</button></div><div><Rocket size={20} /><h4>02 · 发布新版本</h4><p>发布范围：团队模板。进行中的项目继续使用原版本，新项目可选择 V1.4。</p><button className="btn btn-ink" disabled={!testPassed || published} onClick={() => { setPublished(true); notify('V1.4 已发布；进行中项目仍使用原版本') }}><Rocket size={14} />{published ? '已发布 V1.4' : '发布 V1.4'}</button></div></div><div className="version-table"><div><strong>版本</strong><strong>范围</strong><strong>状态</strong><strong>项目策略</strong></div><div><span>V1.3</span><span>团队模板</span><Status tone="green">当前正式版</Status><span>进行中项目继续使用</span></div><div><span>V1.4</span><span>个人草稿</span><Status tone={published ? 'green' : 'neutral'}>{published ? '已发布' : testPassed ? '可发布' : '草稿'}</Status><span>不追溯修改旧项目</span></div></div><button className="text-btn" onClick={() => notify('已打开 V1.2 回滚预览，尚未执行回滚')}><GitBranch size={14} />查看历史版本与回滚预览</button></div>}
               </div>
@@ -589,29 +650,22 @@ export default function App() {
           </section>
         </ListPage>}
 
-        {view === 'messages' && <ListPage title={role === 'enterprise' ? '协同消息' : '客户协同'} subtitle="讨论始终关联项目、文档和决策，不再散落在即时通讯里。" action="发起协同" onAction={() => setModal('task')}>
-          <div className="messages-layout"><div className="message-list">{[
-            ['林岚 · 代理师', '请确认 D1 是否对应你们旧款产品', '磁驱泵智能控制系统', '10:31'],
-            ['申请文件部', '权利要求草案已形成，等待你确认保护层次', '模块化储能热管理', '昨天'],
-            ['风险排查部', '发现 1 件高风险专利，建议安排技术比对', '高速视觉检测设备', '周二'],
-          ].map((m, i) => <button key={m[0]} className={selectedMessage === i ? 'active' : ''} onClick={() => setSelectedMessage(i)}><Avatar name={m[0]} human={i === 0} /><div><strong>{m[0]}</strong><p>{m[1]}</p><small>{m[2]}</small></div><time>{m[3]}</time></button>)}</div><div className="message-thread"><div className="thread-head"><div><strong>{['林岚 · 代理师', '申请文件部', '风险排查部'][selectedMessage]}</strong><small>{['磁驱泵智能控制系统', '模块化储能热管理', '高速视觉检测设备'][selectedMessage]}</small></div><button className="btn btn-secondary" onClick={() => { if (selectedMessage === 2) { setActiveDept('risk'); setModal('task') } else openWorkbench(false, selectedMessage === 1 ? 'storage' : 'magnetic') }}>进入项目</button></div><div className="thread-body"><div className="thread-date">今天</div><div className="thread-message"><Avatar name="林" human /><div><p>{selectedMessage === 0 ? '检索报告中的 D1 描述了一种磁驱泵温度保护方案。请确认它是否对应你们 2024 年已经销售的 MP-200，以及当时是否公开了控制逻辑。' : selectedMessage === 1 ? '已根据交底书形成 12 项权利要求，其中独立权利要求 2 项。请重点确认保护范围是否覆盖计划量产方案。' : 'CN114820391B 的权利要求 1 与当前视觉检测结构存在较高重合。建议研发、代理师一起确认可规避特征。'}</p><small>10:31 · 关联检索证据 D1</small></div></div><div className="thread-message own"><Avatar name="陈" human /><div><p>我先和硬件负责人核对旧款资料，今天 14:00 前给你结论。</p><small>10:36 · 已读</small></div></div></div><div className="thread-compose"><input placeholder="回复，并保留在当前项目记录中…" onKeyDown={e => { if (e.key === 'Enter') { notify('回复已发送并归档到项目'); e.currentTarget.value = '' } }} /><button className="btn btn-ink" onClick={() => notify('回复已发送并归档到项目')}>发送</button></div></div></div>
-        </ListPage>}
       </main>
     </div>
 
     {toast && <div className="toast" role="status" aria-live="polite"><CheckCircle2 size={17} />{toast}</div>}
 
     {searchOpen && <Modal title="搜索整个知产公司" subtitle="项目、案件、文件和部门，都可以从这里直达。" onClose={() => { setSearchOpen(false); setSearch('') }}>
-      <div className="command-search"><Search size={19} /><input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="输入名称、编号或工作内容…" /><kbd>ESC</kbd></div><div className="search-results">{filteredSearch.slice(0, 8).map(item => <button key={item.title} onClick={() => { item.action(); setSearchOpen(false); setSearch('') }}><Search size={15} /><span><strong>{item.title}</strong><small>{item.meta}</small></span><ArrowUpRight size={15} /></button>)}{filteredSearch.length === 0 && <div className="empty-search">没有找到匹配内容，试试“交底书”或“FTO”。</div>}</div>
+      <div className="command-search"><Search size={19} /><input name="global_search" autoComplete="off" autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="输入名称、编号或工作内容…" aria-label="搜索项目、文件或部门" /><kbd>ESC</kbd></div><div className="search-results">{filteredSearch.slice(0, 8).map(item => <button key={item.title} onClick={() => { item.action(); setSearchOpen(false); setSearch('') }}><Search size={15} /><span><strong>{item.title}</strong><small>{item.meta}</small></span><ArrowUpRight size={15} /></button>)}{filteredSearch.length === 0 && <div className="empty-search">没有找到匹配内容，试试“交底书”或“FTO”。</div>}</div>
     </Modal>}
 
     {modal === 'new' && <Modal title={role === 'enterprise' ? '启动一个新项目' : '新建案件'} subtitle="不用选择 Agent。告诉我们业务目标，系统会推荐负责部门和推进路径。" onClose={() => setModal(null)}>
-      <form className="form-stack" onSubmit={e => { e.preventDefault(); setModal(null); notify('项目已建立，创新启发部开始整理输入'); openWorkbench(false) }}><label>项目或技术名称<input required defaultValue="" placeholder="例如：一种低噪声磁驱泵控制方案" /></label><label>你想解决什么问题？<textarea required rows={4} placeholder="可以直接粘贴研发描述，不需要使用专利语言…" /></label><div className="form-two"><label>业务场景<select defaultValue="研发成果保护"><option>研发成果保护</option><option>新产品上市风险排查</option><option>收到审查意见</option><option>已有专利运营</option></select></label><label>期望申请类型<select defaultValue="由部门建议"><option>由部门建议</option><option>发明专利</option><option>实用新型</option><option>发明 + 实用新型</option></select></label></div><div className="form-hint"><Sparkles size={16} /><span>建议首站：创新启发部 → 专利挖掘部。后续会根据项目情况调整，而非固定走完整条流程。</span></div><div className="modal-actions"><button type="button" className="btn btn-secondary" onClick={() => setModal(null)}>取消</button><button className="btn btn-primary" type="submit">建立项目并开始<ArrowRight size={16} /></button></div></form>
+      <form className="form-stack" onSubmit={e => { e.preventDefault(); setModal(null); notify('项目已建立，创新启发部开始整理输入'); openWorkbench(false) }}><label>项目或技术名称<input name="project_name" autoComplete="off" required defaultValue="" placeholder="例如：一种低噪声磁驱泵控制方案" /></label><label>你想解决什么问题？<textarea name="project_goal" autoComplete="off" required rows={4} placeholder="可以直接粘贴研发描述，不需要使用专利语言…" /></label><div className="form-two"><label>业务场景<select name="project_scene" autoComplete="off" defaultValue="研发成果保护"><option>研发成果保护</option><option>新产品上市风险排查</option><option>收到审查意见</option><option>已有专利运营</option></select></label><label>期望申请类型<select name="project_type" autoComplete="off" defaultValue="由部门建议"><option>由部门建议</option><option>发明专利</option><option>实用新型</option><option>发明 + 实用新型</option></select></label></div><div className="form-hint"><Sparkles size={16} /><span>建议首站：创新启发部 → 专利挖掘部。后续会根据项目情况调整，而非固定走完整条流程。</span></div><div className="modal-actions"><button type="button" className="btn btn-secondary" onClick={() => setModal(null)}>取消</button><button className="btn btn-primary" type="submit">建立项目并开始<ArrowRight size={16} /></button></div></form>
     </Modal>}
 
-    {modal === 'task' && <Modal title="交办一项任务" subtitle={`${currentDept.name}会在权限范围内读取本任务所需内容，你只需说明目标与限制。`} onClose={() => setModal(null)}><form className="form-stack" onSubmit={e => { e.preventDefault(); setModal(null); notify(`任务已交给${currentDept.name}`); openWorkbench(false) }}><label>任务目标<textarea required rows={4} defaultValue={currentDept.id === 'risk' ? '针对计划在中国上市的 MP-300 新产品开展 FTO 分析，重点排查磁驱控制与密封结构。' : ''} placeholder="例如：上市前排查这款产品在中国的专利风险" /></label><label>希望交付物<select><option>{currentDept.output}</option><option>部门建议的完整交付包</option></select></label><label>需要重点照顾的要求<input placeholder="时间、预算、目标市场或指定专家（选填）" /></label><div className="modal-actions"><button type="button" className="btn btn-secondary" onClick={() => setModal(null)}>取消</button><button className="btn btn-primary" type="submit">确认交办<ArrowRight size={16} /></button></div></form></Modal>}
+    {modal === 'task' && <Modal title="交办一项任务" subtitle={`${currentDept.name}会在权限范围内读取本任务所需内容，你只需说明目标与限制。`} onClose={() => setModal(null)}><form className="form-stack" onSubmit={e => { e.preventDefault(); setModal(null); notify(`任务已交给${currentDept.name}`); openWorkbench(false) }}><label>任务目标<textarea name="task_goal" autoComplete="off" required rows={4} defaultValue={currentDept.id === 'risk' ? '针对计划在中国上市的 MP-300 新产品开展 FTO 分析，重点排查磁驱控制与密封结构。' : ''} placeholder="例如：上市前排查这款产品在中国的专利风险" /></label><label>希望交付物<select name="task_deliverable" autoComplete="off"><option>{currentDept.output}</option><option>部门建议的完整交付包</option></select></label><label>需要重点照顾的要求<input name="task_notes" autoComplete="off" placeholder="时间、预算、目标市场或指定专家（选填）" /></label><div className="modal-actions"><button type="button" className="btn btn-secondary" onClick={() => setModal(null)}>取消</button><button className="btn btn-primary" type="submit">确认交办<ArrowRight size={16} /></button></div></form></Modal>}
 
-    {modal === 'expert' && <Modal title="添加一位专家" subtitle="用职责与工作方式定义专家，不需要配置提示词、模型或工具链。" onClose={() => setModal(null)}><form className="form-stack" onSubmit={e => { e.preventDefault(); const data = new FormData(e.currentTarget); const name = String(data.get('expert') || '自定义专家'); setCustomExperts(v => [...v, name]); setModal(null); notify(`${name}已加入${currentDept.name}`) }}><label>专家名称<input name="expert" required placeholder="例如：泵行业资深技术顾问" /></label><label>加入部门<select defaultValue={currentDept.name}>{departments.map(d => <option key={d.id}>{d.name}</option>)}</select></label><label>他 / 她擅长什么？<textarea required rows={3} placeholder="例如：熟悉磁驱泵结构，擅长判断技术方案能否落地" /></label><label>参与方式<select><option>按需参与，由部门负责人邀请</option><option>每个任务都参与交叉复核</option><option>只在我指定时参与</option></select></label><div className="modal-actions"><button type="button" className="btn btn-secondary" onClick={() => setModal(null)}>取消</button><button className="btn btn-primary" type="submit">加入部门</button></div></form></Modal>}
+    {modal === 'expert' && <Modal title="添加一位专家" subtitle="用职责与工作方式定义专家，不需要配置提示词、模型或工具链。" onClose={() => setModal(null)}><form className="form-stack" onSubmit={e => { e.preventDefault(); const data = new FormData(e.currentTarget); const name = String(data.get('expert') || '自定义专家'); setCustomExperts(v => [...v, name]); setModal(null); notify(`${name}已加入${currentDept.name}`) }}><label>专家名称<input name="expert" autoComplete="off" required placeholder="例如：泵行业资深技术顾问" /></label><label>加入部门<select name="expert_dept" autoComplete="off" defaultValue={currentDept.name}>{departments.map(d => <option key={d.id}>{d.name}</option>)}</select></label><label>他 / 她擅长什么？<textarea name="expert_skill" autoComplete="off" required rows={3} placeholder="例如：熟悉磁驱泵结构，擅长判断技术方案能否落地" /></label><label>参与方式<select name="expert_mode" autoComplete="off"><option>按需参与，由部门负责人邀请</option><option>每个任务都参与交叉复核</option><option>只在我指定时参与</option></select></label><div className="modal-actions"><button type="button" className="btn btn-secondary" onClick={() => setModal(null)}>取消</button><button className="btn btn-primary" type="submit">加入部门</button></div></form></Modal>}
 
     {modal === 'handoff' && <Modal title={oaMode ? role === 'agency' ? '交付客户确认' : '确认 OA 答复策略' : storageMode ? '确认质检与申请文件' : handedOff ? '部门接力记录' : '把项目交给下一部门'} subtitle="按权限继承所需事实、证据、版本与决策；跨组织时只共享交付快照。" onClose={() => setModal(null)}>
       <div className="handoff-visual"><div><Avatar name={oaMode ? '答' : storageMode ? '质' : '交'} /><strong>{oaMode ? 'OA 答复部' : storageMode ? '质量审查部' : '交底书部'}</strong><small>{oaMode ? '答复策略与文本已形成' : storageMode ? '质检版本与核查项已形成' : '技术事实已确认'}</small></div><span><ArrowRight size={21} /></span><div><Avatar name={oaMode ? '陈' : storageMode ? '王' : '申'} human={oaMode || storageMode} /><strong>{oaMode ? role === 'agency' ? '澄明科技 · 陈宇' : '陈宇 · 企业确认' : storageMode ? '王工 · 企业确认' : '申请文件部'}</strong><small>{oaMode ? '确认策略与修改范围' : storageMode ? '确认文本与申请策略' : '设计权利要求与说明书'}</small></div></div>

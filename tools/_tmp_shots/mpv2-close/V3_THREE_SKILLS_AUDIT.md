@@ -121,3 +121,14 @@ Kimi 迁入的 v3 信息架构（三 tab：首页/项目/部门）与权利形�
 - [x] commit，勿 push（见回报 sha）
 
 **改后 Verdict（配色+P0）**：Needs changes → 配色与 P0 已收；剩余 P1（skip-link、部分 chip 文案热区、表单 name 全覆盖）可下轮。
+
+---
+
+## P1 收口（同日续）
+
+- 顶栏「当前项目」→ 最近案下拉可切换；无活跃时空态 + 去项目/新建
+- 表单 name + autocomplete=off（lead/new/task/expert/compose/studio/search）
+- object-filter / studio-tabs 已有 aria-pressed；热区 min-height 40
+- metric/进度 tabular-nums；lead-suggestions 热区≥40；skip-link → #main-content
+- messages 独立 view 删除；navigate('messages') 仍重定向首页消息区
+- 截图：`V3-home-project-picker.png` / `V3-home-switched.png` / `V3-departments.png`
