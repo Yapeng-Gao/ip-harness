@@ -1,5 +1,5 @@
 {
-  "passN": 21,
+  "passN": 31,
   "failN": 0,
   "notes": [
     "PASS L_login_assistant: login→home 助手高亮",
@@ -22,7 +22,17 @@
     "PASS F_prof_empty: 无案专业空态+引导",
     "PASS F_no_fake_roster: 无假编制满屏",
     "PASS G_gap_chip_current: 还缺：权属声明 已齐 3 / 4",
-    "PASS G_dept_vernacular: dept 白话"
+    "PASS G_dept_vernacular: dept 白话",
+    "PASS W_welcome_marketing: 宣传站·登录干活·无三 tab",
+    "PASS W_welcome_bridge_company: 示范缺口桥接公司页",
+    "PASS H_cases_discover: 案盘可发现·全部案子",
+    "PASS H_cases_vernacular: 案盘白话·进行中",
+    "PASS I_case_new_short: 字段短·案名|本单位 / 客户|一句话目标（可选）",
+    "PASS I_case_new_delegate_secondary: 委托次级非第一跳",
+    "PASS J_delegate_not_first_hop: delegate 非登录第一跳",
+    "PASS K_logistics_weak: 期限/账单/成员弱入口+空态壳",
+    "PASS P_pending_soft: pending 软跳工作台 gate",
+    "PASS P_confirm_log_hold: confirm-log 守住不扩"
   ],
   "evidence": {
     "L_login": {
@@ -99,7 +109,81 @@
       "label": "还缺：权属声明 已齐 3 / 4",
       "vernacular": true,
       "no旧词堆砌": true
+    },
+    "W_welcome": {
+      "marketing": true,
+      "loginCta": true,
+      "noTabs": true,
+      "bridgeCompany": true,
+      "noHomeGapBridge": true,
+      "vernacular": true,
+      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 示范案卡 了解更多 登录干活 → 虚拟知产公司 外挂知识产权部 尽快把专利申请办下来——可递交 · 可授权 · 可维持。七部接力交卷；专家出建议稿，你来拍板。 登录干活 → 挂到项目上的知产能力 · 以中国发明专利为主 示范案卡 先看一件怎么从缺口走到可递交。 下面是演示案子。"
+    },
+    "H_cases": {
+      "title": "全部案子",
+      "filter": [
+        "全部",
+        "即将到期",
+        "待确认",
+        "进行中"
+      ],
+      "hasOpen": true,
+      "vernacular": true,
+      "no阻塞": true,
+      "discover": true,
+      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 期限 🔔 助手 项目 专业 澄明科技有限公司 研发负责人工作区 ⛨ 关键节点，人来决策 专家出建议稿 · 你来拍板 案盘 全部案子 一眼看卡点、下一步和期限。点行进本案公司。 开新案子 全部 即将到期 待确认 进行中 案子 / 客户 卡"
+    },
+    "I_case_new": {
+      "labels": [
+        "案名",
+        "本单位 / 客户",
+        "一句话目标（可选）"
+      ],
+      "goalLabel": "一句话目标（可选）",
+      "short": true,
+      "notFirstHop": true,
+      "mainInk": true
+    },
+    "J_delegate": {
+      "sub": "说一句要办什么 → 拆成计划 → 进工作台。登录后先进首页助手；这里是继续委托，不是第一跳。",
+      "label": "你的目标",
+      "notFirst": true,
+      "goalPlain": true
+    },
+    "K_logistics": {
+      "docket.html": {
+        "subOk": true,
+        "emptyExists": true,
+        "emptyCopyOk": true,
+        "ret": true,
+        "noMenuWall": true,
+        "sub": "法定和程序期限都在这。逾期标红；不在此改官方状态。"
+      },
+      "billing.html": {
+        "subOk": true,
+        "emptyExists": true,
+        "emptyCopyOk": true,
+        "ret": true,
+        "noMenuWall": true,
+        "sub": "范围和钱分开看：官费一袋，服务费一袋。"
+      },
+      "members.html": {
+        "subOk": true,
+        "emptyExists": true,
+        "emptyCopyOk": true,
+        "ret": true,
+        "noMenuWall": true,
+        "sub": "谁在、谁能拍板。不是专家花名册。"
+      }
+    },
+    "P_hold": {
+      "pendingUrl": "http://127.0.0.1:8766/dept.html?dept=disclosure&gate=1&role=enterprise",
+      "CL": {
+        "noExpand": true,
+        "isLog": true,
+        "title": "确认记录 · 虚拟知产公司"
+      }
     }
   },
-  "at": "2026-10-26T07:19:18.802Z"
+  "at": "2026-10-26T07:25:44.850Z"
 }

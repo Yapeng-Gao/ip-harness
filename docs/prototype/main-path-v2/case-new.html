@@ -53,19 +53,19 @@
 
   <p class="kicker">开案子</p>
   <h1 class="page-title">开新案子</h1>
-  <p class="page-sub">尽快申下来 · 虚拟知产公司。创建后进公司首页再「去当前部门」。可顺手向知产负责人交办。</p>
+  <p class="page-sub">填短一点就能开。创建后进公司页，再「去当前部门」。目标可选。</p>
   <form class="form-stack" id="new-case" onsubmit="return false;">
-    <label>案名 / 技术主题<input id="case-name" required placeholder="例如：磁驱泵智能控制系统"></label>
-    <label>客户 / 本单位<input placeholder="澄明科技有限公司" value="澄明科技有限公司"></label>
-    <label>可选 · 交办业务目标（持续委托）
-      <textarea id="case-goal" rows="3" placeholder="例如：整理一项研发成果，评估如何保护"></textarea>
+    <label>案名<input id="case-name" required placeholder="例如：磁驱泵智能控制系统"></label>
+    <label>本单位 / 客户<input placeholder="澄明科技有限公司" value="澄明科技有限公司"></label>
+    <label>一句话目标（可选）
+      <textarea id="case-goal" rows="2" placeholder="例如：整理一项研发成果，评估如何保护"></textarea>
     </label>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
       <button class="btn btn-ink" type="submit" id="create-only">创建并进公司 →</button>
       <button class="btn btn-secondary" type="button" id="create-delegate">创建并开始持续委托 →</button>
       <a class="weak-link" href="home.html" data-keep-role>取消</a>
     </div>
-    <p class="primary-cta-note" style="margin-top:10px">主按钮进本案公司；次级才走顾言委托。</p>
+    <p class="primary-cta-note" style="margin-top:10px">主按钮进公司；次级才走委托（委托不是登录后第一跳）。</p>
   </form>
   <script>
   document.addEventListener('DOMContentLoaded', () => {

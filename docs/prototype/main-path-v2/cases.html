@@ -52,10 +52,10 @@
 <main class="content">
 
   <p class="kicker" data-show-role="agency">案盘</p>
-  <p class="kicker hidden" data-show-role="enterprise">我的案子</p>
-  <h1 class="page-title">进行中的案子</h1>
-  <p class="page-sub" data-show-mode="project">跨案清单：卡点、下一步、谁在干、期限红点。点行进本案公司，再进工作台。</p>
-  <p class="page-sub hidden" data-show-mode="assistant">侧栏已收起；案盘保留，便于从这里进案。</p>
+  <p class="kicker hidden" data-show-role="enterprise">案盘</p>
+  <h1 class="page-title">全部案子</h1>
+  <p class="page-sub" data-show-mode="project">一眼看卡点、下一步和期限。点行进本案公司。</p>
+  <p class="page-sub hidden" data-show-mode="assistant">从这里找案子，再进本案公司。</p>
 
   <div class="cases-toolbar">
     <a class="btn btn-ink" href="case-new.html" data-keep-role>开新案子</a>
@@ -63,7 +63,7 @@
       <button type="button" class="filter-chip active" data-filter="all">全部</button>
       <button type="button" class="filter-chip" data-filter="soon">即将到期</button>
       <button type="button" class="filter-chip" data-filter="pending">待确认</button>
-      <button type="button" class="filter-chip" data-filter="active">齐套中</button>
+      <button type="button" class="filter-chip" data-filter="active">进行中</button>
     </div>
   </div>
 
@@ -71,7 +71,7 @@
     <div class="head"><span>案子 / 客户</span><span>卡点</span><span>下一步</span><span>谁在干</span><span>期限</span><span></span></div>
     <a class="row" href="company.html" data-keep-role data-case-id="mp" data-case-status="pending" data-case-deadline="today" style="color:inherit">
       <span><strong>磁驱泵智能控制</strong><br><small style="color:var(--ink-3)">澄明科技 · 交底部</small></span>
-      <span>缺权属声明，阻塞交卷</span>
+      <span>缺权属声明，还不能交出去</span>
       <span>补齐权属并送确认</span>
       <span>权属核验专家在办 · 待你确认</span>
       <span class="deadline-cell"><span class="urgency-dot today" title="今日到期"></span>今天 14:30</span><span class="weak-link">本案公司 →</span>
@@ -108,7 +108,7 @@
 
   <div class="empty-state hidden" data-cases-empty aria-live="polite">
     <strong>还没有案子</strong>
-    <p>开新案子后，会出现在案盘；再从公司首页进工作台。</p>
+    <p>开新案子后会出现在这里；点行进本案公司，再进工作台。</p>
     <a class="btn btn-ink" href="case-new.html" data-keep-role>开案子 →</a>
   </div>
 </main></div></div><script src="app.js"></script></body></html>

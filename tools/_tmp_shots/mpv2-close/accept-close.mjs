@@ -1,5 +1,6 @@
 /**
  * 主路径 v2 收口验收 —— 缺口主 CTA 只落公司 / 登录助手 / 三态 / 右栏 / 专业无案空态
+ * + welcome 宣传桥接公司 / 案盘可发现 / 开案短字段 / delegate 非第一跳 / 后勤弱入口
  */
 import { chromium } from 'playwright'
 import fs from 'node:fs'
@@ -298,6 +299,159 @@ async function main() {
     if (chip.vernacular && chip.no旧词堆砌) pass('G_dept_vernacular', 'dept 白话')
     else fail('G_dept_vernacular', JSON.stringify(chip))
     await shot(page, 'G-dept-gap-chip.png')
+    await page.close()
+  }
+
+  // ---- W: welcome 宣传在登录前；缺口桥接指向公司（非首页作业） ----
+  {
+    const page = await ctx.newPage()
+    await page.goto(`${BASE}/welcome.html`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(300)
+    const W = await page.evaluate(() => {
+      const t = document.body.innerText
+      const marketing = document.body.classList.contains('marketing-site')
+      const loginCta = [...document.querySelectorAll('a[href*="login"]')].some(a => /登录/.test(a.textContent || ''))
+      const noTabs = !document.querySelector('.mode-switch')
+      const bridgeCompany = /登录后进公司页补同一缺口/.test(t)
+      const noHomeGapBridge = !/登录后同缺口在首页|同一缺口会出现在首页/.test(t)
+      const vernacular = /还不能交出去/.test(t)
+      return { marketing, loginCta, noTabs, bridgeCompany, noHomeGapBridge, vernacular, head: t.slice(0, 180).replace(/\s+/g, ' ') }
+    })
+    evidence.W_welcome = W
+    if (W.marketing && W.loginCta && W.noTabs) pass('W_welcome_marketing', '宣传站·登录干活·无三 tab')
+    else fail('W_welcome_marketing', JSON.stringify(W))
+    if (W.bridgeCompany && W.noHomeGapBridge) pass('W_welcome_bridge_company', '示范缺口桥接公司页')
+    else fail('W_welcome_bridge_company', JSON.stringify(W))
+    await shot(page, 'W-welcome.png')
+    await page.close()
+  }
+
+  // ---- H: 案盘可发现 + 白话 ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'project' })
+    await page.goto(`${BASE}/cases.html?role=enterprise&case=c1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(400)
+    const H = await page.evaluate(() => {
+      const t = document.body.innerText
+      const title = document.querySelector('.page-title')?.textContent?.trim() || ''
+      const filter = [...document.querySelectorAll('[data-cases-filter] .filter-chip')].map(b => b.textContent.trim())
+      const hasOpen = !!document.querySelector('a.btn-ink[href*="case-new"]')
+      const vernacular = /还不能交出去/.test(t)
+      const no阻塞 = !/阻塞交卷/.test(t)
+      const discover = /全部案子|案盘|卡点/.test(t) && !!document.querySelector('[data-cases-list] .row, [data-cases-list] a.row')
+      return { title, filter, hasOpen, vernacular, no阻塞, discover, head: t.slice(0, 160).replace(/\s+/g, ' ') }
+    })
+    evidence.H_cases = H
+    if (H.discover && H.hasOpen) pass('H_cases_discover', `案盘可发现·${H.title}`)
+    else fail('H_cases_discover', JSON.stringify(H))
+    if (H.vernacular && H.no阻塞 && H.filter.includes('进行中')) pass('H_cases_vernacular', '案盘白话·进行中')
+    else fail('H_cases_vernacular', JSON.stringify(H))
+    await shot(page, 'H-cases.png')
+    await page.close()
+  }
+
+  // ---- I: 开案字段短 ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: false, active: '', mode: 'assistant' })
+    await page.goto(`${BASE}/case-new.html?role=enterprise&nocase=1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(300)
+    const I = await page.evaluate(() => {
+      const labels = [...document.querySelectorAll('#new-case label')].map(l => (l.childNodes[0]?.textContent || l.textContent || '').trim().split('\n')[0].trim())
+      const goalLabel = labels.find(x => /目标/.test(x)) || ''
+      const short = labels.some(x => /^案名$/.test(x)) && /可选/.test(goalLabel)
+      const note = document.querySelector('.primary-cta-note')?.textContent || ''
+      const notFirstHop = /不是登录后第一跳|次级才走委托/.test(note)
+      const mainInk = [...document.querySelectorAll('#new-case .btn-ink')].some(b => /进公司/.test(b.textContent || ''))
+      return { labels, goalLabel, short, notFirstHop, mainInk }
+    })
+    evidence.I_case_new = I
+    if (I.short && I.mainInk) pass('I_case_new_short', `字段短·${I.labels.join('|')}`)
+    else fail('I_case_new_short', JSON.stringify(I))
+    if (I.notFirstHop) pass('I_case_new_delegate_secondary', '委托次级非第一跳')
+    else fail('I_case_new_delegate_secondary', JSON.stringify(I))
+    await shot(page, 'I-case-new.png')
+    await page.close()
+  }
+
+  // ---- J: delegate 不替代登录后第一跳 ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'assistant' })
+    await page.goto(`${BASE}/delegate.html?role=enterprise&case=c1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(300)
+    const J = await page.evaluate(() => {
+      const sub = document.querySelector('.page-sub')?.textContent || ''
+      const label = document.querySelector('label')?.childNodes[0]?.textContent?.trim() || ''
+      const notFirst = /不是第一跳|先进首页助手/.test(sub)
+      const goalPlain = /你的目标/.test(label) || /你的目标/.test(document.body.innerText)
+      return { sub: sub.slice(0, 120), label, notFirst, goalPlain }
+    })
+    evidence.J_delegate = J
+    if (J.notFirst && J.goalPlain) pass('J_delegate_not_first_hop', 'delegate 非登录第一跳')
+    else fail('J_delegate_not_first_hop', JSON.stringify(J))
+    await shot(page, 'J-delegate.png')
+    await page.close()
+  }
+
+  // ---- K: 后勤弱入口 · 空态诚实（期限/账单/成员） ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'project' })
+    const pages = [
+      { path: 'docket.html', emptySel: '[data-docket-empty]', expectSub: /期限|逾期/, emptyText: /还没有期限|暂无期限/ },
+      { path: 'billing.html', emptySel: '[data-billing-empty]', expectSub: /官费|服务费|口袋/, emptyText: /还没有报价|尚未报价/ },
+      { path: 'members.html', emptySel: '[data-members-empty]', expectSub: /拍板|成员|权限/, emptyText: /只有你一人|只有创建者/ },
+    ]
+    const K = {}
+    for (const spec of pages) {
+      await page.goto(`${BASE}/${spec.path}?role=enterprise&case=c1`, { waitUntil: 'networkidle', timeout: 30000 })
+      await page.waitForTimeout(300)
+      K[spec.path] = await page.evaluate(({ emptySel, expectSubSource, emptyTextSource }) => {
+        const expectSub = new RegExp(expectSubSource)
+        const emptyText = new RegExp(emptyTextSource)
+        const sub = document.querySelector('.page-sub')?.textContent || ''
+        const empty = document.querySelector(emptySel)
+        const emptyExists = !!empty
+        const ret = !!document.querySelector('[data-logistics-return], .logistics-return')
+        const noMenuWall = !document.querySelector('.nav-menu-wall, .mega-menu') && document.querySelectorAll('.mode-switch button[data-mode]').length <= 3
+        const t = (empty && empty.innerText) || ''
+        return { subOk: expectSub.test(sub), emptyExists, emptyCopyOk: !t || emptyText.test(t) || empty.classList.contains('hidden'), ret, noMenuWall, sub: sub.slice(0, 80) }
+      }, { emptySel: spec.emptySel, expectSubSource: spec.expectSub.source, emptyTextSource: spec.emptyText.source })
+    }
+    evidence.K_logistics = K
+    const allOk = pages.every(s => {
+      const r = K[s.path]
+      return r && r.subOk && r.emptyExists && r.ret && r.noMenuWall
+    })
+    if (allOk) pass('K_logistics_weak', '期限/账单/成员弱入口+空态壳')
+    else fail('K_logistics_weak', JSON.stringify(K))
+    await shot(page, 'K-logistics-members.png')
+    await page.close()
+  }
+
+  // ---- P: pending/confirm-log 守住不扩 ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'project' })
+    await page.goto(`${BASE}/pending.html?role=enterprise&dept=disclosure`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+    await page.waitForTimeout(500)
+    const Purl = page.url()
+    const pendingOk = /dept\.html/.test(Purl) && /gate=1/.test(Purl)
+    if (pendingOk) pass('P_pending_soft', 'pending 软跳工作台 gate')
+    else fail('P_pending_soft', Purl)
+    await page.goto(`${BASE}/confirm-log.html?role=enterprise&case=c1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(300)
+    const CL = await page.evaluate(() => {
+      const t = document.body.innerText
+      const noExpand = !/菜单墙|七部货架|开案子表单/.test(t)
+      const isLog = /确认|记录|留痕/.test(t)
+      return { noExpand, isLog, title: document.title }
+    })
+    evidence.P_hold = { pendingUrl: Purl, CL }
+    if (CL.isLog && CL.noExpand) pass('P_confirm_log_hold', 'confirm-log 守住不扩')
+    else fail('P_confirm_log_hold', JSON.stringify(CL))
     await page.close()
   }
 
