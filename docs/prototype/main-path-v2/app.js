@@ -1011,7 +1011,8 @@
 
   
   function wireWorkbenchInform() {
-    const box = document.querySelector('[data-workbench-inform]');
+    // 三必答只填右栏；禁工作台顶墙 / 绿快照横幅
+    const box = document.querySelector('.rail-triad[data-workbench-inform], [data-workbench-inform]');
     if (!box) return;
     const cur = activeCase() || {};
     const b = box.querySelector('[data-wb-block]');
@@ -1020,13 +1021,11 @@
     if (b) b.textContent = cur.block || '本站进行中';
     if (n) n.textContent = cur.next || '推进本站交卷';
     if (w) w.textContent = cur.who || ((cur.deptName || '本部门') + '在办');
-    // show dept snapshot one-liner if stored
     const snap = getSnapshot && getSnapshot();
-    const slot = document.querySelector('[data-dept-snapshot]');
-    if (slot && snap && snap.fact) {
-      slot.classList.remove('hidden');
-      const line = slot.querySelector('[data-snap-one-liner]');
-      if (line) line.textContent = (snap.deptName || snap.dept || '本站') + '已确认：' + (snap.fact || snap.deliverable || '见确认记录');
+    const link = document.querySelector('[data-dept-snapshot-link]');
+    if (link && snap && (snap.fact || snap.deliverable)) {
+      link.textContent = '交付快照 · ' + ((snap.deptName || '本站') + '已确认') + ' →';
+      link.setAttribute('title', snap.fact || snap.deliverable || '');
     }
   }
 
@@ -1432,7 +1431,7 @@
     }
     const short = goal.length > 48 ? goal.slice(0, 48) + '…' : goal;
     if (banner) {
-      banner.hidden = false;
+      banner.hidden = true; // 禁顶墙；不展示当前目标大条
       const label = banner.querySelector('.dept-goal-label');
       if (label) label.textContent = '当前目标';
       const strong = banner.querySelector('[data-goal-context]');
@@ -1448,20 +1447,15 @@
 
   /** 交底→查新等接力落地：页头一句 + 中栏交卷物已展开（非空转） */
   function applyRelayHandoff(dept) {
-    const banner = document.getElementById('dept-goal-banner');
-    if (!banner || !dept) return;
+    if (!dept) return;
     const d = getDelegation() || {};
     const want = qs('relay') === '1' || (d.step === 'relay' && d.next === dept.id);
     if (!want) return;
     const last = d.lastDept && DEPTS[d.lastDept] ? DEPTS[d.lastDept] : null;
-    const label = banner.querySelector('.dept-goal-label');
-    const strong = banner.querySelector('[data-goal-context]');
-    banner.hidden = false;
-    if (label) label.textContent = '接力接手';
-    if (strong) {
-      strong.textContent = (last ? last.name + '已通过 · ' : '') +
-        '本台中栏已打开「' + dept.deliverable + '」';
-    }
+    // 禁顶墙：接力提示用 toast，不展开工作台顶大条
+    try {
+      toast((last ? last.name + '已通过 · ' : '') + '本台中栏已打开「' + dept.deliverable + '」');
+    } catch (_) {}
     const editor = document.getElementById('dept-editor');
     if (editor) {
       try { editor.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
@@ -2337,7 +2331,7 @@
         }
         if (card) card.classList.add('hidden');
         if (snap) {
-          snap.classList.add('show');
+          /* 禁绿横幅 */ try { wireWorkbenchInform(); } catch (_) {} // was snap.classList.add('show')
           const nextName = dept.next && DEPTS[dept.next] ? DEPTS[dept.next].name : '本案收尾';
           snap.querySelector('[data-snap-deliverable]').textContent = dept.deliverable;
           snap.querySelector('[data-snap-fact]').textContent = dept.pendingFact;

@@ -3911,12 +3911,25 @@ html[data-mode="assistant"] [data-company-fold="depts"] { display: none; }
 .company-node-meta dd { margin: 0; font-size: 13px; font-weight: 600; }
 .company-node-status { margin: 0; font-size: 13px; color: var(--ink-2); }
 
-/* 工作台三必答 */
-.workbench-inform {
-  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 16px;
-  margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper);
+/* 三必答：仅右栏紧凑；禁工作台顶墙 */
+.workbench-inform:not(.rail-triad) { display: none !important; }
+.rail-triad {
+  display: grid; gap: 4px; margin: 0 0 8px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--paper);
+  font-size: 12px; line-height: 1.35;
 }
-.workbench-inform .case-inform-list { margin: 0; }
-.workbench-inform-hint { margin: 0; font-size: 12px; color: var(--ink-3); }
+.rail-triad-row { margin: 0; color: var(--ink-2); }
+.rail-triad-row .case-inform-k { display: inline-block; min-width: 2.5em; color: var(--ink-3); font-size: 11px; }
+.rail-triad-row strong { font-weight: 600; color: var(--ink); font-size: 12px; }
+.rail-audit-link { margin: 6px 0 0; font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.rail-audit-hint { color: var(--ink-3); font-size: 11px; }
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+/* 禁主舞台绿快照横幅 */
+.content-workbench > .snapshot-card,
+.content-workbench > .success-snapshot,
+.content-workbench > .workbench-inform { display: none !important; }
 
 .home-visit-tip { margin: 0 0 12px; font-size: 13px; color: var(--ink-2); }

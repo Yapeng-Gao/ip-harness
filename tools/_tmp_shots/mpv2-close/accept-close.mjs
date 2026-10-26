@@ -3,7 +3,7 @@
  * + welcome 宣传桥接公司 / 案盘可发现 / 开案短字段 / delegate 非第一跳 / 后勤弱入口
  * + 三 tab 关系 / 当前部露出 / 让该部开工
  * + 专业添加专家轻配
- * + 当前节点卡 / 三必答 / home 分层
+ * + 当前节点卡 / 右栏三必答（禁顶墙） / home 分层
  */
 import { chromium } from 'playwright'
 import fs from 'node:fs'
@@ -346,19 +346,29 @@ async function main() {
     await page.goto(`${BASE}/dept.html?role=enterprise&case=c1&dept=disclosure`, { waitUntil: 'networkidle', timeout: 30000 })
     await page.waitForTimeout(400)
     const W = await page.evaluate(() => {
-      const box = document.querySelector('[data-workbench-inform]')
-      const t = box ? box.innerText : ''
-      const audit = /确认记录/.test(document.body.innerText)
+      const topWall = document.querySelector('.content-workbench > .workbench-inform, .content-workbench > .dept-goal-banner, .content-workbench > .snapshot-card, .content-workbench > .success-snapshot')
+      const topVisible = !!(topWall && topWall.offsetParent !== null && getComputedStyle(topWall).display !== 'none')
+      const rail = document.querySelector('.chat-pane .rail-triad[data-workbench-inform], .chat-pane [data-workbench-inform]')
+      const railText = rail ? rail.innerText : ''
+      const midDash = document.querySelector('.editor-pane .case-inform-list, .editor-pane .workbench-inform, .editor-pane .rail-triad')
+      const greenBanner = [...document.querySelectorAll('.success-snapshot.show, .content-workbench > .snapshot-card:not([hidden])')]
+        .some(el => el.offsetParent !== null && getComputedStyle(el).display !== 'none')
+      const auditWeak = !!document.querySelector('.chat-pane [data-dept-snapshot-link], .chat-pane a[href*="confirm-log"]')
       return {
-        has: !!box,
-        triad: /卡点/.test(t) && /下一步/.test(t) && /谁在干/.test(t),
-        audit,
-        head: (t || '').slice(0, 120).replace(/\s+/g, ' '),
+        topVisible,
+        railHas: !!rail,
+        triad: /卡点/.test(railText) && /下一步/.test(railText) && /谁在干/.test(railText),
+        midDash: !!midDash,
+        greenBanner,
+        auditWeak,
+        head: (railText || '').slice(0, 120).replace(/\s+/g, ' '),
       }
     })
     evidence.V_wb = W
-    if (W.has && W.triad) pass('V_workbench_triad', '工作台三必答')
+    if (!W.topVisible && W.railHas && W.triad && !W.midDash && !W.greenBanner && W.auditWeak)
+      pass('V_workbench_triad', '右栏三必答·无顶墙/无绿横幅')
     else fail('V_workbench_triad', JSON.stringify(W))
+    await shot(page, 'V-workbench-rail-triad.png')
     await page.close()
   }
   {

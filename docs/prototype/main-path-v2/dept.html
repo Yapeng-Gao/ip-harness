@@ -92,24 +92,7 @@
 </aside>
 
 <main class="content content-workbench">
-  <div class="dept-goal-banner" id="dept-goal-banner" hidden>
-    <span class="dept-goal-label">当前目标</span>
-    <strong data-goal-context>—</strong>
-  </div>
-  <!-- 九要素压成三必答：卡点 / 下一步 / 谁在干（不新开确认页） -->
-  <section class="workbench-inform" data-workbench-inform aria-label="本站必答">
-    <ul class="case-inform-list">
-      <li><span class="case-inform-k">卡点</span><strong data-wb-block>缺权属声明，还不能交出去</strong></li>
-      <li><span class="case-inform-k">下一步</span><strong data-wb-next>补齐权属并送确认</strong></li>
-      <li><span class="case-inform-k">谁在干</span><strong data-wb-who>权属核验专家在办 · 待你确认</strong></li>
-    </ul>
-    <p class="workbench-inform-hint">细则见右栏契约；确认后见交付快照 · <a class="weak-link" href="confirm-log.html" data-keep-role>确认记录</a></p>
-  </section>
-  <div class="snapshot-card hidden" data-success-snapshot data-dept-snapshot aria-label="本站交付快照">
-    <h3>交付快照</h3>
-    <p data-snap-one-liner>确认通过后这里会出现本站交卷摘要一句。</p>
-    <a class="weak-link" href="confirm-log.html" data-keep-role>确认记录 / 历史 →</a>
-  </div>
+  <!-- fix-both / L1–L5：禁工作台顶信息墙与绿快照横幅；三必答落右栏 -->
   <!-- Cursor 三栏骨架：左目录 / 中可编辑产物 / 右对话 -->
   <div class="workbench workbench-cursor" data-workbench data-tier-workbench>
 
@@ -220,6 +203,12 @@
               <span class="gap-chip-meta">已齐 <span class="tabular" data-check-count>0 / 4</span></span>
             </button>
           </div>
+          <!-- 三必答：右栏紧凑（缺项 chip / 闸叙事旁）；禁工作台顶墙 -->
+          <section class="rail-triad" data-workbench-inform aria-label="卡点下一步谁在干">
+            <p class="rail-triad-row"><span class="case-inform-k">卡点</span> <strong data-wb-block>缺权属声明，还不能交出去</strong></p>
+            <p class="rail-triad-row"><span class="case-inform-k">下一步</span> <strong data-wb-next>补齐权属并送确认</strong></p>
+            <p class="rail-triad-row"><span class="case-inform-k">谁在干</span> <strong data-wb-who>权属核验专家在办 · 待你确认</strong></p>
+          </section>
           <div class="rail-chat-head">
             <div class="rail-chat-who">
               <strong data-chat-peer-name>本部门负责人</strong>
@@ -254,6 +243,16 @@
           </dl>
         </details>
         <a class="guyan-thin-link" href="delegate.html" data-keep-role>顾言 · 跨部 / 改目标</a>
+        <p class="rail-audit-link">
+          <a class="weak-link" href="confirm-log.html" data-keep-role data-dept-snapshot-link>确认记录 / 交付快照 →</a>
+          <span class="rail-audit-hint">只读查阅 · 不抢右栏闸</span>
+        </p>
+        <!-- 隐藏锚：通过后只更新弱链文案，不弹绿横幅 -->
+        <span class="visually-hidden" data-success-snapshot data-dept-snapshot hidden aria-hidden="true">
+          <span data-snap-one-liner></span>
+          <span data-snap-deliverable></span>
+          <span data-snap-fact></span>
+        </span>
 
         <!-- 缺项抽屉/sheet：清单+交卷/闸；勿放发送下；开时勿长期挤死消息流 -->
         <div class="gap-drawer" id="gap-drawer" data-gap-panel hidden>
