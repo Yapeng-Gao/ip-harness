@@ -52,11 +52,19 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 
 .app-shell { min-height: 100dvh; background: var(--paper); color: var(--ink); }
 .topbar { height: 60px; display: flex; align-items: center; border-bottom: 1px solid var(--line); background: var(--paper); position: relative; z-index: 30; }
-.brand { width: 232px; flex: 0 0 232px; height: 100%; display: flex; align-items: center; gap: 10px; padding: 0 18px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; }
+.brand { width: 232px; flex: 0 0 232px; height: 100%; display: flex; align-items: center; gap: 10px; padding: 0 18px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+.brand-wordmark { gap: 0; }
+.brand-lockup { display: inline-flex; align-items: flex-start; gap: 3px; line-height: 1; color: inherit; }
+.brand-novada { font-size: 18px; font-weight: 700; letter-spacing: -.03em; }
+.brand-team { font-size: 10px; font-weight: 700; letter-spacing: -.01em; margin-top: 1px; line-height: 1; }
 .brand-mark { width: 30px; height: 30px; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 17px; font-weight: 600; border-radius: 6px 6px 6px 1px; }
 .brand-copy { display: flex; flex-direction: column; line-height: 1.05; }
 .brand-copy strong { font-size: 15px; letter-spacing: .04em; }
 .brand-copy small { font-size: 8px; letter-spacing: .15em; color: var(--ink-3); margin-top: 5px; font-weight: 600; }
+.brand-footer { display: flex; flex-direction: column; gap: 8px; }
+.brand-footer .brand-lockup { color: var(--ink); }
+.brand-footer .brand-novada { font-size: 16px; }
+.brand-footer .brand-team { font-size: 9px; }
 .topbar-context { display: flex; align-items: center; gap: 10px; padding-left: 20px; min-width: 0; }
 .context-label { color: var(--ink-3); font-size: 12px; white-space: nowrap; }
 .context-picker { position: relative; min-width: 0; }
@@ -1043,7 +1051,10 @@ kbd { font-family: inherit; font-size: 10px; border: 1px solid var(--line); bord
 .marketing-site .btn-primary:hover, .login-page .btn-primary:hover { background: var(--site-orange-dark); border-color: var(--site-orange-dark); color: #fff; }
 .marketing-site .btn-ink, .login-page .btn-ink { background: var(--site-forest); color: var(--site-paper); border-color: var(--site-forest); }
 .site-nav { height: 82px; max-width: 1320px; margin: 0 auto; padding: 0 34px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
-.site-brand { width: auto; flex: 0 0 auto; border: 0; padding: 0; color: var(--site-forest); }
+.site-brand { width: auto; flex: 0 0 auto; border: 0; padding: 0; color: var(--site-forest); border-right: 0; }
+.site-brand .brand-lockup { color: var(--site-forest); }
+.site-brand .brand-novada { font-size: 20px; }
+.site-brand .brand-team { font-size: 11px; }
 .site-brand .brand-mark { background: var(--site-forest); color: var(--site-paper); }
 .site-nav nav { display: flex; align-items: center; gap: 30px; margin-left: auto; }
 .site-nav nav button, .site-login { border: 0; background: transparent; color: var(--site-forest); font-size: 13px; padding: 10px 0; }

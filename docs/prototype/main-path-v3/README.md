@@ -1,6 +1,7 @@
 # main-path-v3 · Kimi 专利生命周期整包原型（对照实验）
 
-**产品理念**：虚拟知产公司 · 尽快把专利申下来（权利形成主线）  
+**产品名**：Novada Team  
+**产品理念**：尽快把专利申下来 · 专业接力组织（虚拟知产公司仅作轻品类）  
 **路径**：`docs/prototype/main-path-v3/`  
 **来源**：`~/Downloads/Kimi_Agent_专利生命周期评估/app`（整包迁入，保留 Kimi 页面结构与主线叙事）  
 **对照**：`docs/prototype/main-path-v2/` = 咱们现行主路径（纸感壳 · 默认验收 @8766）  
