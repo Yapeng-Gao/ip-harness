@@ -1,0 +1,418 @@
+{
+  "at": "2026-10-26T07:37:57.244Z",
+  "findings": [
+    {
+      "sev": "warn",
+      "where": "03-home-assistant",
+      "msg": "h1 数量=2"
+    },
+    {
+      "sev": "warn",
+      "where": "04-company-gap",
+      "msg": "顶栏高亮=assistant 期望=project",
+      "extra": [
+        "assistant"
+      ]
+    },
+    {
+      "sev": "fail",
+      "where": "04-company-gap",
+      "msg": "残留旧词",
+      "extra": [
+        "阻塞交卷"
+      ]
+    },
+    {
+      "sev": "warn",
+      "where": "06-cases-noactive",
+      "msg": "顶栏高亮=assistant 期望=project",
+      "extra": [
+        "assistant"
+      ]
+    },
+    {
+      "sev": "warn",
+      "where": "07-case-new",
+      "msg": "顶栏高亮=assistant 期望=project",
+      "extra": [
+        "assistant"
+      ]
+    },
+    {
+      "sev": "fail",
+      "where": "08-professional",
+      "msg": "残留旧词",
+      "extra": [
+        "阻塞交卷"
+      ]
+    }
+  ],
+  "fail": [
+    {
+      "sev": "fail",
+      "where": "04-company-gap",
+      "msg": "残留旧词",
+      "extra": [
+        "阻塞交卷"
+      ]
+    },
+    {
+      "sev": "fail",
+      "where": "08-professional",
+      "msg": "残留旧词",
+      "extra": [
+        "阻塞交卷"
+      ]
+    }
+  ],
+  "warn": [
+    {
+      "sev": "warn",
+      "where": "03-home-assistant",
+      "msg": "h1 数量=2"
+    },
+    {
+      "sev": "warn",
+      "where": "04-company-gap",
+      "msg": "顶栏高亮=assistant 期望=project",
+      "extra": [
+        "assistant"
+      ]
+    },
+    {
+      "sev": "warn",
+      "where": "06-cases-noactive",
+      "msg": "顶栏高亮=assistant 期望=project",
+      "extra": [
+        "assistant"
+      ]
+    },
+    {
+      "sev": "warn",
+      "where": "07-case-new",
+      "msg": "顶栏高亮=assistant 期望=project",
+      "extra": [
+        "assistant"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "where": "01-welcome",
+      "url": "http://127.0.0.1:8766/welcome.html",
+      "modeActive": [],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "",
+      "title": "虚拟知产公司"
+    },
+    {
+      "where": "02-login",
+      "url": "http://127.0.0.1:8766/login.html",
+      "modeActive": [],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "",
+      "title": "登录 · 虚拟知产公司"
+    },
+    {
+      "where": "03-home-assistant",
+      "url": "http://127.0.0.1:8766/home.html?role=enterprise",
+      "modeActive": [
+        "assistant"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [],
+      "badBtns": 0,
+      "h1n": 2,
+      "pageSub": "委托、进行中目标与待接力。点条目进部门干活；进公司或开案子用弱链。",
+      "title": "早上好，陈宇。"
+    },
+    {
+      "where": "04-company-gap",
+      "url": "http://127.0.0.1:8766/company.html?role=enterprise",
+      "modeActive": [
+        "assistant"
+      ],
+      "gapLike": [
+        "卡点 · 去当前部门 →"
+      ],
+      "jargonHits": [
+        "阻塞交卷"
+      ],
+      "deptsOpen": false,
+      "needItems": 1,
+      "empties": [],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "委托、进行中目标与待接力。七部地图可唤回。",
+      "title": "磁驱泵智能控制系统"
+    },
+    {
+      "where": "05-dept-right",
+      "url": "http://127.0.0.1:8766/dept.html?dept=disclosure&role=enterprise",
+      "modeActive": [
+        "project"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "",
+      "title": "工作台 · 虚拟知产公司",
+      "right": {
+        "hasGate": true,
+        "hasComposer": false
+      }
+    },
+    {
+      "where": "06-cases-noactive",
+      "url": "http://127.0.0.1:8766/cases.html?role=enterprise",
+      "modeActive": [
+        "assistant"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [
+        {
+          "sel": "empty-state hidden",
+          "hidden": true,
+          "text": " 还没有案子 开新案子后会出现在这里；点行进本案公司，再进工作台。 开案子 → "
+        }
+      ],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "从这里找案子，再进本案公司。",
+      "title": "全部案子"
+    },
+    {
+      "where": "07-case-new",
+      "url": "http://127.0.0.1:8766/case-new.html?role=enterprise",
+      "modeActive": [
+        "assistant"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "填短一点就能开。创建后进公司页，再「去当前部门」。目标可选。",
+      "title": "开新案子"
+    },
+    {
+      "where": "08-professional",
+      "url": "http://127.0.0.1:8766/professional.html?role=enterprise&case=c1",
+      "modeActive": [
+        "studio"
+      ],
+      "gapLike": [],
+      "jargonHits": [
+        "阻塞交卷"
+      ],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [
+        {
+          "sel": "prof-empty",
+          "hidden": true,
+          "text": " 各部门能干什么 · 虚拟知产公司 虚 虚拟知产公司VIRTUAL IP COMPANY 尽快把专利申下来 "
+        },
+        {
+          "sel": "prof-empty",
+          "hidden": true,
+          "text": " 专业须带案 先打开或开一个案子 没有活跃案时，不展示各部门编制墙。选好案子后再看在办 / 缺口。 去案盘选案 →"
+        }
+      ],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "各部门编制与职责一眼看清。每卡可见当前在办/缺口，点行或「去该部干活」进工作台。岗名 / 职责 / 占位可轻改；技能与工具默认收折。",
+      "title": "各部门能干什么"
+    },
+    {
+      "where": "09-professional-empty",
+      "url": "http://127.0.0.1:8766/professional.html?role=enterprise&nocase=1",
+      "modeActive": [
+        "studio"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [
+        {
+          "sel": "prof-empty",
+          "hidden": false,
+          "text": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 未选案子 ▾ 专业 期限 🔔 助手 项目 专业 各部门能干什么 本页不进作业台 ← "
+        },
+        {
+          "sel": "prof-empty",
+          "hidden": false,
+          "text": "专业须带案 先打开或开一个案子 没有活跃案时，不展示各部门编制墙。选好案子后再看在办 / 缺口。 去案盘选案 → 开新案子"
+        }
+      ],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "专业须先有案子。还没有活跃案时，这里不展示假编制。",
+      "title": "各部门能干什么"
+    },
+    {
+      "where": "10-docket",
+      "url": "http://127.0.0.1:8766/docket.html?role=enterprise&case=c1",
+      "modeActive": [
+        "project"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [
+        {
+          "sel": "empty-state hidden",
+          "hidden": true,
+          "text": " 本案还没有期限 有法定或程序节点后会出现在这里。可先回公司看当前站。 回公司首页 → "
+        }
+      ],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "法定和程序期限都在这。逾期标红；不在此改官方状态。",
+      "title": "本案期限"
+    },
+    {
+      "where": "11-billing",
+      "url": "http://127.0.0.1:8766/billing.html?role=enterprise&case=c1",
+      "modeActive": [
+        "project"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [
+        {
+          "sel": "empty-state hidden",
+          "hidden": true,
+          "text": " 还没有报价 立项确认后，这里会出现委托摘要和分口袋金额。 去立项部 → 回公司首页 "
+        }
+      ],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "范围和钱分开看：官费一袋，服务费一袋。",
+      "title": "委托与费用"
+    },
+    {
+      "where": "12-members",
+      "url": "http://127.0.0.1:8766/members.html?role=enterprise&case=c1",
+      "modeActive": [
+        "project"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [
+        {
+          "sel": "empty-state hidden",
+          "hidden": true,
+          "text": " 目前只有你一人 邀请发明人、代理人或授权人后，才能把拍板权分对人。 邀请成员 "
+        }
+      ],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "谁在、谁能拍板。不是专家花名册。",
+      "title": "谁能进公司、谁能确认"
+    },
+    {
+      "where": "13-cases-filled",
+      "url": "http://127.0.0.1:8766/cases.html?role=enterprise&case=c1",
+      "modeActive": [
+        "project"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [
+        {
+          "sel": "empty-state hidden",
+          "hidden": true,
+          "text": " 还没有案子 开新案子后会出现在这里；点行进本案公司，再进工作台。 开案子 → "
+        }
+      ],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "一眼看卡点、下一步和期限。点行进本案公司。",
+      "title": "全部案子"
+    },
+    {
+      "where": "14-dept-disclosure",
+      "url": "http://127.0.0.1:8766/dept.html?role=enterprise&case=c1&dept=disclosure",
+      "modeActive": [
+        "project"
+      ],
+      "gapLike": [],
+      "jargonHits": [],
+      "deptsOpen": null,
+      "needItems": null,
+      "empties": [],
+      "badBtns": 0,
+      "h1n": 1,
+      "pageSub": "",
+      "title": "工作台 · 虚拟知产公司"
+    },
+    {
+      "where": "15-logistics-entry",
+      "hasLog": [
+        {
+          "href": "docket.html",
+          "text": "期限",
+          "inAvatar": false
+        },
+        {
+          "href": "docket.html",
+          "text": "期限",
+          "inAvatar": true
+        },
+        {
+          "href": "billing.html",
+          "text": "账单",
+          "inAvatar": true
+        },
+        {
+          "href": "members.html",
+          "text": "成员",
+          "inAvatar": true
+        }
+      ]
+    }
+  ],
+  "postFix": {
+    "fixed": [
+      "阻塞交卷→还不能交出去 (company.html + app.js CASES.block)",
+      "applyRoleUI aria-hidden on data-show-role/hide-role (home dual h1)"
+    ],
+    "falsePositives": [
+      "顶栏高亮 assistant：flow-walk addInitScript seed 在每次导航重写 mpv2-mode，非产品 bug"
+    ],
+    "acceptClose": "31/31"
+  }
+}

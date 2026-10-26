@@ -484,7 +484,7 @@
   /* Demo case catalog — 项目≈案；告知卡点/下一步/谁在干 */
   const CASES = [
     { id: 'mp', name: '磁驱泵智能控制系统', short: '磁驱泵智能控制', glyph: 'MP', dept: 'disclosure', deptName: '交底部',
-      block: '缺权属声明，阻塞交卷', next: '补齐权属并送确认', who: '权属核验专家在办 · 待你确认',
+      block: '缺权属声明，还不能交出去', next: '补齐权属并送确认', who: '权属核验专家在办 · 待你确认',
       status: 'pending', deadline: 'today', client: '澄明科技', progress: '距可递交还 5 站' },
     { id: 'ms', name: '低能耗膜分离工艺', short: '低能耗膜分离工艺', glyph: 'MS', dept: 'oa', deptName: '审查答复',
       block: '企业确认意见未齐', next: '确认答复策略', who: '林岚 · 代理师等复核',
@@ -625,10 +625,16 @@
       btn.classList.toggle('active', btn.dataset.role === r);
     });
     document.querySelectorAll('[data-show-role]').forEach(el => {
-      el.classList.toggle('hidden', el.dataset.showRole !== r);
+      const hide = el.dataset.showRole !== r;
+      el.classList.toggle('hidden', hide);
+      if (hide) el.setAttribute('aria-hidden', 'true');
+      else el.removeAttribute('aria-hidden');
     });
     document.querySelectorAll('[data-hide-role]').forEach(el => {
-      el.classList.toggle('hidden', el.dataset.hideRole === r);
+      const hide = el.dataset.hideRole === r;
+      el.classList.toggle('hidden', hide);
+      if (hide) el.setAttribute('aria-hidden', 'true');
+      else el.removeAttribute('aria-hidden');
     });
     document.querySelectorAll('[data-workbench]').forEach(root => {
       root.dataset.mode = r; // legacy alias
