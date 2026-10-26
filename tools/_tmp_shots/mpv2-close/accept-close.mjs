@@ -2,6 +2,7 @@
  * 主路径 v2 收口验收 —— 缺口主 CTA 只落公司 / 登录助手 / 三态 / 右栏 / 专业无案空态
  * + welcome 宣传桥接公司 / 案盘可发现 / 开案短字段 / delegate 非第一跳 / 后勤弱入口
  * + 三 tab 关系 / 当前部露出 / 让该部开工
+ * + 专业添加专家轻配
  */
 import { chromium } from 'playwright'
 import fs from 'node:fs'
@@ -312,6 +313,54 @@ async function main() {
     if (chip.vernacular && chip.no旧词堆砌) pass('G_dept_vernacular', 'dept 白话')
     else fail('G_dept_vernacular', JSON.stringify(chip))
     await shot(page, 'G-dept-gap-chip.png')
+    await page.close()
+  }
+
+  // ---- U: 专业卡「添加专家」写入 mpv2-prof-light；可删自定义；MCP 仍折 ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'studio' })
+    await page.addInitScript(() => { try { localStorage.removeItem('mpv2-prof-light') } catch (_) {} })
+    await page.goto(`${BASE}/professional.html?role=enterprise&case=c1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(400)
+    const before = await page.locator('[data-add-expert]').count()
+    const firstAdd = page.locator('[data-add-expert]').first()
+    const dept = await firstAdd.getAttribute('data-add-expert')
+    const beforeCount = await page.locator(`.prof-card[data-dept="${dept}"] [data-prof-expert]`).count()
+    await firstAdd.click()
+    await page.waitForTimeout(400)
+    const U = await page.evaluate((deptId) => {
+      const card = document.querySelector(`.prof-card[data-dept="${deptId}"]`)
+      const customs = card ? card.querySelectorAll('[data-custom-id]').length : 0
+      const addBtns = document.querySelectorAll('[data-add-expert]').length
+      const light = JSON.parse(localStorage.getItem('mpv2-prof-light') || '{}')
+      const custom = (light[deptId] && light[deptId].custom) || []
+      const mcp = document.querySelector('#prof-skills-mcp, details.prof-advanced')
+      const editable = card ? card.querySelectorAll('.prof-edit[contenteditable="true"]').length : 0
+      return {
+        customs, addBtns, customLen: custom.length, customTitle: custom[0] && custom[0].title,
+        mcpOpen: mcp ? mcp.open : null,
+        editable,
+        hasDel: !!(card && card.querySelector('[data-del-custom]')),
+      }
+    }, dept)
+    evidence.U_add = { before, beforeCount, dept, ...U }
+    if (before >= 5 && U.customs >= 1 && U.customLen >= 1 && U.hasDel && U.editable >= 2 && U.mcpOpen === false)
+      pass('U_prof_add_expert', `添加专家→mpv2-prof-light · dept=${dept}`)
+    else fail('U_prof_add_expert', JSON.stringify(evidence.U_add))
+    // delete custom
+    await page.locator(`.prof-card[data-dept="${dept}"] [data-del-custom]`).first().click()
+    await page.waitForTimeout(300)
+    const afterDel = await page.evaluate((deptId) => {
+      const light = JSON.parse(localStorage.getItem('mpv2-prof-light') || '{}')
+      const custom = (light[deptId] && light[deptId].custom) || []
+      const customs = document.querySelectorAll(`.prof-card[data-dept="${deptId}"] [data-custom-id]`).length
+      return { customLen: custom.length, customs }
+    }, dept)
+    evidence.U_del = afterDel
+    if (afterDel.customLen === 0 && afterDel.customs === 0) pass('U_prof_del_custom', '自定义席可删')
+    else fail('U_prof_del_custom', JSON.stringify(afterDel))
+    await shot(page, 'U-prof-add-expert.png')
     await page.close()
   }
 

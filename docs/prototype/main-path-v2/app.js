@@ -334,11 +334,19 @@
           light[dept][field] = val;
         } else if (field === 'title' || field === 'role') {
           const wrap = el.closest('[data-prof-expert]');
-          const idx = wrap ? wrap.dataset.idx : null;
-          if (idx == null) return;
-          if (!light[dept].experts) light[dept].experts = {};
-          if (!light[dept].experts[idx]) light[dept].experts[idx] = {};
-          light[dept].experts[idx][field] = val;
+          if (!wrap) return;
+          const customId = wrap.dataset.customId;
+          if (customId) {
+            if (!Array.isArray(light[dept].custom)) light[dept].custom = [];
+            const row = light[dept].custom.find(c => c && c.id === customId);
+            if (row) row[field] = val;
+          } else {
+            const idx = wrap.dataset.idx;
+            if (idx == null) return;
+            if (!light[dept].experts) light[dept].experts = {};
+            if (!light[dept].experts[idx]) light[dept].experts[idx] = {};
+            light[dept].experts[idx][field] = val;
+          }
         }
         saveProfLight(light);
       });
@@ -347,23 +355,72 @@
 
   function renderProfExperts(names, deptId) {
     const light = loadProfLight();
-    const overrides = (light[deptId] && light[deptId].experts) || {};
-    // 按实际编制展示（交底部约 5–6）；禁凑编墙，不截成技能配置
-    return (names || []).map((e, i) => {
+    const deptLight = light[deptId] || {};
+    const overrides = deptLight.experts || {};
+    const hidden = new Set(deptLight.hidden || []);
+    // 按实际编制展示（交底部约 5–6）；禁凑编墙；自定义席来自 mpv2-prof-light.custom
+    const builtIn = (names || []).map((e, i) => {
+      if (hidden.has(String(i))) return '';
       const m = expertMeta(e, i);
       const parts = m.name.split(/\s*·\s*/);
       const title0 = parts[0];
       const role0 = parts[1] || (m.human ? '在岗复核 · 建议稿≠确认' : '本节点专岗 · 出建议稿');
-      const ov = overrides[i] || {};
+      const ov = overrides[i] || overrides[String(i)] || {};
       const title = ov.title || title0;
       const role = ov.role || role0;
       return '<div class="prof-expert" data-prof-expert data-dept="' + deptId + '" data-idx="' + i + '">' +
         '<img class="avatar avatar-photo avatar-small" src="' + m.src + '" alt="" width="32" height="32">' +
         '<span>' +
-          '<strong class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="title" aria-label="岗名">' + title + '</strong>' +
-          '<small class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="role" aria-label="占位一句">' + role + '</small>' +
+          '<strong class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="title" aria-label="岗名">' + esc(title) + '</strong>' +
+          '<small class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="role" aria-label="占位一句">' + esc(role) + '</small>' +
         '</span></div>';
     }).join('');
+    const customs = (deptLight.custom || []).map((c, ci) => {
+      const title = c.title || '新专家岗';
+      const role = c.role || '占位一句 · 可改';
+      const m = expertMeta(title, (names || []).length + ci);
+      const src = c.avatar || m.src;
+      const cid = c.id || ('c' + ci);
+      return '<div class="prof-expert is-custom" data-prof-expert data-dept="' + deptId + '" data-custom-id="' + esc(cid) + '" data-idx="custom:' + esc(cid) + '">' +
+        '<img class="avatar avatar-photo avatar-small" src="' + src + '" alt="" width="32" height="32" title="头像占位">' +
+        '<span>' +
+          '<strong class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="title" aria-label="岗名">' + esc(title) + '</strong>' +
+          '<small class="prof-edit" contenteditable="true" spellcheck="false" data-prof-field="role" aria-label="占位一句">' + esc(role) + '</small>' +
+        '</span>' +
+        '<button type="button" class="prof-expert-del" data-del-custom="' + esc(cid) + '" data-dept="' + deptId + '" aria-label="删除自定义专家">×</button>' +
+        '</div>';
+    }).join('');
+    return builtIn + customs;
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function profExpertCount(deptId, builtInNames) {
+    const light = loadProfLight();
+    const dl = light[deptId] || {};
+    const hidden = new Set(dl.hidden || []);
+    const base = (builtInNames || []).filter((_, i) => !hidden.has(String(i))).length;
+    return base + ((dl.custom || []).length);
+  }
+
+  function addProfCustomExpert(deptId) {
+    const light = loadProfLight();
+    if (!light[deptId]) light[deptId] = {};
+    if (!Array.isArray(light[deptId].custom)) light[deptId].custom = [];
+    const id = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    light[deptId].custom.push({ id: id, title: '新专家岗', role: '占位一句 · 可改' });
+    saveProfLight(light);
+    return id;
+  }
+
+  function removeProfCustomExpert(deptId, customId) {
+    const light = loadProfLight();
+    if (!light[deptId] || !Array.isArray(light[deptId].custom)) return;
+    light[deptId].custom = light[deptId].custom.filter(c => c && c.id !== customId);
+    saveProfLight(light);
   }
 
   function wireWelcomeShelf() {
@@ -971,7 +1028,7 @@
       const light = loadProfLight();
       const duty = (light[d.id] && light[d.id].duty) || (d.pitch || '');
       const faces = renderProfExperts(d.experts, d.id);
-      const nExp = (d.experts || []).length;
+      const nExp = profExpertCount(d.id, d.experts);
       const staffLabel = nExp ? ('编制 ' + nExp + ' 人') : '编制待配';
       const st = profStatusForDept(d.id);
       const statusLead = st.caseShort
@@ -992,7 +1049,8 @@
           '<span class="prof-status-go">让该部开工 →</span>' +
         '</a>' +
         '<div class="prof-experts" aria-label="' + d.name + '专家">' + faces + '</div>' +
-        '<p class="prof-light-hint">可轻改岗名 / 职责一句 / 占位。进阶配置默认收折。</p>' +
+        '<button type="button" class="btn btn-secondary prof-add-expert" data-add-expert="' + d.id + '" aria-label="为' + d.name + '添加专家">+ 添加专家</button>' +
+        '<p class="prof-light-hint">可轻改岗名 / 职责 / 占位；可添加自定义专家。进阶技能/MCP 默认收折。</p>' +
         '<button type="button" class="btn btn-ink prof-go" data-go-dept="' + d.id + '" aria-label="让' + d.name + '开工">让该部开工 →</button>' +
         '</article>';
     }).join('');
@@ -1003,6 +1061,21 @@
       });
     });
     wireProfLightEdit(grid);
+    grid.querySelectorAll('[data-add-expert]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        addProfCustomExpert(btn.dataset.addExpert);
+        wireProfessionalPage();
+      });
+    });
+    grid.querySelectorAll('[data-del-custom]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        removeProfCustomExpert(btn.dataset.dept, btn.dataset.delCustom);
+        wireProfessionalPage();
+      });
+    });
     // Legal exits: must setMode(project) before navigating — no studio bounce
     document.querySelectorAll('[data-exit-pro]').forEach(a => {
       a.addEventListener('click', (e) => {
@@ -2885,7 +2958,7 @@
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
     wireShell, wireTopbarDetails, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
-    renderExperts, renderRailExperts, renderExpertFaces, renderProfExperts, wireProfLightEdit, loadProfLight, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo, gapActionsFor,
+    renderExperts, renderRailExperts, renderExpertFaces, renderProfExperts, wireProfLightEdit, loadProfLight, addProfCustomExpert, removeProfCustomExpert, profExpertCount, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo, gapActionsFor,
     syncHomeSurfacesFromCase, renderCompanyCasesStrip
   };
 

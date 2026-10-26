@@ -3876,3 +3876,20 @@ html[data-mode="assistant"] [data-company-fold="depts"] { display: none; }
 .company-current-dept-card strong { font-size: 16px; }
 .company-current-dept-card small { color: var(--ink-2); font-size: 13px; line-height: 1.45; }
 .company-current-dept-card .weak-link { justify-self: start; margin-top: 4px; }
+
+
+/* 专业轻配：添加专家 / 删自定义席 */
+.prof-add-expert {
+  margin-top: 8px;
+  align-self: start;
+  font-size: 13px;
+  padding: 6px 10px;
+}
+.prof-expert.is-custom { position: relative; padding-right: 22px; }
+.prof-expert-del {
+  position: absolute; right: 0; top: 4px;
+  border: 0; background: transparent; color: var(--ink-3);
+  cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 6px;
+  border-radius: 4px;
+}
+.prof-expert-del:hover { color: var(--ink); background: oklch(0.95 0.01 85); }

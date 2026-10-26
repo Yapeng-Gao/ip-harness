@@ -1,5 +1,5 @@
 {
-  "passN": 35,
+  "passN": 37,
   "failN": 0,
   "notes": [
     "PASS L_login_assistant: login→home 助手高亮",
@@ -25,6 +25,8 @@
     "PASS F_no_fake_roster: 无假编制满屏",
     "PASS G_gap_chip_current: 还缺：权属声明 已齐 3 / 4",
     "PASS G_dept_vernacular: dept 白话",
+    "PASS U_prof_add_expert: 添加专家→mpv2-prof-light · dept=disclosure",
+    "PASS U_prof_del_custom: 自定义席可删",
     "PASS T_prof_start_dept: 专业 CTA=让该部开工",
     "PASS T_home_tab_tip: home 弱提示项目/专业",
     "PASS W_welcome_marketing: 宣传站·登录干活·无三 tab",
@@ -119,6 +121,22 @@
       "vernacular": true,
       "no旧词堆砌": true
     },
+    "U_add": {
+      "before": 7,
+      "beforeCount": 6,
+      "dept": "disclosure",
+      "customs": 1,
+      "addBtns": 7,
+      "customLen": 1,
+      "customTitle": "新专家岗",
+      "mcpOpen": false,
+      "editable": 16,
+      "hasDel": true
+    },
+    "U_del": {
+      "customLen": 0,
+      "customs": 0
+    },
     "T_prof_cta": {
       "has开工": true,
       "no旧": true,
@@ -211,5 +229,5 @@
       }
     }
   },
-  "at": "2026-10-26T07:51:50.128Z"
+  "at": "2026-10-26T08:00:40.796Z"
 }

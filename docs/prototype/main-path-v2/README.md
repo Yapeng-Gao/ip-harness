@@ -29,7 +29,7 @@ cd docs/prototype/main-path-v2 && python3 -m http.server 8766
 | `members.html` | **成员与权限**（后勤弱入口）· 谁能拍板（非专家墙） |
 | `case-new.html` | 开案子字段短 · 目标可选 · 主钮进公司（委托次级） |
 | `company.html` | 一案总览：卡点/下一步/谁在干；**当前部默认露出**；缺口唯一墨色主 CTA；其余六部可折 |
-| `professional.html` | **专业部门页**：能力/编制面；七部能力卡 + 在办/缺口；技能/MCP 默认收折；「让该部开工」 |
+| `professional.html` | **专业部门页**：能力/编制面；七部能力卡 + 在办/缺口；可「添加专家」轻配；技能/MCP 默认收折；「让该部开工」 |
 | `dept.html` | 一屏 Cursor 三栏；两工作台 B；G1 齐套确认（右栏拍板） |
 | `pending.html` | **已废主 hops** · 软跳转 `dept.html?gate=1` |
 | `shell.css` / `app.js` | 纸感 token · 角色/三档换面 · 委托状态 · 快照 |
