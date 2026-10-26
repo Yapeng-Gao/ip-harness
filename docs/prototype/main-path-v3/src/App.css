@@ -1347,3 +1347,30 @@ kbd { font-family: inherit; font-size: 10px; border: 1px solid var(--line); bord
 }
 .workflow-stage-grid > aside .section-kicker { color: #cbd3c7; }
 .first-run-shell .topbar-context, .first-run-shell .search-trigger, .first-run-shell .notice-wrap { display: none; }
+
+
+/* —— upload / docket buckets / download (v3) —— */
+.sr-file-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.attach-chip-list { list-style: none; margin: 6px 0 0; padding: 0 8px 4px; display: flex; flex-wrap: wrap; gap: 6px; }
+.attach-chip-list li { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; padding: 4px 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--warm-paper); color: var(--ink-2); font-size: 10px; }
+.attach-chip-list li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
+.attach-chip-list li button { border: 0; background: transparent; color: var(--ink-3); padding: 2px; display: inline-flex; }
+.attach-hint { margin: 6px 0 0; color: var(--ink-3); font-size: 9px; line-height: 1.45; }
+.confirm-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.confirm-actions .btn { width: 100%; }
+.delivery-download { margin-top: 10px; }
+.asset-bucket { display: flex; flex-direction: column; gap: 0; }
+.asset-bucket > button { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0; background: transparent; color: var(--ink-2); text-align: left; font-size: 11px; }
+.asset-bucket > button.active, .asset-bucket > button:hover { background: rgba(0,0,0,0.04); color: var(--ink); }
+.asset-bucket > button small { margin-left: auto; color: var(--ink-3); font-size: 10px; }
+.asset-bucket-list { padding: 0 8px 8px 28px; display: flex; flex-direction: column; gap: 4px; }
+.asset-bucket-hint { margin: 0 0 4px; color: var(--ink-3); font-size: 9px; line-height: 1.4; }
+.asset-bucket-list > button { width: 100%; display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink-2); text-align: left; }
+.asset-bucket-list > button span { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.asset-bucket-list > button strong { font-size: 10px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.asset-bucket-list > button small { font-size: 8px; color: var(--ink-3); }
+.asset-upload-link { display: inline-flex !important; align-items: center; gap: 6px; margin-top: 4px; border-style: dashed !important; color: var(--accent-dark) !important; }
+.form-attach { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px dashed var(--line-strong); border-radius: 8px; background: var(--warm-paper); }
+.form-attach-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.form-attach-head > span { font-size: 12px; color: var(--ink); font-weight: 600; }
+.department-compose .attach-chip-list { padding-left: 0; padding-right: 0; }

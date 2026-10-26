@@ -4,8 +4,8 @@ import {
   Building2, Cable, Check, CheckCircle2, ChevronDown, ChevronRight,
   CircleAlert, CircleHelp, Clock3, FileCheck2, FileClock,
   Files, FileText, FlaskConical, FolderKanban, GitBranch, Library,
-  Menu, MessageSquareText, MoreHorizontal, Network, Paperclip, PenLine, Plus,
-  Rocket, Search, Send, Settings2, ShieldCheck, Sparkles, Stamp, X,
+  Download, Menu, MessageSquareText, MoreHorizontal, Network, Paperclip, PenLine, Plus,
+  Rocket, Search, Send, Settings2, ShieldCheck, Sparkles, Stamp, Upload, X,
 } from 'lucide-react'
 import './App.css'
 
@@ -17,6 +17,23 @@ type ModalType = 'new' | 'handoff' | 'expert' | 'guide' | 'task' | 'review' | nu
 type ObjectKind = '研发项目' | '申请案件' | '产品风险'
 type WorkContext = 'magnetic' | 'storage'
 type WorkView = 'collaboration' | 'document'
+
+type DocketBucket = 'input' | 'process' | 'output'
+type DocketItem = { id: string; name: string; bucket: DocketBucket; note: string; source: 'seed' | 'upload' }
+
+const FILE_ACCEPT = '.pdf,.doc,.docx,.png,.jpg,.jpeg'
+const FILE_ACCEPT_HINT = 'PDF / Word / 图片 / 常见图纸（png、jpg、pdf、docx）'
+const FILE_EXT_OK = new Set(['pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg'])
+
+const seedDocket: DocketItem[] = [
+  { id: 'in-1', name: '研发交底草稿.pdf', bucket: 'input', note: '用户材料 · 开案附带', source: 'seed' },
+  { id: 'in-2', name: '试验台照片.jpg', bucket: 'input', note: '用户材料 · 补事实', source: 'seed' },
+  { id: 'pr-1', name: '访谈纪要 V2.docx', bucket: 'process', note: '交底书部 · 中间稿', source: 'seed' },
+  { id: 'pr-2', name: '检索比对摘录.pdf', bucket: 'process', note: '风险排查部 · 中间稿', source: 'seed' },
+  { id: 'out-1', name: '交底书 V3.pdf', bucket: 'output', note: '已确认交付 · 可下载', source: 'seed' },
+  { id: 'out-2', name: '可专利性检索 R2.pdf', bucket: 'output', note: '已确认交付 · 可下载', source: 'seed' },
+]
+
 
 const departments = [
   { id: 'innovation', name: '创新启发部', stage: '发现', desc: '从技术问题和行业空白出发，激发可实现的创新方向。', experts: ['技术情报专家', 'TRIZ 创新专家'], output: '创新机会清单' },
@@ -161,6 +178,13 @@ export default function App() {
   const [workView, setWorkView] = useState<WorkView>('collaboration')
   const [factConfirmed, setFactConfirmed] = useState(false)
   const [nodeConfirmed, setNodeConfirmed] = useState(false)
+  const [docket, setDocket] = useState<DocketItem[]>(seedDocket)
+  const [composeFiles, setComposeFiles] = useState<{ id: string; name: string }[]>([])
+  const [newCaseFiles, setNewCaseFiles] = useState<{ id: string; name: string }[]>([])
+  const [assetBucket, setAssetBucket] = useState<DocketBucket | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const newCaseInputRef = useRef<HTMLInputElement>(null)
+  const uploadTargetRef = useRef<'compose' | 'docket' | 'newcase'>('compose')
 
   const notify = (text: string) => { setToast(text); window.setTimeout(() => setToast(''), 2800) }
   const navigate = (next: View) => {
@@ -329,6 +353,67 @@ export default function App() {
     impact: handedOff ? '决定独立权利要求是否覆盖实际产品；确认后提交代理师复核。' : '确认后写入交底书 V4，并作为后续权利要求设计依据；不会自动对外共享。',
     nextDept: handedOff ? '质量审查部' : '申请文件部',
     nodes: handedOff ? [['挖掘布局', 'done'], ['交底形成', 'done'], ['申请文件', 'active'], ['质量审查', 'next'], ['审查答复', 'next']] : [['挖掘布局', 'done'], ['交底形成', 'active'], ['申请文件', 'next'], ['质量审查', 'next'], ['审查答复', 'next']],
+  }
+
+  const openFilePicker = (target: 'compose' | 'docket' | 'newcase' = 'compose') => {
+    uploadTargetRef.current = target
+    if (target === 'newcase') newCaseInputRef.current?.click()
+    else fileInputRef.current?.click()
+  }
+  const ingestFiles = (list: FileList | null, target: 'compose' | 'docket' | 'newcase') => {
+    if (!list?.length) return
+    const accepted: { id: string; name: string }[] = []
+    const rejected: string[] = []
+    Array.from(list).forEach((file, i) => {
+      const ext = file.name.split('.').pop()?.toLowerCase() || ''
+      if (!FILE_EXT_OK.has(ext)) { rejected.push(file.name); return }
+      accepted.push({ id: `${Date.now()}-${i}-${file.name}`, name: file.name })
+    })
+    if (rejected.length) notify(`未支持格式已跳过：${rejected.slice(0, 2).join('、')}${rejected.length > 2 ? '…' : ''}（${FILE_ACCEPT_HINT}）`)
+    if (!accepted.length) return
+    const nodeLabel = `${workMeta.code} · ${collab.node}`
+    if (target === 'newcase') {
+      setNewCaseFiles(v => [...v, ...accepted])
+      notify(`已附首包 ${accepted.length} 个文件 · ${FILE_ACCEPT_HINT}`)
+      return
+    }
+    setComposeFiles(v => [...v, ...accepted])
+    setDocket(v => [
+      ...accepted.map(f => ({
+        id: f.id,
+        name: f.name,
+        bucket: 'input' as DocketBucket,
+        note: `用户上传 · ${nodeLabel}`,
+        source: 'upload' as const,
+      })),
+      ...v,
+    ])
+    notify(`已关联到当前项目与节点：${accepted.map(a => a.name).join('、')}（输入材料）`)
+  }
+  const downloadDemo = (filename: string) => {
+    const outName = `${filename.replace(/\.(pdf|docx|doc|png|jpe?g)$/i, '') || 'deliverable'}.txt`
+    const blob = new Blob([`Novada Team 演示导出\n文件：${filename}\n项目：${workMeta.name}（${workMeta.code}）\n节点：${collab.node}\n说明：原型演示文件，非真实官方文书。\n`], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = outName
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+    notify(`已开始下载演示文件：${outName}`)
+  }
+  const openAssetBucket = (bucket: DocketBucket) => {
+    const labels = { input: '输入', process: '过程', output: '产物' } as const
+    const items = docket.filter(d => d.bucket === bucket)
+    setAssetBucket(prev => {
+      if (prev === bucket) {
+        notify(`${labels[bucket]}已收起`)
+        return null
+      }
+      notify(`${labels[bucket]} · ${items.length} 项已展开`)
+      return bucket
+    })
   }
 
   useEffect(() => {
@@ -547,15 +632,37 @@ export default function App() {
             <div className="file-tree">
               <p>{oaMode || storageMode ? '案件卷宗' : '项目资料'}</p>
               {workTabs.map((doc, i) => <button key={doc} className={activeDoc === doc ? 'active' : ''} onClick={() => { setActiveDoc(doc); setSaved(true) }}><FileText size={15} /><span>{doc}</span>{i === 0 && <span className="unsaved-dot" />}</button>)}
-              <p>过程资产</p>
-              {['研发原始资料', '检索证据库', '部门交付记录'].map((doc, i) => <button key={doc} onClick={() => notify(`已打开${doc}`)}>{i === 0 ? <Files size={15} /> : i === 1 ? <BookOpen size={15} /> : <GitBranch size={15} />}<span>{doc}</span><small>{i === 0 ? 8 : i === 1 ? 23 : 6}</small></button>)}
+              <p>过程资产 · 输入 / 过程 / 产物</p>
+              {([
+                ['input', '输入', '用户上传的交底、图纸与证据', Files] as const,
+                ['process', '过程', '部门中间稿与核查摘录', GitBranch] as const,
+                ['output', '产物', '已确认交付，可下载', FileCheck2] as const,
+              ]).map(([bucket, label, hint, Icon]) => {
+                const count = docket.filter(d => d.bucket === bucket).length
+                const open = assetBucket === bucket
+                return <div key={bucket} className={`asset-bucket ${open ? 'open' : ''}`}>
+                  <button type="button" className={open ? 'active' : ''} onClick={() => openAssetBucket(bucket as DocketBucket)} aria-expanded={open}>
+                    <Icon size={15} /><span>{label}</span><small>{count}</small>
+                  </button>
+                  {open && <div className="asset-bucket-list" role="list">
+                    <p className="asset-bucket-hint">{hint}</p>
+                    {docket.filter(d => d.bucket === bucket).map(item => (
+                      <button type="button" role="listitem" key={item.id} onClick={() => bucket === 'output' ? downloadDemo(item.name) : notify(`已打开${item.name}（${item.note}）`)}>
+                        <span><strong>{item.name}</strong><small>{item.note}</small></span>
+                        {bucket === 'output' ? <Download size={13} /> : <ChevronRight size={13} />}
+                      </button>
+                    ))}
+                    {bucket === 'input' && <button type="button" className="asset-upload-link" onClick={() => openFilePicker('docket')}><Upload size={13} />补材料（{FILE_ACCEPT_HINT}）</button>}
+                  </div>}
+                </div>
+              })}
             </div>
             <div className="file-history"><GitBranch size={15} /><span><strong>所有修改都有版本</strong><small>最近保存：刚刚</small></span></div>
           </aside>
 
           <div className="editor-pane">
             <div className="editor-tabs">{workTabs.map(doc => <button key={doc} className={activeDoc === doc ? 'active' : ''} onClick={() => setActiveDoc(doc)}>{doc}{activeDoc === doc && <span />}</button>)}<button className="icon-btn" onClick={() => setModal('new')} aria-label="新建文件"><Plus size={16} /></button></div>
-            <div className="editor-toolbar"><div><button onClick={() => notify('已切换为编辑模式')}><PenLine size={15} />编辑</button><button onClick={() => notify('批注模式已开启')}><MessageSquareText size={15} />批注</button><button onClick={() => notify('版本对比已生成')}>对比版本</button></div><span className={saved ? '' : 'editing'}>{saved ? <><Check size={13} />已保存</> : '编辑中'}</span></div>
+            <div className="editor-toolbar"><div><button onClick={() => notify('已切换为编辑模式')}><PenLine size={15} />编辑</button><button onClick={() => notify('批注模式已开启')}><MessageSquareText size={15} />批注</button><button onClick={() => notify('版本对比已生成')}>对比版本</button><button type="button" onClick={() => downloadDemo(`${activeDoc}.pdf`)}><Download size={15} />下载</button></div><span className={saved ? '' : 'editing'}>{saved ? <><Check size={13} />已保存</> : '编辑中'}</span></div>
             {role === 'enterprise' && <div className="lead-workbench"><Avatar name="顾" small /><div><strong>顾言 · 知产负责人</strong><p>{oaMode ? 'OA 答复部已拆解争议并准备答复文本。你只需确认修改范围与实际生产方案。' : storageMode ? '申请文件部与质量审查部正在核查文本一致性。我会汇总问题，再请你确认申请策略。' : handedOff ? '申请文件部已接手。我会汇总权利要求与说明书进展，涉及保护范围时再请你决策。' : '交底书部正在完善文本。我已把专业任务留在后台，你只需处理 2 处技术事实。'}</p></div><button className={`process-toggle ${showProcess ? 'active' : ''}`} onClick={() => setShowProcess(v => !v)}><Network size={14} />{showProcess ? '收起专业过程' : '查看专业过程'}</button></div>}
             <div className="document-scroll">
               {oaMode ? <AgencyDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : storageMode ? <StorageDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : <EnterpriseDocument doc={activeDoc} onEdit={() => setSaved(false)} />}
@@ -574,7 +681,7 @@ export default function App() {
               <div className="feed-item"><Avatar name="林" human small /><div><p><strong>林岚 · 代理师</strong><time>10:31</time></p><p>{oaMode ? '先保留方法权利要求的层次，不急于加入全部参数。请确认实际生产是否采用该范围。' : '从申请策略看，建议保留“异常评分自适应修正”这一层。它可能是后续答复创造性的关键。'}</p></div></div>
               {chat.map((c, i) => <div className="feed-item own" key={i}><Avatar name="我" human small /><div><p><strong>我</strong><time>刚刚</time></p><p>{c}</p></div></div>)}
             </div>
-            <div className="department-compose"><div><textarea name="dept_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="用自然语言交办或补充说明…" rows={2} aria-label="向部门交办" /><button onClick={() => notify('附件选择器已打开')} aria-label="添加附件"><Paperclip size={16} /></button></div><div><span>Enter 发送</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div></div>
+            <div className="department-compose"><div><textarea name="dept_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="用自然语言交办或补充说明…" rows={2} aria-label="向部门交办" /><button type="button" onClick={() => openFilePicker('compose')} aria-label="添加附件，支持 PDF、Word、图片与常见图纸"><Paperclip size={16} /></button></div>{composeFiles.length > 0 && <ul className="attach-chip-list" aria-label="待发送附件">{composeFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setComposeFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}<div><span>Enter 发送 · {FILE_ACCEPT_HINT}</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div></div>
             <button className="handoff-button" onClick={() => setModal('handoff')}><GitBranch size={16} /><span><strong>{oaMode ? role === 'agency' ? '交付客户确认' : '确认答复策略' : storageMode ? role === 'agency' ? '交付客户确认' : '确认质检与申请文件' : role === 'agency' ? '交付客户确认' : handedOff ? '查看接力记录' : '让下一部门继续'}</strong><small>{oaMode ? role === 'agency' ? '生成带版本与权限的交付快照' : '确认后回传代理所并保留记录' : storageMode ? role === 'agency' ? '生成质检版本与申请策略交付快照' : '质检版本与申请策略一并确认' : role === 'agency' ? '仅共享指定交付物与确认事项' : handedOff ? '交底书部 → 申请文件部' : '按权限继承所需事实、证据与版本'}</small></span><ArrowRight size={16} /></button>
           </aside>}
           </section> : <section className="collaboration-workspace">
@@ -594,12 +701,12 @@ export default function App() {
 
                 <section className="collab-feed"><div className="collab-section-head"><div><span className="section-kicker">动作与沟通</span><h2>项目内连续记录</h2></div><button className="text-btn" onClick={() => notify('已暂停当前节点的新任务，已有版本保留')}>暂停节点</button></div><div className="collab-event"><span className="event-time">10:24</span><div><p><strong>{collab.tasks[0][0]}</strong> {collab.tasks[0][3]}</p><button onClick={() => openDocument(collab.deliverableDoc)}>定位到交付物<ArrowUpRight size={12} /></button></div></div><div className="collab-event"><span className="event-time">10:31</span><div><p><strong>林岚 · 专利代理师</strong> {oaMode ? '建议保留修改层次，先确认实际生产控制逻辑，再确定最终答复口径。' : storageMode ? '两项遗留问题不影响继续核查，但保护范围需要企业研发与代理师共同确认。' : handedOff ? '独权暂不加入具体阈值，避免不必要缩小保护范围；仍需确认量产方案。' : '建议保留“异常评分自适应修正”这一层，可能是后续答复创造性的关键。'}</p></div></div>{chat.map((c, i) => <div className="collab-event own" key={`${c}-${i}`}><span className="event-time">刚刚</span><div><p><strong>我 → 顾言</strong> {c}</p><small>已纳入当前项目指令，部门会在本线程回复</small></div></div>)}</section>
               </div>
-              <form className="collab-compose" onSubmit={e => { e.preventDefault(); sendChat() }}><div><Avatar name="顾" small /><textarea name="collab_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="在当前项目中向顾言或部门交办：补充事实、调整目标、追问依据…" rows={2} aria-label="向顾言交办" /><button type="button" className="icon-btn" onClick={() => notify('附件将关联到当前项目与节点')} aria-label="添加项目附件"><Paperclip size={16} /></button></div><footer><div><button type="button" onClick={() => setMessage('请汇总当前节点还缺哪些事实和依据。')}>还缺什么</button><button type="button" onClick={() => setMessage('请调整工作计划，并说明对交付和期限的影响。')}>调整计划</button><button type="button" onClick={() => setMessage(`请让${collab.department}退回上一版本重新核查。`)}>退回核查</button></div><button className="btn btn-ink" type="submit" disabled={!message.trim()}>发送给顾言<Send size={14} /></button></footer></form>
+              <form className="collab-compose" onSubmit={e => { e.preventDefault(); sendChat() }}><div><Avatar name="顾" small /><textarea name="collab_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="在当前项目中向顾言或部门交办：补充事实、调整目标、追问依据…" rows={2} aria-label="向顾言交办" /><button type="button" className="icon-btn" onClick={() => openFilePicker('compose')} aria-label="添加项目附件，支持 PDF、Word、图片与常见图纸"><Paperclip size={16} /></button></div>{composeFiles.length > 0 && <ul className="attach-chip-list" aria-label="已关联附件">{composeFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setComposeFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}<footer><div><button type="button" onClick={() => setMessage('请汇总当前节点还缺哪些事实和依据。')}>还缺什么</button><button type="button" onClick={() => setMessage('请调整工作计划，并说明对交付和期限的影响。')}>调整计划</button><button type="button" onClick={() => setMessage(`请让${collab.department}退回上一版本重新核查。`)}>退回核查</button><button type="button" onClick={() => openFilePicker('compose')}><Paperclip size={12} />补材料</button></div><button className="btn btn-ink" type="submit" disabled={!message.trim()}>发送给顾言<Send size={14} /></button></footer></form>
             </div>
 
             <aside className="delivery-confirm-pane">
-              <section className="current-delivery"><div className="pane-section-title"><span>当前交付物</span><Status tone={nodeConfirmed ? 'green' : 'orange'}>{nodeConfirmed ? '已确认' : '待确认'}</Status></div><button className="delivery-file" onClick={() => openDocument(collab.deliverableDoc)}><FileText size={21} /><span><strong>{collab.deliverable}</strong><small>{collab.deliverableNote}</small></span><ArrowUpRight size={15} /></button><button className="evidence-link" onClick={() => openDocument(collab.evidenceDoc)}><BookOpen size={14} /><span><strong>{collab.evidence}</strong><small>查看来源、段落和核查记录</small></span><ChevronRight size={14} /></button></section>
-              <section className="confirmation-flow"><div className="pane-section-title"><span>确认控制点</span><small>2 步</small></div><div className={`confirm-step ${factConfirmed ? 'confirmed' : 'active'}`}><div className="confirm-step-head"><span>{factConfirmed ? <Check size={13} /> : '1'}</span><div><strong>技术事实确认</strong><small>{factConfirmed ? '已写入项目确认记录' : '由你确认，AI 不代替判断'}</small></div></div><h3>{collab.factTitle}</h3><p>{collab.factDetail}</p><button className="source-link" onClick={() => openDocument(collab.sourceDoc)}><FileText size={13} />{collab.source}<ArrowUpRight size={13} /></button><div className="impact-note"><CircleAlert size={14} /><p>{collab.impact}</p></div><button className="btn btn-secondary full-btn" disabled={factConfirmed} onClick={() => { setFactConfirmed(true); notify('技术事实已确认，并绑定当前文书版本') }}>{factConfirmed ? <><Check size={14} />事实已确认</> : '确认事实与当前版本一致'}</button></div><div className={`confirm-step ${nodeConfirmed ? 'confirmed' : factConfirmed ? 'active' : 'locked'}`}><div className="confirm-step-head"><span>{nodeConfirmed ? <Check size={13} /> : '2'}</span><div><strong>节点交付确认</strong><small>{nodeConfirmed ? '交付版本与确认记录已归档' : factConfirmed ? '可以确认本节点交付' : '先完成技术事实确认'}</small></div></div><p>确认对象：{collab.deliverable}。确认只推进当前节点，不代表同意对外递交。</p><button className="btn btn-primary full-btn" disabled={!factConfirmed || nodeConfirmed} onClick={() => { setNodeConfirmed(true); notify('本节点已确认，接力包已准备') }}>{nodeConfirmed ? <><Check size={14} />本节点已确认</> : '确认本节点交付'}</button></div></section>
+              <section className="current-delivery"><div className="pane-section-title"><span>当前交付物</span><Status tone={nodeConfirmed ? 'green' : 'orange'}>{nodeConfirmed ? '已确认' : '待确认'}</Status></div><button className="delivery-file" onClick={() => openDocument(collab.deliverableDoc)}><FileText size={21} /><span><strong>{collab.deliverable}</strong><small>{collab.deliverableNote}</small></span><ArrowUpRight size={15} /></button><button type="button" className="btn btn-secondary full-btn delivery-download" onClick={() => downloadDemo(`${collab.deliverable}.pdf`)}><Download size={14} />下载当前交付物（演示）</button><button className="evidence-link" onClick={() => openDocument(collab.evidenceDoc)}><BookOpen size={14} /><span><strong>{collab.evidence}</strong><small>查看来源、段落和核查记录</small></span><ChevronRight size={14} /></button></section>
+              <section className="confirmation-flow"><div className="pane-section-title"><span>确认控制点</span><small>2 步</small></div><div className={`confirm-step ${factConfirmed ? 'confirmed' : 'active'}`}><div className="confirm-step-head"><span>{factConfirmed ? <Check size={13} /> : '1'}</span><div><strong>技术事实确认</strong><small>{factConfirmed ? '已写入项目确认记录' : '由你确认，AI 不代替判断'}</small></div></div><h3>{collab.factTitle}</h3><p>{collab.factDetail}</p><button className="source-link" onClick={() => openDocument(collab.sourceDoc)}><FileText size={13} />{collab.source}<ArrowUpRight size={13} /></button><div className="impact-note"><CircleAlert size={14} /><p>{collab.impact}</p></div><div className="confirm-actions"><button type="button" className="btn btn-secondary full-btn" onClick={() => openFilePicker('docket')} disabled={factConfirmed}><Upload size={14} />补材料</button><button className="btn btn-secondary full-btn" disabled={factConfirmed} onClick={() => { setFactConfirmed(true); notify('技术事实已确认，并绑定当前文书版本') }}>{factConfirmed ? <><Check size={14} />事实已确认</> : '确认事实与当前版本一致'}</button></div><p className="attach-hint">{FILE_ACCEPT_HINT} · 关联当前项目与节点，归入输入材料</p></div><div className={`confirm-step ${nodeConfirmed ? 'confirmed' : factConfirmed ? 'active' : 'locked'}`}><div className="confirm-step-head"><span>{nodeConfirmed ? <Check size={13} /> : '2'}</span><div><strong>节点交付确认</strong><small>{nodeConfirmed ? '交付版本与确认记录已归档' : factConfirmed ? '可以确认本节点交付' : '先完成技术事实确认'}</small></div></div><p>确认对象：{collab.deliverable}。确认只推进当前节点，不代表同意对外递交。</p><button className="btn btn-primary full-btn" disabled={!factConfirmed || nodeConfirmed} onClick={() => { setNodeConfirmed(true); notify('本节点已确认，接力包已准备') }}>{nodeConfirmed ? <><Check size={14} />本节点已确认</> : '确认本节点交付'}</button></div></section>
               {nodeConfirmed ? <section className="next-action-panel"><GitBranch size={19} /><div><strong>接力条件已满足</strong><p>所需事实、证据、当前版本和确认记录将按权限继承；不共享无关草稿。</p></div><button className="btn btn-ink full-btn" onClick={() => { if (!oaMode && !storageMode && !handedOff) { setHandedOff(true); setActiveDept('drafting'); setActiveDoc('权利要求草案'); setFactConfirmed(false); setNodeConfirmed(false); notify('申请文件部已接手，已切换至新节点') } else setModal('handoff') }}>{oaMode || storageMode ? '进入交付与递交前确认' : handedOff ? '查看部门接力安排' : `交给${collab.nextDept}`}<ArrowRight size={14} /></button></section> : <section className="return-panel"><strong>结论不合适？</strong><p>退回报部门补充，当前版本、依据和意见都会保留。</p><button className="btn btn-secondary full-btn" onClick={() => { setNodeConfirmed(false); setMessage(`请${collab.department}根据我的反馈补充并重新提交：`) ; notify('已退回部门，等待你补充具体意见') }}>退回部门补充</button></section>}
             </aside>
           </section>}
@@ -659,14 +766,30 @@ export default function App() {
       </main>
     </div>
 
+    <input ref={fileInputRef} type="file" multiple accept={FILE_ACCEPT} className="sr-file-input" aria-hidden="true" tabIndex={-1} onChange={e => { ingestFiles(e.target.files, uploadTargetRef.current === 'compose' ? 'compose' : 'docket'); e.target.value = '' }} />
+    <input ref={newCaseInputRef} type="file" multiple accept={FILE_ACCEPT} className="sr-file-input" aria-hidden="true" tabIndex={-1} onChange={e => { ingestFiles(e.target.files, 'newcase'); e.target.value = '' }} />
     {toast && <div className="toast" role="status" aria-live="polite"><CheckCircle2 size={17} />{toast}</div>}
 
     {searchOpen && <Modal title="搜索 Novada Team" subtitle="项目、案件、文件和部门，都可以从这里直达。" onClose={() => { setSearchOpen(false); setSearch('') }}>
       <div className="command-search"><Search size={19} /><input name="global_search" autoComplete="off" autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="输入名称、编号或工作内容…" aria-label="搜索项目、文件或部门" /><kbd>ESC</kbd></div><div className="search-results">{filteredSearch.slice(0, 8).map(item => <button key={item.title} onClick={() => { item.action(); setSearchOpen(false); setSearch('') }}><Search size={15} /><span><strong>{item.title}</strong><small>{item.meta}</small></span><ArrowUpRight size={15} /></button>)}{filteredSearch.length === 0 && <div className="empty-search">没有找到匹配内容，试试“交底书”或“FTO”。</div>}</div>
     </Modal>}
 
-    {modal === 'new' && <Modal title={role === 'enterprise' ? '启动一个新项目' : '新建案件'} subtitle="不用选择 Agent。告诉我们业务目标，系统会推荐负责部门和推进路径。" onClose={() => setModal(null)}>
-      <form className="form-stack" onSubmit={e => { e.preventDefault(); setModal(null); notify('项目已建立，创新启发部开始整理输入'); openWorkbench(false) }}><label>项目或技术名称<input name="project_name" autoComplete="off" required defaultValue="" placeholder="例如：一种低噪声磁驱泵控制方案" /></label><label>你想解决什么问题？<textarea name="project_goal" autoComplete="off" required rows={4} placeholder="可以直接粘贴研发描述，不需要使用专利语言…" /></label><div className="form-two"><label>业务场景<select name="project_scene" autoComplete="off" defaultValue="研发成果保护"><option>研发成果保护</option><option>新产品上市风险排查</option><option>收到审查意见</option><option>已有专利运营</option></select></label><label>期望申请类型<select name="project_type" autoComplete="off" defaultValue="由部门建议"><option>由部门建议</option><option>发明专利</option><option>实用新型</option><option>发明 + 实用新型</option></select></label></div><div className="form-hint"><Sparkles size={16} /><span>建议首站：创新启发部 → 专利挖掘部。后续会根据项目情况调整，而非固定走完整条流程。</span></div><div className="modal-actions"><button type="button" className="btn btn-secondary" onClick={() => setModal(null)}>取消</button><button className="btn btn-primary" type="submit">建立项目并开始<ArrowRight size={16} /></button></div></form>
+    {modal === 'new' && <Modal title={role === 'enterprise' ? '启动一个新项目' : '新建案件'} subtitle="不用选择 Agent。告诉我们业务目标，系统会推荐负责部门和推进路径。" onClose={() => { setModal(null); setNewCaseFiles([]) }}>
+      <form className="form-stack" onSubmit={e => {
+        e.preventDefault()
+        if (newCaseFiles.length) {
+          setDocket(v => [
+            ...newCaseFiles.map(f => ({ id: f.id, name: f.name, bucket: 'input' as DocketBucket, note: '用户上传 · 开案首包', source: 'upload' as const })),
+            ...v,
+          ])
+          setComposeFiles(v => [...v, ...newCaseFiles])
+        }
+        const n = newCaseFiles.length
+        setNewCaseFiles([])
+        setModal(null)
+        notify(n ? `项目已建立，首包 ${n} 个文件已归入输入材料；创新启发部开始整理` : '项目已建立，创新启发部开始整理输入')
+        openWorkbench(false)
+      }}><label>项目或技术名称<input name="project_name" autoComplete="off" required defaultValue="" placeholder="例如：一种低噪声磁驱泵控制方案" /></label><label>你想解决什么问题？<textarea name="project_goal" autoComplete="off" required rows={4} placeholder="可以直接粘贴研发描述，不需要使用专利语言…" /></label><div className="form-two"><label>业务场景<select name="project_scene" autoComplete="off" defaultValue="研发成果保护"><option>研发成果保护</option><option>新产品上市风险排查</option><option>收到审查意见</option><option>已有专利运营</option></select></label><label>期望申请类型<select name="project_type" autoComplete="off" defaultValue="由部门建议"><option>由部门建议</option><option>发明专利</option><option>实用新型</option><option>发明 + 实用新型</option></select></label></div><div className="form-attach"><div className="form-attach-head"><span>首包材料（可选）</span><button type="button" className="btn btn-secondary" onClick={() => openFilePicker('newcase')}><Paperclip size={14} />选择文件</button></div><p className="attach-hint">{FILE_ACCEPT_HINT} · 开案后归入项目「输入」材料，不是全局知识库</p>{newCaseFiles.length > 0 && <ul className="attach-chip-list" aria-label="开案首包">{newCaseFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setNewCaseFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}</div><div className="form-hint"><Sparkles size={16} /><span>建议首站：创新启发部 → 专利挖掘部。后续会根据项目情况调整，而非固定走完整条流程。</span></div><div className="modal-actions"><button type="button" className="btn btn-secondary" onClick={() => { setModal(null); setNewCaseFiles([]) }}>取消</button><button className="btn btn-primary" type="submit">建立项目并开始<ArrowRight size={16} /></button></div></form>
     </Modal>}
 
     {modal === 'task' && <Modal title="交办一项任务" subtitle={`${currentDept.name}会在权限范围内读取本任务所需内容，你只需说明目标与限制。`} onClose={() => setModal(null)}><form className="form-stack" onSubmit={e => { e.preventDefault(); setModal(null); notify(`任务已交给${currentDept.name}`); openWorkbench(false) }}><label>任务目标<textarea name="task_goal" autoComplete="off" required rows={4} defaultValue={currentDept.id === 'risk' ? '针对计划在中国上市的 MP-300 新产品开展 FTO 分析，重点排查磁驱控制与密封结构。' : ''} placeholder="例如：上市前排查这款产品在中国的专利风险" /></label><label>希望交付物<select name="task_deliverable" autoComplete="off"><option>{currentDept.output}</option><option>部门建议的完整交付包</option></select></label><label>需要重点照顾的要求<input name="task_notes" autoComplete="off" placeholder="时间、预算、目标市场或指定专家（选填）" /></label><div className="modal-actions"><button type="button" className="btn btn-secondary" onClick={() => setModal(null)}>取消</button><button className="btn btn-primary" type="submit">确认交办<ArrowRight size={16} /></button></div></form></Modal>}
