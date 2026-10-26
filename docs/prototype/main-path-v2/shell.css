@@ -3461,3 +3461,116 @@ h2.prof-edit { display: inline; font: inherit; font-size: inherit; font-weight: 
 body[data-page="professional"] .sidebar-pro-exit .main-nav a.side-back {
   font-weight: 600;
 }
+
+/* —— 公司页：本案+最近案可发现（清菜单墙≠藏案列表；禁侧栏墙） —— */
+.company-cases-strip {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--warm-paper);
+}
+.company-cases-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.company-cases-head h2 {
+  margin: 2px 0 0;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.company-cases-links {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.company-cases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.company-case-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition-property: background-color, border-color, transform;
+  transition-duration: 140ms;
+  transition-timing-function: ease-out;
+}
+.company-case-row:hover {
+  background: var(--warm-paper);
+  border-color: oklch(0 0 0 / 0.16);
+}
+.company-case-row:active { transform: scale(0.96); }
+.company-case-row:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.company-case-row.is-current {
+  border-color: var(--ink);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.company-case-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.company-case-main strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+.company-case-main small {
+  font-size: 11px;
+  color: var(--ink-3);
+  text-wrap: pretty;
+}
+.company-case-badge {
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 2px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  background: var(--ink);
+  color: var(--paper);
+}
+.company-case-badge.is-recent {
+  background: transparent;
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+}
+.company-case-go {
+  flex: 0 0 auto;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.company-case-row.is-current .company-case-go {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.company-cases-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+html[data-mode="assistant"] .company-cases-strip {
+  /* 助手态公司页收束案列表噪音时可折；仍保留顶栏真切换器 */
+}

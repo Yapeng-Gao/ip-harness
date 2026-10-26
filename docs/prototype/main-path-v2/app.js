@@ -419,6 +419,9 @@
   const WORK_PAGES = ['home', 'company', 'cases', 'dept', 'pending', 'delegate', 'case-new'];
 
   function pendingDeptForRole(r) {
+    const c = activeCase();
+    if (c && c.dept) return c.dept;
+    // no active: role fallback only for empty demos
     return (r || role()) === 'agency' ? 'oa' : 'disclosure';
   }
   function gateHref(deptId) {
@@ -514,13 +517,56 @@
   function applyHasCaseUI() {
     const on = hasCase();
     document.documentElement.dataset.hasCase = on ? '1' : '0';
+    const m = mode();
     document.querySelectorAll('[data-home-case]').forEach(el => {
       const want = el.dataset.homeCase; // has | none
-      el.classList.toggle('hidden', want === 'has' ? !on : on);
+      let hide = want === 'has' ? !on : on;
+      // E2E-B: 同时有 data-show-mode 时并集隐藏（助手态不叠墨色大卡）
+      if (el.dataset.showMode) {
+        const allowed = el.dataset.showMode.split(/\s+/);
+        if (!allowed.includes(m)) hide = true;
+      }
+      el.classList.toggle('hidden', hide);
     });
   }
+  function loadExtraCases() {
+    try { return JSON.parse(localStorage.getItem('mpv2-extra-cases') || '[]'); }
+    catch (e) { return []; }
+  }
+  function allCases() {
+    const extra = loadExtraCases().filter(c => c && c.id && !CASES.some(b => b.id === c.id));
+    return CASES.concat(extra);
+  }
   function getCase(id) {
-    return CASES.find(c => c.id === id) || null;
+    return allCases().find(c => c.id === id) || null;
+  }
+  function mintCaseId() {
+    return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+  }
+  function createCaseStub(name) {
+    const title = (name || '').trim() || '未命名案子';
+    const id = mintCaseId();
+    const stub = {
+      id: id,
+      name: title,
+      short: title.length > 14 ? title.slice(0, 14) : title,
+      glyph: '新',
+      dept: 'disclosure',
+      deptName: '交底部',
+      block: '新开案 · 待交底齐套',
+      next: '完善交底并齐套',
+      who: '交底部待命',
+      status: 'active',
+      deadline: 'ok',
+      client: '澄明科技',
+      progress: '距可递交还 6 站'
+    };
+    const extras = loadExtraCases().filter(c => c && c.id !== id);
+    extras.unshift(stub);
+    localStorage.setItem('mpv2-extra-cases', JSON.stringify(extras.slice(0, 24)));
+    localStorage.setItem('mpv2-has-case', '1');
+    localStorage.setItem('mpv2-active-case', id);
+    return stub;
   }
   function activeCaseId() {
     if (qs('nocase') === '1') return '';
@@ -640,7 +686,13 @@
     // assistant: hide sidebar + dept map (CSS); project: everyday; studio: lands on professional.html
     document.querySelectorAll('[data-show-mode]').forEach(el => {
       const allowed = el.dataset.showMode.split(/\s+/);
-      el.classList.toggle('hidden', !allowed.includes(m));
+      let hide = !allowed.includes(m);
+      if (!hide && el.dataset.homeCase) {
+        const on = hasCase();
+        const want = el.dataset.homeCase;
+        if (want === 'has' ? !on : on) hide = true;
+      }
+      el.classList.toggle('hidden', hide);
     });
     // Dept: assistant slim tree via CSS; 专业换面不在此加密度
     document.querySelectorAll('[data-tier-workbench]').forEach(wb => {
@@ -653,6 +705,12 @@
     const page = document.body.dataset.page || '';
     if (m === 'project') {
       localStorage.setItem('mpv2-mode', 'project');
+      // E2E-A: 已在 home 再点「项目」= 同页切回项目态（可拉缺口大卡），勿跳公司
+      if (page === 'home') {
+        applyModeUI('project');
+        syncHomeSurfacesFromCase();
+        return;
+      }
       // Already on case-shell workbench (company/dept): stay, soft apply
       if (page === 'company' || page === 'dept') {
         applyModeUI('project');
@@ -662,16 +720,18 @@
         location.href = withRole(activeCaseId() ? (lastWorkHref('company.html')) : projectLandingHref());
         return;
       }
-      // Cross-case or other: 项目 tab 三态着陆
+      // 首次着陆 / 从别处进项目：三态着陆（有活跃→公司 / 有案无活跃→案盘 / 无案→开案子）
       location.href = withRole(projectLandingHref());
       return;
     }
     if (m === 'studio') {
-      // 专业须带案：无活跃案不得假编制
+      // 专业须带案：无活跃案不得假编制；toast 须可见后再跳
       if (!hasCase() || !activeCaseId()) {
-        toast('专业须先有案：请先打开或开一个案子');
         localStorage.setItem('mpv2-mode', 'project');
-        location.href = withRole(projectLandingHref());
+        applyModeUI('project');
+        toastThen('专业须先有案：请先打开或开一个案子', function () {
+          location.href = withRole(projectLandingHref());
+        }, 1300);
         return;
       }
       if (page !== 'professional') {
@@ -691,7 +751,7 @@
         location.href = withRole('home.html');
         return;
       }
-      // home / company / cases：同页助手态；跨案面顶栏已无案锁
+      // home / company / cases：同页助手态；跨案面顶栏已无案锁；助手态不叠墨色大卡（data-show-mode）
       applyModeUI('assistant');
       return;
     }
@@ -707,11 +767,15 @@
 
   function ensureProfessionalLanding() {
     const page = document.body.dataset.page || '';
+    syncActiveCaseQuery();
     if (page === 'professional') {
-      // 专业须带案：直开 professional 无活跃案 → 先落到有案语境
+      // 专业须带案：直开 professional 无活跃案 → toast 可见后再落到有案语境
       if (!hasCase() || !activeCaseId()) {
         localStorage.setItem('mpv2-mode', 'project');
-        location.replace(withRole(projectLandingHref()));
+        const dest = withRole(projectLandingHref());
+        toastThen('专业须先有案：请先打开或开一个案子', function () {
+          location.replace(dest);
+        }, 1300);
         return true;
       }
       return false;
@@ -719,7 +783,10 @@
     if (mode() === 'studio' && WORK_PAGES.indexOf(page) !== -1) {
       if (!hasCase() || !activeCaseId()) {
         localStorage.setItem('mpv2-mode', 'project');
-        location.replace(withRole(projectLandingHref()));
+        const dest = withRole(projectLandingHref());
+        toastThen('专业须先有案：请先打开或开一个案子', function () {
+          location.replace(dest);
+        }, 1300);
         return true;
       }
       location.replace(withRole('professional.html'));
@@ -792,11 +859,31 @@
     document.querySelectorAll('[data-case-go-dept]').forEach(a => {
       a.setAttribute('href', 'dept.html?dept=' + c.dept);
     });
+    // Progress track: mark current dept from case state
+    const track = document.querySelector('.case-progress-track');
+    if (track) {
+      track.querySelectorAll('li').forEach(li => {
+        li.classList.remove('is-current');
+        const a = li.querySelector('a[href]');
+        if (!a) return;
+        const m = (a.getAttribute('href') || '').match(/dept=([a-z]+)/);
+        if (m && m[1] === c.dept) li.classList.add('is-current');
+      });
+      const headStrong = document.querySelector('.case-progress-head strong');
+      if (headStrong) {
+        headStrong.textContent = '当前站：' + c.deptName + ' → ' + c.progress;
+      }
+    }
+    document.querySelectorAll('.case-status-main .tag').forEach(tag => {
+      tag.innerHTML = '<span class="tag-dot"></span>' + c.deptName + ' · 进行中';
+    });
     const recent = document.querySelector('[data-case-recent]');
     if (recent) {
-      const recentIds = [c.id].concat(CASES.map(x => x.id).filter(id => id !== c.id)).slice(0, 4);
+      const catalog = allCases();
+      const recentIds = [c.id].concat(catalog.map(x => x.id).filter(id => id !== c.id)).slice(0, 4);
       recent.innerHTML = recentIds.map(id => {
         const item = getCase(id);
+        if (!item) return '';
         const on = id === c.id ? ' is-active' : '';
         return '<button type="button" class="case-switcher-item' + on + '" data-switch-case="' + id + '" role="menuitem">' +
           '<strong>' + item.short + '</strong><small>' + item.deptName + ' · ' + item.block + '</small></button>';
@@ -823,6 +910,10 @@
         location.href = withRole('case-new.html');
       });
     });
+    // Bell / gate follow 本案卡点部
+    applyBellByRole(role());
+    renderCompanyCasesStrip();
+    syncCompanyNeedMeFromCase();
   }
 
 
@@ -889,6 +980,11 @@
     el.classList.add('show');
     clearTimeout(el._t);
     el._t = setTimeout(() => el.classList.remove('show'), 2400);
+  }
+  function toastThen(text, fn, ms) {
+    toast(text);
+    const wait = typeof ms === 'number' ? ms : 1300;
+    setTimeout(fn, wait);
   }
 
   /* —— Delegation chain state —— */
@@ -2467,6 +2563,96 @@
     }
   }
 
+  function syncHomeSurfacesFromCase() {
+    if ((document.body.dataset.page || '') !== 'home') return;
+    const c = activeCase();
+    const on = hasCase() && !!c;
+    // Gap cards only in project mode + has case (助手态不叠墨色大卡靠 data-show-mode)
+    document.querySelectorAll('[data-home-gap="has"]').forEach(el => {
+      // visibility also gated by applyHasCaseUI / data-show-mode
+      if (el.hasAttribute('data-home-case')) return; // leave to applyHasCaseUI
+    });
+    if (!on) return;
+    const gate = 'dept.html?dept=' + encodeURIComponent(c.dept) + '&gate=1';
+    const work = 'dept.html?dept=' + encodeURIComponent(c.dept);
+    document.querySelectorAll('.gap-primary-card').forEach(a => {
+      a.setAttribute('href', gate);
+      const lead = a.querySelector('.gap-primary-lead');
+      if (lead) {
+        lead.textContent = '【' + (c.short || c.name) + '】' + c.deptName + ' · ' + c.block + ' · 待你处理';
+      }
+    });
+    document.querySelectorAll('.need-me-head a.text-btn, .need-me a.rail-item[data-testid="home-pending-entry"]').forEach(a => {
+      a.setAttribute('href', gate);
+    });
+    document.querySelectorAll('a.notice-button').forEach(a => a.setAttribute('href', gate));
+  }
+
+
+  function syncCompanyNeedMeFromCase() {
+    if ((document.body.dataset.page || '') !== 'company') return;
+    const c = activeCase();
+    if (!c) return;
+    const work = 'dept.html?dept=' + encodeURIComponent(c.dept);
+    const gate = work + '&gate=1';
+    document.querySelectorAll('.company-need-me a.text-btn, .company-need-me a.rail-item').forEach((a, i) => {
+      // keep third "另一案" row if marked data-show-mode only as project peek — leave index 2
+      if (i >= 2) return;
+      a.setAttribute('href', i === 0 ? work : gate);
+    });
+    document.querySelectorAll('.dept-map-wrap > div > a.weak-link[href*="dept.html"]').forEach(a => {
+      if ((a.textContent || '').indexOf('当前部') !== -1) {
+        a.setAttribute('href', work);
+        a.textContent = '当前部 · ' + c.deptName;
+      }
+    });
+  }
+
+  function renderCompanyCasesStrip() {
+    const host = document.querySelector('[data-company-cases]');
+    if (!host) return;
+    const cur = activeCase();
+    const catalog = allCases();
+    if (!catalog.length) {
+      host.innerHTML = '<p class="company-cases-empty">还没有案子。<a class="weak-link" href="case-new.html" data-keep-role>开新案子</a></p>';
+      return;
+    }
+    const ordered = cur
+      ? [cur].concat(catalog.filter(x => x.id !== cur.id)).slice(0, 5)
+      : catalog.slice(0, 5);
+    host.innerHTML = ordered.map((item, i) => {
+      const isCur = cur && item.id === cur.id;
+      const badge = isCur ? '<span class="company-case-badge">本案</span>' : (i === 1 ? '<span class="company-case-badge is-recent">最近</span>' : '');
+      return '<button type="button" class="company-case-row' + (isCur ? ' is-current' : '') + '" data-company-pick="' + item.id + '">' +
+        '<span class="company-case-main">' + badge +
+          '<strong>' + item.short + '</strong>' +
+          '<small>' + item.deptName + ' · ' + item.block + '</small>' +
+        '</span>' +
+        '<span class="company-case-go">' + (isCur ? '当前' : '打开 →') + '</span>' +
+      '</button>';
+    }).join('');
+    host.querySelectorAll('[data-company-pick]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-company-pick');
+        if (!id) return;
+        if (cur && id === cur.id) {
+          location.href = withRole('dept.html?dept=' + encodeURIComponent(cur.dept));
+          return;
+        }
+        setActiveCase(id);
+        localStorage.setItem('mpv2-mode', 'project');
+        location.href = withRole('company.html');
+      });
+    });
+    // rebind keep-role for any injected links
+    host.querySelectorAll('a[data-keep-role]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        location.href = withRole(a.getAttribute('href'));
+      });
+    });
+  }
+
   function wireHome() {
     document.querySelectorAll('[data-fill]').forEach(b => {
       b.addEventListener('click', () => {
@@ -2482,6 +2668,7 @@
     });
     wireGoalForm('lead-form', 'lead-input');
     wireGoalForm('lead-form-assist', 'lead-input-assist');
+    syncHomeSurfacesFromCase();
   }
   function wireCompanyPage() {
     document.querySelectorAll('[data-company-fill]').forEach(b => {
@@ -2492,16 +2679,19 @@
     });
     wireGoalForm('company-lead-form', 'company-lead-input');
     wireCompanySnapshot();
+    renderCompanyCasesStrip();
+    syncCompanyNeedMeFromCase();
   }
 
   window.MPV2 = {
     DEPTS, DEPT_ORDER, CASES, role, setRole, mode, setMode, hasCase, setHasCase,
-    activeCaseId, activeCase, setActiveCase, getCase, projectLandingHref,
-    qs, normalizeDeptId, deptFromQuery, toast, withRole,
+    activeCaseId, activeCase, setActiveCase, getCase, allCases, createCaseStub, mintCaseId, projectLandingHref,
+    qs, normalizeDeptId, deptFromQuery, toast, toastThen, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
     wireShell, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
-    renderExperts, renderRailExperts, renderExpertFaces, renderProfExperts, wireProfLightEdit, loadProfLight, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo, gapActionsFor
+    renderExperts, renderRailExperts, renderExpertFaces, renderProfExperts, wireProfLightEdit, loadProfLight, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo, gapActionsFor,
+    syncHomeSurfacesFromCase, renderCompanyCasesStrip
   };
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -2515,8 +2705,9 @@
       a.addEventListener('click', (e) => {
         e.preventDefault();
         if (!hasCase() || !activeCaseId()) {
-          toast('专业须先有案：请先打开或开一个案子');
-          location.href = withRole(projectLandingHref());
+          toastThen('专业须先有案：请先打开或开一个案子', function () {
+            location.href = withRole(projectLandingHref());
+          }, 1300);
           return;
         }
         localStorage.setItem('mpv2-mode', 'studio');

@@ -70,8 +70,11 @@
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('new-case').addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!document.getElementById('case-name').value.trim()) return;
-      MPV2.setHasCase(true); MPV2.setActiveCase('mp'); location.href = MPV2.withRole('company.html');
+      const name = document.getElementById('case-name').value.trim();
+      if (!name) return;
+      // 演示诚实：开案 stub 新 id（勿永远复用 mp）
+      MPV2.createCaseStub(name);
+      location.href = MPV2.withRole('company.html');
     });
     document.getElementById('create-delegate').addEventListener('click', () => {
       const name = document.getElementById('case-name').value.trim();
@@ -79,7 +82,8 @@
       if (!name) { MPV2.toast('请填写案名'); return; }
       const plan = MPV2.planFromGoal(goal);
       MPV2.setDelegation({ goal: plan.goal, step: 'plan', dept: plan.deptId });
-      MPV2.setHasCase(true); MPV2.setActiveCase('mp'); location.href = MPV2.withRole('delegate.html?step=plan');
+      MPV2.createCaseStub(name);
+      location.href = MPV2.withRole('delegate.html?step=plan');
     });
   });
   </script>
