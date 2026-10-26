@@ -1,0 +1,87 @@
+# main-path-v3 · Kimi 专利生命周期整包原型（对照实验）
+
+**产品理念**：虚拟知产公司 · 尽快把专利申下来（权利形成主线）  
+**路径**：`docs/prototype/main-path-v3/`  
+**来源**：`~/Downloads/Kimi_Agent_专利生命周期评估/app`（整包迁入，保留 Kimi 页面结构与主线叙事）  
+**对照**：`docs/prototype/main-path-v2/` = 咱们现行主路径（纸感壳 · 默认验收 @8766）  
+**本目录**：对照实验 · **勿混 v2 验收** · **勿改 v2** · **勿抄进 `apps/agent`**
+
+附：`SOURCE-产品理念业务逻辑与产品逻辑.docx` 为同批 Kimi 产出的理念/业务逻辑原文（只读溯源）。
+
+## 与 v2 的关系（一句）
+
+v3 = Kimi 全生命周期 / 跨对象经营首页 / 十部橙皮 SPA 整包；v2 = 七部纸感壳主路径。两者并行对照，默认仍跑 v2。
+
+| | main-path-v2 | main-path-v3（本目录） |
+|---|---|---|
+| 壳 | 浅色纸感 · 薄入口 | Kimi 原皮（橙/深侧栏） |
+| 部门 | 七部投影 | 十部全生命周期 |
+| 首页 | 登录后助手薄入口 | 跨项目经营首页 |
+| 端口 | **8766** | **8767** |
+| 验收 | 正式主路径 | 对照实验，勿混 |
+
+## 怎么起本地预览
+
+需要 Node 20+（本机已验证 npm 可用）。**不含 `node_modules`**，首次需安装：
+
+```bash
+cd docs/prototype/main-path-v3
+npm install
+npm run dev
+# → http://127.0.0.1:8767/
+```
+
+构建预览：
+
+```bash
+npm run build && npm run preview
+# → http://127.0.0.1:8767/
+```
+
+建议从官网（`surface=site`）进：营销站 → 登录（企业/代理 · 首次/已有）→ 工作区。
+
+## 页面 / 视图清单（单页 SPA，状态机切面）
+
+入口都在 `src/App.tsx`（`src/pages/Home.tsx` 为 Vite 模板残留，未挂路由）。
+
+### 登录前
+| Surface | 说明 |
+|---|---|
+| `site` · MarketingSite | 官网：英雄区、部门接力演示、业务能力、可信机制、双端三深度 |
+| `login` · LoginPage | 演示身份：企业研发 / 代理所 · 首次使用 / 已有工作 |
+
+### 登录后 · 三档模式
+| Mode | 说明 |
+|---|---|
+| `assistant` | 助手：跟顾言说目标 → 拆交办 |
+| `project` | 项目：对象列表 / 工作台协作 |
+| `studio` | 专业工作室：部门/专家/Skill/提示词/MCP/发布 |
+
+### 登录后 · 视图（View）
+| View | 企业研发 | 代理所 |
+|---|---|---|
+| `home` | 公司首页（跨项目待办/进展） | 同左换面 |
+| `projects` | 项目与对象（研发项目/申请案件/产品风险） | — |
+| `clients` | — | 客户与案件 |
+| `workbench` | 协作台 + 文书台（交底/OA/质检语境） | 同左换面 |
+| `assets` | 专利资产 | 同左 |
+| `departments` | 部门与专家（十部） | 同左 |
+| `messages` | 协同消息 | 客户协同 |
+| `studio` | 专业工作室（mode=studio 时） | 同左 |
+
+### 十部（权利形成主线）
+创新启发 → 专利挖掘 → 布局策略 → 风险排查 → 交底书 → 申请文件 → 质量审查 → OA 答复 → 流程事务 → 资产运营
+
+## 工程说明
+
+- 栈：React 19 + Vite 7 + TypeScript + Tailwind 3 + shadcn/ui 组件集
+- `vite.config.ts`：`base: './'` · **dev/preview 端口 8767**（`strictPort` · `host: 127.0.0.1`）
+- 最小适配仅：端口、包名 `main-path-v3-kimi`、本 README；**未**改成纸感壳、未砍十部、未重做页面
+- `.gitignore` 已排除 `node_modules` / `dist`
+
+## 禁
+
+- 改 `docs/prototype/main-path-v2/`
+- 改 / 抄进 `apps/agent`
+- 占 8766（留给 v2）
+- 把本包验收结果当成 v2 正式验收
