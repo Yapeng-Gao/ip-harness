@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ArrowLeft, ArrowRight, ArrowUpRight, Bell, BookOpen, BriefcaseBusiness,
+  ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ArrowUpRight, Bell, BookOpen, BriefcaseBusiness,
   Building2, Cable, Check, CheckCircle2, ChevronDown, ChevronRight,
   CircleAlert, CircleHelp, Clock3, FileCheck2, FileClock,
   Files, FileText, FlaskConical, FolderKanban, GitBranch, Library,
@@ -173,7 +173,10 @@ export default function App() {
   const [prompt, setPrompt] = useState('先核对输入事实与证据来源，再开始起草。不得补造技术效果；涉及保护范围、法律结论和对外递交时，必须提交真实人员确认。')
   const [testPassed, setTestPassed] = useState(false)
   const [published, setPublished] = useState(false)
-  const [planWalk, setPlanWalk] = useState<null | { kind: 'new' | 'oa'; step: number }>(null)
+  const [planNote, setPlanNote] = useState('')
+  const [planChainIds, setPlanChainIds] = useState<string[] | null>(null)
+  const [workFresh, setWorkFresh] = useState(false)
+  const [processLog, setProcessLog] = useState<{ id: string; time: string; expert: string; action: string; artifact?: string; status: 'done' | 'active' | 'queued' }[]>([])
   const [workPlanIndex, setWorkPlanIndex] = useState(2)
   const [factConfirmed, setFactConfirmed] = useState(false)
   const [nodeConfirmed, setNodeConfirmed] = useState(false)
@@ -217,13 +220,36 @@ export default function App() {
     setWorkContext(context)
     const fresh = opts?.fresh === true
     if (fresh) setHandedOff(false)
-    setActiveDoc(oa ? '意见陈述书' : context === 'storage' ? '权利要求草案' : (!fresh && handedOff) ? '权利要求草案' : '交底书 V3')
+    setActiveDoc(oa ? '意见陈述书' : context === 'storage' ? '权利要求草案' : (!fresh && handedOff) ? '权利要求草案' : (fresh ? '交底书草稿' : '交底书 V3'))
     setActiveDept(oa ? 'oa' : context === 'storage' ? 'quality' : (!fresh && handedOff) ? 'drafting' : 'disclosure')
     setActiveProjectCode(oa ? 'CN202610483217.6' : context === 'storage' ? 'CN202610512086.4' : 'RD-2026-017')
     setFactConfirmed(false)
     setNodeConfirmed(false)
     setWorkPlanIndex(opts?.planIndex ?? (fresh ? 0 : 2))
-    setPlanWalk(null)
+    setPlanChainIds(null)
+    setPlanNote('')
+    setWorkFresh(fresh)
+    if (fresh) {
+      setDocket([])
+      setAssetBucket('input')
+      setComposeFiles([])
+      setProcessLog([
+        { id: 'p0', time: '刚刚', expert: '顾言', action: '已确认计划，交办交底书部接手本关', status: 'done' },
+        { id: 'p1', time: '排队', expert: '技术访谈专家', action: '读取输入材料，列出事实缺口', artifact: '缺口清单', status: 'queued' },
+        { id: 'p2', time: '排队', expert: '技术访谈专家', action: '访谈补齐关键效果与工况', artifact: '访谈纪要', status: 'queued' },
+        { id: 'p3', time: '排队', expert: '交底书撰写专家', action: '按结构起草交底书中间稿', artifact: '交底书草稿 V0', status: 'queued' },
+        { id: 'p4', time: '排队', expert: '交底书撰写专家', action: '形成可确认交卷物', artifact: '交底书 V1', status: 'queued' },
+      ])
+    } else {
+      setDocket(seedDocket)
+      setAssetBucket(null)
+      setProcessLog([
+        { id: 'd0', time: '昨天 16:10', expert: '技术访谈专家', action: '完成 6 项访谈整理', artifact: '访谈纪要 V2.docx', status: 'done' },
+        { id: 'd1', time: '今天 09:48', expert: '交底书撰写专家', action: '形成交底书 V3 中间稿', artifact: '交底书 V3.pdf', status: 'done' },
+        { id: 'd2', time: '今天 10:12', expert: '交底书撰写专家', action: '标出 2 处待研发确认事实', artifact: '确认闸 · 技术效果', status: 'active' },
+        { id: 'd3', time: '今天 10:24', expert: '林岚 · 代理师', action: '复核保护层次建议', status: 'active' },
+      ])
+    }
     setProjectPickerOpen(false)
     navigate('workbench')
   }
@@ -255,7 +281,7 @@ export default function App() {
   const currentDept = departments.find(d => d.id === activeDept) ?? departments[4]
   const oaMode = agencyTabs.includes(activeDoc)
   const storageMode = workContext === 'storage' && !oaMode
-  const workTabs = oaMode ? agencyTabs : storageMode ? storageTabs : docTabs
+  const workTabs = oaMode ? agencyTabs : storageMode ? storageTabs : (workFresh ? ['交底书草稿', '检索报告', '权利要求草案', '审批记录'] : docTabs)
   const workMeta = oaMode
     ? { glyph: 'MS', name: '低能耗膜分离清洗控制方法', code: 'CN202610483217.6', status: '第一次 OA 答复', object: '申请案件状态' }
     : storageMode
@@ -277,44 +303,161 @@ export default function App() {
     : role === 'agency'
       ? '代理所私有空间 · 客户仅见交付快照'
       : '企业私有空间 · 确认交付后方可共享'
-  const leadPlan = /审查|OA|答复/i.test(leadRequest)
-    ? { dept: 'OA 答复部', text: '先核对通知书、申请文本与答复期限，再形成修改和意见陈述策略。', kind: 'oa' }
+  const leadPlanKind: 'oa' | 'risk' | 'new' = /审查|OA|答复/i.test(leadRequest)
+    ? 'oa'
     : /FTO|上市|风险|侵权/i.test(leadRequest)
-      ? { dept: '风险排查部', text: '先明确产品方案、目标市场与上市时间，再开展有效权利要求比对。', kind: 'risk' }
-      : { dept: '交底书部', text: '先由技术访谈专家补齐事实，再组织检索、布局与申请文件起草。', kind: 'new' }
+      ? 'risk'
+      : 'new'
+  const planCatalog: Record<'new' | 'oa' | 'risk', {
+    deptId: string
+    dept: string
+    text: string
+    assignDetail: string
+    deliverable: string
+    deliverableHint: string
+    checklist: string[]
+    confirmType: string
+    confirmDetail: string
+    experts: { name: string; seat: string }[]
+    chain: { id: string; name: string; pitch: string; deliverable: string; confirmType: string }[]
+    notePlaceholder: string
+  }> = {
+    new: {
+      deptId: 'disclosure',
+      dept: '交底书部',
+      text: '先由交底书部补齐技术事实，再按接力链推进检索与申请文件。',
+      assignDetail: '补齐技术事实与权属声明，形成可接力的交底书',
+      deliverable: '技术交底书 V3',
+      deliverableHint: '确认计划后立刻打开交底书部工作台；上传与撰写在台内完成',
+      checklist: ['技术方案完整', '技术效果可验证', '权属声明'],
+      confirmType: '技术事实',
+      confirmDetail: '测试数据与工况是否与记录一致——确认后才接力下一部门',
+      experts: [
+        { name: '技术访谈专家', seat: '主责' },
+        { name: '交底书撰写专家', seat: '协作' },
+      ],
+      chain: [
+        { id: 'disclosure', name: '交底书部', pitch: '补齐事实并形成交底', deliverable: '技术交底书 V3', confirmType: '技术事实' },
+        { id: 'risk', name: '风险排查部', pitch: '可专利性检索与比对', deliverable: '检索报告 R2', confirmType: '专业复核' },
+        { id: 'drafting', name: '申请文件部', pitch: '设计权利要求与说明书', deliverable: '申请文件包', confirmType: '保护范围确认' },
+      ],
+      notePlaceholder: '例如：优先补权属，访谈安排在本周内',
+    },
+    oa: {
+      deptId: 'oa',
+      dept: 'OA 答复部',
+      text: '先核对通知书、申请文本与答复期限，再形成修改和意见陈述策略。',
+      assignDetail: '在剩余期限内形成可复核的第一次审查意见答复包',
+      deliverable: '意见陈述书 V2',
+      deliverableHint: '确认计划后立刻打开 OA 答复部工作台；同屏右栏拍板',
+      checklist: ['通知书与期限对齐', 'D1/D2 特征比对', '修改与争辩口径'],
+      confirmType: '商业与风险决策',
+      confirmDetail: '量产方案是否采用双参数联动——确认后进入代理师复核，不自动递交',
+      experts: [
+        { name: 'OA 策略专家', seat: '主责' },
+        { name: '创造性争辩专家', seat: '协作' },
+      ],
+      chain: [
+        { id: 'oa', name: 'OA 答复部', pitch: '形成答复策略与修改对照', deliverable: '意见陈述书 V2', confirmType: '商业与风险决策' },
+        { id: 'quality', name: '质量审查部', pitch: '复核修改超范围与一致性', deliverable: '质检快照', confirmType: '专业复核' },
+        { id: 'procedure', name: '流程事务部', pitch: '期限与递交清单', deliverable: '递交核查单', confirmType: '对外交付 / 递交' },
+      ],
+      notePlaceholder: '例如：优先处理创造性争辩，客户确认安排在周五前',
+    },
+    risk: {
+      deptId: 'risk',
+      dept: '风险排查部',
+      text: '先明确产品方案、目标市场与上市时间，再开展有效权利要求比对。',
+      assignDetail: '针对拟上市产品开展 FTO，标出高相关权利要求与选项',
+      deliverable: 'FTO 风险比对报告',
+      deliverableHint: '确认计划后打开交办单，补充产品与地区约束',
+      checklist: ['产品方案与地区', '有效权利要求比对', '风险分级与选项'],
+      confirmType: '商业与风险决策',
+      confirmDetail: '高相关专利是否规避 / 无效 / 许可——确认前不自动对外动作',
+      experts: [
+        { name: '检索分析专家', seat: '主责' },
+        { name: 'FTO 法律专家', seat: '协作' },
+      ],
+      chain: [
+        { id: 'risk', name: '风险排查部', pitch: 'FTO 比对与风险分级', deliverable: 'FTO 风险比对报告', confirmType: '商业与风险决策' },
+        { id: 'strategy', name: '布局策略部', pitch: '规避设计与外围布局建议', deliverable: '规避与布局建议', confirmType: '专业复核' },
+        { id: 'drafting', name: '申请文件部', pitch: '必要时补申请或改写', deliverable: '补强申请文件', confirmType: '保护范围确认' },
+      ],
+      notePlaceholder: '例如：中国 + 欧盟优先，11 月上市前出结论',
+    },
+  }
+  const leadPlan = planCatalog[leadPlanKind]
+  const activePlanChain = (planChainIds
+    ? planChainIds.map(id => leadPlan.chain.find(n => n.id === id)).filter(Boolean) as typeof leadPlan.chain
+    : leadPlan.chain)
+  const movePlanChain = (index: number, dir: -1 | 1) => {
+    const base = planChainIds ?? leadPlan.chain.map(n => n.id)
+    const j = index + dir
+    if (j < 0 || j >= base.length) return
+    const next = [...base]
+    ;[next[index], next[j]] = [next[j], next[index]]
+    setPlanChainIds(next)
+  }
   const submitLead = (e: React.FormEvent) => {
     e.preventDefault()
-    if (leadInput.trim()) setLeadRequest(leadInput.trim())
+    if (!leadInput.trim()) return
+    setLeadRequest(leadInput.trim())
+    setPlanChainIds(null)
+    setPlanNote('')
   }
-  const planWalkSteps = leadPlan.kind === 'oa'
-    ? [
-        ['核对通知书与期限', '先对齐审查意见、申请文本与答复截止日，确认本节点目标。'],
-        ['比对 D1 / D2 证据', '拆解争议特征，形成证据比对与修改空间判断。'],
-        ['形成修改与争辩策略', '产出意见陈述与权利要求修改对照，等待事实确认。'],
-        ['代理师复核并交付', '真实人员复核后进入工作台，由你确认再接力。'],
-      ]
-    : [
-        ['读取研发资料', '整理交底、图纸与实验记录，归入项目输入材料。'],
-        ['访谈补齐技术事实', '技术访谈专家追问关键效果与工况，标出待你确认的事实。'],
-        ['检索对照与撰写', '对照检索完善交底书，形成可供申请文件部接手的版本。'],
-        ['研发确认并接力', '你确认技术事实与节点交付后，按权限交给下一部门。'],
-      ]
   const startLeadPlan = () => {
     setFirstRun(false)
-    if (leadPlan.kind === 'risk') { setActiveDept('risk'); setModal('task'); return }
-    setPlanWalk({ kind: leadPlan.kind === 'oa' ? 'oa' : 'new', step: 0 })
-    notify(leadPlan.kind === 'oa' ? '已确认 OA 计划，请逐步走完四步' : '已确认计划，请逐步走完四步后再进入工作台')
-  }
-  const advancePlanWalk = () => {
-    if (!planWalk) return
-    if (planWalk.step < 3) {
-      setPlanWalk({ ...planWalk, step: planWalk.step + 1 })
-      notify(`第 ${planWalk.step + 2} 步：${planWalkSteps[planWalk.step + 1][0]}`)
+    if (leadPlanKind === 'risk') {
+      setActiveDept('risk')
+      setModal('task')
+      notify('已确认风险排查计划，请补充产品与地区约束')
       return
     }
-    const oa = planWalk.kind === 'oa'
-    notify('四步计划已完成，进入工作台')
-    openWorkbench(oa, 'magnetic', { planIndex: 0, fresh: true })
+    notify(leadPlanKind === 'oa' ? '已确认 OA 计划，进入工作台（空卷宗）' : '已确认计划，进入交底书部工作台（空材料）')
+    openWorkbench(leadPlanKind === 'oa', 'magnetic', { planIndex: 0, fresh: true })
+  }
+  const advanceFreshProcess = () => {
+    if (!workFresh) {
+      notify('演示项目已有过程资产，可从左栏查看输入 / 过程 / 产物')
+      return
+    }
+    const inputCount = docket.filter(d => d.bucket === 'input').length
+    if (workPlanIndex === 0 && inputCount === 0) {
+      notify('请先上传或点「放入演示样例」，专家才能开始读取')
+      setAssetBucket('input')
+      return
+    }
+    if (workPlanIndex >= 3) {
+      notify('本关交卷物已形成，请在确认闸拍板')
+      return
+    }
+    const next = workPlanIndex + 1
+    if (next === 1) {
+      setDocket(v => [...v, { id: `pr-gap-${Date.now()}`, name: '缺口清单.md', bucket: 'process', note: '技术访谈专家 · 读材料产出', source: 'seed' }])
+      setProcessLog(v => v.map(e => e.id === 'p1' ? { ...e, time: '刚刚', status: 'done' } : e.id === 'p2' ? { ...e, time: '进行中', status: 'active' } : e))
+      setWorkPlanIndex(1)
+      setAssetBucket('process')
+      notify('技术访谈专家已产出缺口清单 → 过程')
+      return
+    }
+    if (next === 2) {
+      setDocket(v => [...v, { id: `pr-iv-${Date.now()}`, name: '访谈纪要 V0.docx', bucket: 'process', note: '技术访谈专家 · 访谈产出', source: 'seed' }])
+      setProcessLog(v => v.map(e => e.id === 'p2' ? { ...e, time: '刚刚', status: 'done' } : e.id === 'p3' ? { ...e, time: '进行中', status: 'active' } : e))
+      setWorkPlanIndex(2)
+      setActiveDoc('交底书草稿')
+      setAssetBucket('process')
+      notify('访谈纪要已入过程；撰写专家开始起草')
+      return
+    }
+    setDocket(v => [...v,
+      { id: `pr-dr-${Date.now()}`, name: '交底书草稿 V0.docx', bucket: 'process', note: '交底书撰写专家 · 中间稿', source: 'seed' },
+      { id: `out-v1-${Date.now()}`, name: '交底书 V1.pdf', bucket: 'output', note: '待你确认 · 可下载预览', source: 'seed' },
+    ])
+    setProcessLog(v => v.map(e => e.id === 'p3' || e.id === 'p4' ? { ...e, time: '刚刚', status: 'done' } : e))
+    setWorkPlanIndex(3)
+    setActiveDoc('交底书 V3')
+    setAssetBucket('output')
+    notify('交底书 V1 已入产物；请确认技术事实与节点交付')
   }
   const filteredProjects = projects.filter(p =>
     (objectFilter === '全部对象' || p.kind === objectFilter) &&
@@ -572,11 +715,64 @@ export default function App() {
             <div className="lead-command">
               <form onSubmit={submitLead}><input name="lead_goal" autoComplete="off" value={leadInput} onChange={e => setLeadInput(e.target.value)} placeholder={firstRun ? '例如：我们有一项磁驱泵控制技术，想评估如何保护…' : '交办新目标，或告诉顾言调整工作区优先级…'} aria-label="告诉知产负责人你的目标" /><button className="btn btn-ink" type="submit" disabled={!leadInput.trim()}>交给顾言<Send size={14} /></button></form>
               <div className="lead-suggestions"><span>{firstRun ? '从常见目标开始' : '快速交办'}</span>{['整理一项研发成果', '新产品上市前排查风险', '收到审查意见'].map(text => <button key={text} onClick={() => setLeadInput(text)}>{text}</button>)}</div>
-              {leadRequest && !planWalk && <div className="lead-response"><CheckCircle2 size={17} /><div><strong>已理解，建议由{leadPlan.dept}先接手</strong><p>{leadPlan.text} 我会汇总进展，只在需要技术事实或商业决策时找你。</p></div><button className="btn btn-secondary" onClick={startLeadPlan}>确认计划并开始<ArrowRight size={14} /></button></div>}
-              {planWalk && <div className="plan-walk" aria-label="计划四步">
-                <div className="plan-walk-head"><CheckCircle2 size={17} /><div><strong>计划已确认 · {leadPlan.dept}负责</strong><p>请逐步走完四步；完成后进入工作台，不会跳到中段演示。</p></div></div>
-                <div className="plan-sequence plan-walk-sequence">{planWalkSteps.map((s, i) => <div key={s[0]} className={i < planWalk.step ? 'done' : i === planWalk.step ? 'active' : ''}><span>{i < planWalk.step ? <Check size={12} /> : i + 1}</span><strong>{s[0]}</strong>{i < planWalkSteps.length - 1 && <ArrowRight size={13} />}</div>)}</div>
-                <div className="plan-walk-body"><span className="section-kicker">第 {planWalk.step + 1} / 4 步</span><h3>{planWalkSteps[planWalk.step][0]}</h3><p>{planWalkSteps[planWalk.step][1]}</p><div className="plan-walk-actions"><button type="button" className="btn btn-secondary" onClick={() => { setPlanWalk(null); notify('已取消计划推进，可重新确认') }}>取消</button><button type="button" className="btn btn-ink" onClick={advancePlanWalk}>{planWalk.step < 3 ? <>下一步<ArrowRight size={14} /></> : <>完成并进入工作台<ArrowRight size={14} /></>}</button></div></div>
+              {leadRequest && <div className="lead-plan-card" aria-label="可调工作计划">
+                <div className="lead-plan-head">
+                  <CheckCircle2 size={17} />
+                  <div>
+                    <span className="section-kicker">计划可调 · 确认后进台</span>
+                    <strong>建议先由{leadPlan.dept}接手</strong>
+                    <p>你的目标：「{leadRequest.length > 48 ? `${leadRequest.slice(0, 48)}…` : leadRequest}」</p>
+                  </div>
+                </div>
+                <div className="plan-deliverable-hero" aria-label="本关交卷物">
+                  <span className="plan-deliverable-kicker">产出 · 本关交卷物</span>
+                  <strong>{leadPlan.deliverable}</strong>
+                  <small>{leadPlan.deliverableHint}</small>
+                </div>
+                <div className="plan-breakdown">
+                  <article>
+                    <span>交办</span>
+                    <strong>{leadPlan.dept}</strong>
+                    <small>{leadPlan.assignDetail}</small>
+                  </article>
+                  <article>
+                    <span>齐套要点</span>
+                    <ul className="plan-check-inline">{leadPlan.checklist.map(c => <li key={c}>{c}</li>)}</ul>
+                  </article>
+                  <article>
+                    <span>下一步确认</span>
+                    <strong>{leadPlan.confirmType}</strong>
+                    <small>{leadPlan.confirmDetail}</small>
+                  </article>
+                </div>
+                <div className="plan-expert-seats" aria-label="建议专家席">
+                  <span className="section-kicker">建议专家席</span>
+                  <div>{leadPlan.experts.map(e => <span key={e.name} className="plan-expert-chip"><Avatar name={e.name} small /><strong>{e.name}</strong><em>{e.seat}</em></span>)}</div>
+                </div>
+                <p className="plan-chain-hint">顺序可调。确认计划 = 立刻进该部工作台；上传与部内进度在台内完成。</p>
+                <ul className="plan-chain-list" aria-label="可调接力链">
+                  {activePlanChain.map((node, i) => (
+                    <li key={node.id} className={i === 0 ? 'is-primary' : ''}>
+                      <span className="ord">{i + 1}</span>
+                      <div>
+                        <strong>{node.name}</strong>
+                        <span>{node.pitch}</span>
+                        <small>{i === 0 ? <>产出：<em>{node.deliverable}</em> · 关口：{node.confirmType}</> : <>产出：{node.deliverable}；关口：{node.confirmType}</>}</small>
+                      </div>
+                      <div className="plan-chain-move">
+                        <button type="button" className="icon-btn" aria-label={`上移${node.name}`} disabled={i === 0} onClick={() => movePlanChain(i, -1)}><ArrowUp size={14} /></button>
+                        <button type="button" className="icon-btn" aria-label={`下移${node.name}`} disabled={i === activePlanChain.length - 1} onClick={() => movePlanChain(i, 1)}><ArrowDown size={14} /></button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <label className="plan-note-label">计划备注（可调）
+                  <textarea name="plan_note" rows={2} autoComplete="off" value={planNote} onChange={e => setPlanNote(e.target.value)} placeholder={leadPlan.notePlaceholder} />
+                </label>
+                <div className="plan-card-actions">
+                  <button type="button" className="btn btn-secondary" onClick={() => { setLeadRequest(''); setPlanChainIds(null); setPlanNote(''); notify('已返回改目标') }}>返回改目标</button>
+                  <button type="button" className="btn btn-ink" onClick={startLeadPlan}>确认并打开交卷物 · 去{leadPlan.dept}<ArrowRight size={14} /></button>
+                </div>
               </div>}
             </div>
           </section>
@@ -675,6 +871,7 @@ export default function App() {
                   </button>
                   {open && <div className="asset-bucket-list" role="list">
                     <p className="asset-bucket-hint">{hint}</p>
+                    {docket.filter(d => d.bucket === bucket).length === 0 && <p className="asset-bucket-empty">{bucket === 'input' ? '还没有输入材料' : bucket === 'process' ? '专家产出后会出现在这里' : '确认后的交卷物会出现在这里'}</p>}
                     {docket.filter(d => d.bucket === bucket).map(item => (
                       <button type="button" role="listitem" key={item.id} onClick={() => bucket === 'output' ? downloadDemo(item.name) : notify(`已打开${item.name}（${item.note}）`)}>
                         <span><strong>{item.name}</strong><small>{item.note}</small></span>
@@ -692,9 +889,36 @@ export default function App() {
           <div className="editor-pane">
             <div className="editor-tabs" role="tablist">{workTabs.map(doc => <button key={doc} role="tab" aria-selected={activeDoc === doc} className={activeDoc === doc ? 'active' : ''} onClick={() => setActiveDoc(doc)}>{doc}{activeDoc === doc && <span />}</button>)}<button className="icon-btn" onClick={() => setModal('new')} aria-label="新建文件"><Plus size={16} /></button></div>
             <div className="editor-toolbar"><div><button onClick={() => notify('已切换为编辑模式')}><PenLine size={15} />编辑</button><button onClick={() => notify('批注模式已开启')}><MessageSquareText size={15} />批注</button><button onClick={() => notify('版本对比已生成')}>对比版本</button><button type="button" onClick={() => downloadDemo(`${activeDoc}.pdf`)}><Download size={15} />下载</button></div><span className={saved ? '' : 'editing'}>{saved ? <><Check size={13} />已保存</> : '编辑中'}</span></div>
-            {role === 'enterprise' && <div className="lead-workbench"><Avatar name="顾" small /><div><strong>顾言 · 知产负责人</strong><p>{oaMode ? 'OA 答复部已拆解争议并准备答复文本。你只需确认修改范围与实际生产方案。' : storageMode ? '申请文件部与质量审查部正在核查文本一致性。我会汇总问题，再请你确认申请策略。' : workPlanIndex === 0 ? '计划四步已走完，现在从读取材料开始。左栏可补输入，右侧确认闸与对话同屏。' : handedOff ? '申请文件部已接手。我会汇总权利要求与说明书进展，涉及保护范围时再请你决策。' : '交底书部正在完善文本。左卷宗 · 中文书 · 右确认闸同屏，你只需处理标出的技术事实。'}</p></div><Status tone="orange">一屏三栏</Status></div>}
+            {role === 'enterprise' && <div className="lead-workbench"><Avatar name="顾" small /><div><strong>顾言 · 知产负责人</strong><p>{oaMode ? 'OA 答复部已拆解争议并准备答复文本。你只需确认修改范围与实际生产方案。' : storageMode ? '申请文件部与质量审查部正在核查文本一致性。我会汇总问题，再请你确认申请策略。' : workFresh ? (workPlanIndex === 0 ? '卷宗还是空的。先在左栏补输入材料，再点「推进专家动作」看缺口清单与访谈如何产出。' : workPlanIndex < 3 ? '专家动作正在写入过程资产；中栏会在撰写步出现草稿。' : '交卷物已入产物栏，请在确认闸拍板后再接力。') : handedOff ? '申请文件部已接手。我会汇总权利要求与说明书进展，涉及保护范围时再请你决策。' : '交底书部正在完善文本。左卷宗 · 中文书 · 右确认闸同屏，你只需处理标出的技术事实。'}</p></div><Status tone="orange">一屏三栏</Status></div>}
             <div className="document-scroll">
-              {oaMode ? <AgencyDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : storageMode ? <StorageDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : <EnterpriseDocument doc={activeDoc} onEdit={() => setSaved(false)} />}
+              {oaMode ? <AgencyDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : storageMode ? <StorageDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : workFresh && workPlanIndex < 2 ? (
+                <article className="document document-empty">
+                  <div className="doc-meta"><span>交底书 · 尚未形成</span><Status tone="orange">空卷宗起步</Status></div>
+                  <h1>中间稿还没出现</h1>
+                  <p className="doc-lead">确认计划后从空材料开始。先在左栏「输入」上传交底 / 图纸 / 试验记录，再推进专家动作；过程稿会进入「过程」，交卷物进入「产物」。</p>
+                  <div className="empty-doc-steps">
+                    <div><span>01</span><strong>补输入</strong><small>左栏上传材料</small></div>
+                    <div><span>02</span><strong>专家动作</strong><small>访谈列缺口 → 纪要</small></div>
+                    <div><span>03</span><strong>形成交卷</strong><small>撰写专家产出草稿</small></div>
+                  </div>
+                  <div className="empty-doc-actions">
+                    <button type="button" className="btn btn-secondary" onClick={() => openFilePicker('docket')}><Upload size={14} />上传输入材料</button>
+                    <button type="button" className="btn btn-secondary" onClick={() => { setDocket(v => v.some(x => x.id === 'demo-in') ? v : [...v, { id: 'demo-in', name: '研发交底草稿.pdf', bucket: 'input', note: '演示样例 · 输入', source: 'upload' }]); setAssetBucket('input'); notify('已放入演示样例材料到输入') }}>放入演示样例</button>
+                    <button type="button" className="btn btn-ink" onClick={advanceFreshProcess}>推进专家动作<ArrowRight size={14} /></button>
+                  </div>
+                </article>
+              ) : workFresh && workPlanIndex === 2 ? (
+                <article className="document" contentEditable suppressContentEditableWarning onInput={() => setSaved(false)}>
+                  <div className="doc-meta"><span>技术交底书 · 草稿 V0</span><Status tone="orange">撰写专家起草中</Status></div>
+                  <h1>一种磁驱泵的智能控制方法及系统</h1>
+                  <p className="doc-lead">根据访谈纪要整理的初稿。效果数据与工况仍缺，确认闸会标出。</p>
+                  <h2>一、要解决的技术问题</h2>
+                  <p>现有磁驱泵多以固定阈值报警，工况变化时易误报或漏报。</p>
+                  <h2>二、核心技术方案</h2>
+                  <p>（撰写中）拟写入：先评分、再按工况修正的处理顺序……</p>
+                  <div className="doc-comment"><MessageSquareText size={16} /><p><strong>交底书撰写专家</strong>：正在把访谈纪要结构化；下一步补技术效果段落后形成 V1。</p></div>
+                </article>
+              ) : <EnterpriseDocument doc={activeDoc} onEdit={() => setSaved(false)} />}
             </div>
             <div className="editor-footer"><span>{saved ? `内容已同步至${oaMode || storageMode ? '案件卷宗' : '项目事实库'}` : '有未保存修改'}</span><div><button className="btn btn-secondary" onClick={() => { setSaved(true); notify('新版本已保存') }}>保存版本</button><button className="btn btn-ink" onClick={() => setModal('review')}><Stamp size={15} />{role === 'enterprise' ? '提交确认' : '提交质检'}</button></div></div>
           </div>
@@ -702,7 +926,7 @@ export default function App() {
           <aside className="department-pane">
             <div className="department-head"><div><span className="section-kicker">{role === 'enterprise' ? '协同 · 确认闸' : '当前负责部门'}</span><h3>{oaMode ? 'OA 答复部' : handedOff && !storageMode ? '申请文件部' : currentDept.name}</h3></div><button className="icon-btn" onClick={() => navigate('departments')} aria-label="查看部门与专家"><MoreHorizontal size={18} /></button></div>
             <div className="working-team">
-              {(oaMode ? ['策', '辩', '林'] : handedOff || storageMode ? ['权', '说', '质'] : ['访', '检', '林']).map((n, i) => <div key={n}><Avatar name={n} human={i === 2} small /><span><strong>{oaMode ? ['OA 策略专家', '创造性争辩专家', '林岚 · 复核'][i] : handedOff || storageMode ? ['权利要求专家', '说明书撰写专家', '质量审查专家'][i] : ['技术访谈专家', '交底书撰写专家', '林岚 · 代理师'][i]}</strong><small>{i === 2 ? '等待最终复核' : workPlanIndex === 0 && i === 0 ? '正在读取材料' : '已完成本节点任务'}</small></span><CheckCircle2 size={15} /></div>)}
+              {(oaMode ? ['策', '辩', '林'] : handedOff || storageMode ? ['权', '说', '质'] : ['访', '检', '林']).map((n, i) => <div key={n}><Avatar name={n} human={i === 2} small /><span><strong>{oaMode ? ['OA 策略专家', '创造性争辩专家', '林岚 · 复核'][i] : handedOff || storageMode ? ['权利要求专家', '说明书撰写专家', '质量审查专家'][i] : ['技术访谈专家', '交底书撰写专家', '林岚 · 代理师'][i]}</strong><small>{i === 2 ? '等待最终复核' : workFresh ? (i === 0 ? (workPlanIndex === 0 ? '等待输入材料' : workPlanIndex === 1 ? '正在列缺口 / 访谈' : '访谈已交卷') : i === 1 ? (workPlanIndex < 2 ? '等待访谈齐套' : workPlanIndex < 3 ? '正在起草交底' : '交卷物已形成') : '等待节点确认') : (workPlanIndex === 0 && i === 0 ? '正在读取材料' : '已完成本节点任务')}</small></span><CheckCircle2 size={15} /></div>)}
             </div>
             <section className="rail-confirm">
               <div className="pane-section-title"><span>确认控制点</span><small>2 步</small></div>
@@ -714,9 +938,31 @@ export default function App() {
               </div>
               <div className="rail-delivery-row"><button type="button" className="evidence-link rail-delivery" onClick={() => { setActiveDoc(collab.deliverableDoc); notify(`已打开${collab.deliverable}`) }}><FileText size={14} /><span><strong>{collab.deliverable}</strong><small>中栏文书</small></span></button><button type="button" className="icon-btn" aria-label="下载交付物" onClick={() => downloadDemo(`${collab.deliverable}.pdf`)}><Download size={14} /></button></div>
             </section>
+            <section className="process-timeline" aria-label="专家过程与产物时间线">
+              <div className="pane-section-title"><span>过程时间线</span><small>谁在做 · 产出什么</small></div>
+              <ol className="process-timeline-list">
+                {processLog.map(ev => (
+                  <li key={ev.id} className={`process-step ${ev.status}`}>
+                    <span className="process-dot" aria-hidden="true" />
+                    <div>
+                      <p><strong>{ev.expert}</strong><time>{ev.time}</time></p>
+                      <p>{ev.action}</p>
+                      {ev.artifact && <button type="button" className="process-artifact" onClick={() => { if (ev.artifact?.includes('交底')) setActiveDoc(workFresh && workPlanIndex < 3 ? '交底书草稿' : '交底书 V3'); else if (ev.artifact?.includes('确认')) notify('已定位确认闸'); else { setAssetBucket(ev.artifact?.includes('V1') || ev.artifact?.includes('pdf') ? 'output' : 'process'); notify(`已定位 ${ev.artifact}`) } }}>{ev.artifact}</button>}
+                    </div>
+                    <Status tone={ev.status === 'done' ? 'green' : ev.status === 'active' ? 'orange' : 'neutral'}>{ev.status === 'done' ? '已产出' : ev.status === 'active' ? '进行中' : '排队'}</Status>
+                  </li>
+                ))}
+              </ol>
+              {workFresh && !oaMode && !storageMode && (
+                <button type="button" className="btn btn-ink full-btn process-advance-btn" onClick={advanceFreshProcess}>
+                  {workPlanIndex === 0 ? '推进专家动作 · 读材料列缺口' : workPlanIndex === 1 ? '推进专家动作 · 完成访谈' : workPlanIndex === 2 ? '推进专家动作 · 形成交卷物' : '交卷物已就绪'}
+                  <ArrowRight size={14} />
+                </button>
+              )}
+            </section>
             <div className="department-feed">
-              <div className="feed-item"><Avatar name={oaMode ? '策' : '访'} small /><div><p><strong>{oaMode ? 'OA 策略专家' : '技术访谈专家'}</strong><time>10:24</time></p><p>{workPlanIndex === 0 && !oaMode ? '已开始读取你确认计划时关联的研发资料，缺失项会标在确认闸。' : oaMode ? '已将审查员争议拆解为 3 个特征组，D1 并未直接给出闭环清洗条件。' : '我把“响应更快”改写成了可验证的技术效果，还需要你确认测试条件。'}</p><button onClick={() => notify('已定位到文档对应段落')}>定位到文档<ArrowUpRight size={13} /></button></div></div>
-              <div className="feed-item"><Avatar name="林" human small /><div><p><strong>林岚 · 代理师</strong><time>10:31</time></p><p>{oaMode ? '先保留方法权利要求的层次，不急于加入全部参数。请确认实际生产是否采用该范围。' : '从申请策略看，建议保留“异常评分自适应修正”这一层。它可能是后续答复创造性的关键。'}</p></div></div>
+              <div className="feed-item"><Avatar name={oaMode ? '策' : '访'} small /><div><p><strong>{oaMode ? 'OA 策略专家' : '技术访谈专家'}</strong><time>{workFresh ? '刚刚' : '10:24'}</time></p><p>{workFresh && !oaMode ? (workPlanIndex === 0 ? '还没有输入材料。你补交底 / 图纸 / 试验记录后，我再列缺口并开访谈。' : workPlanIndex === 1 ? '已根据输入列出缺口，下一步访谈补齐效果与工况。' : workPlanIndex === 2 ? '访谈纪要已交撰写专家，正在形成交底书草稿。' : '关键事实已写入交卷物，请你在确认闸拍板。') : workPlanIndex === 0 && !oaMode ? '已开始读取你确认计划时关联的研发资料，缺失项会标在确认闸。' : oaMode ? '已将审查员争议拆解为 3 个特征组，D1 并未直接给出闭环清洗条件。' : '我把“响应更快”改写成了可验证的技术效果，还需要你确认测试条件。'}</p><button onClick={() => notify('已定位到文档对应段落')}>定位到文档<ArrowUpRight size={13} /></button></div></div>
+              {!workFresh && <div className="feed-item"><Avatar name="林" human small /><div><p><strong>林岚 · 代理师</strong><time>10:31</time></p><p>{oaMode ? '先保留方法权利要求的层次，不急于加入全部参数。请确认实际生产是否采用该范围。' : '从申请策略看，建议保留“异常评分自适应修正”这一层。它可能是后续答复创造性的关键。'}</p></div></div>}
               {chat.map((c, i) => <div className="feed-item own" key={i}><Avatar name="我" human small /><div><p><strong>我</strong><time>刚刚</time></p><p>{c}</p></div></div>)}
             </div>
             <div className="department-compose"><div><textarea name="dept_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="用自然语言交办或补充说明…" rows={2} aria-label="向部门交办" /><button type="button" onClick={() => openFilePicker('compose')} aria-label="添加附件，支持 PDF、Word、图片与常见图纸"><Paperclip size={16} /></button></div>{composeFiles.length > 0 && <ul className="attach-chip-list" aria-label="待发送附件">{composeFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setComposeFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}<div><span>Enter 发送 · {FILE_ACCEPT_HINT}</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div></div>
@@ -832,7 +1078,7 @@ export default function App() {
       <section><span className="guide-number">02</span><div><h3>首页、项目、部门，共享同一业务底座</h3><p>首页：顾言委托、跨案待办与消息；项目：对象列表与工作台；部门：花名册 + 工作室配置（Skill、提示词、MCP）。协同消息从首页「全部消息」或顶栏通知进入，不做首页双强调、不做第四主 tab。切换模式不会另建项目或丢失版本。</p></div></section>
       <section><span className="guide-number">03</span><div><h3>两条业务主线，多种对象独立推进</h3><p>权利形成线覆盖创新、挖掘、布局、申请、审查与运营；风险防控线覆盖产品拆解、FTO、比对和规避。研发项目、申请案件、产品风险与专利资产分别管理状态，可关联、并行、回退或重开。</p></div></section>
       <section><span className="guide-number">04</span><div><h3>三类空间，按权限接力</h3><p>企业私有、代理所私有和双方共享空间相互隔离。部门只继承本任务所需的事实、证据、版本与决策；跨组织交付绑定版本、交付人、时间、可见范围和确认记录。</p></div></section>
-      <section><span className="guide-number">05</span><div><h3>一屏三栏工作台，确认控制流程</h3><p>工作台固定同屏三栏：左卷宗与过程资产、中可编文书、右协同对话与确认闸。首页「确认计划」后先逐步走完四步，再进入工作台。技术事实确认后还要确认节点交付，再由你决定是否接力，不会自动递交。</p></div></section>
+      <section><span className="guide-number">05</span><div><h3>一屏三栏工作台，确认控制流程</h3><p>工作台固定同屏三栏：左卷宗与过程资产、中可编文书、右协同对话与确认闸。首页计划卡展示建议部门、交卷物、齐套要点、确认类型与可调接力链；确认后立刻进入该部工作台。技术事实确认后还要确认节点交付，再由你决定是否接力，不会自动递交。</p></div></section>
       <div className="guide-demo"><strong>建议这样体验原型</strong><div><button onClick={() => { switchRole('enterprise'); switchMode('assistant'); setModal(null) }}>企业首页</button><ArrowRight size={15} /><button onClick={() => { switchRole('enterprise'); switchMode('project'); setModal(null) }}>项目列表</button><ArrowRight size={15} /><button onClick={() => { switchMode('studio'); setModal(null) }}>部门</button><ArrowRight size={15} /><button onClick={() => { switchRole('agency'); openWorkbench(true); setModal(null) }}>代理所 OA 工作台</button></div></div>
     </div></Modal>}
   </div>
