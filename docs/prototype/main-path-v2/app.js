@@ -986,14 +986,14 @@
         '</div>' +
         '<p class="prof-deliverable">交卷物 · ' + d.deliverable + '</p>' +
         '<p class="prof-duty prof-edit" contenteditable="true" spellcheck="false" data-prof-field="duty" data-dept="' + d.id + '" aria-label="职责一句">' + duty + '</p>' +
-        '<a class="' + statusCls + '" href="dept.html?dept=' + encodeURIComponent(d.id) + '" data-go-dept="' + d.id + '" aria-label="' + d.name + '当前在办或缺口">' +
+        '<a class="' + statusCls + '" href="dept.html?dept=' + encodeURIComponent(d.id) + '" data-go-dept="' + d.id + '" aria-label="让' + d.name + '开工：当前在办或缺口">' +
           '<span class="prof-status-kicker">当前在办/缺口</span>' +
           '<span class="prof-status-text">' + statusLead + '</span>' +
-          '<span class="prof-status-go">去干活 →</span>' +
+          '<span class="prof-status-go">让该部开工 →</span>' +
         '</a>' +
         '<div class="prof-experts" aria-label="' + d.name + '专家">' + faces + '</div>' +
         '<p class="prof-light-hint">可轻改岗名 / 职责一句 / 占位。进阶配置默认收折。</p>' +
-        '<button type="button" class="btn btn-ink prof-go" data-go-dept="' + d.id + '">去该部干活 →</button>' +
+        '<button type="button" class="btn btn-ink prof-go" data-go-dept="' + d.id + '" aria-label="让' + d.name + '开工">让该部开工 →</button>' +
         '</article>';
     }).join('');
     grid.querySelectorAll('[data-go-dept]').forEach(btn => {
@@ -2849,15 +2849,31 @@
     wireCompanySnapshot();
     renderCompanyCasesStrip();
     syncCompanyNeedMeFromCase();
-    /* 收口：缺口主 CTA 在案况条；有缺口时 need-me 只开一条主卡点；七部默认折 */
+    /* 收口：缺口主 CTA 在案况条；有缺口 need-me 只开一条；当前部默认露出（其余六部折）；禁整页只剩按钮 */
     try {
       const need = document.querySelector('[data-company-fold="need-me"]');
       const depts = document.querySelector('[data-company-fold="depts"]');
       const delegate = document.querySelector('[data-company-fold="delegate"]');
       const hasGap = !!(activeCase() && activeCase().block);
       if (need) need.open = !!hasGap; // 有缺口只开 need-me（内仅一条主卡点）
-      if (depts) depts.open = false;
+      if (depts) depts.open = false; // 其他部折；当前部在 fold 外常显
       if (delegate) delegate.open = false;
+      // 同步当前部卡片文案
+      const cur = activeCase();
+      const curCard = document.querySelector('[data-company-current-dept]');
+      if (cur && curCard) {
+        const nameEl = curCard.querySelector('[data-current-dept-name]');
+        const delEl = curCard.querySelector('[data-current-dept-deliverable]');
+        const stEl = curCard.querySelector('[data-current-dept-status]');
+        const go = curCard.querySelector('[data-current-dept-go]');
+        if (nameEl) nameEl.textContent = cur.deptName || '当前部';
+        if (delEl) delEl.textContent = (DEPTS[cur.dept] && DEPTS[cur.dept].deliverable) || '本关交卷物';
+        if (stEl) stEl.textContent = (cur.block || '进行中') + (cur.next ? (' · ' + cur.next) : '');
+        if (go) {
+          go.href = withRole('dept.html?dept=' + encodeURIComponent(cur.dept || 'disclosure'));
+          go.setAttribute('aria-label', '打开' + (cur.deptName || '当前部') + '工作台');
+        }
+      }
       localStorage.setItem('mpv2-company-visited', '1');
     } catch (_) {}
   }

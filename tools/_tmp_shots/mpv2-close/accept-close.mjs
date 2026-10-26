@@ -1,6 +1,7 @@
 /**
  * 主路径 v2 收口验收 —— 缺口主 CTA 只落公司 / 登录助手 / 三态 / 右栏 / 专业无案空态
  * + welcome 宣传桥接公司 / 案盘可发现 / 开案短字段 / delegate 非第一跳 / 后勤弱入口
+ * + 三 tab 关系 / 当前部露出 / 让该部开工
  */
 import { chromium } from 'playwright'
 import fs from 'node:fs'
@@ -96,6 +97,9 @@ async function main() {
       const need = document.querySelector('[data-company-fold="need-me"]')
       const depts = document.querySelector('[data-company-fold="depts"]')
       const needItems = need ? need.querySelectorAll('.rail-item').length : -1
+      const currentDept = document.querySelector('[data-company-current-dept]')
+      const currentVisible = !!(currentDept && !currentDept.classList.contains('hidden') && currentDept.offsetParent !== null)
+      const currentText = currentDept ? currentDept.innerText.replace(/\s+/g, ' ').slice(0, 120) : ''
       return {
         hasCta: !!cta,
         ctaText: cta ? cta.textContent.trim() : '',
@@ -104,7 +108,9 @@ async function main() {
         needOpen: need ? need.open : null,
         deptsOpen: depts ? depts.open : null,
         needItems,
-        hasCaseStrip: /卡点|缺口|需我|交底/.test(t),
+        currentVisible,
+        currentText,
+        hasCaseStrip: /卡点|缺口|需我|交底|下一步|谁在干/.test(t),
         hasDeptGrid: !!document.querySelector('.dept-grid') || /立项|撰写|附图|递交/.test(t),
         textHead: t.slice(0, 220).replace(/\s+/g, ' '),
       }
@@ -112,8 +118,10 @@ async function main() {
     evidence.A1_company = fill
     if (fill.hasCta && fill.gapCtaCount === 1) pass('A1_company_gap_cta', `唯一缺口主 CTA: ${fill.ctaText}`)
     else fail('A1_company_gap_cta', JSON.stringify(fill))
-    if (fill.deptsOpen === false) pass('A1_depts_folded', '七部默认折')
-    else fail('A1_depts_folded', `deptsOpen=${fill.deptsOpen}`)
+    if (fill.currentVisible && /交底|当前部/.test(fill.currentText)) pass('A1_current_dept', '当前部默认露出')
+    else fail('A1_current_dept', JSON.stringify({ currentVisible: fill.currentVisible, currentText: fill.currentText }))
+    if (fill.deptsOpen === false) pass('A1_other_depts_folded', '其余部门默认折')
+    else fail('A1_other_depts_folded', `deptsOpen=${fill.deptsOpen}`)
     if (fill.needOpen === true && fill.needItems === 1) pass('A1_need_one', '有缺口 need-me 只开一条')
     else fail('A1_need_one', JSON.stringify({ needOpen: fill.needOpen, needItems: fill.needItems }))
     if (fill.hasCaseStrip) pass('A1_company_fill', '公司案况可见')
@@ -304,6 +312,44 @@ async function main() {
     if (chip.vernacular && chip.no旧词堆砌) pass('G_dept_vernacular', 'dept 白话')
     else fail('G_dept_vernacular', JSON.stringify(chip))
     await shot(page, 'G-dept-gap-chip.png')
+    await page.close()
+  }
+
+  // ---- T: 专业「让该部开工」+ home 弱提示三 tab ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'studio' })
+    await page.goto(`${BASE}/professional.html?role=enterprise&case=c1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(500)
+    const T = await page.evaluate(() => {
+      const t = document.body.innerText
+      const btns = [...document.querySelectorAll('[data-go-dept], .prof-go, .prof-status-go')].map(el => (el.textContent || '').trim())
+      const has开工 = btns.some(x => /让该部开工/.test(x)) || /让该部开工/.test(t)
+      const no旧 = !/去该部干活/.test(t)
+      const htmlHidden = document.documentElement.classList.contains('hidden')
+      return { has开工, no旧, htmlHidden, btns: btns.slice(0, 5), head: t.slice(0, 160).replace(/\s+/g, ' ') }
+    })
+    evidence.T_prof_cta = T
+    if (T.has开工 && T.no旧 && !T.htmlHidden) pass('T_prof_start_dept', '专业 CTA=让该部开工')
+    else fail('T_prof_start_dept', JSON.stringify(T))
+    await shot(page, 'T-prof-start-dept.png')
+    await page.close()
+  }
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'assistant' })
+    await page.goto(`${BASE}/home.html?role=enterprise&case=c1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(300)
+    const H = await page.evaluate(() => {
+      const t = document.body.innerText
+      return {
+        tip: /盯整案用「项目」/.test(t) && /选部开工用「专业」/.test(t),
+        noGapCard: !document.querySelector('.gap-primary-card'),
+      }
+    })
+    evidence.T_home_tip = H
+    if (H.tip && H.noGapCard) pass('T_home_tab_tip', 'home 弱提示项目/专业')
+    else fail('T_home_tab_tip', JSON.stringify(H))
     await page.close()
   }
 

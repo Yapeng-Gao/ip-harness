@@ -1,5 +1,5 @@
 {
-  "passN": 32,
+  "passN": 35,
   "failN": 0,
   "notes": [
     "PASS L_login_assistant: login→home 助手高亮",
@@ -8,7 +8,8 @@
     "PASS A1_home_assistant: home 强制助手态",
     "PASS A1_project_active: 有活跃→company",
     "PASS A1_company_gap_cta: 唯一缺口主 CTA: 卡点 · 去当前部门 →",
-    "PASS A1_depts_folded: 七部默认折",
+    "PASS A1_current_dept: 当前部默认露出",
+    "PASS A1_other_depts_folded: 其余部门默认折",
     "PASS A1_need_one: 有缺口 need-me 只开一条",
     "PASS A1_company_fill: 公司案况可见",
     "PASS A2_project_noactive: 有案无活跃→cases",
@@ -24,6 +25,8 @@
     "PASS F_no_fake_roster: 无假编制满屏",
     "PASS G_gap_chip_current: 还缺：权属声明 已齐 3 / 4",
     "PASS G_dept_vernacular: dept 白话",
+    "PASS T_prof_start_dept: 专业 CTA=让该部开工",
+    "PASS T_home_tab_tip: home 弱提示项目/专业",
     "PASS W_welcome_marketing: 宣传站·登录干活·无三 tab",
     "PASS W_welcome_bridge_company: 示范缺口桥接公司页",
     "PASS H_cases_discover: 案盘可发现·全部案子",
@@ -57,6 +60,8 @@
       "needOpen": true,
       "deptsOpen": false,
       "needItems": 1,
+      "currentVisible": true,
+      "currentText": "当前部 · 默认露出 现在在这一部 选部开工（专业）→ 进行中 · 交底部 技术交底书 V3 缺权属声明，还不能交出去 · 补齐权属并送确认 技术访谈专家 交底书撰写专家 权属核验专家 打开工作台 →",
       "hasCaseStrip": true,
       "hasDeptGrid": true,
       "textHead": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 磁驱泵智能控制系统 ▾ 期限 🔔 助手 项目 专业 一案一公司 磁驱泵智能控制系统 委托、进行中目标与待接力。七部地图可唤回。 交底部 · 进行中 卡点 缺权属声明，还不能交出去 下一步 补齐权属并送确认 谁在干 权属核验专家在办 · 待你确认 卡点 · 去当前部门 → 主链进度 · 申请链 当前站：交底部 → 距可递交还 5 站 服务办申请，不是组织图"
@@ -84,7 +89,7 @@
       "asstActive": true,
       "hasWeak": true,
       "noCompanyFill": true,
-      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 期限 🔔 助手 项目 专业 登录后 早上好，陈宇。 委托、进行中目标与待接力。点条目进部门干活；进公司或开案子用弱链。 委托区 顾言 · 说一句目标 提目标 → 计划可调 → 部门执行 → 确认 → 接力。下方可看进行中与待接力。 交给顾言 → 快速交办 交底齐套 开案保护 上市风险排查 审查答复 进行中 进行"
+      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 期限 🔔 助手 项目 专业 登录后 早上好，陈宇。 委托、进行中目标与待接力。点条目进部门。盯整案用「项目」，选部开工用「专业」；进公司或开案子用弱链。 委托区 顾言 · 说一句目标 提目标 → 计划可调 → 部门执行 → 确认 → 接力。下方可看进行中与待接力。 交给顾言 → 快速交办 交底齐套 开案保护 上"
     },
     "D_dept": {
       "hasRight": true,
@@ -113,6 +118,23 @@
       "label": "还缺：权属声明 已齐 3 / 4",
       "vernacular": true,
       "no旧词堆砌": true
+    },
+    "T_prof_cta": {
+      "has开工": true,
+      "no旧": true,
+      "htmlHidden": false,
+      "btns": [
+        "当前在办/缺口【磁驱泵智能控制】缺权属声明，还不能交出去 · 补齐权属并送确认让该部开工 →",
+        "让该部开工 →",
+        "让该部开工 →",
+        "当前在办/缺口【车载热泵阀体】结论稿未齐 · 写完结论稿再送立项让该部开工 →",
+        "让该部开工 →"
+      ],
+      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 磁驱泵智能控制系统 ▾ 专业 期限 🔔 助手 项目 专业 各部门能干什么 本页不进作业台 ← 回公司 ⛨ 开工先回项目档 点「让该部开工」→ 部内 bot 在工作台干 各部门能干什么 各部门能干什么 各部门编制与职责一眼看清。每卡可见当前"
+    },
+    "T_home_tip": {
+      "tip": true,
+      "noGapCard": true
     },
     "W_welcome": {
       "marketing": true,
@@ -189,5 +211,5 @@
       }
     }
   },
-  "at": "2026-10-26T07:41:23.356Z"
+  "at": "2026-10-26T07:51:50.128Z"
 }

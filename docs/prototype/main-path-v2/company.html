@@ -71,7 +71,7 @@
 
   <p class="kicker">一案一公司</p>
   <h1 class="page-title" data-active-case-title>磁驱泵智能控制系统</h1>
-  <p class="page-sub" data-show-mode="project" data-case-sub>尽快申下来。卡点在交底部 · 点下方墨色按钮去补齐。</p>
+  <p class="page-sub" data-show-mode="project" data-case-sub>盯这一案：卡点、下一步、谁在干都在这。当前部在下方；点墨色按钮进部补齐。</p>
   <p class="page-sub hidden" data-show-mode="assistant">委托、进行中目标与待接力。七部地图可唤回。</p>
 
   <!-- 告知义务：卡点 / 下一步 / 谁在干 -->
@@ -251,19 +251,34 @@
   </div>
 
 
+  <!-- 当前部默认露出（项目信息要够；其余六部可折） -->
+  <section class="company-current-dept" data-company-current-dept aria-label="当前部门">
+    <div class="company-current-dept-head">
+      <div>
+        <span class="kicker">当前部 · 默认露出</span>
+        <h2 style="margin:4px 0 0;font-size:16px">现在在这一部</h2>
+      </div>
+      <a class="weak-link" href="professional.html" data-keep-role data-go-professional>选部开工（专业）→</a>
+    </div>
+    <a class="company-current-dept-card" href="dept.html?dept=disclosure" data-keep-role data-current-dept-go data-dept-open="disclosure" data-deliverable-bound="1">
+      <span>进行中 · <span data-current-dept-name>交底部</span></span>
+      <strong data-current-dept-deliverable>技术交底书 V3</strong>
+      <small data-current-dept-status>缺权属声明，还不能交出去 · 补齐权属并送确认</small>
+      <div class="dept-faces" aria-label="本部门专家"></div>
+      <span class="weak-link">打开工作台 →</span>
+    </a>
+  </section>
+
   <details class="company-fold" data-company-fold="depts">
-    <summary>七部交卷地图 <span>· 当前站高亮</span></summary>
+    <summary>其他部门 <span>· 其余可折</span></summary>
   <div class="dept-map-wrap" style="margin-top:18px">
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:12px;flex-wrap:wrap">
       <div>
-        <span class="kicker">七部 · 交卷导航</span>
-        <h2 style="margin:4px 0 0;font-size:16px">现在交哪一卷</h2>
-        <a class="weak-link" href="professional.html" data-keep-role data-go-professional style="display:inline-block;margin-top:6px">各部门能干什么 →</a>
+        <span class="kicker">其余六部 · 交卷导航</span>
+        <h2 style="margin:4px 0 0;font-size:16px">后面还会交哪一卷</h2>
       </div>
-      <a class="weak-link" href="dept.html?dept=disclosure" data-keep-role>当前部 · 交底部</a>
     </div>
-    <div class="dept-grid" aria-label="七部 · 交卷物">
-      <a href="dept.html?dept=disclosure" data-keep-role data-dept-open="disclosure" data-deliverable-bound="1"><span>进行中 · 交底部</span><strong>技术交底书 V3</strong><small>未齐套 · 缺权属声明</small><div class="dept-faces" aria-label="本部门专家"></div></a>
+    <div class="dept-grid" aria-label="其他部门 · 交卷物">
       <a href="dept.html?dept=research" data-keep-role data-dept-open="research" data-deliverable-bound="1"><span>待命 · 查新部</span><strong>可专利性检索报告 R2</strong><small>等交底接力</small><div class="dept-faces" aria-label="本部门专家"></div></a>
       <a href="dept.html?dept=intake" data-keep-role data-dept-open="intake" data-deliverable-bound="1"><span>待命 · 立项部</span><strong>立项决议与报价单</strong><small>等查新结论</small><div class="dept-faces" aria-label="本部门专家"></div></a>
       <a href="dept.html?dept=draft" data-keep-role data-dept-open="draft" data-deliverable-bound="1"><span>待命 · 撰写部</span><strong>权利要求草案 V1</strong><small>等立项决议</small><div class="dept-faces" aria-label="本部门专家"></div></a>
@@ -307,7 +322,7 @@
       <div data-drawer-experts></div>
     </div>
     <div class="drawer-actions">
-      <a class="btn btn-ink" href="#" data-drawer-go>去该部干活 →</a>
+      <a class="btn btn-ink" href="#" data-drawer-go>让该部开工 →</a>
       <button class="btn btn-ghost" type="button" data-drawer-close>关闭</button>
     </div>
   </aside>
