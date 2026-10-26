@@ -1,5 +1,5 @@
 {
-  "passN": 31,
+  "passN": 32,
   "failN": 0,
   "notes": [
     "PASS L_login_assistant: login→home 助手高亮",
@@ -13,6 +13,7 @@
     "PASS A1_company_fill: 公司案况可见",
     "PASS A2_project_noactive: 有案无活跃→cases",
     "PASS A3_project_none: 无案→case-new",
+    "PASS B_prof_visible: 专业有案可见×7",
     "PASS B_prof_status: 专业卡在办/缺口 ×7",
     "PASS B_mcp_folded: 技能/MCP 默认收折",
     "PASS C_home_assistant_only: home 仅助手叙事·无缺口大卡",
@@ -71,7 +72,10 @@
       "kickerCount": 7,
       "mcpOpen": false,
       "mcpSummary": "进阶 · 技能 / MCP · 默认收折",
-      "hasGo": 14
+      "hasGo": 14,
+      "htmlHidden": false,
+      "htmlDisplay": "block",
+      "cardsVisible": 7
     },
     "C_home": {
       "asstSub": true,
@@ -101,7 +105,7 @@
       "cards": 0,
       "mcpHidden": true,
       "hasGuide": true,
-      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 未选案子 ▾ 专业 期限 🔔 助手 项目 专业 各部门能干什么 本页不进作业台 ← 回公司 ⛨ 去干活先回项目档 点卡片「去该部干活」进工作台 各部门能干什么 各部门能干什么 专业须先有案子。还没有活跃案时，这里不展示假编制。 专业须带"
+      "head": "专业须带案 先打开或开一个案子 没有活跃案时，不展示各部门编制墙。选好案子后再看在办 / 缺口。 去案盘选案 → 开新案子"
     },
     "G_chip": {
       "hasChip": true,
@@ -185,5 +189,5 @@
       }
     }
   },
-  "at": "2026-10-26T07:39:16.529Z"
+  "at": "2026-10-26T07:41:23.356Z"
 }

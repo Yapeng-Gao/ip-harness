@@ -408,11 +408,13 @@
   "postFix": {
     "fixed": [
       "阻塞交卷→还不能交出去 (company.html + app.js CASES.block)",
-      "applyRoleUI aria-hidden on data-show-role/hide-role (home dual h1)"
+      "applyRoleUI aria-hidden on data-show-role/hide-role (home dual h1)",
+      "applyRoleUI aria-hidden on data-show-role/hide-role",
+      "CRITICAL: applyProfessionalEmptyState 勿把 data-prof-empty 写到 <html>（有案时整页 display:none）；改 data-prof-is-empty"
     ],
     "falsePositives": [
       "顶栏高亮 assistant：flow-walk addInitScript seed 在每次导航重写 mpv2-mode，非产品 bug"
     ],
-    "acceptClose": "31/31"
+    "acceptClose": "32/32"
   }
 }

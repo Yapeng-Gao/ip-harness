@@ -933,8 +933,12 @@
 
   function applyProfessionalEmptyState() {
     const empty = !hasCase() || !activeCaseId();
-    document.documentElement.dataset.profEmpty = empty ? '1' : '0';
-    document.querySelectorAll('[data-prof-empty]').forEach(el => el.classList.toggle('hidden', !empty));
+    // 勿写 data-prof-empty 到 <html>：会与空态节点选择器撞车，有案时把整页 display:none
+    document.documentElement.dataset.profIsEmpty = empty ? '1' : '0';
+    document.querySelectorAll('[data-prof-empty]').forEach(el => {
+      if (el === document.documentElement) return;
+      el.classList.toggle('hidden', !empty);
+    });
     document.querySelectorAll('[data-prof-grid], #prof-capability-grid').forEach(el => el.classList.toggle('hidden', empty));
     document.querySelectorAll('#prof-skills-mcp, #prof-more-depts, .prof-footnote, .prof-hero-side').forEach(el => {
       el.classList.toggle('hidden', empty);

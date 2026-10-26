@@ -165,9 +165,14 @@ async function main() {
       const details = document.querySelector('#prof-skills-mcp, details.prof-advanced')
       const mcpOpen = details ? details.open : null
       const mcpSummary = details?.querySelector('summary')?.textContent?.trim() || ''
-      return { kickers: kickers.slice(0, 3), kickerCount: kickers.length, mcpOpen, mcpSummary, hasGo: [...document.querySelectorAll('[data-go-dept]')].length }
+      const htmlHidden = document.documentElement.classList.contains('hidden')
+      const htmlDisplay = getComputedStyle(document.documentElement).display
+      const cardsVisible = [...document.querySelectorAll('.prof-card')].filter(c => c.offsetParent !== null).length
+      return { kickers: kickers.slice(0, 3), kickerCount: kickers.length, mcpOpen, mcpSummary, hasGo: [...document.querySelectorAll('[data-go-dept]')].length, htmlHidden, htmlDisplay, cardsVisible }
     })
     evidence.B_prof = prof
+    if (!prof.htmlHidden && prof.htmlDisplay !== 'none' && prof.cardsVisible >= 5) pass('B_prof_visible', `专业有案可见×${prof.cardsVisible}`)
+    else fail('B_prof_visible', JSON.stringify(prof))
     if (prof.kickerCount >= 5 && kickersOk(prof.kickers)) pass('B_prof_status', `专业卡在办/缺口 ×${prof.kickerCount}`)
     else fail('B_prof_status', JSON.stringify(prof))
     if (prof.mcpOpen === false && /技能|MCP/.test(prof.mcpSummary)) pass('B_mcp_folded', '技能/MCP 默认收折')
