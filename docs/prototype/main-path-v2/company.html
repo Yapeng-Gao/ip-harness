@@ -225,7 +225,7 @@
   </details>
 
   <div class="snapshot-card hidden" data-company-snapshot>
-    <h3>交付快照 · 最近一次确认</h3>
+    <h3>交付快照 · 最近一次确认 <small style="font-weight:400;color:var(--ink-3)">一句可见 · 拍板仍在右栏</small></h3>
     <p><strong data-snap-dept></strong> · <span data-snap-deliverable></span></p>
     <p>已确认事实：<span data-snap-fact></span></p>
     <section class="artifact-preview" aria-label="已确认交卷物摘要">
@@ -251,22 +251,31 @@
   </div>
 
 
-  <!-- 当前部默认露出（项目信息要够；其余六部可折） -->
-  <section class="company-current-dept" data-company-current-dept aria-label="当前部门">
+  <!-- 当前节点卡（借信息结构不借 Kimi UI）：阶段+在干+短步骤+负责部+交付+接力 -->
+  <section class="company-current-dept company-node-card" data-company-current-dept data-company-node-card aria-label="当前节点卡">
     <div class="company-current-dept-head">
       <div>
-        <span class="kicker">当前部 · 默认露出</span>
-        <h2 style="margin:4px 0 0;font-size:16px">现在在这一部</h2>
+        <span class="kicker">当前节点卡 · 默认露出</span>
+        <h2 style="margin:4px 0 0;font-size:16px"><span data-node-stage>交底阶段</span></h2>
       </div>
       <a class="weak-link" href="professional.html" data-keep-role data-go-professional>选部开工（专业）→</a>
     </div>
-    <a class="company-current-dept-card" href="dept.html?dept=disclosure" data-keep-role data-current-dept-go data-dept-open="disclosure" data-deliverable-bound="1">
-      <span>进行中 · <span data-current-dept-name>交底部</span></span>
-      <strong data-current-dept-deliverable>技术交底书 V3</strong>
-      <small data-current-dept-status>缺权属声明，还不能交出去 · 补齐权属并送确认</small>
+    <div class="company-node-body">
+      <p class="company-node-doing">在干什么：<strong data-node-doing>把技术事实与权属齐套，交出可接力的交底书</strong></p>
+      <ol class="company-node-steps" aria-label="本站短步骤">
+        <li class="is-done">访谈纪要入库</li>
+        <li class="is-current">补齐权属声明</li>
+        <li class="is-todo">你确认后交查新</li>
+      </ol>
+      <dl class="company-node-meta">
+        <div><dt>负责部</dt><dd data-current-dept-name>交底部</dd></div>
+        <div><dt>节点交付</dt><dd data-current-dept-deliverable>技术交底书 V3</dd></div>
+        <div><dt>接力条件</dt><dd data-node-handoff>齐套 + 你点头通过 → 查新部</dd></div>
+      </dl>
+      <p class="company-node-status" data-current-dept-status>缺权属声明，还不能交出去 · 补齐权属并送确认</p>
       <div class="dept-faces" aria-label="本部门专家"></div>
-      <span class="weak-link">打开工作台 →</span>
-    </a>
+      <a class="weak-link" href="dept.html?dept=disclosure" data-keep-role data-current-dept-go data-dept-open="disclosure" data-deliverable-bound="1">打开工作台 →</a>
+    </div>
   </section>
 
   <details class="company-fold" data-company-fold="depts">

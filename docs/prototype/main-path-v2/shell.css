@@ -3893,3 +3893,30 @@ html[data-mode="assistant"] [data-company-fold="depts"] { display: none; }
   border-radius: 4px;
 }
 .prof-expert-del:hover { color: var(--ink); background: oklch(0.95 0.01 85); }
+
+
+/* 当前节点卡 · 借信息结构 */
+.company-node-body { display: grid; gap: 10px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+.company-node-doing { margin: 0; font-size: 14px; color: var(--ink-2); }
+.company-node-steps { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.company-node-steps li {
+  font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-3);
+}
+.company-node-steps li.is-done { text-decoration: line-through; opacity: .7; }
+.company-node-steps li.is-current { border-color: var(--ink); color: var(--ink); background: oklch(0.96 0.01 85); font-weight: 600; }
+.company-node-steps li.is-todo { opacity: .85; }
+.company-node-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px 14px; margin: 0; }
+.company-node-meta div { display: grid; gap: 2px; }
+.company-node-meta dt { font-size: 11px; color: var(--ink-3); }
+.company-node-meta dd { margin: 0; font-size: 13px; font-weight: 600; }
+.company-node-status { margin: 0; font-size: 13px; color: var(--ink-2); }
+
+/* 工作台三必答 */
+.workbench-inform {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 16px;
+  margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper);
+}
+.workbench-inform .case-inform-list { margin: 0; }
+.workbench-inform-hint { margin: 0; font-size: 12px; color: var(--ink-3); }
+
+.home-visit-tip { margin: 0 0 12px; font-size: 13px; color: var(--ink-2); }

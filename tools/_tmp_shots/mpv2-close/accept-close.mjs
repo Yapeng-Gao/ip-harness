@@ -3,6 +3,7 @@
  * + welcome 宣传桥接公司 / 案盘可发现 / 开案短字段 / delegate 非第一跳 / 后勤弱入口
  * + 三 tab 关系 / 当前部露出 / 让该部开工
  * + 专业添加专家轻配
+ * + 当前节点卡 / 三必答 / home 分层
  */
 import { chromium } from 'playwright'
 import fs from 'node:fs'
@@ -313,6 +314,94 @@ async function main() {
     if (chip.vernacular && chip.no旧词堆砌) pass('G_dept_vernacular', 'dept 白话')
     else fail('G_dept_vernacular', JSON.stringify(chip))
     await shot(page, 'G-dept-gap-chip.png')
+    await page.close()
+  }
+
+  // ---- V: 当前节点卡 / 工作台三必答 / home 回访分层 / 快照弱链 ----
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'project' })
+    await page.goto(`${BASE}/company.html?role=enterprise&case=c1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(400)
+    const V = await page.evaluate(() => {
+      const card = document.querySelector('[data-company-node-card], [data-company-current-dept]')
+      const t = card ? card.innerText.replace(/\s+/g, ' ') : ''
+      return {
+        hasCard: !!card,
+        stage: /交底|阶段|当前节点/.test(t),
+        steps: /补齐权属|访谈|查新/.test(t),
+        meta: /负责部|节点交付|接力/.test(t),
+        head: t.slice(0, 160),
+      }
+    })
+    evidence.V_node = V
+    if (V.hasCard && V.stage && V.steps && V.meta) pass('V_company_node_card', '公司当前节点卡')
+    else fail('V_company_node_card', JSON.stringify(V))
+    await shot(page, 'V-company-node-card.png')
+    await page.close()
+  }
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'project' })
+    await page.goto(`${BASE}/dept.html?role=enterprise&case=c1&dept=disclosure`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(400)
+    const W = await page.evaluate(() => {
+      const box = document.querySelector('[data-workbench-inform]')
+      const t = box ? box.innerText : ''
+      const audit = /确认记录/.test(document.body.innerText)
+      return {
+        has: !!box,
+        triad: /卡点/.test(t) && /下一步/.test(t) && /谁在干/.test(t),
+        audit,
+        head: (t || '').slice(0, 120).replace(/\s+/g, ' '),
+      }
+    })
+    evidence.V_wb = W
+    if (W.has && W.triad) pass('V_workbench_triad', '工作台三必答')
+    else fail('V_workbench_triad', JSON.stringify(W))
+    await page.close()
+  }
+  {
+    const page = await ctx.newPage()
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem('mpv2-has-case', '0')
+        localStorage.setItem('mpv2-active-case', '')
+        localStorage.removeItem('mpv2-home-visited')
+      } catch (_) {}
+    })
+    await seed(page, { hasCase: false, active: '', mode: 'assistant' })
+    await page.goto(`${BASE}/home.html?role=enterprise&nocase=1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(300)
+    const H = await page.evaluate(() => {
+      const first = document.querySelector('[data-home-visit="first"]')
+      const ret = document.querySelector('[data-home-visit="return"]')
+      const firstShow = first && !first.hidden && !first.classList.contains('hidden')
+      const retShow = ret && !ret.hidden && !ret.classList.contains('hidden')
+      return { firstShow, retShow, tip: first ? first.innerText.slice(0, 80) : '' }
+    })
+    evidence.V_home_first = H
+    if (H.firstShow && !H.retShow) pass('V_home_first_empty', '首次/无案空态提示')
+    else fail('V_home_first_empty', JSON.stringify(H))
+    await page.close()
+  }
+  {
+    const page = await ctx.newPage()
+    await seed(page, { hasCase: true, active: 'c1', mode: 'assistant' })
+    await page.addInitScript(() => { try { localStorage.setItem('mpv2-home-visited', '1') } catch (_) {} })
+    await page.goto(`${BASE}/home.html?role=enterprise&case=c1`, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.waitForTimeout(300)
+    const H = await page.evaluate(() => {
+      const first = document.querySelector('[data-home-visit="first"]')
+      const ret = document.querySelector('[data-home-visit="return"]')
+      const firstShow = first && !first.hidden && !first.classList.contains('hidden')
+      const retShow = ret && !ret.hidden && !ret.classList.contains('hidden')
+      const gap = !!document.querySelector('.gap-primary-card')
+      return { firstShow, retShow, gap }
+    })
+    evidence.V_home_return = H
+    if (H.retShow && !H.firstShow && !H.gap) pass('V_home_return', '回访助手分层·无缺口大卡')
+    else fail('V_home_return', JSON.stringify(H))
     await page.close()
   }
 

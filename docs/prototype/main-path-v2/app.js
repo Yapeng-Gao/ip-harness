@@ -1009,6 +1009,27 @@
     return empty;
   }
 
+  
+  function wireWorkbenchInform() {
+    const box = document.querySelector('[data-workbench-inform]');
+    if (!box) return;
+    const cur = activeCase() || {};
+    const b = box.querySelector('[data-wb-block]');
+    const n = box.querySelector('[data-wb-next]');
+    const w = box.querySelector('[data-wb-who]');
+    if (b) b.textContent = cur.block || '本站进行中';
+    if (n) n.textContent = cur.next || '推进本站交卷';
+    if (w) w.textContent = cur.who || ((cur.deptName || '本部门') + '在办');
+    // show dept snapshot one-liner if stored
+    const snap = getSnapshot && getSnapshot();
+    const slot = document.querySelector('[data-dept-snapshot]');
+    if (slot && snap && snap.fact) {
+      slot.classList.remove('hidden');
+      const line = slot.querySelector('[data-snap-one-liner]');
+      if (line) line.textContent = (snap.deptName || snap.dept || '本站') + '已确认：' + (snap.fact || snap.deliverable || '见确认记录');
+    }
+  }
+
   function wireProfessionalPage() {
     const grid = document.getElementById('prof-capability-grid');
     if (!grid) return;
@@ -1790,6 +1811,7 @@
     localStorage.setItem('mpv2-last-work', 'dept.html?dept=' + key);
     syncDeptFold();
     applyGoalContext();
+    wireWorkbenchInform();
     document.querySelectorAll('[data-dept-name]').forEach(el => { el.textContent = dept.name; });
     document.querySelectorAll('[data-dept-pitch]').forEach(el => { el.textContent = dept.pitch || ''; });
     document.querySelectorAll('[data-deliverable]').forEach(el => { el.textContent = dept.deliverable; });
@@ -2895,6 +2917,18 @@
   }
 
   function wireHome() {
+    try {
+      const visited = localStorage.getItem('mpv2-home-visited') === '1';
+      const first = !visited && !hasCase();
+      document.querySelectorAll('[data-home-visit]').forEach(el => {
+        const want = el.dataset.homeVisit;
+        const show = (want === 'first' && first) || (want === 'return' && (visited || hasCase()));
+        el.hidden = !show;
+        el.classList.toggle('hidden', !show);
+      });
+      if (hasCase() || visited) localStorage.setItem('mpv2-home-visited', '1');
+      else if (!first) localStorage.setItem('mpv2-home-visited', '1');
+    } catch (_) {}
     document.querySelectorAll('[data-fill]').forEach(b => {
       b.addEventListener('click', () => {
         const inp = document.getElementById('lead-input');
@@ -2931,7 +2965,7 @@
       if (need) need.open = !!hasGap; // 有缺口只开 need-me（内仅一条主卡点）
       if (depts) depts.open = false; // 其他部折；当前部在 fold 外常显
       if (delegate) delegate.open = false;
-      // 同步当前部卡片文案
+      // 同步当前节点卡（阶段/在干/交付/接力）
       const cur = activeCase();
       const curCard = document.querySelector('[data-company-current-dept]');
       if (cur && curCard) {
@@ -2939,9 +2973,16 @@
         const delEl = curCard.querySelector('[data-current-dept-deliverable]');
         const stEl = curCard.querySelector('[data-current-dept-status]');
         const go = curCard.querySelector('[data-current-dept-go]');
+        const stage = curCard.querySelector('[data-node-stage]');
+        const doing = curCard.querySelector('[data-node-doing]');
+        const handoff = curCard.querySelector('[data-node-handoff]');
+        const d = DEPTS[cur.dept] || {};
         if (nameEl) nameEl.textContent = cur.deptName || '当前部';
-        if (delEl) delEl.textContent = (DEPTS[cur.dept] && DEPTS[cur.dept].deliverable) || '本关交卷物';
+        if (delEl) delEl.textContent = d.deliverable || '本关交卷物';
         if (stEl) stEl.textContent = (cur.block || '进行中') + (cur.next ? (' · ' + cur.next) : '');
+        if (stage) stage.textContent = (cur.deptName || '交底部') + ' · 当前阶段';
+        if (doing) doing.textContent = cur.next || d.pitch || '推进本站交卷';
+        if (handoff) handoff.textContent = '齐套 + 你点头通过 → 下一部';
         if (go) {
           go.href = withRole('dept.html?dept=' + encodeURIComponent(cur.dept || 'disclosure'));
           go.setAttribute('aria-label', '打开' + (cur.deptName || '当前部') + '工作台');
@@ -2957,7 +2998,7 @@
     qs, normalizeDeptId, deptFromQuery, toast, toastThen, withRole,
     getDelegation, setDelegation, getSnapshot, setSnapshot, goWorkDept, exitProfessional,
     pendingDeptForRole, gateHref, applyBellByRole, lastWorkHref,
-    wireShell, wireTopbarDetails, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
+    wireShell, wireTopbarDetails, wireDeptPage, wirePending, wireChecklist, wireDelegate, wireHome, wireCompanyPage, wireCompanySnapshot, wireProfessionalPage, wireWorkbenchInform, injectGuyanPresence, syncDeptFold, applyRelayHandoff,
     renderExperts, renderRailExperts, renderExpertFaces, renderProfExperts, wireProfLightEdit, loadProfLight, addProfCustomExpert, removeProfCustomExpert, profExpertCount, wireWelcomeShelf, wireCompanyDeptFaces, planFromGoal, wireWelcomeGoalDemo, gapActionsFor,
     syncHomeSurfacesFromCase, renderCompanyCasesStrip
   };

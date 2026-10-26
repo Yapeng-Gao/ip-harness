@@ -1,5 +1,5 @@
 {
-  "passN": 37,
+  "passN": 41,
   "failN": 0,
   "notes": [
     "PASS L_login_assistant: login→home 助手高亮",
@@ -25,6 +25,10 @@
     "PASS F_no_fake_roster: 无假编制满屏",
     "PASS G_gap_chip_current: 还缺：权属声明 已齐 3 / 4",
     "PASS G_dept_vernacular: dept 白话",
+    "PASS V_company_node_card: 公司当前节点卡",
+    "PASS V_workbench_triad: 工作台三必答",
+    "PASS V_home_first_empty: 首次/无案空态提示",
+    "PASS V_home_return: 回访助手分层·无缺口大卡",
     "PASS U_prof_add_expert: 添加专家→mpv2-prof-light · dept=disclosure",
     "PASS U_prof_del_custom: 自定义席可删",
     "PASS T_prof_start_dept: 专业 CTA=让该部开工",
@@ -63,7 +67,7 @@
       "deptsOpen": false,
       "needItems": 1,
       "currentVisible": true,
-      "currentText": "当前部 · 默认露出 现在在这一部 选部开工（专业）→ 进行中 · 交底部 技术交底书 V3 缺权属声明，还不能交出去 · 补齐权属并送确认 技术访谈专家 交底书撰写专家 权属核验专家 打开工作台 →",
+      "currentText": "当前节点卡 · 默认露出 交底部 · 当前阶段 选部开工（专业）→ 在干什么：补齐权属并送确认 访谈纪要入库 补齐权属声明 你确认后交查新 负责部 交底部 节点交付 技术交底书 V3 接力条件 齐套 + 你点头通过 → 下一部 缺权属声明，",
       "hasCaseStrip": true,
       "hasDeptGrid": true,
       "textHead": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 磁驱泵智能控制系统 ▾ 期限 🔔 助手 项目 专业 一案一公司 磁驱泵智能控制系统 委托、进行中目标与待接力。七部地图可唤回。 交底部 · 进行中 卡点 缺权属声明，还不能交出去 下一步 补齐权属并送确认 谁在干 权属核验专家在办 · 待你确认 卡点 · 去当前部门 → 主链进度 · 申请链 当前站：交底部 → 距可递交还 5 站 服务办申请，不是组织图"
@@ -91,7 +95,7 @@
       "asstActive": true,
       "hasWeak": true,
       "noCompanyFill": true,
-      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 期限 🔔 助手 项目 专业 登录后 早上好，陈宇。 委托、进行中目标与待接力。点条目进部门。盯整案用「项目」，选部开工用「专业」；进公司或开案子用弱链。 委托区 顾言 · 说一句目标 提目标 → 计划可调 → 部门执行 → 确认 → 接力。下方可看进行中与待接力。 交给顾言 → 快速交办 交底齐套 开案保护 上"
+      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 期限 🔔 助手 项目 专业 登录后 早上好，陈宇。 委托、进行中目标与待接力。点条目进部门。盯整案用「项目」，选部开工用「专业」；进公司或开案子用弱链。 回访：继续委托、看进行中与待接力。盯整案用「项目」，选部开工用「专业」。 委托区 顾言 · 说一句目标 提目标 → 计划可调 → 部门执行 → 确认 → 接力"
     },
     "D_dept": {
       "hasRight": true,
@@ -99,7 +103,7 @@
       "has缺项或禁用": true,
       "has拍板": true,
       "threeCol": true,
-      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 磁驱泵智能控制系统 ▾ 期限 🔔 助手 项目 专业 本案目录 收折 MP 磁驱泵智能控制 撰写部 交卷物 · 撰写部 权利要求草案 V1 权属声明（缺） 材料 访谈纪要 10-20 前序检索摘要 附图草图 F1 对比文献包 R2 确认记录 · 技术事实 已确认事实 卷宗 12 份 缺权属声明 · 阻塞接力 权利要求草案 V1 权属声明 访谈纪要 编辑 批"
+      "head": "虚 虚拟知产公司 VIRTUAL IP COMPANY 尽快把专利申下来 磁驱泵智能控制系统 ▾ 期限 🔔 助手 项目 专业 卡点 缺权属声明，还不能交出去 下一步 补齐权属并送确认 谁在干 权属核验专家在办 · 待你确认 细则见右栏契约；确认后见交付快照 · 确认记录 本案目录 收折 MP 磁驱泵智能控制 撰写部 交卷物 · 撰写部 权利要求草案 V1 权属声明（缺） 材料 访谈纪要 10-20 前序检索摘要 附图草图 "
     },
     "E_tabs": [
       "assistant:助手",
@@ -120,6 +124,29 @@
       "label": "还缺：权属声明 已齐 3 / 4",
       "vernacular": true,
       "no旧词堆砌": true
+    },
+    "V_node": {
+      "hasCard": true,
+      "stage": true,
+      "steps": true,
+      "meta": true,
+      "head": "当前节点卡 · 默认露出 交底部 · 当前阶段 选部开工（专业）→ 在干什么：补齐权属并送确认 访谈纪要入库 补齐权属声明 你确认后交查新 负责部 交底部 节点交付 技术交底书 V3 接力条件 齐套 + 你点头通过 → 下一部 缺权属声明，还不能交出去 · 补齐权属并送确认 打开工作台 → 技术访谈专家 交底书撰写专家"
+    },
+    "V_wb": {
+      "has": true,
+      "triad": true,
+      "audit": true,
+      "head": "卡点 缺权属声明，还不能交出去 下一步 补齐权属并送确认 谁在干 权属核验专家在办 · 待你确认 细则见右栏契约；确认后见交付快照 · 确认记录"
+    },
+    "V_home_first": {
+      "firstShow": true,
+      "retShow": false,
+      "tip": "第一次来？先开案子，再把目标交给顾言。盯整案用「项目」，选部开工用「专业」。"
+    },
+    "V_home_return": {
+      "firstShow": false,
+      "retShow": true,
+      "gap": false
     },
     "U_add": {
       "before": 7,
@@ -229,5 +256,5 @@
       }
     }
   },
-  "at": "2026-10-26T08:00:40.796Z"
+  "at": "2026-10-26T08:09:40.804Z"
 }
