@@ -52,38 +52,57 @@
 
   <p class="kicker">开案子</p>
   <h1 class="page-title">开新案子</h1>
-  <p class="page-sub">填短一点就能开。创建后进公司页，再「去当前部门」。目标可选。</p>
+  <p class="page-sub">填短一点就能开。创建后进<strong>本案</strong>公司页（看卡点/下一步），再「去当前部门」。目标可选。</p>
   <form class="form-stack" id="new-case" onsubmit="return false;" autocomplete="off">
-    <label>案名<input id="case-name" name="case-name" required autocomplete="off" placeholder="例如：磁驱泵智能控制系统"></label>
-    <label>本单位 / 客户<input name="org" autocomplete="off" placeholder="澄明科技有限公司" value="澄明科技有限公司"></label>
+    <label>案名<input id="case-name" name="case-name" required autocomplete="off" placeholder="例如：磁驱泵智能控制系统…"></label>
+    <label>本单位 / 客户<input id="case-org" name="org" autocomplete="organization" placeholder="例如：澄明科技有限公司…" value="澄明科技有限公司"></label>
     <label>一句话目标（可选）
-      <textarea id="case-goal" name="case-goal" rows="2" autocomplete="off" placeholder="例如：整理一项研发成果，评估如何保护"></textarea>
+      <textarea id="case-goal" name="case-goal" rows="2" autocomplete="off" placeholder="例如：整理一项研发成果，评估如何保护…"></textarea>
     </label>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <button class="btn btn-ink" type="submit" id="create-only">创建并进公司 →</button>
+      <button class="btn btn-ink" type="submit" id="create-only">创建并进本案 →</button>
       <button class="btn btn-secondary" type="button" id="create-delegate">创建并开始持续委托 →</button>
       <a class="weak-link" href="home.html" data-keep-role>取消</a>
     </div>
-    <p class="primary-cta-note" style="margin-top:10px">主按钮进公司；次级才走委托（委托不是登录后第一跳）。</p>
+    <p class="primary-cta-note" style="margin-top:10px">主按钮进本案公司页（进度壳）；次级也先落公司，再从公司弱入口进委托（委托不是登录后第一跳）。</p>
   </form>
   <script>
   document.addEventListener('DOMContentLoaded', () => {
+    const nameEl = document.getElementById('case-name');
+    const orgEl = document.getElementById('case-org');
+    function requireCaseName() {
+      const name = (nameEl.value || '').trim();
+      if (!name) {
+        nameEl.setAttribute('aria-invalid', 'true');
+        MPV2.toast('请填写案名');
+        nameEl.focus();
+        return '';
+      }
+      nameEl.removeAttribute('aria-invalid');
+      return name;
+    }
+    function readOrg() {
+      return (orgEl && orgEl.value || '').trim();
+    }
     document.getElementById('new-case').addEventListener('submit', (e) => {
       e.preventDefault();
-      const name = document.getElementById('case-name').value.trim();
+      const name = requireCaseName();
       if (!name) return;
-      // 演示诚实：开案 stub 新 id（勿永远复用 mp）
-      MPV2.createCaseStub(name);
+      // 演示诚实：开案 stub 新 id（勿永远复用 mp）；本单位写入 stub
+      MPV2.createCaseStub(name, { client: readOrg() });
+      localStorage.setItem('mpv2-mode', 'project');
       location.href = MPV2.withRole('company.html');
     });
     document.getElementById('create-delegate').addEventListener('click', () => {
-      const name = document.getElementById('case-name').value.trim();
+      const name = requireCaseName();
+      if (!name) return;
       const goal = document.getElementById('case-goal').value.trim() || name;
-      if (!name) { MPV2.toast('请填写案名'); return; }
       const plan = MPV2.planFromGoal(goal);
       MPV2.setDelegation({ goal: plan.goal, step: 'plan', dept: plan.deptId });
-      MPV2.createCaseStub(name);
-      location.href = MPV2.withRole('delegate.html?step=plan');
+      MPV2.createCaseStub(name, { client: readOrg() });
+      localStorage.setItem('mpv2-mode', 'project');
+      // 硬闸：交办后仍先进公司认知，再从公司弱入口进委托
+      location.href = MPV2.withRole('company.html?delegate=1');
     });
   });
   </script>

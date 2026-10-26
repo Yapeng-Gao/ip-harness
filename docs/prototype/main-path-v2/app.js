@@ -600,9 +600,11 @@
   function mintCaseId() {
     return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
   }
-  function createCaseStub(name) {
+  function createCaseStub(name, opts) {
     const title = (name || '').trim() || '未命名案子';
     const id = mintCaseId();
+    const o = opts && typeof opts === 'object' ? opts : {};
+    const clientRaw = (o.client != null ? String(o.client) : '').trim();
     const stub = {
       id: id,
       name: title,
@@ -615,7 +617,7 @@
       who: '交底部待命',
       status: 'active',
       deadline: 'ok',
-      client: '澄明科技',
+      client: clientRaw || '澄明科技',
       progress: '距可递交还 6 站'
     };
     const extras = loadExtraCases().filter(c => c && c.id !== id);
@@ -3077,7 +3079,17 @@
       const hasGap = !!(activeCase() && activeCase().block);
       if (need) need.open = !!hasGap; // 有缺口只开 need-me（内仅一条主卡点）
       if (depts) depts.open = false; // 其他部折；当前部在 fold 外常显
-      if (delegate) delegate.open = false;
+      // 开案次钮：先落地公司认知，再展开委托弱入口（?delegate=1）
+      if (qs('delegate') === '1') {
+        if (delegate) delegate.open = true;
+        const delBtn = document.querySelector('.company-delegate-rail a.btn[href*="delegate"]');
+        if (delBtn && getDelegation()) {
+          delBtn.href = withRole('delegate.html?step=plan');
+          delBtn.textContent = '继续持续委托 →';
+        }
+      } else if (delegate) {
+        delegate.open = false;
+      }
       // 同步当前节点卡（阶段/在干/交付/接力）
       const cur = activeCase();
       const curCard = document.querySelector('[data-company-current-dept]');
