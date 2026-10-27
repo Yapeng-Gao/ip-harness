@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
 import './App.css'
 
-type Phase = 'profile' | 'home' | 'upload' | 'analyze' | 'report' | 'project' | 'execute'
+type Phase = 'home' | 'upload' | 'analyze' | 'report' | 'project' | 'execute' | 'returning'
 
 type Profile = {
   role: string
@@ -71,7 +71,6 @@ const FAKE_PROJECTS = [
 ]
 
 const PHASES: { id: Phase; label: string }[] = [
-  { id: 'profile', label: 'A 画像' },
   { id: 'home', label: 'B 能力地图' },
   { id: 'upload', label: 'C 上传' },
   { id: 'analyze', label: 'D 分析' },
@@ -83,6 +82,7 @@ const PHASES: { id: Phase; label: string }[] = [
 const EXEC_PEERS = ['交底书部负责人', '技术访谈专家', '交底书撰写专家'] as const
 
 function phaseIndex(p: Phase) {
+  if (p === 'returning') return -1
   return PHASES.findIndex((x) => x.id === p)
 }
 
@@ -117,13 +117,15 @@ function inferBundle(goal: string) {
 }
 
 export default function App() {
-  const [phase, setPhase] = useState<Phase>('profile')
+  const returning = typeof window !== 'undefined' && window.localStorage.getItem('mpv4_seen') === '1'
+  const [phase, setPhase] = useState<Phase>(() => (returning ? 'returning' as Phase : 'home'))
+  const [profileOpen, setProfileOpen] = useState(false)
   const [profile, setProfile] = useState<Profile>({
     role: '发明人',
     domain: '机电控制',
     ask: '',
     hasProject: '不确定',
-    skipped: false,
+    skipped: true,
   })
   const [intentDept, setIntentDept] = useState<string | null>(null)
   const [intentExpert, setIntentExpert] = useState<string | null>(null)
@@ -158,6 +160,9 @@ export default function App() {
   )
   const [draft, setDraft] = useState('')
   const [gapOpen, setGapOpen] = useState(false)
+  useEffect(() => {
+    try { window.localStorage.setItem('mpv4_seen', '1') } catch {}
+  }, [])
   const fileRef = useRef<HTMLInputElement>(null)
 
   const intentLabel = useMemo(() => {
@@ -338,48 +343,36 @@ export default function App() {
 
       {phase !== 'execute' && (
         <main id="v4-main" className="v4-main" tabIndex={-1}>
-          {phase === 'profile' && (
+          
+          {phase === 'returning' && (
             <div className="v4-card">
-              <p className="v4-section-kicker">A · 进应用</p>
-              <h1>先初步了解你</h1>
-              <p className="lead">第一次画像。可跳过；跳过的话后面汇报会标明「了解不足」。</p>
-              <div className="v4-field">
-                <label htmlFor="pf-role">身份倾向</label>
-                <select id="pf-role" name="role" autoComplete="organization-title" value={profile.role} onChange={(e) => setProfile({ ...profile, role: e.target.value, skipped: false })}>
-                  {['发明人', '代理人', '企业对接', '其他'].map((x) => (
-                    <option key={x}>{x}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="v4-field">
-                <label htmlFor="pf-domain">领域 / 技术方向</label>
-                <input id="pf-domain" name="domain" autoComplete="off" value={profile.domain} onChange={(e) => setProfile({ ...profile, domain: e.target.value, skipped: false })} placeholder="如：机电控制、生物医药…" />
-              </div>
-              <div className="v4-field">
-                <label htmlFor="pf-ask">当前诉求（可空）</label>
-                <textarea id="pf-ask" name="ask" autoComplete="off" value={profile.ask} onChange={(e) => setProfile({ ...profile, ask: e.target.value, skipped: false })} placeholder="一句话即可，后面材料还会补" />
-              </div>
-              <div className="v4-field">
-                <label htmlFor="pf-has">是否已有在办项目</label>
-                <select id="pf-has" name="hasProject" autoComplete="off" value={profile.hasProject} onChange={(e) => setProfile({ ...profile, hasProject: e.target.value, skipped: false })}>
-                  {['是', '否', '不确定'].map((x) => (
-                    <option key={x}>{x}</option>
-                  ))}
-                </select>
+              <p className="v4-section-kicker">再次进入</p>
+              <h1>继续你的在办</h1>
+              <p className="lead">有缺项要拍板，或从能力地图重新丢材料开案。</p>
+              <div className="v4-grid">
+                <button type="button" className="v4-tile is-on" onClick={() => {
+                  setConfirmedProject({ code: 'RD-2026-017', name: '磁驱泵智能控制' })
+                  setFiles([
+                    { name: '磁驱泵控制方案-研发纪要.pdf', size: 420_000 },
+                    { name: '传感器布置草图.png', size: 180_000 },
+                  ])
+                  setGaps([
+                    { id: 'g1', title: '权属声明 / 发明人信息', why: '交底接力需要确认权利主体', blocking: false, skipped: false, decided: false },
+                    { id: 'g2', title: '稳态工况测试数据原文', why: '技术效果仍缺原始记录', blocking: false, skipped: false, decided: false },
+                  ])
+                  setPhase('execute')
+                }}>
+                  <strong>磁驱泵智能控制 · RD-2026-017</strong>
+                  <small>交底形成中 · 2 项缺项待拍板</small>
+                </button>
+                <button type="button" className="v4-tile" onClick={() => setPhase('home')}>
+                  <strong>看能力地图 / 新丢材料</strong>
+                  <small>不进旧案，从了解再走一遍</small>
+                </button>
               </div>
               <div className="v4-actions">
-                <button className="btn btn-primary" type="button" onClick={() => setPhase('home')}>
-                  进入首页
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  type="button"
-                  onClick={() => {
-                    setProfile((p) => ({ ...p, skipped: true }))
-                    setPhase('home')
-                  }}
-                >
-                  跳过，稍后再说
+                <button className="btn btn-ghost" type="button" onClick={() => { try { localStorage.removeItem('mpv4_seen') } catch {}; setPhase('home'); setProfile({ role: '发明人', domain: '机电控制', ask: '', hasProject: '不确定', skipped: true }) }}>
+                  模拟「第一次进入」
                 </button>
               </div>
             </div>
@@ -387,12 +380,19 @@ export default function App() {
 
           {phase === 'home' && (
             <div className="v4-card">
-              <p className="v4-section-kicker">B · 首页 · 能力地图</p>
-              <h1>全部部门与专家</h1>
+              <p className="v4-section-kicker">进公司 · 能力地图</p>
+              <h1>虚拟知产公司，帮你尽快申专利</h1>
               <p className="lead">
-                先看部门；点选后只展开该部专家。也可搜索，或不选人直接上传。
-                {profile.skipped ? ' （画像已跳过，推荐会偏弱）' : ` · 当前画像：${profile.role} / ${profile.domain}`}
+                先看清有哪些部门、专家能做什么；可点选，也可不选，直接丢材料。
+                {profile.skipped
+                  ? ' · 尚未了解你（推荐会偏弱）'
+                  : ` · 已了解：${profile.role} / ${profile.domain}`}
               </p>
+              <div className="v4-actions" style={{ marginTop: 0, marginBottom: 12 }}>
+                <button className="btn btn-ghost" type="button" onClick={() => setProfileOpen(true)}>
+                  {profile.skipped ? '补充一点关于你' : '改一下关于你'}
+                </button>
+              </div>
               <div className="v4-intent">当前意向：{intentLabel}</div>
               <div className="v4-field">
                 <label htmlFor="home-q">搜索部门或专家</label>
@@ -854,6 +854,43 @@ export default function App() {
                 <button type="submit">发送</button>
               </form>
             </aside>
+          </div>
+        </div>
+      )}
+
+      {profileOpen && (
+        <div className="v4-sheet-scrim" role="dialog" aria-modal="true" aria-labelledby="pf-title" onClick={() => setProfileOpen(false)}>
+          <div className="v4-sheet" onClick={(e) => e.stopPropagation()}>
+            <h2 id="pf-title">关于你（可随时补）</h2>
+            <p className="lead">不挡门。补了汇报更准；不补也能上传。</p>
+            <div className="v4-field">
+              <label htmlFor="pf-role">身份倾向</label>
+              <select id="pf-role" name="role" autoComplete="organization-title" value={profile.role} onChange={(e) => setProfile({ ...profile, role: e.target.value, skipped: false })}>
+                {['发明人', '代理人', '企业对接', '其他'].map((x) => (
+                  <option key={x}>{x}</option>
+                ))}
+              </select>
+            </div>
+            <div className="v4-field">
+              <label htmlFor="pf-domain">领域 / 技术方向</label>
+              <input id="pf-domain" name="domain" autoComplete="off" value={profile.domain} onChange={(e) => setProfile({ ...profile, domain: e.target.value, skipped: false })} placeholder="如：机电控制、生物医药…" />
+            </div>
+            <div className="v4-field">
+              <label htmlFor="pf-ask">当前诉求（可空）</label>
+              <textarea id="pf-ask" name="ask" autoComplete="off" value={profile.ask} onChange={(e) => setProfile({ ...profile, ask: e.target.value, skipped: false })} placeholder="一句话即可" />
+            </div>
+            <div className="v4-field">
+              <label htmlFor="pf-has">是否已有在办项目</label>
+              <select id="pf-has" name="hasProject" autoComplete="off" value={profile.hasProject} onChange={(e) => setProfile({ ...profile, hasProject: e.target.value, skipped: false })}>
+                {['是', '否', '不确定'].map((x) => (
+                  <option key={x}>{x}</option>
+                ))}
+              </select>
+            </div>
+            <div className="v4-actions">
+              <button className="btn btn-primary" type="button" onClick={() => { setProfile((p) => ({ ...p, skipped: false })); setProfileOpen(false) }}>保存</button>
+              <button className="btn btn-ghost" type="button" onClick={() => { setProfile((p) => ({ ...p, skipped: true })); setProfileOpen(false) }}>先不填</button>
+            </div>
           </div>
         </div>
       )}

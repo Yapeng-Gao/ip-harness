@@ -1986,3 +1986,7 @@ kbd { font-family: inherit; font-size: 10px; border: 1px solid var(--line); bord
   .v4-actions .btn, .v4-tile { transition: none; }
   .v4-actions .btn:active:not(:disabled), .v4-tile:active { transform: none; }
 }
+
+.v4-sheet-scrim { position:fixed; inset:0; background:rgba(28,25,23,.35); display:flex; align-items:flex-end; justify-content:center; z-index:40; padding:16px; }
+.v4-sheet { width:min(480px,100%); background:#fff; border-radius:16px 16px 12px 12px; padding:20px 20px 24px; box-shadow:0 -8px 40px rgba(0,0,0,.12); max-height:min(85vh,640px); overflow:auto; }
+.v4-sheet h2 { margin:0 0 6px; font-size:18px; text-wrap:balance; }
