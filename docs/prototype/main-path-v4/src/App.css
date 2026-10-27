@@ -1904,9 +1904,6 @@ kbd { font-family: inherit; font-size: 10px; border: 1px solid var(--line); bord
 .v4-top strong { font-size:14px; }
 .v4-top small { color:#78716c; }
 .v4-steps { display:flex; gap:6px; flex-wrap:wrap; }
-.v4-steps span { font-size:11px; padding:3px 8px; border-radius:999px; background:rgba(28,25,23,.06); color:#78716c; }
-.v4-steps span.on { background:#1c1917; color:#fafaf9; }
-.v4-steps span.done { background:#d6d3d1; color:#44403c; }
 .v4-main { max-width:1100px; margin:0 auto; padding:28px 20px 64px; }
 .v4-card { background:#fff; border:1px solid rgba(28,25,23,.08); border-radius:16px; padding:22px 24px; box-shadow:0 1px 0 rgba(28,25,23,.03); }
 .v4-card h1 { font-size:22px; margin:0 0 8px; letter-spacing:-.02em; }
@@ -1966,4 +1963,26 @@ kbd { font-family: inherit; font-size: 10px; border: 1px solid var(--line); bord
 @media (max-width: 960px) {
   .v4-wb { grid-template-columns:1fr; }
   .v4-wb aside, .v4-wb section { border-right:0; border-bottom:1px solid rgba(28,25,23,.08); }
+}
+
+
+.v4-steps button { font-size:11px; padding:3px 8px; border-radius:999px; background:rgba(28,25,23,.06); color:#78716c; border:0; }
+.v4-steps button.on { background:#1c1917; color:#fafaf9; }
+.v4-steps button.done { background:#d6d3d1; color:#44403c; }
+.v4-steps button:disabled { opacity:.45; cursor:not-allowed; }
+.v4-drop.is-drag { border-color:#1c1917; background:#fff; box-shadow:0 0 0 2px rgba(28,25,23,.12); }
+.v4-hint { font-size:12px; color:#78716c; }
+.v4-hint.tabular, .tabular { font-variant-numeric: tabular-nums; }
+.v4-actions .btn { transition: transform 150ms ease-out, background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; }
+.v4-actions .btn:active:not(:disabled) { transform: scale(0.96); }
+.v4-tile { transition: border-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out; }
+.v4-tile:active { transform: scale(0.98); }
+.v4-card h1 { text-wrap: balance; }
+.v4-rail { display:flex; flex-direction:column; min-height:0; }
+.v4-rail .v4-chat { flex:1; min-height:140px; }
+.v4-rail .v4-compose { position:sticky; bottom:0; background:#fff; padding-top:8px; }
+@media (prefers-reduced-motion: reduce) {
+  .v4-progress i { transition: none; }
+  .v4-actions .btn, .v4-tile { transition: none; }
+  .v4-actions .btn:active:not(:disabled), .v4-tile:active { transform: none; }
 }
