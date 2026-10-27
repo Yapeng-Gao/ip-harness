@@ -86,6 +86,10 @@ function phaseIndex(p: Phase) {
   return PHASES.findIndex((x) => x.id === p)
 }
 
+function markSeen() {
+  try { window.localStorage.setItem('mpv4_seen', '1') } catch {}
+}
+
 function inferBundle(goal: string) {
   const g = goal.toLowerCase()
   if (g.includes('fto') || g.includes('风险')) {
@@ -119,12 +123,59 @@ function inferBundle(goal: string) {
 export default function App() {
   const [phase, setPhase] = useState<Phase>(() => {
     try {
+      const q = new URLSearchParams(window.location.search).get('phase') as Phase | null
+      const allowed: Phase[] = ['home', 'upload', 'analyze', 'report', 'project', 'execute', 'returning']
+      if (q && allowed.includes(q)) return q
       return window.localStorage.getItem('mpv4_seen') === '1' ? 'returning' : 'home'
     } catch {
       return 'home'
     }
   })
   const [profileOpen, setProfileOpen] = useState(false)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const sheetCloseRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href)
+      if (phase === 'home' || phase === 'returning') url.searchParams.delete('phase')
+      else url.searchParams.set('phase', phase)
+      window.history.replaceState(null, '', url.pathname + url.search + url.hash)
+    } catch {}
+  }, [phase])
+
+  useEffect(() => {
+    if (!profileOpen) return
+    const prev = document.activeElement as HTMLElement | null
+    sheetCloseRef.current?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        setProfileOpen(false)
+        return
+      }
+      if (e.key !== 'Tab' || !sheetRef.current) return
+      const focusables = sheetRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      )
+      if (!focusables.length) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      prev?.focus?.()
+    }
+  }, [profileOpen])
+
   const [profile, setProfile] = useState<Profile>({
     role: '发明人',
     domain: '机电控制',
@@ -136,6 +187,7 @@ export default function App() {
   const [intentExpert, setIntentExpert] = useState<string | null>(null)
   const [homeQuery, setHomeQuery] = useState('')
   const [showAllExperts, setShowAllExperts] = useState(false)
+  const [stageFilter, setStageFilter] = useState<string | 'all'>('all')
   const [files, setFiles] = useState<{ name: string; size: number }[]>([])
   const [dragOver, setDragOver] = useState(false)
   const [analyzePct, setAnalyzePct] = useState(0)
@@ -165,9 +217,6 @@ export default function App() {
   )
   const [draft, setDraft] = useState('')
   const [gapOpen, setGapOpen] = useState(false)
-  useEffect(() => {
-    try { window.localStorage.setItem('mpv4_seen', '1') } catch {}
-  }, [])
   const fileRef = useRef<HTMLInputElement>(null)
 
   const intentLabel = useMemo(() => {
@@ -184,16 +233,19 @@ export default function App() {
     openGaps.some((g) => g.blocking) ? '不够' : openGaps.length > 0 ? '勉强' : '够'
 
   const q = homeQuery.trim().toLowerCase()
+  const stages = ['了解', '发现', '规划', '形成', '申请', '审查', '运营']
   const filteredDepts = useMemo(
     () =>
-      DEPARTMENTS.filter(
-        (d) =>
-          !q ||
+      DEPARTMENTS.filter((d) => {
+        if (stageFilter !== 'all' && d.stage !== stageFilter) return false
+        if (!q) return true
+        return (
           d.name.toLowerCase().includes(q) ||
           d.desc.toLowerCase().includes(q) ||
-          d.experts.some((e) => e.toLowerCase().includes(q)),
-      ),
-    [q],
+          d.experts.some((e) => e.toLowerCase().includes(q))
+        )
+      }),
+    [q, stageFilter],
   )
   const filteredExperts = useMemo(() => {
     let list = EXPERTS
@@ -275,6 +327,7 @@ export default function App() {
 
   function startAnalyze() {
     if (!files.length) return
+    markSeen()
     setAnalyzeDone(false)
     setAnalyzePct(0)
     setPhase('analyze')
@@ -283,12 +336,14 @@ export default function App() {
   function confirmProject() {
     if (projectChoice === 'new') {
       setConfirmedProject({ code: 'RD-2026-NEW', name: files[0]?.name.replace(/\.[^.]+$/, '') || '新开项目' })
+      markSeen()
       setPhase('execute')
       return
     }
     if (projectChoice === 'merge' && mergeId) {
       const p = FAKE_PROJECTS.find((x) => x.id === mergeId)!
       setConfirmedProject({ code: p.id, name: p.name })
+      markSeen()
       setPhase('execute')
     }
   }
@@ -365,6 +420,7 @@ export default function App() {
                     { id: 'g1', title: '权属声明 / 发明人信息', why: '交底接力需要确认权利主体', blocking: false, skipped: false, decided: false },
                     { id: 'g2', title: '稳态工况测试数据原文', why: '技术效果仍缺原始记录', blocking: false, skipped: false, decided: false },
                   ])
+                  markSeen()
                   setPhase('execute')
                 }}>
                   <strong>磁驱泵智能控制 · RD-2026-017</strong>
@@ -405,6 +461,12 @@ export default function App() {
               </div>
 
               <h2>部门</h2>
+              <div className="v4-actions" style={{ marginTop: 0, marginBottom: 10 }} role="group" aria-label="按阶段筛选部门">
+                <button type="button" className={`btn ${stageFilter === 'all' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setStageFilter('all')}>全部</button>
+                {stages.map((s) => (
+                  <button key={s} type="button" className={`btn ${stageFilter === s ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setStageFilter(s)}>{s}</button>
+                ))}
+              </div>
               <div className="v4-grid" style={{ marginBottom: 18 }}>
                 {filteredDepts.map((d) => (
                   <button key={d.id} type="button" className={`v4-tile ${intentDept === d.id ? 'is-on' : ''}`} onClick={() => toggleDept(d.id)} aria-pressed={intentDept === d.id}>
@@ -465,7 +527,7 @@ export default function App() {
                   className="btn btn-secondary"
                   type="button"
                   onClick={() => {
-                    try { localStorage.setItem('mpv4_seen', '1') } catch {}
+                    markSeen()
                     setIntentDept(null)
                     setIntentExpert(null)
                     setPhase('upload')
@@ -865,9 +927,21 @@ export default function App() {
       )}
 
       {profileOpen && (
-        <div className="v4-sheet-scrim" role="dialog" aria-modal="true" aria-labelledby="pf-title" onClick={() => setProfileOpen(false)}>
-          <div className="v4-sheet" onClick={(e) => e.stopPropagation()}>
-            <h2 id="pf-title">关于你（可随时补）</h2>
+        <div className="v4-sheet-scrim" role="presentation" onClick={() => setProfileOpen(false)}>
+          <div
+            className="v4-sheet"
+            ref={sheetRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="pf-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+              <h2 id="pf-title">关于你（可随时补）</h2>
+              <button ref={sheetCloseRef} type="button" className="btn btn-ghost" aria-label="关闭" onClick={() => setProfileOpen(false)}>
+                关闭
+              </button>
+            </div>
             <p className="lead">不挡门。补了汇报更准；不补也能上传。</p>
             <div className="v4-field">
               <label htmlFor="pf-role">身份倾向</label>
