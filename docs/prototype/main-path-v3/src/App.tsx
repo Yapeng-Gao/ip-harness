@@ -155,8 +155,11 @@ export default function App() {
   const [search, setSearch] = useState('')
   const [handedOff, setHandedOff] = useState(false)
   const [customExperts, setCustomExperts] = useState<string[]>([])
-  const [chat, setChat] = useState<string[]>([])
+  const [chat, setChat] = useState<{ id: string; from: 'me' | 'expert'; name: string; text: string }[]>([])
   const [message, setMessage] = useState('')
+  const [talkTo, setTalkTo] = useState<string | null>(null)
+  const [railFeedOpen, setRailFeedOpen] = useState(true)
+  const composeRef = useRef<HTMLTextAreaElement>(null)
   const [saved, setSaved] = useState(true)
   const [projectFilter, setProjectFilter] = useState('')
   const [objectFilter, setObjectFilter] = useState<'全部对象' | ObjectKind>('全部对象')
@@ -600,10 +603,24 @@ export default function App() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
   // 壳左侧栏已整栏去掉；项目列表从首页「全部项目」或顶栏返回进入
+  const focusCompose = (who?: string) => {
+    if (who) setTalkTo(who)
+    setRailFeedOpen(true)
+    window.requestAnimationFrame(() => composeRef.current?.focus())
+  }
   const sendChat = () => {
-    if (!message.trim()) return
-    setChat(c => [...c, message.trim()]); setMessage('')
-    window.setTimeout(() => notify('部门已收到，将在项目内回复'), 500)
+    if (!message.trim() && composeFiles.length === 0) return
+    const to = talkTo ?? (oaMode ? 'OA 策略专家' : handedOff || storageMode ? '权利要求专家' : '技术访谈专家')
+    const body = message.trim() || (composeFiles.length ? `（附上 ${composeFiles.map(f => f.name).join('、')}）` : '')
+    const mine = talkTo ? `@${talkTo} ${body}` : body
+    setChat(c => [...c, { id: `m-${Date.now()}`, from: 'me', name: '我', text: mine }])
+    setMessage('')
+    setComposeFiles([])
+    setRailFeedOpen(true)
+    window.setTimeout(() => {
+      setChat(c => [...c, { id: `r-${Date.now()}`, from: 'expert', name: to, text: '已收到。我会在本节点内继续处理；新产出会出现在过程时间线，并归档到左栏过程 / 产物。' }])
+      notify(`${to}已回复`)
+    }, 550)
   }
 
   const searchItems = useMemo(() => [
@@ -906,10 +923,17 @@ export default function App() {
 
           <aside className="department-pane">
             <div className="department-head"><div><span className="section-kicker">{role === 'enterprise' ? '确认闸' : '当前负责部门'}</span><h3>{oaMode ? 'OA 答复部' : handedOff && !storageMode ? '申请文件部' : currentDept.name}</h3></div><button className="icon-btn" onClick={() => navigate('departments')} aria-label="查看部门与专家"><MoreHorizontal size={18} /></button></div>
-            <div className="working-team working-team-compact" aria-label="本节点专家">
-              {(oaMode ? [['策', 'OA 策略', true], ['辩', '创造性争辩', true], ['林', '林岚复核', false]] : handedOff || storageMode ? [['权', '权利要求', true], ['说', '说明书', true], ['质', '质量审查', false]] : [['访', '技术访谈', !workFresh || workPlanIndex > 1], ['检', '交底撰写', !workFresh || workPlanIndex > 2], ['林', '林岚复核', false]]).map(([n, label, done]) => (
-                <div key={String(n)} className={done ? 'done' : 'pending'}><Avatar name={String(n)} human={n === '林'} small /><span>{String(label)}</span>{done ? <CheckCircle2 size={13} /> : <Clock3 size={13} />}</div>
-              ))}
+            <div className="working-team working-team-compact" role="group" aria-label="本节点专家，点击可对话">
+              {(oaMode ? [['策', 'OA 策略专家', true], ['辩', '创造性争辩专家', true], ['林', '林岚 · 复核', false]] : handedOff || storageMode ? [['权', '权利要求专家', true], ['说', '说明书撰写专家', true], ['质', '质量审查专家', false]] : [['访', '技术访谈专家', !workFresh || workPlanIndex > 1], ['检', '交底书撰写专家', !workFresh || workPlanIndex > 2], ['林', '林岚 · 代理师', false]]).map(([n, label, done]) => {
+                const short = String(label).replace(/专家$/, '').replace(/ · .*$/, '')
+                const active = talkTo === label
+                const outs = processLog.filter(ev => ev.expert.includes(String(label).slice(0, 4)) || ev.expert.includes(short.slice(0, 2)))
+                return (
+                  <button type="button" key={String(n)} className={`${done ? 'done' : 'pending'}${active ? ' active' : ''}`} aria-pressed={active} onClick={() => { focusCompose(String(label)); if (outs[0]?.artifact) { const a = outs[0].artifact!; if (a.includes('交底')) setActiveDoc(workFresh && workPlanIndex < 3 ? '交底书草稿' : '交底书'); else { setAssetBucket(a.includes('pdf') || a.includes('V') ? 'output' : 'process'); } } notify(outs.length ? `已选 ${label} · ${outs.length} 项产出可点时间线查看` : `已选 ${label}，可在下方输入交办`) }}>
+                    <Avatar name={String(n)} human={n === '林'} small /><span>{short}</span>{done ? <CheckCircle2 size={13} /> : <Clock3 size={13} />}
+                  </button>
+                )
+              })}
             </div>
             <section className="rail-confirm" aria-label="确认控制点">
               <div className="pane-section-title"><span>你来拍板</span><small>2 步 · 主进度</small></div>
@@ -928,7 +952,7 @@ export default function App() {
                   <li key={ev.id} className={`process-step ${ev.status}`}>
                     <span className="process-dot" aria-hidden="true" />
                     <div>
-                      <p><strong>{ev.expert}</strong><time>{ev.time}</time></p>
+                      <p><button type="button" className="process-expert-link" onClick={() => focusCompose(ev.expert)}><strong>{ev.expert}</strong></button><time>{ev.time}</time></p>
                       <p>{ev.action}</p>
                       {ev.artifact && <button type="button" className="process-artifact" onClick={() => { if (ev.artifact?.includes('交底')) setActiveDoc(workFresh && workPlanIndex < 3 ? '交底书草稿' : '交底书'); else if (ev.artifact?.includes('确认')) notify('已定位确认闸'); else { setAssetBucket(ev.artifact?.includes('V1') || ev.artifact?.includes('pdf') ? 'output' : 'process'); notify(`已定位 ${ev.artifact}`) } }}>{ev.artifact}</button>}
                     </div>
@@ -943,15 +967,20 @@ export default function App() {
                 </button>
               )}
             </section>
-            <details className="rail-feed">
-              <summary>协同留言<span>{chat.length + (workFresh ? 1 : 2)}</span></summary>
-              <div className="department-feed">
-                <div className="feed-item"><Avatar name={oaMode ? '策' : '访'} small /><div><p><strong>{oaMode ? 'OA 策略专家' : '技术访谈专家'}</strong><time>{workFresh ? '刚刚' : '10:24'}</time></p><p>{workFresh && !oaMode ? (workPlanIndex === 0 ? '还没有输入材料。你补交底 / 图纸 / 试验记录后，我再列缺口并开访谈。' : workPlanIndex === 1 ? '已根据输入列出缺口，下一步访谈补齐效果与工况。' : workPlanIndex === 2 ? '访谈纪要已交撰写专家，正在形成交底书草稿。' : '关键事实已写入交卷物，请你在确认闸拍板。') : workPlanIndex === 0 && !oaMode ? '已开始读取你确认计划时关联的研发资料，缺失项会标在确认闸。' : oaMode ? '已将审查员争议拆解为 3 个特征组，D1 并未直接给出闭环清洗条件。' : '我把“响应更快”改写成了可验证的技术效果，还需要你确认测试条件。'}</p><button onClick={() => notify('已定位到文档对应段落')}>定位到文档<ArrowUpRight size={13} /></button></div></div>
-                {!workFresh && <div className="feed-item"><Avatar name="林" human small /><div><p><strong>林岚 · 代理师</strong><time>10:31</time></p><p>{oaMode ? '先保留方法权利要求的层次，不急于加入全部参数。请确认实际生产是否采用该范围。' : '从申请策略看，建议保留“异常评分自适应修正”这一层。它可能是后续答复创造性的关键。'}</p></div></div>}
-                {chat.map((c, i) => <div className="feed-item own" key={i}><Avatar name="我" human small /><div><p><strong>我</strong><time>刚刚</time></p><p>{c}</p></div></div>)}
+            <section className="rail-chat" aria-label="与专家交互">
+              <div className="pane-section-title"><span>与专家说</span><button type="button" className="text-btn rail-feed-toggle" onClick={() => setRailFeedOpen(v => !v)}>{railFeedOpen ? '收起记录' : `展开记录 · ${chat.length + (workFresh ? 1 : 2)}`}</button></div>
+              {railFeedOpen && <div className="department-feed">
+                <div className="feed-item"><Avatar name={oaMode ? '策' : '访'} small /><div><p><strong>{oaMode ? 'OA 策略专家' : '技术访谈专家'}</strong><time>{workFresh ? '刚刚' : '10:24'}</time></p><p>{workFresh && !oaMode ? (workPlanIndex === 0 ? '还没有输入材料。你补交底 / 图纸 / 试验记录后，我再列缺口并开访谈。' : workPlanIndex === 1 ? '已根据输入列出缺口，下一步访谈补齐效果与工况。' : workPlanIndex === 2 ? '访谈纪要已交撰写专家，正在形成交底书草稿。' : '关键事实已写入交卷物，请你在确认闸拍板。') : workPlanIndex === 0 && !oaMode ? '已开始读取你确认计划时关联的研发资料，缺失项会标在确认闸。' : oaMode ? '已将审查员争议拆解为 3 个特征组，D1 并未直接给出闭环清洗条件。' : '我把“响应更快”改写成了可验证的技术效果，还需要你确认测试条件。'}</p><button type="button" onClick={() => { focusCompose(oaMode ? 'OA 策略专家' : '技术访谈专家'); notify('已定位到文档对应段落') }}>回复并定位<ArrowUpRight size={13} /></button></div></div>
+                {!workFresh && <div className="feed-item"><Avatar name="林" human small /><div><p><strong>林岚 · 代理师</strong><time>10:31</time></p><p>{oaMode ? '先保留方法权利要求的层次，不急于加入全部参数。请确认实际生产是否采用该范围。' : '从申请策略看，建议保留“异常评分自适应修正”这一层。它可能是后续答复创造性的关键。'}</p><button type="button" onClick={() => focusCompose('林岚 · 代理师')}>回复林岚<ArrowUpRight size={13} /></button></div></div>}
+                {chat.map(c => <div className={`feed-item ${c.from === 'me' ? 'own' : ''}`} key={c.id}><Avatar name={c.from === 'me' ? '我' : c.name} human={c.from === 'me' || c.name.includes('林')} small /><div><p><strong>{c.name}</strong><time>刚刚</time></p><p>{c.text}</p></div></div>)}
+              </div>}
+              <div className="department-compose">
+                {talkTo && <div className="compose-to">对 <strong>{talkTo}</strong> 说<button type="button" aria-label="取消指定专家" onClick={() => setTalkTo(null)}><X size={12} /></button></div>}
+                <div><textarea ref={composeRef} name="dept_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder={talkTo ? `向${talkTo}交办或追问…` : '点上方专家，或直接交办本部门…'} rows={2} aria-label="向专家交办" /><button type="button" onClick={() => openFilePicker('compose')} aria-label="添加附件，支持 PDF、Word、图片与常见图纸"><Paperclip size={16} /></button></div>
+                {composeFiles.length > 0 && <ul className="attach-chip-list" aria-label="待发送附件">{composeFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setComposeFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}
+                <div><span>Enter 发送 · {FILE_ACCEPT_HINT}</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div>
               </div>
-              <div className="department-compose"><div><textarea name="dept_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="用自然语言交办或补充说明…" rows={2} aria-label="向部门交办" /><button type="button" onClick={() => openFilePicker('compose')} aria-label="添加附件，支持 PDF、Word、图片与常见图纸"><Paperclip size={16} /></button></div>{composeFiles.length > 0 && <ul className="attach-chip-list" aria-label="待发送附件">{composeFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setComposeFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}<div><span>Enter 发送 · {FILE_ACCEPT_HINT}</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div></div>
-            </details>
+            </section>
             <button className="handoff-button" onClick={() => setModal('handoff')}><GitBranch size={16} /><span><strong>{oaMode ? role === 'agency' ? '交付客户确认' : '确认答复策略' : storageMode ? role === 'agency' ? '交付客户确认' : '确认质检与申请文件' : role === 'agency' ? '交付客户确认' : handedOff ? '查看接力记录' : '让下一部门继续'}</strong><small>{oaMode ? role === 'agency' ? '生成带版本与权限的交付快照' : '确认后回传代理所并保留记录' : storageMode ? role === 'agency' ? '生成质检版本与申请策略交付快照' : '质检版本与申请策略一并确认' : role === 'agency' ? '仅共享指定交付物与确认事项' : handedOff ? '交底书部 → 申请文件部' : '按权限继承所需事实、证据与版本'}</small></span><ArrowRight size={16} /></button>
           </aside>
           </section>

@@ -366,7 +366,7 @@ kbd { font-family: inherit; font-size: 10px; border: 1px solid var(--line); bord
 .editor-footer > div { display: flex; gap: 7px; }
 .editor-footer .btn { min-height: 40px; padding: 8px 12px; font-size: 11px; }
 .department-pane { border-left: 1px solid var(--line); min-width: 0; display: flex; flex-direction: column; height: 100%; background: var(--paper); overflow: hidden; }
-.department-pane > *:not(.rail-feed) { flex-shrink: 0; }
+.department-pane > *:not(.rail-chat) { flex-shrink: 0; }
 .department-head { height: 61px; flex: 0 0 61px; padding: 11px 13px 9px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
 .department-head .section-kicker { display: block; margin-bottom: 4px; font-size: 8px; }
 .department-head h3 { margin: 0; font-size: 14px; }
@@ -1492,3 +1492,18 @@ kbd { font-family: inherit; font-size: 10px; border: 1px solid var(--line); bord
 .rail-feed .department-feed { flex: 1; min-height: 60px; }
 .rail-feed .department-compose { flex-shrink: 0; }
 .department-pane > .handoff-button { margin-top: auto; }
+
+.working-team-compact > button { flex: 1; min-width: 0; display: flex; align-items: center; gap: 5px; padding: 6px 7px; border: 1px solid var(--line); border-radius: 6px; background: var(--warm-paper); cursor: pointer; text-align: left; color: inherit; }
+.working-team-compact > button:hover { border-color: var(--line-strong); background: var(--paper); }
+.working-team-compact > button.active { border-color: var(--ink); background: var(--paper); box-shadow: 0 0 0 1px var(--ink); }
+.working-team-compact > button span:not(.avatar) { flex: 1; min-width: 0; font-size: 9px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.process-expert-link { border: 0; background: transparent; padding: 0; color: inherit; cursor: pointer; text-align: left; }
+.process-expert-link:hover strong { text-decoration: underline; }
+.rail-chat { border-top: 1px solid var(--line); flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--paper); }
+.rail-chat > .pane-section-title { padding: 8px 12px 0; }
+.rail-feed-toggle { font-size: 10px; color: var(--ink-3); }
+.rail-chat .department-feed { flex: 1; min-height: 72px; max-height: 180px; }
+.rail-chat .department-compose { flex-shrink: 0; margin: 8px 12px 10px; }
+.compose-to { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; padding: 4px 6px; border-radius: 4px; background: var(--warm-paper); font-size: 10px; color: var(--ink-2); }
+.compose-to strong { color: var(--ink); }
+.compose-to button { margin-left: auto; border: 0; background: transparent; color: var(--ink-3); display: inline-flex; padding: 4px; }
