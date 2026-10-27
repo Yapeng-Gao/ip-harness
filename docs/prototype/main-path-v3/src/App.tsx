@@ -827,15 +827,13 @@ export default function App() {
 
         {view === 'workbench' && <section className="workspace-frame">
           <header className="workspace-switchbar">
-            <div className="workspace-title"><button className="icon-btn" onClick={() => navigate(role === 'enterprise' ? 'projects' : 'clients')} aria-label="返回列表"><ArrowLeft size={17} /></button><button type="button" className={`icon-btn fold-left-btn ${leftPaneOpen ? 'active' : ''}`} aria-pressed={leftPaneOpen} aria-label={leftPaneOpen ? '收折卷宗栏' : '展开卷宗栏'} title={leftPaneOpen ? '收折卷宗' : '展开卷宗'} onClick={() => setLeftPaneOpen(v => !v)}><PanelLeft size={17} /></button><span className="project-glyph">{workMeta.glyph}</span><div><strong>{workMeta.name}</strong><small>{workMeta.code} · {collab.department}</small></div></div>
+            <div className="workspace-title"><button className="icon-btn" onClick={() => navigate(role === 'enterprise' ? 'projects' : 'clients')} aria-label="返回列表"><ArrowLeft size={17} /></button><button type="button" className={`icon-btn fold-left-btn ${leftPaneOpen ? 'active' : ''}`} aria-pressed={leftPaneOpen} aria-label={leftPaneOpen ? '收折卷宗栏' : '展开卷宗栏'} title={leftPaneOpen ? '收折卷宗' : '展开卷宗'} onClick={() => setLeftPaneOpen(v => !v)}><PanelLeft size={17} /></button></div>
             <div className="workspace-plan-strip" aria-label="本节点四步进度">{collab.plan.map((step, i) => <div key={step} className={i < workPlanIndex ? 'done' : i === workPlanIndex ? 'active' : ''}><span>{i < workPlanIndex ? <Check size={11} /> : i + 1}</span><strong>{step}</strong></div>)}</div>
             <div className="workspace-live"><span className="live-dot" /><span><strong>{nodeConfirmed ? '本节点已确认' : collab.node}</strong><small>{nodeConfirmed ? `等待交给${collab.nextDept}` : '顾言持续协调中'}</small></span></div>
           </header>
           <section className={`workbench ${leftPaneOpen ? '' : 'workbench-stage'}`.trim()}>
           {leftPaneOpen && <aside className="file-pane">
-            <div className="pane-top"><button className="back-link" onClick={() => navigate(role === 'enterprise' ? 'projects' : 'clients')}><ArrowLeft size={15} />{role === 'enterprise' ? '项目中心' : '案件列表'}</button><button className="icon-btn" onClick={() => notify('项目设置已打开')} aria-label="项目设置"><Settings2 size={16} /></button></div>
-            <div className="file-project"><span className="project-glyph">{workMeta.glyph}</span><div><strong>{workMeta.name}</strong><small>{workMeta.code}</small></div></div>
-            <div className="file-stage"><span>{workMeta.object}</span><Status tone={oaMode ? 'red' : 'orange'}>{workMeta.status}</Status></div>
+            <div className="pane-top"><span className="pane-top-label">卷宗</span><button className="icon-btn" onClick={() => notify('项目设置已打开')} aria-label="项目设置"><Settings2 size={16} /></button></div>
             <div className="workspace-scope"><ShieldCheck size={15} /><span><strong>{scopeText.split(' · ')[0]}</strong><small>{scopeText.split(' · ')[1]}</small></span></div>
             <div className="file-tree">
               <p>{oaMode || storageMode ? '案件卷宗' : '项目资料'}</p>
