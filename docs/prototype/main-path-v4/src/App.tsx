@@ -117,8 +117,13 @@ function inferBundle(goal: string) {
 }
 
 export default function App() {
-  const returning = typeof window !== 'undefined' && window.localStorage.getItem('mpv4_seen') === '1'
-  const [phase, setPhase] = useState<Phase>(() => (returning ? 'returning' as Phase : 'home'))
+  const [phase, setPhase] = useState<Phase>(() => {
+    try {
+      return window.localStorage.getItem('mpv4_seen') === '1' ? 'returning' : 'home'
+    } catch {
+      return 'home'
+    }
+  })
   const [profileOpen, setProfileOpen] = useState(false)
   const [profile, setProfile] = useState<Profile>({
     role: '发明人',
@@ -460,6 +465,7 @@ export default function App() {
                   className="btn btn-secondary"
                   type="button"
                   onClick={() => {
+                    try { localStorage.setItem('mpv4_seen', '1') } catch {}
                     setIntentDept(null)
                     setIntentExpert(null)
                     setPhase('upload')
