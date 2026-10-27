@@ -222,8 +222,16 @@ export default function App() {
   const intentLabel = useMemo(() => {
     const d = DEPARTMENTS.find((x) => x.id === intentDept)
     const e = EXPERTS.find((x) => x.id === intentExpert)
-    if (!d && !e) return '未选部门/专家（可直接上传）'
+    if (!d && !e) return '未点选（将交给公司）'
     return [d ? `部门：${d.name}` : null, e ? `专家：${e.name}` : null].filter(Boolean).join(' · ')
+  }, [intentDept, intentExpert])
+
+  const primaryCta = useMemo(() => {
+    const d = DEPARTMENTS.find((x) => x.id === intentDept)
+    const e = EXPERTS.find((x) => x.id === intentExpert)
+    if (d) return `交给${d.name}`
+    if (e) return `交给${e.deptName}（意向 ${e.name}）`
+    return '交给公司'
   }, [intentDept, intentExpert])
 
   const inferredGoal = goalOverride.trim() || '写技术交底书（推断置信中等）'
@@ -231,6 +239,14 @@ export default function App() {
   const openGaps = gaps.filter((g) => !g.skipped && !g.decided)
   const support =
     openGaps.some((g) => g.blocking) ? '不够' : openGaps.length > 0 ? '勉强' : '够'
+  const pathExplain = (() => {
+    const d = DEPARTMENTS.find((x) => x.id === intentDept)
+    const e = EXPERTS.find((x) => x.id === intentExpert)
+    const intentBit = d || e
+      ? `你的意向：${[d ? d.name : null, e ? e.name : null].filter(Boolean).join(' · ')}。`
+      : '你未点选部门/专家。'
+    return `${intentBit}先由「综合服务 / 材料组」做材料分析（必跑），再建议主责落到「${bundle.lead}」。`
+  })()
 
   const q = homeQuery.trim().toLowerCase()
   const stages = ['了解', '发现', '规划', '形成', '申请', '审查', '运营']
@@ -408,7 +424,7 @@ export default function App() {
             <div className="v4-card">
               <p className="v4-section-kicker">再次进入</p>
               <h1>继续你的在办</h1>
-              <p className="lead">有缺项要拍板，或从能力地图重新丢材料开案。</p>
+              <p className="lead">操作入口在这里：继续在办、拍缺项。要开新活再回部门墙交给公司。</p>
               <div className="v4-grid">
                 <button type="button" className="v4-tile is-on" onClick={() => {
                   setConfirmedProject({ code: 'RD-2026-017', name: '磁驱泵智能控制' })
@@ -427,8 +443,8 @@ export default function App() {
                   <small>交底形成中 · 2 项缺项待拍板</small>
                 </button>
                 <button type="button" className="v4-tile" onClick={() => setPhase('home')}>
-                  <strong>看能力地图 / 新丢材料</strong>
-                  <small>不进旧案，从了解再走一遍</small>
+                  <strong>回部门墙 · 开新活</strong>
+                  <small>再看编制，交给公司收新材料</small>
                 </button>
               </div>
               <div className="v4-actions">
@@ -444,7 +460,7 @@ export default function App() {
               <p className="v4-section-kicker">进公司 · 能力地图</p>
               <h1>虚拟知产公司，帮你尽快申专利</h1>
               <p className="lead">
-                先看清有哪些部门、专家能做什么；可点选，也可不选，直接丢材料。
+                先进公司，先看编制：各部门做什么、谁在岗。点选只是意向，不挡交活；也可不点，直接交给公司。
                 {profile.skipped
                   ? ' · 尚未了解你（推荐会偏弱）'
                   : ` · 已了解：${profile.role} / ${profile.domain}`}
@@ -503,7 +519,7 @@ export default function App() {
               </div>
               {!intentDept && !q && (
                 <p className="lead" style={{ marginTop: 8 }}>
-                  先点一个部门看编制，或搜索专家名；也可以不选，直接上传。
+                  先点一个部门看编制，或搜索专家名；不点也能交给公司。
                 </p>
               )}
               {(intentDept || q || showAllExperts) && (
@@ -521,28 +537,18 @@ export default function App() {
 
               <div className="v4-actions">
                 <button className="btn btn-primary" type="button" onClick={() => setPhase('upload')}>
-                  上传材料，开始了解
+                  {primaryCta}
                 </button>
-                <button
-                  className="btn btn-secondary"
-                  type="button"
-                  onClick={() => {
-                    setIntentDept(null)
-                    setIntentExpert(null)
-                    setPhase('upload')
-                  }}
-                >
-                  不选人，直接上传
-                </button>
+                <span className="v4-hint">{intentDept || intentExpert ? '带着上面的意向去交材料' : '不点选也可以，公司先收料再分工'}</span>
               </div>
             </div>
           )}
 
           {phase === 'upload' && (
             <div className="v4-card">
-              <p className="v4-section-kicker">C · 上传材料</p>
-              <h1>把材料丢进来</h1>
-              <p className="lead">支持拖入或选择文件。至少 1 个文件后进入材料分析。</p>
+              <p className="v4-section-kicker">C · 交给公司</p>
+              <h1>把材料交给公司</h1>
+              <p className="lead">拖入或选择文件。交出去后由材料分析专家必跑（综合服务 / 材料组），与是否点选部门无关。</p>
               <div className="v4-intent">当前意向：{intentLabel}</div>
               <div
                 className={`v4-drop ${dragOver ? 'is-drag' : ''}`}
@@ -599,7 +605,7 @@ export default function App() {
                   返回首页
                 </button>
                 <button className="btn btn-primary" type="button" disabled={!files.length} onClick={startAnalyze}>
-                  交给材料分析专家
+                  交给公司，开始分析
                 </button>
                 {!files.length && <span className="v4-hint">先添加至少 1 个文件</span>}
               </div>
@@ -664,9 +670,10 @@ export default function App() {
 
               <div className="v4-report-block">
                 <h3>2. 相关部门与专家</h3>
-                <p>建议主责：{bundle.lead}</p>
-                <p style={{ color: '#78716c', fontSize: 13 }}>协作：材料分析专家（已完成归档）</p>
-                {intentExpert && <p style={{ fontSize: 13 }}>你的意向已记下：{intentLabel}</p>}
+                <p style={{ fontSize: 14, lineHeight: 1.55 }}>{pathExplain}</p>
+                <p>建议主责：<strong>{bundle.lead}</strong></p>
+                <p style={{ color: '#78716c', fontSize: 13 }}>已完成：材料分析专家（综合服务 / 材料组）归档</p>
+                <p style={{ fontSize: 13 }}>当前意向标签：{intentLabel}</p>
               </div>
 
               <div className="v4-report-block">
