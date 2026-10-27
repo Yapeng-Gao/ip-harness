@@ -153,7 +153,6 @@ export default function App() {
   const [toast, setToast] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const [mobileNav, setMobileNav] = useState(false)
   const [handedOff, setHandedOff] = useState(false)
   const [customExperts, setCustomExperts] = useState<string[]>([])
   const [chat, setChat] = useState<string[]>([])
@@ -198,18 +197,18 @@ export default function App() {
       setMode('assistant')
       setView('home')
       setMessagesOpen(true)
-      setMobileNav(false); setNoticeOpen(false)
+      setNoticeOpen(false)
       return
     }
     if (next === 'departments' || next === 'studio') {
       setMode('studio')
       setView('studio')
-      setMobileNav(false); setNoticeOpen(false)
+      setNoticeOpen(false)
       return
     }
     if (next === 'home') setMode('assistant')
     else if (!['home', 'studio'].includes(next)) setMode('project')
-    setView(next); setMobileNav(false); setNoticeOpen(false); setMessagesOpen(false)
+    setView(next); setNoticeOpen(false); setMessagesOpen(false)
   }
   const switchMode = (next: Mode) => {
     if (firstRun && next !== 'assistant') { setFirstRun(false); notify('已切换至已有工作演示') }
@@ -217,7 +216,7 @@ export default function App() {
     if (next === 'studio') setView('studio')
     else if (next === 'project') setView(role === 'enterprise' ? 'projects' : 'clients')
     else setView('home')
-    setMobileNav(false); setNoticeOpen(false); setMessagesOpen(false); setProjectPickerOpen(false)
+    setNoticeOpen(false); setMessagesOpen(false); setProjectPickerOpen(false)
   }
   const openWorkbench = (oa = false, context: WorkContext = 'magnetic', opts?: { planIndex?: number; fresh?: boolean; deptId?: string }) => {
     setWorkContext(context)
@@ -600,13 +599,7 @@ export default function App() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
-  // 工作台态壳侧栏不再放「项目与对象 / 专利资产」；列表从首页「全部项目」或顶栏返回进入
-  const enterpriseNav: { id: View; label: string; icon: typeof Library; count?: number }[] = []
-  const agencyNav = [
-    { id: 'clients' as View, label: '客户与案件', icon: BriefcaseBusiness, count: 12 },
-  ]
-  const nav = role === 'enterprise' ? enterpriseNav : agencyNav
-
+  // 壳左侧栏已整栏去掉；项目列表从首页「全部项目」或顶栏返回进入
   const sendChat = () => {
     if (!message.trim()) return
     setChat(c => [...c, message.trim()]); setMessage('')
@@ -625,7 +618,6 @@ export default function App() {
   return <div className={`app-shell ${firstRun && view === 'home' ? 'first-run-shell' : ''}`}>
     <a className="skip-link" href="#main-content">跳到主内容</a>
     <header className="topbar">
-      {mode === 'project' && <button className="mobile-menu icon-btn" onClick={() => setMobileNav(true)} aria-label="打开导航"><Menu size={20} /></button>}
       <BrandWordmark onClick={() => navigate('home')} ariaLabel="Novada Team · 返回首页" />
       {showProjectPicker && <div className="topbar-context">
         <span className="context-label">{contextLabel}</span>
@@ -694,24 +686,7 @@ export default function App() {
     </header>
 
     <div className="app-main">
-      {mobileNav && mode === 'project' && <div className="mobile-scrim" onClick={() => setMobileNav(false)} />}
-      {mode === 'project' && <aside className={`sidebar ${mobileNav ? 'mobile-open' : ''}`}>
-        <div className="mobile-sidebar-head"><strong>工作导航</strong><button className="icon-btn" onClick={() => setMobileNav(false)} aria-label="关闭导航"><X size={18} /></button></div>
-        <div className="workspace-label">{role === 'enterprise' ? '澄明科技有限公司' : '衡知专利代理事务所'}<span>{role === 'enterprise' ? '研发负责人工作区' : '代理师工作区'}</span></div>
-        <nav className="main-nav">
-          {nav.map(item => <button key={item.id} className={view === item.id ? 'active' : ''} onClick={() => navigate(item.id)}><item.icon size={17} /><span>{item.label}</span>{item.count && <em>{item.count}</em>}</button>)}
-        </nav>
-        <div className="sidebar-section">
-          <div className="sidebar-heading"><span>进行中的项目</span><button className="sidebar-new-chip" onClick={() => setModal('new')} aria-label="新建项目"><Plus size={14} /><span>新建</span></button></div>
-          <button className="side-project active" onClick={() => openWorkbench(role === 'agency')}><span className="project-glyph">MP</span><span><strong>{role === 'enterprise' ? '磁驱泵智能控制' : '低能耗膜分离工艺'}</strong><small>{role === 'enterprise' ? '交底书完善中' : '第一次 OA 答复'}</small></span></button>
-          <button className="side-project" onClick={() => { notify('已切换至模块化储能热管理'); openWorkbench(false, 'storage') }}><span className="project-glyph muted">ES</span><span><strong>模块化储能热管理</strong><small>申请文件质检</small></span></button>
-        </div>
-        <div className="sidebar-bottom">
-          <button onClick={() => setModal('guide')}><BookOpen size={16} />产品如何工作<ChevronRight size={14} /></button>
-          <div className="human-guard"><ShieldCheck size={17} /><span><strong>关键节点，人来决策</strong><small>AI 起草 · 专家复核 · 你确认</small></span></div>
-        </div>
-      </aside>}
-
+      {/* 壳左侧栏整栏去掉：公司名/进行中项目改由顶栏三态 + 项目切换器承担；工作台仍保留卷宗列 */}
       <main id="main-content" className={`content ${view === 'workbench' ? 'content-workbench' : ''} ${mode === 'assistant' || mode === 'studio' ? 'content-assistant' : ''}`}>
         {view === 'home' && (role === 'enterprise' ? <>
           <section className="home-intro company-home-intro">
