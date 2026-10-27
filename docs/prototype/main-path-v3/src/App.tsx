@@ -6,7 +6,7 @@ import {
   CircleAlert, CircleHelp, Clock3, FileCheck2, FileClock,
   Files, FileText, FlaskConical, GitBranch, Library,
   Download, Menu, MessageSquareText, MoreHorizontal, Network, Paperclip, PenLine, Plus,
-  Rocket, Search, Send, Settings2, ShieldCheck, Sparkles, Stamp, Upload, X,
+  Rocket, Search, Send, Settings2, ShieldCheck, Sparkles, Upload, X,
 } from 'lucide-react'
 import './App.css'
 
@@ -828,7 +828,7 @@ export default function App() {
         {view === 'workbench' && <section className="workspace-frame">
           <header className="workspace-switchbar">
             <div className="workspace-title"><button className="icon-btn" onClick={() => navigate(role === 'enterprise' ? 'projects' : 'clients')} aria-label="返回列表"><ArrowLeft size={17} /></button><button type="button" className={`icon-btn fold-left-btn ${leftPaneOpen ? 'active' : ''}`} aria-pressed={leftPaneOpen} aria-label={leftPaneOpen ? '收折卷宗栏' : '展开卷宗栏'} title={leftPaneOpen ? '收折卷宗' : '展开卷宗'} onClick={() => setLeftPaneOpen(v => !v)}><PanelLeft size={17} /></button></div>
-            <div className="workspace-plan-strip" aria-label="本节点四步进度">{collab.plan.map((step, i) => <div key={step} className={i < workPlanIndex ? 'done' : i === workPlanIndex ? 'active' : ''}><span>{i < workPlanIndex ? <Check size={11} /> : i + 1}</span><strong>{step}</strong></div>)}</div>
+            <div className="workspace-plan-wrap" aria-label="部内工序（辅助）"><span className="workspace-plan-kicker">部内工序</span><div className="workspace-plan-strip">{collab.plan.map((step, i) => <div key={step} className={i < workPlanIndex ? 'done' : i === workPlanIndex ? 'active' : ''}><span>{i < workPlanIndex ? <Check size={11} /> : i + 1}</span><strong>{step}</strong></div>)}</div></div>
             <div className="workspace-live"><span className="live-dot" /><span><strong>{nodeConfirmed ? '本节点已确认' : collab.node}</strong><small>{nodeConfirmed ? `等待交给${collab.nextDept}` : '顾言持续协调中'}</small></span></div>
           </header>
           <section className={`workbench ${leftPaneOpen ? '' : 'workbench-stage'}`.trim()}>
@@ -870,7 +870,7 @@ export default function App() {
           <div className="editor-pane">
             <div className="editor-tabs" role="tablist">{workTabs.map(doc => <button key={doc} role="tab" aria-selected={activeDoc === doc} className={activeDoc === doc ? 'active' : ''} onClick={() => setActiveDoc(doc)}>{doc}{activeDoc === doc && <span />}</button>)}<button className="icon-btn" onClick={() => setModal('new')} aria-label="新建文件"><Plus size={16} /></button></div>
             <div className="editor-toolbar"><div><button onClick={() => notify('已切换为编辑模式')}><PenLine size={15} />编辑</button><button onClick={() => notify('批注模式已开启')}><MessageSquareText size={15} />批注</button><button onClick={() => notify('版本对比已生成')}>对比版本</button><button type="button" onClick={() => downloadDemo(`${activeDoc}.pdf`)}><Download size={15} />下载</button></div><span className={saved ? '' : 'editing'}>{saved ? <><Check size={13} />已保存</> : '编辑中'}</span></div>
-            {role === 'enterprise' && <div className="lead-workbench"><Avatar name="顾" small /><div><strong>顾言 · 知产负责人</strong><p>{oaMode ? 'OA 答复部已拆解争议并准备答复文本。你只需确认修改范围与实际生产方案。' : storageMode ? '申请文件部与质量审查部正在核查文本一致性。我会汇总问题，再请你确认申请策略。' : workFresh ? (workPlanIndex === 0 ? '卷宗还是空的。用中栏「上传」或右栏附件补输入材料，再点「推进专家动作」看专家如何产出。' : workPlanIndex < 3 ? '专家动作正在写入过程资产；中栏会在撰写步出现草稿。' : '交卷物已入产物栏，请在确认闸拍板后再接力。') : handedOff ? '申请文件部已接手。我会汇总权利要求与说明书进展，涉及保护范围时再请你决策。' : '交底书部正在完善文本。左卷宗 · 中文书 · 右确认闸同屏。你只需处理标出的技术事实。'}</p></div><Status tone="orange">三栏工作台</Status></div>}
+            {role === 'enterprise' && <div className="lead-workbench"><Avatar name="顾" small /><div><strong>顾言 · 知产负责人</strong><p>{oaMode ? 'OA 答复部已拆解争议并准备答复文本。你只需确认修改范围与实际生产方案。' : storageMode ? '申请文件部与质量审查部正在核查文本一致性。我会汇总问题，再请你确认申请策略。' : workFresh ? (workPlanIndex === 0 ? '卷宗还是空的。用中栏「上传」或右栏附件补输入材料，再点「推进专家动作」看专家如何产出。' : workPlanIndex < 3 ? '专家动作正在写入过程资产；中栏会在撰写步出现草稿。' : '交卷物已入产物栏，请在确认闸拍板后再接力。') : handedOff ? '申请文件部已接手。我会汇总权利要求与说明书进展，涉及保护范围时再请你决策。' : '交底书部正在完善文本。左卷宗 · 中文书 · 右确认闸同屏。你只需处理标出的技术事实。'}</p></div><Status tone="orange">右栏拍板</Status></div>}
             <div className="document-scroll">
               {oaMode ? <AgencyDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : storageMode ? <StorageDocument doc={activeDoc} onEdit={() => setSaved(false)} /> : workFresh && workPlanIndex < 2 ? (
                 <article className="document document-empty">
@@ -901,26 +901,28 @@ export default function App() {
                 </article>
               ) : <EnterpriseDocument doc={activeDoc} onEdit={() => setSaved(false)} />}
             </div>
-            <div className="editor-footer"><span>{saved ? `内容已同步至${oaMode || storageMode ? '案件卷宗' : '项目事实库'}` : '有未保存修改'}</span><div><button className="btn btn-secondary" onClick={() => { setSaved(true); notify('新版本已保存') }}>保存版本</button><button className="btn btn-ink" onClick={() => setModal('review')}><Stamp size={15} />{role === 'enterprise' ? '提交确认' : '提交质检'}</button></div></div>
+            <div className="editor-footer"><span>{saved ? `内容已同步至${oaMode || storageMode ? '案件卷宗' : '项目事实库'} · 拍板请用右栏确认闸` : '有未保存修改'}</span><div><button className="btn btn-secondary" onClick={() => { setSaved(true); notify('新版本已保存') }}>保存版本</button></div></div>
           </div>
 
           <aside className="department-pane">
-            <div className="department-head"><div><span className="section-kicker">{role === 'enterprise' ? '协同 · 确认闸' : '当前负责部门'}</span><h3>{oaMode ? 'OA 答复部' : handedOff && !storageMode ? '申请文件部' : currentDept.name}</h3></div><button className="icon-btn" onClick={() => navigate('departments')} aria-label="查看部门与专家"><MoreHorizontal size={18} /></button></div>
-            <div className="working-team">
-              {(oaMode ? ['策', '辩', '林'] : handedOff || storageMode ? ['权', '说', '质'] : ['访', '检', '林']).map((n, i) => <div key={n}><Avatar name={n} human={i === 2} small /><span><strong>{oaMode ? ['OA 策略专家', '创造性争辩专家', '林岚 · 复核'][i] : handedOff || storageMode ? ['权利要求专家', '说明书撰写专家', '质量审查专家'][i] : ['技术访谈专家', '交底书撰写专家', '林岚 · 代理师'][i]}</strong><small>{i === 2 ? '等待最终复核' : workFresh ? (i === 0 ? (workPlanIndex === 0 ? '等待输入材料' : workPlanIndex === 1 ? '正在列缺口 / 访谈' : '访谈已交卷') : i === 1 ? (workPlanIndex < 2 ? '等待访谈齐套' : workPlanIndex < 3 ? '正在起草交底' : '交卷物已形成') : '等待节点确认') : (workPlanIndex === 0 && i === 0 ? '正在读取材料' : '已完成本节点任务')}</small></span><CheckCircle2 size={15} /></div>)}
+            <div className="department-head"><div><span className="section-kicker">{role === 'enterprise' ? '确认闸' : '当前负责部门'}</span><h3>{oaMode ? 'OA 答复部' : handedOff && !storageMode ? '申请文件部' : currentDept.name}</h3></div><button className="icon-btn" onClick={() => navigate('departments')} aria-label="查看部门与专家"><MoreHorizontal size={18} /></button></div>
+            <div className="working-team working-team-compact" aria-label="本节点专家">
+              {(oaMode ? [['策', 'OA 策略', true], ['辩', '创造性争辩', true], ['林', '林岚复核', false]] : handedOff || storageMode ? [['权', '权利要求', true], ['说', '说明书', true], ['质', '质量审查', false]] : [['访', '技术访谈', !workFresh || workPlanIndex > 1], ['检', '交底撰写', !workFresh || workPlanIndex > 2], ['林', '林岚复核', false]]).map(([n, label, done]) => (
+                <div key={String(n)} className={done ? 'done' : 'pending'}><Avatar name={String(n)} human={n === '林'} small /><span>{String(label)}</span>{done ? <CheckCircle2 size={13} /> : <Clock3 size={13} />}</div>
+              ))}
             </div>
-            <section className="rail-confirm">
-              <div className="pane-section-title"><span>确认控制点</span><small>2 步</small></div>
+            <section className="rail-confirm" aria-label="确认控制点">
+              <div className="pane-section-title"><span>你来拍板</span><small>2 步 · 主进度</small></div>
               <div className={`confirm-step compact ${factConfirmed ? 'confirmed' : 'active'}`}><div className="confirm-step-head"><span>{factConfirmed ? <Check size={13} /> : '1'}</span><div><strong>技术事实确认</strong><small>{collab.factTitle}</small></div></div>
-                {!factConfirmed && <div className="confirm-actions"><button type="button" className="btn btn-secondary full-btn" onClick={() => openFilePicker('docket')}><Upload size={14} />补材料</button><button className="btn btn-secondary full-btn" onClick={() => { setFactConfirmed(true); notify('技术事实已确认，并绑定当前文书版本') }}>确认事实</button></div>}
+                {!factConfirmed && <div className="confirm-actions"><button type="button" className="btn btn-secondary full-btn" onClick={() => openFilePicker('docket')}><Upload size={14} />补材料</button><button className="btn btn-ink full-btn" onClick={() => { setFactConfirmed(true); notify('技术事实已确认，并绑定当前文书版本') }}>确认事实</button></div>}
               </div>
               <div className={`confirm-step compact ${nodeConfirmed ? 'confirmed' : factConfirmed ? 'active' : 'locked'}`}><div className="confirm-step-head"><span>{nodeConfirmed ? <Check size={13} /> : '2'}</span><div><strong>节点交付确认</strong><small>{collab.deliverable}</small></div></div>
                 <button className="btn btn-primary full-btn" disabled={!factConfirmed || nodeConfirmed} onClick={() => { setNodeConfirmed(true); notify('本节点已确认，接力包已准备') }}>{nodeConfirmed ? <><Check size={14} />本节点已确认</> : '确认本节点交付'}</button>
               </div>
-              <div className="rail-delivery-row"><button type="button" className="evidence-link rail-delivery" onClick={() => { setActiveDoc(collab.deliverableDoc); notify(`已打开${collab.deliverable}`) }}><FileText size={14} /><span><strong>{collab.deliverable}</strong><small>中栏文书</small></span></button><button type="button" className="icon-btn" aria-label="下载交付物" onClick={() => downloadDemo(`${collab.deliverable}.pdf`)}><Download size={14} /></button></div>
+              <div className="rail-delivery-row"><button type="button" className="evidence-link rail-delivery" onClick={() => { setActiveDoc(collab.deliverableDoc); notify(`已打开${collab.deliverable}`) }}><FileText size={14} /><span><strong>{collab.deliverable}</strong><small>打开中栏文书</small></span></button><button type="button" className="icon-btn" aria-label="下载交卷物到本地；归档见左栏产物" title="下载；归档在左栏产物" onClick={() => downloadDemo(`${collab.deliverable}.pdf`)}><Download size={14} /></button></div>
             </section>
             <section className="process-timeline" aria-label="专家过程与产物时间线">
-              <div className="pane-section-title"><span>过程时间线</span><small>谁在做 · 产出什么</small></div>
+              <div className="pane-section-title"><span>过程时间线</span><small>谁 · 产出</small></div>
               <ol className="process-timeline-list">
                 {processLog.map(ev => (
                   <li key={ev.id} className={`process-step ${ev.status}`}>
@@ -935,18 +937,21 @@ export default function App() {
                 ))}
               </ol>
               {workFresh && !oaMode && !storageMode && (
-                <button type="button" className="btn btn-ink full-btn process-advance-btn" onClick={advanceFreshProcess}>
+                <button type="button" className="btn btn-secondary full-btn process-advance-btn" onClick={advanceFreshProcess}>
                   {workPlanIndex === 0 ? '推进专家动作 · 读材料列缺口' : workPlanIndex === 1 ? '推进专家动作 · 完成访谈' : workPlanIndex === 2 ? '推进专家动作 · 形成交卷物' : '交卷物已就绪'}
                   <ArrowRight size={14} />
                 </button>
               )}
             </section>
-            <div className="department-feed">
-              <div className="feed-item"><Avatar name={oaMode ? '策' : '访'} small /><div><p><strong>{oaMode ? 'OA 策略专家' : '技术访谈专家'}</strong><time>{workFresh ? '刚刚' : '10:24'}</time></p><p>{workFresh && !oaMode ? (workPlanIndex === 0 ? '还没有输入材料。你补交底 / 图纸 / 试验记录后，我再列缺口并开访谈。' : workPlanIndex === 1 ? '已根据输入列出缺口，下一步访谈补齐效果与工况。' : workPlanIndex === 2 ? '访谈纪要已交撰写专家，正在形成交底书草稿。' : '关键事实已写入交卷物，请你在确认闸拍板。') : workPlanIndex === 0 && !oaMode ? '已开始读取你确认计划时关联的研发资料，缺失项会标在确认闸。' : oaMode ? '已将审查员争议拆解为 3 个特征组，D1 并未直接给出闭环清洗条件。' : '我把“响应更快”改写成了可验证的技术效果，还需要你确认测试条件。'}</p><button onClick={() => notify('已定位到文档对应段落')}>定位到文档<ArrowUpRight size={13} /></button></div></div>
-              {!workFresh && <div className="feed-item"><Avatar name="林" human small /><div><p><strong>林岚 · 代理师</strong><time>10:31</time></p><p>{oaMode ? '先保留方法权利要求的层次，不急于加入全部参数。请确认实际生产是否采用该范围。' : '从申请策略看，建议保留“异常评分自适应修正”这一层。它可能是后续答复创造性的关键。'}</p></div></div>}
-              {chat.map((c, i) => <div className="feed-item own" key={i}><Avatar name="我" human small /><div><p><strong>我</strong><time>刚刚</time></p><p>{c}</p></div></div>)}
-            </div>
-            <div className="department-compose"><div><textarea name="dept_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="用自然语言交办或补充说明…" rows={2} aria-label="向部门交办" /><button type="button" onClick={() => openFilePicker('compose')} aria-label="添加附件，支持 PDF、Word、图片与常见图纸"><Paperclip size={16} /></button></div>{composeFiles.length > 0 && <ul className="attach-chip-list" aria-label="待发送附件">{composeFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setComposeFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}<div><span>Enter 发送 · {FILE_ACCEPT_HINT}</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div></div>
+            <details className="rail-feed">
+              <summary>协同留言<span>{chat.length + (workFresh ? 1 : 2)}</span></summary>
+              <div className="department-feed">
+                <div className="feed-item"><Avatar name={oaMode ? '策' : '访'} small /><div><p><strong>{oaMode ? 'OA 策略专家' : '技术访谈专家'}</strong><time>{workFresh ? '刚刚' : '10:24'}</time></p><p>{workFresh && !oaMode ? (workPlanIndex === 0 ? '还没有输入材料。你补交底 / 图纸 / 试验记录后，我再列缺口并开访谈。' : workPlanIndex === 1 ? '已根据输入列出缺口，下一步访谈补齐效果与工况。' : workPlanIndex === 2 ? '访谈纪要已交撰写专家，正在形成交底书草稿。' : '关键事实已写入交卷物，请你在确认闸拍板。') : workPlanIndex === 0 && !oaMode ? '已开始读取你确认计划时关联的研发资料，缺失项会标在确认闸。' : oaMode ? '已将审查员争议拆解为 3 个特征组，D1 并未直接给出闭环清洗条件。' : '我把“响应更快”改写成了可验证的技术效果，还需要你确认测试条件。'}</p><button onClick={() => notify('已定位到文档对应段落')}>定位到文档<ArrowUpRight size={13} /></button></div></div>
+                {!workFresh && <div className="feed-item"><Avatar name="林" human small /><div><p><strong>林岚 · 代理师</strong><time>10:31</time></p><p>{oaMode ? '先保留方法权利要求的层次，不急于加入全部参数。请确认实际生产是否采用该范围。' : '从申请策略看，建议保留“异常评分自适应修正”这一层。它可能是后续答复创造性的关键。'}</p></div></div>}
+                {chat.map((c, i) => <div className="feed-item own" key={i}><Avatar name="我" human small /><div><p><strong>我</strong><time>刚刚</time></p><p>{c}</p></div></div>)}
+              </div>
+              <div className="department-compose"><div><textarea name="dept_compose" autoComplete="off" value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat() } }} placeholder="用自然语言交办或补充说明…" rows={2} aria-label="向部门交办" /><button type="button" onClick={() => openFilePicker('compose')} aria-label="添加附件，支持 PDF、Word、图片与常见图纸"><Paperclip size={16} /></button></div>{composeFiles.length > 0 && <ul className="attach-chip-list" aria-label="待发送附件">{composeFiles.map(f => <li key={f.id}><Files size={12} /><span>{f.name}</span><button type="button" aria-label={`移除 ${f.name}`} onClick={() => setComposeFiles(v => v.filter(x => x.id !== f.id))}><X size={12} /></button></li>)}</ul>}<div><span>Enter 发送 · {FILE_ACCEPT_HINT}</span><button className="icon-btn send-btn" onClick={sendChat} aria-label="发送"><Send size={16} /></button></div></div>
+            </details>
             <button className="handoff-button" onClick={() => setModal('handoff')}><GitBranch size={16} /><span><strong>{oaMode ? role === 'agency' ? '交付客户确认' : '确认答复策略' : storageMode ? role === 'agency' ? '交付客户确认' : '确认质检与申请文件' : role === 'agency' ? '交付客户确认' : handedOff ? '查看接力记录' : '让下一部门继续'}</strong><small>{oaMode ? role === 'agency' ? '生成带版本与权限的交付快照' : '确认后回传代理所并保留记录' : storageMode ? role === 'agency' ? '生成质检版本与申请策略交付快照' : '质检版本与申请策略一并确认' : role === 'agency' ? '仅共享指定交付物与确认事项' : handedOff ? '交底书部 → 申请文件部' : '按权限继承所需事实、证据与版本'}</small></span><ArrowRight size={16} /></button>
           </aside>
           </section>
