@@ -527,7 +527,6 @@ export default function App() {
                   className="btn btn-secondary"
                   type="button"
                   onClick={() => {
-                    markSeen()
                     setIntentDept(null)
                     setIntentExpert(null)
                     setPhase('upload')
