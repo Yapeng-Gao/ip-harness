@@ -301,6 +301,7 @@
   }
 
   function goLobbyTodo(go) {
+    if (go === "front") { openFront(); return; }
     if (go === "d4-fact" || go === "d4-hand") {
       openDept("d4", { direct: true });
       if (go === "d4-hand") {
@@ -317,7 +318,7 @@
       return;
     }
     if (go === "d6") { state.view = "reply"; render(); return; }
-    if (go === "d5") { openDept("d5", { fromWorkOrder: state.workOrderOpened }); return; }
+    if (go === "d5") { openDept("d5", { fromWorkOrder: state.workOrderOpened || true }); return; }
     if (go === "h45") { if (state.canHand5) openWorkOrder(); else openDept("d4", { direct: true }); }
   }
 
@@ -410,13 +411,14 @@
           <div><strong>${escapeHtml(h.title)}</strong><div class="fm">${escapeHtml(h.sub || "")}</div></div>
         </button>`).join("")}`;
     } else if (state.shellPanel === "notify") {
-      const seeds = DEMO.lobbySeed || [];
+      const seeds = buildLobbyTodos();
+      const rows = seeds.length ? seeds : [{ kind: "c", text: "各部门暂无要你拍的事", go: "", tag: "空" }];
       card.innerHTML = `
         <div class="fly-head"><strong>要你拍的</strong>${closeBtn}</div>
-        <p class="fly-hint">通知密度演示 · 与大厅待办同源</p>
-        ${seeds.map((s) => `<button type="button" class="fly-item" data-fly-go="${escapeHtml(s.go)}" data-testid="fly-notify">
-          <span class="fk urge">${escapeHtml(s.tag || "待拍")}</span>
-          <div><strong>${escapeHtml(s.text)}</strong><div class="fm">${escapeHtml(s.sub || "")}</div></div>
+        <p class="fly-hint">顶栏列表 · 大厅只留摘要，不重复展开</p>
+        ${rows.map((s) => `<button type="button" class="fly-item" data-fly-go="${escapeHtml(s.go || "")}" data-testid="fly-notify">
+          <span class="fk urge">${escapeHtml(s.tag || (s.kind === "a" ? "待你拍" : "进行中"))}</span>
+          <div><strong>${escapeHtml(s.text)}</strong><div class="fm">${escapeHtml(s.sub || s.cta || "")}</div></div>
         </button>`).join("")}`;
     } else if (state.shellPanel === "schedule") {
       const items = DEMO.scheduleItems || [];
@@ -430,8 +432,8 @@
     } else if (state.shellPanel === "cases") {
       const cases = DEMO.caseSwitch || DEMO.progressCases || [];
       card.innerHTML = `
-        <div class="fly-head"><strong>切换进行中案</strong>${closeBtn}</div>
-        <p class="fly-hint">并行任务 · 切案时主栏/请示跟着变</p>
+        <div class="fly-head"><strong>公司正在推进</strong>${closeBtn}</div>
+        <p class="fly-hint">顶栏「公司正在推进」· 切案时主栏/请示跟着变</p>
         ${cases.map((c) => {
           const full = caseById(c.id) || c;
           const on = c.id === state.activeCaseId ? " · 当前" : "";
@@ -475,8 +477,8 @@
     }
     const dot = $("#notifyDot");
     if (dot) {
-      const n = (DEMO.lobbySeed || []).length;
-      dot.textContent = String(Math.max(n, state.enteredD4 && !state.factConfirmed ? 1 : n));
+      const n = buildLobbyTodos().filter((t) => t.go).length;
+      dot.textContent = String(n);
       dot.style.display = n ? "" : "none";
     }
     $$(".role-toggle .role").forEach((b) => b.classList.toggle("on", b.dataset.role === state.role));
@@ -485,7 +487,7 @@
     const csl = $("#caseSwitchLabel");
     if (csl) {
       const ac = caseById(state.activeCaseId);
-      csl.textContent = ac ? (ac.title.length > 10 ? ac.title.slice(0, 10) + "…" : ac.title) : "切换案卷";
+      csl.textContent = ac ? (ac.title.length > 10 ? ac.title.slice(0, 10) + "…" : ac.title) : "公司正在推进";
     }
     const sdot = $("#scheduleDot");
     if (sdot) {
@@ -507,7 +509,7 @@
     if (hint) {
       hint.textContent = state.demoMode === "first"
         ? "首次：带教可跳过 · 仍进八部大厅，不另造经营首页。"
-        : "已有工作：进厅即见「要你拍的」与进行中案 · 不是空目录。";
+        : "已有工作：进厅见摘要计数 · 列表在顶栏「要你拍的 / 正在推进」。";
     }
     const enter = $("#btnGateEnter");
     if (enter) {
@@ -515,22 +517,22 @@
     }
   }
 
-  function renderLobby() {
+  function buildLobbyTodos() {
     const todos = [];
     if (state.destinationConfirmed && !state.enteredD4) {
-      todos.push({ kind: "a", text: "前台：去向已确认，待领进交底部", action: () => openFront() });
+      todos.push({ kind: "a", text: "前台：去向已确认，待领进交底部", go: "front" });
     }
     if (state.enteredD4 && !state.factConfirmed) {
-      todos.push({ kind: "a", text: "交底部：待你确认交底事实", action: () => goLobbyTodo("d4-fact") });
+      todos.push({ kind: "a", text: "交底部：待你确认交底事实", go: "d4-fact" });
     } else if (state.enteredD4 && state.allGreen && !state.canHand5) {
-      todos.push({ kind: "a", text: "交底部：全绿后待你拍「可交⑤」", action: () => goLobbyTodo("d4-hand") });
+      todos.push({ kind: "a", text: "交底部：全绿后待你拍「可交⑤」", go: "d4-hand" });
     } else if (state.canHand5 && !state.workOrderOpened) {
-      todos.push({ kind: "c", text: "进行中：可开④→⑤工单", action: () => goLobbyTodo("h45") });
+      todos.push({ kind: "c", text: "进行中：可开④→⑤工单", go: "h45" });
     }
     if (state.apply.understand && state.apply.applyOrNot === null) {
-      todos.push({ kind: "a", text: "申请部：理解已确认 · 待拍申不申", action: () => openDept("d5", { fromWorkOrder: true }) });
+      todos.push({ kind: "a", text: "申请部：理解已确认 · 待拍申不申", go: "d5" });
     }
-    /* 进厅即有货：样例 A/C 回流；被 live 覆盖则跳过 */
+    /* 样例 A/C 回流；被 live 覆盖则跳过 —— 列表只在顶栏飞层展示 */
     const covered = new Set();
     if (state.factConfirmed) covered.add("fact");
     if (state.canHand5) covered.add("hand");
@@ -540,56 +542,36 @@
     (DEMO.lobbySeed || []).forEach((s) => {
       if (covered.has(s.cover)) return;
       if (todos.some((t) => t.text === s.text)) return;
-      todos.push({ kind: s.kind, text: s.text, tag: s.tag, sub: s.sub, cta: s.cta, action: () => goLobbyTodo(s.go), seed: true });
+      todos.push({ kind: s.kind, text: s.text, tag: s.tag, sub: s.sub, cta: s.cta, go: s.go, seed: true });
     });
-    if (!todos.length) todos.push({ kind: "c", text: "各部门暂无要你拍的事", action: null });
+    return todos;
+  }
+
+  function renderLobby() {
+    const todos = buildLobbyTodos();
+    const actionable = todos.filter((x) => x.go);
+    const nTodo = actionable.length;
+    const nProg = (DEMO.progressCases || []).length;
 
     const greetN = $("#lobbyTodoCount");
-    if (greetN) greetN.textContent = String(todos.filter((x) => x.action).length || todos.length);
+    if (greetN) greetN.textContent = String(nTodo);
     const sub = $("#lobbyGreetSub");
     if (sub) {
-      const n = todos.filter((x) => x.action).length;
-      sub.innerHTML = n
-        ? `今天有 <strong id="lobbyTodoCount">${n}</strong> 件事需要你处理 · 专家在办，关键节点等你拍板。`
+      sub.innerHTML = nTodo
+        ? `待拍 <strong id="lobbyTodoCount">${nTodo}</strong> · 推进中 <strong>${nProg}</strong> · 列表在顶栏，首页不展开。`
         : `各部门暂无硬请示 · 可交给前台开新案，或点八部进厅。`;
     }
 
-    $("#todoList").innerHTML = todos.map((t, i) => {
-      const tag = t.tag || (t.kind === "a" ? "待你拍" : t.kind === "b" ? "催办" : "进行中");
-      const sub = t.sub ? `<div class="todo-meta">${escapeHtml(t.sub)}</div>` : "";
-      const cta = t.cta || "去处理";
-      return `<li data-testid="todo-item">
-        <span class="badge ${t.kind}">${escapeHtml(tag)}</span>
-        <div style="flex:1;min-width:0">
-          <div>${escapeHtml(t.text)}</div>
-          ${sub}
-          ${t.action ? `<button type="button" class="todo-cta" data-todo-go="${i}" data-testid="todo-go">${escapeHtml(cta)}</button>` : ""}
-        </div>
-      </li>`;
-    }).join("");
-    $$("[data-todo-go]").forEach((btn) => {
-      btn.addEventListener("click", () => { const t = todos[+btn.dataset.todoGo]; if (t && t.action) t.action(); });
-    });
+    const chipTodo = $("#lobbyTodoChipN");
+    if (chipTodo) chipTodo.textContent = String(nTodo);
+    const chipProg = $("#lobbyProgChipN");
+    if (chipProg) chipProg.textContent = String(nProg);
 
-    const rail = $("#progressRail");
-    if (rail) {
-      const cases = DEMO.progressCases || [];
-      rail.innerHTML = cases.map((c) => {
-        const on = c.id === state.activeCaseId ? "on" : "";
-        const tr = (c.traces || []).slice(0, 2).map((t) => `<span>${escapeHtml(t.who)}·${escapeHtml(t.act)}</span>`).join("");
-        return `<button type="button" class="prog-card ${on}" data-prog-id="${escapeHtml(c.id)}" data-testid="prog-card">
-          <div>
-            <strong>${escapeHtml(c.title)}</strong>
-            <div class="pm">${escapeHtml(c.dept)} · ${escapeHtml(c.summary || "")}</div>
-            ${tr ? `<div class="ptrace">${tr}</div>` : ""}
-          </div>
-          <span class="pst">${escapeHtml(c.status)}</span>
-        </button>`;
-      }).join("");
-      $$("[data-prog-id]").forEach((b) => b.addEventListener("click", () => switchParallelCase(b.dataset.progId, true)));
-      const pm = $("#progressMeta");
-      if (pm) pm.textContent = `${cases.length} 个并行案 · 点切换 · 轨迹可扫`;
-    }
+    /* 首页不再铺 todo-list / progress-rail；点摘要 = 顶栏同源飞层 */
+    const bTodo = $("#btnLobbyTodoSummary");
+    if (bTodo) bTodo.onclick = () => toggleShellPanel("notify");
+    const bProg = $("#btnLobbyProgSummary");
+    if (bProg) bProg.onclick = () => toggleShellPanel("cases");
 
     $("#deptWall").innerHTML = DEMO.depts.map((d) => {
       const has = (d.id === "d4" && state.enteredD4 && (!state.factConfirmed || (state.allGreen && !state.canHand5)))
@@ -1045,7 +1027,7 @@
         <h1>⑤ 申请部</h1>
         <span class="line-status ${a.overLine ? "ok" : ""}">${a.overLine ? "申请文件可递交（过线）" : "未过线 / 进行中"}</span>
         <div class="shell-spacer"></div>
-        <button type="button" id="btnApplyDoc">案卷抽屉</button>
+        <span class="tiny muted dept-doc-hint">案卷 → 顶栏「案卷」</span>
       </div>
       <div class="task-strip" id="d5TaskStrip" data-testid="task-strip">${taskStripHtml(state.activeCaseId || "pc2")}</div>
       <div class="lead-bar">
@@ -1133,7 +1115,6 @@
       render();
     }));
     $("#btnApplyBack").addEventListener("click", goLobby);
-    $("#btnApplyDoc").addEventListener("click", () => openDrawer());
     const u = $("#btnUnd"); if (u) u.addEventListener("click", () => { state.apply.understand = true; addTrace("硬请示·理解确认", "⑤ A"); render(); });
     const y = $("#btnYes"); if (y) y.addEventListener("click", () => {
       if (!state.apply.understand) return;
@@ -1200,7 +1181,7 @@
         <h1>⑥ 答复部</h1>
         <span class="line-status">本轮答复进行中</span>
         <div class="shell-spacer"></div>
-        <button type="button" id="btnReplyDoc">案卷抽屉</button>
+        <span class="tiny muted dept-doc-hint">案卷 → 顶栏「案卷」</span>
       </div>
       <div class="task-strip" id="d6TaskStrip" data-testid="task-strip">${taskStripHtml("pc3")}</div>
       <div class="lead-bar">
@@ -1280,7 +1261,6 @@
       render();
     }));
     $("#btnReplyBack").addEventListener("click", goLobby);
-    $("#btnReplyDoc").addEventListener("click", () => openDrawer());
     const bc = $("#btnContention"); if (bc) bc.addEventListener("click", () => { state.reply.contentionOk = true; addTrace("硬请示·争点理解", "⑥ A"); render(); });
     const bl = $("#btnLimit"); if (bl) bl.addEventListener("click", () => {
       if (!state.reply.contentionOk) return;
@@ -1453,9 +1433,7 @@
       else if (id === "d5") openDept("d5");
       else if (id === "d6") { state.view = "reply"; render(); }
     }));
-    $("#btnOpenDoc").addEventListener("click", () => openDrawer());
     $("#btnDeptLobby").addEventListener("click", goLobby);
-    $("#btnDeptDoc").addEventListener("click", () => openDrawer());
     const cs = $("#btnComposerSend");
     if (cs) cs.addEventListener("click", sendComposerDemo);
     const ci = $("#composerInput");

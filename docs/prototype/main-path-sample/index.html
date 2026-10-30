@@ -18,7 +18,7 @@
       </button>
       <nav class="shell-nav" aria-label="主导航">
         <button type="button" class="nav-tab on" id="navLobby" data-testid="nav-lobby">大厅</button>
-        <button type="button" class="nav-tab" id="navCases" data-testid="nav-cases" title="案卷抽屉">案卷</button>
+        <button type="button" class="nav-tab" id="navCases" data-testid="nav-cases" title="打开案卷（壳级唯一入口）">案卷</button>
       </nav>
       <button type="button" class="shell-search" id="btnShellSearch" title="搜案卷 / 专家 / 请示" data-testid="shell-search">
         <span class="sk">⌘K</span>
@@ -28,12 +28,12 @@
       <button type="button" class="icon-btn" id="btnSchedule" data-testid="btn-schedule" title="定时 / 催办">
         定时<span class="badge-dot soft" id="scheduleDot">4</span>
       </button>
-      <button type="button" class="icon-btn" id="btnNotify" data-testid="btn-notify" title="要你拍的">
-        铃<span class="badge-dot" id="notifyDot">3</span>
+      <button type="button" class="icon-btn" id="btnNotify" data-testid="btn-notify" title="要你拍的 · 列表在顶栏飞层">
+        要你拍的<span class="badge-dot" id="notifyDot">3</span>
       </button>
-      <button type="button" class="case-switch-chip" id="btnCaseSwitch" data-testid="btn-case-switch" title="切换进行中案">
-        <span class="cs-k">案</span>
-        <span id="caseSwitchLabel">切换案卷</span>
+      <button type="button" class="case-switch-chip" id="btnCaseSwitch" data-testid="btn-case-switch" title="公司正在推进 · 列表在顶栏飞层">
+        <span class="cs-k">推进</span>
+        <span id="caseSwitchLabel">公司正在推进</span>
         <span class="cs-caret">▾</span>
       </button>
       <div class="role-toggle" data-testid="role-toggle">
@@ -44,8 +44,7 @@
         <span class="uav">你</span>
         <span>Leslie<span class="urole"> · 领导</span></span>
       </div>
-      <button type="button" class="case-chip empty" id="caseChip"><span>暂无打开案卷</span></button>
-      <button type="button" id="btnOpenDoc">案卷抽屉</button>
+      <button type="button" class="case-chip empty" id="caseChip" data-testid="case-chip" title="当前案 · 点开与「案卷」同一抽屉"><span>暂无打开案卷</span></button>
     </header>
 
     <div class="shell-fly" id="shellFly" data-testid="shell-fly" hidden>
@@ -79,7 +78,7 @@
             <button type="button" class="gm on" data-mode="existing">已有工作</button>
             <button type="button" class="gm" data-mode="first">首次使用</button>
           </div>
-          <p class="tiny muted" id="gateModeHint">进厅即见「要你拍的」与进行中案 · 不是空目录。</p>
+          <p class="tiny muted" id="gateModeHint">进厅见摘要计数 · 列表在顶栏「要你拍的 / 正在推进」· 不是空目录。</p>
           <button type="button" class="primary gate-enter" id="btnGateEnter" data-testid="gate-enter">进入企业研发工作区 →</button>
         </div>
       </div>
@@ -118,27 +117,27 @@
           </div>
         </div>
 
-        <div class="lobby-grid agent-home">
-          <div class="card todo-card">
-            <div class="card-head">
-              <h2>要你拍的</h2>
-              <span class="tiny muted">按期限与流程影响 · 非运营看板</span>
-            </div>
-            <ul class="todo-list" id="todoList"></ul>
+        <!-- 顶栏已有「要你拍的」「公司正在推进」飞层：大厅只留摘要计数，勿再展开内容墙 -->
+        <div class="lobby-attn-strip" data-testid="lobby-attn-strip">
+          <button type="button" class="attn-chip urge" id="btnLobbyTodoSummary" data-testid="lobby-todo-summary" title="打开顶栏 · 要你拍的">
+            <span class="attn-k">要你拍的</span>
+            <strong id="lobbyTodoChipN">3</strong>
+            <span class="attn-hint">点开顶栏列表</span>
+          </button>
+          <button type="button" class="attn-chip prog" id="btnLobbyProgSummary" data-testid="lobby-prog-summary" title="打开顶栏 · 公司正在推进">
+            <span class="attn-k">公司正在推进</span>
+            <strong id="lobbyProgChipN">3</strong>
+            <span class="attn-hint">点开顶栏列表</span>
+          </button>
+          <span class="tiny muted attn-note">列表只在顶栏飞层 · 首页不重复展开</span>
+        </div>
+
+        <div class="card dept-home-card" data-testid="dept-home-card">
+          <div class="card-head">
+            <h2>八个部门</h2>
+            <span class="tiny muted">④⑤⑥ 厚 · 其余薄占位</span>
           </div>
-          <div class="card progress-card" data-testid="progress-rail">
-            <div class="card-head">
-              <h2>公司正在推进</h2>
-              <span class="tiny muted" id="progressMeta">进行中案 · 可点进部</span>
-            </div>
-            <div class="progress-rail" id="progressRail"></div>
-            <div class="sep"></div>
-            <div class="card-head" style="margin-bottom:8px">
-              <h2>八个部门</h2>
-              <span class="tiny muted">④⑤⑥ 厚 · 其余薄占位</span>
-            </div>
-            <div class="dept-wall dense" id="deptWall" data-testid="dept-wall"></div>
-          </div>
+          <div class="dept-wall dense" id="deptWall" data-testid="dept-wall"></div>
         </div>
         <div class="case-bar" data-testid="case-bar">
           <strong>案卷底座</strong>
@@ -166,7 +165,7 @@
           <h1>④ 交底部</h1>
           <span class="line-status" id="deptLineStatus">未过线 / 质检进行中</span>
           <div class="shell-spacer"></div>
-          <button type="button" id="btnDeptDoc" data-testid="open-doc-d4">案卷抽屉</button>
+          <span class="tiny muted dept-doc-hint">案卷 → 顶栏「案卷」</span>
         </div>
         <div class="task-strip" id="d4TaskStrip" data-testid="task-strip"></div>
         <div class="lead-bar" data-testid="lead-bar" id="leadBar">

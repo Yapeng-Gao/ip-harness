@@ -945,6 +945,32 @@ button.ask-confirm:hover:not(:disabled) {
 .lobby-greet p { margin: 0; color: var(--muted); font-size: 14px; }
 .lobby-greet strong { color: var(--ask); font-variant-numeric: tabular-nums; }
 
+/* 大厅摘要条：顶栏已有列表飞层，首页不展开内容墙 */
+.lobby-attn-strip {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin: 0 0 14px;
+}
+.attn-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface);
+  box-shadow: var(--shadow-sm); cursor: pointer; font: inherit;
+  color: var(--ink);
+}
+.attn-chip:hover { border-color: var(--brand-soft-2); background: #fff; }
+.attn-chip .attn-k { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+.attn-chip strong {
+  font-variant-numeric: tabular-nums; font-size: 14px; min-width: 1.1em;
+}
+.attn-chip.urge strong { color: var(--ask); }
+.attn-chip.prog strong { color: var(--brand); }
+.attn-chip .attn-hint { font-size: 11px; color: var(--muted); }
+.attn-note { margin-left: 4px; }
+.dept-home-card { margin-bottom: 12px; }
+.dept-doc-hint { opacity: .75; white-space: nowrap; }
+
+
+
 .entrust-card {
   margin-bottom: 16px;
   border: 1.5px solid var(--brand-soft-2);

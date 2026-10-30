@@ -64,11 +64,17 @@ try {
   check("L1 shows 前台/委托", front === 1);
   check("L1 shows 8 dept doors", doors === 8, `got ${doors}`);
   check("L1 委托 composer", await page.locator('[data-testid="entrust-input"]').count() === 1);
-  check("L1 进行中轨", await page.locator('[data-testid="progress-rail"]').count() === 1);
   check("L1 问候计数", await page.locator('[data-testid="lobby-greet"]').count() === 1);
+  check("L1 摘要条（不展开列表）", await page.locator('[data-testid="lobby-attn-strip"]').count() === 1);
+  check("L1 无首页待办墙", await page.locator('[data-testid="todo-item"]').count() === 0);
+  check("L1 无首页推进轨", await page.locator('[data-testid="prog-card"]').count() === 0);
+  check("L1 八部仍在", await page.locator('[data-testid="dept-wall"] .dept-door').count() === 8);
   check("Shell ⌘K densify", await page.locator('[data-testid="shell-search"]').count() === 1);
   check("Shell 定时/催办入口", await page.locator('[data-testid="btn-schedule"]').count() === 1);
-  check("Shell 案切换", await page.locator('[data-testid="btn-case-switch"]').count() === 1);
+  check("Shell 要你拍的入口", await page.locator('[data-testid="btn-notify"]').count() === 1);
+  check("Shell 正在推进入口", await page.locator('[data-testid="btn-case-switch"]').count() === 1);
+  check("Shell 案卷唯一入口", await page.locator('[data-testid="nav-cases"]').count() === 1);
+  check("Shell 无重复案卷抽屉钮", await page.locator("#btnOpenDoc").count() === 0);
 
   // 壳级导航 · 搜索面板
   await page.click('[data-testid="shell-search"]');
@@ -95,8 +101,19 @@ try {
   await page.click('[data-testid="fly-close"]').catch(() => {});
   await sleep(100);
 
-  const todoN = await page.locator('[data-testid="todo-item"]').count();
-  check("L1 要你拍的 has 2–3 sample todos", todoN >= 2 && todoN <= 6, `got ${todoN}`);
+  // 首页摘要 → 顶栏飞层有货（列表不在首页）
+  await page.click('[data-testid="lobby-todo-summary"]');
+  await sleep(200);
+  const flyTodoN = await page.locator('[data-testid="fly-notify"]').count();
+  check("摘要点开要你拍的飞层", flyTodoN >= 2 && flyTodoN <= 6, `got ${flyTodoN}`);
+  await page.click('[data-testid="fly-close"]').catch(() => {});
+  await sleep(100);
+  await page.click('[data-testid="lobby-prog-summary"]');
+  await sleep(200);
+  const flyCaseN = await page.locator('[data-testid="fly-case"]').count();
+  check("摘要点开正在推进飞层", flyCaseN >= 2, `got ${flyCaseN}`);
+  await page.click('[data-testid="fly-close"]').catch(() => {});
+  await sleep(100);
 
   await page.click('[data-testid="open-front"]');
   await page.click('[data-testid="load-sample"]');
@@ -274,44 +291,56 @@ try {
   const r = await page.evaluate(() => window.__SAMPLE__.state.reply);
   check("⑥ hard asks advance only after confirm", r.contentionOk && r.limitOk && r.submit);
 
-  // 大厅待办回流：重置⑥痕迹后回大厅，样例「答复」应再出现
+  // 顶栏飞层回流：重置⑥痕迹后回大厅，飞层「答复」应可进⑥
   await page.evaluate(() => {
     window.__SAMPLE__.state.reply = { contentionOk: false, limitOk: false, submit: false };
     window.__SAMPLE__.goLobby();
   });
   await sleep(250);
-  const goBtns = page.locator('[data-testid="todo-go"]');
-  const nGo = await goBtns.count();
-  check("大厅仍有可点待办", nGo >= 1, `go=${nGo}`);
+  await page.click('[data-testid="btn-notify"]');
+  await sleep(200);
+  const flyItems = page.locator('[data-testid="fly-notify"]');
+  const nFly = await flyItems.count();
+  check("顶栏要你拍的仍有货", nFly >= 1, `fly=${nFly}`);
   let hitReply = false;
-  const nItems = await page.locator('[data-testid="todo-item"]').count();
-  for (let i = 0; i < nItems; i++) {
-    const row = page.locator('[data-testid="todo-item"]').nth(i);
+  for (let i = 0; i < nFly; i++) {
+    const row = flyItems.nth(i);
     const t = await row.innerText();
     if (t.includes("答复")) {
-      await row.locator('[data-testid="todo-go"]').click();
+      await row.click();
       await sleep(250);
       hitReply = (await page.locator("#viewReply.on").count()) === 1
         || (await page.locator('[data-testid="d6-gates"]').count()) === 1;
       break;
     }
   }
-  check("大厅待办可进⑥", hitReply);
+  check("顶栏待办可进⑥", hitReply);
 
-  // 并行任务：回大厅点另一案 → 进⑤且任务条高亮变化
+  // 并行任务：顶栏「正在推进」切另一案 → 进部且任务条在
   await page.evaluate(() => window.__SAMPLE__.goLobby());
   await sleep(200);
-  const cards = page.locator('[data-testid="prog-card"]');
+  await page.click('[data-testid="btn-case-switch"]');
+  await sleep(200);
+  const cards = page.locator('[data-testid="fly-case"]');
   const nCards = await cards.count();
-  check("大厅并行案卡 ≥2", nCards >= 2, `cards=${nCards}`);
+  check("顶栏推进案 ≥2", nCards >= 2, `cards=${nCards}`);
   if (nCards >= 2) {
     await cards.nth(1).click();
     await sleep(300);
     const onApply = await page.locator("#viewApply.on").count();
     const strip = await page.locator('[data-testid="task-strip"]').count();
-    check("点并行案进部台", onApply === 1 || (await page.locator("#viewDept.on").count()) === 1 || (await page.locator("#viewReply.on").count()) === 1);
+    check("点推进案进部台", onApply === 1 || (await page.locator("#viewDept.on").count()) === 1 || (await page.locator("#viewReply.on").count()) === 1);
     check("进部后仍有任务条", strip >= 1);
   }
+
+  // 案卷唯一壳入口可开抽屉
+  await page.evaluate(() => window.__SAMPLE__.goLobby());
+  await sleep(150);
+  await page.click('[data-testid="nav-cases"]');
+  await sleep(200);
+  check("壳级案卷打开抽屉", await page.locator('[data-testid="doc-drawer"].on').count() === 1
+    || await page.locator("#drawer.on").count() === 1);
+  await page.evaluate(() => window.__SAMPLE__.closeDrawer());
 
   await page.screenshot({ path: path.join(outDir, "smoke-final.png"), fullPage: true });
 } catch (e) {
