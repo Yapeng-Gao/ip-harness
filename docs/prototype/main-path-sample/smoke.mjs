@@ -42,7 +42,12 @@ function check(name, pass, detail = "") {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const browser = await chromium.launch({ headless: true });
+let browser;
+try {
+  browser = await chromium.launch({ headless: true });
+} catch (e) {
+  browser = await chromium.launch({ channel: "chrome", headless: true });
+}
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 
 try {
