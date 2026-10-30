@@ -2794,3 +2794,98 @@ em.hit-em {
   padding: 0 2px;
   border-radius: 3px;
 }
+
+
+/* ── Leslie 圈注 · 按步减负 2026-10-30 ──
+   1 顶空白去掉  2 壳顶减负  3 四步条默认不展  4 质检按当前步 */
+.wb-chrome[hidden] { display: none !important; }
+.wb-chrome:not(:has(.mentor-body)) { display: none !important; }
+.mentor-tip { padding: 6px 14px 8px; }
+.mentor-tip .mentor-body {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-size: 12.5px; padding: 8px 10px; border-radius: 10px;
+  background: var(--brand-soft); border: 1px solid var(--brand-soft-2);
+}
+
+.dept-top {
+  flex-wrap: nowrap;
+  gap: 6px 8px;
+  padding: 6px 12px;
+  min-height: 40px;
+  max-height: 48px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-items: center;
+}
+.dept-top h1 { font-size: 14.5px; white-space: nowrap; }
+.dept-meta {
+  flex: 0 1 auto;
+  max-width: 28vw;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+.dm-case {
+  appearance: none; border: 0; background: transparent;
+  font: inherit; font-size: 12px; font-weight: 650;
+  color: var(--ink-2); cursor: default;
+  max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 0;
+}
+.pref-chip.pref-compact {
+  max-width: 48px;
+  padding: 2px 7px;
+  font-size: 10.5px;
+}
+.task-strip.in-top {
+  flex: 1 1 160px;
+  min-width: 120px;
+  max-width: 36vw;
+}
+.task-chip .tc-st { display: none; }
+.mode-hint[hidden] { display: none !important; }
+
+/* 当前步极薄一句 · 替代四步横条 / ABC 墙 */
+.stage-bar.stage-thin,
+.main-pane > .stage-bar.stage-thin {
+  padding: 4px 12px 0;
+  max-height: 36px;
+  overflow: hidden;
+}
+.step-now,
+.step-now-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 2px;
+  font-size: 12.5px;
+  min-height: 28px;
+}
+.step-now-k {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--brand); background: var(--brand-soft);
+  border: 1px solid var(--brand-soft-2);
+  padding: 1px 7px; border-radius: 999px; flex-shrink: 0;
+}
+.step-now strong,
+.step-now-bar strong { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+.step-now-hint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.abc-strip.abc-thin.step-now-bar {
+  display: flex; grid-template-columns: none;
+  align-items: center; gap: 8px;
+  padding: 4px 10px; margin: 0;
+  background: transparent; border: 0; box-shadow: none;
+  max-height: 32px;
+}
+.abc-strip.abc-thin.step-now-bar .seg { display: none; }
+
+/* 质检按当前步：一行紧凑，不堆墙 */
+.qc-progress-line.qc-by-step {
+  gap: 6px;
+  padding: 6px 8px;
+  margin-top: 8px;
+}
+.qc-progress-line.qc-by-step .qc-fix-row { font-size: 12px; }
+.qc-progress-line.qc-by-step .qc-yellow-fix {
+  display: inline-flex; gap: 6px; flex-wrap: wrap;
+}
+.qc-progress-line.qc-by-step .qc-fix-btn {
+  height: 28px; padding: 0 10px; font-size: 12px;
+}

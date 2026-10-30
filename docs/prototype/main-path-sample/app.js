@@ -166,10 +166,14 @@
   }
 
   function deptMetaHtml({ caseTitle, deadline, upgraded, prefShort }) {
+    /* 壳顶减负：案名缩短；期限仅关键时出；偏好挤成「偏好」小 chip（全文在 title） */
     const bits = [];
-    if (caseTitle) bits.push(`<span class="dm-case" data-testid="dept-case">${escapeHtml(caseTitle)}</span>`);
+    if (caseTitle) {
+      const short = caseTitle.length > 14 ? caseTitle.slice(0, 14) + "…" : caseTitle;
+      bits.push(`<button type="button" class="dm-case" data-testid="dept-case" title="${escapeHtml(caseTitle)}">${escapeHtml(short)}</button>`);
+    }
     if (deadline) bits.push(`<span class="deadline-chip" data-testid="deadline-chip" title="期限不落主产出">截止 ${escapeHtml(deadline)}${upgraded ? " · 已升级" : ""}</span>`);
-    if (prefShort) bits.push(`<span class="pref-chip" data-testid="pref-chip" title="跨案偏好">${escapeHtml(prefShort)}</span>`);
+    if (prefShort) bits.push(`<span class="pref-chip pref-compact" data-testid="pref-chip" title="${escapeHtml(prefShort)}">偏好</span>`);
     return bits.length ? `<div class="dept-meta" data-testid="dept-meta">${bits.join("")}</div>` : "";
   }
 
@@ -845,10 +849,10 @@
       const on = c.id === active ? "on" : "";
       const short = String(c.title || "").split(" · ")[0];
       const dept = String(c.dept || "").replace(/\s+/g, "");
+      const short2 = short.length > 8 ? short.slice(0, 8) + "…" : short;
       return `<button type="button" class="task-chip ${on}" data-task-case="${escapeHtml(c.id)}" data-testid="task-chip" title="${escapeHtml((c.title || "") + " · " + (c.status || ""))}">
         <span class="tc-dept">${escapeHtml(dept)}</span>
-        <span class="tc-title">${escapeHtml(short)}</span>
-        <span class="tc-st">${escapeHtml(c.status || "")}</span>
+        <span class="tc-title">${escapeHtml(short2)}</span>
       </button>`;
     }).join("");
     const traces = (cur.traces || []).map((t) =>
@@ -1404,7 +1408,7 @@
         ${cfg.metaHtml || ""}
         <div class="task-strip in-top" id="${escapeHtml(cfg.stripId)}" data-testid="task-strip">${cfg.stripHtml || ""}</div>
         ${cfg.topExtra || ""}
-        <span class="mode-hint tiny" id="${escapeHtml(cfg.modeHintId)}" data-testid="${escapeHtml(cfg.modeHintTestId)}">${dens ? "轻量" : "主笔"}</span>
+        <span class="mode-hint tiny" id="${escapeHtml(cfg.modeHintId)}" data-testid="${escapeHtml(cfg.modeHintTestId)}" hidden>${dens ? "轻量" : "主笔"}</span>
       </div>
       <div class="wb-chrome" data-testid="${escapeHtml(cfg.chromeTestId)}" hidden></div>
       <div class="workbench ${escapeHtml(cfg.layoutClass || "")} ${dens ? "density-light" : ""}" data-testid="${escapeHtml(cfg.layoutTestId)}">
@@ -1419,6 +1423,14 @@
         ${cfg.sideHtml || ""}
       </div>
       </div>`;
+  }
+
+  /** ④ 当前步（AI 内推进；壳不展四步条） */
+  function d4CurrentStep() {
+    if (!state.allGreen) return { id: "qc", label: "质检循环", hint: "复检红黄项" };
+    if (!state.factConfirmed) return { id: "fact", label: "事实确认", hint: "待你确认" };
+    if (!state.canHand5) return { id: "hand", label: "可交⑤", hint: "硬请示未关" };
+    return { id: "done", label: "可开工单", hint: "本段完成" };
   }
 
   function renderWorkbench() {
@@ -1454,7 +1466,8 @@
     }
     const mh = $("#d4ModeHint");
     if (mh) {
-      mh.hidden = false;
+      /* 壳顶减负：密度态不占 chip */
+      mh.hidden = true;
       mh.textContent = isLight ? "轻量" : "主笔";
       mh.title = "点编制展开或主产出即切主笔；无密度切换钮";
       mh.style.cursor = "pointer";
@@ -1463,6 +1476,7 @@
 
     /* 带教淡出 · 大纲 §7 */
     const mentor = $("#mentorTip");
+    const chromeEl = $("#d4Chrome");
     if (mentor) {
       if (!state.mentorDismissed) {
         mentor.hidden = false;
@@ -1473,9 +1487,11 @@
           </div>`;
         const mo = $("#btnMentorOk");
         if (mo) mo.addEventListener("click", dismissMentor);
+        if (chromeEl) chromeEl.hidden = false;
       } else {
         mentor.hidden = true;
         mentor.innerHTML = "";
+        if (chromeEl) chromeEl.hidden = true; /* 去掉壳顶空白 */
       }
     }
 
@@ -1532,30 +1548,17 @@
       focusExpert(b.dataset.expert);
     }));
 
-    /* 四步可读时间线（非 pill 堆） */
-    const stages = [
-      { id: "draft", label: "成稿", hint: "草案已落主栏", done: true, on: false, wait: false },
-      { id: "qc", label: "质检循环", hint: state.allGreen ? "已全绿" : "复检红黄项", done: state.allGreen, on: !state.allGreen, wait: false },
-      { id: "fact", label: "事实确认", hint: state.factConfirmed ? "你已拍板" : "待你确认", done: state.factConfirmed, on: false, wait: state.allGreen && !state.factConfirmed },
-      { id: "hand", label: "可交⑤", hint: state.canHand5 ? "可开④→⑤工单" : "硬请示未关", done: state.canHand5, on: false, wait: state.allGreen && state.factConfirmed && !state.canHand5 }
-    ];
-    $("#stageBar").innerHTML = `<div class="timeline" data-testid="d4-timeline-inner">
-      <div class="tl-track">
-        ${stages.map((s, i) => {
-          let cls = "tl-step";
-          if (s.done) cls += " done";
-          else if (s.wait) cls += " wait";
-          else if (s.on) cls += " on";
-          const mark = s.done ? "✓" : String(i + 1);
-          const line = i < stages.length - 1
-            ? `<div class="tl-line ${s.done ? "done" : ""}"></div>` : "";
-          return `<div class="${cls}" data-testid="tl-${s.id}">
-              <div class="tl-dot">${mark}</div>
-              <div class="tl-meta"><strong>${escapeHtml(s.label)}</strong><span>${escapeHtml(s.hint)}</span></div>
-            </div>${line}`;
-        }).join("")}
-      </div>
-    </div>`;
+    /* 默认不展四步流程条：AI 内推进；全流程进「轨迹」 */
+    const curStep = d4CurrentStep();
+    const stageBar = $("#stageBar");
+    if (stageBar) {
+      stageBar.classList.add("stage-thin");
+      stageBar.innerHTML = `<div class="step-now" data-testid="d4-timeline-inner">
+        <span class="step-now-k">当前</span>
+        <strong data-testid="tl-${curStep.id}">${escapeHtml(curStep.label)}</strong>
+        <span class="tiny muted step-now-hint">${escapeHtml(curStep.hint)} · AI 推进，全流程见「轨迹」</span>
+      </div>`;
+    }
 
     const flashId = state.highlightAnchor;
     const ver = state.docVersion || "current";
@@ -1595,19 +1598,27 @@
           const flash = flashId === s.id ? " anchor-flash" : "";
           return `<div class="sec${flash}" id="${escapeHtml(s.id)}"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`;
         }).join("")}
-        <div class="qc-progress-line${flashId === "qc-card" ? " anchor-flash" : ""}" data-testid="qc-card" id="qc-card">
-          <strong>质检</strong>
-          <span class="tiny muted" data-testid="qc-method">主栏权威 · 侧栏仅锚点 · 全绿≠交⑤</span>
-          ${qc.map((q) => {
-            const tag = q.status === "green" ? '<span class="tag ok">绿</span>' : q.status === "yellow" ? '<span class="tag warn">黄</span>' : '<span class="tag ask">红</span>';
-            return `<span class="qc-fix-row" data-testid="${q.status !== "green" ? "qc-yellow-item" : "qc-green-item"}">${escapeHtml(q.name)} ${tag}</span>`;
-          }).join("")}
-          ${!state.allGreen
-            ? `<span class="qc-yellow-fix" data-testid="qc-yellow-fix">
-                <button type="button" class="primary qc-fix-btn" id="btnQcData" data-testid="qc-fix-data">补数据转绿</button>
-                <button type="button" class="qc-fix-btn ghost-risk" id="btnQcRisk" data-testid="qc-fix-risk">认风险</button>
-              </span>`
-            : `<span class="tag ok" data-testid="qc-all-green">已全绿${state.yellowRiskAccepted ? "（含认风险）" : ""}</span>`}
+        <div class="qc-progress-line qc-by-step${flashId === "qc-card" ? " anchor-flash" : ""}" data-testid="qc-card" id="qc-card">
+          ${(() => {
+            const step = d4CurrentStep().id;
+            const greens = qc.filter((q) => q.status === "green").length;
+            const openQc = qc.filter((q) => q.status !== "green");
+            if (step === "qc" && openQc.length) {
+              return `<strong>质检 · 本步</strong>
+                <span class="tiny muted" data-testid="qc-method">已绿 ${greens}/${qc.length} · 只展未过项 · 全绿≠交⑤</span>
+                ${openQc.map((q) => {
+                  const tag = q.status === "yellow" ? '<span class="tag warn">黄</span>' : '<span class="tag ask">红</span>';
+                  return `<span class="qc-fix-row" data-testid="qc-yellow-item">${escapeHtml(q.name)} ${tag}</span>`;
+                }).join("")}
+                <span class="qc-yellow-fix" data-testid="qc-yellow-fix">
+                  <button type="button" class="primary qc-fix-btn" id="btnQcData" data-testid="qc-fix-data">补数据转绿</button>
+                  <button type="button" class="qc-fix-btn ghost-risk" id="btnQcRisk" data-testid="qc-fix-risk">认风险</button>
+                </span>`;
+            }
+            return `<strong>质检</strong>
+              <span class="tag ok" data-testid="qc-all-green">已全绿${state.yellowRiskAccepted ? "（含认风险）" : ""} · ${greens}/${qc.length}</span>
+              <span class="tiny muted" data-testid="qc-method">本步看文书/对话请示 · 清单默认折</span>`;
+          })()}
         </div>
       </div>`;
     const bd = $("#btnQcData"); if (bd) bd.addEventListener("click", () => resolveYellowQc("data"));
@@ -1713,16 +1724,19 @@
     /* 侧栏层2 · 依据默认折叠，动作权威只留主栏（P0/P1） */
     const ev = $("#sideEvidence");
     if (ev) {
+      const stepEv = d4CurrentStep().id;
+      const openEv = qc.filter((q) => q.status !== "green");
+      const rowsEv = (stepEv === "qc" ? openEv : []).map((q) => {
+        const st = q.status === "yellow" ? "warn" : "ask";
+        const anchor = q.id === "q4" ? "sec-effect" : "qc-card";
+        return `<button type="button" class="ev-row ${st}" data-excerpt-anchor="${anchor}" data-testid="ev-row">
+          <span>${escapeHtml(q.name)}</span><span class="tag ${st}">${q.status === "yellow" ? "黄" : "红"}</span>
+        </button>`;
+      }).join("");
       ev.innerHTML = `<details class="evidence-layer evidence-fold" data-testid="side-evidence">
-        <summary class="ev-h">依据 / 质检 · 锚主栏（默认折）</summary>
-        ${qc.map((q) => {
-          const st = q.status === "green" ? "ok" : q.status === "yellow" ? "warn" : "ask";
-          const anchor = q.id === "q4" ? "sec-effect" : "qc-card";
-          return `<button type="button" class="ev-row ${st}" data-excerpt-anchor="${anchor}" data-testid="ev-row">
-            <span>${escapeHtml(q.name)}</span><span class="tag ${st}">${q.status === "green" ? "绿" : q.status === "yellow" ? "黄" : "红"}</span>
-          </button>`;
-        }).join("")}
-        <p class="tiny muted" style="margin:6px 0 0">黄项补数据/认风险 · 请用主栏质检行</p>
+        <summary class="ev-h">依据 / 质检 · ${stepEv === "qc" && openEv.length ? `本步 ${openEv.length} 项` : "默认折"}</summary>
+        ${rowsEv || `<p class="tiny muted" style="margin:6px 0 0">本步无未过质检项 · 拍板在对话</p>`}
+        ${stepEv === "qc" && openEv.length ? `<p class="tiny muted" style="margin:6px 0 0">补数据/认风险 · 主栏本步质检行</p>` : ""}
       </details>`;
       bindExcerptClicks(ev);
     }
@@ -1938,19 +1952,25 @@
               ${tabBtn("diff", "差分对照")}
             </div>
             ${docInner}
-            <div class="qc-progress-line" style="margin-top:12px" id="d5-qc" data-testid="d5-qc-card">
-              <strong>C · 过线</strong>
-              <span class="tiny muted">过线≠递交 · 拍板在对话</span>
-              ${aQc.map((q) => {
-                const tag = q.status === "green" ? '<span class="tag ok">绿</span>' : '<span class="tag warn">黄</span>';
-                return `<span class="qc-fix-row">${escapeHtml(q.name)} ${tag}</span>`;
-              }).join("")}
-              ${!a.overLine
-                ? `<span class="qc-yellow-fix" data-testid="d5-qc-yellow-fix">
-                    <button type="button" class="primary qc-fix-btn" id="btnOver" data-testid="make-overline" ${a.applyOrNot === "yes" && a.understand ? "" : "disabled"}>补数据过线</button>
-                    <button type="button" class="qc-fix-btn ghost-risk" id="btnOverRisk" data-testid="d5-qc-risk" ${a.applyOrNot === "yes" && a.understand ? "" : "disabled"}>认风险过线</button>
-                  </span>`
-                : `<span class="tag ok" data-testid="d5-overlined">已过线${state.applyYellowRisk ? "（含认风险）" : ""}</span>`}
+            <div class="qc-progress-line qc-by-step" style="margin-top:12px" id="d5-qc" data-testid="d5-qc-card">
+              ${(() => {
+                const onGateC = !!a.understand && !!a.applyOrNot && a.applyOrNot === "yes";
+                const openQ = aQc.filter((q) => q.status !== "green");
+                if (!a.overLine && onGateC) {
+                  return `<strong>过线 · 本步</strong>
+                    <span class="tiny muted">只展未过项 · 过线≠递交</span>
+                    ${openQ.map((q) => `<span class="qc-fix-row">${escapeHtml(q.name)} <span class="tag warn">黄</span></span>`).join("")}
+                    <span class="qc-yellow-fix" data-testid="d5-qc-yellow-fix">
+                      <button type="button" class="primary qc-fix-btn" id="btnOver" data-testid="make-overline">补数据过线</button>
+                      <button type="button" class="qc-fix-btn ghost-risk" id="btnOverRisk" data-testid="d5-qc-risk">认风险过线</button>
+                    </span>`;
+                }
+                if (a.overLine) {
+                  return `<strong>过线</strong><span class="tag ok" data-testid="d5-overlined">已过线${state.applyYellowRisk ? "（含认风险）" : ""}</span><span class="tiny muted">拍板在对话</span>`;
+                }
+                return `<strong>过线</strong><span class="tiny muted">先完成对话里 A/B · 本步质检稍后</span>
+                  <span class="qc-yellow-fix" data-testid="d5-qc-yellow-fix" hidden></span>`;
+              })()}
             </div>`;
     $("#applyBody").innerHTML = chainShellHtml({
       dens: aDens,
@@ -1968,10 +1988,13 @@
       layoutTestId: "d5-layout",
       mainTitle: "主产出 · 申请文件",
       mainTag: "权项 | 说明书 | 差分",
-      mainExtra: `<div class="abc-strip abc-thin" data-testid="d5-abc">
-            <div class="${segCls(segA)}" data-testid="seg-a"><span class="seg-k">A</span>理解${a.understand ? " · 已确认" : " · 待你确认"}</div>
-            <div class="${segCls(segB)}" data-testid="seg-b"><span class="seg-k">B</span>申不申${a.applyOrNot === "yes" ? " · 要申" : a.applyOrNot === "no" ? " · 不申" : a.understand ? " · 待你拍" : ""}</div>
-            <div class="${segCls(segC)}" data-testid="seg-c"><span class="seg-k">C</span>递交${a.submit ? " · 已确认" : a.overLine ? " · 过线待递交" : ""}</div>
+      mainExtra: `<div class="abc-strip abc-thin step-now-bar" data-testid="d5-abc">
+            <span class="step-now-k">当前</span>
+            <strong>${!a.understand ? "A · 理解" : !a.applyOrNot ? "B · 申不申" : !a.submit ? (a.overLine ? "C · 递交" : "C · 过线") : "本段完成"}</strong>
+            <span class="tiny muted">AI 推进 · 拍板在对话</span>
+            <span class="seg-anchors" hidden>
+              <span data-testid="seg-a">A</span><span data-testid="seg-b">B</span><span data-testid="seg-c">C</span>
+            </span>
           </div>`,
       lightFoldTestId: "d5-light-fold",
       mainBody: d5MainBody,

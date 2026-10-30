@@ -155,8 +155,9 @@ try {
   check("after confirm → D4 has 编制 + main产出", roster >= 5 && main === 1, `roster=${roster}`);
   check("D4 编制用照片头像岗", photos >= 5, `photos=${photos}`);
 
-  const tl = await page.locator('[data-testid="d4-timeline-inner"] .tl-step').count();
-  check("D4 四步时间线", tl === 4, `got ${tl}`);
+  const tlNow = await page.locator('[data-testid="d4-timeline-inner"].step-now, [data-testid="d4-timeline-inner"] .step-now-k').count();
+  const tlSteps = await page.locator('[data-testid="d4-timeline-inner"] .tl-step').count();
+  check("D4 当前步薄条（不展四步墙）", tlNow >= 1 && tlSteps === 0, `now=${tlNow} steps=${tlSteps}`);
   const chipN = await page.locator('[data-testid="task-strip"] [data-testid="task-chip"]').count();
   check("D4 进行中薄轨常显 chip≥2", chipN >= 2, `chips=${chipN}`);
   const stripMetrics = await page.evaluate(() => {
@@ -358,7 +359,7 @@ try {
     s.openDept("d5", { fromWorkOrder: true });
   });
   await sleep(250);
-  check("D5 shows A/B/C strip", await page.locator('[data-testid="d5-abc"]').count() === 1);
+  check("D5 shows 当前步薄条", await page.locator('[data-testid="d5-abc"]').count() === 1);
   check("D5 侧栏 composer", await page.locator('[data-testid="d5-composer"]').count() === 1);
   check("D5 文书 tabs", await page.locator('[data-testid="d5-doc-tabs"]').count() === 1);
   check("D5 权项分页默认", await page.locator('[data-testid="d5-doc-claims"]').count() === 1);
@@ -370,7 +371,7 @@ try {
   check("D5 差分对照可切", await page.locator('[data-testid="d5-doc-diff"]').count() === 1);
   await page.click('[data-testid="d5-tab-claims"]');
   await sleep(100);
-  check("D5 seg A/B/C labels", (await page.locator('[data-testid="seg-a"]').count()) === 1
+  check("D5 seg A/B/C anchors retained", (await page.locator('[data-testid="seg-a"]').count()) === 1
     && (await page.locator('[data-testid="seg-b"]').count()) === 1
     && (await page.locator('[data-testid="seg-c"]').count()) === 1);
   const bYesDisabled = await page.locator('[data-testid="confirm-apply-yes"][disabled]').count();
