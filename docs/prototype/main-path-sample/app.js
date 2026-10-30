@@ -54,7 +54,7 @@
     thinLineConfirmed: {},
     searchPinAsk: null,
     invitedExperts: {},
-    taskStripOpen: false, /* 部内并行案默认折叠 */
+    taskStripOpen: false, /* 轨迹飞层；进行中 chip 轨始终单行可见 */
     searchFilter: "全部" /* 壳搜索筛选 */
   };
 
@@ -748,38 +748,44 @@
     const open = !!state.taskStripOpen;
     const chips = cases.map((c) => {
       const on = c.id === active ? "on" : "";
-      return `<button type="button" class="task-chip ${on}" data-task-case="${escapeHtml(c.id)}" data-testid="task-chip">
-        <strong>${escapeHtml(c.title)}</strong>
-        <span class="tm">${escapeHtml(c.dept)} · ${escapeHtml(c.status)}</span>
+      const short = String(c.title || "").split(" · ")[0];
+      const dept = String(c.dept || "").replace(/\s+/g, "");
+      return `<button type="button" class="task-chip ${on}" data-task-case="${escapeHtml(c.id)}" data-testid="task-chip" title="${escapeHtml((c.title || "") + " · " + (c.status || ""))}">
+        <span class="tc-dept">${escapeHtml(dept)}</span>
+        <span class="tc-title">${escapeHtml(short)}</span>
+        <span class="tc-st">${escapeHtml(c.status || "")}</span>
       </button>`;
     }).join("");
     const traces = (cur.traces || []).map((t) =>
       `<div class="ttr-row"><span class="at">${escapeHtml(t.at)}</span><span><b>${escapeHtml(t.who)}</b> · ${escapeHtml(t.act)}</span></div>`
     ).join("");
-    const toggle = `<button type="button" class="task-strip-toggle" data-testid="task-strip-toggle" id="btnTaskStripToggle">${open ? "收起进行中" : "切换进行中 · " + cases.length}</button>`;
-    if (!open) {
-      return `${toggle}<span class="tiny muted" style="align-self:center">当前 · ${escapeHtml(cur.title)} · 跨部切案用顶栏「推进」</span>`;
-    }
-    return `${toggle}${chips}
-      <div class="task-trace-rail" data-testid="task-trace">
-        <div class="ttr-h">轨迹回放 · ${escapeHtml(cur.title)}</div>
+    const pop = open
+      ? `<div class="task-trace-pop" data-testid="task-trace" role="dialog">
+        <div class="ttr-h">轨迹 · ${escapeHtml(cur.title)}</div>
         ${traces || `<div class="tiny muted">暂无轨迹</div>`}
-        <div class="tiny muted" style="margin-top:6px">${escapeHtml(cur.summary || "")}</div>
-      </div>`;
+        <div class="tiny muted ttr-sum">${escapeHtml(cur.summary || "")}</div>
+      </div>`
+      : "";
+    return `<span class="task-strip-label">进行中</span>
+      <div class="task-chip-rail" data-testid="task-chip-rail">${chips}</div>
+      <button type="button" class="task-strip-toggle ${open ? "on" : ""}" data-testid="task-strip-toggle" id="btnTaskStripToggle" aria-expanded="${open ? "true" : "false"}">轨迹</button>
+      ${pop}`;
   }
 
   function bindTaskStrip(root) {
     const r = root || document;
     r.querySelectorAll("[data-task-case]").forEach((b) => {
-      b.addEventListener("click", () => switchParallelCase(b.dataset.taskCase, true));
+      b.addEventListener("click", () => {
+        state.taskStripOpen = false;
+        switchParallelCase(b.dataset.taskCase, true);
+      });
     });
     const tog = r.querySelector("[data-testid='task-strip-toggle'], #btnTaskStripToggle");
-    if (tog) tog.addEventListener("click", () => {
+    if (tog) tog.addEventListener("click", (ev) => {
+      ev.stopPropagation();
       state.taskStripOpen = !state.taskStripOpen;
       render();
     });
-    const strip = r.classList && r.classList.contains("task-strip") ? r : r.querySelector?.(".task-strip");
-    if (strip && strip.classList) strip.classList.toggle("is-collapsed", !state.taskStripOpen);
   }
 
   function renderShellPanel() {
@@ -1321,7 +1327,7 @@
     if (chrome) chrome.classList.toggle("chrome-light-collapsed", isLight);
     const stripEl = $("#d4TaskStrip");
     if (stripEl) {
-      stripEl.classList.toggle("is-collapsed", !state.taskStripOpen);
+      /* thin rail: no collapse */
       if (isLight) stripEl.style.display = "none";
       else stripEl.style.display = "";
     }

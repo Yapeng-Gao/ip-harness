@@ -157,13 +157,30 @@ try {
 
   const tl = await page.locator('[data-testid="d4-timeline-inner"] .tl-step').count();
   check("D4 四步时间线", tl === 4, `got ${tl}`);
-  check("D4 并行任务条默认折叠", await page.locator('[data-testid="task-strip-toggle"]').count() === 1);
+  const chipN = await page.locator('[data-testid="task-strip"] [data-testid="task-chip"]').count();
+  check("D4 进行中薄轨常显 chip≥2", chipN >= 2, `chips=${chipN}`);
+  const stripMetrics = await page.evaluate(() => {
+    const strip = document.querySelector("#d4TaskStrip");
+    const r = strip?.getBoundingClientRect();
+    return { h: r ? Math.round(r.height) : -1, label: !!strip?.querySelector(".task-strip-label") };
+  });
+  check("D4 进行中单行薄轨≤40px", stripMetrics.h > 0 && stripMetrics.h <= 40, JSON.stringify(stripMetrics));
+  check("D4 进行中有标签", stripMetrics.label === true);
   await page.click('[data-testid="task-strip-toggle"]');
   await sleep(150);
-  check("D4 展开后有并行案卡", await page.locator('[data-testid="task-strip"] .task-chip').count() >= 2);
-  check("D4 轨迹回放", await page.locator('[data-testid="task-trace"]').count() === 1);
+  check("D4 轨迹飞层", await page.locator('[data-testid="task-trace"]').count() === 1);
   await page.click('[data-testid="task-strip-toggle"]').catch(() => {});
   await sleep(100);
+  check("D4 收起轨迹后飞层消失", await page.locator('[data-testid="task-trace"]').count() === 0);
+  // 切进行中第二案
+  const beforeCase = await page.evaluate(() => window.__SAMPLE__?.state?.activeCaseId);
+  await page.locator('[data-testid="task-chip"]').nth(1).click();
+  await sleep(280);
+  const afterCase = await page.evaluate(() => window.__SAMPLE__?.state?.activeCaseId);
+  check("D4 进行中切案", afterCase && afterCase !== beforeCase, `${beforeCase}→${afterCase}`);
+  // 回到④以便后续断言
+  await page.evaluate(() => window.__SAMPLE__.openDept("d4", { direct: true, keepCase: true }));
+  await sleep(200);
   check("D4 侧栏假 composer", await page.locator('[data-testid="d4-composer"]').count() === 1);
   // 五维 P0：视口持有 + composer 首屏可见
   const fold = await page.evaluate(() => {
@@ -185,7 +202,7 @@ try {
   check("P0 workbench 较早露头", fold.wbTop > 0 && fold.wbTop < 420, `wbTop=${fold.wbTop}`);
   const d4txt = await page.locator('[data-testid="view-d4"]').innerText();
   check("清脚手架旁白无 Kimi/文书面板", !d4txt.includes("对照 Kimi") && !d4txt.includes("文书面板") && !d4txt.includes("案卷 →"), "ok");
-  check("部内并行默认折叠", await page.locator('[data-testid="task-strip-toggle"]').count() === 1);
+  check("部内进行中轨常显", await page.locator('[data-testid="task-strip"] [data-testid="task-chip"]').count() >= 2);
   check("主栏质检收成进度行", await page.locator('[data-testid="qc-card"]').count() === 1);
 
   check("D4 硬请示含依据摘录", await page.locator('[data-testid="ask-excerpt"]').count() >= 1);
