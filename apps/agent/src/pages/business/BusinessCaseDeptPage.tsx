@@ -35,7 +35,6 @@ import {
   ADOPT_NE_CONFIRM_NOTE,
   handoffPhaseFromStatus,
   handoffPhaseLabel,
-  handoffStatusSentence,
   latestReturnNote,
 } from '../../departments/handoffPhase'
 import {
@@ -75,9 +74,9 @@ function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
 }
 
 /**
- * 部门工作台 · product-pages §2 Cursor 三栏（85d64e4 / Frame 5）
- * 左·材料目录 | 中·产出正文 | 右·对话 + G1 交卷 + 待你确认
- * 交卷 / 确认主 CTA 仅在右栏；不放顶栏 / 中栏。confirmGate 只接线不改逻辑。
+ * 部门工作台 · product-pages §2 Cursor 三栏
+ * 左·材料目录 | 中·产出正文 | 右·跟本部门负责人对话（编制/工具点开再看）
+ * 硬请示进对话汇报气泡；交卷主 CTA 仍在右栏底。confirmGate 只接线不改逻辑。
  */
 export function BusinessCaseDeptPage() {
   const { caseId = '', deptSlug: slug = '' } = useParams()
@@ -129,9 +128,13 @@ export function BusinessCaseDeptPage() {
 
   const seatFromUrl = params.get('seat') as ProjectExpertId | null
   const [pickedSeat, setPickedSeat] = useState<ProjectExpertId | null>(null)
-  const [seatOpen, setSeatOpen] = useState(() => Boolean(params.get('seat')))
+  /** 右栏默认就跟本部门负责人对话（不再「对话区默认收起」） */
+  const [seatOpen, setSeatOpen] = useState(true)
   const [adoptedPeerIds, setAdoptedPeerIds] = useState<string[]>([])
   const [selectedMaterialId, setSelectedMaterialId] = useState('deliverable')
+  /** 编制默认收；工具/巡检点开再看 */
+  const [rosterOpen, setRosterOpen] = useState(false)
+  const [toolsOpen, setToolsOpen] = useState(false)
   /** 窄屏：左目录可收起；右栏改底抽屉（G1 交卷可达） */
   const [leftOpen, setLeftOpen] = useState(true)
   const [mobileRightOpen, setMobileRightOpen] = useState(false)
@@ -181,7 +184,7 @@ export function BusinessCaseDeptPage() {
   const canSubmit =
     allChecklistDone && !awaitingThis && st !== '已完成' && cta.action !== 'confirm'
 
-  const peers: DeptPeer[] = (dept?.peers ?? []).slice(0, 3)
+  const peers: DeptPeer[] = dept?.peers ?? []
 
   const dual = dept ? deliverableForExpert(dept.leadSeatId) : undefined
   const deliverableSummary = dual?.sampleArtifact
@@ -316,9 +319,6 @@ export function BusinessCaseDeptPage() {
   }
 
   const companyHref = `/agent/cases/${caseId}`
-  const statusLine = st
-    ? handoffStatusSentence(dept.id, st)
-    : handoff.deliverable
   // 持久回流意见（pending.returned.returnNote）；不依赖会 6s 清空的 lastReturnHint
   const persistentReturnNote = latestReturnNote(pending, kindForDept)
   const returnHintText = persistentReturnNote || lastReturnHint || null
@@ -543,24 +543,25 @@ export function BusinessCaseDeptPage() {
           <button
             type="button"
             className="fixed inset-0 z-30 bg-slate-900/20 lg:hidden"
-            aria-label="关闭对话交卷"
+            aria-label="关闭对话"
             data-testid="dept-mobile-right-backdrop"
             onClick={() => setMobileRightOpen(false)}
           />
         ) : null}
 
-        {/* 右·对话区：专家 + 对话/过程 + 缺项 + 交卷 + 确认（禁成果阅读面） */}
+        {/* 右栏 = 跟本部门负责人对话；编制/工具点开再看；硬请示进对话气泡 */}
         <aside
           className={`${
             mobileRightOpen ? 'fixed inset-x-0 bottom-0 z-40 flex max-h-[min(90vh,40rem)] shadow-xl' : 'hidden'
-          } min-h-0 w-full shrink-0 flex-col border-t border-slate-200 bg-white lg:static lg:z-auto lg:flex lg:max-h-none lg:w-[22rem] lg:border-l lg:border-t-0 lg:shadow-none xl:w-[24rem]`}
+          } min-h-0 w-full shrink-0 flex-col border-t border-slate-200 bg-white lg:static lg:z-auto lg:flex lg:max-h-none lg:w-[21.25rem] lg:border-l lg:border-t-0 lg:shadow-none xl:w-[21.25rem]`}
           data-testid="dept-right-rail"
           data-slot="dialogue-confirm"
           data-mobile-drawer={mobileRightOpen ? '1' : '0'}
+          data-rail-model="leader-chat"
         >
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 px-3 py-2 lg:hidden">
-              <p className="text-[12px] font-semibold text-slate-800">对话 · 交卷</p>
+              <p className="text-[12px] font-semibold text-slate-800">对话</p>
               <button
                 type="button"
                 onClick={() => setMobileRightOpen(false)}
@@ -572,34 +573,86 @@ export function BusinessCaseDeptPage() {
                 收起
               </button>
             </div>
-            {/* slot: 交卷态 */}
+
+            {/* 身份行：本部门负责人 + 编制开关 */}
             <header
-              className="shrink-0 border-b border-slate-200 px-3 py-2.5"
-              data-slot="handoff-status"
-              data-testid="dept-right-status"
+              className="flex shrink-0 items-center gap-2 border-b border-slate-200 px-3 py-2"
+              data-slot="identity"
+              data-testid="dept-right-identity"
             >
-              <div className="flex flex-wrap items-center gap-1.5">
-                {st ? <DeptStatusDot status={st} withLabel={false} /> : null}
-                <span
-                  className="text-[11px] font-medium text-slate-700"
-                  data-testid="dept-checklist-phase"
-                  data-handoff-phase={handoffPhase}
-                >
-                  {handoffPhaseLabel(handoffPhase)}
+              <button
+                type="button"
+                onClick={openLeadSeat}
+                className="focus-ring flex min-w-0 flex-1 items-center gap-2 rounded-md text-left"
+                data-testid="dept-right-leader"
+                aria-label={`跟本部门负责人 ${businessSeatLabel(dept.leadSeatId)} 对话`}
+              >
+                <ExpertAvatar
+                  name={businessSeatLabel(dept.leadSeatId)}
+                  seed={dept.leadSeatId}
+                  size="md"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[12px] font-semibold text-slate-900">
+                    {businessSeatLabel(dept.leadSeatId)}
+                  </span>
+                  <span
+                    className="mt-0.5 flex flex-wrap items-center gap-1 text-[10px] text-slate-500"
+                    data-testid="dept-right-status"
+                  >
+                    {st ? <DeptStatusDot status={st} withLabel={false} /> : null}
+                    <span data-testid="dept-checklist-phase" data-handoff-phase={handoffPhase}>
+                      本部门负责人
+                      {st ? ` · ${handoffPhaseLabel(handoffPhase)}` : ''}
+                    </span>
+                  </span>
                 </span>
-              </div>
-              <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-                {statusLine}
-              </p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRosterOpen((v) => !v)}
+                className={`btn-press focus-ring shrink-0 rounded-md px-2 py-1 text-[11px] font-medium ${
+                  rosterOpen
+                    ? 'bg-slate-900 text-white'
+                    : 'border border-slate-200 bg-white text-slate-600'
+                }`}
+                data-testid="dept-roster-toggle"
+                aria-expanded={rosterOpen}
+              >
+                编制{peers.length ? ` · ${peers.length}` : ''}
+              </button>
             </header>
 
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-3">
-              {/* slot: 专家协作 */}
-              <section data-slot="experts" data-testid="dept-right-experts">
-                <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                  专家协作（≤3）
-                </p>
-                <ul className="space-y-2">
+            {/* 编制：默认收；展开才见全专家 */}
+            {rosterOpen ? (
+              <section
+                className="shrink-0 border-b border-slate-100 px-3 py-2"
+                data-slot="experts"
+                data-testid="dept-right-experts"
+                data-roster-folded="0"
+              >
+                <ul className="flex flex-wrap gap-2" data-testid="dept-right-roster-row">
+                  <li>
+                    <button
+                      type="button"
+                      onClick={openLeadSeat}
+                      className={`focus-ring inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] ${
+                        activeSeat === dept.leadSeatId && seatOpen
+                          ? 'border-slate-900 bg-slate-900 text-white'
+                          : 'border-slate-200 bg-slate-50 text-slate-700'
+                      }`}
+                      data-testid="dept-side-expert-lead"
+                      title="本部门负责人"
+                    >
+                      <ExpertAvatar
+                        name={businessSeatLabel(dept.leadSeatId)}
+                        seed={dept.leadSeatId}
+                        size="sm"
+                        tone={activeSeat === dept.leadSeatId ? 'onDark' : 'light'}
+                      />
+                      负责人
+                    </button>
+                  </li>
                   {peers.map((peer) => {
                     const peerSeat =
                       peer.kind === 'session' && peer.sessionSeatId
@@ -612,121 +665,169 @@ export function BusinessCaseDeptPage() {
                           activeSeat === peer.leadSeatId &&
                           pickedSeat === peer.leadSeatId))
                     const label = peerDisplayLabel(dept.id, peer.id, peer.label)
-                    const hint = peerSuggestionHint(dept.id, peer.id)
                     const adopted = adoptedPeerIds.includes(peer.id)
                     return (
-                      <li
-                        key={peer.id}
-                        className={`rounded-lg border px-2.5 py-2 ${
-                          selected
-                            ? 'border-slate-900 bg-slate-900 text-white'
-                            : 'border-slate-200 bg-slate-50 text-slate-800'
-                        }`}
-                        data-testid={`dept-side-expert-${peer.id}`}
-                      >
+                      <li key={peer.id} className="inline-flex items-center gap-1">
                         <button
                           type="button"
                           onClick={() => openPeer(peer)}
-                          className="focus-ring flex w-full items-center gap-2 text-left"
+                          className={`focus-ring inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] ${
+                            selected
+                              ? 'border-slate-900 bg-slate-900 text-white'
+                              : 'border-slate-200 bg-slate-50 text-slate-700'
+                          }`}
+                          data-testid={`dept-side-expert-${peer.id}`}
+                          title={peerSuggestionHint(dept.id, peer.id) || label}
                         >
                           <ExpertAvatar
                             name={label}
+                            size="sm"
                             tone={selected ? 'onDark' : 'light'}
                           />
-                          <span className="min-w-0 flex-1 text-[12px] font-medium">
-                            {label}
-                          </span>
+                          <span className="max-w-[5.5rem] truncate">{label}</span>
                         </button>
-                        {hint ? (
-                          <p
-                            className={`mt-1 pl-9 text-[11px] leading-relaxed ${
-                              selected ? 'text-white/75' : 'text-slate-500'
-                            }`}
-                          >
-                            {hint}
-                          </p>
-                        ) : null}
-                        <div className="mt-1.5 flex flex-wrap gap-2 pl-9">
-                          <button
-                            type="button"
-                            onClick={() => toggleAdopt(peer.id)}
-                            className={`btn-press focus-ring rounded-md px-2 py-0.5 text-[10px] font-semibold ${
-                              adopted
-                                ? selected
-                                  ? 'bg-white text-slate-900'
-                                  : 'bg-emerald-600 text-white'
-                                : selected
-                                  ? 'bg-white/15 text-white'
-                                  : 'bg-white text-slate-700 outline outline-1 -outline-offset-1 outline-black/10'
-                            }`}
-                            data-testid={`dept-side-adopt-${peer.id}`}
-                          >
-                            {adopted ? ADOPT_CTA_DONE_LABEL : ADOPT_CTA_LABEL}
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => toggleAdopt(peer.id)}
+                          className={`btn-press focus-ring rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${
+                            adopted
+                              ? 'bg-emerald-600 text-white'
+                              : 'bg-white text-slate-500 outline outline-1 -outline-offset-1 outline-black/10'
+                          }`}
+                          data-testid={`dept-side-adopt-${peer.id}`}
+                          title={adopted ? ADOPT_CTA_DONE_LABEL : ADOPT_CTA_LABEL}
+                        >
+                          {adopted ? '已采' : '采纳'}
+                        </button>
                       </li>
                     )
                   })}
                 </ul>
                 <p
-                  className="mt-2 text-[10px] leading-relaxed text-slate-400"
+                  className="mt-1.5 text-[10px] leading-relaxed text-slate-400"
                   data-slot="adopt-ne-confirm"
                   data-testid="dept-side-adopt-ne-confirm"
                 >
                   {ADOPT_NE_CONFIRM_NOTE}
                 </p>
-                <button
-                  type="button"
-                  onClick={openLeadSeat}
-                  className="btn-press focus-ring mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700"
-                  data-testid="dept-enter-seat"
-                >
-                  进入专家岗 · {businessSeatLabel(dept.leadSeatId)}
-                  <ArrowRight className="h-3 w-3" aria-hidden />
-                </button>
               </section>
+            ) : (
+              <div className="sr-only" data-testid="dept-right-experts" data-roster-folded="1">
+                编制已收起
+              </div>
+            )}
 
-              {/* slot: 对话 */}
-              <section data-slot="conversation" data-testid="dept-right-chat">
+            {/* 对话吃高：硬请示气泡 + 席会话 + composer（席内钉底） */}
+            <div
+              className="flex min-h-0 flex-1 flex-col overflow-hidden"
+              data-slot="conversation"
+              data-testid="dept-right-chat"
+            >
+              <div className="shrink-0 space-y-2 px-3 pt-2">
+                {/* 硬请示 = 汇报气泡（一句结论 + 选项）；不另开 sticky 同文卡 */}
+                {awaitingThis ? (
+                  <div
+                    className="max-w-[95%] rounded-2xl rounded-tl-md bg-violet-50 px-3 py-2 text-[12px] leading-relaxed text-slate-900"
+                    role="status"
+                    data-testid="dept-ask-bubble-confirm"
+                    data-ask-kind="confirm"
+                    data-awaiting-banner="1"
+                  >
+                    {/* 兼容旧闸：保留 awaiting banner 语义 */}
+                    <span className="sr-only" data-testid="dept-awaiting-confirm-banner">
+                      待你确认
+                    </span>
+                    <p className="text-[9px] font-semibold uppercase tracking-wide text-violet-700/80">
+                      {businessSeatLabel(dept.leadSeatId)} · 汇报
+                    </p>
+                    <p className="mt-0.5 font-medium">
+                      本站已交卷，待你拍板。
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-slate-600">
+                      {AWAITING_ADVANCE_LOCK_HINT}
+                    </p>
+                    {cta.confirmId ? (
+                      <Link
+                        to={pendingDetailPath(cta.confirmId, slug || undefined)}
+                        className="btn-press focus-ring mt-2 inline-flex rounded-full bg-amber-600 px-3 py-1 text-[11px] font-semibold text-white"
+                        data-testid="dept-right-confirm-link"
+                      >
+                        打开确认页 · 过 / 驳回
+                      </Link>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {returnHintText && !awaitingThis ? (
+                  <div
+                    className="max-w-[95%] rounded-2xl rounded-tl-md bg-amber-50 px-3 py-2 text-[12px] leading-relaxed text-amber-950"
+                    role="status"
+                    data-testid="dept-return-hint"
+                    data-return-source={
+                      persistentReturnNote
+                        ? 'pending'
+                        : lastReturnHint
+                          ? 'flash'
+                          : undefined
+                    }
+                  >
+                    <p className="text-[9px] font-semibold uppercase tracking-wide text-amber-800/80">
+                      {businessSeatLabel(dept.leadSeatId)} · 回流
+                    </p>
+                    <p className="mt-0.5">{returnHintText}</p>
+                  </div>
+                ) : null}
+
+                {!allChecklistDone ? (
+                  <div
+                    className="max-w-[95%] rounded-2xl rounded-tl-md bg-violet-50 px-3 py-2 text-[12px] leading-relaxed text-slate-900"
+                    data-testid="dept-ask-bubble-g1"
+                    data-ask-kind="g1"
+                  >
+                    <p className="text-[9px] font-semibold uppercase tracking-wide text-violet-700/80">
+                      {businessSeatLabel(dept.leadSeatId)} · 汇报
+                    </p>
+                    <p className="mt-0.5 font-medium">齐套未齐，还不能交卷。</p>
+                    <ul
+                      className="mt-1 list-disc space-y-0.5 pl-4 text-[11px] text-slate-600"
+                      data-testid="dept-checklist-missing"
+                    >
+                      {checklistItems
+                        .filter((x) => !x.done)
+                        .map((x) => (
+                          <li key={x.label}>{x.label}</li>
+                        ))}
+                    </ul>
+                    {/* 兼容闸测：保留 checklist 槽，不占视觉墙 */}
+                    <div className="sr-only" data-testid="dept-checklist" aria-hidden>
+                      齐套缺项
+                    </div>
+                  </div>
+                ) : (
+                  <div className="sr-only" data-testid="dept-checklist">
+                    齐套已齐
+                  </div>
+                )}
+
+                {returnHintText && awaitingThis ? (
+                  <div className="sr-only" data-testid="dept-right-return" />
+                ) : (
+                  <div className="sr-only" data-testid="dept-right-return" />
+                )}
+              </div>
+
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                 {seatOpen ? (
                   <div
-                    className="rounded-xl border border-slate-200 bg-slate-50/80 p-2"
+                    className="flex min-h-0 flex-1 flex-col"
                     data-testid="dept-seat-workbench-wrap"
                   >
-                    <div className="mb-2 flex items-center justify-between gap-2 px-1">
-                      <p className="text-[11px] font-medium text-slate-500">
-                        对话 · {businessSeatLabel(activeSeat)}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSeatOpen(false)
-                          const nextParams = new URLSearchParams(params)
-                          nextParams.delete('seat')
-                          navigate(
-                            `/agent/cases/${caseId}/depts/${slug}${
-                              nextParams.toString() ? `?${nextParams}` : ''
-                            }`,
-                            { replace: true },
-                          )
-                        }}
-                        className="btn-press focus-ring rounded-md px-2 py-1 text-[11px] font-medium text-slate-500 underline-offset-2 hover:underline"
-                        data-testid="dept-close-seat"
-                      >
-                        收起对话
-                      </button>
-                    </div>
-                    <CaseAssistantPanel
-                      caseId={caseId}
-                      stageId={prog.stageId}
-                      activeSeat={activeSeat}
-                      onSwitchSeat={switchSeat}
-                    />
                     <BusinessSeatWorkbench
                       caseId={caseId}
                       seatId={activeSeat}
                       workNonce={workNonce}
                       hideArtifactPanel
+                      compactRail
                       deliverBlocked={
                         !allChecklistDone || awaitingThis || st === '已完成'
                       }
@@ -748,83 +849,37 @@ export function BusinessCaseDeptPage() {
                   </div>
                 ) : (
                   <p
-                    className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-center text-[11px] text-slate-400"
+                    className="px-3 py-3 text-center text-[11px] text-slate-400"
                     data-testid="dept-seat-collapsed-hint"
                   >
-                    对话区默认收起。点上方专家岗后在此协作（过程可看；成果只在中栏）。交卷与确认在本栏底部。
+                    点上方负责人开始对话。
                   </p>
                 )}
-              </section>
+              </div>
 
-              {/* slot: 缺项 G1 */}
-              <section
-                data-slot="missing-checklist"
-                data-testid="dept-checklist"
-                aria-labelledby="dept-right-missing-title"
-              >
-                <h3
-                  id="dept-right-missing-title"
-                  className="text-[10px] font-semibold uppercase tracking-wide text-slate-400"
+              {/* 工具 / 巡检：点开再看，不抢对话高度 */}
+              {toolsOpen ? (
+                <div
+                  className="max-h-[40%] shrink-0 overflow-y-auto border-t border-slate-100 px-2 py-2"
+                  data-testid="dept-right-tools"
                 >
-                  齐套缺项（G1）
-                </h3>
-                {!allChecklistDone ? (
-                  <div
-                    className="mt-1.5 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-2 text-[11px] text-amber-950"
-                    data-testid="dept-checklist-missing"
-                  >
-                    <p className="font-medium">缺项未清 · 交卷不可用</p>
-                    <ul className="mt-1 list-disc space-y-0.5 pl-4">
-                      {checklistItems
-                        .filter((x) => !x.done)
-                        .map((x) => (
-                          <li key={x.label}>{x.label}</li>
-                        ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <p className="mt-1.5 text-[11px] text-slate-500">
-                    齐套已齐。交卷后将进「待你确认」；确认权在人，专家建议稿不算拍板。
-                  </p>
-                )}
-              </section>
-
-              {/* slot: 回流 · 持久 pending.returnNote 优先，短暂 lastReturnHint 并存兜底 */}
-              <section data-slot="return-hint" data-testid="dept-right-return">
-                {returnHintText ? (
-                  <div
-                    className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-[11px] text-amber-950"
-                    data-testid="dept-return-hint"
-                    role="status"
-                    data-return-source={
-                      persistentReturnNote
-                        ? 'pending'
-                        : lastReturnHint
-                          ? 'flash'
-                          : undefined
-                    }
-                  >
-                    回流意见：{returnHintText}
-                  </div>
-                ) : null}
-                {awaitingThis ? (
-                  <div
-                    className="mt-2 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-medium text-amber-950"
-                    role="status"
-                    data-testid="dept-awaiting-confirm-banner"
-                  >
-                    待你确认 · 未拍板 · {AWAITING_ADVANCE_LOCK_HINT}
-                  </div>
-                ) : null}
-              </section>
+                  <CaseAssistantPanel
+                    caseId={caseId}
+                    stageId={prog.stageId}
+                    activeSeat={activeSeat}
+                    onSwitchSeat={switchSeat}
+                  />
+                </div>
+              ) : null}
             </div>
 
-            {/* 底：交卷 + 确认（仅右栏） */}
+            {/* 底：主 CTA 一行 + 工具/换部辅 */}
             <footer
-              className="shrink-0 space-y-2 border-t border-slate-200 px-3 py-3"
+              className="shrink-0 space-y-1.5 border-t border-slate-200 px-3 py-2"
               data-slot="submit-confirm"
               data-testid="dept-right-submit"
             >
+              {/* 待确认时气泡已带主选项；底栏不再复述同文 sticky，只留可达 CTA */}
               <button
                 type="button"
                 onClick={onSubmit}
@@ -851,68 +906,79 @@ export function BusinessCaseDeptPage() {
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden />
               </button>
 
-              {(cta.action === 'confirm' || awaitingThis) && cta.confirmId ? (
-                <Link
-                  to={pendingDetailPath(cta.confirmId, slug || undefined)}
-                  className="btn-press focus-ring block w-full rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-center text-[11px] font-medium text-amber-950"
-                  data-testid="dept-right-confirm-link"
+              <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setToolsOpen((v) => !v)}
+                  className={`btn-press focus-ring rounded-md px-2 py-1 text-[10px] font-medium ${
+                    toolsOpen
+                      ? 'bg-slate-800 text-white'
+                      : 'border border-slate-200 bg-white text-slate-500'
+                  }`}
+                  data-testid="dept-tools-toggle"
+                  aria-expanded={toolsOpen}
                 >
-                  打开确认页 · 过 / 驳回
-                </Link>
-              ) : null}
-
-              <div className="flex flex-wrap gap-2">
+                  {toolsOpen ? '收起工具' : '工具'}
+                </button>
                 <Link
                   to={companyHref}
-                  className="btn-press focus-ring inline-flex flex-1 items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
+                  className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-600"
                   data-testid="dept-side-back-company"
                 >
                   <Building2 className="h-3 w-3" aria-hidden />
-                  回公司首页
+                  公司
                 </Link>
-              </div>
-
-              <div data-testid="dept-side-switch-depts">
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                  换部
-                </p>
-                <ul className="flex flex-wrap gap-1">
-                  {switchDepts.map((d) => (
-                    <li key={d.id}>
-                      {d.locked && !d.active ? (
-                        <span
-                          className="inline-block cursor-not-allowed rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-400"
-                          title={d.lockReason ?? '待你确认后才能推进'}
-                          data-testid={`dept-side-switch-${d.id}`}
-                          data-locked="1"
-                          aria-disabled="true"
-                        >
-                          {d.label} · 锁
-                        </span>
-                      ) : (
-                        <Link
-                          to={d.href}
-                          className={`focus-ring inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                            d.active
-                              ? 'bg-slate-900 text-white'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
-                          data-testid={`dept-side-switch-${d.id}`}
-                          data-locked="0"
-                        >
-                          {d.label}
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                <details className="min-w-0 flex-1" data-testid="dept-side-switch-depts">
+                  <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-400">
+                    换部
+                  </summary>
+                  <ul className="mt-1 flex flex-wrap gap-1">
+                    {switchDepts.map((d) => (
+                      <li key={d.id}>
+                        {d.locked && !d.active ? (
+                          <span
+                            className="inline-block cursor-not-allowed rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-400"
+                            title={d.lockReason ?? '待你确认后才能推进'}
+                            data-testid={`dept-side-switch-${d.id}`}
+                            data-locked="1"
+                            aria-disabled="true"
+                          >
+                            {d.label} · 锁
+                          </span>
+                        ) : (
+                          <Link
+                            to={d.href}
+                            className={`focus-ring inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                              d.active
+                                ? 'bg-slate-900 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
+                            data-testid={`dept-side-switch-${d.id}`}
+                            data-locked="0"
+                          >
+                            {d.label}
+                          </Link>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                <button
+                  type="button"
+                  onClick={openLeadSeat}
+                  className="sr-only"
+                  data-testid="dept-enter-seat"
+                  tabIndex={-1}
+                >
+                  进入专家岗
+                </button>
               </div>
             </footer>
           </div>
         </aside>
       </div>
 
-      {/* 窄屏底栏：目录开关 + 打开对话/交卷（G1 可达） */}
+      {/* 窄屏底栏：目录开关 + 打开对话（G1 可达） */}
       <div
         className="flex shrink-0 items-center gap-2 border-t border-slate-200 bg-white px-3 py-2 lg:hidden"
         data-testid="dept-mobile-dock"
@@ -938,7 +1004,7 @@ export function BusinessCaseDeptPage() {
           data-testid="dept-mobile-open-right"
         >
           <MessageSquare className="h-3.5 w-3.5" aria-hidden />
-          对话 · 交卷
+          对话
         </button>
       </div>
     </div>

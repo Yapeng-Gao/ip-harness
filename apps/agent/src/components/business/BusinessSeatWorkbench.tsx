@@ -68,6 +68,11 @@ type Props = {
    * 默认全开，兼容案页 BusinessCasePage。
    */
   hideArtifactPanel?: boolean
+  /**
+   * 部门右栏对话化：藏席头/步骤条/面 tab，会话吃高 + composer 钉底。
+   * 与 hideArtifactPanel 同用于部门台。
+   */
+  compactRail?: boolean
 }
 
 /**
@@ -85,6 +90,7 @@ export function BusinessSeatWorkbench({
   deliverBlocked = false,
   deliverBlockedReason,
   hideArtifactPanel = false,
+  compactRail = false,
 }: Props) {
   const {
     advanceSeatWork,
@@ -485,7 +491,9 @@ export function BusinessSeatWorkbench({
       data-seat-id={seatId}
       data-biz-case-ia="1"
       data-hide-artifact={hideArtifactPanel ? '1' : '0'}
+      data-compact-rail={compactRail ? '1' : '0'}
     >
+      {!compactRail ? (
       <header className="mb-3 flex flex-wrap items-start justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold text-slate-900">{seatLabel}</h2>
@@ -543,6 +551,7 @@ export function BusinessSeatWorkbench({
           )}
         </div>
       </header>
+      ) : null}
 
       {oaLocked && (
         <p
@@ -553,7 +562,8 @@ export function BusinessSeatWorkbench({
         </p>
       )}
 
-      {/* 已完成 / 当前步可点回退；未到达不可点 */}
+      {/* 已完成 / 当前步可点回退；未到达不可点 · 右栏对话化时点开「本步」再看 */}
+      {!compactRail ? (
       <ol
         className="mb-3 flex flex-wrap gap-1.5"
         data-testid="business-seat-steps"
@@ -595,8 +605,52 @@ export function BusinessSeatWorkbench({
           )
         })}
       </ol>
+      ) : (
+        <details
+          className="mb-1.5 shrink-0 px-0"
+          data-testid="business-seat-steps-fold"
+        >
+          <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-400">
+            本步 · {stepIndex + 1}/{def.steps.length}
+            {def.steps[stepIndex]?.label ? ` · ${def.steps[stepIndex].label}` : ''}
+          </summary>
+          <ol
+            className="mt-1.5 flex flex-wrap gap-1.5"
+            data-testid="business-seat-steps"
+            aria-label="本席步骤进度（可回退已走步骤）"
+          >
+            {def.steps.map((s, i) => {
+              const done = i < stepIndex
+              const current = i === stepIndex
+              const canRewind = (done || current) && !oaLocked && !busy
+              return (
+                <li key={s.id}>
+                  <button
+                    type="button"
+                    disabled={!canRewind}
+                    onClick={() => onRewindStep(i)}
+                    className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                      done
+                        ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:border-emerald-400 hover:bg-emerald-100'
+                        : current
+                          ? 'border-slate-800 bg-slate-900 text-white hover:bg-slate-800'
+                          : 'cursor-default border-slate-200 bg-white text-slate-500 opacity-70'
+                    } ${canRewind ? 'cursor-pointer' : ''}`}
+                    data-testid={`business-seat-step-${s.id}`}
+                    data-current={current ? '1' : '0'}
+                    aria-current={current ? 'step' : undefined}
+                  >
+                    {i + 1}. {s.label}
+                    {s.triggersHitl ? ' · 待交' : ''}
+                  </button>
+                </li>
+              )
+            })}
+          </ol>
+        </details>
+      )}
 
-      {pendingForSeat.length > 0 && (
+      {!compactRail && pendingForSeat.length > 0 && (
         <div
           className="mb-3 rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2"
           data-testid="business-seat-pending-gate"
@@ -620,7 +674,8 @@ export function BusinessSeatWorkbench({
         </div>
       )}
 
-      {/* 会话主 · 成果/过程次 tab（默认藏工程文件名） */}
+      {/* 会话主 · 成果/过程次 tab；右栏对话化默认只会话 */}
+      {!compactRail ? (
       <div
         className="mb-2 flex flex-wrap items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5"
         data-testid="business-seat-surface-tabs"
@@ -675,13 +730,24 @@ export function BusinessSeatWorkbench({
           </button>
         ) : null}
       </div>
+      ) : null}
 
-      {panel === 'chat' || (hideArtifactPanel && panel === 'artifact') ? (
+      {panel === 'chat' || (hideArtifactPanel && panel === 'artifact') || compactRail ? (
         <section
-          className="mb-3 flex min-h-[16rem] flex-col rounded-xl border border-slate-200 bg-white shadow-sm"
+          className={
+            compactRail
+              ? 'flex min-h-0 flex-1 flex-col border-0 bg-transparent shadow-none'
+              : 'mb-3 flex min-h-[16rem] flex-col rounded-xl border border-slate-200 bg-white shadow-sm'
+          }
           data-testid="business-seat-chat"
         >
-          <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3">
+          <div
+            className={
+              compactRail
+                ? 'min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-2'
+                : 'min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3'
+            }
+          >
             {messages.length === 0 ? (
               <p className="text-[12px] text-slate-500">
                 {caseHasPending
@@ -749,7 +815,13 @@ export function BusinessSeatWorkbench({
             ) : null}
             <div ref={chatEndRef} />
           </div>
-          <div className="shrink-0 border-t border-slate-100 px-2 py-2">
+          <div
+            className={
+              compactRail
+                ? 'shrink-0 border-t border-slate-100 px-2 py-2'
+                : 'shrink-0 border-t border-slate-100 px-2 py-2'
+            }
+          >
             {/* 简模式：主路径只留干活/交卷；feedback/loop 收进「高级」 */}
             {!caseHasPending ? (
               <div className="mb-1.5 space-y-1" data-testid="business-seat-chips">
@@ -918,7 +990,11 @@ export function BusinessSeatWorkbench({
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={onKey}
                 rows={1}
-                placeholder={`跟「${seatLabel}」说…（环边/回退/feedback 均可）`}
+                placeholder={
+                  compactRail
+                    ? `对：${seatLabel} · 说一句驾驭`
+                    : `跟「${seatLabel}」说…（环边/回退/feedback 均可）`
+                }
                 className="focus-ring min-h-[2.25rem] flex-1 resize-none rounded-lg border border-slate-200 px-2.5 py-1.5 text-[12px] text-slate-800 placeholder:text-slate-400"
                 data-testid="business-seat-composer"
                 disabled={oaLocked || busy}
