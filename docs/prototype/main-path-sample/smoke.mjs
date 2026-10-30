@@ -118,6 +118,67 @@ try {
   await sleep(200);
   check("B2 blocks ⑤ without 交底 path", await page.locator('[data-testid="b2-block"]').count() === 1);
 
+  // ⑤ A/B/C 屏上闸 + 硬请示顺序（先关案卷抽屉，避免 backdrop 挡点击）
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.closeDrawer();
+    s.state.workOrderOpened = true;
+    s.state.canHand5 = true;
+    s.state.factConfirmed = true;
+    s.state.allGreen = true;
+    s.state.apply = { understand: false, applyOrNot: null, submit: false, overLine: false };
+    s.openDept("d5", { fromWorkOrder: true });
+  });
+  await sleep(250);
+  check("D5 shows A/B/C strip", await page.locator('[data-testid="d5-abc"]').count() === 1);
+  check("D5 seg A/B/C labels", (await page.locator('[data-testid="seg-a"]').count()) === 1
+    && (await page.locator('[data-testid="seg-b"]').count()) === 1
+    && (await page.locator('[data-testid="seg-c"]').count()) === 1);
+  const bYesDisabled = await page.locator('[data-testid="confirm-apply-yes"][disabled]').count();
+  check("B 申不申 disabled before A", bYesDisabled === 1);
+  await page.click('[data-testid="confirm-understand"]');
+  await sleep(150);
+  const bYesEnabled = await page.locator('[data-testid="confirm-apply-yes"]:not([disabled])').count();
+  check("B enabled after A confirm", bYesEnabled === 1);
+  const submitBefore = await page.locator('[data-testid="confirm-submit5"][disabled]').count();
+  check("C 确认递交 disabled before overline", submitBefore === 1);
+  await page.click('[data-testid="confirm-apply-yes"]');
+  await sleep(150);
+  await page.click('[data-testid="make-overline"]');
+  await sleep(150);
+  const submitReady = await page.locator('[data-testid="confirm-submit5"]:not([disabled])').count();
+  check("C 确认递交 enabled after overline", submitReady === 1);
+  await page.click('[data-testid="confirm-submit5"]');
+  await sleep(150);
+  const traces = await page.evaluate(() => window.__SAMPLE__.state.traces.map(t => t.title).join("|"));
+  check("hard asks recorded in traces", traces.includes("理解确认") && traces.includes("申不申") && traces.includes("确认递交"), traces);
+
+  // 薄部：进得去 + 合格线 + 禁超卖
+  await page.evaluate(() => window.__SAMPLE__.openDept("d1"));
+  await sleep(200);
+  check("thin dept enterable", await page.locator('[data-testid="thin-dept"]').count() === 1);
+  const ban = await page.locator('[data-testid="thin-ban"]').innerText();
+  check("thin shows 禁超卖", ban.includes("禁超卖") && ban.length > 8, ban.slice(0, 80));
+
+  // ⑥ 硬请示：争点 → 缩限 → 递交
+  await page.evaluate(() => {
+    window.__SAMPLE__.state.reply = { contentionOk: false, limitOk: false, submit: false };
+    window.__SAMPLE__.state.view = "reply";
+    window.__SAMPLE__.render();
+  });
+  await sleep(200);
+  check("D6 gates visible", await page.locator('[data-testid="d6-gates"]').count() === 1);
+  const limDisabled = await page.locator('[data-testid="confirm-limit"][disabled]').count();
+  check("⑥ limit disabled before contention", limDisabled === 1);
+  await page.click('[data-testid="confirm-contention"]');
+  await sleep(150);
+  await page.click('[data-testid="confirm-limit"]');
+  await sleep(150);
+  await page.click('[data-testid="confirm-reply-submit"]');
+  await sleep(150);
+  const r = await page.evaluate(() => window.__SAMPLE__.state.reply);
+  check("⑥ hard asks advance only after confirm", r.contentionOk && r.limitOk && r.submit);
+
   await page.screenshot({ path: path.join(outDir, "smoke-final.png"), fullPage: true });
 } catch (e) {
   check("smoke threw", false, String(e));

@@ -18,7 +18,7 @@
     enteredD4: false,
     disclosureReady: false,
     apply: { understand: false, applyOrNot: null, submit: false, overLine: false },
-    reply: { strategyOk: false, limitOk: false, submit: false },
+    reply: { contentionOk: false, limitOk: false, submit: false },
     drawerOpen: false,
     drawerTab: "materials",
     activeExpert: "writer",
@@ -500,6 +500,10 @@
 
   function renderApply() {
     const a = state.apply;
+    const segA = a.understand ? "done" : "now";
+    const segB = !a.understand ? "todo" : (a.applyOrNot ? "done" : "now");
+    const segC = a.applyOrNot !== "yes" ? "todo" : (a.submit ? "done" : "now");
+    const segCls = (s) => s === "done" ? "seg done" : (s === "now" ? "seg now" : "seg");
     $("#applyBody").innerHTML = `
       <div class="dept-top" style="margin:-20px -20px 16px;border-radius:0">
         <button type="button" class="ghost" id="btnApplyBack">← 工作台</button>
@@ -508,39 +512,74 @@
         <button type="button" id="btnApplyDoc">案卷</button>
       </div>
       <div class="card" data-testid="d5-gates">
-        <h2>关键闸（样机）</h2>
-        <p class="muted">撰写帧示意；硬请示与过线分离。</p>
-        <div class="hard-ask ${a.understand ? "done" : ""}">
-          <div class="label">【硬请示】</div>
-          <h3>理解确认</h3>
-          <p class="tiny">${escapeHtml(DEMO.apply.understand)}</p>
-          <div class="acts">${a.understand ? "<span class='tag ok'>已确认理解</span>" : `<button type="button" class="ask-confirm" id="btnUnd">确认理解</button>`}</div>
+        <h2>⑤ 关键闸 · A / B / C</h2>
+        <p class="muted tiny">禁止一部一黑箱：三段进度必须可见；硬请示分钮；过线 ≠ 确认递交。</p>
+        <div class="abc-strip" data-testid="d5-abc">
+          <div class="${segCls(segA)}" data-testid="seg-a"><span class="seg-k">A</span>理解${a.understand ? " · 已确认" : " · 待你确认"}</div>
+          <div class="${segCls(segB)}" data-testid="seg-b"><span class="seg-k">B</span>查新·申不申${a.applyOrNot === "yes" ? " · 要申" : a.applyOrNot === "no" ? " · 不申" : a.understand ? " · 待你拍" : ""}</div>
+          <div class="${segCls(segC)}" data-testid="seg-c"><span class="seg-k">C</span>撰写递交${a.submit ? " · 已递交确认" : a.overLine ? " · 过线待递交" : a.applyOrNot === "yes" ? " · 撰写中" : ""}</div>
         </div>
-        <div class="hard-ask ${a.applyOrNot ? "done" : ""}">
-          <div class="label">【硬请示】</div>
-          <h3>申不申？</h3>
-          <div class="acts">${a.applyOrNot ? `<span class="tag ok">已拍：${a.applyOrNot === "yes" ? "申请" : "不申结案"}</span>` : `<button type="button" class="ask-confirm" id="btnYes">申请</button><button type="button" id="btnNo">不申（B5）</button>`}</div>
+
+        <div class="seg-block" data-testid="block-a">
+          <div class="seg-title">A · 理解</div>
+          <div class="hard-ask ${a.understand ? "done" : ""}" data-testid="ask-understand">
+            <div class="label">【硬请示】</div>
+            <h3>确认开案理解</h3>
+            <p class="tiny">${escapeHtml(DEMO.apply.understand)}</p>
+            <div class="acts">${a.understand ? "<span class='tag ok'>已确认理解</span>" : `<button type="button" class="ask-confirm" id="btnUnd" data-testid="confirm-understand">确认理解</button>`}</div>
+          </div>
         </div>
-        <div class="qc-card">
-          <strong>撰写示意</strong>
-          <p class="tiny">${escapeHtml(DEMO.apply.claimsHint)}</p>
-          <p class="tiny">${escapeHtml(DEMO.apply.specHint)}</p>
-          ${!a.overLine ? `<button type="button" id="btnOver" ${a.applyOrNot === "yes" && a.understand ? "" : "disabled"}>演示：质检过线</button>` : `<span class="tag ok">已过线</span> <span class="tiny muted">过线 ≠ 确认递交</span>`}
+
+        <div class="seg-block ${!a.understand ? "dim" : ""}" data-testid="block-b">
+          <div class="seg-title">B · 查新·申不申</div>
+          <p class="tiny muted">${escapeHtml(DEMO.apply.noveltyHint)}</p>
+          <div class="hard-ask ${a.applyOrNot ? "done" : ""} ${!a.understand ? "blocked-hint" : ""}" data-testid="ask-apply-or-not">
+            <div class="label">【硬请示】</div>
+            <h3>申不申？</h3>
+            <p class="tiny">A 未确认前本钮不可用。跳过查新须另认风险（样机略）。</p>
+            <div class="acts">${a.applyOrNot ? `<span class="tag ok">已拍：${a.applyOrNot === "yes" ? "申请" : "不申结案"}</span>` : `<button type="button" class="ask-confirm" id="btnYes" data-testid="confirm-apply-yes" ${a.understand ? "" : "disabled"}>申请</button><button type="button" id="btnNo" data-testid="confirm-apply-no" ${a.understand ? "" : "disabled"}>不申（B5）</button>`}</div>
+          </div>
         </div>
-        <div class="hard-ask ${a.submit ? "done" : ""}">
-          <div class="label">【硬请示】</div>
-          <h3>确认递交</h3>
-          <div class="acts">${a.submit ? `<span class="tag ok">已确认递交（演示）</span>` : `<button type="button" class="ask-confirm" id="btnSubmit" ${a.overLine ? "" : "disabled"}>确认递交</button>`}</div>
+
+        <div class="seg-block ${a.applyOrNot !== "yes" ? "dim" : ""}" data-testid="block-c">
+          <div class="seg-title">C · 撰写递交</div>
+          <div class="qc-card">
+            <strong>撰写示意（权项 | 说明书）</strong>
+            <p class="tiny">${escapeHtml(DEMO.apply.claimsHint)}</p>
+            <p class="tiny">${escapeHtml(DEMO.apply.specHint)}</p>
+            ${!a.overLine
+              ? `<button type="button" id="btnOver" data-testid="make-overline" ${a.applyOrNot === "yes" && a.understand ? "" : "disabled"}>演示：质检过线</button>`
+              : `<span class="tag ok">已过线</span> <span class="tiny muted">过线 ≠ 确认递交</span>`}
+          </div>
+          <div class="hard-ask ${a.submit ? "done" : ""} ${!a.overLine ? "blocked-hint" : ""}" data-testid="ask-submit5">
+            <div class="label">【硬请示】</div>
+            <h3>确认递交</h3>
+            <p class="tiny">须先过线；本钮与过线分离，不可 Toast/静默绿勾代替。</p>
+            <div class="acts">${a.submit ? `<span class="tag ok">已确认递交（演示）</span>` : `<button type="button" class="ask-confirm" id="btnSubmit" data-testid="confirm-submit5" ${a.overLine ? "" : "disabled"}>确认递交</button>`}</div>
+          </div>
         </div>
-        <div class="row-actions"><button type="button" id="btnToReply">有 OA 时 → ⑥答复</button></div>
+
+        <div class="row-actions"><button type="button" id="btnToReply" data-testid="to-reply">有 OA 时 → ⑥答复</button></div>
       </div>`;
     $("#btnApplyBack").addEventListener("click", goLobby);
     $("#btnApplyDoc").addEventListener("click", () => openDrawer());
-    const u = $("#btnUnd"); if (u) u.addEventListener("click", () => { state.apply.understand = true; addTrace("硬请示·理解确认", "⑤"); render(); });
-    const y = $("#btnYes"); if (y) y.addEventListener("click", () => { state.apply.applyOrNot = "yes"; addTrace("硬请示·申不申", "申请"); render(); });
-    const n = $("#btnNo"); if (n) n.addEventListener("click", () => { state.apply.applyOrNot = "no"; addTrace("硬请示·申不申", "不申结案 · 不出申请号"); toast("不申结案（B5）· 不生成申请号"); render(); });
-    const o = $("#btnOver"); if (o) o.addEventListener("click", () => { state.apply.overLine = true; render(); });
-    const s = $("#btnSubmit"); if (s) s.addEventListener("click", () => { state.apply.submit = true; addTrace("硬请示·确认递交", "⑤"); toast("已确认递交（演示）"); render(); });
+    const u = $("#btnUnd"); if (u) u.addEventListener("click", () => { state.apply.understand = true; addTrace("硬请示·理解确认", "⑤ A"); render(); });
+    const y = $("#btnYes"); if (y) y.addEventListener("click", () => {
+      if (!state.apply.understand) return;
+      state.apply.applyOrNot = "yes"; addTrace("硬请示·申不申", "申请"); render();
+    });
+    const n = $("#btnNo"); if (n) n.addEventListener("click", () => {
+      if (!state.apply.understand) return;
+      state.apply.applyOrNot = "no"; addTrace("硬请示·申不申", "不申结案 · 不出申请号"); toast("不申结案（B5）· 不生成申请号"); render();
+    });
+    const o = $("#btnOver"); if (o) o.addEventListener("click", () => {
+      if (!(state.apply.applyOrNot === "yes" && state.apply.understand)) return;
+      state.apply.overLine = true; addTrace("⑤过线", "申请文件可递交（过线）≠ 已确认递交"); render();
+    });
+    const s = $("#btnSubmit"); if (s) s.addEventListener("click", () => {
+      if (!state.apply.overLine) return;
+      state.apply.submit = true; addTrace("硬请示·确认递交", "⑤ C"); toast("已确认递交（演示·非 Toast 代替硬请示）"); render();
+    });
     $("#btnToReply").addEventListener("click", () => { state.view = "reply"; render(); });
   }
 
@@ -559,24 +598,46 @@
           <div class="tiny">超期须升级可见，不可静默。</div>
         </div>
         <h2>关键闸（样机）</h2>
-        <p><strong>A 争点（中立）</strong></p>
-        <ul>${DEMO.reply.issues.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
-        <p class="tiny muted">A→B 不混步定调</p>
-        <div class="hard-ask ${r.limitOk ? "done" : ""}">
-          <div class="label">【硬请示】</div>
-          <h3>重大缩限是否接受？</h3>
-          <div class="acts">${r.limitOk ? `<span class="tag ok">已确认策略/缩限</span>` : `<button type="button" class="ask-confirm" id="btnLimit">确认策略</button>`}</div>
+        <p class="tiny muted">A→B 不混步；硬请示须可点确认，不可 Toast 冒充。</p>
+        <div class="seg-block" data-testid="block-a6">
+          <div class="seg-title">A · 争点（中立）</div>
+          <ul>${DEMO.reply.issues.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+          <div class="hard-ask ${r.contentionOk ? "done" : ""}" data-testid="ask-contention">
+            <div class="label">【硬请示】</div>
+            <h3>审查意见理解是否如此？</h3>
+            <p class="tiny">${escapeHtml(DEMO.reply.contention)}</p>
+            <div class="acts">${r.contentionOk ? `<span class="tag ok">争点理解已确认</span>` : `<button type="button" class="ask-confirm" id="btnContention" data-testid="confirm-contention">确认争点理解</button>`}</div>
+          </div>
         </div>
-        <div class="hard-ask ${r.submit ? "done" : ""}">
-          <div class="label">【硬请示】</div>
-          <h3>确认本轮递交</h3>
-          <div class="acts">${r.submit ? `<span class="tag ok">已确认本轮递交</span>` : `<button type="button" class="ask-confirm" id="btnReplySubmit" ${r.limitOk ? "" : "disabled"}>确认递交</button>`}</div>
+        <div class="seg-block ${!r.contentionOk ? "dim" : ""}" data-testid="block-b6">
+          <div class="seg-title">B · 策略 / 重大缩限</div>
+          <div class="hard-ask ${r.limitOk ? "done" : ""} ${!r.contentionOk ? "blocked-hint" : ""}" data-testid="ask-limit">
+            <div class="label">【硬请示】</div>
+            <h3>重大缩限是否接受？</h3>
+            <p class="tiny">A 未确认前不可定调策略。</p>
+            <div class="acts">${r.limitOk ? `<span class="tag ok">已确认策略/缩限</span>` : `<button type="button" class="ask-confirm" id="btnLimit" data-testid="confirm-limit" ${r.contentionOk ? "" : "disabled"}>确认策略</button>`}</div>
+          </div>
+        </div>
+        <div class="seg-block ${!r.limitOk ? "dim" : ""}">
+          <div class="seg-title">C/D · 起草与本轮递交</div>
+          <div class="hard-ask ${r.submit ? "done" : ""} ${!r.limitOk ? "blocked-hint" : ""}" data-testid="ask-reply-submit">
+            <div class="label">【硬请示】</div>
+            <h3>确认本轮递交</h3>
+            <div class="acts">${r.submit ? `<span class="tag ok">已确认本轮递交</span>` : `<button type="button" class="ask-confirm" id="btnReplySubmit" data-testid="confirm-reply-submit" ${r.limitOk ? "" : "disabled"}>确认递交</button>`}</div>
+          </div>
         </div>
       </div>`;
     $("#btnReplyBack").addEventListener("click", goLobby);
     $("#btnReplyDoc").addEventListener("click", () => openDrawer());
-    const bl = $("#btnLimit"); if (bl) bl.addEventListener("click", () => { state.reply.limitOk = true; addTrace("硬请示·重大缩限", "⑥"); render(); });
-    const bs = $("#btnReplySubmit"); if (bs) bs.addEventListener("click", () => { state.reply.submit = true; addTrace("硬请示·确认本轮递交", "⑥"); render(); });
+    const bc = $("#btnContention"); if (bc) bc.addEventListener("click", () => { state.reply.contentionOk = true; addTrace("硬请示·争点理解", "⑥ A"); render(); });
+    const bl = $("#btnLimit"); if (bl) bl.addEventListener("click", () => {
+      if (!state.reply.contentionOk) return;
+      state.reply.limitOk = true; addTrace("硬请示·重大缩限", "⑥ B"); render();
+    });
+    const bs = $("#btnReplySubmit"); if (bs) bs.addEventListener("click", () => {
+      if (!state.reply.limitOk) return;
+      state.reply.submit = true; addTrace("硬请示·确认本轮递交", "⑥"); render();
+    });
   }
 
   function renderThin() {
@@ -587,8 +648,10 @@
         <h2>${escapeHtml(d.name)}</h2>
         <p class="muted">${escapeHtml(d.desc)}</p>
         <div class="sep"></div>
+        <p><strong>进得去：</strong>本部门门可从大厅点入（样机薄占位）。</p>
         <p><strong>本部门合格线：</strong>${escapeHtml(d.line)}</p>
-        <p class="tiny muted">样机薄部：进得去 + 合格线一句话；不做细作业。</p>
+        <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
+        <p class="tiny muted">样机薄部：进得去 + 合格线一句话 + 禁超卖；不做细作业（厚做未冻）。</p>
         <div class="row-actions" style="justify-content:center">
           <button type="button" class="primary" id="btnThinLobby">回工作台</button>
         </div>

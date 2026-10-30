@@ -3,14 +3,14 @@ window.DEMO = {
   brand: "Novada Team",
   tagline: "团队协作 · 关键处你来确认",
   depts: [
-    { id: "d1", num: "①", name: "立项部", desc: "要不要立这个方向", thin: true, line: "项目状态已确认" },
-    { id: "d2", num: "②", name: "创新激发部", desc: "问题卡点 → 路径 → 方案", thin: true, line: "选题/去向已拍（可跳过）" },
-    { id: "d3", num: "③", name: "专利挖掘部", desc: "研发资料 → 创新点 + 拆案", thin: true, line: "点包可交④" },
+    { id: "d1", num: "①", name: "立项部", desc: "要不要立这个方向", thin: true, line: "项目已创建 + 方向一句话 + 状态 + 用户确认", ban: "勿把建项说成完整论证报告；≠③保护去向；≠⑤申不申" },
+    { id: "d2", num: "②", name: "创新激发部", desc: "问题卡点 → 路径 → 方案", thin: true, line: "问题→路径→用户选题+收藏（或跳过留痕）", ban: "报告/三图≠本部主交付；无授权承诺；可整段跳过" },
+    { id: "d3", num: "③", name: "专利挖掘部", desc: "研发资料 → 创新点 + 拆案", thin: true, line: "报告路径或交④点包路径择一确认", ban: "不代替④交底 / ⑤申不申；不承诺可授权" },
     { id: "d4", num: "④", name: "交底部", desc: "技术事实 → 交底书全绿", thin: false, line: "交底质检全绿" },
     { id: "d5", num: "⑤", name: "申请部", desc: "合格交底 → 申请文件 → 递交", thin: false, line: "申请文件可递交（过线）" },
     { id: "d6", num: "⑥", name: "答复部", desc: "通知书 → 策略 → 答复", thin: false, line: "本轮答复可递交（D 过线）" },
-    { id: "d7", num: "⑦", name: "维护部", desc: "确权后期限 · 年费 · 台账", thin: true, line: "期限/年费已确认" },
-    { id: "d8", num: "⑧", name: "复盘部", desc: "年末/阶段复盘报告", thin: true, line: "报告已交（只读可不拍）" }
+    { id: "d7", num: "⑦", name: "维护部", desc: "确权后期限 · 年费 · 台账", thin: true, line: "台账可核 + 期限提醒 +（有费）缴费经用户确认", ban: "台账有≠看板已交付；系统内提醒≠短信邮件已通" },
+    { id: "d8", num: "⑧", name: "复盘部", desc: "年末/阶段复盘报告", thin: true, line: "复盘报告已交 + 维持/放弃已拍或只读不拍留痕", ban: "⑧≠情报官≠检索；只读不拍不得回写⑦" }
   ],
   sampleFiles: [
     { name: "电机冷却结构技术说明.docx", type: "技术说明·灵感草稿", summary: "描述水道布局与散热鳍片组合", conf: "high" },
@@ -66,11 +66,13 @@ window.DEMO = {
   },
   apply: {
     understand: "本案核心：螺旋水道 + 端盖鳍片 + 双密封，解决高功率密度温升与泄漏。",
+    noveltyHint: "申请向查新摘要（示意）：最接近 D1 公开螺旋水道；区别＝端盖鳍片+双密封组合。",
     claimsHint: "独权草案：一种电机冷却结构，包括壳体水道……（示意）",
     specHint: "说明书章节已按交底展开（示意帧）。"
   },
   reply: {
     deadline: "2026-11-12（剩余约 14 天）",
-    issues: ["对比文件 D1 公开螺旋水道", "创造性：鳍片与水道组合是否显而易见"]
+    issues: ["对比文件 D1 公开螺旋水道", "创造性：鳍片与水道组合是否显而易见"],
+    contention: "争点中立复述：审查员认为鳍片与水道组合相对 D1 显而易见；本案拟主张双密封+错位进出口带来的非显而易见效果。"
   }
 };

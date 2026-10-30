@@ -318,3 +318,18 @@ button.ask-confirm {
 .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
 .row-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .sep { height: 1px; background: var(--line); margin: 14px 0; }
+
+/* ⑤ A/B/C 段进度 + 薄部禁超卖 */
+.abc-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0 16px; }
+.abc-strip .seg {
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px;
+  background:var(--rail); font-size:13px; color:var(--muted);
+}
+.abc-strip .seg .seg-k { display:inline-block; font-weight:800; margin-right:6px; color:var(--brand); }
+.abc-strip .seg.now { border-color:var(--ask-border); background:var(--ask-bg); color:inherit; font-weight:600; }
+.abc-strip .seg.done { border-color:#9ad4b0; background:var(--ok-soft); color:var(--ok); }
+.seg-block { margin:14px 0; padding-top:4px; }
+.seg-block.dim { opacity:.55; }
+.seg-title { font-size:13px; font-weight:800; letter-spacing:.04em; margin-bottom:6px; color:var(--brand); }
+.ban-line { margin-top:10px; padding:10px 12px; border-radius:10px; border:1px dashed #e6c97a; background:var(--warn-soft); font-size:13px; }
+@media (max-width:720px){ .abc-strip { grid-template-columns:1fr; } }
