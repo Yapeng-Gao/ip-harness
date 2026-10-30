@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>新质数研发创新团队 · 主链样机</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="shell-top">
+      <button type="button" class="brand-mark" id="btnBrand" title="回大厅">
+        <span class="brand-logo">新质</span>
+        <span class="brand-text">
+          <strong>新质数研发创新团队</strong>
+          <span>专家向你汇报 · 你来拍板</span>
+        </span>
+      </button>
+      <div class="shell-spacer"></div>
+      <button type="button" class="case-chip empty" id="caseChip"><span>暂无打开案卷</span></button>
+      <button type="button" id="btnOpenDoc">案卷抽屉</button>
+    </header>
+
+    <!-- L1 大厅 -->
+    <section class="view on" id="viewLobby" data-testid="view-lobby">
+      <div class="view-body">
+        <div class="lobby-hero">
+          <h1>走进公司大厅</h1>
+          <p>前台帮你分诊领进；八个部门大门始终看得见、点得开。</p>
+        </div>
+        <div class="lobby-grid">
+          <div>
+            <div class="card front-desk" data-testid="front-desk-card">
+              <div class="eyebrow">Reception</div>
+              <h2>前台接待</h2>
+              <p class="muted">不清楚要干嘛、先丢一堆材料？从这儿开始：上传 → 分析 → 建议 → 你确认去向。</p>
+              <div class="row-actions">
+                <button type="button" class="primary" id="btnFront" data-testid="open-front">需要帮忙从这儿开始</button>
+              </div>
+            </div>
+            <div class="card" style="margin-top:14px">
+              <h2>老板待办</h2>
+              <ul class="todo-list" id="todoList"></ul>
+            </div>
+          </div>
+          <div class="card">
+            <h2>八部门大门</h2>
+            <p class="tiny muted" style="margin-top:-4px;margin-bottom:10px">可直达 · ④交底为样机主演示 · ①②③⑦⑧薄占位</p>
+            <div class="dept-wall" id="deptWall" data-testid="dept-wall"></div>
+          </div>
+        </div>
+        <div class="case-bar" data-testid="case-bar">
+          <strong>案卷</strong>
+          <span id="caseBarText" class="muted">尚无案卷</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 前台 F1–F4 -->
+    <section class="view" id="viewFront" data-testid="view-front">
+      <div class="view-body">
+        <div class="row-actions" style="margin-bottom:8px">
+          <button type="button" class="ghost" id="btnFrontLobby">← 回大厅</button>
+        </div>
+        <div class="fd-steps" id="fdSteps"></div>
+        <div id="fdPane"></div>
+      </div>
+    </section>
+
+    <!-- D4 交底 -->
+    <section class="view" id="viewDept" data-testid="view-d4">
+      <div class="dept-shell">
+        <div class="dept-top">
+          <button type="button" class="ghost" id="btnDeptLobby">← 大厅</button>
+          <h1>④ 交底部</h1>
+          <span class="line-status" id="deptLineStatus">未过线 / 质检进行中</span>
+          <div class="shell-spacer"></div>
+          <button type="button" id="btnDeptDoc" data-testid="open-doc-d4">案卷抽屉</button>
+        </div>
+        <div class="lead-bar" data-testid="lead-bar">
+          <div class="avatar">负</div>
+          <div>
+            <strong>交底部负责人</strong>
+            <div class="tiny muted">主持分活与汇报 · 不是前台。预设编制已就位。</div>
+          </div>
+        </div>
+        <div class="roster" id="roster" data-testid="roster"></div>
+        <div class="stage-bar" id="stageBar"></div>
+        <div class="workbench">
+          <div class="main-pane">
+            <div class="pane-head"><strong>主产出 · 交底书</strong></div>
+            <div class="pane-body" id="docMain"></div>
+          </div>
+          <div class="side-pane">
+            <div class="pane-head"><strong>侧栏 · 硬请示优先</strong></div>
+            <div class="pane-body">
+              <div id="sideAsks"></div>
+              <div>
+                <div class="tiny muted" style="margin-bottom:6px">对话（辅）</div>
+                <div class="feed" id="feed"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- H45 -->
+    <section class="view" id="viewWO" data-testid="view-h45">
+      <div class="view-body" id="woBody"></div>
+    </section>
+
+    <!-- D5 -->
+    <section class="view" id="viewApply">
+      <div class="view-body" id="applyBody"></div>
+    </section>
+
+    <!-- D6 -->
+    <section class="view" id="viewReply">
+      <div class="view-body" id="replyBody"></div>
+    </section>
+
+    <!-- Thin -->
+    <section class="view" id="viewThin">
+      <div class="view-body" id="thinBody"></div>
+    </section>
+
+    <!-- B2 block -->
+    <section class="view" id="viewBlock">
+      <div class="view-body" id="blockBody"></div>
+    </section>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer" data-testid="doc-drawer">
+    <div class="drawer-head">
+      <strong>案卷抽屉</strong>
+      <button type="button" id="drawerClose">关闭</button>
+    </div>
+    <div class="drawer-tabs">
+      <button type="button" data-dtab="materials" class="on">材料</button>
+      <button type="button" data-dtab="checklist">检查表</button>
+      <button type="button" data-dtab="orders">工单</button>
+      <button type="button" data-dtab="traces">判断痕迹</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="./demo-data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
