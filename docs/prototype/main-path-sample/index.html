@@ -13,10 +13,14 @@
         <span class="brand-logo">NT</span>
         <span class="brand-text">
           <strong>Novada Team</strong>
-          <span>团队协作 · 关键处你来确认</span>
+          <span>专家向你汇报 · 关键处你来确认</span>
         </span>
       </button>
       <div class="shell-spacer"></div>
+      <div class="user-chip" title="领导＝当前用户">
+        <span class="uav">你</span>
+        <span>Leslie<span class="urole"> · 领导</span></span>
+      </div>
       <button type="button" class="case-chip empty" id="caseChip"><span>暂无打开案卷</span></button>
       <button type="button" id="btnOpenDoc">案卷抽屉</button>
     </header>
@@ -25,27 +29,42 @@
     <section class="view on" id="viewLobby" data-testid="view-lobby">
       <div class="view-body">
         <div class="lobby-hero">
-          <h1>Novada Team 工作台</h1>
-          <p>从前台上传开始，或直达团队模块。关键节点需你确认。</p>
+          <div>
+            <h1>进 Novada Team 办事</h1>
+            <p>像带一支知产团队：前台弄清去向，八部各办一事；专家向你汇报，关键节点由你拍板。</p>
+          </div>
+          <div class="hero-meta">
+            <div class="goal-pills" id="goalPills">
+              <button type="button" class="goal-pill" data-goal="d4">写交底</button>
+              <button type="button" class="goal-pill" data-goal="d5">递申请</button>
+              <button type="button" class="goal-pill" data-goal="d6">答审查意见</button>
+            </div>
+          </div>
         </div>
         <div class="lobby-grid">
           <div>
             <div class="card front-desk" data-testid="front-desk-card">
-              <div class="eyebrow">Start</div>
-              <h2>前台 · 开始</h2>
-              <p class="muted">上传材料 → 自动分析 → 建议去向 → 你确认后再进模块。</p>
-              <div class="row-actions">
+              <div class="eyebrow">Start · 接待</div>
+              <h2>前台 · 从这儿开始</h2>
+              <p class="muted">上传材料 → 自动分析 → 建议去向 → <strong>你确认后再进部门</strong>。接待只引导，不进部派活。</p>
+              <div class="row-actions" style="margin-top:0">
                 <button type="button" class="primary" id="btnFront" data-testid="open-front">上传 / 开始</button>
+                <button type="button" class="ghost" id="btnLobbyD4">直达交底部</button>
               </div>
             </div>
             <div class="card" style="margin-top:14px">
-              <h2>待确认</h2>
+              <div class="card-head">
+                <h2>要你拍的 / 进行中</h2>
+                <span class="tiny muted">不是运营看板</span>
+              </div>
               <ul class="todo-list" id="todoList"></ul>
             </div>
           </div>
           <div class="card">
-            <h2>团队模块</h2>
-            <p class="tiny muted" style="margin-top:-4px;margin-bottom:10px">八部门能力图 · 可直达 · ④交底为主演示 · ①②③⑦⑧薄占位</p>
+            <div class="card-head">
+              <h2>八个部门</h2>
+              <span class="tiny muted">①～⑧ 均可进 · ④⑤⑥ 厚做 · 其余薄占位</span>
+            </div>
             <div class="dept-wall" id="deptWall" data-testid="dept-wall"></div>
           </div>
         </div>
@@ -59,7 +78,7 @@
     <!-- 前台 F1–F4 -->
     <section class="view" id="viewFront" data-testid="view-front">
       <div class="view-body">
-        <div class="row-actions" style="margin-bottom:8px">
+        <div class="row-actions" style="margin-bottom:8px;margin-top:0">
           <button type="button" class="ghost" id="btnFrontLobby">← 回工作台</button>
         </div>
         <div class="fd-steps" id="fdSteps"></div>
@@ -81,22 +100,28 @@
           <div class="avatar">负</div>
           <div>
             <strong>交底部负责人</strong>
-            <div class="tiny muted">主持分活与汇报 · 不是前台。预设编制已就位。</div>
+            <div class="tiny muted">主持分活与汇报 · 不是前台。专家向你（领导）请示关键结论。</div>
           </div>
         </div>
         <div class="roster" id="roster" data-testid="roster"></div>
         <div class="stage-bar" id="stageBar"></div>
         <div class="workbench">
           <div class="main-pane">
-            <div class="pane-head"><strong>主产出 · 交底书</strong></div>
+            <div class="pane-head">
+              <strong>主产出 · 交底书</strong>
+              <span class="pane-tag">文书面板 · 非聊天气泡</span>
+            </div>
             <div class="pane-body" id="docMain"></div>
           </div>
           <div class="side-pane">
-            <div class="pane-head"><strong>侧栏 · 硬请示优先</strong></div>
+            <div class="pane-head">
+              <strong>侧栏 · 硬请示优先</strong>
+              <span class="pane-tag">对话驾驭</span>
+            </div>
             <div class="pane-body">
               <div id="sideAsks"></div>
               <div>
-                <div class="tiny muted" style="margin-bottom:6px">对话（辅）</div>
+                <div class="tiny muted" style="margin-bottom:6px">团队动态（辅）</div>
                 <div class="feed" id="feed"></div>
               </div>
             </div>
@@ -112,12 +137,12 @@
 
     <!-- D5 -->
     <section class="view" id="viewApply">
-      <div class="view-body" id="applyBody"></div>
+      <div class="apply-shell" id="applyBody"></div>
     </section>
 
     <!-- D6 -->
     <section class="view" id="viewReply">
-      <div class="view-body" id="replyBody"></div>
+      <div class="reply-shell" id="replyBody"></div>
     </section>
 
     <!-- Thin -->
