@@ -549,8 +549,8 @@ button.ask-confirm:hover:not(:disabled) {
 .tl-step.wait .tl-meta strong { color: var(--ask); }
 
 .workbench {
-  display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, .88fr);
-  gap: 14px; padding: 12px 20px 20px; flex: 1; min-height: 0;
+  display: grid; grid-template-columns: minmax(0, 1.72fr) minmax(280px, .78fr);
+  gap: 12px; padding: 10px 16px 16px; flex: 1; min-height: 0;
 }
 @media (max-width: 980px) { .workbench { grid-template-columns: 1fr; } }
 
@@ -1309,3 +1309,111 @@ button.ask-confirm:hover:not(:disabled) {
 /* denser hard-ask */
 .hard-ask { padding: 12px; }
 .hard-ask h3 { font-size: 14px; }
+
+
+/* —— 本轮：密度态 / @材料 / 带教 / 版本 / 依据层（Agent 形态） —— */
+.density-toggle {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px; border-radius: 999px; background: var(--rail);
+  border: 1px solid var(--line); margin-left: 8px;
+}
+.dens-label { font-size: 10px; color: var(--muted); padding: 0 6px; }
+.dens-btn {
+  border: 0; box-shadow: none; background: transparent;
+  padding: 4px 10px; font-size: 11.5px; border-radius: 999px; color: var(--muted);
+}
+.dens-btn.on {
+  background: var(--surface); color: var(--brand); font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+.mentor-tip { padding: 0 20px; }
+.mentor-tip:empty, .mentor-tip[hidden] { display: none; }
+.mentor-body {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 8px 0 0; padding: 8px 12px; border-radius: 10px;
+  background: var(--brand-soft); border: 1px solid var(--brand-soft-2);
+  font-size: 12.5px; color: var(--ink-2);
+}
+.mentor-body .ghost { margin-left: auto; padding: 4px 10px; font-size: 12px; }
+
+.who-block.collapsed {
+  max-height: 0; opacity: 0; overflow: hidden; padding-top: 0; padding-bottom: 0;
+  margin: 0; border: 0; pointer-events: none;
+}
+.who-block { transition: max-height .2s ease, opacity .15s ease; }
+
+.doc-ver {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 10px;
+}
+.ver-tab {
+  padding: 4px 10px; font-size: 11.5px; border-radius: 999px;
+  box-shadow: none; background: var(--rail);
+}
+.ver-tab.on {
+  background: var(--brand-soft); color: var(--brand); border-color: var(--brand-soft-2); font-weight: 600;
+}
+.ver-note { margin-left: 4px; }
+.light-conclusion {
+  margin-bottom: 12px; padding: 12px 14px; border-radius: 12px;
+  background: var(--ask-bg); border: 1px solid var(--ask-border);
+  box-shadow: 0 0 0 3px var(--ask-glow);
+}
+.light-conclusion .lc-k {
+  font-size: 10.5px; letter-spacing: .06em; color: var(--ask); font-weight: 700;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.light-conclusion strong { display: block; font-size: 15px; margin-bottom: 4px; }
+.doc-body.readonly { opacity: .96; }
+.doc-body.readonly .sec p { user-select: text; }
+
+.evidence-layer {
+  border: 1px solid var(--line); border-radius: 10px; background: var(--rail);
+  padding: 8px 10px; display: grid; gap: 4px;
+}
+.ev-h { font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+.ev-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  width: 100%; text-align: left; padding: 6px 8px; font-size: 12px;
+  box-shadow: none; background: var(--surface);
+}
+.ev-row.warn { border-color: var(--warn-border); }
+.ev-row.ask { border-color: var(--ask-border); }
+
+.feed-wrap.collapsed .feed { display: none; }
+.feed-wrap.collapsed .tiny.muted { display: none; }
+.feed-toggle {
+  border: 0; box-shadow: none; background: transparent; padding: 0;
+  color: var(--brand-3); text-decoration: underline; text-underline-offset: 2px;
+  margin-bottom: 4px;
+}
+
+.at-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 6px; position: relative; }
+.at-toggle {
+  padding: 3px 8px; font-size: 11px; border-radius: 999px;
+  background: var(--brand-soft); border-color: var(--brand-soft-2); color: var(--brand);
+  box-shadow: none;
+}
+.at-picker {
+  display: flex; flex-wrap: wrap; gap: 4px; width: 100%;
+  padding: 6px; border-radius: 8px; background: var(--rail); border: 1px solid var(--line);
+}
+.at-picker[hidden] { display: none !important; }
+.at-chip {
+  padding: 3px 8px; font-size: 11px; border-radius: 6px; box-shadow: none;
+  max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* 轻量态：硬请示更大、侧栏优先 */
+.density-light .side-pane .hard-ask {
+  box-shadow: 0 0 0 1px var(--ask-border), 0 4px 16px var(--ask-glow);
+}
+.density-light .side-pane { min-height: 420px; }
+.density-light .main-pane .pane-tag::after { content: " · 轻量"; }
+
+/* 大厅少仪表盘感 */
+.dept-home-card .card-head h2 { font-size: 14px; font-weight: 650; }
+.lobby-body .card { box-shadow: var(--shadow-sm); }
+.entrust-card {
+  border-color: var(--brand-soft-2);
+  background: linear-gradient(180deg, #fff, var(--surface-2));
+}

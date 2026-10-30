@@ -36,7 +36,11 @@
     activeCaseId: "pc1",
     shellPanel: null, /* search | notify | schedule | cases | null */
     applyDocTab: "claims", /* claims | spec | diff */
-    replyDocTab: "reply" /* reply | oa | diff */
+    replyDocTab: "reply", /* reply | oa | diff */
+    densityMode: "author", /* light=老板轻量 | author=主笔 */
+    mentorDismissed: false,
+    docVersion: "current", /* current | prev */
+    atOpen: false
   };
 
   function deptById(id) { return DEMO.depts.find((d) => d.id === id); }
@@ -105,13 +109,16 @@
 
     if (id === "d4") {
       if (!opts.direct && !state.destinationConfirmed && !state.enteredD4) {
-        toast("请先经前台确认去向，或从工作台「直达交底部」进入（B1）");
+        toast("请先经前台确认去向，或从大厅「直达交底部」进入（B1）");
         return;
       }
       state.enteredD4 = true;
       state.caseOpen = true;
       state.caseName = state.caseName || "电机冷却结构 · 交底案";
       if (!opts.keepCase) state.activeCaseId = "pc1";
+      /* A 类待办进部 → 默认老板轻量；直达/前台领进 → 主笔 */
+      if (opts.light) state.densityMode = "light";
+      else if (opts.fromFront || opts.direct) state.densityMode = state.densityMode || "author";
       if (!state.disclosureReady) {
         state.disclosureReady = true;
         DEMO.disclosure.qc.forEach((q) => {
@@ -136,7 +143,7 @@
       state.analyzing = false;
       state.fdStep = "f2";
       state.caseOpen = true;
-      state.caseName = "电机冷却结构 · 待分诊";
+      state.caseName = "电机冷却结构 · 待接待";
       addTrace("前台分析", "样例材料已分析，建议交底部");
       render();
     }, 900);
@@ -159,7 +166,7 @@
       state.analyzing = false;
       state.fdStep = "f2";
       state.caseOpen = true;
-      state.caseName = state.caseName || "用户上传材料 · 待分诊";
+      state.caseName = state.caseName || "用户上传材料 · 待接待";
       addTrace("前台分析", "用户上传材料已分析");
       render();
     }, 900);
@@ -303,7 +310,7 @@
   function goLobbyTodo(go) {
     if (go === "front") { openFront(); return; }
     if (go === "d4-fact" || go === "d4-hand") {
-      openDept("d4", { direct: true });
+      openDept("d4", { direct: true, light: true });
       if (go === "d4-hand") {
         requestAnimationFrame(() => {
           const el = document.querySelector('[data-testid="ask-hand5"]');
@@ -347,7 +354,7 @@
     closeShellPanel();
     if (!navigate) { render(); return; }
     if (c.go === "d4-fact" || c.go === "d4-hand") {
-      openDept("d4", { direct: true, keepCase: true });
+      openDept("d4", { direct: true, keepCase: true, light: true });
       requestAnimationFrame(() => {
         const el = document.querySelector(c.go === "d4-hand" ? '[data-testid="ask-hand5"]' : '[data-testid="ask-fact"]');
         if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -740,6 +747,35 @@
     }
   }
 
+
+  function setDensityMode(mode) {
+    state.densityMode = mode === "light" ? "light" : "author";
+    if (state.densityMode === "author") state.sideMode = state.sideMode || "team";
+    toast(state.densityMode === "light" ? "已切老板轻量 · 硬请示钉顶" : "已切主笔 · 全文可改");
+    render();
+  }
+
+  function dismissMentor() {
+    state.mentorDismissed = true;
+    toast("部门说明已收起 · 设置里可重开（演示）");
+    render();
+  }
+
+  function insertAtMaterial(name) {
+    const input = $("#composerInput");
+    if (!input) return;
+    const tag = "@" + name + " ";
+    const start = input.selectionStart || input.value.length;
+    const end = input.selectionEnd || start;
+    input.value = input.value.slice(0, start) + tag + input.value.slice(end);
+    state.atOpen = false;
+    input.focus();
+    toast("已 @ " + name);
+    /* 不整页 render，只关 @ 浮层 */
+    const pop = $("#atPicker");
+    if (pop) pop.hidden = true;
+  }
+
   function renderDept() {
     const qc = DEMO.disclosure.qc;
     state.allGreen = qc.every((q) => q.status === "green");
@@ -755,6 +791,41 @@
     }
 
     const lead = DEMO.disclosure.roster.find((e) => e.kind === "lead") || DEMO.disclosure.roster[0];
+    const isLight = state.densityMode === "light";
+    const shell = document.querySelector("#viewDept .dept-shell");
+    if (shell) shell.classList.toggle("density-light", isLight);
+    if (shell) shell.classList.toggle("density-author", !isLight);
+
+    /* 密度态切换 · 大纲 §4.4.3 */
+    const densEl = $("#densityToggle");
+    if (densEl) {
+      densEl.innerHTML = `
+        <span class="dens-label">密度</span>
+        <button type="button" class="dens-btn ${isLight ? "on" : ""}" data-dens="light" data-testid="density-light">老板轻量</button>
+        <button type="button" class="dens-btn ${!isLight ? "on" : ""}" data-dens="author" data-testid="density-author">主笔</button>`;
+      densEl.querySelectorAll("[data-dens]").forEach((b) => {
+        b.addEventListener("click", () => setDensityMode(b.dataset.dens));
+      });
+    }
+
+    /* 带教淡出 · 大纲 §7 */
+    const mentor = $("#mentorTip");
+    if (mentor) {
+      if (!state.mentorDismissed) {
+        mentor.hidden = false;
+        mentor.innerHTML = `
+          <div class="mentor-body" data-testid="mentor-tip">
+            <strong>本部门办完的标志</strong>是交底质检<strong>全绿</strong>；要你拍的是<strong>事实确认</strong>与<strong>可否交⑤</strong>（分钮，不糊）。
+            <button type="button" class="ghost" id="btnMentorOk" data-testid="mentor-dismiss">知道了</button>
+          </div>`;
+        const mo = $("#btnMentorOk");
+        if (mo) mo.addEventListener("click", dismissMentor);
+      } else {
+        mentor.hidden = true;
+        mentor.innerHTML = "";
+      }
+    }
+
     const leadBar = $("#leadBar");
     if (leadBar && lead) {
       leadBar.innerHTML = `${avatarHtml(lead.photo, lead.av, "avatar")}
@@ -762,7 +833,11 @@
           <strong>${escapeHtml(lead.name)}</strong>
           <div class="tiny muted">主持分活与汇报 · 不是前台。专家向你（领导）请示关键结论。</div>
         </div>`;
+      leadBar.hidden = false;
     }
+
+    const whoBlock = document.querySelector("#viewDept .who-block");
+    if (whoBlock) whoBlock.classList.toggle("collapsed", isLight);
 
     $("#roster").innerHTML = DEMO.disclosure.roster.map((e) => {
       const active = state.activeExpert === e.id ? "active" : "";
@@ -808,11 +883,31 @@
     </div>`;
 
     const flashId = state.highlightAnchor;
+    const ver = state.docVersion || "current";
+    const verBar = `<div class="doc-ver" data-testid="doc-version">
+        <button type="button" class="ver-tab ${ver === "current" ? "on" : ""}" data-ver="current" data-testid="ver-current">当前稿</button>
+        <button type="button" class="ver-tab ${ver === "prev" ? "on" : ""}" data-ver="prev" data-testid="ver-prev">上一确认稿</button>
+        ${isLight ? `<span class="tiny muted ver-note">轻量 · 只读批注为主</span>` : `<span class="tiny muted ver-note">主笔 · 可改全文</span>`}
+      </div>`;
+    const lightBanner = isLight && !state.factConfirmed
+      ? `<div class="light-conclusion" data-testid="light-conclusion">
+          <div class="lc-k">要你拍什么</div>
+          <strong>确认交底事实是否与材料一致</strong>
+          <p class="tiny muted">一两句依据摘要：螺旋水道 + 双密封 · 点侧栏摘录可定位主栏。</p>
+        </div>` : "";
+    const sections = ver === "prev"
+      ? DEMO.disclosure.sections.map((s, i) => ({
+          ...s,
+          t: i === 3 ? "（上一确认稿）壳体设螺旋水道；端盖鳍片；单密封圈——尚未改为双密封。" : s.t
+        }))
+      : DEMO.disclosure.sections;
     $("#docMain").innerHTML = `
-      <div class="doc-body" data-testid="d4-main" id="doc-top">
-        <h3>${escapeHtml(DEMO.disclosure.title)}</h3>
+      ${verBar}
+      ${lightBanner}
+      <div class="doc-body ${isLight ? "readonly" : ""}" data-testid="d4-main" id="doc-top">
+        <h3>${escapeHtml(DEMO.disclosure.title)}${ver === "prev" ? " · 上一确认稿" : ""}</h3>
         <p class="tiny muted">主产出全文区 · 非聊天碎片 · 点编制「看产出」或硬请示依据可定位</p>
-        ${DEMO.disclosure.sections.map((s) => {
+        ${sections.map((s) => {
           const flash = flashId === s.id ? " anchor-flash" : "";
           return `<div class="sec${flash}" id="${escapeHtml(s.id)}"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`;
         }).join("")}
@@ -830,6 +925,10 @@
       </div>`;
     const bg = $("#btnAllGreen");
     if (bg) bg.addEventListener("click", makeAllGreen);
+    $$("[data-ver]").forEach((b) => b.addEventListener("click", () => {
+      state.docVersion = b.dataset.ver;
+      render();
+    }));
 
     /* 侧栏聚焦条：1:1 / 看产出 */
     const ae = expertById(state.activeExpert) || lead;
@@ -917,6 +1016,22 @@
     const wo = $("#btnOpenWO"); if (wo) wo.addEventListener("click", openWorkOrder);
     bindExcerptClicks($("#sideAsks"));
 
+    /* 侧栏层2 · 依据/结构旁路（大纲 §4.4.4） */
+    const ev = $("#sideEvidence");
+    if (ev) {
+      ev.innerHTML = `<div class="evidence-layer" data-testid="side-evidence">
+        <div class="ev-h">依据 / 质检锚点</div>
+        ${qc.map((q) => {
+          const st = q.status === "green" ? "ok" : q.status === "yellow" ? "warn" : "ask";
+          const anchor = q.id === "q4" ? "sec-effect" : "qc-card";
+          return `<button type="button" class="ev-row ${st}" data-excerpt-anchor="${anchor}" data-testid="ev-row">
+            <span>${escapeHtml(q.name)}</span><span class="tag ${st}">${q.status === "green" ? "绿" : q.status === "yellow" ? "黄" : "红"}</span>
+          </button>`;
+        }).join("")}
+      </div>`;
+      bindExcerptClicks(ev);
+    }
+
     /* feed + 头像 */
     const baseFeed = DEMO.disclosure.feed.map((b) => ({ ...b }));
     let feedItems = [...state.feedExtra, ...baseFeed];
@@ -937,12 +1052,44 @@
       </div>`;
     }).join("");
 
-    /* composer 指向 */
+    /* light：对话默认收起 */
+    const feedWrap = $("#feedWrap");
+    if (feedWrap) {
+      feedWrap.classList.toggle("collapsed", isLight && state.sideMode !== "1to1");
+      const fh = $("#feedToggle");
+      if (fh) {
+        fh.textContent = feedWrap.classList.contains("collapsed") ? "展开团队动态" : "收起团队动态";
+        fh.onclick = () => {
+          feedWrap.classList.toggle("collapsed");
+          fh.textContent = feedWrap.classList.contains("collapsed") ? "展开团队动态" : "收起团队动态";
+        };
+      }
+    }
+
+    /* composer 指向 + @材料 */
     const cTo = $("#composerTo");
     if (cTo) {
       cTo.textContent = state.sideMode === "1to1" && ae
         ? `对：${ae.name} · 1:1`
         : `对：${lead ? lead.name : "交底部负责人"} · 团队`;
+    }
+    const atRow = $("#atChips");
+    if (atRow) {
+      const mats = (state.files.length ? state.files : DEMO.sampleFiles).slice(0, 4);
+      atRow.innerHTML = `
+        <button type="button" class="at-toggle" id="btnAtToggle" data-testid="at-toggle">@材料</button>
+        <div class="at-picker" id="atPicker" data-testid="at-picker" ${state.atOpen ? "" : "hidden"}>
+          ${mats.map((f) => `<button type="button" class="at-chip" data-at="${escapeHtml(f.name)}" data-testid="at-chip">${escapeHtml(f.name)}</button>`).join("")}
+        </div>`;
+      const tog = $("#btnAtToggle");
+      if (tog) tog.addEventListener("click", () => {
+        state.atOpen = !state.atOpen;
+        const pop = $("#atPicker");
+        if (pop) pop.hidden = !state.atOpen;
+      });
+      atRow.querySelectorAll("[data-at]").forEach((b) => {
+        b.addEventListener("click", () => insertAtMaterial(b.dataset.at));
+      });
     }
     if (flashId) {
       requestAnimationFrame(() => scrollToAnchor(flashId));
@@ -1447,7 +1594,7 @@
       state, loadSample, confirmDestination, enterConfirmedDept, makeAllGreen,
       confirmFact, confirmCanHand5, openWorkOrder, openDept, openDrawer, goLobby, openFront, render, closeDrawer,
       focusExpert, revealExpertOutput, sendComposerDemo, goLobbyTodo, enterFromGate,
-      switchParallelCase, toggleShellPanel, closeShellPanel
+      switchParallelCase, toggleShellPanel, closeShellPanel, setDensityMode, dismissMentor, insertAtMaterial
     };
   }
 

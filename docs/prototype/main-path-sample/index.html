@@ -97,9 +97,9 @@
             <span class="avatar sm"><img src="./avatars/01.jpg" alt="" width="32" height="32" /></span>
             <div>
               <div class="eyebrow">统一委托 · 前台</div>
-              <strong>交给前台分诊</strong>
+              <strong>交给前台接待</strong>
             </div>
-            <span class="tiny muted">你确认去向后才进部 · 接待不派活</span>
+            <span class="tiny muted">弄清去向后才进部 · 接待不派活</span>
           </div>
           <div class="entrust-box">
             <textarea id="entrustInput" rows="2" placeholder="跨部门目标，或直接说：把这份技术说明写成交底…" data-testid="entrust-input"></textarea>
@@ -134,8 +134,8 @@
 
         <div class="card dept-home-card" data-testid="dept-home-card">
           <div class="card-head">
-            <h2>八个部门</h2>
-            <span class="tiny muted">④⑤⑥ 厚 · 其余薄占位</span>
+            <h2>进哪个部门办事</h2>
+            <span class="tiny muted">④⑤⑥ 主链厚 · 其余薄占位</span>
           </div>
           <div class="dept-wall dense" id="deptWall" data-testid="dept-wall"></div>
         </div>
@@ -150,7 +150,7 @@
     <section class="view" id="viewFront" data-testid="view-front">
       <div class="view-body">
         <div class="row-actions" style="margin-bottom:8px;margin-top:0">
-          <button type="button" class="ghost" id="btnFrontLobby">← 回工作台</button>
+          <button type="button" class="ghost" id="btnFrontLobby">← 回大厅</button>
         </div>
         <div class="fd-steps" id="fdSteps"></div>
         <div id="fdPane"></div>
@@ -161,12 +161,14 @@
     <section class="view" id="viewDept" data-testid="view-d4">
       <div class="dept-shell">
         <div class="dept-top">
-          <button type="button" class="ghost" id="btnDeptLobby">← 工作台</button>
+          <button type="button" class="ghost" id="btnDeptLobby">← 回大厅</button>
           <h1>④ 交底部</h1>
           <span class="line-status" id="deptLineStatus">未过线 / 质检进行中</span>
+          <div class="density-toggle" id="densityToggle" data-testid="density-toggle"></div>
           <div class="shell-spacer"></div>
           <span class="tiny muted dept-doc-hint">案卷 → 顶栏「案卷」</span>
         </div>
+        <div class="mentor-tip" id="mentorTip" data-testid="mentor-wrap"></div>
         <div class="task-strip" id="d4TaskStrip" data-testid="task-strip"></div>
         <div class="lead-bar" data-testid="lead-bar" id="leadBar">
           <span class="avatar"><img src="./avatars/04.jpg" alt="" width="40" height="40" /></span>
@@ -199,15 +201,18 @@
             <div class="pane-body" id="sideBody">
               <div id="sideFocus"></div>
               <div id="sideAsks"></div>
-              <div>
-                <div class="tiny muted" style="margin-bottom:6px">团队动态（辅）</div>
+              <div id="sideEvidence"></div>
+              <div id="feedWrap" class="feed-wrap">
+                <button type="button" class="feed-toggle tiny" id="feedToggle" data-testid="feed-toggle">收起团队动态</button>
+                <div class="tiny muted" style="margin-bottom:6px">团队动态（辅 · 层3）</div>
                 <div class="feed" id="feed" data-testid="d4-feed"></div>
               </div>
             </div>
             <div class="composer" id="composer" data-testid="d4-composer">
               <div class="composer-to" id="composerTo">对：交底部负责人 · 团队</div>
+              <div class="at-row" id="atChips" data-testid="at-chips"></div>
               <div class="composer-row">
-                <textarea id="composerInput" rows="1" placeholder="打一句驾驭（演示）· 可 @材料" data-testid="composer-input"></textarea>
+                <textarea id="composerInput" rows="1" placeholder="打一句驾驭 · @材料 指案卷" data-testid="composer-input"></textarea>
                 <button type="button" class="primary" id="btnComposerSend" data-testid="composer-send">发送</button>
               </div>
             </div>

@@ -64,6 +64,8 @@ try {
   check("L1 shows 前台/委托", front === 1);
   check("L1 shows 8 dept doors", doors === 8, `got ${doors}`);
   check("L1 委托 composer", await page.locator('[data-testid="entrust-input"]').count() === 1);
+  const entrustTxt = await page.locator('[data-testid="front-desk-card"]').innerText();
+  check("L1 用语不用分诊", !entrustTxt.includes("分诊") && entrustTxt.includes("接待"), entrustTxt.slice(0, 40));
   check("L1 问候计数", await page.locator('[data-testid="lobby-greet"]').count() === 1);
   check("L1 摘要条（不展开列表）", await page.locator('[data-testid="lobby-attn-strip"]').count() === 1);
   check("L1 无首页待办墙", await page.locator('[data-testid="todo-item"]').count() === 0);
@@ -146,6 +148,27 @@ try {
   check("D4 侧栏假 composer", await page.locator('[data-testid="d4-composer"]').count() === 1);
   check("D4 硬请示含依据摘录", await page.locator('[data-testid="ask-excerpt"]').count() >= 1);
   check("D4 feed 有工具轨迹芯片", await page.locator('[data-testid="tool-chips"]').count() >= 1);
+  check("D4 密度态切换", await page.locator('[data-testid="density-toggle"]').count() === 1
+    && await page.locator('[data-testid="density-author"]').count() === 1);
+  check("D4 带教提示可关", await page.locator('[data-testid="mentor-tip"]').count() === 1);
+  await page.click('[data-testid="mentor-dismiss"]');
+  await sleep(150);
+  check("带教已淡出", await page.locator('[data-testid="mentor-tip"]').count() === 0);
+  check("D4 侧栏依据层", await page.locator('[data-testid="side-evidence"]').count() === 1);
+  check("D4 @材料入口", await page.locator('[data-testid="at-toggle"]').count() === 1);
+  await page.click('[data-testid="at-toggle"]');
+  await sleep(120);
+  check("@材料浮层", await page.locator('[data-testid="at-chip"]').count() >= 1);
+  await page.click('[data-testid="at-chip"]');
+  await sleep(120);
+  const atVal = await page.locator('[data-testid="composer-input"]').inputValue();
+  check("@材料写入 composer", atVal.includes("@"), atVal.slice(0, 40));
+  check("D4 版本切换", await page.locator('[data-testid="doc-version"]').count() === 1);
+  await page.click('[data-testid="ver-prev"]');
+  await sleep(120);
+  check("上一确认稿可切", (await page.locator('[data-testid="d4-main"]').innerText()).includes("上一确认稿"));
+  await page.click('[data-testid="ver-current"]');
+  await sleep(80);
 
   // 点编制 → 1:1 聚焦 + 看产出
   await page.click('[data-testid="expert-writer"]');
@@ -315,6 +338,23 @@ try {
     }
   }
   check("顶栏待办可进⑥", hitReply);
+
+  // A 类待办进④ → 默认老板轻量
+  await page.evaluate(() => {
+    window.__SAMPLE__.state.mentorDismissed = true;
+    window.__SAMPLE__.state.factConfirmed = false;
+    window.__SAMPLE__.state.enteredD4 = true;
+    window.__SAMPLE__.goLobbyTodo("d4-fact");
+  });
+  await sleep(300);
+  const lightOn = await page.locator('.density-light').count();
+  const lightBtn = await page.locator('[data-testid="density-light"].on').count();
+  check("A待办进④默认轻量态", lightOn >= 1 || lightBtn === 1, `shell=${lightOn} btn=${lightBtn}`);
+  check("轻量有要你拍结论区或硬请示", await page.locator('[data-testid="ask-fact"]').count() >= 1
+    || await page.locator('[data-testid="light-conclusion"]').count() >= 1);
+  await page.click('[data-testid="density-author"]');
+  await sleep(150);
+  check("可切回主笔", await page.locator('[data-testid="density-author"].on').count() === 1);
 
   // 并行任务：顶栏「正在推进」切另一案 → 进部且任务条在
   await page.evaluate(() => window.__SAMPLE__.goLobby());
