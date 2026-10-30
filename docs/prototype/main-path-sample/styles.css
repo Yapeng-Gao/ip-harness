@@ -2216,13 +2216,19 @@ em.hit-em {
 }
 
 /* 轻量：藏编制与闲聊，硬请示+composer 保留 */
-.density-light .ai-id-zone .who-block,
-.apply-layout.density-light .ai-id-zone .who-block,
-.reply-layout.density-light .ai-id-zone .who-block,
-.density-light .feed-wrap,
-.apply-layout.density-light .feed-wrap,
-.reply-layout.density-light .feed-wrap {
+/* 轻量：编制席可折（头仍在），对话流含汇报必须可见 */
+.density-light .ai-id-zone .who-block.collapsed .roster,
+.apply-layout.density-light .ai-id-zone .who-block.collapsed .roster,
+.reply-layout.density-light .ai-id-zone .who-block.collapsed .roster,
+.density-light .ai-id-zone .who-block.roster-folded .roster,
+.apply-layout.density-light .ai-id-zone .who-block.roster-folded .roster,
+.reply-layout.density-light .ai-id-zone .who-block.roster-folded .roster {
   display: none !important;
+}
+.density-light .feed-wrap.feed-primary,
+.apply-layout.density-light .feed-wrap.feed-primary,
+.reply-layout.density-light .feed-wrap.feed-primary {
+  display: flex !important;
 }
 .density-light .ai-ask-zone,
 .apply-layout.density-light .ai-ask-zone,
@@ -2244,3 +2250,217 @@ em.hit-em {
   font-size: 13.5px;
   line-height: 1.65;
 }
+
+
+/* ── Leslie 圈注四刀 + 对话流汇报 2026-10-30 ── */
+.dept-top {
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 8px 14px;
+  min-height: 44px;
+  overflow-x: auto;
+}
+.dept-top .shell-spacer { display: none; }
+.dept-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.dm-case {
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+.deadline-chip {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--warn-soft);
+  color: var(--warn);
+  border: 1px solid var(--warn-border);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pref-chip {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.task-strip.in-top {
+  flex: 1 1 240px;
+  min-width: 180px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  max-width: 42vw;
+}
+.mode-hint {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px dashed var(--line);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.density-toggle { display: none !important; }
+
+/* 编制单行横滑 · 负责人只在席内一次 */
+.ai-id-zone {
+  padding: 0 !important;
+}
+.ai-id-zone .who-block.single-rail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px !important;
+  border-bottom: 1px solid var(--line);
+}
+.ai-id-zone .who-block.single-rail .who-head {
+  margin: 0;
+  flex-shrink: 0;
+}
+.ai-id-zone .who-block.single-rail .roster {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 2px;
+}
+.ai-id-zone .lead-bar[hidden] { display: none !important; }
+
+/* 对话流为主 · 汇报气泡 */
+.feed-wrap.feed-primary {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  margin: 0;
+}
+.feed-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 4px;
+  flex-shrink: 0;
+}
+.feed-h strong {
+  font-size: 12px;
+  letter-spacing: .04em;
+  color: var(--ask, #b45309);
+}
+.feed-primary .feed {
+  max-height: none;
+  flex: 1;
+  overflow: auto;
+  padding: 4px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bubble.report {
+  background: linear-gradient(180deg, var(--ask-bg, #fff7ed), var(--surface));
+  border: 1.5px solid var(--ask-border, #f0c9a0);
+  box-shadow: 0 0 0 3px var(--ask-glow, oklch(0.85 0.06 70 / 0.35)), var(--shadow-sm);
+  border-radius: 14px;
+  padding: 12px;
+}
+.bubble.report.done {
+  border-color: var(--ok-border);
+  background: var(--ok-soft);
+  box-shadow: var(--shadow-sm);
+}
+.bubble.report .rpt-tag {
+  margin-left: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ask);
+  letter-spacing: .04em;
+}
+.bubble.report.done .rpt-tag { color: var(--ok); }
+.bubble.report .rpt-q {
+  font-size: 14px;
+  font-weight: 750;
+  margin: 0 0 8px;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.bubble.report .report-acts {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bubble.report .grade-badge {
+  margin-left: auto;
+  font-size: 10px;
+}
+.rpt-ev {
+  margin: 8px 0;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+}
+.rpt-ev summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--brand);
+  list-style: none;
+}
+.rpt-ev summary::-webkit-details-marker { display: none; }
+.rpt-ev[open] summary { margin-bottom: 6px; }
+.rpt-ev .evidence-chain {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+/* 旧侧栏硬请示区收掉（若仍残留） */
+.ai-ask-zone:not([hidden]) { /* keep for compat */ }
+#sideAsks[hidden],
+[data-testid="ai-ask-zone"][hidden],
+[data-testid="ai-ask-zone-d5"][hidden],
+[data-testid="ai-ask-zone-d6"][hidden] {
+  display: none !important;
+}
+
+/* 主产出内不再出现期限黄条 */
+.main-pane .deadline-banner,
+.pane-body > .deadline-banner,
+.pane-body > .pref-banner {
+  display: none !important;
+}
+
+/* 对话流吃满 AI 区剩余高度 · 旧 ask-zone 退场 */
+.side-pane > .pane-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.side-pane .feed-wrap.feed-primary {
+  flex: 1 1 auto;
+  min-height: 160px;
+}
+.ai-ask-zone { display: none !important; }

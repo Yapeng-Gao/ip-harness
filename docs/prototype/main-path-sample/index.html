@@ -150,13 +150,12 @@
           <button type="button" class="ghost" id="btnDeptLobby">← 回大厅</button>
           <h1>④ 交底部</h1>
           <span class="line-status" id="deptLineStatus">未过线 / 质检进行中</span>
-          <div class="density-toggle" id="densityToggle" data-testid="density-toggle"></div>
-          <div class="shell-spacer"></div>
+          <div id="d4DeptMeta" data-testid="d4-dept-meta"></div>
+          <div class="task-strip in-top" id="d4TaskStrip" data-testid="task-strip"></div>
           <span class="mode-hint tiny" id="d4ModeHint" data-testid="d4-mode-hint" hidden></span>
         </div>
         <div class="wb-chrome" id="d4Chrome" data-testid="wb-chrome">
           <div class="mentor-tip" id="mentorTip" data-testid="mentor-wrap"></div>
-          <div class="task-strip" id="d4TaskStrip" data-testid="task-strip"></div>
         </div>
         <div class="workbench">
           <div class="main-pane">
@@ -168,36 +167,27 @@
             <div class="pane-body" id="docMain"></div>
           </div>
           <div class="side-pane" data-testid="ai-pane">
-            <!-- 层1 硬请示钉顶 · 大纲 §4.4.4 -->
-            <div class="ai-ask-zone" data-testid="ai-ask-zone">
-              <div class="ai-zone-h"><strong>硬请示</strong><span class="pane-tag" id="sideHeadTag">要你拍</span></div>
-              <div id="sideAsks"></div>
-            </div>
-            <!-- 次要：身份 + 编制可折 -->
+            <!-- 编制单行横滑（负责人只在席内一次，不另起身份条） -->
             <div class="ai-id-zone" data-testid="ai-id-zone">
-              <div class="lead-bar ai-identity" data-testid="lead-bar" id="leadBar">
-                <span class="avatar"><img src="./avatars/04.jpg" alt="" width="40" height="40" /></span>
-                <div>
-                  <strong>交底部负责人</strong>
-                  <div class="tiny muted">主持分活与汇报 · 专家向你请示关键结论</div>
-                </div>
-              </div>
-              <div class="who-block ai-roster">
+              <div class="who-block ai-roster single-rail" data-testid="roster-wrap">
                 <div class="who-head">
-                  <strong>编制 · 谁在办</strong>
+                  <strong>编制</strong>
                   <button type="button" class="ghost tiny roster-fold-btn" id="btnRosterFold" data-testid="roster-fold">收起</button>
                 </div>
                 <div class="roster" id="roster" data-testid="roster"></div>
               </div>
+              <!-- 兼容旧 smoke：leadBar 隐藏占位，不占视觉两行 -->
+              <div class="lead-bar ai-identity" data-testid="lead-bar" id="leadBar" hidden></div>
             </div>
             <div class="pane-body" id="sideBody">
               <div id="sideFocus"></div>
               <div id="sideEvidence"></div>
-              <div id="feedWrap" class="feed-wrap">
-                <button type="button" class="feed-toggle tiny" id="feedToggle" data-testid="feed-toggle">收起团队动态</button>
-                <div class="tiny muted" style="margin-bottom:6px">团队动态（辅 · 层3）</div>
+              <!-- 对话流：汇报/硬请示/拿不准/重要节点都在此 -->
+              <div id="feedWrap" class="feed-wrap feed-primary" data-testid="feed-wrap">
+                <div class="feed-h"><strong>对话</strong><span class="pane-tag" id="sideHeadTag">汇报 · 要你拍</span></div>
                 <div class="feed" id="feed" data-testid="d4-feed"></div>
               </div>
+              <div id="sideAsks" hidden data-testid="ai-ask-zone"></div>
             </div>
             <div class="composer" id="composer" data-testid="d4-composer">
               <div class="composer-to" id="composerTo">对：交底部负责人 · 团队</div>

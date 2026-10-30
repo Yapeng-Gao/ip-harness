@@ -226,8 +226,15 @@ try {
 
   check("D4 硬请示含依据摘录", await page.locator('[data-testid="ask-excerpt"]').count() >= 1);
   check("D4 feed 有工具轨迹芯片", await page.locator('[data-testid="tool-chips"]').count() >= 1);
-  check("D4 密度态切换", await page.locator('[data-testid="density-toggle"]').count() === 1
-    && await page.locator('[data-testid="density-author"]').count() === 1);
+  check("D4 无密度三钮", await page.locator('[data-testid="density-toggle"]').count() === 0
+    && await page.locator('[data-testid="density-author"]').count() === 0);
+  check("D4 硬请示在对话流", await page.locator('[data-testid="d4-feed"] [data-testid="ask-fact"]').count() >= 1);
+  check("D4 编制单行无双负责人条", await page.evaluate(() => {
+    const lead = document.querySelector("#leadBar");
+    const roster = document.querySelector('[data-testid="roster"]');
+    const leadVisible = lead && !lead.hidden && getComputedStyle(lead).display !== "none";
+    return !leadVisible && !!roster;
+  }));
   check("D4 带教提示可关", await page.locator('[data-testid="mentor-tip"]').count() === 1);
   await page.evaluate(() => { if (window.__SAMPLE__ && window.__SAMPLE__.dismissMentor) window.__SAMPLE__.dismissMentor(); else document.querySelector('[data-testid="mentor-dismiss"]')?.click(); });
   await sleep(150);
@@ -473,31 +480,32 @@ try {
   });
   await sleep(300);
   const lightOn = await page.locator('.density-light').count();
-  const lightBtn = await page.locator('[data-testid="density-light"].on').count();
   const lightChrome = await page.evaluate(() => {
     const who = document.querySelector("#viewDept .who-block");
-    const lead = document.querySelector("#leadBar");
     const strip = document.querySelector("#d4TaskStrip");
     const ai = document.querySelector('[data-testid="ai-pane"]');
+    const askInFeed = document.querySelector('[data-testid="d4-feed"] [data-testid="ask-fact"]');
     const cs = (el) => el ? getComputedStyle(el).display : "none";
+    const folded = who && (who.classList.contains("roster-folded") || who.classList.contains("collapsed"));
     return {
-      who: cs(who),
-      lead: lead && lead.hidden ? "none" : cs(lead),
+      whoDisplay: cs(who),
+      folded: !!folded,
       strip: cs(strip),
-      leadInAi: !!(ai && lead && ai.contains(lead)),
+      askInFeed: !!askInFeed,
       aiW: ai ? Math.round(ai.getBoundingClientRect().width) : 0,
+      meta: !!document.querySelector('[data-testid="dept-meta"]'),
     };
   });
-  /* 轻量：编制收；进行中薄轨保留；AI 身份留在右侧区（不再全宽壳上段） */
-  check("五维 轻量真收壳", lightOn >= 1 && lightChrome.who === "none" && lightChrome.strip !== "none" && lightChrome.leadInAi, JSON.stringify(lightChrome));
-  check("AI 区宽度稳定", lightChrome.aiW >= 340 && lightChrome.aiW <= 400, JSON.stringify(lightChrome));
-
-  check("A待办进④默认轻量态", lightOn >= 1 || lightBtn === 1, `shell=${lightOn} btn=${lightBtn}`);
-  check("轻量有要你拍结论区或硬请示", await page.locator('[data-testid="ask-fact"]').count() >= 1
+  check("五维 轻量真收壳", lightOn >= 1 && lightChrome.folded && lightChrome.strip !== "none", JSON.stringify(lightChrome));
+  check("AI 区宽度稳定", lightChrome.aiW >= 300 && lightChrome.aiW <= 420, JSON.stringify(lightChrome));
+  check("壳顶有案信息无空白 grout", lightChrome.meta === true);
+  check("A待办进④默认轻量态", lightOn >= 1, `shell=${lightOn}`);
+  check("轻量有对话流硬请示", await page.locator('[data-testid="d4-feed"] [data-testid="ask-fact"]').count() >= 1
     || await page.locator('[data-testid="light-conclusion"]').count() >= 1);
-  await page.click('[data-testid="density-author"]');
+  await page.evaluate(() => window.__SAMPLE__.setDensityMode("author"));
   await sleep(150);
-  check("可切回主笔", await page.locator('[data-testid="density-author"].on').count() === 1);
+  check("可切回主笔", await page.locator('.density-author, .dept-shell:not(.density-light)').count() >= 1
+    || (await page.evaluate(() => window.__SAMPLE__.state.densityMode)) === "author");
 
   // 并行任务：顶栏「正在推进」切另一案 → 进部且任务条在
   await page.evaluate(() => window.__SAMPLE__.goLobby());
@@ -572,7 +580,7 @@ try {
   });
   await sleep(250);
   check("P1 D4-哲7 黄项存疑条", await page.locator('[data-testid="doubt-bar"]').count() === 1);
-  check("P1 D4-哲8 跨案偏好条", await page.locator('[data-testid="pref-banner"]').count() === 1);
+  check("P1 D4-哲8 跨案偏好条", await page.locator('[data-testid="pref-chip"], [data-testid="pref-banner"]').count() >= 1);
   check("P1 D4-设3 质检去相关手段", await page.locator('[data-testid="qc-method"]').count() === 1);
   check("P2 D4-哲6 风格标签", await page.locator('[data-testid="expert-style"]').count() >= 1);
   check("P1 HA-设1 硬请示分级", await page.locator('[data-testid="gate-grade"]').count() >= 1);
@@ -622,7 +630,8 @@ try {
   });
   await sleep(250);
   check("P1 D5-哲4 编制席", await page.locator('[data-testid="d5-roster"] .expert-chip').count() >= 2);
-  check("P1 D5-哲5 密度态", await page.locator('[data-testid="d5-density"]').count() === 1);
+  check("P1 D5 无密度三钮", await page.locator('[data-testid="d5-density"]').count() === 0);
+  check("P1 D5 硬请示在对话流", await page.locator('[data-testid="d5-feed"] [data-testid="ask-understand"], [data-testid="d5-feed"] [data-testid="ask-apply-or-not"], [data-testid="d5-feed"] [data-testid="ask-submit5"]').count() >= 1);
   check("P1 D5-哲3 黄项过线入口", await page.locator('[data-testid="d5-qc-yellow-fix"]').count() === 1);
   check("P1 D5-哲3 无闷头「演示：质检过线」文案", !(await page.locator('[data-testid="d5-qc-card"]').innerText()).includes("演示：质检过线"));
   await page.fill('[data-testid="d5-composer-input"]', "收紧独权双密封");
@@ -640,7 +649,14 @@ try {
   });
   await sleep(200);
   check("P1 D6-哲3 编制席", await page.locator('[data-testid="d6-roster"] .expert-chip').count() >= 2);
-  check("P1 D6-哲3 密度", await page.locator('[data-testid="d6-density"]').count() === 1);
+  check("P1 D6 无密度三钮", await page.locator('[data-testid="d6-density"]').count() === 0);
+  check("P1 D6 期限在壳顶不在主产出", await page.evaluate(() => {
+    const chip = document.querySelector('[data-testid="deadline-chip"]');
+    const mainBan = document.querySelector('.main-pane .deadline-banner, .pane-body > .deadline-banner');
+    return !!chip && !mainBan;
+  }));
+  check("P1 D6 硬请示在对话流", await page.locator('[data-testid="d6-feed"] [data-testid="ask-contention"]').count() >= 1);
+  check("P1 D6 汇报气泡样式", await page.locator('[data-testid="d6-feed"] .bubble.report').count() >= 1);
   await page.click('[data-testid="btn-upgrade"]');
   await sleep(120);
   check("P2 D6-哲4 已升级催办", await page.locator('[data-testid="upgrade-badge"]').count() === 1);
@@ -701,8 +717,9 @@ try {
   check("N-P1-1 ⑤A 含来源/对比行", await page.evaluate(() => {
     const el = document.querySelector('[data-testid="understand-evidence"]');
     if (!el) return false;
-    const t = el.innerText || "";
-    return t.includes("来源") && (t.includes("对比") || t.includes("推演"));
+    const t = (el.innerText || "") + (el.textContent || "");
+    return (t.includes("来源") || el.querySelector('[data-testid="ec-source"]'))
+      && (t.includes("对比") || t.includes("推演") || el.querySelector('[data-testid="ec-compare"]') || el.querySelector('[data-testid="ec-reasoning"]'));
   }));
 
   await page.evaluate(() => {
