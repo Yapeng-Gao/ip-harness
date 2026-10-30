@@ -155,23 +155,8 @@
           <span class="mode-hint tiny" id="d4ModeHint" data-testid="d4-mode-hint" hidden></span>
         </div>
         <div class="wb-chrome" id="d4Chrome" data-testid="wb-chrome">
-        <div class="mentor-tip" id="mentorTip" data-testid="mentor-wrap"></div>
-        <div class="task-strip" id="d4TaskStrip" data-testid="task-strip"></div>
-        <div class="lead-bar" data-testid="lead-bar" id="leadBar">
-          <span class="avatar"><img src="./avatars/04.jpg" alt="" width="40" height="40" /></span>
-          <div>
-            <strong>交底部负责人</strong>
-            <div class="tiny muted">主持分活与汇报 · 不是前台。专家向你（领导）请示关键结论。</div>
-          </div>
-        </div>
-        <div class="who-block">
-          <div class="who-head">
-            <strong>编制 · 谁在办</strong>
-            <span class="tiny muted">可点聚焦 · 质检与成稿分席</span>
-          </div>
-          <div class="roster" id="roster" data-testid="roster"></div>
-        </div>
-        <div class="stage-bar" id="stageBar" data-testid="d4-timeline"></div>
+          <div class="mentor-tip" id="mentorTip" data-testid="mentor-wrap"></div>
+          <div class="task-strip" id="d4TaskStrip" data-testid="task-strip"></div>
         </div>
         <div class="workbench">
           <div class="main-pane">
@@ -179,12 +164,27 @@
               <strong>主产出 · 交底书</strong>
               <span class="pane-tag">交底书</span>
             </div>
+            <div class="stage-bar" id="stageBar" data-testid="d4-timeline"></div>
             <div class="pane-body" id="docMain"></div>
           </div>
-          <div class="side-pane">
+          <div class="side-pane" data-testid="ai-pane">
+            <div class="lead-bar ai-identity" data-testid="lead-bar" id="leadBar">
+              <span class="avatar"><img src="./avatars/04.jpg" alt="" width="40" height="40" /></span>
+              <div>
+                <strong>交底部负责人</strong>
+                <div class="tiny muted">主持分活与汇报 · 专家向你请示关键结论</div>
+              </div>
+            </div>
+            <div class="who-block ai-roster">
+              <div class="who-head">
+                <strong>编制 · 谁在办</strong>
+                <span class="tiny muted">可点聚焦</span>
+              </div>
+              <div class="roster" id="roster" data-testid="roster"></div>
+            </div>
             <div class="pane-head" id="sideHead">
-              <strong id="sideHeadTitle">侧栏 · 硬请示优先</strong>
-              <span class="pane-tag" id="sideHeadTag">对话驾驭</span>
+              <strong id="sideHeadTitle">对话 · 硬请示</strong>
+              <span class="pane-tag" id="sideHeadTag">AI 区</span>
             </div>
             <div class="pane-body" id="sideBody">
               <div id="sideFocus"></div>

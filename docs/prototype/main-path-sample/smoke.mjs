@@ -182,6 +182,25 @@ try {
   await page.evaluate(() => window.__SAMPLE__.openDept("d4", { direct: true, keepCase: true }));
   await sleep(200);
   check("D4 侧栏假 composer", await page.locator('[data-testid="d4-composer"]').count() === 1);
+  const aiGeo = await page.evaluate(() => {
+    const ai = document.querySelector('[data-testid="ai-pane"]');
+    const lead = document.querySelector("#leadBar");
+    const roster = document.querySelector("#roster");
+    const composer = document.querySelector('[data-testid="d4-composer"]');
+    const chrome = document.querySelector("#d4Chrome");
+    return {
+      ai: !!ai,
+      leadInAi: !!(ai && lead && ai.contains(lead)),
+      rosterInAi: !!(ai && roster && ai.contains(roster)),
+      composerInAi: !!(ai && composer && ai.contains(composer)),
+      leadInChrome: !!(chrome && lead && chrome.contains(lead)),
+      aiW: ai ? Math.round(ai.getBoundingClientRect().width) : 0,
+      chromeH: chrome ? Math.round(chrome.getBoundingClientRect().height) : -1,
+    };
+  });
+  check("AI 区在右侧含身份+编制+composer", aiGeo.ai && aiGeo.leadInAi && aiGeo.rosterInAi && aiGeo.composerInAi && !aiGeo.leadInChrome, JSON.stringify(aiGeo));
+  check("AI 区宽度约 340–400", aiGeo.aiW >= 340 && aiGeo.aiW <= 400, JSON.stringify(aiGeo));
+  check("壳上段不再堆身份编制", aiGeo.chromeH > 0 && aiGeo.chromeH < 140, JSON.stringify(aiGeo));
   // 五维 P0：视口持有 + composer 首屏可见
   const fold = await page.evaluate(() => {
     const c = document.querySelector('[data-testid="d4-composer"]');
@@ -459,10 +478,19 @@ try {
     const who = document.querySelector("#viewDept .who-block");
     const lead = document.querySelector("#leadBar");
     const strip = document.querySelector("#d4TaskStrip");
+    const ai = document.querySelector('[data-testid="ai-pane"]');
     const cs = (el) => el ? getComputedStyle(el).display : "none";
-    return { who: cs(who), lead: lead && lead.hidden ? "none" : cs(lead), strip: cs(strip) };
+    return {
+      who: cs(who),
+      lead: lead && lead.hidden ? "none" : cs(lead),
+      strip: cs(strip),
+      leadInAi: !!(ai && lead && ai.contains(lead)),
+      aiW: ai ? Math.round(ai.getBoundingClientRect().width) : 0,
+    };
   });
-  check("五维 轻量真收壳", lightOn >= 1 && lightChrome.who === "none" && lightChrome.lead === "none", JSON.stringify(lightChrome));
+  /* 轻量：编制收；进行中薄轨保留；AI 身份留在右侧区（不再全宽壳上段） */
+  check("五维 轻量真收壳", lightOn >= 1 && lightChrome.who === "none" && lightChrome.strip !== "none" && lightChrome.leadInAi, JSON.stringify(lightChrome));
+  check("AI 区宽度稳定", lightChrome.aiW >= 340 && lightChrome.aiW <= 400, JSON.stringify(lightChrome));
 
   check("A待办进④默认轻量态", lightOn >= 1 || lightBtn === 1, `shell=${lightOn} btn=${lightBtn}`);
   check("轻量有要你拍结论区或硬请示", await page.locator('[data-testid="ask-fact"]').count() >= 1

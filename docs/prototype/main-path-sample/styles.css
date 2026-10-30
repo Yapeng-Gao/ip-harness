@@ -549,8 +549,8 @@ button.ask-confirm:hover:not(:disabled) {
 .tl-step.wait .tl-meta strong { color: var(--ask); }
 
 .workbench {
-  display: grid; grid-template-columns: minmax(0, 1.72fr) minmax(280px, .78fr);
-  gap: 12px; padding: 10px 16px 16px; flex: 1; min-height: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 380px);
+  gap: 12px; padding: 8px 12px 10px; flex: 1; min-height: 0;
 }
 @media (max-width: 980px) { .workbench { grid-template-columns: 1fr; } }
 
@@ -724,8 +724,8 @@ button.ask-confirm:hover:not(:disabled) {
   display: flex; flex-direction: column; flex: 1; min-height: 0; width: 100%;
 }
 .apply-layout, .reply-layout {
-  display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .9fr);
-  gap: 14px; padding: 12px 20px 20px; flex: 1;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 380px);
+  gap: 12px; padding: 8px 12px 10px; flex: 1;
 }
 @media (max-width: 980px) {
   .apply-layout, .reply-layout { grid-template-columns: 1fr; }
@@ -1609,8 +1609,8 @@ html, body {
 }
 .wb-chrome {
   flex-shrink: 0;
-  max-height: min(28vh, 220px);
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
   border-bottom: 1px solid transparent;
 }
 .wb-chrome:empty { display: none; }
@@ -1654,26 +1654,25 @@ html, body {
   box-shadow: 0 -6px 16px oklch(0 0 0 / 0.04);
 }
 
-/* 老板轻量：真收壳 — 藏名册/案卡/轨迹/负责人/时间线 */
-.density-light .wb-chrome .lead-bar,
-.density-light .wb-chrome .who-block,
-.density-light .wb-chrome .stage-bar,
-.density-light .wb-chrome .task-strip,
-.density-light .wb-chrome .mentor-tip,
-.apply-shell.density-light-shell .lead-bar,
-.apply-shell.density-light-shell .who-block,
-.apply-shell.density-light-shell .task-strip,
-.reply-shell.density-light-shell .lead-bar,
-.reply-shell.density-light-shell .who-block,
-.reply-shell.density-light-shell .task-strip {
+/* 老板轻量：AI 区收编制；进行中薄轨仍在壳顶；时间线收 */
+.density-light .side-pane .who-block,
+.density-light .side-pane .ai-roster,
+.apply-layout.density-light .side-pane .who-block,
+.reply-layout.density-light .side-pane .who-block,
+.density-light .main-pane .stage-bar,
+.apply-shell.density-light-shell .main-pane .stage-bar,
+.reply-shell.density-light-shell .main-pane .stage-bar,
+.density-light .wb-chrome .mentor-tip {
   display: none !important;
 }
+.density-light .side-pane .lead-bar .tiny,
+.apply-layout.density-light .side-pane .lead-bar .tiny,
+.reply-layout.density-light .side-pane .lead-bar .tiny {
+  display: none;
+}
 .density-light .wb-chrome {
-  max-height: 0;
-  overflow: hidden;
-  border: 0;
-  padding: 0;
-  margin: 0;
+  max-height: none;
+  overflow: visible;
 }
 .density-light .side-pane .hard-ask {
   order: -1;
@@ -1795,8 +1794,8 @@ button.primary.qc-fix-btn {
 }
 .task-chip { box-shadow: none; }
 
-.apply-shell.density-light-shell .wb-chrome,
-.reply-shell.density-light-shell .wb-chrome {
+.apply-shell.density-light-shell .wb-chrome .mentor-tip,
+.reply-shell.density-light-shell .wb-chrome .mentor-tip {
   display: none !important;
 }
 .apply-shell,
@@ -2004,3 +2003,117 @@ em.hit-em {
 
 /* 旧 diff-row 兼容（若仍有） */
 .diff-grid { display: grid; gap: 8px; }
+
+/* ── AI 区专修：身份→编制→消息→composer 钉在右侧 2026-10-30 ── */
+.side-pane[data-testid="ai-pane"],
+.side-pane[data-testid="ai-pane-d5"],
+.side-pane[data-testid="ai-pane-d6"],
+.workbench > .side-pane,
+.apply-layout > .side-pane,
+.reply-layout > .side-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+}
+
+/* 身份 / 编制压进 AI 区顶部，不再全宽抢壳 */
+.side-pane .lead-bar,
+.side-pane .ai-identity,
+.side-pane .who-block,
+.side-pane .ai-roster {
+  margin: 0 !important;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  box-shadow: none !important;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+.side-pane .lead-bar,
+.side-pane .ai-identity {
+  padding: 10px 12px;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+.side-pane .lead-bar .avatar,
+.side-pane .ai-identity .avatar {
+  width: 34px; height: 34px;
+}
+.side-pane .lead-bar strong,
+.side-pane .ai-identity strong { font-size: 13px; }
+.side-pane .lead-bar .tiny,
+.side-pane .ai-identity .tiny { font-size: 11px; line-height: 1.35; }
+
+.side-pane .who-block,
+.side-pane .ai-roster {
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.side-pane .who-head { margin-bottom: 6px; }
+.side-pane .who-head strong { font-size: 11.5px; }
+.side-pane .roster {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 6px;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+.side-pane .expert-chip {
+  min-width: 118px;
+  max-width: 148px;
+  padding: 6px 8px 6px 6px;
+  flex-shrink: 0;
+}
+.side-pane .expert-chip .av { width: 28px; height: 28px; font-size: 11px; }
+.side-pane .expert-chip strong { font-size: 11.5px; }
+.side-pane .expert-chip .st { display: none; } /* 窄栏减噪 */
+
+.side-pane .pane-head {
+  flex-shrink: 0;
+  padding: 8px 12px;
+}
+.side-pane .pane-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px 12px;
+}
+.side-pane .composer {
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* 主栏内时间线：不占 AI 区、不占全宽壳 */
+.main-pane > .stage-bar {
+  padding: 8px 12px 0;
+  flex-shrink: 0;
+  max-height: 88px;
+  overflow: auto;
+}
+.main-pane > .stage-bar .timeline {
+  padding: 8px 10px;
+  box-shadow: none;
+}
+.main-pane > .stage-bar .tl-step { min-width: 88px; }
+.main-pane > .stage-bar .tl-meta strong { font-size: 11.5px; }
+.main-pane > .stage-bar .tl-meta span { font-size: 10.5px; }
+
+/* 进行中薄轨：只贴壳顶一行，不进 AI 列 */
+.wb-chrome .task-strip {
+  margin: 0;
+  border-radius: 0;
+  border-left: 0; border-right: 0;
+}
+
+/* 轻量态：AI 身份保留一行，编制已藏 */
+.density-light .side-pane .lead-bar,
+.apply-layout.density-light .side-pane .lead-bar,
+.reply-layout.density-light .side-pane .lead-bar {
+  padding: 8px 12px;
+}

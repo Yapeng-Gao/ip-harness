@@ -1320,16 +1320,15 @@
     const whoBlock = document.querySelector("#viewDept .who-block");
     if (whoBlock) whoBlock.classList.toggle("collapsed", isLight);
     const leadBarEl = $("#leadBar");
-    if (leadBarEl) leadBarEl.hidden = !!isLight;
+    if (leadBarEl) leadBarEl.hidden = false; /* AI 区身份常显；轻量只收编制/副文 */
     const stageBarEl = $("#stageBar");
     if (stageBarEl) stageBarEl.style.display = isLight ? "none" : "";
     const chrome = $("#d4Chrome");
-    if (chrome) chrome.classList.toggle("chrome-light-collapsed", isLight);
+    if (chrome) chrome.classList.toggle("chrome-light-collapsed", false); /* 薄轨保留 */
     const stripEl = $("#d4TaskStrip");
     if (stripEl) {
-      /* thin rail: no collapse */
-      if (isLight) stripEl.style.display = "none";
-      else stripEl.style.display = "";
+      /* 进行中薄轨始终在壳顶，不进 AI 区、轻量也不藏 */
+      stripEl.style.display = "";
     }
 
     $("#roster").innerHTML = DEMO.disclosure.roster.map((e) => {
@@ -1750,27 +1749,10 @@
         <div class="shell-spacer"></div>
         <span class="mode-hint tiny" id="d5ModeHint" hidden></span>
       </div>
-      <div class="wb-chrome" data-testid="d5-chrome">
+            <div class="wb-chrome" data-testid="d5-chrome">
       <div class="task-strip" id="d5TaskStrip" data-testid="task-strip">${taskStripHtml(state.activeCaseId || "pc2")}</div>
-      <div class="lead-bar">
-        <span class="avatar"><img src="./avatars/05.jpg" alt="" width="40" height="40" /></span>
-        <div>
-          <strong>申请部负责人</strong>
-          <div class="tiny muted">向你汇报 A 理解 → B 申不申 → C 撰写递交；过线 ≠ 确认递交。</div>
-        </div>
       </div>
-      <div class="who-block ${aDens ? "collapsed" : ""}" data-testid="d5-roster-wrap">
-        <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">权项 / 质检分席</span></div>
-        <div class="roster" data-testid="d5-roster">${aRoster.map((e) => `
-          <button type="button" class="expert-chip ${e.kind === "qc" ? "qc" : ""}" data-testid="d5-expert-${escapeHtml(e.id)}">
-            ${avatarHtml(e.photo, e.av)}
-            <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
-            <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
-            ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
-          </button>`).join("")}</div>
-      </div>
-      </div>
-      <div class="apply-layout ${aDens ? "density-light" : ""}" data-testid="d5-layout">
+<div class="apply-layout ${aDens ? "density-light" : ""}" data-testid="d5-layout">
         <div class="main-pane">
           <div class="pane-head"><strong>主产出 · 申请文件</strong><span class="pane-tag">权项 | 说明书 | 差分</span></div>
           ${aDens ? `<div class="light-fold-hint" data-testid="d5-light-fold">轻量 · 主栏收拢 · 请示在侧栏</div>` : ""}
@@ -1797,8 +1779,25 @@
             </div>
           </div>
         </div>
-        <div class="side-pane">
-          <div class="pane-head"><strong>关键闸 · A / B / C</strong><span class="pane-tag">硬请示</span></div>
+        <div class="side-pane" data-testid="ai-pane-d5">
+          <div class="lead-bar ai-identity">
+            <span class="avatar"><img src="./avatars/05.jpg" alt="" width="40" height="40" /></span>
+            <div>
+              <strong>申请部负责人</strong>
+              <div class="tiny muted">A 理解 → B 申不申 → C 递交；过线 ≠ 确认递交</div>
+            </div>
+          </div>
+          <div class="who-block ai-roster ${aDens ? "collapsed" : ""}" data-testid="d5-roster-wrap">
+            <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">权项 / 质检</span></div>
+            <div class="roster" data-testid="d5-roster">${aRoster.map((e) => `
+              <button type="button" class="expert-chip ${e.kind === "qc" ? "qc" : ""}" data-testid="d5-expert-${escapeHtml(e.id)}">
+                ${avatarHtml(e.photo, e.av)}
+                <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
+                <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
+                ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
+              </button>`).join("")}</div>
+          </div>
+          <div class="pane-head"><strong>对话 · 硬请示</strong><span class="pane-tag">AI 区</span></div>
           <div class="pane-body">
             <div data-testid="d5-gates">
               <div class="abc-strip" data-testid="d5-abc">
@@ -2044,23 +2043,6 @@
       </div>
       <div class="wb-chrome" data-testid="d6-chrome">
       <div class="task-strip" id="d6TaskStrip" data-testid="task-strip">${taskStripHtml("pc3")}</div>
-      <div class="lead-bar">
-        <span class="avatar"><img src="./avatars/06.jpg" alt="" width="40" height="40" /></span>
-        <div>
-          <strong>答复部负责人</strong>
-          <div class="tiny muted">争点理解 → 策略/缩限 → 本轮递交；期限醒目，不可静默超期。</div>
-        </div>
-      </div>
-      <div class="who-block ${rDens ? "collapsed" : ""}" data-testid="d6-roster-wrap">
-        <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">争点 / 策略分席</span></div>
-        <div class="roster" data-testid="d6-roster">${rRoster.map((e) => `
-          <button type="button" class="expert-chip" data-testid="d6-expert-${escapeHtml(e.id)}">
-            ${avatarHtml(e.photo, e.av)}
-            <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
-            <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
-            ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
-          </button>`).join("")}</div>
-      </div>
       </div>
       <div class="reply-layout ${rDens ? "density-light" : ""}" data-testid="d6-layout">
         <div class="main-pane">
@@ -2080,8 +2062,25 @@
             ${docInner}
           </div>
         </div>
-        <div class="side-pane">
-          <div class="pane-head"><strong>关键闸</strong><span class="pane-tag">硬请示</span></div>
+        <div class="side-pane" data-testid="ai-pane-d6">
+          <div class="lead-bar ai-identity">
+            <span class="avatar"><img src="./avatars/06.jpg" alt="" width="40" height="40" /></span>
+            <div>
+              <strong>答复部负责人</strong>
+              <div class="tiny muted">争点 → 策略/缩限 → 本轮递交；期限醒目</div>
+            </div>
+          </div>
+          <div class="who-block ai-roster ${rDens ? "collapsed" : ""}" data-testid="d6-roster-wrap">
+            <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">争点 / 策略</span></div>
+            <div class="roster" data-testid="d6-roster">${rRoster.map((e) => `
+              <button type="button" class="expert-chip" data-testid="d6-expert-${escapeHtml(e.id)}">
+                ${avatarHtml(e.photo, e.av)}
+                <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
+                <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
+                ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
+              </button>`).join("")}</div>
+          </div>
+          <div class="pane-head"><strong>对话 · 硬请示</strong><span class="pane-tag">AI 区</span></div>
           <div class="pane-body">
             <div data-testid="d6-gates">
               <div class="seg-block" data-testid="block-a6">
