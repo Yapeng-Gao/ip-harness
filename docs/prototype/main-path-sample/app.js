@@ -199,6 +199,20 @@
     return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
+  function avatarHtml(photo, fallback, cls) {
+    const c = cls || "av";
+    if (photo) {
+      return `<span class="${c}"><img src="./avatars/${photo}" alt="" width="36" height="36" /></span>`;
+    }
+    return `<span class="${c}">${fallback || "?"}</span>`;
+  }
+
+  function statusLabel(st) {
+    return ({ doing: "进行中", done: "已完成", wait: "待审", idle: "未请来" })[st] || st || "";
+  }
+
+
+
   function renderShellTop() {
     const chip = $("#caseChip");
     if (state.caseOpen && state.caseName) {
@@ -393,12 +407,28 @@
     lineEl.textContent = state.allGreen ? "交底质检全绿" : "未过线 / 质检进行中";
     lineEl.className = "line-status" + (state.allGreen ? " ok" : "");
 
+    const lead = DEMO.disclosure.roster.find((e) => e.kind === "lead") || DEMO.disclosure.roster[0];
+    const leadBar = $("#leadBar");
+    if (leadBar && lead) {
+      leadBar.innerHTML = `${avatarHtml(lead.photo, lead.av, "avatar")}
+        <div>
+          <strong>${escapeHtml(lead.name)}</strong>
+          <div class="tiny muted">主持分活与汇报 · 不是前台。专家向你（领导）请示关键结论。</div>
+        </div>`;
+    }
     $("#roster").innerHTML = DEMO.disclosure.roster.map((e) => {
       const active = state.activeExpert === e.id ? "active" : "";
       const qcCls = e.kind === "qc" ? "qc" : "";
-      return `<button type="button" class="expert-chip ${qcCls} ${active}" data-expert="${e.id}">
-          <span class="av">${e.av}</span>
-          <span><strong>${escapeHtml(e.name)}</strong><div class="st">${escapeHtml(e.role)}${e.busy ? " · " + escapeHtml(e.busy) : ""}</div></span>
+      const idleCls = e.status === "idle" ? "idle" : "";
+      const tagCls = e.tag === "协" ? "tag-role sub" : "tag-role";
+      const st = e.status || "doing";
+      return `<button type="button" class="expert-chip ${qcCls} ${idleCls} ${active}" data-expert="${e.id}" title="${escapeHtml(e.role)}">
+          ${avatarHtml(e.photo, e.av)}
+          <span class="meta">
+            <span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="${tagCls}">${escapeHtml(e.tag || "")}</span></span>
+            <span class="status-pill ${st}">${escapeHtml(statusLabel(st))}</span>
+            <span class="st">${escapeHtml(e.busy || e.role)}</span>
+          </span>
         </button>`;
     }).join("");
     $$("[data-expert]").forEach((b) => b.addEventListener("click", () => { state.activeExpert = b.dataset.expert; render(); }));
@@ -517,7 +547,7 @@
         <button type="button" id="btnApplyDoc">案卷抽屉</button>
       </div>
       <div class="lead-bar">
-        <div class="avatar">申</div>
+        <span class="avatar"><img src="./avatars/05.jpg" alt="" width="40" height="40" /></span>
         <div>
           <strong>申请部负责人</strong>
           <div class="tiny muted">向你汇报 A 理解 → B 申不申 → C 撰写递交；过线 ≠ 确认递交。</div>
@@ -621,7 +651,7 @@
         <button type="button" id="btnReplyDoc">案卷抽屉</button>
       </div>
       <div class="lead-bar">
-        <div class="avatar">答</div>
+        <span class="avatar"><img src="./avatars/06.jpg" alt="" width="40" height="40" /></span>
         <div>
           <strong>答复部负责人</strong>
           <div class="tiny muted">争点理解 → 策略/缩限 → 本轮递交；期限醒目，不可静默超期。</div>

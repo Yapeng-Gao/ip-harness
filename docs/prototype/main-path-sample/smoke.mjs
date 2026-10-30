@@ -77,8 +77,10 @@ try {
   await page.click('[data-testid="enter-d4"]');
   await page.waitForSelector('[data-testid="view-d4"].on');
   const roster = await page.locator('[data-testid="roster"] .expert-chip').count();
+  const photos = await page.locator('[data-testid="roster"] .expert-chip .av img').count();
   const main = await page.locator('[data-testid="d4-main"]').count();
-  check("after confirm → D4 has 编制 + main产出", roster >= 3 && main === 1, `roster=${roster}`);
+  check("after confirm → D4 has 编制 + main产出", roster >= 5 && main === 1, `roster=${roster}`);
+  check("D4 编制用照片头像岗", photos >= 5, `photos=${photos}`);
 
   const handDisabled = await page.locator('[data-testid="confirm-hand5"][disabled]').count();
   check("D4a hand5 disabled before gates", handDisabled === 1);

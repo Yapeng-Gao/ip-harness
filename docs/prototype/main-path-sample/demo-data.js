@@ -54,14 +54,17 @@ window.DEMO = {
       { id: "q5", name: "实施方式可复现", status: "green" }
     ],
     roster: [
-      { id: "lead", name: "交底部负责人", role: "主持分活 / 打包工单", av: "负", kind: "lead" },
-      { id: "writer", name: "交底专家", role: "成稿 · 润色", av: "交", kind: "writer", busy: "成稿中" },
-      { id: "qc", name: "质检席", role: "检测循环 · 不可与成稿糊", av: "质", kind: "qc", busy: "复检中" }
+      { id: "lead", name: "交底部负责人", role: "主持分活 / 打包工单", av: "负", photo: "04.jpg", kind: "lead", tag: "主", status: "doing", busy: "汇总中" },
+      { id: "writer", name: "成稿专家", role: "材料 · 提纲 · 起草", av: "成", photo: "07.jpg", kind: "writer", tag: "主", status: "doing", busy: "成稿中" },
+      { id: "polish", name: "润色专家", role: "改表述不改技术含义", av: "润", photo: "11.jpg", kind: "polish", tag: "协", status: "wait", busy: "待审" },
+      { id: "search", name: "检索专家", role: "交底向查新（选做）", av: "检", photo: "02.jpg", kind: "search", tag: "协", status: "idle", busy: "未请来" },
+      { id: "qc", name: "质检专家", role: "检测循环 · 不可与成稿糊", av: "质", photo: "08.jpg", kind: "qc", tag: "主", status: "doing", busy: "复检中" },
+      { id: "advisor", name: "代理顾问", role: "成色视角（选做）", av: "顾", photo: "09.jpg", kind: "advisor", tag: "协", status: "idle", busy: "未请来" }
     ],
     feed: [
-      { who: "交底部负责人", text: "材料够开写。已请交底专家出草案，质检席单独盯红项。" },
-      { who: "交底专家", text: "草案已落主栏。效果数据标了「样机测」——若要硬数字请你补测报告。" },
-      { who: "质检席", text: "q4 暂黄：效果依据偏弱。可认风险过，或补数据后再绿。" }
+      { who: "交底部负责人", text: "材料够开写。已请成稿专家出草案；润色待命；质检席单独盯红项。检索/顾问未请来——要加走建议后请示。" },
+      { who: "成稿专家", text: "草案已落主栏。效果数据标了「样机测」——若要硬数字请你补测报告。" },
+      { who: "质检专家", text: "q4 暂黄：效果依据偏弱。可认风险过，或补数据后再绿。" }
     ]
   },
   apply: {
