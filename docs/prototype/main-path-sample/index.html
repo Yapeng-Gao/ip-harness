@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>新质数研发创新团队 · 主链样机</title>
+  <title>Novada Team · 主链样机</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="app">
     <header class="shell-top">
-      <button type="button" class="brand-mark" id="btnBrand" title="回大厅">
-        <span class="brand-logo">新质</span>
+      <button type="button" class="brand-mark" id="btnBrand" title="回工作台">
+        <span class="brand-logo">NT</span>
         <span class="brand-text">
-          <strong>新质数研发创新团队</strong>
-          <span>专家向你汇报 · 你来拍板</span>
+          <strong>Novada Team</strong>
+          <span>团队协作 · 关键处你来确认</span>
         </span>
       </button>
       <div class="shell-spacer"></div>
@@ -25,27 +25,27 @@
     <section class="view on" id="viewLobby" data-testid="view-lobby">
       <div class="view-body">
         <div class="lobby-hero">
-          <h1>走进公司大厅</h1>
-          <p>前台帮你分诊领进；八个部门大门始终看得见、点得开。</p>
+          <h1>Novada Team 工作台</h1>
+          <p>从前台上传开始，或直达团队模块。关键节点需你确认。</p>
         </div>
         <div class="lobby-grid">
           <div>
             <div class="card front-desk" data-testid="front-desk-card">
-              <div class="eyebrow">Reception</div>
-              <h2>前台接待</h2>
-              <p class="muted">不清楚要干嘛、先丢一堆材料？从这儿开始：上传 → 分析 → 建议 → 你确认去向。</p>
+              <div class="eyebrow">Start</div>
+              <h2>前台 · 开始</h2>
+              <p class="muted">上传材料 → 自动分析 → 建议去向 → 你确认后再进模块。</p>
               <div class="row-actions">
-                <button type="button" class="primary" id="btnFront" data-testid="open-front">需要帮忙从这儿开始</button>
+                <button type="button" class="primary" id="btnFront" data-testid="open-front">上传 / 开始</button>
               </div>
             </div>
             <div class="card" style="margin-top:14px">
-              <h2>老板待办</h2>
+              <h2>待确认</h2>
               <ul class="todo-list" id="todoList"></ul>
             </div>
           </div>
           <div class="card">
-            <h2>八部门大门</h2>
-            <p class="tiny muted" style="margin-top:-4px;margin-bottom:10px">可直达 · ④交底为样机主演示 · ①②③⑦⑧薄占位</p>
+            <h2>团队模块</h2>
+            <p class="tiny muted" style="margin-top:-4px;margin-bottom:10px">八部门能力图 · 可直达 · ④交底为主演示 · ①②③⑦⑧薄占位</p>
             <div class="dept-wall" id="deptWall" data-testid="dept-wall"></div>
           </div>
         </div>
@@ -60,7 +60,7 @@
     <section class="view" id="viewFront" data-testid="view-front">
       <div class="view-body">
         <div class="row-actions" style="margin-bottom:8px">
-          <button type="button" class="ghost" id="btnFrontLobby">← 回大厅</button>
+          <button type="button" class="ghost" id="btnFrontLobby">← 回工作台</button>
         </div>
         <div class="fd-steps" id="fdSteps"></div>
         <div id="fdPane"></div>
@@ -71,7 +71,7 @@
     <section class="view" id="viewDept" data-testid="view-d4">
       <div class="dept-shell">
         <div class="dept-top">
-          <button type="button" class="ghost" id="btnDeptLobby">← 大厅</button>
+          <button type="button" class="ghost" id="btnDeptLobby">← 工作台</button>
           <h1>④ 交底部</h1>
           <span class="line-status" id="deptLineStatus">未过线 / 质检进行中</span>
           <div class="shell-spacer"></div>

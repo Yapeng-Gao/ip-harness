@@ -1,13 +1,13 @@
 /* main-path-sample mid-hi-fi */
 :root {
-  --bg: #f0f3f8;
+  --bg: #f7f5f2;
   --surface: #ffffff;
-  --ink: #1a2332;
-  --muted: #5a6577;
-  --line: #d8dee8;
-  --brand: #1e4d8c;
-  --brand-2: #2a6bb5;
-  --brand-soft: #e8f0fa;
+  --ink: #1c1917;
+  --muted: #6b6560;
+  --line: #e8e4de;
+  --brand: #2563eb;
+  --brand-2: #3b82f6;
+  --brand-soft: #eff6ff;
   --ask: #c45c16;
   --ask-bg: #fff6ee;
   --ask-border: #e8955a;
@@ -17,9 +17,9 @@
   --warn-soft: #fff8e6;
   --danger: #b42318;
   --danger-soft: #fef3f2;
-  --rail: #f7f9fc;
-  --shadow: 0 1px 2px rgba(26,35,50,.06), 0 8px 24px rgba(26,35,50,.06);
-  --radius: 12px;
+  --rail: #faf8f5;
+  --shadow: 0 1px 2px rgba(28,25,23,.04), 0 6px 20px rgba(28,25,23,.05);
+  --radius: 14px;
   --font: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }

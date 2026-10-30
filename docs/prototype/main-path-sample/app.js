@@ -81,7 +81,7 @@
 
     if (id === "d4") {
       if (!opts.direct && !state.destinationConfirmed && !state.enteredD4) {
-        toast("请先经前台确认去向，或从大厅「直达交底部」进入（B1）");
+        toast("请先经前台确认去向，或从工作台「直达交底部」进入（B1）");
         return;
       }
       state.enteredD4 = true;
@@ -222,7 +222,7 @@
     } else if (state.canHand5 && !state.workOrderOpened) {
       todos.push({ kind: "c", text: "进行中：可开④→⑤工单", action: () => openDept("d4", { direct: true }) });
     }
-    if (!todos.length) todos.push({ kind: "c", text: "各部门暂无要你拍的事", action: null });
+    if (!todos.length) todos.push({ kind: "c", text: "暂无待确认事项", action: null });
 
     $("#todoList").innerHTML = todos.map((t, i) => `<li>
         <span class="badge ${t.kind}">${t.kind === "a" ? "待你拍" : t.kind === "b" ? "催办" : "进行中"}</span>
@@ -374,7 +374,7 @@
           </ul>
           <div class="row-actions">
             <button type="button" class="primary" id="btnEnterDept" data-testid="enter-d4">进入${escapeHtml(d.name)}</button>
-            <button type="button" class="ghost" id="btnBackLobby">返回大厅</button>
+            <button type="button" class="ghost" id="btnBackLobby">回工作台</button>
           </div>
         </div>`;
       $("#btnEnterDept").addEventListener("click", enterConfirmedDept);
@@ -490,7 +490,7 @@
         <div class="row-actions">
           <button type="button" class="primary" id="btnAcceptWO" data-testid="accept-wo">申请部接单进入</button>
           <button type="button" id="btnBackD4">返回交底部</button>
-          <button type="button" class="ghost" id="btnWoLobby">回大厅</button>
+          <button type="button" class="ghost" id="btnWoLobby">回工作台</button>
         </div>
       </div>`;
     $("#btnAcceptWO").addEventListener("click", () => openDept("d5", { fromWorkOrder: true }));
@@ -502,7 +502,7 @@
     const a = state.apply;
     $("#applyBody").innerHTML = `
       <div class="dept-top" style="margin:-20px -20px 16px;border-radius:0">
-        <button type="button" class="ghost" id="btnApplyBack">← 大厅</button>
+        <button type="button" class="ghost" id="btnApplyBack">← 工作台</button>
         <h1>⑤ 申请部</h1>
         <span class="line-status ${a.overLine ? "ok" : ""}">${a.overLine ? "申请文件可递交（过线）" : "未过线 / 进行中"}</span>
         <button type="button" id="btnApplyDoc">案卷</button>
@@ -548,7 +548,7 @@
     const r = state.reply;
     $("#replyBody").innerHTML = `
       <div class="dept-top" style="margin:-20px -20px 16px;border-radius:0">
-        <button type="button" class="ghost" id="btnReplyBack">← 大厅</button>
+        <button type="button" class="ghost" id="btnReplyBack">← 工作台</button>
         <h1>⑥ 答复部</h1>
         <span class="line-status">期限醒目</span>
         <button type="button" id="btnReplyDoc">案卷</button>
@@ -590,7 +590,7 @@
         <p><strong>本部门合格线：</strong>${escapeHtml(d.line)}</p>
         <p class="tiny muted">样机薄部：进得去 + 合格线一句话；不做细作业。</p>
         <div class="row-actions" style="justify-content:center">
-          <button type="button" class="primary" id="btnThinLobby">返回大厅</button>
+          <button type="button" class="primary" id="btnThinLobby">回工作台</button>
         </div>
       </div>`;
     $("#btnThinLobby").addEventListener("click", goLobby);
@@ -604,7 +604,7 @@
         <p class="tiny">当前：无交底冲⑤会被挡回（B2）。</p>
         <div class="row-actions" style="justify-content:center">
           <button type="button" class="primary" id="btnBlockTo4">去交底部</button>
-          <button type="button" id="btnBlockLobby">回大厅</button>
+          <button type="button" id="btnBlockLobby">回工作台</button>
           <button type="button" class="ghost" id="btnBlockFront">找前台</button>
         </div>
       </div>`;

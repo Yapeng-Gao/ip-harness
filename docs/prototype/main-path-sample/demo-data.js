@@ -1,7 +1,7 @@
 /* Demo Happy Path — static sample for main-path-sample */
 window.DEMO = {
-  brand: "新质数研发创新团队",
-  tagline: "专家向你汇报 · 你来拍板",
+  brand: "Novada Team",
+  tagline: "团队协作 · 关键处你来确认",
   depts: [
     { id: "d1", num: "①", name: "立项部", desc: "要不要立这个方向", thin: true, line: "项目状态已确认" },
     { id: "d2", num: "②", name: "创新激发部", desc: "问题卡点 → 路径 → 方案", thin: true, line: "选题/去向已拍（可跳过）" },

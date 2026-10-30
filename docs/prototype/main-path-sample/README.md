@@ -1,5 +1,7 @@
 # 主链样机 · main-path-sample
 
+**产品**：Novada Team
+
 中高保真可点主链：大厅 → 前台分诊 → ④交底 → 工单交⑤（+ ⑤/⑥关键闸薄做）。
 
 **真源**：[`../MAIN_PATH_SAMPLE_IA.md`](../MAIN_PATH_SAMPLE_IA.md) · 交互大纲 · 故事板 ④⑤⑥  
