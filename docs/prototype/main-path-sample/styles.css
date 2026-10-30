@@ -1456,3 +1456,35 @@ button.ask-confirm:hover:not(:disabled) {
 .judgment-item .ec-k { display: inline-block; min-width: 32px; }
 .drawer-tabs { flex-wrap: wrap; }
 .conf { white-space: nowrap; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 999px; }
+
+
+/* P1/P2 · 2026-10-30 */
+.dept-door.main-chain { border-color: var(--brand-soft-2, #c7d7f5); box-shadow: 0 1px 0 rgba(37,99,235,.06); }
+.dept-door.main-chain strong { font-size: 14px; }
+.dept-door.has-todo { outline: 2px solid var(--brand, #2563eb); outline-offset: 1px; }
+.dept-door.has-todo strong { font-weight: 800; }
+.style-tag { display: inline-block; font-size: 10px; color: var(--muted); background: #f3f4f6; border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
+.invite-hint { font-size: 10px; color: var(--brand); margin-left: 4px; text-decoration: underline; }
+.doubt-bar { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; padding: 8px 10px; border-radius: 8px; margin: 8px 0; font-size: 12px; }
+.end-check { background: #f8fafc; border: 1px dashed var(--line, #e5e7eb); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+.ec-check { font-size: 12px; margin: 2px 0; }
+.ec-check.ok { color: var(--ok, #15803d); font-weight: 600; }
+.grade-badge { display: inline-block; font-size: 10px; font-weight: 700; background: #fef2f2; color: #b91c1c; border-radius: 4px; padding: 1px 6px; margin-left: 4px; }
+.pref-banner { margin: 8px 16px; padding: 8px 12px; background: #eef2ff; border-radius: 8px; font-size: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.pref-k { font-weight: 700; color: #3730a3; }
+.contract-table { margin: 12px 0; border: 1px solid var(--line, #e5e7eb); border-radius: 8px; overflow: hidden; }
+.ct-row { display: grid; grid-template-columns: 88px 1fr; gap: 8px; padding: 8px 10px; font-size: 12px; border-bottom: 1px solid var(--line, #e5e7eb); }
+.ct-row:last-child { border-bottom: 0; }
+.ct-k { font-weight: 700; color: var(--muted); }
+.wo-accept-checks { margin: 10px 0; padding: 10px; background: #f8fafc; border-radius: 8px; }
+.wo-ck { display: block; font-size: 13px; margin: 4px 0; }
+.claim-hi, .claim-row.claim-hi { outline: 2px solid var(--brand, #2563eb); background: #eff6ff; border-radius: 6px; }
+.diff-hint { color: var(--warn, #b45309); margin-bottom: 8px; font-weight: 600; }
+.first-tip { margin: 0 0 12px; padding: 10px 12px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+.qc-method { color: var(--brand); margin-bottom: 6px; }
+.contract-line { font-weight: 600; color: var(--ink); margin-top: 2px; }
+.gap-list { text-align: left; background: #fff7ed; border-radius: 8px; padding: 10px 12px; margin: 10px 0; }
+.gap-list ul { margin: 4px 0 0 18px; padding: 0; font-size: 13px; }
+.linkish { background: none; border: 0; color: var(--brand); text-decoration: underline; cursor: pointer; padding: 0; font: inherit; display: block; text-align: left; margin: 4px 0; }
+.fly-summary { color: var(--brand); margin-top: 2px; }
+.pref-precip { border-left: 3px solid #6366f1; }

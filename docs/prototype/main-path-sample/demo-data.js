@@ -3,14 +3,14 @@ window.DEMO = {
   brand: "Novada Team",
   tagline: "团队协作 · 关键处你来确认",
   depts: [
-    { id: "d1", num: "①", name: "立项部", desc: "要不要立这个方向", thin: true, line: "项目已创建 + 方向一句话 + 状态 + 用户确认", ban: "勿把建项说成完整论证报告；≠③保护去向；≠⑤申不申" },
-    { id: "d2", num: "②", name: "创新激发部", desc: "问题卡点 → 路径 → 方案", thin: true, line: "问题→路径→用户选题+收藏（或跳过留痕）", ban: "报告/三图≠本部主交付；无授权承诺；可整段跳过" },
-    { id: "d3", num: "③", name: "专利挖掘部", desc: "研发资料 → 创新点 + 拆案", thin: true, line: "报告路径或交④点包路径择一确认", ban: "不代替④交底 / ⑤申不申；不承诺可授权" },
+    { id: "d1", num: "①", name: "立项部", leadPhoto: "12.jpg", desc: "要不要立这个方向", thin: true, line: "项目已创建 + 方向一句话 + 状态 + 用户确认", ban: "勿把建项说成完整论证报告；≠③保护去向；≠⑤申不申" },
+    { id: "d2", num: "②", name: "创新激发部", leadPhoto: "10.jpg", desc: "问题卡点 → 路径 → 方案", thin: true, line: "问题→路径→用户选题+收藏（或跳过留痕）", ban: "报告/三图≠本部主交付；无授权承诺；可整段跳过" },
+    { id: "d3", num: "③", name: "专利挖掘部", leadPhoto: "03.jpg", desc: "研发资料 → 创新点 + 拆案", thin: true, line: "报告路径或交④点包路径择一确认", ban: "不代替④交底 / ⑤申不申；不承诺可授权" },
     { id: "d4", num: "④", name: "交底部", desc: "技术事实 → 交底书全绿", thin: false, line: "交底质检全绿" },
     { id: "d5", num: "⑤", name: "申请部", desc: "合格交底 → 申请文件 → 递交", thin: false, line: "申请文件可递交（过线）" },
     { id: "d6", num: "⑥", name: "答复部", desc: "通知书 → 策略 → 答复", thin: false, line: "本轮答复可递交（D 过线）" },
-    { id: "d7", num: "⑦", name: "维护部", desc: "确权后期限 · 年费 · 台账", thin: true, line: "台账可核 + 期限提醒 +（有费）缴费经用户确认", ban: "台账有≠看板已交付；系统内提醒≠短信邮件已通" },
-    { id: "d8", num: "⑧", name: "复盘部", desc: "年末/阶段复盘报告", thin: true, line: "复盘报告已交 + 维持/放弃已拍或只读不拍留痕", ban: "⑧≠情报官≠检索；只读不拍不得回写⑦" }
+    { id: "d7", num: "⑦", name: "维护部", leadPhoto: "09.jpg", desc: "确权后期限 · 年费 · 台账", thin: true, line: "台账可核 + 期限提醒 +（有费）缴费经用户确认", ban: "台账有≠看板已交付；系统内提醒≠短信邮件已通" },
+    { id: "d8", num: "⑧", name: "复盘部", leadPhoto: "01.jpg", desc: "年末/阶段复盘报告", thin: true, line: "复盘报告已交 + 维持/放弃已拍或只读不拍留痕", ban: "⑧≠情报官≠检索；只读不拍不得回写⑦" }
   ],
   sampleFiles: [
     { name: "电机冷却结构技术说明.docx", type: "技术说明·灵感草稿", summary: "描述水道布局与散热鳍片组合", conf: "high" },
@@ -54,17 +54,17 @@ window.DEMO = {
       { id: "q5", name: "实施方式可复现", status: "green" }
     ],
     roster: [
-      { id: "lead", name: "交底部负责人", role: "主持分活 / 打包工单", av: "负", photo: "04.jpg", kind: "lead", tag: "主", status: "doing", busy: "汇总中", outputAnchor: "doc-top", blurb: "主持分活与硬请示打包" },
-      { id: "writer", name: "成稿专家", role: "材料 · 提纲 · 起草", av: "成", photo: "07.jpg", kind: "writer", tag: "主", status: "doing", busy: "成稿中", outputAnchor: "sec-tech", blurb: "主笔技术方案与实施方式" },
-      { id: "polish", name: "润色专家", role: "改表述不改技术含义", av: "润", photo: "11.jpg", kind: "polish", tag: "协", status: "wait", busy: "待审", outputAnchor: "sec-effect", blurb: "润色效果表述，待审" },
-      { id: "search", name: "检索专家", role: "交底向查新（选做）", av: "检", photo: "02.jpg", kind: "search", tag: "协", status: "idle", busy: "未请来", outputAnchor: "sec-bg", blurb: "选做查新 · 未请来" },
-      { id: "qc", name: "质检专家", role: "检测循环 · 不可与成稿糊", av: "质", photo: "08.jpg", kind: "qc", tag: "主", status: "doing", busy: "复检中", outputAnchor: "qc-card", blurb: "质检分卡 · 盯红黄项" },
-      { id: "advisor", name: "代理顾问", role: "成色视角（选做）", av: "顾", photo: "09.jpg", kind: "advisor", tag: "协", status: "idle", busy: "未请来", outputAnchor: "sec-problem", blurb: "成色视角 · 未请来" }
+      { id: "lead", name: "交底部负责人", role: "主持分活 / 打包工单", av: "负", photo: "04.jpg", kind: "lead", tag: "主", status: "doing", busy: "汇总中", outputAnchor: "doc-top", blurb: "主持分活与硬请示打包", style: "收敛·打包口" },
+      { id: "writer", name: "成稿专家", role: "材料 · 提纲 · 起草", av: "成", photo: "07.jpg", kind: "writer", tag: "主", status: "doing", busy: "成稿中", outputAnchor: "sec-tech", blurb: "主笔技术方案与实施方式", style: "偏结构、少形容词" },
+      { id: "polish", name: "润色专家", role: "改表述不改技术含义", av: "润", photo: "11.jpg", kind: "polish", tag: "协", status: "wait", busy: "待审", outputAnchor: "sec-effect", blurb: "润色效果表述，待审", style: "改表述不改技术含义" },
+      { id: "search", name: "检索专家", role: "交底向查新（选做）", av: "检", photo: "02.jpg", kind: "search", tag: "协", status: "idle", busy: "未请来", outputAnchor: "sec-bg", blurb: "选做查新 · 未请来", style: "证据优先" },
+      { id: "qc", name: "质检专家", role: "检测循环 · 不可与成稿糊", av: "质", photo: "08.jpg", kind: "qc", tag: "主", status: "doing", busy: "复检中", outputAnchor: "qc-card", blurb: "质检分卡 · 盯红黄项", style: "对照图纸+规则检", method: "对照图纸+规则检 q4" },
+      { id: "advisor", name: "代理顾问", role: "成色视角（选做）", av: "顾", photo: "09.jpg", kind: "advisor", tag: "协", status: "idle", busy: "未请来", outputAnchor: "sec-problem", blurb: "成色视角 · 未请来", style: "成色视角" }
     ],
     feed: [
       { who: "交底部负责人", expertId: "lead", text: "材料够开写。已请成稿专家出草案；润色待命；质检席单独盯红项。", tools: ["分活", "组编制"] },
       { who: "成稿专家", expertId: "writer", text: "草案已落主栏。效果数据标了「样机测」——若要硬数字请你补测报告。", tools: ["读材料", "写 · 技术方案"] },
-      { who: "质检专家", expertId: "qc", text: "q4 暂黄：效果依据偏弱。可认风险过，或补数据后再绿。", tools: ["检 · q4", "标黄"] },
+      { who: "质检专家", expertId: "qc", text: "q4 暂黄：效果依据偏弱。去相关：对照图纸+规则检 q4。可认风险过，或补数据后再绿。", tools: ["检 · q4", "对照图纸", "规则检"] },
       { who: "成稿专家", expertId: "writer", text: "对照图纸补了进水口错位描述。", tools: ["对照图纸", "改段"] }
     ],
     factAsk: {
@@ -133,7 +133,7 @@ window.DEMO = {
   searchHits: [
     { kind: "案卷", title: "电机冷却结构 · 交底案", sub: "④ 交底部 · 待确认事实", go: "d4-fact" },
     { kind: "专家", title: "成稿专家 · 交底部", sub: "主笔技术方案", go: "d4-fact" },
-    { kind: "请示", title: "确认交底事实", sub: "硬请示 · 今日", go: "d4-fact" },
+    { kind: "请示", title: "确认交底事实", sub: "硬请示 · 今日", go: "d4-fact", summary: "结论：技术方案与样机测效果描述与本案材料一致，可确认事实。" },
     { kind: "案卷", title: "低功耗膜分离 · OA", sub: "⑥ 答复部", go: "d6" }
   ],
   caseSwitch: [
@@ -148,6 +148,16 @@ window.DEMO = {
     { t: "建议", d: "主推 ④ 交底部 · 备选 ⑤ / ③" }
   ],
   apply: {
+    roster: [
+      { id: "a-lead", name: "申请部负责人", role: "主持 A/B/C", av: "申", photo: "05.jpg", kind: "lead", tag: "主", status: "doing", busy: "开案中", style: "打包口" },
+      { id: "a-claim", name: "权项专家", role: "独权/从权", av: "权", photo: "07.jpg", kind: "writer", tag: "主", status: "doing", busy: "写独权", outputAnchor: "claim-c1", style: "偏结构" },
+      { id: "a-qc", name: "质检专家", role: "过线检测", av: "质", photo: "08.jpg", kind: "qc", tag: "主", status: "doing", busy: "对照交底", outputAnchor: "d5-qc", style: "对照交底+规则", method: "对照交底差分+形式检" }
+    ],
+    qc: [
+      { id: "aq1", name: "权项与交底一致", status: "green" },
+      { id: "aq2", name: "说明书支撑权项", status: "green" },
+      { id: "aq3", name: "形式要件齐全", status: "yellow" }
+    ],
     understand: "本案核心：螺旋水道 + 端盖鳍片 + 双密封，解决高功率密度温升与泄漏。",
     noveltyHint: "申请向查新摘要（示意）：最接近 D1 公开螺旋水道；区别＝端盖鳍片+双密封组合。",
     applyOrNotAsk: {
@@ -196,7 +206,32 @@ window.DEMO = {
       { side: "说明书", text: "有益效果：同功率温升下降约 12℃（样机测）；装配工时可减 15%。" }
     ]
   },
+  /* 纪律一 · 闸表抽数据（样机对照一期节点） */
+  gateTable: [
+    { id: "front-dest", grade: "P1", label: "确认去向", dept: "前台" },
+    { id: "d4-fact", grade: "P0", label: "确认交底事实", dept: "④" },
+    { id: "d4-hand5", grade: "P0", label: "可否交⑤", dept: "④" },
+    { id: "d5-understand", grade: "P1", label: "理解确认", dept: "⑤" },
+    { id: "d5-apply", grade: "P0", label: "申不申", dept: "⑤" },
+    { id: "d5-submit", grade: "P0", label: "确认递交", dept: "⑤" },
+    { id: "d6-contention", grade: "P1", label: "争点理解", dept: "⑥" },
+    { id: "d6-strategy", grade: "P0", label: "策略/缩限", dept: "⑥" },
+    { id: "d6-submit", grade: "P0", label: "本轮递交", dept: "⑥" }
+  ],
+  /* T12 跨案偏好示意 */
+  preferences: [
+    { id: "pref-effect", text: "你上次要求：效果必须标测法（样机测 / 仿真 / 文献）", from: "电机冷却 · 交底案", precipitable: true }
+  ],
+  agencyLobbySeed: [
+    { id: "seed-agency", kind: "a", tag: "陪同⑤", text: "陪同客户 · 模块化热管理案：待拍「申不申」", sub: "代理武装 · 今日", go: "d5", cover: "agency", cta: "陪同进⑤" }
+  ],
   reply: {
+    roster: [
+      { id: "r-lead", name: "答复部负责人", role: "主持闸", av: "答", photo: "06.jpg", kind: "lead", tag: "主", status: "doing", busy: "盯期限", style: "打包口" },
+      { id: "r-cont", name: "争点专家", role: "中立复述", av: "争", photo: "02.jpg", kind: "writer", tag: "主", status: "doing", busy: "复述中", outputAnchor: "rp-cont", style: "中立·不争辩" },
+      { id: "r-strat", name: "策略专家", role: "缩限/争辩选项", av: "策", photo: "11.jpg", kind: "writer", tag: "主", status: "doing", busy: "拟 A/B", outputAnchor: "rp-amend", style: "权衡影响" }
+    ],
+    upgraded: false,
     deadline: "2026-11-12（剩余约 14 天）",
     issues: ["对比文件 D1 公开螺旋水道", "创造性：鳍片与水道组合是否显而易见"],
     contention: "争点中立复述：审查员认为鳍片与水道组合相对 D1 显而易见；本案拟主张双密封+错位进出口带来的非显而易见效果。",

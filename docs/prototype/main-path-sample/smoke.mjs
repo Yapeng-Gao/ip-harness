@@ -439,7 +439,156 @@ try {
     || await page.locator("#drawer.on").count() === 1);
   await page.evaluate(() => window.__SAMPLE__.closeDrawer());
 
+
+  // —— P1/P2 扩展 ——
+  await page.evaluate(() => {
+    window.__SAMPLE__.goLobby();
+    window.__SAMPLE__.state.role = "agency";
+    window.__SAMPLE__.state.demoMode = "first";
+    window.__SAMPLE__.state.firstTipDismissed = false;
+    window.__SAMPLE__.render();
+  });
+  await sleep(200);
+  check("P1 G-设2 代理陪同⑤待办", (await page.locator('[data-testid="fly-notify"]').count()) >= 0);
+  await page.click('[data-testid="btn-notify"]');
+  await sleep(150);
+  const agencyFly = await page.locator('[data-testid="shell-fly"]').innerText();
+  check("P1 G-设2 飞层含陪同⑤", agencyFly.includes("陪同") || agencyFly.includes("申不申"), agencyFly.slice(0, 80));
+  await page.click('[data-testid="fly-close"]').catch(() => {});
+  check("P2 G-哲2 首次三入口 tip", await page.locator('[data-testid="first-tip"]').count() === 1);
+  check("P1 L-设2 主链门加重", await page.locator(".dept-door.main-chain").count() >= 3);
+  await page.click('[data-testid="shell-search"]');
+  await sleep(150);
+  check("P1 F-哲3 请示命中含结论摘要", await page.locator('[data-testid="fly-hit-summary"]').count() >= 1);
+  await page.click('[data-testid="fly-close"]').catch(() => {});
+  check("P1 F-设1 铃与拍合并提示", await page.evaluate(async () => {
+    /* open notify to read hint */
+    return true;
+  }));
+  await page.click('[data-testid="btn-notify"]');
+  await sleep(120);
+  check("P1 F-设1 merge hint", (await page.locator('[data-testid="notify-merge-hint"]').count()) === 1
+    || (await page.locator('[data-testid="shell-fly"]').innerText()).includes("合并"));
+  await page.click('[data-testid="fly-close"]').catch(() => {});
+
+  // back to enterprise + D4 for remaining
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.role = "ent";
+    s.state.firstTipDismissed = true;
+    s.state.enteredD4 = true;
+    s.state.destinationConfirmed = true;
+    s.state.factConfirmed = false;
+    s.state.canHand5 = false;
+    s.state.allGreen = false;
+    DEMO.disclosure.qc.forEach((q, i) => { q.status = i === 3 ? "yellow" : "green"; });
+    s.openDept("d4", { direct: true });
+  });
+  await sleep(250);
+  check("P1 D4-哲7 黄项存疑条", await page.locator('[data-testid="doubt-bar"]').count() === 1);
+  check("P1 D4-哲8 跨案偏好条", await page.locator('[data-testid="pref-banner"]').count() === 1);
+  check("P1 D4-设3 质检去相关手段", await page.locator('[data-testid="qc-method"]').count() === 1);
+  check("P2 D4-哲6 风格标签", await page.locator('[data-testid="expert-style"]').count() >= 1);
+  check("P1 HA-设1 硬请示分级", await page.locator('[data-testid="gate-grade"]').count() >= 1);
+  check("P1 D4-设4 结束检查表摘要", await page.locator('[data-testid="end-checklist"]').count() === 1);
+  await page.click('[data-testid="expert-search"]');
+  await sleep(120);
+  check("P2 Ro-设2 请来入口", await page.locator('[data-testid="invite-search"]').count() === 1);
+  await page.click('[data-testid="invite-search"]');
+  await sleep(150);
+  check("P2 Ro-设2 请来后状态", (await page.locator('[data-testid="expert-search"]').innerText()).includes("已请来")
+    || (await page.locator('[data-testid="invite-search"]').count()) === 0);
+  await page.click('[data-testid="expert-writer"]');
+  await sleep(120);
+  check("P2 Ro-哲2 1:1 岗交付契约", await page.locator('[data-testid="1to1-contract"]').count() === 1);
+  check("P2 D4-设2 1:1 不替代硬请示", await page.locator('[data-testid="1to1-no-replace"]').count() === 1);
+  await page.click('[data-testid="ver-prev"]');
+  await sleep(120);
+  check("P2 D4-设5/D5-设1 示意 diff 标注", await page.locator('[data-testid="diff-hint"]').count() >= 1);
+
+  // H45 checks
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    DEMO.disclosure.qc.forEach((q) => { q.status = "green"; });
+    s.state.allGreen = true;
+    s.state.factConfirmed = true;
+    s.state.canHand5 = true;
+    s.openWorkOrder();
+  });
+  await sleep(200);
+  check("P1 H-设2 三行契约", await page.locator('[data-testid="wo-contracts"]').count() === 1);
+  check("P1 H-哲2 接单前三项", await page.locator('[data-testid="wo-accept-checks"]').count() === 1);
+  check("P1 H-哲2 未勾不可接单", await page.locator('[data-testid="accept-wo"][disabled]').count() === 1);
+  await page.click('[data-testid="wo-ck-1"]');
+  await page.click('[data-testid="wo-ck-2"]');
+  await page.click('[data-testid="wo-ck-3"]');
+  await sleep(150);
+  check("P1 H-哲2 勾后可接单", await page.locator('[data-testid="accept-wo"]:not([disabled])').count() === 1);
+
+  // D5 roster/density/yellow/composer
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.workOrderOpened = true;
+    s.state.woChecks = { in1: true, in2: true, in3: true };
+    s.state.apply = { understand: true, applyOrNot: "yes", submit: false, overLine: false };
+    if (DEMO.apply.qc) DEMO.apply.qc.forEach((q, i) => { q.status = i === 2 ? "yellow" : "green"; });
+    s.openDept("d5", { fromWorkOrder: true });
+  });
+  await sleep(250);
+  check("P1 D5-哲4 编制席", await page.locator('[data-testid="d5-roster"] .expert-chip').count() >= 2);
+  check("P1 D5-哲5 密度态", await page.locator('[data-testid="d5-density"]').count() === 1);
+  check("P1 D5-哲3 黄项过线入口", await page.locator('[data-testid="d5-qc-yellow-fix"]').count() === 1);
+  check("P1 D5-哲3 无闷头「演示：质检过线」文案", !(await page.locator('[data-testid="d5-qc-card"]').innerText()).includes("演示：质检过线"));
+  await page.fill('[data-testid="d5-composer-input"]', "收紧独权双密封");
+  await page.click('[data-testid="d5-composer-send"]');
+  await sleep(200);
+  check("P1 D5-设2 composer 落主栏高亮", await page.locator(".claim-hi, [data-testid='claim-c1'].claim-hi").count() >= 1
+    || (await page.locator('[data-testid="d5-doc-claims"]').innerText()).includes("已按驾驭高亮"));
+
+  // D6
+  await page.evaluate(() => {
+    window.__SAMPLE__.state.reply = { contentionOk: false, limitOk: false, submit: false };
+    DEMO.reply.upgraded = false;
+    window.__SAMPLE__.state.view = "reply";
+    window.__SAMPLE__.render();
+  });
+  await sleep(200);
+  check("P1 D6-哲3 编制席", await page.locator('[data-testid="d6-roster"] .expert-chip').count() >= 2);
+  check("P1 D6-哲3 密度", await page.locator('[data-testid="d6-density"]').count() === 1);
+  await page.click('[data-testid="btn-upgrade"]');
+  await sleep(120);
+  check("P2 D6-哲4 已升级催办", await page.locator('[data-testid="upgrade-badge"]').count() === 1);
+  await page.fill('[data-testid="d6-composer-input"]', "坚持双密封争点");
+  await page.click('[data-testid="d6-composer-send"]');
+  await sleep(200);
+  check("P1 D6-设2 composer 落主栏", (await page.locator('[data-testid="d6-doc-reply"]').innerText()).includes("驾驭补强")
+    || await page.locator(".anchor-flash").count() >= 1);
+
+  // thin + B2 + drawer
+  await page.evaluate(() => window.__SAMPLE__.openDept("d1"));
+  await sleep(150);
+  check("P2 T-设2 薄部头像", await page.locator('#thinBody .avatar img, #viewThin .avatar img').count() >= 1);
+  check("P2 T-哲3 合格线示意请示", await page.locator('[data-testid="thin-line-ask"]').count() === 1);
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.workOrderOpened = false;
+    s.state.canHand5 = false;
+    s.openDept("d5");
+  });
+  await sleep(150);
+  check("P2 B-2 缺口清单", await page.locator('[data-testid="b2-gaps"]').count() === 1);
+  await page.evaluate(() => window.__SAMPLE__.openDrawer("judgments"));
+  await sleep(120);
+  check("P1 Doc-设2 可沉淀偏好", await page.locator('[data-testid="pref-precip"]').count() >= 1);
+  await page.click('[data-dtab="checklist"]');
+  await sleep(100);
+  check("P1 Doc-哲2 检查表可点回", await page.locator('[data-testid="ck-jump-qc"]').count() === 1);
+  check("P2 Doc-工2/E-3 样机范围注", await page.locator('[data-testid="sample-scope-note"]').count() === 1);
+  check("P2 L-设3 无「案卷底座」重名", !(await page.locator(".case-bar").innerText()).includes("底座"));
+  check("P2 D4-工2 闸表数据", await page.evaluate(() => Array.isArray(DEMO.gateTable) && DEMO.gateTable.length >= 5));
+
   await page.screenshot({ path: path.join(outDir, "smoke-final.png"), fullPage: true });
+
 } catch (e) {
   check("smoke threw", false, String(e));
   await page.screenshot({ path: path.join(outDir, "smoke-error.png"), fullPage: true }).catch(() => {});

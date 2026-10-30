@@ -43,7 +43,17 @@
     densityMode: "author", /* light=老板轻量 | author=主笔 */
     mentorDismissed: false,
     docVersion: "current", /* current | prev */
-    atOpen: false
+    atOpen: false,
+    firstTipDismissed: false,
+    applyDensity: "author",
+    replyDensity: "author",
+    applyClaimHighlight: null,
+    replySecHighlight: null,
+    applyYellowRisk: false,
+    woChecks: { in1: false, in2: false, in3: false },
+    thinLineConfirmed: {},
+    searchPinAsk: null,
+    invitedExperts: {}
   };
 
   function deptById(id) { return DEMO.depts.find((d) => d.id === id); }
@@ -93,6 +103,35 @@
   function confClass(c) {
     return c === "high" ? "high" : c === "mid" ? "mid" : "low";
   }
+
+
+  function gateGrade(id) {
+    const g = (DEMO.gateTable || []).find((x) => x.id === id);
+    return g ? g.grade : "P0";
+  }
+  function gradeBadge(id) {
+    const g = gateGrade(id);
+    return `<span class="grade-badge" data-testid="gate-grade">${escapeHtml(g)} 签字级</span>`;
+  }
+  function prefBannerHtml() {
+    const prefs = DEMO.preferences || [];
+    if (!prefs.length) return "";
+    return `<div class="pref-banner" data-testid="pref-banner">
+      <span class="pref-k">跨案偏好</span>
+      ${prefs.map((p) => `<span class="pref-item">${escapeHtml(p.text)}</span>`).join("")}
+    </div>`;
+  }
+  function inviteExpert(id) {
+    const e = expertById(id);
+    if (!e) return;
+    state.invitedExperts[id] = true;
+    e.status = "doing";
+    e.busy = "已请来 · 工作中";
+    addTrace("请来专家", e.name);
+    toast(`已请来 ${e.name}（演示）`);
+    render();
+  }
+
 
   /** T4 四件套：来源 / 推演 / 对比 / 置信 */
   function evidenceChainHtml(ev, testid) {
@@ -573,14 +612,14 @@
         <p class="fly-hint">演示命中 · 点一条进对应案</p>
         ${hits.map((h, i) => `<button type="button" class="fly-item" data-fly-go="${escapeHtml(h.go || "")}" data-testid="fly-hit">
           <span class="fk">${escapeHtml(h.kind)}</span>
-          <div><strong>${escapeHtml(h.title)}</strong><div class="fm">${escapeHtml(h.sub || "")}</div></div>
+          <div><strong>${escapeHtml(h.title)}</strong><div class="fm">${escapeHtml(h.sub || "")}</div>${h.summary ? `<div class="fm fly-summary" data-testid="fly-hit-summary">${escapeHtml(h.summary)}</div>` : ""}</div>
         </button>`).join("")}`;
     } else if (state.shellPanel === "notify") {
       const seeds = buildLobbyTodos();
       const rows = seeds.length ? seeds : [{ kind: "c", text: "各部门暂无要你拍的事", go: "", tag: "空" }];
       card.innerHTML = `
         <div class="fly-head"><strong>要你拍的</strong>${closeBtn}</div>
-        <p class="fly-hint">顶栏列表 · 大厅只留摘要，不重复展开</p>
+        <p class="fly-hint" data-testid="notify-merge-hint">「要你拍的」＝原通知铃合并入口 · 非拍类催办在「定时」</p>
         ${rows.map((s) => `<button type="button" class="fly-item" data-fly-go="${escapeHtml(s.go || "")}" data-testid="fly-notify">
           <span class="fk urge">${escapeHtml(s.tag || (s.kind === "a" ? "待你拍" : "进行中"))}</span>
           <div><strong>${escapeHtml(s.text)}</strong><div class="fm">${escapeHtml(s.sub || s.cta || "")}</div></div>
@@ -613,11 +652,13 @@
     card.querySelectorAll("[data-fly-go]").forEach((b) => {
       b.addEventListener("click", () => {
         const go = b.dataset.flyGo;
+        const isUrge = (b.querySelector(".fk") || {}).textContent === "催办"
+          || (b.innerText || "").includes("催办");
         closeShellPanel();
         if (!go) { toast("演示项 · 无跳转"); return; }
-        /* sync active case if matching */
         const hit = (DEMO.progressCases || []).find((c) => c.go === go);
         if (hit) state.activeCaseId = hit.id;
+        if (isUrge || go === "d4-fact" || go === "d4-hand") state.searchPinAsk = go;
         goLobbyTodo(go);
       });
     });
@@ -704,7 +745,13 @@
     if (state.reply && state.reply.submit) covered.add("reply");
     if (state.enteredD4 && !state.factConfirmed) covered.add("fact");
     if (state.enteredD4 && state.allGreen && !state.canHand5) covered.add("hand");
-    (DEMO.lobbySeed || []).forEach((s) => {
+    const seeds = [...(DEMO.lobbySeed || [])];
+    if (state.role === "agency") {
+      (DEMO.agencyLobbySeed || []).forEach((s) => {
+        if (!seeds.some((x) => x.id === s.id)) seeds.unshift(s);
+      });
+    }
+    seeds.forEach((s) => {
       if (covered.has(s.cover)) return;
       if (todos.some((t) => t.text === s.text)) return;
       todos.push({ kind: s.kind, text: s.text, tag: s.tag, sub: s.sub, cta: s.cta, go: s.go, seed: true });
@@ -722,8 +769,9 @@
     if (greetN) greetN.textContent = String(nTodo);
     const sub = $("#lobbyGreetSub");
     if (sub) {
+      const agencyNote = state.role === "agency" ? " · 代理视角含陪同⑤" : "";
       sub.innerHTML = nTodo
-        ? `待拍 <strong id="lobbyTodoCount">${nTodo}</strong> · 推进中 <strong>${nProg}</strong> · 列表在顶栏，首页不展开。`
+        ? `待拍 <strong id="lobbyTodoCount">${nTodo}</strong> · 推进中 <strong>${nProg}</strong>${agencyNote} · 列表在顶栏，首页不展开。`
         : `各部门暂无硬请示 · 可交给前台开新案，或点八部进厅。`;
     }
 
@@ -738,13 +786,25 @@
     const bProg = $("#btnLobbyProgSummary");
     if (bProg) bProg.onclick = () => toggleShellPanel("cases");
 
+    /* G-哲2 首次带教三入口 */
+    let firstTip = "";
+    if (state.demoMode === "first" && !state.firstTipDismissed) {
+      firstTip = `<div class="first-tip" data-testid="first-tip">
+        <strong>今天先认大厅三入口</strong>：①委托前台 · ②顶栏「要你拍的 / 推进」· ③八部进厅。
+        <button type="button" class="ghost" id="btnFirstTipOk" data-testid="first-tip-dismiss">知道了</button>
+      </div>`;
+    }
+
     $("#deptWall").innerHTML = DEMO.depts.map((d) => {
       const has = (d.id === "d4" && state.enteredD4 && (!state.factConfirmed || (state.allGreen && !state.canHand5)))
-        || (d.id === "d5" && state.canHand5 && !state.apply.submit);
+        || (d.id === "d5" && state.canHand5 && !state.apply.submit)
+        || (d.id === "d5" && state.role === "agency" && !state.apply.submit)
+        || (d.id === "d6" && state.reply && !state.reply.submit);
+      const main = !d.thin;
       const pill = d.thin
         ? `<span class="pill thin-p">薄 · 合格线</span>`
         : `<span class="pill thick">主链</span>`;
-      return `<button class="dept-door ${d.thin ? "thin" : ""} ${has ? "has-todo" : ""}" data-dept="${d.id}" type="button">
+      return `<button class="dept-door ${d.thin ? "thin" : "main-chain"} ${has ? "has-todo" : ""}" data-dept="${d.id}" type="button" data-testid="dept-door-${d.id}">
           <span class="dot"></span>
           <div class="num">${d.num}</div>
           <strong>${escapeHtml(d.name)}</strong>
@@ -752,7 +812,24 @@
           <div class="door-foot">${pill}<span>${d.thin ? "进得去" : "可协同"}</span></div>
         </button>`;
     }).join("");
-    $$("[data-dept]").forEach((btn) => {
+
+    const wallCard = document.querySelector('[data-testid="dept-home-card"]');
+    const greet = document.querySelector('[data-testid="lobby-greet"]');
+    if (greet && firstTip) {
+      let tipEl = document.querySelector('[data-testid="first-tip"]');
+      if (!tipEl) {
+        greet.insertAdjacentHTML("afterend", firstTip);
+      } else {
+        tipEl.outerHTML = firstTip;
+      }
+    } else {
+      const tipEl = document.querySelector('[data-testid="first-tip"]');
+      if (tipEl && state.firstTipDismissed) tipEl.remove();
+    }
+    const ft = $("#btnFirstTipOk");
+    if (ft) ft.onclick = () => { state.firstTipDismissed = true; render(); };
+
+    $$("#deptWall [data-dept]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const id = btn.dataset.dept;
         if (id === "d4") openDept("d4", { direct: true });
@@ -761,10 +838,12 @@
     });
 
     const bar = $("#caseBarText");
+    const barStrong = document.querySelector(".case-bar strong");
+    if (barStrong) barStrong.textContent = "当前案";
     if (state.caseOpen) {
       bar.textContent = `${state.caseName} · ${state.canHand5 ? "可交⑤已确认" : state.enteredD4 ? "交底进行中" : "待领进"}`;
     } else {
-      bar.textContent = "尚无案卷 · 可从前台上传或加载样例";
+      bar.textContent = "尚无打开案卷 · 可从前台上传或加载样例";
     }
   }
 
@@ -875,7 +954,7 @@
             ${judgmentReasonHtml("dest", `选④因：${DEMO.suggest.main.reason}；不选⑤因：${DEMO.suggest.alts[0].reason}`)}
             <div class="acts">
               <button type="button" class="ask-confirm" id="btnConfirmDest" data-testid="confirm-dest">确认 · 去交底部</button>
-              <button type="button" id="btnAlt5" data-testid="alt-dest-5">改去申请部</button>
+              <button type="button" id="btnAlt5" data-testid="alt-dest-5">改去申请部（真切·领进可 B2）</button>
               <button type="button" class="ghost" id="btnPauseDest">暂停</button>
             </div>
           </div>
@@ -885,7 +964,14 @@
           </div>
         </div>`;
       $("#btnConfirmDest").addEventListener("click", () => confirmDestination("d4"));
-      $("#btnAlt5").addEventListener("click", () => { toast("已记下你要改去⑤——进部后门槛会挡开写并给退④选项（B3 示意）"); confirmDestination("d4"); });
+      $("#btnAlt5").addEventListener("click", () => {
+        confirmDestination("d5");
+        toast("已确认去向⑤ · 领进时若无合格交底会 B2 挡回（真切备选）");
+      });
+      const a3 = $("#btnAlt3");
+      if (a3) a3.addEventListener("click", () => {
+        toast("备选③演示仍落主推路径示意 · 真切请走前台另案");
+      });
       $("#btnPauseDest").addEventListener("click", () => toast("已暂停，去向未确认"));
       $("#btnTryEnterEarly").addEventListener("click", () => { if (!state.destinationConfirmed) toast("未确认去向，不能领进交底部"); });
       $("#btnBackF2").addEventListener("click", () => { state.fdStep = "f2"; render(); });
@@ -903,6 +989,7 @@
               return `<li><div><strong>${escapeHtml(h.item)}</strong><div class="tiny muted">${escapeHtml(h.note)}</div></div>${tag}</li>`;
             }).join("")}
           </ul>
+          <p class="tiny muted" data-testid="f4-checklist-link">交接缺口见案卷检查表 · <button type="button" class="linkish" id="btnF4Check" data-testid="f4-open-checklist">打开检查表</button></p>
           <div class="row-actions">
             <button type="button" class="primary" id="btnEnterDept" data-testid="enter-d4">进入${escapeHtml(d.name)}</button>
             <button type="button" class="ghost" id="btnBackLobby">回工作台</button>
@@ -910,6 +997,7 @@
         </div>`;
       $("#btnEnterDept").addEventListener("click", enterConfirmedDept);
       $("#btnBackLobby").addEventListener("click", goLobby);
+      const f4c = $("#btnF4Check"); if (f4c) f4c.addEventListener("click", () => openDrawer("checklist"));
     }
   }
 
@@ -1006,22 +1094,29 @@
     if (whoBlock) whoBlock.classList.toggle("collapsed", isLight);
 
     $("#roster").innerHTML = DEMO.disclosure.roster.map((e) => {
+      const st0 = state.invitedExperts[e.id] ? "doing" : (e.status || "doing");
       const active = state.activeExpert === e.id ? "active" : "";
       const qcCls = e.kind === "qc" ? "qc" : "";
-      const idleCls = e.status === "idle" ? "idle" : "";
+      const idleCls = st0 === "idle" ? "idle" : "";
       const tagCls = e.tag === "协" ? "tag-role sub" : "tag-role";
-      const st = e.status || "doing";
-      const pulse = st === "doing" ? "doing-pulse" : "";
+      const pulse = st0 === "doing" ? "doing-pulse" : "";
+      const style = e.style ? `<span class="style-tag" data-testid="expert-style">${escapeHtml(e.style)}</span>` : "";
+      const invite = st0 === "idle" ? `<span class="invite-hint" data-invite="${e.id}" data-testid="invite-${e.id}">请来</span>` : "";
       return `<button type="button" class="expert-chip ${qcCls} ${idleCls} ${active} ${pulse}" data-expert="${e.id}" data-testid="expert-${e.id}" title="${escapeHtml(e.role)}">
           ${avatarHtml(e.photo, e.av)}
           <span class="meta">
-            <span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="${tagCls}">${escapeHtml(e.tag || "")}</span></span>
-            <span class="status-pill ${st}">${escapeHtml(statusLabel(st))}</span>
-            <span class="st">${escapeHtml(e.busy || e.role)}</span>
+            <span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="${tagCls}">${escapeHtml(e.tag || "")}</span>${invite}</span>
+            <span class="status-pill ${st0}">${escapeHtml(statusLabel(st0))}</span>
+            <span class="st">${escapeHtml(state.invitedExperts[e.id] ? "已请来 · 工作中" : (e.busy || e.role))}</span>
+            ${style}
           </span>
         </button>`;
     }).join("");
-    $$("[data-expert]").forEach((b) => b.addEventListener("click", () => focusExpert(b.dataset.expert)));
+    $$("#roster [data-expert]").forEach((b) => b.addEventListener("click", (ev) => {
+      const inv = ev.target.closest("[data-invite]");
+      if (inv) { ev.preventDefault(); ev.stopPropagation(); inviteExpert(inv.dataset.invite); return; }
+      focusExpert(b.dataset.expert);
+    }));
 
     /* 四步可读时间线（非 pill 堆） */
     const stages = [
@@ -1067,9 +1162,16 @@
           t: i === 3 ? "（上一确认稿）壳体设螺旋水道；端盖鳍片；单密封圈——尚未改为双密封。" : s.t
         }))
       : DEMO.disclosure.sections;
+    const d4Diff = ver === "prev" ? `<div class="diff-grid d4-ver-diff" data-testid="d4-ver-diff">
+        <div class="diff-hint tiny" data-testid="diff-hint">示意·非可批 diff（可辨差分示意，非真算法）</div>
+        <div class="diff-row from-src"><span class="ds">上一确认稿</span><div>关键连接处采用单密封圈</div></div>
+        <div class="diff-row to-dst"><span class="ds">当前稿</span><div>关键连接处采用双密封圈</div></div>
+      </div>` : "";
     $("#docMain").innerHTML = `
       ${verBar}
+      ${prefBannerHtml()}
       ${lightBanner}
+      ${d4Diff}
       <div class="doc-body ${isLight ? "readonly" : ""}" data-testid="d4-main" id="doc-top">
         <h3>${escapeHtml(DEMO.disclosure.title)}${ver === "prev" ? " · 上一确认稿" : ""}</h3>
         <p class="tiny muted">主产出全文区 · 非聊天碎片 · 点编制「看产出」或硬请示依据可定位</p>
@@ -1080,6 +1182,7 @@
         <div class="qc-card${flashId === "qc-card" ? " anchor-flash" : ""}" data-testid="qc-card" id="qc-card">
           <strong>质检分卡</strong>
           <div class="tiny muted" style="margin:4px 0 8px">与成稿分卡；全绿 ≠ 已交⑤</div>
+          <div class="tiny qc-method" data-testid="qc-method">去相关手段：对照图纸 + 规则检 q4（质检席独立）</div>
           ${qc.map((q) => {
             const tag = q.status === "green" ? '<span class="tag ok">绿</span>' : q.status === "yellow" ? '<span class="tag warn">黄</span>' : '<span class="tag ask">红</span>';
             return `<div class="qc-row"><span>${escapeHtml(q.name)}</span>${tag}</div>`;
@@ -1116,8 +1219,11 @@
             <div>
               <strong>1:1 · ${escapeHtml(ae.name)}</strong>
               <div class="tiny muted">${escapeHtml(ae.blurb || ae.role)}</div>
+              <div class="tiny contract-line" data-testid="1to1-contract">本岗交付：${escapeHtml(ae.kind === "qc" ? "质检分卡红黄项" : ae.kind === "writer" ? "技术方案段" : ae.role)}</div>
+              ${ae.style ? `<div class="tiny muted">风格 · ${escapeHtml(ae.style)}</div>` : ""}
             </div>
           </div>
+          <p class="tiny muted" data-testid="1to1-no-replace">1:1 只驾驭 · 不替代侧栏硬请示打包口（负责人）</p>
           <div class="focus-acts">
             <button type="button" class="primary" data-testid="btn-see-output" id="btnSeeOutput">看产出</button>
             <button type="button" class="ghost" id="btnBackTeam" data-testid="btn-back-team">回团队</button>
@@ -1151,14 +1257,16 @@
         ${evidenceChainHtml(ask, chainTestId || "ask-evidence")}`;
     }
 
+    const hasYellowOpen = !(DEMO.disclosure.qc.every((q) => q.status === "green"));
     let asks = "";
     if (!state.factConfirmed) {
       asks += `
         <div class="hard-ask" data-testid="ask-fact">
-          <div class="label">【硬请示】P0 签字级</div>
+          <div class="label">【硬请示】${gradeBadge("d4-fact")}</div>
           <h3>确认交底事实</h3>
           ${askExcerptHtml(DEMO.disclosure.factAsk, "fact-evidence")}
-          ${judgmentReasonHtml("fact", "接受结论 · 技术方案与材料一致")}
+          ${hasYellowOpen ? `<div class="doubt-bar" data-testid="doubt-bar"><strong>此处存疑</strong> · 黄项未关闭（q4 效果依据）· 可认风险后仍拍，或先补数据</div>` : ""}
+          ${judgmentReasonHtml("fact", hasYellowOpen ? "接受结论 · 已知 q4 存疑" : "接受结论 · 技术方案与材料一致")}
           <div class="acts">
             <button type="button" class="ask-confirm" id="btnFact" data-testid="confirm-fact">确认事实</button>
             <button type="button">还要改</button>
@@ -1170,11 +1278,18 @@
     }
     if (!state.canHand5) {
       const blocked = !state.allGreen || !state.factConfirmed;
+      const endCheck = `<div class="end-check" data-testid="end-checklist">
+            <div class="tiny" style="font-weight:700">结束检查表摘要（可交⑤前）</div>
+            <div class="ec-check ${state.allGreen ? "ok" : ""}">全绿 ${state.allGreen ? "✓" : "…"}</div>
+            <div class="ec-check ${state.factConfirmed ? "ok" : ""}">事实确认 ${state.factConfirmed ? "✓" : "…"}</div>
+            <div class="ec-check">输入契约齐（材料入卷）✓</div>
+          </div>`;
       asks += `
         <div class="hard-ask ${blocked ? "blocked-hint" : ""}" data-testid="ask-hand5">
-          <div class="label">【硬请示】P0 签字级</div>
+          <div class="label">【硬请示】${gradeBadge("d4-hand5")}</div>
           <h3>可否交申请部（⑤）？</h3>
           ${askExcerptHtml(DEMO.disclosure.hand5Ask, "hand5-evidence")}
+          ${endCheck}
           <p class="tiny">前置：交底质检全绿 + 事实确认。黄项处理不能代替本确认。</p>
           ${!blocked ? judgmentReasonHtml("hand5", "全绿+事实已确认 · 授权交⑤开写") : ""}
           <div class="acts">
@@ -1276,11 +1391,13 @@
   }
 
   function renderWorkOrder() {
+    const ck = state.woChecks;
+    const allCk = ck.in1 && ck.in2 && ck.in3;
     $("#woBody").innerHTML = `
       <div class="wo-card" data-testid="h45">
         <span class="tag ask">工单 · 现在做⑤</span>
         <h2>④ → ⑤ 交办工单</h2>
-        <p class="muted">像 Codex/WorkBuddy 的任务交接：打包方交产出，接单方开新线程；旁注三线分词。</p>
+        <p class="muted">打包方交产出，接单方开新线程；旁注三线分词。</p>
         <div class="wo-agents">
           <div class="wo-agent">${avatarHtml("04.jpg", "负")}<div><strong>交底部负责人</strong><div class="tiny muted">打包 · 结束检查表</div></div></div>
           <div class="wo-agent">${avatarHtml("05.jpg", "申")}<div><strong>申请部负责人</strong><div class="tiny muted">接单 · 开 A/B/C</div></div></div>
@@ -1291,18 +1408,40 @@
           <div><label>④ 合格线</label><span class="tag ok">交底已全绿</span></div>
           <div><label>⑤ 合格线</label><span class="tag warn">申请尚未过线</span></div>
         </div>
+        <div class="contract-table" data-testid="wo-contracts">
+          <div class="ct-row"><span class="ct-k">输入契约</span><span>合格交底全绿 + 事实确认 + 材料包</span></div>
+          <div class="ct-row"><span class="ct-k">输出契约</span><span>申请文件可递交（过线）+ 申不申结论</span></div>
+          <div class="ct-row"><span class="ct-k">质量契约</span><span>权项-交底一致 · 形式要件 · 过线≠递交</span></div>
+        </div>
+        <div class="wo-accept-checks" data-testid="wo-accept-checks">
+          <div class="tiny" style="font-weight:700;margin-bottom:6px">接单前勾结束检查表三项</div>
+          <label class="wo-ck"><input type="checkbox" data-wock="in1" ${ck.in1 ? "checked" : ""} data-testid="wo-ck-1"/> 交底全绿已核</label>
+          <label class="wo-ck"><input type="checkbox" data-wock="in2" ${ck.in2 ? "checked" : ""} data-testid="wo-ck-2"/> 事实确认已核</label>
+          <label class="wo-ck"><input type="checkbox" data-wock="in3" ${ck.in3 ? "checked" : ""} data-testid="wo-ck-3"/> 材料包齐全</label>
+        </div>
         <div class="agent-steps">
           <div class="agent-step done"><span class="as-t">过线</span><span>交底全绿 + 事实 + 可交⑤</span></div>
           <div class="agent-step done"><span class="as-t">打包</span><span>材料包 / 结束检查表摘要已列</span></div>
-          <div class="agent-step on"><span class="as-t">接单</span><span>待申请部负责人接单进入⑤</span></div>
+          <div class="agent-step on"><span class="as-t">接单</span><span>勾三项后申请部接单进入⑤</span></div>
         </div>
         <div class="row-actions">
-          <button type="button" class="primary" id="btnAcceptWO" data-testid="accept-wo">申请部接单进入</button>
+          <button type="button" class="primary" id="btnAcceptWO" data-testid="accept-wo" ${allCk ? "" : "disabled"}>申请部接单进入</button>
           <button type="button" id="btnBackD4">返回交底部</button>
           <button type="button" class="ghost" id="btnWoLobby">回工作台</button>
         </div>
+        ${!allCk ? `<p class="tiny muted" data-testid="wo-need-check">请先勾选结束检查表三项再接单</p>` : ""}
       </div>`;
-    $("#btnAcceptWO").addEventListener("click", () => openDept("d5", { fromWorkOrder: true }));
+    $$("[data-wock]").forEach((inp) => inp.addEventListener("change", () => {
+      state.woChecks[inp.dataset.wock] = !!inp.checked;
+      render();
+    }));
+    $("#btnAcceptWO").addEventListener("click", () => {
+      if (!(state.woChecks.in1 && state.woChecks.in2 && state.woChecks.in3)) {
+        toast("请先勾结束检查表三项");
+        return;
+      }
+      openDept("d5", { fromWorkOrder: true });
+    });
     $("#btnBackD4").addEventListener("click", () => openDept("d4", { direct: true }));
     $("#btnWoLobby").addEventListener("click", goLobby);
   }
@@ -1322,10 +1461,13 @@
       docInner = `<div class="doc-page" data-testid="d5-doc-claims">
         <div class="page-kicker">权利要求书 · 第 1 页（示意分页）</div>
         <h3 style="margin:0 0 10px;font-family:var(--font-doc)">权利要求书</h3>
-        ${claims.map((c) => `<div class="claim-row" id="claim-${escapeHtml(c.id)}">
+        ${claims.map((c) => {
+          const hi = state.applyClaimHighlight === c.id ? " claim-hi" : "";
+          return `<div class="claim-row${hi}" id="claim-${escapeHtml(c.id)}" data-testid="claim-${escapeHtml(c.id)}">
           <div class="claim-no">${escapeHtml(c.no)}<span class="ck">${escapeHtml(c.kind)}</span></div>
           <p>${escapeHtml(c.text)}</p>
-        </div>`).join("")}
+        </div>`;
+        }).join("")}
       </div>`;
     } else if (tab === "spec") {
       docInner = `<div class="doc-page" data-testid="d5-doc-spec">
@@ -1337,6 +1479,7 @@
     } else {
       docInner = `<div class="doc-page" data-testid="d5-doc-diff">
         <div class="page-kicker">交底 ↔ 申请 · 对照差分</div>
+        <div class="diff-hint tiny" data-testid="diff-hint">示意·非可批 diff（可辨差分示意，非真算法）</div>
         <h3 style="margin:0 0 10px">一眼对照</h3>
         <div class="diff-grid">${diffs.map((d, i) => {
           const cls = i % 2 === 1 ? "to-dst" : "from-src";
@@ -1346,11 +1489,20 @@
     }
     const tabBtn = (id, label) => `<button type="button" class="doc-tab ${tab === id ? "on" : ""}" data-apply-tab="${id}" data-testid="d5-tab-${id}">${label}</button>`;
 
+    const aDens = state.applyDensity === "light";
+    const aRoster = DEMO.apply.roster || [];
+    const aQc = DEMO.apply.qc || [];
+    const aAllGreen = aQc.length ? aQc.every((q) => q.status === "green") : a.overLine;
     $("#applyBody").innerHTML = `
       <div class="dept-top">
         <button type="button" class="ghost" id="btnApplyBack">← 工作台</button>
         <h1>⑤ 申请部</h1>
         <span class="line-status ${a.overLine ? "ok" : ""}">${a.overLine ? "申请文件可递交（过线）" : "未过线 / 进行中"}</span>
+        <div class="density-toggle" data-testid="d5-density">
+          <span class="dens-label">密度</span>
+          <button type="button" class="dens-btn ${aDens ? "on" : ""}" data-ad="light" data-testid="d5-density-light">老板轻量</button>
+          <button type="button" class="dens-btn ${!aDens ? "on" : ""}" data-ad="author" data-testid="d5-density-author">主笔</button>
+        </div>
         <div class="shell-spacer"></div>
         <span class="tiny muted dept-doc-hint">案卷 → 顶栏「案卷」</span>
       </div>
@@ -1362,7 +1514,17 @@
           <div class="tiny muted">向你汇报 A 理解 → B 申不申 → C 撰写递交；过线 ≠ 确认递交。</div>
         </div>
       </div>
-      <div class="apply-layout">
+      <div class="who-block ${aDens ? "collapsed" : ""}" data-testid="d5-roster-wrap">
+        <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">权项 / 质检分席</span></div>
+        <div class="roster" data-testid="d5-roster">${aRoster.map((e) => `
+          <button type="button" class="expert-chip ${e.kind === "qc" ? "qc" : ""}" data-testid="d5-expert-${escapeHtml(e.id)}">
+            ${avatarHtml(e.photo, e.av)}
+            <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
+            <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
+            ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
+          </button>`).join("")}</div>
+      </div>
+      <div class="apply-layout ${aDens ? "density-light" : ""}">
         <div class="main-pane">
           <div class="pane-head"><strong>主产出 · 申请文件</strong><span class="pane-tag">权项 | 说明书 | 差分</span></div>
           <div class="pane-body">
@@ -1372,12 +1534,22 @@
               ${tabBtn("diff", "差分对照")}
             </div>
             ${docInner}
-            <div class="qc-card" style="margin-top:12px">
+            <div class="qc-card" style="margin-top:12px" id="d5-qc" data-testid="d5-qc-card">
               <strong>C 段 · 质检过线</strong>
-              <div class="tiny muted" style="margin:4px 0 8px">过线只证明「文件可递交」，须另点确认递交。</div>
+              <div class="tiny muted" style="margin:4px 0 8px">过线只证明「文件可递交」，须另点确认递交。去相关：对照交底差分+形式检。</div>
+              ${aQc.map((q) => {
+                const tag = q.status === "green" ? '<span class="tag ok">绿</span>' : '<span class="tag warn">黄</span>';
+                return `<div class="qc-row"><span>${escapeHtml(q.name)}</span>${tag}</div>`;
+              }).join("")}
               ${!a.overLine
-                ? `<button type="button" id="btnOver" data-testid="make-overline" ${a.applyOrNot === "yes" && a.understand ? "" : "disabled"}>演示：质检过线</button>`
-                : `<span class="tag ok">已过线</span> <span class="tiny muted">过线 ≠ 确认递交</span>`}
+                ? `<div class="qc-yellow-fix" data-testid="d5-qc-yellow-fix">
+                    <p class="tiny" style="margin:8px 0 6px">黄项须处理（禁一键闷头过线）：</p>
+                    <div class="row-actions">
+                      <button type="button" class="primary" id="btnOver" data-testid="make-overline" ${a.applyOrNot === "yes" && a.understand ? "" : "disabled"}>打开黄项 · 补数据转绿过线</button>
+                      <button type="button" id="btnOverRisk" data-testid="d5-qc-risk" ${a.applyOrNot === "yes" && a.understand ? "" : "disabled"}>认风险过线</button>
+                    </div>
+                  </div>`
+                : `<span class="tag ok" data-testid="d5-overlined">已过线${state.applyYellowRisk ? "（含认风险）" : ""}</span> <span class="tiny muted">过线 ≠ 确认递交</span>`}
             </div>
           </div>
         </div>
@@ -1394,7 +1566,7 @@
               <div class="seg-block" data-testid="block-a">
                 <div class="seg-title">A · 理解</div>
                 <div class="hard-ask ${a.understand ? "done" : ""}" data-testid="ask-understand">
-                  <div class="label">【硬请示】</div>
+                  <div class="label">【硬请示】${gradeBadge("d5-understand")}</div>
                   <h3>确认开案理解</h3>
                   <p class="tiny">${escapeHtml(DEMO.apply.understand)}</p>
                   <div class="acts">${a.understand ? "<span class='tag ok'>已确认理解</span>" : `<button type="button" class="ask-confirm" id="btnUnd" data-testid="confirm-understand">确认理解</button>`}</div>
@@ -1404,7 +1576,7 @@
               <div class="seg-block ${!a.understand ? "dim" : ""}" data-testid="block-b">
                 <div class="seg-title">B · 查新·申不申</div>
                 <div class="hard-ask ${a.applyOrNot ? "done" : ""} ${!a.understand ? "blocked-hint" : ""}" data-testid="ask-apply-or-not">
-                  <div class="label">【硬请示】P0 签字级</div>
+                  <div class="label">【硬请示】${gradeBadge("d5-apply")}</div>
                   <h3>申不申？</h3>
                   <p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.apply.applyOrNotAsk || {}).conclusion || DEMO.apply.noveltyHint)}</p>
                   <p class="tiny muted">${escapeHtml(DEMO.apply.noveltyHint)}</p>
@@ -1417,7 +1589,7 @@
               <div class="seg-block ${a.applyOrNot !== "yes" ? "dim" : ""}" data-testid="block-c">
                 <div class="seg-title">C · 撰写递交</div>
                 <div class="hard-ask ${a.submit ? "done" : ""} ${!a.overLine ? "blocked-hint" : ""}" data-testid="ask-submit5">
-                  <div class="label">【硬请示】P0 签字级</div>
+                  <div class="label">【硬请示】${gradeBadge("d5-submit")}</div>
                   <h3>确认递交</h3>
                   <p class="tiny">须先过线；本钮与过线分离。</p>
                   ${a.overLine ? evidenceChainHtml(DEMO.apply.submitAsk, "submit5-evidence") : ""}
@@ -1497,9 +1669,27 @@
       toast("不申结案（B5）· 不生成申请号");
       render();
     });
+    $$("[data-ad]").forEach((b) => b.addEventListener("click", () => {
+      state.applyDensity = b.dataset.ad;
+      render();
+    }));
     const o = $("#btnOver"); if (o) o.addEventListener("click", () => {
       if (!(state.apply.applyOrNot === "yes" && state.apply.understand)) return;
-      state.apply.overLine = true; addTrace("操作·⑤过线", "申请文件可递交（过线）≠ 已确认递交"); render();
+      (DEMO.apply.qc || []).forEach((q) => { q.status = "green"; });
+      state.apply.overLine = true;
+      state.applyYellowRisk = false;
+      addTrace("操作·⑤过线", "补数据转绿 · 过线 ≠ 已确认递交");
+      addJudgment({ gate: "⑤质检过线", conclusion: "黄项补数据转绿过线", option: "补数据转绿", reason: "形式要件补齐", confidence: "high" });
+      render();
+    });
+    const orisk = $("#btnOverRisk"); if (orisk) orisk.addEventListener("click", () => {
+      if (!(state.apply.applyOrNot === "yes" && state.apply.understand)) return;
+      (DEMO.apply.qc || []).forEach((q) => { q.status = "green"; });
+      state.apply.overLine = true;
+      state.applyYellowRisk = true;
+      addTrace("操作·⑤过线", "认风险过线 ≠ 已确认递交");
+      addJudgment({ gate: "⑤质检过线", conclusion: "认风险过线", option: "认风险过线", reason: "接受形式黄项风险", confidence: "mid" });
+      render();
     });
     const s = $("#btnSubmit"); if (s) s.addEventListener("click", () => {
       if (!state.apply.overLine) return;
@@ -1525,9 +1715,22 @@
     if (acs) acs.addEventListener("click", () => {
       const v = ($("#applyComposerInput") && $("#applyComposerInput").value || "").trim();
       if (!v) { toast("先打一句再说（演示）"); return; }
-      addTrace("⑤侧栏驾驭（演示）", v.slice(0, 80));
-      toast("已发送给申请部负责人（演示）");
+      state.applyDocTab = "claims";
+      state.applyClaimHighlight = "c1";
+      if (DEMO.apply.claims && DEMO.apply.claims[0]) {
+        const tip = "【已按驾驭高亮】";
+        if (!DEMO.apply.claims[0].text.includes("【已按驾驭高亮】")) {
+          DEMO.apply.claims[0].text = tip + DEMO.apply.claims[0].text;
+        }
+      }
+      addTrace("⑤侧栏驾驭（演示）", v.slice(0, 80) + " → 独权高亮");
+      toast("已落主栏 · 独权 1 高亮（演示）");
       if ($("#applyComposerInput")) $("#applyComposerInput").value = "";
+      render();
+      requestAnimationFrame(() => {
+        const el = document.getElementById("claim-c1");
+        if (el) { el.classList.add("claim-hi"); el.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+      });
     });
   }
 
@@ -1541,7 +1744,10 @@
       docInner = `<div class="doc-page" data-testid="d6-doc-reply">
         <div class="page-kicker">答复书 · 分页稿（示意）</div>
         <h3 style="margin:0 0 10px;font-family:var(--font-doc)">审查意见答复书（草案）</h3>
-        ${sections.map((s) => `<div class="sec" id="${escapeHtml(s.id)}"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`).join("")}
+        ${sections.map((s) => {
+          const hi = state.replySecHighlight === s.id ? " anchor-flash" : "";
+          return `<div class="sec${hi}" id="${escapeHtml(s.id)}" data-testid="reply-sec-${escapeHtml(s.id)}"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`;
+        }).join("")}
       </div>`;
     } else if (tab === "oa") {
       docInner = `<div class="doc-page" data-testid="d6-doc-oa">
@@ -1554,6 +1760,7 @@
     } else {
       docInner = `<div class="doc-page" data-testid="d6-doc-diff">
         <div class="page-kicker">通知书 ↔ 答复 · 对照</div>
+        <div class="diff-hint tiny" data-testid="diff-hint">示意·非可批 diff（可辨差分示意，非真算法）</div>
         <h3 style="margin:0 0 10px">一眼对照</h3>
         <div class="diff-grid">${diffs.map((d, i) => {
           const cls = i % 2 === 1 ? "to-dst" : "from-src";
@@ -1563,11 +1770,18 @@
     }
     const tabBtn = (id, label) => `<button type="button" class="doc-tab ${tab === id ? "on" : ""}" data-reply-tab="${id}" data-testid="d6-tab-${id}">${label}</button>`;
 
+    const rDens = state.replyDensity === "light";
+    const rRoster = DEMO.reply.roster || [];
     $("#replyBody").innerHTML = `
       <div class="dept-top">
         <button type="button" class="ghost" id="btnReplyBack">← 工作台</button>
         <h1>⑥ 答复部</h1>
         <span class="line-status">本轮答复进行中</span>
+        <div class="density-toggle" data-testid="d6-density">
+          <span class="dens-label">密度</span>
+          <button type="button" class="dens-btn ${rDens ? "on" : ""}" data-rd="light" data-testid="d6-density-light">老板轻量</button>
+          <button type="button" class="dens-btn ${!rDens ? "on" : ""}" data-rd="author" data-testid="d6-density-author">主笔</button>
+        </div>
         <div class="shell-spacer"></div>
         <span class="tiny muted dept-doc-hint">案卷 → 顶栏「案卷」</span>
       </div>
@@ -1579,13 +1793,24 @@
           <div class="tiny muted">争点理解 → 策略/缩限 → 本轮递交；期限醒目，不可静默超期。</div>
         </div>
       </div>
-      <div class="reply-layout">
+      <div class="who-block ${rDens ? "collapsed" : ""}" data-testid="d6-roster-wrap">
+        <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">争点 / 策略分席</span></div>
+        <div class="roster" data-testid="d6-roster">${rRoster.map((e) => `
+          <button type="button" class="expert-chip" data-testid="d6-expert-${escapeHtml(e.id)}">
+            ${avatarHtml(e.photo, e.av)}
+            <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
+            <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
+            ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
+          </button>`).join("")}</div>
+      </div>
+      <div class="reply-layout ${rDens ? "density-light" : ""}">
         <div class="main-pane">
           <div class="pane-head"><strong>主产出 · 答复稿</strong><span class="pane-tag">答复 | 通知书 | 差分</span></div>
           <div class="pane-body">
             <div class="deadline-banner">
               <strong>答复截止：${escapeHtml(DEMO.reply.deadline)}</strong>
-              <div class="tiny">超期须升级可见，不可静默。</div>
+              <div class="tiny">超期须升级可见，不可静默。${DEMO.reply.upgraded ? ' <span class="tag ask" data-testid="upgrade-badge">已升级催办</span>' : ""}</div>
+              ${!DEMO.reply.upgraded ? `<button type="button" class="ghost" id="btnUpgrade" data-testid="btn-upgrade" style="margin-top:6px">演示：升级催办</button>` : ""}
             </div>
             <div class="doc-tabs" data-testid="d6-doc-tabs">
               ${tabBtn("reply", "答复书")}
@@ -1602,7 +1827,7 @@
               <div class="seg-block" data-testid="block-a6">
                 <div class="seg-title">A · 争点（中立）</div>
                 <div class="hard-ask ${r.contentionOk ? "done" : ""}" data-testid="ask-contention">
-                  <div class="label">【硬请示】</div>
+                  <div class="label">【硬请示】${gradeBadge("d6-contention")}</div>
                   <h3>审查意见理解是否如此？</h3>
                   <p class="tiny">${escapeHtml(DEMO.reply.contention)}</p>
                   <div class="acts">${r.contentionOk ? `<span class="tag ok">争点理解已确认</span>` : `<button type="button" class="ask-confirm" id="btnContention" data-testid="confirm-contention">确认争点理解</button>`}</div>
@@ -1611,7 +1836,7 @@
               <div class="seg-block ${!r.contentionOk ? "dim" : ""}" data-testid="block-b6">
                 <div class="seg-title">B · 策略 / 重大缩限</div>
                 <div class="hard-ask ${r.limitOk ? "done" : ""} ${!r.contentionOk ? "blocked-hint" : ""}" data-testid="ask-limit">
-                  <div class="label">【硬请示】P0 签字级</div>
+                  <div class="label">【硬请示】${gradeBadge("d6-strategy")}</div>
                   <h3>重大缩限是否接受？</h3>
                   ${r.contentionOk ? `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.reply.strategyAsk || {}).conclusion || "")}</p>
                   ${evidenceChainHtml(DEMO.reply.strategyAsk, "strategy-evidence")}
@@ -1633,7 +1858,7 @@
               <div class="seg-block ${!r.limitOk ? "dim" : ""}" data-testid="block-c6">
                 <div class="seg-title">C/D · 起草与本轮递交</div>
                 <div class="hard-ask ${r.submit ? "done" : ""} ${!r.limitOk ? "blocked-hint" : ""}" data-testid="ask-reply-submit">
-                  <div class="label">【硬请示】P0 签字级</div>
+                  <div class="label">【硬请示】${gradeBadge("d6-submit")}</div>
                   <h3>确认本轮递交</h3>
                   ${r.limitOk ? evidenceChainHtml(DEMO.reply.submitAsk, "reply-submit-evidence") : ""}
                   ${r.limitOk ? submitManifestHtml(DEMO.reply.submitAsk, "reply-submit-manifest") : ""}
@@ -1665,6 +1890,13 @@
       render();
     }));
     $("#btnReplyBack").addEventListener("click", goLobby);
+    $$("[data-rd]").forEach((b) => b.addEventListener("click", () => { state.replyDensity = b.dataset.rd; render(); }));
+    const bup = $("#btnUpgrade"); if (bup) bup.addEventListener("click", () => {
+      DEMO.reply.upgraded = true;
+      addTrace("升级催办", "超期风险 · 已升级可见");
+      toast("已升级催办（演示）");
+      render();
+    });
     $$("[data-strat]").forEach((b) => b.addEventListener("click", () => {
       if (state.reply.limitOk) return;
       state.strategyChoice = b.dataset.strat;
@@ -1727,14 +1959,25 @@
     if (rcs) rcs.addEventListener("click", () => {
       const v = ($("#replyComposerInput") && $("#replyComposerInput").value || "").trim();
       if (!v) { toast("先打一句再说（演示）"); return; }
-      addTrace("⑥侧栏驾驭（演示）", v.slice(0, 80));
-      toast("已发送给答复部负责人（演示）");
+      state.replyDocTab = "reply";
+      state.replySecHighlight = "rp-arg";
+      const sec = (DEMO.reply.replySections || []).find((s) => s.id === "rp-arg");
+      if (sec && !sec.t.includes("【驾驭补强】")) sec.t = "【驾驭补强】" + sec.t;
+      addTrace("⑥侧栏驾驭（演示）", v.slice(0, 80) + " → 创造性段高亮");
+      toast("已落主栏 · 创造性段高亮（演示）");
       if ($("#replyComposerInput")) $("#replyComposerInput").value = "";
+      render();
+      requestAnimationFrame(() => {
+        const el = document.getElementById("rp-arg");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
     });
   }
 
   function renderThin() {
     const d = deptById(state.thinDept);
+    const confirmed = !!(state.thinLineConfirmed[d.id]);
+    const photo = d.leadPhoto || "01.jpg";
     $("#thinBody").innerHTML = `
       <div class="thin-shell">
         <div class="dept-top">
@@ -1743,7 +1986,7 @@
           <span class="line-status">薄占位 · 合格线示意</span>
         </div>
         <div class="lead-bar">
-          <span class="avatar">${escapeHtml(d.num)}</span>
+          ${avatarHtml(photo, d.num, "avatar")}
           <div>
             <strong>${escapeHtml(d.name)}负责人</strong>
             <div class="tiny muted">${escapeHtml(d.desc)} · 一期薄部，不造细作业台。</div>
@@ -1757,8 +2000,16 @@
             </div>
             <div class="mw-card">
               <strong>agent 状态</strong>
-              <p class="tiny" style="margin:6px 0 0">编制未展开 · 进得去 · 可回大厅派别的部</p>
+              <p class="tiny" style="margin:6px 0 0">编制薄占位 · 进得去 · 可回大厅派别的部</p>
             </div>
+          </div>
+          <div class="hard-ask ${confirmed ? "done" : ""}" data-testid="thin-line-ask">
+            <div class="label">【示意硬请示】P2</div>
+            <h3>合格线确认（薄部示意）</h3>
+            <p class="tiny">一期不做细台；若本部门有产出，请确认是否达到合格线表述。</p>
+            <div class="acts">${confirmed
+              ? `<span class="tag ok">已确认合格线示意</span>`
+              : `<button type="button" class="ask-confirm" id="btnThinLine" data-testid="thin-confirm-line">确认合格线</button>`}</div>
           </div>
           <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
           <div class="side-composer-stub" data-testid="thin-composer">
@@ -1771,6 +2022,13 @@
         </div>
       </div>`;
     $("#btnThinLobby").addEventListener("click", goLobby);
+    const bt = $("#btnThinLine");
+    if (bt) bt.addEventListener("click", () => {
+      state.thinLineConfirmed[d.id] = true;
+      addJudgment({ gate: `${d.num}合格线确认`, conclusion: d.line, option: "确认合格线示意", reason: "薄部示意拍板", confidence: "mid" });
+      toast("薄部合格线已确认（示意）");
+      render();
+    });
   }
 
   function renderBlock() {
@@ -1784,13 +2042,21 @@
         <div class="block-panel" data-testid="b2-block">
           <h2>进入门槛未过（B2）</h2>
           <p>要进申请部，需要合格交底（④全绿）并完成「可交⑤」与工单接单——agent 不会越权开写。</p>
+          <div class="gap-list" data-testid="b2-gaps">
+            <div class="tiny" style="font-weight:700;margin-bottom:4px">缺什么</div>
+            <ul>
+              <li>尚无交底书成稿 / ④未全绿</li>
+              <li>未确认「可交⑤」</li>
+              <li>未开④→⑤工单接单</li>
+            </ul>
+          </div>
           <div class="agent-steps" style="margin:12px 0;text-align:left">
             <div class="agent-step"><span class="as-t">检</span><span>无④全绿交底路径</span></div>
             <div class="agent-step"><span class="as-t">挡</span><span>B2 回退 · 请先走交底部或前台</span></div>
           </div>
           <div class="row-actions">
-            <button type="button" class="primary" id="btnBlockTo4">去交底部</button>
-            <button type="button" class="ghost" id="btnBlockFront">找前台</button>
+            <button type="button" class="primary" id="btnBlockTo4" data-testid="b2-to-d4">去交底部补缺口</button>
+            <button type="button" class="ghost" id="btnBlockFront" data-testid="b2-to-front">回前台</button>
           </div>
         </div>
       </div>`;
@@ -1821,7 +2087,12 @@
     } else if (state.drawerTab === "checklist") {
       body.innerHTML = `<h3 style="margin-top:0">检查表</h3>
         <div class="trace-item"><strong>进入检查表（④）</strong><div class="tiny">技术说明 ✓ · 图纸 ✓ · 目标写交底 ✓</div></div>
-        <div class="trace-item"><strong>结束检查表（④）</strong><div class="tiny">全绿 ${state.allGreen ? "✓" : "…"} · 事实 ${state.factConfirmed ? "✓" : "…"} · 可交⑤ ${state.canHand5 ? "✓" : "…"}</div></div>`;
+        <div class="trace-item"><strong>结束检查表（④）</strong>
+          <button type="button" class="linkish checklist-jump" data-ck-jump="qc-card" data-testid="ck-jump-qc">全绿 ${state.allGreen ? "✓" : "…"} · 点回质检分卡</button>
+          <button type="button" class="linkish checklist-jump" data-ck-jump="ask-fact" data-testid="ck-jump-fact">事实 ${state.factConfirmed ? "✓" : "…"} · 点回硬请示</button>
+          <div class="tiny">可交⑤ ${state.canHand5 ? "✓" : "…"}</div>
+        </div>
+        <p class="tiny muted" data-testid="sample-scope-note">样机范围 · 无 API/字典；合入主干前再套成本审计（E-3）</p>`;
     } else if (state.drawerTab === "orders") {
       body.innerHTML = `<h3 style="margin-top:0">工单</h3>
         <div class="trace-item"><strong>前台领进</strong><div class="tiny muted">接待专家交办材料 → 交底部负责人</div></div>
@@ -1837,8 +2108,15 @@
           : `<p class="muted tiny">尚无操作记录</p>`}
         </div>`;
     } else if (state.drawerTab === "judgments") {
+      const prefs = DEMO.preferences || [];
       body.innerHTML = `<h3 style="margin-top:0" data-testid="judgment-archive-title">判断档案</h3>
         <p class="tiny muted">T10 · 结论 / 选项 / 理由 / 依据锚 / 置信</p>
+        ${prefs.map((pr) => `<div class="trace-item pref-precip" data-testid="pref-precip">
+          <strong>可沉淀为偏好</strong>
+          <div class="tiny">${escapeHtml(pr.text)}</div>
+          <div class="tiny muted">来自 ${escapeHtml(pr.from || "")}</div>
+          <button type="button" class="ghost" data-testid="btn-precip-pref">示意沉淀</button>
+        </div>`).join("")}
         <div data-testid="judgment-archive">
         ${state.judgments.length
           ? state.judgments.map((j) => `<div class="trace-item judgment-item" data-testid="judgment-item">
@@ -1851,12 +2129,28 @@
               ${j.compare ? `<div class="tiny"><span class="ec-k">对比</span> ${escapeHtml(j.compare)}</div>` : ""}
               ${j.confidence ? `<div class="tiny"><span class="ec-k">置信</span> <span class="conf ${confClass(j.confidence)}">${escapeHtml(confLabel(j.confidence))}</span></div>` : ""}
               ${j.evidenceAnchor ? `<div class="tiny muted">依据锚 · ${escapeHtml(j.evidenceAnchor)}</div>` : ""}
+              <button type="button" class="linkish" data-testid="judgment-precip">可沉淀为偏好（示意）</button>
             </div>`).join("")
           : `<p class="muted tiny">尚无判断档案 · 硬请示确认后写入</p>`}
         </div>`;
+      body.querySelectorAll('[data-testid="btn-precip-pref"], [data-testid="judgment-precip"]').forEach((b) => {
+        b.addEventListener("click", () => toast("已示意沉淀为跨案偏好（不写真后端）"));
+      });
     } else {
       body.innerHTML = `<p class="muted tiny">未知页签</p>`;
     }
+    body.querySelectorAll("[data-ck-jump]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const jump = b.dataset.ckJump;
+        closeDrawer();
+        if (!state.enteredD4) openDept("d4", { direct: true });
+        else { state.view = "dept"; render(); }
+        requestAnimationFrame(() => {
+          const el = document.querySelector(`[data-testid="${jump}"], #${jump}`);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      });
+    });
   }
 
   function render() {
@@ -1930,7 +2224,7 @@
       state, loadSample, confirmDestination, enterConfirmedDept, makeAllGreen, resolveYellowQc,
       confirmFact, confirmCanHand5, openWorkOrder, openDept, openDrawer, goLobby, openFront, render, closeDrawer,
       focusExpert, revealExpertOutput, sendComposerDemo, goLobbyTodo, enterFromGate,
-      switchParallelCase, toggleShellPanel, closeShellPanel, setDensityMode, dismissMentor, insertAtMaterial
+      switchParallelCase, toggleShellPanel, closeShellPanel, setDensityMode, dismissMentor, insertAtMaterial, inviteExpert, gateGrade
     };
   }
 
