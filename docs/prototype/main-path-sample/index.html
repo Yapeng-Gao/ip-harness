@@ -253,11 +253,12 @@
       <strong>案卷抽屉</strong>
       <button type="button" id="drawerClose">关闭</button>
     </div>
-    <div class="drawer-tabs">
-      <button type="button" data-dtab="materials" class="on">材料</button>
-      <button type="button" data-dtab="checklist">检查表</button>
-      <button type="button" data-dtab="orders">工单</button>
-      <button type="button" data-dtab="traces">判断痕迹</button>
+    <div class="drawer-tabs" data-testid="drawer-tabs">
+      <button type="button" data-dtab="materials" class="on" data-testid="dtab-materials">材料</button>
+      <button type="button" data-dtab="checklist" data-testid="dtab-checklist">检查表</button>
+      <button type="button" data-dtab="orders" data-testid="dtab-orders">工单</button>
+      <button type="button" data-dtab="ops" data-testid="dtab-ops">操作记录</button>
+      <button type="button" data-dtab="judgments" data-testid="dtab-judgments">判断档案</button>
     </div>
     <div class="drawer-body" id="drawerBody"></div>
   </aside>

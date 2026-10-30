@@ -122,6 +122,10 @@ try {
   await page.waitForSelector('[data-testid="analyzing"]', { timeout: 2000 }).catch(() => {});
   await page.waitForSelector('[data-testid="f2-analysis"]', { timeout: 5000 });
   check("sample/upload → F2 analysis", await page.locator('[data-testid="f2-analysis"]').count() === 1);
+  const confN = await page.locator('[data-testid="file-conf"]').count();
+  check("P0 R-哲2 前台材料置信可见", confN >= 3, `conf=${confN}`);
+  const confTxt = await page.locator('[data-testid="front-file-conf-list"]').innerText();
+  check("P0 R-哲2 mid 标存疑可进部", confTxt.includes("存疑") || confTxt.includes("中"), confTxt.slice(0, 60));
 
   await page.click('[data-testid="to-f3"]');
   await page.waitForSelector('[data-testid="f3-confirm"]');
@@ -131,8 +135,14 @@ try {
   const notD4yet = await page.locator('[data-testid="view-d4"].on').count();
   check("without F3 confirm cannot enter D4", stillF3 === 1 && notD4yet === 0);
 
+  check("P0 去向卡有依据链", await page.locator('[data-testid="dest-evidence"]').count() === 1);
+  check("P0 去向卡有拍板理由", await page.locator('[data-testid="jr-dest"]').count() === 1);
   await page.click('[data-testid="confirm-dest"]');
   await page.waitForSelector('[data-testid="enter-d4"]');
+  const jAfterDest = await page.evaluate(() => window.__SAMPLE__.state.judgments.map(j => j.gate).join("|"));
+  check("P0 R-哲3/L-哲3 确认去向写判断档案", jAfterDest.includes("确认去向"), jAfterDest);
+  check("P0 去向理由含不选⑤", (await page.evaluate(() => (window.__SAMPLE__.state.judgments[0] || {}).compare || (window.__SAMPLE__.state.judgments[0] || {}).reason || "")).includes("⑤")
+    || (await page.evaluate(() => (window.__SAMPLE__.state.judgments.find(j => j.gate.includes("去向")) || {}).reason || "")).length > 8);
   await page.click('[data-testid="enter-d4"]');
   await page.waitForSelector('[data-testid="view-d4"].on');
   const roster = await page.locator('[data-testid="roster"] .expert-chip').count();
@@ -196,16 +206,29 @@ try {
   }
   check("依据摘录可点", exCount >= 1);
 
+  check("P0 D4-哲2 事实卡 T4 依据链", await page.locator('[data-testid="fact-evidence"]').count() === 1);
+  check("P0 D4-哲2 四件套字段", await page.locator('[data-testid="ec-source"]').count() >= 1
+    && await page.locator('[data-testid="ec-reasoning"]').count() >= 1
+    && await page.locator('[data-testid="ec-compare"]').count() >= 1
+    && await page.locator('[data-testid="ec-confidence"]').count() >= 1);
+  check("P0 D4-哲3 无一对全绿钮", await page.locator('[data-testid="make-green"]').count() === 0);
+  check("P0 D4-哲3 黄项处理入口", await page.locator('[data-testid="qc-yellow-fix"]').count() === 1);
+
   const handDisabled = await page.locator('[data-testid="confirm-hand5"][disabled]').count();
   check("D4a hand5 disabled before gates", handDisabled === 1);
-  await page.click('[data-testid="make-green"]');
+  await page.click('[data-testid="qc-fix-data"]');
   await sleep(200);
+  check("P0 D4-哲3 补数据后全绿", await page.locator('[data-testid="qc-all-green"]').count() === 1);
   const stillDisabled = await page.locator('[data-testid="confirm-hand5"][disabled]').count();
   check("D4a still blocked without fact confirm", stillDisabled === 1);
   await page.click('[data-testid="confirm-fact"]');
   await sleep(200);
+  const jFact = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("事实")));
+  check("P0 D4-哲4/HA-哲4 事实确认写判断档案", jFact);
   await page.click('[data-testid="confirm-hand5"]');
   await sleep(200);
+  const jHand = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("可交")));
+  check("P0 D4-哲4 可交⑤写判断档案", jHand);
   const openWo = await page.locator('[data-testid="open-wo"]').count();
   check("after gates → can open H45", openWo === 1);
 
@@ -215,15 +238,29 @@ try {
 
   await page.evaluate(() => window.__SAMPLE__.openDrawer("materials"));
   await sleep(200);
-  const tabs = ["materials", "checklist", "orders", "traces"];
+  const tabs = ["materials", "checklist", "orders", "ops", "judgments"];
   let tabOk = true;
-  for (const t of tabs) {
-    await page.click(`[data-dtab="${t}"]`);
+  for (const tb of tabs) {
+    await page.click(`[data-dtab="${tb}"]`);
     await sleep(100);
     const body = await page.locator("#drawerBody").innerText();
     if (!body || body.length < 2) tabOk = false;
   }
-  check("DOC has 4 tabs with content", tabOk);
+  check("DOC has 5 tabs with content", tabOk);
+  await page.click('[data-dtab="materials"]');
+  await sleep(100);
+  check("P0 R-哲2 案卷材料置信", await page.locator('[data-testid="drawer-materials"] [data-testid="file-conf"]').count() >= 1);
+  await page.click('[data-dtab="ops"]');
+  await sleep(100);
+  check("P0 Doc-哲1 操作记录 tab", await page.locator('[data-testid="ops-log-title"]').count() === 1
+    && (await page.locator("#drawerBody").innerText()).includes("操作记录"));
+  await page.click('[data-dtab="judgments"]');
+  await sleep(100);
+  const jBody = await page.locator("#drawerBody").innerText();
+  check("P0 Doc-哲1 判断档案 tab 名实分离", await page.locator('[data-testid="judgment-archive-title"]').count() === 1
+    && jBody.includes("判断档案") && !jBody.startsWith("判断痕迹"));
+  check("P0 Doc-哲1 判断档案有条目", await page.locator('[data-testid="judgment-item"]').count() >= 1, jBody.slice(0, 80));
+  check("P0 无旧「判断痕迹」页签", await page.locator('[data-dtab="traces"]').count() === 0);
 
   await page.evaluate(() => {
     const s = window.__SAMPLE__;
@@ -267,18 +304,25 @@ try {
   await sleep(150);
   const bYesEnabled = await page.locator('[data-testid="confirm-apply-yes"]:not([disabled])').count();
   check("B enabled after A confirm", bYesEnabled === 1);
+  check("P0 HA-哲1 申不申依据链", await page.locator('[data-testid="apply-evidence"]').count() === 1);
   const submitBefore = await page.locator('[data-testid="confirm-submit5"][disabled]').count();
   check("C 确认递交 disabled before overline", submitBefore === 1);
   await page.click('[data-testid="confirm-apply-yes"]');
   await sleep(150);
+  const jApply = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("申不申") && j.option.includes("申请")));
+  check("P0 HA-哲4 申不申写判断档案", jApply);
   await page.click('[data-testid="make-overline"]');
   await sleep(150);
+  check("P0 HA-哲2 递交清单", await page.locator('[data-testid="submit5-manifest"]').count() === 1);
+  check("P0 HA-哲2 风险声明", await page.locator('[data-testid="submit-risk"]').count() >= 1);
   const submitReady = await page.locator('[data-testid="confirm-submit5"]:not([disabled])').count();
   check("C 确认递交 enabled after overline", submitReady === 1);
   await page.click('[data-testid="confirm-submit5"]');
   await sleep(150);
   const traces = await page.evaluate(() => window.__SAMPLE__.state.traces.map(t => t.title).join("|"));
   check("hard asks recorded in traces", traces.includes("理解确认") && traces.includes("申不申") && traces.includes("确认递交"), traces);
+  const jSub = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("确认递交")));
+  check("P0 HA-哲2/4 ⑤递交写判断档案", jSub);
 
   // 薄部：进得去 + 合格线 + 禁超卖
   await page.evaluate(() => window.__SAMPLE__.openDept("d1"));
@@ -291,6 +335,7 @@ try {
   // ⑥ 硬请示：争点 → 缩限 → 递交
   await page.evaluate(() => {
     window.__SAMPLE__.state.reply = { contentionOk: false, limitOk: false, submit: false };
+    window.__SAMPLE__.state.strategyChoice = null;
     window.__SAMPLE__.state.view = "reply";
     window.__SAMPLE__.render();
   });
@@ -307,8 +352,19 @@ try {
   check("⑥ limit disabled before contention", limDisabled === 1);
   await page.click('[data-testid="confirm-contention"]');
   await sleep(150);
+  check("P0 HA-哲3 策略双选项", await page.locator('[data-testid="strategy-opts"]').count() === 1
+    && await page.locator('[data-testid="strat-A"]').count() === 1
+    && await page.locator('[data-testid="strat-B"]').count() === 1);
+  check("P0 HA-哲3 策略依据链", await page.locator('[data-testid="strategy-evidence"]').count() === 1);
+  const impactTxt = await page.locator('[data-testid="strategy-opts"]').innerText();
+  check("P0 HA-哲3 影响一句话", impactTxt.includes("影响"), impactTxt.slice(0, 60));
+  await page.click('[data-testid="strat-A"]');
+  await sleep(100);
   await page.click('[data-testid="confirm-limit"]');
   await sleep(150);
+  const jStrat = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("策略") && (j.option || "").includes("A")));
+  check("P0 HA-哲3/4 策略写判断档案", jStrat);
+  check("P0 HA-哲2 ⑥递交清单", await page.locator('[data-testid="reply-submit-manifest"]').count() === 1);
   await page.click('[data-testid="confirm-reply-submit"]');
   await sleep(150);
   const r = await page.evaluate(() => window.__SAMPLE__.state.reply);
@@ -317,6 +373,7 @@ try {
   // 顶栏飞层回流：重置⑥痕迹后回大厅，飞层「答复」应可进⑥
   await page.evaluate(() => {
     window.__SAMPLE__.state.reply = { contentionOk: false, limitOk: false, submit: false };
+    window.__SAMPLE__.state.strategyChoice = null;
     window.__SAMPLE__.goLobby();
   });
   await sleep(250);

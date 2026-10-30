@@ -1417,3 +1417,42 @@ button.ask-confirm:hover:not(:disabled) {
   border-color: var(--brand-soft-2);
   background: linear-gradient(180deg, #fff, var(--surface-2));
 }
+
+
+/* —— P0 · T4 依据链 / 判断理由 / 策略双选项 / 递交清单 —— */
+.evidence-chain {
+  margin: 8px 0 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--bg-soft, #f6f7f9);
+  border: 1px solid var(--line, #e5e7eb);
+  display: grid;
+  gap: 6px;
+}
+.ec-row { display: grid; grid-template-columns: 40px 1fr; gap: 8px; align-items: start; font-size: 12px; line-height: 1.45; }
+.ec-k { font-weight: 700; color: var(--muted, #6b7280); }
+.ec-v { color: var(--ink, #111); text-wrap: pretty; }
+.jr-box { margin: 8px 0 4px; }
+.jr-label { display: block; margin-bottom: 4px; font-weight: 600; }
+.jr-input {
+  width: 100%; box-sizing: border-box; border: 1px solid var(--line, #e5e7eb);
+  border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 12px;
+  resize: vertical; min-height: 44px; background: #fff;
+}
+.qc-yellow-fix { margin-top: 8px; padding-top: 4px; border-top: 1px dashed var(--line, #e5e7eb); }
+.qc-fix-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 13px; }
+.strategy-opts { display: grid; gap: 8px; margin: 8px 0; }
+.strat-opt {
+  text-align: left; border: 1px solid var(--line, #e5e7eb); border-radius: 10px;
+  padding: 10px 12px; background: #fff; cursor: pointer; font: inherit;
+}
+.strat-opt:hover { border-color: var(--brand, #2563eb); }
+.strat-opt.on { border-color: var(--brand, #2563eb); background: var(--brand-soft, #eff6ff); box-shadow: inset 0 0 0 1px var(--brand, #2563eb); }
+.strat-opt:disabled { opacity: .75; cursor: default; }
+.submit-manifest { margin: 8px 0; padding: 8px 10px; border-radius: 8px; background: #fff; border: 1px solid var(--line, #e5e7eb); }
+.submit-files { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 4px; font-size: 12px; }
+.submit-files li { display: flex; gap: 6px; align-items: center; }
+.risk-line { margin: 8px 0 0; font-size: 12px; color: var(--warn, #b45309); line-height: 1.45; }
+.judgment-item .ec-k { display: inline-block; min-width: 32px; }
+.drawer-tabs { flex-wrap: wrap; }
+.conf { white-space: nowrap; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 999px; }

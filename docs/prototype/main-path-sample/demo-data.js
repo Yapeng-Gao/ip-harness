@@ -71,13 +71,23 @@ window.DEMO = {
       conclusion: "技术方案与「样机测」效果描述与本案材料一致，可据当前稿确认交底事实。",
       anchor: "sec-tech",
       label: "依据摘录 · 技术方案",
-      text: "壳体设螺旋水道；转子端盖集成散热鳍片；进水口与出水口错位布置。关键连接处采用双密封圈。"
+      text: "壳体设螺旋水道；转子端盖集成散热鳍片；进水口与出水口错位布置。关键连接处采用双密封圈。",
+      source: "电机冷却结构技术说明.docx · 装配示意-侧视.png",
+      reasoning: "材料写水道/鳍片/密封 → 对照图纸侧视剖面 → 与主栏技术方案段一一对应，无矛盾。",
+      compare: "备选「单密封」表述与图纸双密封圈不符；当前稿取双密封+错位进出口。",
+      confidence: "mid",
+      confidenceNote: "效果数据标「样机测」· 存疑可认风险"
     },
     hand5Ask: {
       conclusion: "交底质检全绿且事实已确认后，可交申请部撰写——本确认 ≠ 已开工单。",
       anchor: "qc-card",
       label: "依据摘录 · 质检分卡",
-      text: "全绿项齐 · q4 效果依据已补（演示）。过线 ≠ 已交⑤。"
+      text: "全绿项齐 · q4 效果依据已处理。过线 ≠ 已交⑤。",
+      source: "质检分卡 q1–q5 · 结束检查表",
+      reasoning: "五项质检均绿 → 事实已确认 → 满足交⑤输入契约；本拍板只授权开写，不开工单。",
+      compare: "「全绿」≠「已交⑤」；未拍本钮不得开④→⑤工单。",
+      confidence: "high",
+      confidenceNote: "契约齐 · 高置信"
     }
   },
   lobbySeed: [
@@ -140,6 +150,30 @@ window.DEMO = {
   apply: {
     understand: "本案核心：螺旋水道 + 端盖鳍片 + 双密封，解决高功率密度温升与泄漏。",
     noveltyHint: "申请向查新摘要（示意）：最接近 D1 公开螺旋水道；区别＝端盖鳍片+双密封组合。",
+    applyOrNotAsk: {
+      conclusion: "相对最接近 D1，本案区别点足够支撑先走申请；建议「申请」。",
+      source: "申请向查新摘要 · 交底技术方案",
+      reasoning: "D1 公开螺旋水道 → 本案另有端盖鳍片+双密封组合 → 区别可写进独权。",
+      compare: "D1：仅螺旋水道。本案：水道 + 鳍片 + 双密封 + 错位进出口。",
+      confidence: "high",
+      confidenceNote: "查新对比清晰 · 高置信",
+      anchor: "sp-bg"
+    },
+    submitAsk: {
+      conclusion: "申请文件已过线，可确认向官方递交。",
+      source: "权项 · 说明书 · 过线质检",
+      reasoning: "过线证明文件集齐可递交 → 本拍板承担递交法律责任。",
+      compare: "过线 ≠ 已递交；未拍本钮不得视为已递交。",
+      confidence: "high",
+      confidenceNote: "签字级 · 高置信",
+      files: [
+        { name: "权利要求书.pdf", ok: true },
+        { name: "说明书.pdf", ok: true },
+        { name: "说明书附图.pdf", ok: true },
+        { name: "申请书/著录项目", ok: true }
+      ],
+      risk: "递交后权要以官方受理文本为准；演示样机不产生真实官费。"
+    },
     claimsHint: "独权草案：一种电机冷却结构，包括壳体水道……（示意）",
     specHint: "说明书章节已按交底展开（示意帧）。",
     claims: [
@@ -166,6 +200,42 @@ window.DEMO = {
     deadline: "2026-11-12（剩余约 14 天）",
     issues: ["对比文件 D1 公开螺旋水道", "创造性：鳍片与水道组合是否显而易见"],
     contention: "争点中立复述：审查员认为鳍片与水道组合相对 D1 显而易见；本案拟主张双密封+错位进出口带来的非显而易见效果。",
+    strategyOptions: [
+      {
+        id: "A",
+        title: "缩限：独权写入双密封+轴向错位",
+        impact: "保护范围变窄；授权概率升高；放弃「纯鳍片宽保护」。",
+        recommend: true
+      },
+      {
+        id: "B",
+        title: "争辩不缩限：坚持组合非显而易见",
+        impact: "范围更宽；驳回/二通风险升高；需更强效果证据。",
+        recommend: false
+      }
+    ],
+    strategyAsk: {
+      conclusion: "建议采纳方案 A（缩限），在期限前稳住授权路径。",
+      source: "通知书摘录 · 争点复述 · 效果数据",
+      reasoning: "D1 未教双密封+错位 → 写入独权可避开「鳍片显而易见」主攻；代价是放弃宽保护。",
+      compare: "A 弃宽求稳；B 保宽担风险。",
+      confidence: "mid",
+      confidenceNote: "策略权衡 · 中置信（效果数据仍弱）"
+    },
+    submitAsk: {
+      conclusion: "本轮答复文件可递交。",
+      source: "意见陈述 · 修改说明 · 权要修订页",
+      reasoning: "争点已确认 + 策略已拍 → 文件集齐 → 本拍板递交本轮答复。",
+      compare: "确认递交 ≠ 已授权；未拍不得视为已答复。",
+      confidence: "high",
+      confidenceNote: "签字级",
+      files: [
+        { name: "意见陈述书.pdf", ok: true },
+        { name: "修改后的权利要求书.pdf", ok: true },
+        { name: "修改说明页", ok: true }
+      ],
+      risk: "递交后以官方收文为准；超期未递交须升级催办（不可静默）。"
+    },
     replySections: [
       { id: "rp-issue", h: "审查意见要点", t: "1）D1 公开螺旋水道；2）认为鳍片与水道组合相对于 D1 显而易见。" },
       { id: "rp-cont", h: "争点中立复述", t: "审查员认为鳍片与水道组合相对 D1 显而易见；本案拟主张双密封+错位进出口带来的非显而易见效果。" },
