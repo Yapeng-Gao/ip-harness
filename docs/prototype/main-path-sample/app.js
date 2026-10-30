@@ -522,7 +522,17 @@
       return;
     }
     if (go === "d6") { state.view = "reply"; render(); return; }
-    if (go === "d5") { openDept("d5", { fromWorkOrder: state.workOrderOpened || true }); return; }
+    if (go === "d5") {
+      /* N-P1-2：仅代理陪同可绕 B2；企业须工单/接单路径，否则挡板 */
+      const agencyBypass = state.role === "agency";
+      const woBypass = !!state.workOrderOpened;
+      if (agencyBypass || woBypass) {
+        openDept("d5", { fromWorkOrder: true, agencyEscort: agencyBypass && !woBypass });
+      } else {
+        openDept("d5"); /* 企业无工单 → B2 */
+      }
+      return;
+    }
     if (go === "h45") { if (state.canHand5) openWorkOrder(); else openDept("d4", { direct: true }); }
   }
 
@@ -1524,10 +1534,11 @@
             ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
           </button>`).join("")}</div>
       </div>
-      <div class="apply-layout ${aDens ? "density-light" : ""}">
+      <div class="apply-layout ${aDens ? "density-light" : ""}" data-testid="d5-layout">
         <div class="main-pane">
           <div class="pane-head"><strong>主产出 · 申请文件</strong><span class="pane-tag">权项 | 说明书 | 差分</span></div>
-          <div class="pane-body">
+          ${aDens ? `<div class="light-fold-hint" data-testid="d5-light-fold">老板轻量 · 主栏收拢 · 硬请示钉侧栏（无独立 feed，对齐④收 feed）</div>` : ""}
+          <div class="pane-body ${aDens ? "light-folded" : ""}">
             <div class="doc-tabs" data-testid="d5-doc-tabs">
               ${tabBtn("claims", "权项")}
               ${tabBtn("spec", "说明书")}
@@ -1568,7 +1579,15 @@
                 <div class="hard-ask ${a.understand ? "done" : ""}" data-testid="ask-understand">
                   <div class="label">【硬请示】${gradeBadge("d5-understand")}</div>
                   <h3>确认开案理解</h3>
-                  <p class="tiny">${escapeHtml(DEMO.apply.understand)}</p>
+                  <p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.apply.understandAsk || {}).conclusion || DEMO.apply.understand)}</p>
+                  ${evidenceChainHtml(DEMO.apply.understandAsk || {
+                    source: "交底技术方案",
+                    reasoning: DEMO.apply.understand,
+                    compare: "开案复述 vs 交底要点",
+                    confidence: "high",
+                    confidenceNote: "与交底一致"
+                  }, "understand-evidence")}
+                  ${!a.understand ? judgmentReasonHtml("understand", "接受开案理解 · 三点组合无遗漏") : ""}
                   <div class="acts">${a.understand ? "<span class='tag ok'>已确认理解</span>" : `<button type="button" class="ask-confirm" id="btnUnd" data-testid="confirm-understand">确认理解</button>`}</div>
                 </div>
               </div>
@@ -1619,16 +1638,19 @@
     }));
     $("#btnApplyBack").addEventListener("click", goLobby);
     const u = $("#btnUnd"); if (u) u.addEventListener("click", () => {
+      const uAsk = DEMO.apply.understandAsk || {};
+      const reason = readJudgmentReason("understand");
       state.apply.understand = true;
       addTrace("操作·理解确认", "⑤ A");
       addJudgment({
         gate: "⑤理解确认",
-        conclusion: DEMO.apply.understand,
+        conclusion: uAsk.conclusion || DEMO.apply.understand,
         option: "确认理解",
-        reason: "接受开案理解表述",
-        evidenceAnchor: "block-a",
-        source: "交底核心要点",
-        confidence: "high"
+        reason: reason,
+        evidenceAnchor: uAsk.anchor || "block-a",
+        source: uAsk.source || "交底核心要点",
+        compare: uAsk.compare || "",
+        confidence: uAsk.confidence || "high"
       });
       render();
     });
@@ -1803,10 +1825,11 @@
             ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
           </button>`).join("")}</div>
       </div>
-      <div class="reply-layout ${rDens ? "density-light" : ""}">
+      <div class="reply-layout ${rDens ? "density-light" : ""}" data-testid="d6-layout">
         <div class="main-pane">
           <div class="pane-head"><strong>主产出 · 答复稿</strong><span class="pane-tag">答复 | 通知书 | 差分</span></div>
-          <div class="pane-body">
+          ${rDens ? `<div class="light-fold-hint" data-testid="d6-light-fold">老板轻量 · 主栏收拢 · 硬请示钉侧栏</div>` : ""}
+          <div class="pane-body ${rDens ? "light-folded" : ""}">
             <div class="deadline-banner">
               <strong>答复截止：${escapeHtml(DEMO.reply.deadline)}</strong>
               <div class="tiny">超期须升级可见，不可静默。${DEMO.reply.upgraded ? ' <span class="tag ask" data-testid="upgrade-badge">已升级催办</span>' : ""}</div>
@@ -2109,14 +2132,24 @@
         </div>`;
     } else if (state.drawerTab === "judgments") {
       const prefs = DEMO.preferences || [];
+      const savedPrefs = prefs.filter((p) => p.saved);
+      const pendPrefs = prefs.filter((p) => p.precipitable !== false && !p.saved);
       body.innerHTML = `<h3 style="margin-top:0" data-testid="judgment-archive-title">判断档案</h3>
         <p class="tiny muted">T10 · 结论 / 选项 / 理由 / 依据锚 / 置信</p>
-        ${prefs.map((pr) => `<div class="trace-item pref-precip" data-testid="pref-precip">
+        <div data-testid="pref-list">
+        ${savedPrefs.length ? `<div class="tiny" style="font-weight:700;margin:6px 0 4px">已沉淀偏好 · ${savedPrefs.length}</div>` : ""}
+        ${savedPrefs.map((pr) => `<div class="trace-item pref-precip pref-saved" data-testid="pref-saved">
+          <strong>已沉淀</strong>
+          <div class="tiny">${escapeHtml(pr.text)}</div>
+          <div class="tiny muted">来自 ${escapeHtml(pr.from || "")}${pr.savedAt ? " · " + escapeHtml(pr.savedAt) : ""}</div>
+        </div>`).join("")}
+        ${pendPrefs.map((pr) => `<div class="trace-item pref-precip" data-testid="pref-precip">
           <strong>可沉淀为偏好</strong>
           <div class="tiny">${escapeHtml(pr.text)}</div>
           <div class="tiny muted">来自 ${escapeHtml(pr.from || "")}</div>
-          <button type="button" class="ghost" data-testid="btn-precip-pref">示意沉淀</button>
+          <button type="button" class="ghost" data-testid="btn-precip-pref" data-pref-id="${escapeHtml(pr.id)}">写入偏好列表</button>
         </div>`).join("")}
+        </div>
         <div data-testid="judgment-archive">
         ${state.judgments.length
           ? state.judgments.map((j) => `<div class="trace-item judgment-item" data-testid="judgment-item">
@@ -2129,12 +2162,41 @@
               ${j.compare ? `<div class="tiny"><span class="ec-k">对比</span> ${escapeHtml(j.compare)}</div>` : ""}
               ${j.confidence ? `<div class="tiny"><span class="ec-k">置信</span> <span class="conf ${confClass(j.confidence)}">${escapeHtml(confLabel(j.confidence))}</span></div>` : ""}
               ${j.evidenceAnchor ? `<div class="tiny muted">依据锚 · ${escapeHtml(j.evidenceAnchor)}</div>` : ""}
-              <button type="button" class="linkish" data-testid="judgment-precip">可沉淀为偏好（示意）</button>
+              <button type="button" class="linkish" data-testid="judgment-precip" data-j-gate="${escapeHtml(j.gate)}" data-j-conclusion="${escapeHtml((j.conclusion || "").slice(0, 80))}">写入为跨案偏好</button>
             </div>`).join("")
           : `<p class="muted tiny">尚无判断档案 · 硬请示确认后写入</p>`}
         </div>`;
-      body.querySelectorAll('[data-testid="btn-precip-pref"], [data-testid="judgment-precip"]').forEach((b) => {
-        b.addEventListener("click", () => toast("已示意沉淀为跨案偏好（不写真后端）"));
+      body.querySelectorAll('[data-testid="btn-precip-pref"]').forEach((b) => {
+        b.addEventListener("click", () => {
+          const id = b.dataset.prefId;
+          const list = DEMO.preferences || (DEMO.preferences = []);
+          const pr = list.find((p) => p.id === id);
+          if (pr) {
+            pr.saved = true;
+            pr.precipitable = false;
+            pr.savedAt = new Date().toLocaleString("zh-CN", { hour12: false });
+          }
+          toast("已写入跨案偏好列表（演示）");
+          openDrawer("judgments");
+        });
+      });
+      body.querySelectorAll('[data-testid="judgment-precip"]').forEach((b) => {
+        b.addEventListener("click", () => {
+          const gate = b.dataset.jGate || "判断";
+          const conclusion = b.dataset.jConclusion || "";
+          const list = DEMO.preferences || (DEMO.preferences = []);
+          const nid = "pref-" + Date.now();
+          list.unshift({
+            id: nid,
+            text: `跨案偏好：${gate} · ${conclusion}`.slice(0, 120),
+            from: "本次判断档案",
+            precipitable: false,
+            saved: true,
+            savedAt: new Date().toLocaleString("zh-CN", { hour12: false })
+          });
+          toast("已写入跨案偏好列表（演示）");
+          openDrawer("judgments");
+        });
       });
     } else {
       body.innerHTML = `<p class="muted tiny">未知页签</p>`;

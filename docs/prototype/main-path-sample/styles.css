@@ -1488,3 +1488,49 @@ button.ask-confirm:hover:not(:disabled) {
 .linkish { background: none; border: 0; color: var(--brand); text-decoration: underline; cursor: pointer; padding: 0; font: inherit; display: block; text-align: left; margin: 4px 0; }
 .fly-summary { color: var(--brand); margin-top: 2px; }
 .pref-precip { border-left: 3px solid #6366f1; }
+
+
+/* —— 二轮复扫落地 · N-P2-1/3 密度对齐 + 精致度 —— */
+.apply-layout.density-light .side-pane .hard-ask,
+.reply-layout.density-light .side-pane .hard-ask {
+  box-shadow: 0 0 0 1px var(--ask-border), 0 4px 16px var(--ask-glow);
+}
+.apply-layout.density-light .side-pane,
+.reply-layout.density-light .side-pane { min-height: 420px; }
+.apply-layout.density-light .main-pane .pane-tag::after,
+.reply-layout.density-light .main-pane .pane-tag::after { content: " · 轻量"; }
+.light-fold-hint {
+  margin: 0 12px 8px; padding: 6px 10px; font-size: 11.5px; color: var(--brand);
+  background: var(--brand-soft); border-radius: 8px; border: 1px solid var(--brand-soft-2);
+}
+.pane-body.light-folded {
+  max-height: 260px; overflow: auto; opacity: 0.9;
+  mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
+}
+.pref-saved { border-left-color: var(--ok, #166534); background: var(--ok-soft, #ecf8f0); }
+.pref-saved strong { color: var(--ok, #166534); }
+
+/* 精致度再收：顶栏更矮、字阶更紧、墨蓝不动 */
+:root {
+  --top-h: 48px;
+}
+.shell-top {
+  backdrop-filter: saturate(1.1) blur(8px);
+  -webkit-backdrop-filter: saturate(1.1) blur(8px);
+}
+.card, .dept-door, .hard-ask, .fly-item {
+  transition: box-shadow 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+.dept-door:hover, .fly-item:hover {
+  transform: translateY(-1px);
+}
+.lobby-hero h1 { font-size: 20px; letter-spacing: 0.005em; }
+.pane-head { padding: 8px 12px; }
+.pane-body { padding: 10px 12px; }
+.abc-strip { gap: 4px; }
+.seg { font-size: 11.5px; padding: 5px 8px; }
+.composer { padding: 8px 10px; border-top: 1px solid var(--line); }
+.composer-row textarea { min-height: 36px; font-size: 13px; }
+.evidence-chain { background: var(--surface-2); border-color: var(--line); }
+.ec-k { color: var(--brand-3); letter-spacing: 0.04em; font-size: 10.5px; }

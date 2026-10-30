@@ -159,6 +159,17 @@ window.DEMO = {
       { id: "aq3", name: "形式要件齐全", status: "yellow" }
     ],
     understand: "本案核心：螺旋水道 + 端盖鳍片 + 双密封，解决高功率密度温升与泄漏。",
+    understandAsk: {
+      conclusion: "本案核心：螺旋水道 + 端盖鳍片 + 双密封，解决高功率密度温升与泄漏。",
+      source: "交底技术方案 · 附图 · 口述补充",
+      reasoning: "开案理解对齐交底三点组合；后续查新/权项以此为共同事实基础。",
+      compare: "交底主张三点组合 vs 开案复述三点组合 · 无遗漏关键区别点",
+      confidence: "high",
+      confidenceNote: "与交底一致 · 高置信",
+      anchor: "block-a",
+      label: "开案理解摘录",
+      text: "螺旋水道 + 端盖鳍片 + 双密封 · 温升与泄漏"
+    },
     noveltyHint: "申请向查新摘要（示意）：最接近 D1 公开螺旋水道；区别＝端盖鳍片+双密封组合。",
     applyOrNotAsk: {
       conclusion: "相对最接近 D1，本案区别点足够支撑先走申请；建议「申请」。",
@@ -220,7 +231,7 @@ window.DEMO = {
   ],
   /* T12 跨案偏好示意 */
   preferences: [
-    { id: "pref-effect", text: "你上次要求：效果必须标测法（样机测 / 仿真 / 文献）", from: "电机冷却 · 交底案", precipitable: true }
+    { id: "pref-effect", text: "你上次要求：效果必须标测法（样机测 / 仿真 / 文献）", from: "电机冷却 · 交底案", precipitable: true, saved: false }
   ],
   agencyLobbySeed: [
     { id: "seed-agency", kind: "a", tag: "陪同⑤", text: "陪同客户 · 模块化热管理案：待拍「申不申」", sub: "代理武装 · 今日", go: "d5", cover: "agency", cta: "陪同进⑤" }

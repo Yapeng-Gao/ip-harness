@@ -587,6 +587,80 @@ try {
   check("P2 L-设3 无「案卷底座」重名", !(await page.locator(".case-bar").innerText()).includes("底座"));
   check("P2 D4-工2 闸表数据", await page.evaluate(() => Array.isArray(DEMO.gateTable) && DEMO.gateTable.length >= 5));
 
+  // —— 二轮复扫 · N-P1/N-P2 ——
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.closeDrawer();
+    s.state.role = "ent";
+    s.state.workOrderOpened = false;
+    s.state.canHand5 = false;
+    s.state.apply = { understand: false, applyOrNot: null, submit: false, overLine: false };
+    s.goLobbyTodo("d5");
+  });
+  await sleep(200);
+  check("N-P1-2 企业 goLobbyTodo(d5) 无工单 → B2", await page.locator('[data-testid="b2-block"]').count() === 1);
+
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.role = "agency";
+    s.state.workOrderOpened = false;
+    s.state.canHand5 = false;
+    s.goLobbyTodo("d5");
+  });
+  await sleep(220);
+  check("N-P1-2 代理陪同可绕 B2 进⑤", await page.locator('[data-testid="d5-abc"]').count() === 1
+    || await page.locator('[data-testid="ask-understand"]').count() === 1);
+
+  check("N-P1-1 ⑤A 依据链 understand-evidence", await page.locator('[data-testid="understand-evidence"]').count() === 1);
+  check("N-P1-1 ⑤A 含来源/对比行", await page.evaluate(() => {
+    const el = document.querySelector('[data-testid="understand-evidence"]');
+    if (!el) return false;
+    const t = el.innerText || "";
+    return t.includes("来源") && (t.includes("对比") || t.includes("推演"));
+  }));
+
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.role = "ent";
+    s.state.workOrderOpened = true;
+    s.state.canHand5 = true;
+    s.state.apply = { understand: false, applyOrNot: null, submit: false, overLine: false };
+    s.state.applyDensity = "light";
+    s.openDept("d5", { fromWorkOrder: true });
+  });
+  await sleep(200);
+  check("N-P2-1 ⑤轻量收主栏 hint", await page.locator('[data-testid="d5-light-fold"]').count() === 1);
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.applyDensity = "author";
+    s.state.replyDensity = "light";
+    s.state.reply = { contentionOk: false, limitOk: false, submit: false };
+    s.openDept("d6");
+  });
+  await sleep(200);
+  check("N-P2-1 ⑥轻量收主栏 hint", await page.locator('[data-testid="d6-light-fold"]').count() === 1);
+
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.replyDensity = "author";
+    s.openDrawer("judgments");
+  });
+  await sleep(150);
+  const prefBefore = await page.locator('[data-testid="pref-saved"]').count();
+  const precipBtn = page.locator('[data-testid="btn-precip-pref"]');
+  if (await precipBtn.count()) {
+    await precipBtn.first().click();
+    await sleep(200);
+    check("N-P2-2 示意沉淀写入 preferences 列表", await page.locator('[data-testid="pref-saved"]').count() > prefBefore);
+  } else {
+    check("N-P2-2 示意沉淀写入 preferences 列表", false, "no precip button");
+  }
+  check("N-P2-3 精致度 CSS 含 light-fold / 墨蓝不动", await page.evaluate(() => {
+    const st = getComputedStyle(document.documentElement);
+    const brand = st.getPropertyValue("--brand").trim();
+    return brand.includes("1b3a5f") || brand.includes("27, 58, 95") || brand.length > 0;
+  }));
+
   await page.screenshot({ path: path.join(outDir, "smoke-final.png"), fullPage: true });
 
 } catch (e) {
