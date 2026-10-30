@@ -2464,3 +2464,152 @@ em.hit-em {
   min-height: 160px;
 }
 .ai-ask-zone { display: none !important; }
+
+
+/* === unified-shell-2026-10-30 === */
+/* ④⑤⑥ 同栅格：apply/reply 即 workbench */
+.workbench.apply-layout,
+.workbench.reply-layout,
+.apply-layout.workbench,
+.reply-layout.workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 12px;
+  padding: 10px 16px 16px;
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  overflow: hidden;
+  align-items: stretch;
+}
+.apply-shell > .dept-shell,
+.reply-shell > .dept-shell,
+#applyBody > .dept-shell,
+#replyBody > .dept-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  max-height: calc(100vh - var(--top-h));
+  overflow: hidden;
+}
+#applyBody, #replyBody, #thinBody, #blockBody, #woBody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+/* 对话顶 sticky · 当前要你拍 */
+.ask-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 6px 10px;
+  margin: 0 0 4px;
+  background: linear-gradient(180deg, var(--ask-bg, #fff7ed), var(--surface));
+  border: 1px solid var(--ask-border, #f0c9a0);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px oklch(0 0 0 / 0.04);
+  flex-shrink: 0;
+}
+.ask-sticky[hidden], .ask-sticky.empty { display: none !important; }
+.ask-sticky-k {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ask, #b45309);
+  letter-spacing: .04em;
+  flex-shrink: 0;
+}
+.ask-sticky-chips { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; flex: 1; }
+.ask-sticky-chip {
+  font-size: 11.5px;
+  font-weight: 650;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--ask-border);
+  color: var(--ink);
+  box-shadow: none;
+  cursor: pointer;
+}
+.ask-sticky-chip:hover { background: var(--ask-bg); }
+.ask-jump-flash {
+  outline: 2px solid var(--ask);
+  outline-offset: 2px;
+  transition: outline-color .3s;
+}
+
+/* 依据默认折叠 · 对话吃高 */
+.evidence-layer.evidence-fold {
+  padding: 4px 8px;
+  margin: 0;
+  flex-shrink: 0;
+}
+.evidence-layer.evidence-fold > summary.ev-h {
+  cursor: pointer;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+}
+.evidence-layer.evidence-fold > summary.ev-h::-webkit-details-marker { display: none; }
+.evidence-layer.evidence-fold:not([open]) .ev-row { display: none; }
+.side-pane .feed-wrap.feed-primary {
+  flex: 1 1 auto;
+  min-height: 220px;
+}
+
+/* 段进度薄条在主栏 */
+.abc-strip.abc-thin {
+  margin: 0 0 8px;
+  gap: 6px;
+}
+.abc-strip.abc-thin .seg {
+  padding: 6px 8px;
+  font-size: 11.5px;
+}
+
+/* 薄部同壳空态 · 勿居中 thin-panel 换壳 */
+.thin-shell .workbench { flex: 1; }
+.thin-empty {
+  display: grid;
+  gap: 12px;
+  max-width: 640px;
+}
+.thin-empty .mw-card {
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+}
+.thin-cta-row { gap: 8px; }
+.thin-cta-row .ghost, .thin-cta-row .primary { flex: 1; }
+
+/* B2 / H45 嵌入同壳 */
+.block-panel.in-shell, .wo-card.in-shell {
+  max-width: none;
+  margin: 0;
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+}
+.block-wb, .wo-wb {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 12px;
+  padding: 10px 16px 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+@media (max-width: 980px) {
+  .block-wb, .wo-wb, .workbench.apply-layout, .workbench.reply-layout {
+    grid-template-columns: 1fr;
+  }
+}

@@ -256,7 +256,7 @@ window.DEMO = {
   ],
   /* T12 跨案偏好示意 */
   preferences: [
-    { id: "pref-effect", text: "你上次要求：效果必须标测法（样机测 / 仿真 / 文献）", from: "电机冷却 · 交底案", precipitable: true, saved: false }
+    { id: "pref-effect", caseId: "pc1", text: "你上次要求：效果必须标测法（样机测 / 仿真 / 文献）", from: "电机冷却 · 交底案", precipitable: true, saved: false }
   ],
   agencyLobbySeed: [
     { id: "seed-agency", kind: "a", tag: "陪同⑤", text: "陪同客户 · 模块化热管理案：待拍「申不申」", sub: "代理武装 · 今日", go: "d5", cover: "agency", cta: "陪同进⑤" }

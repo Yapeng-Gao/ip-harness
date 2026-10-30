@@ -176,11 +176,51 @@
     /* 偏好不落主产出顶；壳顶 chip / AI 折层用 */
     return "";
   }
-  function prefShortText() {
+  function prefShortText(caseId) {
     const prefs = DEMO.preferences || [];
     if (!prefs.length) return "";
-    const t = prefs[0].text || "";
+    const cid = caseId || state.activeCaseId || null;
+    const matched = prefs.filter((p) => {
+      if (!cid) return true;
+      if (p.caseId) return p.caseId === cid;
+      if (Array.isArray(p.caseIds)) return p.caseIds.includes(cid);
+      /* 无案绑定的偏好不串台；仅当前案缺绑定时不展示旧全局条 */
+      return false;
+    });
+    const pick = matched[0];
+    if (!pick) return "";
+    const t = pick.text || "";
     return t.length > 28 ? t.slice(0, 28) + "…" : t;
+  }
+
+  /** 对话区顶 · 当前未关硬请示 sticky（大纲 §4.4.4 钉顶可达） */
+  function askStickyHtml(items) {
+    const open = (items || []).filter((x) => x && x.id && x.label && !x.done);
+    if (!open.length) {
+      return `<div class="ask-sticky empty" data-testid="ask-sticky" hidden></div>`;
+    }
+    const chips = open.map((x) =>
+      `<button type="button" class="ask-sticky-chip" data-ask-jump="${escapeHtml(x.id)}" data-testid="ask-sticky-chip">${escapeHtml(x.label)}</button>`
+    ).join("");
+    return `<div class="ask-sticky" data-testid="ask-sticky">
+      <span class="ask-sticky-k">当前要你拍</span>
+      <div class="ask-sticky-chips">${chips}</div>
+      <span class="ask-sticky-n tiny muted">${open.length} 项</span>
+    </div>`;
+  }
+  function bindAskSticky(root) {
+    const scope = root || document;
+    scope.querySelectorAll("[data-ask-jump]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const id = b.getAttribute("data-ask-jump");
+        const el = document.querySelector(`[data-testid="${id}"]`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          el.classList.add("ask-jump-flash");
+          setTimeout(() => el.classList.remove("ask-jump-flash"), 1200);
+        }
+      });
+    });
   }
   function inviteExpert(id) {
     const e = expertById(id);
@@ -1336,7 +1376,7 @@
       const c = caseById(state.activeCaseId) || caseById("pc1");
       metaEl.innerHTML = deptMetaHtml({
         caseTitle: (c && c.title) || state.caseName || "当前案",
-        prefShort: prefShortText()
+        prefShort: prefShortText(state.activeCaseId || "pc1")
       });
     }
     const mh = $("#d4ModeHint");
@@ -1484,7 +1524,7 @@
         }).join("")}
         <div class="qc-progress-line${flashId === "qc-card" ? " anchor-flash" : ""}" data-testid="qc-card" id="qc-card">
           <strong>质检</strong>
-          <span class="tiny muted" data-testid="qc-method">权威在侧栏锚点 · 全绿≠交⑤</span>
+          <span class="tiny muted" data-testid="qc-method">主栏权威 · 侧栏仅锚点 · 全绿≠交⑤</span>
           ${qc.map((q) => {
             const tag = q.status === "green" ? '<span class="tag ok">绿</span>' : q.status === "yellow" ? '<span class="tag warn">黄</span>' : '<span class="tag ask">红</span>';
             return `<span class="qc-fix-row" data-testid="${q.status !== "green" ? "qc-yellow-item" : "qc-green-item"}">${escapeHtml(q.name)} ${tag}</span>`;
@@ -1597,19 +1637,11 @@
 
     bindDiffBoard(document);
 
-    /* 侧栏层2 · 依据/结构旁路（大纲 §4.4.4） */
+    /* 侧栏层2 · 依据默认折叠，动作权威只留主栏（P0/P1） */
     const ev = $("#sideEvidence");
     if (ev) {
-      const yellowFix = !state.allGreen
-        ? `<div class="qc-yellow-fix" data-testid="side-qc-yellow" style="margin-top:8px">
-            <p class="tiny" style="margin:0 0 6px">黄项处理（侧栏权威）：</p>
-            <div class="row-actions">
-              <button type="button" class="primary qc-fix-btn" id="btnQcDataSide" data-testid="qc-fix-data-side">补数据转绿</button>
-              <button type="button" class="qc-fix-btn ghost-risk" id="btnQcRiskSide" data-testid="qc-fix-risk-side">认风险</button>
-            </div>
-          </div>` : "";
-      ev.innerHTML = `<div class="evidence-layer" data-testid="side-evidence">
-        <div class="ev-h">依据 / 质检（权威）</div>
+      ev.innerHTML = `<details class="evidence-layer evidence-fold" data-testid="side-evidence">
+        <summary class="ev-h">依据 / 质检 · 锚主栏（默认折）</summary>
         ${qc.map((q) => {
           const st = q.status === "green" ? "ok" : q.status === "yellow" ? "warn" : "ask";
           const anchor = q.id === "q4" ? "sec-effect" : "qc-card";
@@ -1617,11 +1649,9 @@
             <span>${escapeHtml(q.name)}</span><span class="tag ${st}">${q.status === "green" ? "绿" : q.status === "yellow" ? "黄" : "红"}</span>
           </button>`;
         }).join("")}
-        ${yellowFix}
-      </div>`;
+        <p class="tiny muted" style="margin:6px 0 0">黄项补数据/认风险 · 请用主栏质检行</p>
+      </details>`;
       bindExcerptClicks(ev);
-      const bds = $("#btnQcDataSide"); if (bds) bds.addEventListener("click", () => resolveYellowQc("data"));
-      const brs = $("#btnQcRiskSide"); if (brs) brs.addEventListener("click", () => resolveYellowQc("risk"));
     }
 
     /* 对话流：硬请示/拿不准/重要节点 = 汇报气泡在上；团队动态在下 */
@@ -1643,17 +1673,29 @@
         ${tools ? `<div class="tool-chips" data-testid="tool-chips">${tools}</div>` : ""}
       </div>`;
     }).join("");
+    const stickyItems = [
+      { id: "ask-fact", label: "确认交底事实", done: !!state.factConfirmed },
+      { id: "ask-hand5", label: "可否交⑤", done: !!state.canHand5 }
+    ];
+    const feedWrap = $("#feedWrap");
+    if (feedWrap) {
+      feedWrap.classList.remove("collapsed");
+      const head = feedWrap.querySelector(".feed-h");
+      let stickyHost = feedWrap.querySelector('[data-testid="ask-sticky"]');
+      if (!stickyHost) {
+        stickyHost = document.createElement("div");
+        stickyHost.setAttribute("data-sticky-host", "1");
+        if (head && head.nextSibling) feedWrap.insertBefore(stickyHost, head.nextSibling);
+        else feedWrap.insertBefore(stickyHost, feedWrap.firstChild);
+      }
+      stickyHost.outerHTML = askStickyHtml(stickyItems);
+      bindAskSticky(feedWrap);
+    }
     $("#feed").innerHTML = reportBubbles.join("") + chatHtml;
     const bf = $("#btnFact"); if (bf) bf.addEventListener("click", confirmFact);
     const bh = $("#btnHand5"); if (bh) bh.addEventListener("click", confirmCanHand5);
     const wo = $("#btnOpenWO"); if (wo) wo.addEventListener("click", openWorkOrder);
     bindExcerptClicks($("#feed"));
-
-    /* 汇报流常显；轻量不收对话（请示在对话里） */
-    const feedWrap = $("#feedWrap");
-    if (feedWrap) {
-      feedWrap.classList.remove("collapsed");
-    }
 
     /* composer 指向 + @材料 */
     const cTo = $("#composerTo");
@@ -1690,7 +1732,16 @@
     const ck = state.woChecks;
     const allCk = ck.in1 && ck.in2 && ck.in3;
     $("#woBody").innerHTML = `
-      <div class="wo-card" data-testid="h45">
+      <div class="dept-shell wo-shell">
+        <div class="dept-top">
+          <button type="button" class="ghost" id="btnWoLobbyTop">← 回大厅</button>
+          <h1>④ → ⑤ 工单</h1>
+          <span class="line-status">接单门槛</span>
+        </div>
+        <div class="workbench wo-wb">
+        <div class="main-pane"><div class="pane-head"><strong>主栏 · 交办工单</strong><span class="pane-tag">H45</span></div>
+        <div class="pane-body">
+      <div class="wo-card in-shell" data-testid="h45">
         <span class="tag ask">工单 · 现在做⑤</span>
         <h2>④ → ⑤ 交办工单</h2>
         <p class="muted">打包方交产出，接单方开新线程；旁注三线分词。</p>
@@ -1723,9 +1774,26 @@
         <div class="row-actions">
           <button type="button" class="primary" id="btnAcceptWO" data-testid="accept-wo" ${allCk ? "" : "disabled"}>申请部接单进入</button>
           <button type="button" id="btnBackD4">返回交底部</button>
-          <button type="button" class="ghost" id="btnWoLobby">回工作台</button>
+          <button type="button" class="ghost" id="btnWoLobby">← 回大厅</button>
         </div>
         ${!allCk ? `<p class="tiny muted" data-testid="wo-need-check">请先勾选结束检查表三项再接单</p>` : ""}
+      </div>
+        </div></div>
+        <div class="side-pane" data-testid="ai-pane-h45">
+          <div class="ai-id-zone"><div class="who-block ai-roster single-rail"><div class="who-head"><strong>编制</strong></div>
+            <div class="roster">
+              <button type="button" class="expert-chip">${avatarHtml("04.jpg","负")}<span class="meta"><span class="name-row"><strong>交底部负责人</strong></span><span class="status-pill done">打包</span></span></button>
+              <button type="button" class="expert-chip">${avatarHtml("05.jpg","申")}<span class="meta"><span class="name-row"><strong>申请部负责人</strong></span><span class="status-pill wait">接单</span></span></button>
+            </div>
+          </div></div>
+          <div class="pane-body"><div class="feed-wrap feed-primary"><div class="feed-h"><strong>对话</strong><span class="pane-tag">工单汇报</span></div>
+            <div class="feed"><div class="bubble report"><div class="bubble-head">${avatarHtml("05.jpg","申")}<div class="who">申请部负责人<span class="rpt-tag">向你汇报</span></div></div>
+              <div class="bubble-text report-body"><div class="rpt-q">接单前请勾三项</div><p class="tiny">勾齐结束检查表后点「申请部接单进入」。</p></div>
+            </div></div>
+          </div></div>
+          <div class="composer"><div class="composer-to">对：接单方</div><div class="composer-row"><button type="button" class="ghost" id="btnWoLobby2">回大厅</button></div></div>
+        </div>
+        </div>
       </div>`;
     $$("[data-wock]").forEach((inp) => inp.addEventListener("change", () => {
       state.woChecks[inp.dataset.wock] = !!inp.checked;
@@ -1740,6 +1808,8 @@
     });
     $("#btnBackD4").addEventListener("click", () => openDept("d4", { direct: true }));
     $("#btnWoLobby").addEventListener("click", goLobby);
+    const wotop = $("#btnWoLobbyTop"); if (wotop) wotop.addEventListener("click", goLobby);
+    const wol2 = $("#btnWoLobby2"); if (wol2) wol2.addEventListener("click", goLobby);
   }
 
   function renderApply() {
@@ -1840,19 +1910,30 @@
     const d5ReportHtml = d5Reports.join("");
     const d5ChatHtml = `<div class="bubble" data-testid="feed-bubble"><div class="bubble-head">${avatarHtml(aLead.photo, aLead.av)}<div class="who">${escapeHtml(aLead.name)}</div></div><div class="bubble-text">撰写与查新进行中 · 关键关我放在上面向你汇报。</div></div>`;
 
-        $("#applyBody").innerHTML = `
+        const d5Sticky = askStickyHtml([
+      { id: "ask-understand", label: "确认开案理解", done: !!a.understand },
+      { id: "ask-apply-or-not", label: "申不申", done: !!a.applyOrNot },
+      { id: "ask-submit5", label: "确认递交", done: !!a.submit }
+    ]);
+    $("#applyBody").innerHTML = `
+      <div class="dept-shell ${aDens ? "density-light" : "density-author"}">
       <div class="dept-top">
-        <button type="button" class="ghost" id="btnApplyBack">← 工作台</button>
+        <button type="button" class="ghost" id="btnApplyBack">← 回大厅</button>
         <h1>⑤ 申请部</h1>
         <span class="line-status ${a.overLine ? "ok" : ""}">${a.overLine ? "申请文件可递交（过线）" : "未过线 / 进行中"}</span>
-        ${deptMetaHtml({ caseTitle: (caseById(state.activeCaseId || "pc2") || {}).title || "申请撰写", prefShort: prefShortText() })}
+        ${deptMetaHtml({ caseTitle: (caseById(state.activeCaseId || "pc2") || {}).title || "申请撰写", prefShort: prefShortText(state.activeCaseId || "pc2") })}
         <div class="task-strip in-top" id="d5TaskStrip" data-testid="task-strip">${taskStripHtml(state.activeCaseId || "pc2")}</div>
         <span class="mode-hint tiny" id="d5ModeHint" data-testid="d5-mode-hint">${aDens ? "轻量" : "主笔"}</span>
       </div>
       <div class="wb-chrome" data-testid="d5-chrome" hidden></div>
-<div class="apply-layout ${aDens ? "density-light" : ""}" data-testid="d5-layout">
+      <div class="workbench apply-layout ${aDens ? "density-light" : ""}" data-testid="d5-layout">
         <div class="main-pane">
           <div class="pane-head"><strong>主产出 · 申请文件</strong><span class="pane-tag">权项 | 说明书 | 差分</span></div>
+          <div class="abc-strip abc-thin" data-testid="d5-abc">
+            <div class="${segCls(segA)}" data-testid="seg-a"><span class="seg-k">A</span>理解${a.understand ? " · 已确认" : " · 待你确认"}</div>
+            <div class="${segCls(segB)}" data-testid="seg-b"><span class="seg-k">B</span>申不申${a.applyOrNot === "yes" ? " · 要申" : a.applyOrNot === "no" ? " · 不申" : a.understand ? " · 待你拍" : ""}</div>
+            <div class="${segCls(segC)}" data-testid="seg-c"><span class="seg-k">C</span>递交${a.submit ? " · 已确认" : a.overLine ? " · 过线待递交" : ""}</div>
+          </div>
           ${aDens ? `<div class="light-fold-hint" data-testid="d5-light-fold">轻量 · 主栏收拢 · 请示在对话</div>` : ""}
           <div class="pane-body ${aDens ? "light-folded" : ""}">
             <div class="doc-tabs" data-testid="d5-doc-tabs">
@@ -1863,7 +1944,7 @@
             ${docInner}
             <div class="qc-progress-line" style="margin-top:12px" id="d5-qc" data-testid="d5-qc-card">
               <strong>C · 过线</strong>
-              <span class="tiny muted">过线≠递交 · 侧栏确认</span>
+              <span class="tiny muted">过线≠递交 · 拍板在对话</span>
               ${aQc.map((q) => {
                 const tag = q.status === "green" ? '<span class="tag ok">绿</span>' : '<span class="tag warn">黄</span>';
                 return `<span class="qc-fix-row">${escapeHtml(q.name)} ${tag}</span>`;
@@ -1891,13 +1972,9 @@
             </div>
           </div>
           <div class="pane-body" data-testid="d5-side-body">
-            <div class="abc-strip" data-testid="d5-abc">
-              <div class="${segCls(segA)}" data-testid="seg-a"><span class="seg-k">A</span>理解${a.understand ? " · 已确认" : " · 待你确认"}</div>
-              <div class="${segCls(segB)}" data-testid="seg-b"><span class="seg-k">B</span>申不申${a.applyOrNot === "yes" ? " · 要申" : a.applyOrNot === "no" ? " · 不申" : a.understand ? " · 待你拍" : ""}</div>
-              <div class="${segCls(segC)}" data-testid="seg-c"><span class="seg-k">C</span>递交${a.submit ? " · 已确认" : a.overLine ? " · 过线待递交" : ""}</div>
-            </div>
             <div class="feed-wrap feed-primary" data-testid="feed-wrap-d5">
               <div class="feed-h"><strong>对话</strong><span class="pane-tag">汇报 · 要你拍</span></div>
+              ${d5Sticky}
               <div class="feed" data-testid="d5-feed" data-testid-gates="d5-gates">${d5ReportHtml}${d5ChatHtml}</div>
             </div>
             <div hidden data-testid="d5-gates"></div>
@@ -1911,11 +1988,16 @@
             </div>
           </div>
         </div>
+      </div>
       </div>`;
     const d5s = $("#d5TaskStrip");
     if (d5s) bindTaskStrip(d5s);
+    bindAskSticky($("#applyBody"));
     const applyShell = $("#applyBody");
-    if (applyShell) applyShell.classList.toggle("density-light-shell", !!aDens);
+    if (applyShell) {
+      applyShell.classList.add("apply-shell");
+      applyShell.classList.toggle("density-light-shell", !!aDens);
+    }
     /* 轻量时隐藏 chrome 内条 */
     const d5ch = document.querySelector('[data-testid="d5-chrome"]');
     if (d5ch) d5ch.hidden = true;
@@ -2143,23 +2225,29 @@
     const d6ReportHtml = d6Reports.join("");
     const d6ChatHtml = `<div class="bubble" data-testid="feed-bubble"><div class="bubble-head">${avatarHtml(rLead.photo, rLead.av)}<div class="who">${escapeHtml(rLead.name)}</div></div><div class="bubble-text">本轮答复进行中 · 期限与策略拿不准的地方，我都放在对话里向你汇报。</div></div>`;
 
-        $("#replyBody").innerHTML = `
+        const d6Sticky = askStickyHtml([
+      { id: "ask-contention", label: "争点理解", done: !!r.contentionOk },
+      { id: "ask-limit", label: "策略/缩限", done: !!r.limitOk },
+      { id: "ask-reply-submit", label: "本轮递交", done: !!r.submit }
+    ]);
+    $("#replyBody").innerHTML = `
+      <div class="dept-shell ${rDens ? "density-light" : "density-author"}">
       <div class="dept-top">
-        <button type="button" class="ghost" id="btnReplyBack">← 工作台</button>
+        <button type="button" class="ghost" id="btnReplyBack">← 回大厅</button>
         <h1>⑥ 答复部</h1>
         <span class="line-status">本轮答复进行中</span>
         ${deptMetaHtml({
           caseTitle: (caseById("pc3") || {}).title || "低功耗膜分离 · 首通 OA",
           deadline: DEMO.reply.deadline,
           upgraded: DEMO.reply.upgraded,
-          prefShort: prefShortText()
+          prefShort: prefShortText("pc3")
         })}
         <div class="task-strip in-top" id="d6TaskStrip" data-testid="task-strip">${taskStripHtml("pc3")}</div>
         ${!DEMO.reply.upgraded ? `<button type="button" class="ghost tiny" id="btnUpgrade" data-testid="btn-upgrade">升级催办</button>` : `<span class="tag ask" data-testid="upgrade-badge">已升级催办</span>`}
         <span class="mode-hint tiny" id="d6ModeHint" data-testid="d6-mode-hint">${rDens ? "轻量" : "主笔"}</span>
       </div>
       <div class="wb-chrome" data-testid="d6-chrome" hidden></div>
-      <div class="reply-layout ${rDens ? "density-light" : ""}" data-testid="d6-layout">
+      <div class="workbench reply-layout ${rDens ? "density-light" : ""}" data-testid="d6-layout">
         <div class="main-pane">
           <div class="pane-head"><strong>主产出 · 答复稿</strong><span class="pane-tag">答复 | 通知书 | 差分</span></div>
           ${rDens ? `<div class="light-fold-hint" data-testid="d6-light-fold">轻量 · 主栏收拢 · 请示在对话</div>` : ""}
@@ -2188,6 +2276,7 @@
           <div class="pane-body" data-testid="d6-side-body">
             <div class="feed-wrap feed-primary" data-testid="feed-wrap-d6">
               <div class="feed-h"><strong>对话</strong><span class="pane-tag">汇报 · 要你拍</span></div>
+              ${d6Sticky}
               <div class="feed" data-testid="d6-feed">${d6ReportHtml}${d6ChatHtml}</div>
             </div>
             <div hidden data-testid="d6-gates"></div>
@@ -2201,17 +2290,18 @@
             </div>
           </div>
         </div>
+      </div>
       </div>`;
     const d6s = $("#d6TaskStrip");
     if (d6s) {
-      /* ensure active highlight pc3 when in reply */
-      if (state.activeCaseId !== "pc3") {
-        /* keep user's choice but strip defaults visual via taskStripHtml arg */
-      }
       bindTaskStrip(d6s);
     }
+    bindAskSticky($("#replyBody"));
     const replyShell = $("#replyBody");
-    if (replyShell) replyShell.classList.toggle("density-light-shell", !!rDens);
+    if (replyShell) {
+      replyShell.classList.add("reply-shell");
+      replyShell.classList.toggle("density-light-shell", !!rDens);
+    }
     const d6ch = document.querySelector('[data-testid="d6-chrome"]');
     if (d6ch) d6ch.hidden = true;
     $$("[data-reply-tab]").forEach((b) => b.addEventListener("click", () => {
@@ -2312,50 +2402,87 @@
     const d = deptById(state.thinDept);
     const confirmed = !!(state.thinLineConfirmed[d.id]);
     const photo = d.leadPhoto || "01.jpg";
+    const lead = { name: d.name + "负责人", av: (d.num || "薄").slice(0, 1), photo };
+    const report = confirmed
+      ? agentReportBubble({
+          testid: "thin-line-ask", gradeId: null, title: "合格线确认（薄部示意）",
+          lead, done: true, doneLabel: "已确认合格线示意"
+        })
+      : agentReportBubble({
+          testid: "thin-line-ask", gradeId: null, title: "合格线确认（薄部示意）",
+          lead,
+          bodyHtml: `<p class="tiny">一期不做细台；若本部门有产出，请确认是否达到合格线表述。</p>
+            <p class="ask-conclusion"><strong>合格线</strong> ${escapeHtml(d.line)}</p>`,
+          actsHtml: `<button type="button" class="ask-confirm" id="btnThinLine" data-testid="thin-confirm-line">确认合格线</button>`
+        });
+    const sticky = askStickyHtml([{ id: "thin-line-ask", label: "合格线确认", done: confirmed }]);
     $("#thinBody").innerHTML = `
-      <div class="thin-shell">
+      <div class="dept-shell thin-shell" data-testid="thin-dept">
         <div class="dept-top">
-          <button type="button" class="ghost" id="btnThinLobby">← 工作台</button>
+          <button type="button" class="ghost" id="btnThinLobby">← 回大厅</button>
           <h1>${escapeHtml(d.num)} ${escapeHtml(d.name)}</h1>
           <span class="line-status">薄占位 · 合格线示意</span>
+          ${deptMetaHtml({ caseTitle: d.desc, prefShort: "" })}
         </div>
-        <div class="lead-bar">
-          ${avatarHtml(photo, d.num, "avatar")}
-          <div>
-            <strong>${escapeHtml(d.name)}负责人</strong>
-            <div class="tiny muted">${escapeHtml(d.desc)} · 一期薄部，不造细作业台。</div>
-          </div>
-        </div>
-        <div class="thin-panel" data-testid="thin-dept">
-          <div class="mini-wb">
-            <div class="mw-card">
-              <strong>本部门合格线</strong>
-              <p class="tiny" style="margin:6px 0 0">${escapeHtml(d.line)}</p>
+        <div class="workbench">
+          <div class="main-pane">
+            <div class="pane-head"><strong>主产出 · 空态</strong><span class="pane-tag">薄部</span></div>
+            <div class="pane-body">
+              <div class="thin-empty" data-testid="thin-empty">
+                <div class="mw-card thin-lead-row" style="display:flex;gap:12px;align-items:flex-start">
+                  ${avatarHtml(photo, lead.av, "avatar")}
+                  <div><strong>${escapeHtml(lead.name)}</strong><div class="tiny muted">${escapeHtml(d.desc)} · 一期薄部同壳空态</div></div>
+                </div>
+                <div class="mw-card">
+                  <strong>本部门合格线</strong>
+                  <p class="tiny" style="margin:6px 0 0">${escapeHtml(d.line)}</p>
+                </div>
+                <div class="mw-card">
+                  <strong>一期不造细作业台</strong>
+                  <p class="tiny" style="margin:6px 0 0">同壳空态 · 汇报与拍板在右侧 · 可回大厅派主链④⑤⑥</p>
+                </div>
+                <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
+              </div>
             </div>
-            <div class="mw-card">
-              <strong>agent 状态</strong>
-              <p class="tiny" style="margin:6px 0 0">编制薄占位 · 进得去 · 可回大厅派别的部</p>
+          </div>
+          <div class="side-pane" data-testid="ai-pane-thin">
+            <div class="ai-id-zone">
+              <div class="who-block ai-roster single-rail" data-testid="thin-roster-wrap">
+                <div class="who-head"><strong>编制</strong><span class="tiny muted">薄占位</span></div>
+                <div class="roster" data-testid="thin-roster">
+                  <button type="button" class="expert-chip" data-testid="thin-lead">
+                    ${avatarHtml(photo, lead.av)}
+                    <span class="meta"><span class="name-row"><strong>${escapeHtml(lead.name)}</strong><span class="tag-role">主</span></span>
+                    <span class="status-pill wait">示意</span>
+                    <span class="st">${escapeHtml(d.desc)}</span></span>
+                  </button>
+                </div>
+              </div>
+              <div class="lead-bar ai-identity" hidden></div>
             </div>
-          </div>
-          <div class="hard-ask ${confirmed ? "done" : ""}" data-testid="thin-line-ask">
-            <div class="label">【示意硬请示】P2</div>
-            <h3>合格线确认（薄部示意）</h3>
-            <p class="tiny">一期不做细台；若本部门有产出，请确认是否达到合格线表述。</p>
-            <div class="acts">${confirmed
-              ? `<span class="tag ok">已确认合格线示意</span>`
-              : `<button type="button" class="ask-confirm" id="btnThinLine" data-testid="thin-confirm-line">确认合格线</button>`}</div>
-          </div>
-          <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
-          <div class="side-composer-stub" data-testid="thin-composer">
-            <div class="composer-to">对：${escapeHtml(d.name)}负责人（薄部示意）</div>
-            <div class="composer-row">
-              <textarea rows="1" disabled placeholder="薄部暂不开放细驾驭 · 请回大厅或进④⑤⑥"></textarea>
-              <button type="button" disabled>发送</button>
+            <div class="pane-body">
+              <div class="feed-wrap feed-primary" data-testid="feed-wrap-thin">
+                <div class="feed-h"><strong>对话</strong><span class="pane-tag">汇报 · 要你拍</span></div>
+                ${sticky}
+                <div class="feed" data-testid="thin-feed">${report}
+                  <div class="bubble" data-testid="feed-bubble"><div class="bubble-head">${avatarHtml(photo, lead.av)}<div class="who">${escapeHtml(lead.name)}</div></div><div class="bubble-text">薄部示意汇报 · 关键关在上。细驾驭请回大厅进④⑤⑥。</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="composer" data-testid="thin-composer">
+              <div class="composer-to">对：${escapeHtml(d.name)}负责人（薄部）</div>
+              <div class="composer-row thin-cta-row">
+                <button type="button" class="ghost" id="btnThinToLobby" data-testid="thin-cta-lobby">回大厅</button>
+                <button type="button" class="primary" id="btnThinToD4" data-testid="thin-cta-d4">去主链④</button>
+              </div>
             </div>
           </div>
         </div>
       </div>`;
     $("#btnThinLobby").addEventListener("click", goLobby);
+    const bl = $("#btnThinToLobby"); if (bl) bl.addEventListener("click", goLobby);
+    const bd4 = $("#btnThinToD4"); if (bd4) bd4.addEventListener("click", () => openDept("d4", { direct: true }));
+    bindAskSticky($("#thinBody"));
     const bt = $("#btnThinLine");
     if (bt) bt.addEventListener("click", () => {
       state.thinLineConfirmed[d.id] = true;
@@ -2367,13 +2494,17 @@
 
   function renderBlock() {
     $("#blockBody").innerHTML = `
-      <div class="block-shell">
+      <div class="dept-shell block-shell">
         <div class="dept-top">
-          <button type="button" class="ghost" id="btnBlockLobby">← 工作台</button>
+          <button type="button" class="ghost" id="btnBlockLobby">← 回大厅</button>
           <h1>⑤ 申请部 · 进不去</h1>
           <span class="line-status">门槛未过</span>
         </div>
-        <div class="block-panel" data-testid="b2-block">
+        <div class="workbench block-wb">
+        <div class="main-pane">
+        <div class="pane-head"><strong>主栏 · 门槛挡板</strong><span class="pane-tag">B2</span></div>
+        <div class="pane-body">
+        <div class="block-panel in-shell" data-testid="b2-block">
           <h2>进入门槛未过（B2）</h2>
           <p>要进申请部，需要合格交底（④全绿）并完成「可交⑤」与工单接单——agent 不会越权开写。</p>
           <div class="gap-list" data-testid="b2-gaps">
@@ -2393,9 +2524,30 @@
             <button type="button" class="ghost" id="btnBlockFront" data-testid="b2-to-front">回前台</button>
           </div>
         </div>
+        </div>
+        </div>
+        <div class="side-pane" data-testid="ai-pane-b2">
+          <div class="ai-id-zone"><div class="who-block ai-roster single-rail"><div class="who-head"><strong>编制</strong></div>
+            <div class="roster"><button type="button" class="expert-chip">${avatarHtml("05.jpg","申")}<span class="meta"><span class="name-row"><strong>申请部负责人</strong></span><span class="status-pill wait">挡</span></span></button></div>
+          </div></div>
+          <div class="pane-body">
+            <div class="feed-wrap feed-primary">
+              <div class="feed-h"><strong>对话</strong><span class="pane-tag">门槛汇报</span></div>
+              <div class="feed"><div class="bubble report" data-testid="b2-report"><div class="bubble-head">${avatarHtml("05.jpg","申")}<div class="who">申请部负责人<span class="rpt-tag">向你汇报</span></div></div>
+                <div class="bubble-text report-body"><div class="rpt-q">进⑤门槛未过</div><p class="tiny">缺全绿交底 / 可交⑤ / 工单接单。请先去④补缺口。</p></div>
+                <div class="acts report-acts"><button type="button" class="ask-confirm" id="btnBlockTo4Side">去交底部</button></div>
+              </div></div>
+            </div>
+          </div>
+          <div class="composer"><div class="composer-to">对：申请部 · 门槛</div><div class="composer-row"><button type="button" class="ghost" id="btnBlockLobby2">回大厅</button></div></div>
+        </div>
+        </div>
       </div>`;
-    $("#btnBlockTo4").addEventListener("click", () => openDept("d4", { direct: true }));
+    const go4 = () => openDept("d4", { direct: true });
+    $("#btnBlockTo4").addEventListener("click", go4);
+    const b4s = $("#btnBlockTo4Side"); if (b4s) b4s.addEventListener("click", go4);
     $("#btnBlockLobby").addEventListener("click", goLobby);
+    const bl2 = $("#btnBlockLobby2"); if (bl2) bl2.addEventListener("click", goLobby);
     $("#btnBlockFront").addEventListener("click", openFront);
   }
 
@@ -2499,6 +2651,7 @@
           const nid = "pref-" + Date.now();
           list.unshift({
             id: nid,
+            caseId: state.activeCaseId || null,
             text: `跨案偏好：${gate} · ${conclusion}`.slice(0, 120),
             from: "本次判断档案",
             precipitable: false,
