@@ -3019,3 +3019,96 @@ em.hit-em {
   padding: 6px 0 10px;
   border-bottom: 0;
 }
+
+
+/* === STEPKILL 2026-10-30: 无四步条 / 无顶空 / 壳顶极简 === */
+#stageBar,
+.stage-bar,
+.main-pane > .stage-bar,
+[data-testid="d4-timeline"],
+[data-testid="d5-abc"],
+[data-testid="d6-step-bar"],
+[data-testid="thin-step-bar"] {
+  display: none !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+}
+#viewDept .dept-shell,
+.apply-shell .dept-shell,
+.reply-shell .dept-shell {
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+#viewDept .wb-chrome,
+#d4Chrome,
+.wb-chrome[hidden],
+.wb-chrome:empty {
+  display: none !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+/* 去掉 sticky 叠出的顶空带：壳顶已占 --top-h，部顶贴着走 */
+#viewDept .dept-top,
+.apply-shell .dept-top,
+.reply-shell .dept-top,
+.thin-shell .dept-top,
+.block-shell .dept-top {
+  position: static !important;
+  top: auto !important;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 6px 12px;
+  min-height: 36px;
+  max-height: 40px;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  background: var(--surface);
+}
+#viewDept .dept-top h1 {
+  font-size: 14px;
+  margin: 0;
+}
+#viewDept .line-status,
+#viewDept #d4TaskStrip,
+#viewDept .task-strip.in-top,
+#viewDept .mode-hint {
+  display: none !important;
+}
+#viewDept .dept-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+}
+#viewDept .dm-case {
+  max-width: 240px;
+  font-size: 12.5px;
+}
+#viewDept .dept-top-acts {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+#viewDept .pane-head-slim {
+  padding: 6px 12px;
+  min-height: 0;
+}
+#viewDept .pane-head-slim .pane-tag { display: none; }
+#viewDept .workbench {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+#viewDept #sideEvidence[hidden],
+#viewDept #sideEvidence:empty {
+  display: none !important;
+}

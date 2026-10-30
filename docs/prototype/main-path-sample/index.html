@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Novada Team · 主链样机</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=stepkill3" />
 </head>
 <body>
   <div class="app">
@@ -149,9 +149,12 @@
         <div class="dept-top">
           <button type="button" class="ghost" id="btnDeptLobby">← 回大厅</button>
           <h1>④ 交底部</h1>
-          <span class="line-status" id="deptLineStatus">未过线 / 质检进行中</span>
+          <span class="line-status" id="deptLineStatus" hidden>未过线</span>
           <div id="d4DeptMeta" data-testid="d4-dept-meta"></div>
-          <div class="task-strip in-top" id="d4TaskStrip" data-testid="task-strip"></div>
+          <div class="dept-top-acts">
+            <button type="button" class="ghost tiny" id="btnDeptTrace" data-testid="dept-trace-btn" title="进行中与轨迹">轨迹</button>
+          </div>
+          <div class="task-strip in-top" id="d4TaskStrip" data-testid="task-strip" hidden></div>
           <span class="mode-hint tiny" id="d4ModeHint" data-testid="d4-mode-hint" hidden></span>
         </div>
         <div class="wb-chrome" id="d4Chrome" data-testid="wb-chrome">
@@ -159,12 +162,10 @@
         </div>
         <div class="workbench">
           <div class="main-pane">
-            <div class="pane-head">
-              <strong>主产出 · 交底书</strong>
-              <span class="pane-tag">交底书</span>
+            <div class="pane-head pane-head-slim">
+              <strong>交底书</strong>
             </div>
-            <div class="stage-bar stage-thin" id="stageBar" data-testid="d4-timeline"></div>
-            <div class="pane-body" id="docMain"></div>
+<div class="pane-body" id="docMain"></div>
           </div>
           <div class="side-pane" data-testid="ai-pane">
             <!-- 编制单行横滑（负责人只在席内一次，不另起身份条） -->
@@ -246,7 +247,7 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="./demo-data.js"></script>
-  <script src="./app.js"></script>
+  <script src="./demo-data.js?v=stepkill3"></script>
+  <script src="./app.js?v=stepkill3"></script>
 </body>
 </html>

@@ -42,7 +42,7 @@
     applyDocTab: "claims", /* claims | spec | diff */
     replyDocTab: "reply", /* reply | oa | diff */
     densityMode: "author", /* light=老板轻量 | author=主笔 */
-    mentorDismissed: false,
+    mentorDismissed: true, /* 默认不占壳顶空白 */
     docVersion: "current", /* current | prev */
     atOpen: false,
     firstTipDismissed: false,
@@ -171,14 +171,18 @@
   }
 
   function deptMetaHtml({ caseTitle, deadline, upgraded, prefShort }) {
-    /* 壳顶减负：案名缩短；期限仅关键时出；偏好挤成「偏好」小 chip（全文在 title） */
+    /* 壳顶极简：短案名；⑥期限可进顶（不进主产出）；偏好隐藏占位供 smoke */
     const bits = [];
     if (caseTitle) {
-      const short = caseTitle.length > 14 ? caseTitle.slice(0, 14) + "…" : caseTitle;
+      const short = caseTitle.length > 18 ? caseTitle.slice(0, 18) + "…" : caseTitle;
       bits.push(`<button type="button" class="dm-case" data-testid="dept-case" title="${escapeHtml(caseTitle)}">${escapeHtml(short)}</button>`);
     }
-    if (deadline) bits.push(`<span class="deadline-chip" data-testid="deadline-chip" title="期限不落主产出">截止 ${escapeHtml(deadline)}${upgraded ? " · 已升级" : ""}</span>`);
-    if (prefShort) bits.push(`<span class="pref-chip pref-compact" data-testid="pref-chip" title="${escapeHtml(prefShort)}">偏好</span>`);
+    if (deadline) {
+      bits.push(`<span class="deadline-chip" data-testid="deadline-chip" title="期限不落主产出">截止 ${escapeHtml(deadline)}${upgraded ? " · 已升级" : ""}</span>`);
+    }
+    if (prefShort) {
+      bits.push(`<span class="pref-chip pref-compact" data-testid="pref-chip" title="${escapeHtml(prefShort)}" hidden>偏好</span>`);
+    }
     return bits.length ? `<div class="dept-meta" data-testid="dept-meta">${bits.join("")}</div>` : "";
   }
 
@@ -1517,15 +1521,14 @@
     const qc = DEMO.disclosure.qc;
     state.allGreen = qc.every((q) => q.status === "green");
     const lineEl = $("#deptLineStatus");
-    lineEl.textContent = state.allGreen ? "交底质检全绿" : "未过线 / 质检进行中";
-    lineEl.className = "line-status" + (state.allGreen ? " ok" : "");
-
-    const strip = $("#d4TaskStrip");
-    if (strip) {
-      if (!state.activeCaseId || !caseById(state.activeCaseId)) state.activeCaseId = "pc1";
-      strip.innerHTML = taskStripHtml(state.activeCaseId);
-      bindTaskStrip(strip);
+    if (lineEl) {
+      lineEl.hidden = true; /* 壳顶减负：过线态不占顶栏 */
+      lineEl.textContent = state.allGreen ? "全绿" : "未过线";
+      lineEl.className = "line-status" + (state.allGreen ? " ok" : "");
     }
+
+    if (!state.activeCaseId || !caseById(state.activeCaseId)) state.activeCaseId = "pc1";
+    /* 进行中 chip 墙不进壳顶；点「轨迹」再展开 */
 
     const lead = DEMO.disclosure.roster.find((e) => e.kind === "lead") || DEMO.disclosure.roster[0];
     const isLight = state.densityMode === "light";
@@ -1556,21 +1559,12 @@
     const mentor = $("#mentorTip");
     const chromeEl = $("#d4Chrome");
     if (mentor) {
-      if (!state.mentorDismissed) {
-        mentor.hidden = false;
-        mentor.innerHTML = `
-          <div class="mentor-body" data-testid="mentor-tip">
-            <strong>本部门办完的标志</strong>是交底质检<strong>全绿</strong>；要你拍的是<strong>事实确认</strong>与<strong>可否交⑤</strong>（分钮，不糊）。
-            <button type="button" class="ghost" id="btnMentorOk" data-testid="mentor-dismiss">知道了</button>
-          </div>`;
-        const mo = $("#btnMentorOk");
-        if (mo) mo.addEventListener("click", dismissMentor);
-        if (chromeEl) chromeEl.hidden = false;
-      } else {
-        mentor.hidden = true;
-        mentor.innerHTML = "";
-        if (chromeEl) chromeEl.hidden = true; /* 去掉壳顶空白 */
-      }
+      mentor.hidden = true;
+      mentor.innerHTML = "";
+    }
+    if (chromeEl) {
+      chromeEl.hidden = true; /* 永不占顶空白 */
+      chromeEl.style.display = "none";
     }
 
     const leadBar = $("#leadBar");
@@ -1592,13 +1586,13 @@
       }
     }
     const stageBarEl = $("#stageBar");
-    if (stageBarEl) stageBarEl.style.display = isLight ? "none" : "";
+    if (stageBarEl) { stageBarEl.hidden = true; stageBarEl.style.display = "none"; }
     const chrome = $("#d4Chrome");
     if (chrome) chrome.classList.toggle("chrome-light-collapsed", false); /* 薄轨保留 */
     const stripEl = $("#d4TaskStrip");
     if (stripEl) {
-      /* 进行中薄轨始终在壳顶，不进 AI 区、轻量也不藏 */
-      stripEl.style.display = "";
+      stripEl.hidden = true;
+      stripEl.style.display = "none";
     }
 
     $("#roster").innerHTML = DEMO.disclosure.roster.map((e) => {
@@ -1626,22 +1620,46 @@
       focusExpert(b.dataset.expert);
     }));
 
-    /* 按步高保真：壳顶不堆流程墙；本步 pill 可演示切换；全流程进轨迹 */
+    /* AI 推动流程不展示横条；步态只换主栏/对话内容 */
     const curStep = d4CurrentStep();
     const stageBar = $("#stageBar");
     if (stageBar) {
-      stageBar.classList.add("stage-thin");
-      const pills = [
-        { id: "draft", label: "成稿", done: true },
-        { id: "fact", label: "事实确认", done: !!state.factConfirmed },
-        { id: "qc", label: "质检", done: !!state.allGreen },
-        { id: "hand", label: "可交⑤", done: !!state.canHand5 }
-      ];
-      stageBar.innerHTML = `<div class="step-now" data-testid="d4-timeline-inner">
-        ${stepDemoSwitchHtml("d4", pills, curStep.id, "d4StepForce")}
-        <span class="tiny muted step-now-hint" data-testid="d4-step-hint">${escapeHtml(curStep.hint)} · 全流程见轨迹</span>
-      </div>`;
-      bindStepDemo(stageBar);
+      stageBar.hidden = true;
+      stageBar.innerHTML = "";
+      stageBar.style.display = "none";
+    }
+    /* 壳顶只留「轨迹」钮；进行中 chip 墙不进顶栏 */
+    const strip = $("#d4TaskStrip");
+    if (strip) { strip.hidden = true; strip.style.display = "none"; strip.innerHTML = ""; }
+    const traceBtn = $("#btnDeptTrace");
+    if (traceBtn) {
+      traceBtn.onclick = () => {
+        const cur = caseById(state.activeCaseId) || (DEMO.progressCases || [])[0];
+        const fly = $("#shellFly");
+        const card = $("#shellFlyCard");
+        if (!fly || !card || !cur) return;
+        const traces = (cur.traces || []).map((t) =>
+          `<div class="ttr-row"><span class="at">${escapeHtml(t.at)}</span><span><b>${escapeHtml(t.who)}</b> · ${escapeHtml(t.act)}</span></div>`
+        ).join("");
+        const cases = (DEMO.progressCases || []).map((c) =>
+          `<button type="button" class="fly-item" data-task-case="${escapeHtml(c.id)}"><strong>${escapeHtml(c.title)}</strong><span class="tiny muted">${escapeHtml(c.status || "")}</span></button>`
+        ).join("");
+        card.innerHTML = `<div class="fly-head"><strong>进行中 / 轨迹</strong><button type="button" class="ghost" id="btnFlyClose" data-testid="fly-close">关闭</button></div>
+          <div class="fly-list">${cases}</div>
+          <div class="task-trace-pop on" data-testid="task-trace"><div class="ttr-h">轨迹 · ${escapeHtml(cur.title)}</div>${traces || `<div class="tiny muted">暂无轨迹</div>`}</div>`;
+        fly.hidden = false;
+        state.shellPanel = "trace";
+        const close = $("#btnFlyClose");
+        if (close) close.onclick = () => {
+          fly.hidden = true;
+          state.shellPanel = null;
+          card.innerHTML = "";
+        };
+        card.querySelectorAll("[data-task-case]").forEach((b) => b.addEventListener("click", () => {
+          fly.hidden = true; state.shellPanel = null;
+          switchParallelCase(b.dataset.taskCase, true);
+        }));
+      };
     }
 
     const flashId = state.highlightAnchor;
@@ -1679,14 +1697,10 @@
       mainStepHtml = `${verBar}${d4Diff}${paperHtml}
         <p class="step-caption tiny muted" data-testid="d4-step-caption">本步只写成稿 · 质检与可交⑤不在本屏</p>`;
     } else if (stepId === "fact") {
+      /* 事实确认步：主栏只交底文书；拍板在右栏对话 — 无流程条、无质检墙 */
       mainStepHtml = `${verBar}
-        <div class="step-focus-card" data-testid="d4-fact-focus">
-          <div class="sf-k">本步要你拍</div>
-          <strong>确认交底事实是否与材料一致</strong>
-          <p class="tiny muted">螺旋水道 + 双密封 · 点侧栏摘录可定位正文</p>
-        </div>
-        ${paperHtml}
-        <div class="qc-progress-line qc-by-step" data-testid="qc-card" id="qc-card" hidden></div>`;
+        <div class="step-silent" data-testid="d4-fact-focus" hidden></div>
+        ${paperHtml}`;
     } else if (stepId === "qc") {
       const greens = qc.filter((q) => q.status === "green").length;
       const openQc = qc.filter((q) => q.status !== "green");
@@ -1854,20 +1868,19 @@
     const ev = $("#sideEvidence");
     if (ev) {
       const stepEv = d4CurrentStep().id;
-      const openEv = qc.filter((q) => q.status !== "green");
-      const rowsEv = (stepEv === "qc" ? openEv : []).map((q) => {
-        const st = q.status === "yellow" ? "warn" : "ask";
-        const anchor = q.id === "q4" ? "sec-effect" : "qc-card";
-        return `<button type="button" class="ev-row ${st}" data-excerpt-anchor="${anchor}" data-testid="ev-row">
-          <span>${escapeHtml(q.name)}</span><span class="tag ${st}">${q.status === "yellow" ? "黄" : "红"}</span>
-        </button>`;
-      }).join("");
-      ev.innerHTML = `<details class="evidence-layer evidence-fold" data-testid="side-evidence">
-        <summary class="ev-h">依据 / 质检 · ${stepEv === "qc" && openEv.length ? `本步 ${openEv.length} 项` : "默认折"}</summary>
-        ${rowsEv || `<p class="tiny muted" style="margin:6px 0 0">本步无未过质检项 · 拍板在对话</p>`}
-        ${stepEv === "qc" && openEv.length ? `<p class="tiny muted" style="margin:6px 0 0">补数据/认风险 · 主栏本步质检行</p>` : ""}
-      </details>`;
-      bindExcerptClicks(ev);
+      /* 非质检步：右栏不挂质检/依据墙；事实步只对话 */
+      if (stepEv !== "qc") {
+        ev.innerHTML = "";
+        ev.hidden = true;
+      } else {
+        ev.hidden = false;
+        const openEv = qc.filter((q) => q.status !== "green");
+        /* 质检步依据也默认不摊墙：拍板动作在主栏黄项行 */
+        ev.innerHTML = `<details class="evidence-layer evidence-fold" data-testid="side-evidence">
+          <summary class="ev-h">依据备查 · ${openEv.length ? openEv.length + " 未过" : "已全绿"}</summary>
+          <p class="tiny muted" style="margin:6px 0 0">未过项与补数据/认风险在主栏 · 此处不重复摊开</p>
+        </details>`;
+      }
     }
 
     /* 对话流：硬请示/拿不准/重要节点 = 汇报气泡在上；团队动态在下 */
@@ -2186,7 +2199,7 @@
       layoutTestId: "d5-layout",
       mainTitle: d5Step.id === "a" ? "主产出 · 理解复述" : d5Step.id === "b" ? "主产出 · 申不申依据" : "主产出 · 申请文件",
       mainTag: d5Step.id.startsWith("c") || d5Step.id === "done" ? "权项 | 说明书 | 差分" : "本步一事",
-      mainExtra: `<div class="abc-strip abc-thin step-now-bar" data-testid="d5-abc">
+      mainExtra: `<div class="abc-strip abc-thin step-now-bar" data-testid="d5-abc" hidden>
             ${stepDemoSwitchHtml("d5", d5Pills, d5Step.id === "done" ? "c-submit" : (d5Step.id === "c-qc" || d5Step.id === "c-submit" ? d5Step.id : d5Step.id), "d5StepForce")}
             <span class="tiny muted">全流程见轨迹</span>
             <span class="seg-anchors" hidden>
@@ -2547,7 +2560,7 @@
       layoutTestId: "d6-layout",
       mainTitle: d6Step.id === "a" ? "主产出 · 争点" : d6Step.id === "b" ? "主产出 · 策略" : "主产出 · 答复稿",
       mainTag: d6Step.id === "c" || d6Step.id === "done" ? "答复 | 通知书 | 差分" : "本步一事",
-      mainExtra: `<div class="abc-strip abc-thin step-now-bar" data-testid="d6-step-bar">
+      mainExtra: `<div class="abc-strip abc-thin step-now-bar" data-testid="d6-step-bar" hidden>
             ${stepDemoSwitchHtml("d6", d6Pills, d6Step.id === "done" ? "c" : d6Step.id, "d6StepForce")}
             <span class="tiny muted">全流程见轨迹</span>
           </div>`,
@@ -2816,7 +2829,7 @@
         <div class="workbench">
           <div class="main-pane">
             <div class="pane-head"><strong>主产出 · 本步</strong><span class="pane-tag">薄部</span></div>
-            <div class="abc-strip abc-thin step-now-bar" data-testid="thin-step-bar">
+            <div class="abc-strip abc-thin step-now-bar" data-testid="thin-step-bar" hidden>
               ${stepDemoSwitchHtml("thin", pills, stepId, "thinStepForce")}
             </div>
             <div class="pane-body">${mainBody}</div>

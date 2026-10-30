@@ -155,27 +155,40 @@ try {
   check("after confirm → D4 has 编制 + main产出", roster >= 5 && main === 1, `roster=${roster}`);
   check("D4 编制用照片头像岗", photos >= 5, `photos=${photos}`);
 
-  const tlNow = await page.locator('[data-testid="d4-timeline-inner"].step-now, [data-testid="d4-timeline-inner"] .step-now-k').count();
-  const tlSteps = await page.locator('[data-testid="d4-timeline-inner"] .tl-step').count();
-  check("D4 当前步薄条（不展四步墙）", tlNow >= 1 && tlSteps === 0, `now=${tlNow} steps=${tlSteps}`);
-  const chipN = await page.locator('[data-testid="task-strip"] [data-testid="task-chip"]').count();
-  check("D4 进行中薄轨常显 chip≥2", chipN >= 2, `chips=${chipN}`);
-  const stripMetrics = await page.evaluate(() => {
-    const strip = document.querySelector("#d4TaskStrip");
-    const r = strip?.getBoundingClientRect();
-    return { h: r ? Math.round(r.height) : -1, label: !!strip?.querySelector(".task-strip-label") };
+  /* 流程条必须从 UI 消失 */
+  const tlVisible = await page.evaluate(() => {
+    const el = document.querySelector('[data-testid="d4-timeline"], #stageBar, .stage-bar');
+    if (!el) return false;
+    const st = getComputedStyle(el);
+    const r = el.getBoundingClientRect();
+    return st.display !== "none" && st.visibility !== "hidden" && r.height > 2;
   });
-  check("D4 进行中单行薄轨≤40px", stripMetrics.h > 0 && stripMetrics.h <= 40, JSON.stringify(stripMetrics));
-  check("D4 进行中有标签", stripMetrics.label === true);
-  await page.click('[data-testid="task-strip-toggle"]');
+  check("D4 无四步/流程横条", tlVisible === false, `visible=${tlVisible}`);
+  const topSlim = await page.evaluate(() => {
+    const top = document.querySelector("#viewDept .dept-top");
+    const chrome = document.querySelector("#d4Chrome");
+    const r = top?.getBoundingClientRect();
+    const ch = chrome ? getComputedStyle(chrome).display : "none";
+    return { h: r ? Math.round(r.height) : -1, chromeDisplay: ch, gap: r ? Math.round(r.top - 48) : -1 };
+  });
+  check("D4 壳顶瘦身≤44px", topSlim.h > 0 && topSlim.h <= 44, JSON.stringify(topSlim));
+  check("D4 无 wb-chrome 空白", topSlim.chromeDisplay === "none");
+  /* 轨迹飞层（壳顶单钮） */
+  await page.click('[data-testid="dept-trace-btn"]');
   await sleep(150);
   check("D4 轨迹飞层", await page.locator('[data-testid="task-trace"]').count() === 1);
-  await page.click('[data-testid="task-strip-toggle"]').catch(() => {});
+  await page.click('[data-testid="fly-close"]').catch(() => {});
   await sleep(100);
-  check("D4 收起轨迹后飞层消失", await page.locator('[data-testid="task-trace"]').count() === 0);
-  // 切进行中第二案
+  check("D4 收起轨迹后飞层消失", await page.evaluate(() => {
+    const fly = document.querySelector("#shellFly");
+    const tr = document.querySelector('[data-testid="task-trace"]');
+    return (!!fly && fly.hidden) || !tr;
+  }));
+  // 切进行中第二案（经轨迹飞层）
   const beforeCase = await page.evaluate(() => window.__SAMPLE__?.state?.activeCaseId);
-  await page.locator('[data-testid="task-chip"]').nth(1).click();
+  await page.click('[data-testid="dept-trace-btn"]');
+  await sleep(120);
+  await page.locator('#shellFlyCard [data-task-case]').nth(1).click();
   await sleep(280);
   const afterCase = await page.evaluate(() => window.__SAMPLE__?.state?.activeCaseId);
   check("D4 进行中切案", afterCase && afterCase !== beforeCase, `${beforeCase}→${afterCase}`);
@@ -201,7 +214,7 @@ try {
   });
   check("AI 区在右侧含身份+编制+composer", aiGeo.ai && aiGeo.leadInAi && aiGeo.rosterInAi && aiGeo.composerInAi && !aiGeo.leadInChrome, JSON.stringify(aiGeo));
   check("AI 区宽度约 340–400", aiGeo.aiW >= 340 && aiGeo.aiW <= 400, JSON.stringify(aiGeo));
-  check("壳上段不再堆身份编制", aiGeo.chromeH > 0 && aiGeo.chromeH < 140, JSON.stringify(aiGeo));
+  check("壳上段无 chrome 空白", aiGeo.chromeH === 0 || aiGeo.chromeH === -1, JSON.stringify(aiGeo));
   // 五维 P0：视口持有 + composer 首屏可见
   const fold = await page.evaluate(() => {
     const c = document.querySelector('[data-testid="d4-composer"]');
@@ -222,8 +235,8 @@ try {
   check("P0 workbench 较早露头", fold.wbTop > 0 && fold.wbTop < 420, `wbTop=${fold.wbTop}`);
   const d4txt = await page.locator('[data-testid="view-d4"]').innerText();
   check("清脚手架旁白无 Kimi/文书面板", !d4txt.includes("对照 Kimi") && !d4txt.includes("文书面板") && !d4txt.includes("案卷 →"), "ok");
-  check("部内进行中轨常显", await page.locator('[data-testid="task-strip"] [data-testid="task-chip"]').count() >= 2);
-  check("主栏质检收成进度行", await page.locator('[data-testid="qc-card"]').count() === 1);
+  check("部内轨迹入口在壳顶", await page.locator('[data-testid="dept-trace-btn"]').count() === 1);
+  check("事实步主栏无质检进度行", await page.locator('[data-testid="qc-card"]').count() === 0);
 
   check("D4 硬请示含依据摘录", await page.locator('[data-testid="ask-excerpt"]').count() >= 1);
   check("D4 feed 有工具轨迹芯片", await page.locator('[data-testid="tool-chips"]').count() >= 1);
@@ -236,11 +249,12 @@ try {
     const leadVisible = lead && !lead.hidden && getComputedStyle(lead).display !== "none";
     return !leadVisible && !!roster;
   }));
-  check("D4 带教提示可关", await page.locator('[data-testid="mentor-tip"]').count() === 1);
-  await page.evaluate(() => { if (window.__SAMPLE__ && window.__SAMPLE__.dismissMentor) window.__SAMPLE__.dismissMentor(); else document.querySelector('[data-testid="mentor-dismiss"]')?.click(); });
-  await sleep(150);
-  check("带教已淡出", await page.locator('[data-testid="mentor-tip"]').count() === 0);
-  check("D4 侧栏依据层", await page.locator('[data-testid="side-evidence"]').count() === 1);
+  check("D4 带教默认不占顶", await page.locator('[data-testid="mentor-tip"]').count() === 0
+    && await page.evaluate(() => {
+      const c = document.querySelector("#d4Chrome");
+      return !c || c.hidden || getComputedStyle(c).display === "none" || c.getBoundingClientRect().height < 2;
+    }));
+  check("D4 事实步不挂依据墙", await page.locator('[data-testid="side-evidence"]').count() === 0);
   check("D4 @材料入口", await page.locator('[data-testid="at-toggle"]').count() === 1);
   await page.click('[data-testid="at-toggle"]');
   await sleep(120);
@@ -289,22 +303,32 @@ try {
     && await page.locator('[data-testid="ec-confidence"]').count() >= 1);
   check("P0 D4-哲3 无一对全绿钮", await page.locator('[data-testid="make-green"]').count() === 0);
   /* 真源步序：进部在事实确认 — 黄项/可交⑤不在本步 */
-  check("D4 默认本步事实确认", await page.locator('[data-testid="d4-step-fact"].on').count() === 1);
+  check("D4 默认本步事实确认", await page.locator('[data-testid="confirm-fact"]').count() === 1
+    && await page.locator('[data-testid="d4-main"]').count() === 1);
   check("D4 事实步无黄项墙", await page.locator('[data-testid="qc-yellow-form"]').count() === 0);
+  check("D4 事实步无质检清单墙", await page.locator('[data-testid="qc-yellow-item"]').count() === 0
+    && await page.locator('[data-testid="qc-fix-data"]').count() === 0);
   check("D4 事实步无可交⑤钮", await page.locator('[data-testid="confirm-hand5"]').count() === 0);
+  check("D4 事实步右栏无依据墙", await page.evaluate(() => {
+    const ev = document.querySelector("#sideEvidence");
+    return !ev || ev.hidden || !ev.innerHTML.trim() || getComputedStyle(ev).display === "none";
+  }));
 
   await page.click('[data-testid="confirm-fact"]');
   await sleep(200);
   const jFact = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("事实")));
   check("P0 D4-哲4/HA-哲4 事实确认写判断档案", jFact);
-  check("D4 事实后进质检步", await page.locator('[data-testid="d4-step-qc"].on').count() === 1);
+  check("D4 事实后进质检步", await page.locator('[data-testid="d4-qc-focus"]').count() === 1
+    || await page.locator('[data-testid="qc-yellow-form"]').count() === 1);
   check("P0 D4-哲3 黄项处理入口", await page.locator('[data-testid="qc-yellow-form"]').count() === 1);
+  check("质检步主栏有进度行", await page.locator('[data-testid="qc-card"]').count() === 1);
   check("D4 质检步无可交⑤", await page.locator('[data-testid="confirm-hand5"]').count() === 0);
 
   await page.click('[data-testid="qc-fix-data"]');
   await sleep(200);
   check("P0 D4-哲3 补数据后全绿", await page.locator('[data-testid="qc-all-green"]').count() === 1);
-  check("D4 全绿后进可交⑤步", await page.locator('[data-testid="d4-step-hand"].on').count() === 1);
+  check("D4 全绿后进可交⑤步", await page.locator('[data-testid="confirm-hand5"]').count() === 1
+    || await page.locator('[data-testid="d4-hand-focus"]').count() === 1);
   await page.click('[data-testid="confirm-hand5"]');
   await sleep(200);
   const jHand = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("可交")));
@@ -364,7 +388,12 @@ try {
   });
   await sleep(250);
   check("D5 shows 本步条", await page.locator('[data-testid="d5-abc"]').count() === 1);
-  check("D5 本步演示切换", await page.locator('[data-testid="d5-step-demo"]').count() === 1);
+  check("D5 无流程横条展示", await page.evaluate(() => {
+    const el = document.querySelector('[data-testid="d5-abc"]');
+    if (!el) return true;
+    const st = getComputedStyle(el);
+    return st.display === "none" || el.hidden || el.getBoundingClientRect().height < 2;
+  }));
   check("D5 侧栏 composer", await page.locator('[data-testid="d5-composer"]').count() === 1);
   check("D5 默认 A 理解步", await page.locator('[data-testid="d5-step-a"].on').count() === 1);
   check("D5 A 步无撰写 tabs 可见", await page.evaluate(() => {
@@ -523,7 +552,8 @@ try {
       meta: !!document.querySelector('[data-testid="dept-meta"]'),
     };
   });
-  check("五维 轻量真收壳", lightOn >= 1 && lightChrome.folded && lightChrome.strip !== "none", JSON.stringify(lightChrome));
+  check("五维 轻量真收壳", lightOn >= 1 && lightChrome.folded, JSON.stringify(lightChrome));
+  check("五维 轨迹在壳顶单钮", await page.locator('[data-testid="dept-trace-btn"]').count() === 1);
   check("AI 区宽度稳定", lightChrome.aiW >= 300 && lightChrome.aiW <= 420, JSON.stringify(lightChrome));
   check("壳顶有案信息无空白 grout", lightChrome.meta === true);
   check("A待办进④默认轻量态", lightOn >= 1, `shell=${lightOn}`);
@@ -611,7 +641,12 @@ try {
   check("P2 D4-哲6 风格标签", await page.locator('[data-testid="expert-style"]').count() >= 1);
   check("P1 HA-设1 硬请示分级", await page.locator('[data-testid="gate-grade"]').count() >= 1);
   /* 演示切到质检步：存疑条 + 质检手段 */
-  await page.click('[data-testid="d4-step-qc"]');
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.d4StepForce = "qc";
+    s.state.factConfirmed = true;
+    s.render();
+  });
   await sleep(150);
   check("P1 D4-哲7 黄项存疑条", await page.locator('[data-testid="doubt-bar"]').count() === 1);
   check("P1 D4-设3 质检去相关手段", await page.locator('[data-testid="qc-method"]').count() === 1);
