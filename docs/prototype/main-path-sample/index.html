@@ -168,27 +168,30 @@
             <div class="pane-body" id="docMain"></div>
           </div>
           <div class="side-pane" data-testid="ai-pane">
-            <div class="lead-bar ai-identity" data-testid="lead-bar" id="leadBar">
-              <span class="avatar"><img src="./avatars/04.jpg" alt="" width="40" height="40" /></span>
-              <div>
-                <strong>交底部负责人</strong>
-                <div class="tiny muted">主持分活与汇报 · 专家向你请示关键结论</div>
-              </div>
+            <!-- 层1 硬请示钉顶 · 大纲 §4.4.4 -->
+            <div class="ai-ask-zone" data-testid="ai-ask-zone">
+              <div class="ai-zone-h"><strong>硬请示</strong><span class="pane-tag" id="sideHeadTag">要你拍</span></div>
+              <div id="sideAsks"></div>
             </div>
-            <div class="who-block ai-roster">
-              <div class="who-head">
-                <strong>编制 · 谁在办</strong>
-                <span class="tiny muted">可点聚焦</span>
+            <!-- 次要：身份 + 编制可折 -->
+            <div class="ai-id-zone" data-testid="ai-id-zone">
+              <div class="lead-bar ai-identity" data-testid="lead-bar" id="leadBar">
+                <span class="avatar"><img src="./avatars/04.jpg" alt="" width="40" height="40" /></span>
+                <div>
+                  <strong>交底部负责人</strong>
+                  <div class="tiny muted">主持分活与汇报 · 专家向你请示关键结论</div>
+                </div>
               </div>
-              <div class="roster" id="roster" data-testid="roster"></div>
-            </div>
-            <div class="pane-head" id="sideHead">
-              <strong id="sideHeadTitle">对话 · 硬请示</strong>
-              <span class="pane-tag" id="sideHeadTag">AI 区</span>
+              <div class="who-block ai-roster">
+                <div class="who-head">
+                  <strong>编制 · 谁在办</strong>
+                  <button type="button" class="ghost tiny roster-fold-btn" id="btnRosterFold" data-testid="roster-fold">收起</button>
+                </div>
+                <div class="roster" id="roster" data-testid="roster"></div>
+              </div>
             </div>
             <div class="pane-body" id="sideBody">
               <div id="sideFocus"></div>
-              <div id="sideAsks"></div>
               <div id="sideEvidence"></div>
               <div id="feedWrap" class="feed-wrap">
                 <button type="button" class="feed-toggle tiny" id="feedToggle" data-testid="feed-toggle">收起团队动态</button>

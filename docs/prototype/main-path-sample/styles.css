@@ -2117,3 +2117,130 @@ em.hit-em {
 .reply-layout.density-light .side-pane .lead-bar {
   padding: 8px 12px;
 }
+
+/* ── 工作台主次分区 2026-10-30 ──
+   主栏＝文书最大；AI：硬请示钉顶 → 身份/编制可折 → 依据/对话 → composer 钉底 */
+
+.workbench,
+.apply-layout,
+.reply-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 340px) !important;
+  gap: 10px;
+}
+
+.main-pane {
+  box-shadow: var(--shadow);
+}
+
+/* AI 区纵序 */
+.side-pane[data-testid="ai-pane"],
+.side-pane[data-testid="ai-pane-d5"],
+.side-pane[data-testid="ai-pane-d6"] {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ai-ask-zone {
+  flex: 0 1 auto;
+  max-height: 46%;
+  min-height: 120px;
+  overflow: auto;
+  border-bottom: 1px solid var(--ask-border, #f0c9a0);
+  background: linear-gradient(180deg, var(--ask-bg, #fff7ed), var(--surface));
+  order: 0;
+}
+.ai-zone-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 4px;
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 2;
+}
+.ai-zone-h strong {
+  font-size: 12px;
+  letter-spacing: .04em;
+  color: var(--ask, #b45309);
+}
+.ai-ask-zone .hard-ask,
+.ai-ask-body .hard-ask {
+  margin: 6px 10px 10px;
+}
+.ai-ask-body {
+  padding: 0 0 8px !important;
+  overflow: visible !important;
+  flex: none !important;
+  max-height: none !important;
+}
+
+.ai-id-zone {
+  flex-shrink: 0;
+  order: 1;
+  border-bottom: 1px solid var(--line);
+  background: var(--rail);
+}
+.ai-id-zone .lead-bar,
+.ai-id-zone .ai-identity {
+  padding: 8px 10px !important;
+  background: transparent !important;
+  border-bottom: 0 !important;
+}
+.ai-id-zone .who-block,
+.ai-id-zone .ai-roster {
+  padding: 0 10px 8px !important;
+  background: transparent !important;
+  border-bottom: 0 !important;
+}
+.ai-id-zone .who-block.roster-folded .roster,
+.ai-id-zone .who-block.collapsed .roster {
+  display: none !important;
+}
+.ai-id-zone .who-block.roster-folded .who-head,
+.ai-id-zone .who-block.collapsed .who-head {
+  margin-bottom: 0;
+}
+
+.side-pane > .pane-body {
+  order: 2;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+.side-pane > .composer {
+  order: 3;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+/* 轻量：藏编制与闲聊，硬请示+composer 保留 */
+.density-light .ai-id-zone .who-block,
+.apply-layout.density-light .ai-id-zone .who-block,
+.reply-layout.density-light .ai-id-zone .who-block,
+.density-light .feed-wrap,
+.apply-layout.density-light .feed-wrap,
+.reply-layout.density-light .feed-wrap {
+  display: none !important;
+}
+.density-light .ai-ask-zone,
+.apply-layout.density-light .ai-ask-zone,
+.reply-layout.density-light .ai-ask-zone {
+  max-height: 58%;
+}
+.density-light .ai-id-zone .lead-bar .tiny,
+.apply-layout.density-light .ai-id-zone .lead-bar .tiny,
+.reply-layout.density-light .ai-id-zone .lead-bar .tiny {
+  display: none;
+}
+
+/* 主栏文书区更大呼吸 */
+.main-pane .pane-head strong {
+  font-size: 13px;
+}
+.main-pane .doc-body,
+.main-pane .doc-page {
+  font-size: 13.5px;
+  line-height: 1.65;
+}

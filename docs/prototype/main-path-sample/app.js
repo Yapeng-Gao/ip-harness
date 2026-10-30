@@ -3,6 +3,7 @@
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 
   const state = {
+    rosterFolded: false,
     view: "gate",
     gateDone: false,
     role: "ent", /* ent | agency */
@@ -1318,7 +1319,16 @@
     }
 
     const whoBlock = document.querySelector("#viewDept .who-block");
-    if (whoBlock) whoBlock.classList.toggle("collapsed", isLight);
+    if (whoBlock) {
+      whoBlock.classList.toggle("collapsed", isLight);
+      const folded = isLight || !!state.rosterFolded;
+      whoBlock.classList.toggle("roster-folded", folded);
+      const foldBtnEarly = $("#btnRosterFold");
+      if (foldBtnEarly) {
+        foldBtnEarly.textContent = folded ? "展开编制" : "收起";
+        foldBtnEarly.onclick = () => { state.rosterFolded = !state.rosterFolded; render(); };
+      }
+    }
     const leadBarEl = $("#leadBar");
     if (leadBarEl) leadBarEl.hidden = false; /* AI 区身份常显；轻量只收编制/副文 */
     const stageBarEl = $("#stageBar");
@@ -1472,15 +1482,12 @@
       }
     }
 
-    const sideTitle = $("#sideHeadTitle");
     const sideTag = $("#sideHeadTag");
-    if (sideTitle) {
-      sideTitle.textContent = state.sideMode === "1to1" && ae
-        ? `侧栏 · 与${ae.name} 1:1`
-        : "侧栏 · 硬请示优先";
+    if (sideTag) {
+      sideTag.textContent = state.sideMode === "1to1" && ae
+        ? `1:1 · ${ae.name}`
+        : "要你拍";
     }
-    if (sideTag) sideTag.textContent = state.sideMode === "1to1" ? "1:1 驾驭" : "对话驾驭";
-
     function askExcerptHtml(ask, chainTestId) {
       if (!ask) return "";
       return `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml(ask.conclusion)}</p>
@@ -1780,25 +1787,9 @@
           </div>
         </div>
         <div class="side-pane" data-testid="ai-pane-d5">
-          <div class="lead-bar ai-identity">
-            <span class="avatar"><img src="./avatars/05.jpg" alt="" width="40" height="40" /></span>
-            <div>
-              <strong>申请部负责人</strong>
-              <div class="tiny muted">A 理解 → B 申不申 → C 递交；过线 ≠ 确认递交</div>
-            </div>
-          </div>
-          <div class="who-block ai-roster ${aDens ? "collapsed" : ""}" data-testid="d5-roster-wrap">
-            <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">权项 / 质检</span></div>
-            <div class="roster" data-testid="d5-roster">${aRoster.map((e) => `
-              <button type="button" class="expert-chip ${e.kind === "qc" ? "qc" : ""}" data-testid="d5-expert-${escapeHtml(e.id)}">
-                ${avatarHtml(e.photo, e.av)}
-                <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
-                <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
-                ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
-              </button>`).join("")}</div>
-          </div>
-          <div class="pane-head"><strong>对话 · 硬请示</strong><span class="pane-tag">AI 区</span></div>
-          <div class="pane-body">
+          <div class="ai-ask-zone" data-testid="ai-ask-zone-d5">
+            <div class="ai-zone-h"><strong>硬请示</strong><span class="pane-tag">A→B→C</span></div>
+            <div class="pane-body ai-ask-body">
             <div data-testid="d5-gates">
               <div class="abc-strip" data-testid="d5-abc">
                 <div class="${segCls(segA)}" data-testid="seg-a"><span class="seg-k">A</span>理解${a.understand ? " · 已确认" : " · 待你确认"}</div>
@@ -1851,6 +1842,26 @@
               </div>
 
               <div class="row-actions"><button type="button" id="btnToReply" data-testid="to-reply">有 OA 时 → ⑥答复</button></div>
+            </div>
+            </div>
+          </div>
+          <div class="ai-id-zone" data-testid="ai-id-zone-d5">
+            <div class="lead-bar ai-identity">
+              <span class="avatar"><img src="./avatars/05.jpg" alt="" width="40" height="40" /></span>
+              <div>
+                <strong>申请部负责人</strong>
+                <div class="tiny muted">过线 ≠ 确认递交</div>
+              </div>
+            </div>
+            <div class="who-block ai-roster ${aDens ? "collapsed roster-folded" : ""}" data-testid="d5-roster-wrap">
+              <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">权项 / 质检</span></div>
+              <div class="roster" data-testid="d5-roster">${aRoster.map((e) => `
+                <button type="button" class="expert-chip ${e.kind === "qc" ? "qc" : ""}" data-testid="d5-expert-${escapeHtml(e.id)}">
+                  ${avatarHtml(e.photo, e.av)}
+                  <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
+                  <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
+                  ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
+                </button>`).join("")}</div>
             </div>
           </div>
           <div class="composer" data-testid="d5-composer">
@@ -2063,25 +2074,9 @@
           </div>
         </div>
         <div class="side-pane" data-testid="ai-pane-d6">
-          <div class="lead-bar ai-identity">
-            <span class="avatar"><img src="./avatars/06.jpg" alt="" width="40" height="40" /></span>
-            <div>
-              <strong>答复部负责人</strong>
-              <div class="tiny muted">争点 → 策略/缩限 → 本轮递交；期限醒目</div>
-            </div>
-          </div>
-          <div class="who-block ai-roster ${rDens ? "collapsed" : ""}" data-testid="d6-roster-wrap">
-            <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">争点 / 策略</span></div>
-            <div class="roster" data-testid="d6-roster">${rRoster.map((e) => `
-              <button type="button" class="expert-chip" data-testid="d6-expert-${escapeHtml(e.id)}">
-                ${avatarHtml(e.photo, e.av)}
-                <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
-                <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
-                ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
-              </button>`).join("")}</div>
-          </div>
-          <div class="pane-head"><strong>对话 · 硬请示</strong><span class="pane-tag">AI 区</span></div>
-          <div class="pane-body">
+          <div class="ai-ask-zone" data-testid="ai-ask-zone-d6">
+            <div class="ai-zone-h"><strong>硬请示</strong><span class="pane-tag">争点→策略→递交</span></div>
+            <div class="pane-body ai-ask-body">
             <div data-testid="d6-gates">
               <div class="seg-block" data-testid="block-a6">
                 <div class="seg-title">A · 争点（中立）</div>
@@ -2125,6 +2120,26 @@
                   <div class="acts">${r.submit ? `<span class="tag ok">已确认本轮递交</span>` : `<button type="button" class="ask-confirm" id="btnReplySubmit" data-testid="confirm-reply-submit" ${r.limitOk ? "" : "disabled"}>确认递交</button>`}</div>
                 </div>
               </div>
+            </div>
+            </div>
+          </div>
+          <div class="ai-id-zone" data-testid="ai-id-zone-d6">
+            <div class="lead-bar ai-identity">
+              <span class="avatar"><img src="./avatars/06.jpg" alt="" width="40" height="40" /></span>
+              <div>
+                <strong>答复部负责人</strong>
+                <div class="tiny muted">期限醒目 · 策略后定调</div>
+              </div>
+            </div>
+            <div class="who-block ai-roster ${rDens ? "collapsed roster-folded" : ""}" data-testid="d6-roster-wrap">
+              <div class="who-head"><strong>编制 · 谁在办</strong><span class="tiny muted">争点 / 策略</span></div>
+              <div class="roster" data-testid="d6-roster">${rRoster.map((e) => `
+                <button type="button" class="expert-chip" data-testid="d6-expert-${escapeHtml(e.id)}">
+                  ${avatarHtml(e.photo, e.av)}
+                  <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
+                  <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
+                  ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
+                </button>`).join("")}</div>
             </div>
           </div>
           <div class="composer" data-testid="d6-composer">
