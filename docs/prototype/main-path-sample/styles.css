@@ -1534,3 +1534,252 @@ button.ask-confirm:hover:not(:disabled) {
 .composer-row textarea { min-height: 36px; font-size: 13px; }
 .evidence-chain { background: var(--surface-2); border-color: var(--line); }
 .ec-k { color: var(--brand-3); letter-spacing: 0.04em; font-size: 10.5px; }
+
+
+/* ═══════════════════════════════════════════════
+   五维扫描全落 · 2026-10-30
+   视口持有 / 轻量真收壳 / 首页去三重计数 / UI 层级
+   ═══════════════════════════════════════════════ */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+.app {
+  height: 100vh;
+  max-height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+.view.on {
+  overflow: hidden;
+  min-height: 0;
+}
+/* 大厅/前台/工单等：体内滚 */
+#viewLobby .view-body,
+#viewFront .view-body,
+#viewWO .view-body,
+#viewThin .view-body,
+#viewBlock .view-body,
+#viewGate .view-body,
+.gate-wrap {
+  overflow: auto;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+}
+#viewGate {
+  overflow: auto;
+}
+
+/* 工作台壳：100vh 内 flex；上段可折；双栏内滚；composer 贴底 */
+.dept-shell,
+.apply-shell,
+.reply-shell,
+.thin-shell,
+.block-shell {
+  height: 100%;
+  max-height: calc(100vh - var(--top-h));
+  overflow: hidden;
+  min-height: 0;
+}
+.wb-chrome {
+  flex-shrink: 0;
+  max-height: min(28vh, 220px);
+  overflow: auto;
+  border-bottom: 1px solid transparent;
+}
+.wb-chrome:empty { display: none; }
+
+.workbench,
+.apply-layout,
+.reply-layout {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  overflow: hidden;
+  align-content: stretch;
+  align-items: stretch;
+  padding-bottom: 10px;
+}
+.main-pane,
+.side-pane {
+  min-height: 0 !important;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+.side-pane {
+  display: flex;
+  flex-direction: column;
+}
+.side-pane .pane-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+.main-pane .pane-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+.composer {
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  flex-shrink: 0;
+  box-shadow: 0 -6px 16px oklch(0 0 0 / 0.04);
+}
+
+/* 老板轻量：真收壳 — 藏名册/案卡/轨迹/负责人/时间线 */
+.density-light .wb-chrome .lead-bar,
+.density-light .wb-chrome .who-block,
+.density-light .wb-chrome .stage-bar,
+.density-light .wb-chrome .task-strip,
+.density-light .wb-chrome .mentor-tip,
+.apply-shell.density-light-shell .lead-bar,
+.apply-shell.density-light-shell .who-block,
+.apply-shell.density-light-shell .task-strip,
+.reply-shell.density-light-shell .lead-bar,
+.reply-shell.density-light-shell .who-block,
+.reply-shell.density-light-shell .task-strip {
+  display: none !important;
+}
+.density-light .wb-chrome {
+  max-height: 0;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.density-light .side-pane .hard-ask {
+  order: -1;
+}
+.mode-hint {
+  color: var(--brand);
+  font-weight: 650;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-soft-2);
+}
+.mode-hint[hidden] { display: none !important; }
+
+/* 部内并行案条默认折叠 */
+.task-strip {
+  flex-wrap: wrap;
+}
+.task-strip-toggle {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--rail);
+  color: var(--brand);
+  font-weight: 650;
+  box-shadow: none;
+}
+.task-strip.is-collapsed .task-chip,
+.task-strip.is-collapsed .task-trace-rail {
+  display: none !important;
+}
+.task-strip.is-collapsed {
+  padding-top: 6px;
+  padding-bottom: 2px;
+}
+
+/* 首页：无 attn 双 chip；案卷条加重 */
+.lobby-attn-strip { display: none !important; }
+.case-bar {
+  border-style: solid;
+  border-color: var(--brand-soft-2);
+  background: linear-gradient(180deg, #fff, var(--brand-soft));
+  justify-content: flex-start;
+}
+.case-bar strong {
+  color: var(--brand);
+  font-size: 12.5px;
+}
+.case-bar-cta {
+  margin-left: auto;
+  color: var(--brand);
+  font-weight: 650;
+}
+
+/* 顶栏减拥挤：缩搜索、角色短标 */
+.shell-search { min-width: 140px; max-width: 200px; }
+.shell-search > span:last-child {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.brand-text span { display: none; } /* L-UI2 减一行 */
+.role-toggle .role[data-role="ent"] { font-size: 11px; }
+.user-chip .urole { display: none; }
+@media (max-width: 1180px) {
+  .shell-search > span:last-child { display: none; }
+  .case-switch-chip #caseSwitchLabel { max-width: 72px; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* W-UI1：此刻主控件放大 — 硬请示确认钮 */
+.hard-ask .ask-confirm {
+  min-width: 128px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+}
+.hard-ask .acts button:not(.ask-confirm):not(.primary) {
+  opacity: 0.92;
+  font-size: 12.5px;
+}
+
+/* W-UI2：黄项操作 vs 硬请示分色 */
+.qc-fix-btn {
+  background: var(--warn-soft) !important;
+  border-color: var(--warn-border) !important;
+  color: var(--warn) !important;
+  font-weight: 700;
+  box-shadow: none !important;
+}
+.qc-fix-btn.primary,
+button.primary.qc-fix-btn {
+  background: linear-gradient(180deg, #d4a017, #a16207) !important;
+  border-color: #92400e !important;
+  color: #fff !important;
+}
+.qc-fix-btn.ghost-risk {
+  background: transparent !important;
+  border: 1px dashed var(--warn-border) !important;
+  color: var(--warn) !important;
+}
+
+/* W-设2：密度切换用栏内 hint，toast 更轻更短 */
+.toast.soft {
+  bottom: auto;
+  top: calc(var(--top-h) + 10px);
+  background: var(--ink-2);
+  padding: 7px 12px;
+  font-size: 12px;
+  opacity: 0;
+}
+.toast.soft.on { opacity: 0.92; }
+
+/* 主栏质检一行进度（权威在侧栏） */
+.qc-progress-line {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-top: 12px; padding: 8px 10px; border-radius: 10px;
+  background: var(--rail); border: 1px solid var(--line);
+  font-size: 12.5px;
+}
+.qc-progress-line strong { font-size: 12px; }
+.qc-progress-line .qc-fix-row { margin: 0; }
+
+/* 精致度：卡片阴影略收 */
+.card, .dept-door, .hard-ask {
+  box-shadow: var(--shadow-sm);
+}
+.task-chip { box-shadow: none; }
+
+.apply-shell.density-light-shell .wb-chrome,
+.reply-shell.density-light-shell .wb-chrome {
+  display: none !important;
+}
+.apply-shell,
+.reply-shell {
+  display: flex;
+  flex-direction: column;
+}

@@ -67,12 +67,16 @@ try {
   const entrustTxt = await page.locator('[data-testid="front-desk-card"]').innerText();
   check("L1 用语不用分诊", !entrustTxt.includes("分诊") && entrustTxt.includes("接待"), entrustTxt.slice(0, 40));
   check("L1 问候计数", await page.locator('[data-testid="lobby-greet"]').count() === 1);
-  check("L1 摘要条（不展开列表）", await page.locator('[data-testid="lobby-attn-strip"]').count() === 1);
+  check("L1 无 attn 双 chip（计数不三重）", await page.locator('[data-testid="lobby-attn-strip"]').count() === 0);
   check("L1 无首页待办墙", await page.locator('[data-testid="todo-item"]').count() === 0);
   check("L1 无首页推进轨", await page.locator('[data-testid="prog-card"]').count() === 0);
   check("L1 八部仍在", await page.locator('[data-testid="dept-wall"] .dept-door').count() === 8);
+  const greetTxt = await page.locator('[data-testid="lobby-greet"]').innerText();
+  check("L1 问候含待拍计数", greetTxt.includes("待拍"), greetTxt.slice(0, 60));
+  check("L1 案卷条可扫", await page.locator('[data-testid="case-bar"]').count() === 1);
   check("Shell ⌘K densify", await page.locator('[data-testid="shell-search"]').count() === 1);
-  check("Shell 定时/催办入口", await page.locator('[data-testid="btn-schedule"]').count() === 1);
+  check("Shell 定时全文", await page.locator('[data-testid="btn-schedule"]').count() === 1
+    && (await page.locator('[data-testid="btn-schedule"]').innerText()).includes("定时"));
   check("Shell 要你拍的入口", await page.locator('[data-testid="btn-notify"]').count() === 1);
   check("Shell 正在推进入口", await page.locator('[data-testid="btn-case-switch"]').count() === 1);
   check("Shell 案卷唯一入口", await page.locator('[data-testid="nav-cases"]').count() === 1);
@@ -103,17 +107,17 @@ try {
   await page.click('[data-testid="fly-close"]').catch(() => {});
   await sleep(100);
 
-  // 首页摘要 → 顶栏飞层有货（列表不在首页）
-  await page.click('[data-testid="lobby-todo-summary"]');
+  // 顶栏「要你拍的 / 推进」= 唯一列表入口（首页无摘要 chip）
+  await page.click('[data-testid="btn-notify"]');
   await sleep(200);
   const flyTodoN = await page.locator('[data-testid="fly-notify"]').count();
-  check("摘要点开要你拍的飞层", flyTodoN >= 2 && flyTodoN <= 6, `got ${flyTodoN}`);
+  check("顶栏要你拍的飞层有货", flyTodoN >= 2 && flyTodoN <= 6, `got ${flyTodoN}`);
   await page.click('[data-testid="fly-close"]').catch(() => {});
   await sleep(100);
-  await page.click('[data-testid="lobby-prog-summary"]');
+  await page.click('[data-testid="btn-case-switch"]');
   await sleep(200);
   const flyCaseN = await page.locator('[data-testid="fly-case"]').count();
-  check("摘要点开正在推进飞层", flyCaseN >= 2, `got ${flyCaseN}`);
+  check("顶栏推进飞层有货", flyCaseN >= 2, `got ${flyCaseN}`);
   await page.click('[data-testid="fly-close"]').catch(() => {});
   await sleep(100);
 
@@ -153,15 +157,43 @@ try {
 
   const tl = await page.locator('[data-testid="d4-timeline-inner"] .tl-step').count();
   check("D4 四步时间线", tl === 4, `got ${tl}`);
-  check("D4 并行任务条", await page.locator('[data-testid="task-strip"] .task-chip').count() >= 2);
+  check("D4 并行任务条默认折叠", await page.locator('[data-testid="task-strip-toggle"]').count() === 1);
+  await page.click('[data-testid="task-strip-toggle"]');
+  await sleep(150);
+  check("D4 展开后有并行案卡", await page.locator('[data-testid="task-strip"] .task-chip').count() >= 2);
   check("D4 轨迹回放", await page.locator('[data-testid="task-trace"]').count() === 1);
+  await page.click('[data-testid="task-strip-toggle"]').catch(() => {});
+  await sleep(100);
   check("D4 侧栏假 composer", await page.locator('[data-testid="d4-composer"]').count() === 1);
+  // 五维 P0：视口持有 + composer 首屏可见
+  const fold = await page.evaluate(() => {
+    const c = document.querySelector('[data-testid="d4-composer"]');
+    const wb = document.querySelector("#viewDept .workbench");
+    const cr = c ? c.getBoundingClientRect() : null;
+    const vh = window.innerHeight;
+    return {
+      scrollH: document.documentElement.scrollHeight,
+      bodyOverflow: getComputedStyle(document.body).overflow,
+      composerTop: cr ? Math.round(cr.top) : -1,
+      composerVisible: cr ? (cr.bottom > 0 && cr.top < vh && cr.height > 0) : false,
+      wbTop: wb ? Math.round(wb.getBoundingClientRect().top) : -1,
+      vh
+    };
+  });
+  check("P0 视口持有 body 不整页狂滚", fold.scrollH <= fold.vh + 120 || fold.bodyOverflow.includes("hidden"), JSON.stringify(fold));
+  check("P0 composer 首屏可见", fold.composerVisible && fold.composerTop < fold.vh, JSON.stringify(fold));
+  check("P0 workbench 较早露头", fold.wbTop > 0 && fold.wbTop < 420, `wbTop=${fold.wbTop}`);
+  const d4txt = await page.locator('[data-testid="view-d4"]').innerText();
+  check("清脚手架旁白无 Kimi/文书面板", !d4txt.includes("对照 Kimi") && !d4txt.includes("文书面板") && !d4txt.includes("案卷 →"), "ok");
+  check("部内并行默认折叠", await page.locator('[data-testid="task-strip-toggle"]').count() === 1);
+  check("主栏质检收成进度行", await page.locator('[data-testid="qc-card"]').count() === 1);
+
   check("D4 硬请示含依据摘录", await page.locator('[data-testid="ask-excerpt"]').count() >= 1);
   check("D4 feed 有工具轨迹芯片", await page.locator('[data-testid="tool-chips"]').count() >= 1);
   check("D4 密度态切换", await page.locator('[data-testid="density-toggle"]').count() === 1
     && await page.locator('[data-testid="density-author"]').count() === 1);
   check("D4 带教提示可关", await page.locator('[data-testid="mentor-tip"]').count() === 1);
-  await page.click('[data-testid="mentor-dismiss"]');
+  await page.evaluate(() => { if (window.__SAMPLE__ && window.__SAMPLE__.dismissMentor) window.__SAMPLE__.dismissMentor(); else document.querySelector('[data-testid="mentor-dismiss"]')?.click(); });
   await sleep(150);
   check("带教已淡出", await page.locator('[data-testid="mentor-tip"]').count() === 0);
   check("D4 侧栏依据层", await page.locator('[data-testid="side-evidence"]').count() === 1);
@@ -406,6 +438,15 @@ try {
   await sleep(300);
   const lightOn = await page.locator('.density-light').count();
   const lightBtn = await page.locator('[data-testid="density-light"].on').count();
+  const lightChrome = await page.evaluate(() => {
+    const who = document.querySelector("#viewDept .who-block");
+    const lead = document.querySelector("#leadBar");
+    const strip = document.querySelector("#d4TaskStrip");
+    const cs = (el) => el ? getComputedStyle(el).display : "none";
+    return { who: cs(who), lead: lead && lead.hidden ? "none" : cs(lead), strip: cs(strip) };
+  });
+  check("五维 轻量真收壳", lightOn >= 1 && lightChrome.who === "none" && lightChrome.lead === "none", JSON.stringify(lightChrome));
+
   check("A待办进④默认轻量态", lightOn >= 1 || lightBtn === 1, `shell=${lightOn} btn=${lightBtn}`);
   check("轻量有要你拍结论区或硬请示", await page.locator('[data-testid="ask-fact"]').count() >= 1
     || await page.locator('[data-testid="light-conclusion"]').count() >= 1);

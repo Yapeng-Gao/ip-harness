@@ -28,10 +28,10 @@
       <button type="button" class="icon-btn" id="btnSchedule" data-testid="btn-schedule" title="定时 / 催办">
         定时<span class="badge-dot soft" id="scheduleDot">4</span>
       </button>
-      <button type="button" class="icon-btn" id="btnNotify" data-testid="btn-notify" title="要你拍的（原通知铃已合并）· 列表在顶栏飞层">
+      <button type="button" class="icon-btn" id="btnNotify" data-testid="btn-notify" title="要你拍的">
         要你拍的<span class="badge-dot" id="notifyDot">3</span>
       </button>
-      <button type="button" class="case-switch-chip" id="btnCaseSwitch" data-testid="btn-case-switch" title="公司正在推进 · 列表在顶栏飞层">
+      <button type="button" class="case-switch-chip" id="btnCaseSwitch" data-testid="btn-case-switch" title="公司正在推进">
         <span class="cs-k">推进</span>
         <span id="caseSwitchLabel">公司正在推进</span>
         <span class="cs-caret">▾</span>
@@ -52,7 +52,7 @@
     </div>
 
 
-    <!-- Gate · 登录/选工作台（对标 Kimi login 密度，不采集账户） -->
+    <!-- Gate · 登录/选工作台（不采集账户） -->
     <section class="view on" id="viewGate" data-testid="view-gate">
       <div class="gate-wrap">
         <div class="gate-copy">
@@ -99,7 +99,7 @@
               <div class="eyebrow">统一委托 · 前台</div>
               <strong>交给前台接待</strong>
             </div>
-            <span class="tiny muted">弄清去向后才进部 · 接待不派活</span>
+            <span class="tiny muted">接待弄清去向后进部 · 熟客可直达</span>
           </div>
           <div class="entrust-box">
             <textarea id="entrustInput" rows="2" placeholder="跨部门目标，或直接说：把这份技术说明写成交底…" data-testid="entrust-input"></textarea>
@@ -117,21 +117,6 @@
           </div>
         </div>
 
-        <!-- 顶栏已有「要你拍的」「公司正在推进」飞层：大厅只留摘要计数，勿再展开内容墙 -->
-        <div class="lobby-attn-strip" data-testid="lobby-attn-strip">
-          <button type="button" class="attn-chip urge" id="btnLobbyTodoSummary" data-testid="lobby-todo-summary" title="打开顶栏 · 要你拍的">
-            <span class="attn-k">要你拍的</span>
-            <strong id="lobbyTodoChipN">3</strong>
-            <span class="attn-hint">点开顶栏列表</span>
-          </button>
-          <button type="button" class="attn-chip prog" id="btnLobbyProgSummary" data-testid="lobby-prog-summary" title="打开顶栏 · 公司正在推进">
-            <span class="attn-k">公司正在推进</span>
-            <strong id="lobbyProgChipN">3</strong>
-            <span class="attn-hint">点开顶栏列表</span>
-          </button>
-          <span class="tiny muted attn-note">列表只在顶栏飞层 · 首页不重复展开</span>
-        </div>
-
         <div class="card dept-home-card" data-testid="dept-home-card">
           <div class="card-head">
             <h2>进哪个部门办事</h2>
@@ -142,6 +127,7 @@
         <div class="case-bar" data-testid="case-bar">
           <strong>当前案</strong>
           <span id="caseBarText" class="muted">尚无案卷</span>
+          <button type="button" class="ghost case-bar-cta" id="btnCaseBarOpen" data-testid="case-bar-open">打开案卷</button>
         </div>
       </div>
     </section>
@@ -166,8 +152,9 @@
           <span class="line-status" id="deptLineStatus">未过线 / 质检进行中</span>
           <div class="density-toggle" id="densityToggle" data-testid="density-toggle"></div>
           <div class="shell-spacer"></div>
-          <span class="tiny muted dept-doc-hint">案卷 → 顶栏「案卷」</span>
+          <span class="mode-hint tiny" id="d4ModeHint" data-testid="d4-mode-hint" hidden></span>
         </div>
+        <div class="wb-chrome" id="d4Chrome" data-testid="wb-chrome">
         <div class="mentor-tip" id="mentorTip" data-testid="mentor-wrap"></div>
         <div class="task-strip" id="d4TaskStrip" data-testid="task-strip"></div>
         <div class="lead-bar" data-testid="lead-bar" id="leadBar">
@@ -180,16 +167,17 @@
         <div class="who-block">
           <div class="who-head">
             <strong>编制 · 谁在办</strong>
-            <span class="tiny muted">对照 Kimi「谁在做」· 可点聚焦 · 质检不与成稿糊</span>
+            <span class="tiny muted">可点聚焦 · 质检与成稿分席</span>
           </div>
           <div class="roster" id="roster" data-testid="roster"></div>
         </div>
         <div class="stage-bar" id="stageBar" data-testid="d4-timeline"></div>
+        </div>
         <div class="workbench">
           <div class="main-pane">
             <div class="pane-head">
               <strong>主产出 · 交底书</strong>
-              <span class="pane-tag">文书面板 · 非聊天气泡</span>
+              <span class="pane-tag">交底书</span>
             </div>
             <div class="pane-body" id="docMain"></div>
           </div>
