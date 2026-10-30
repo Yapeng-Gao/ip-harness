@@ -243,6 +243,16 @@ try {
   check("D4 无密度三钮", await page.locator('[data-testid="density-toggle"]').count() === 0
     && await page.locator('[data-testid="density-author"]').count() === 0);
   check("D4 硬请示在对话流", await page.locator('[data-testid="d4-feed"] [data-testid="ask-fact"]').count() >= 1);
+  check("D4 请示气泡化·依据折进展开", await page.locator('[data-testid="d4-feed"] [data-testid="ask-more"]').count() >= 1);
+  check("D4 单请示不钉 sticky 墙", await page.evaluate(() => {
+    const s = document.querySelector('[data-testid="ask-sticky"]');
+    return !s || s.hidden || s.classList.contains("empty") || getComputedStyle(s).display === "none";
+  }));
+  check("D4 编制默认折起", await page.evaluate(() => {
+    const w = document.querySelector('[data-testid="roster-wrap"]');
+    return !!(w && (w.classList.contains("roster-folded") || w.classList.contains("collapsed")));
+  }));
+  check("D4 工具芯片静音折起", await page.locator(".tool-chips-fold").count() >= 1);
   check("D4 编制单行无双负责人条", await page.evaluate(() => {
     const lead = document.querySelector("#leadBar");
     const roster = document.querySelector('[data-testid="roster"]');
@@ -270,7 +280,18 @@ try {
   await page.click('[data-testid="ver-current"]');
   await sleep(80);
 
-  // 点编制 → 1:1 聚焦 + 看产出
+  // 默认编制折起 → 先点「编制」展开，再点专家切 1:1
+  const foldBtn = page.locator('[data-testid="roster-fold"]');
+  if (await foldBtn.count()) {
+    const folded = await page.evaluate(() => {
+      const w = document.querySelector('[data-testid="roster-wrap"]');
+      return !!(w && (w.classList.contains("roster-folded") || w.classList.contains("collapsed")));
+    });
+    if (folded) {
+      await foldBtn.click();
+      await sleep(150);
+    }
+  }
   await page.click('[data-testid="expert-writer"]');
   await sleep(200);
   check("点编制切 1:1", await page.locator('[data-testid="side-1to1"]').count() === 1);
@@ -286,9 +307,17 @@ try {
   const feedText = await page.locator('[data-testid="d4-feed"]').innerText();
   check("composer 演示进 feed", feedText.includes("双密封"), feedText.slice(0, 60));
 
-  // 点依据摘录 → 主栏定位（回团队后硬请示仍在）
+  // 点依据摘录 → 先展开「依据与理由」，再点摘录（回团队后硬请示仍在）
   await page.click('[data-testid="btn-back-team"]').catch(() => {});
   await sleep(150);
+  const more = page.locator('[data-testid="d4-feed"] [data-testid="ask-more"]').first();
+  if (await more.count()) {
+    const open = await more.evaluate((el) => el.open);
+    if (!open) {
+      await more.locator(":scope > summary").click();
+      await sleep(120);
+    }
+  }
   const exCount = await page.locator('[data-testid="ask-excerpt"]').count();
   if (exCount) {
     await page.click('[data-testid="ask-excerpt"]');

@@ -3,7 +3,7 @@
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 
   const state = {
-    rosterFolded: false,
+    rosterFolded: true, /* 默认只留负责人，展开才见全编制 */
     view: "gate",
     gateDone: false,
     role: "ent", /* ent | agency */
@@ -47,7 +47,9 @@
     atOpen: false,
     firstTipDismissed: false,
     applyDensity: "author",
+    applyRosterFolded: true,
     replyDensity: "author",
+    replyRosterFolded: true,
     applyClaimHighlight: null,
     replySecHighlight: null,
     applyYellowRisk: false,
@@ -130,24 +132,25 @@
   }
 
 
-  /** Agent 汇报气泡：结论在上、依据可展、行动在消息内（Kimi/GPT 式） */
+  /** Agent 汇报气泡：短问+主钮（对话态）；依据/理由默认折进「展开」 */
   function agentReportBubble({ testid, gradeId, title, lead, bodyHtml, actsHtml, done, doneLabel }) {
     const L = lead || { name: "负责人", av: "负", photo: null };
+    /* 分级仍入 DOM（smoke/档案）；ask-lite CSS 视觉隐藏，避免 P0 墙 */
     const grade = gradeId ? gradeBadge(gradeId) : "";
     if (done) {
-      return `<div class="bubble report done chatty" data-testid="${testid}">
+      return `<div class="bubble report done chatty ask-lite" data-testid="${testid}">
         <div class="bubble-head">${avatarHtml(L.photo, L.av)}<div class="who">${escapeHtml(L.name)}<span class="rpt-tag">已确认</span></div>${grade}</div>
         <div class="bubble-text"><div class="rpt-q">${escapeHtml(doneLabel || title)}</div></div>
         ${actsHtml ? `<div class="acts report-acts">${actsHtml}</div>` : ""}
       </div>`;
     }
-    return `<div class="bubble report chatty" data-testid="${testid}">
+    return `<div class="bubble report chatty ask-lite" data-testid="${testid}">
       <div class="bubble-head">${avatarHtml(L.photo, L.av)}<div class="who">${escapeHtml(L.name)}<span class="rpt-tag">要你拍</span></div>${grade}</div>
       <div class="bubble-text report-body">
         <div class="rpt-q">${escapeHtml(title)}</div>
         ${bodyHtml || ""}
       </div>
-      ${actsHtml ? `<div class="acts report-acts">${actsHtml}</div>` : ""}
+      ${actsHtml ? `<div class="acts report-acts lite-acts">${actsHtml}</div>` : ""}
     </div>`;
   }
 
@@ -171,6 +174,32 @@
         <span class="ex-text">${escapeHtml(ask.text || "")}</span>
       </button>` : ""}
       ${evidenceDetailsHtml(ask, chainTestId || "ask-evidence")}`;
+  }
+
+  /** 气泡轻体：一句结论 + 主钮；摘录/依据/理由进「展开」（DOM 仍在，供 smoke） */
+  function askBubbleBodyHtml(ask, opts = {}) {
+    const chainTestId = opts.chainTestId || "ask-evidence";
+    const conc = (ask && ask.conclusion) || opts.conclusion || "";
+    const short = conc.length > 64 ? conc.slice(0, 64) + "…" : conc;
+    const excerptBtn = (ask && (ask.label || ask.text))
+      ? `<button type="button" class="ask-excerpt" data-excerpt-anchor="${escapeHtml(ask.anchor || "")}" data-testid="ask-excerpt">
+        <span class="ex-label">${escapeHtml(ask.label || "依据摘录")}</span>
+        <span class="ex-text">${escapeHtml(ask.text || "")}</span>
+      </button>` : "";
+    const reason = opts.reasonGateId
+      ? judgmentReasonHtml(opts.reasonGateId, opts.reasonPreset || "接受结论")
+      : "";
+    const extra = opts.extraHtml || "";
+    return `${short ? `<p class="ask-conclusion lite" title="${escapeHtml(conc)}">${escapeHtml(short)}</p>` : ""}
+      <details class="ask-more" data-testid="ask-more">
+        <summary>展开依据与理由</summary>
+        <div class="ask-more-body">
+          ${excerptBtn}
+          ${evidenceDetailsHtml(ask, chainTestId)}
+          ${reason}
+          ${extra}
+        </div>
+      </details>`;
   }
 
   function deptMetaHtml({ caseTitle, deadline, upgraded, prefShort }) {
@@ -213,16 +242,17 @@
   /** 对话区顶 · 当前未关硬请示 sticky（大纲 §4.4.4 钉顶可达） */
   function askStickyHtml(items) {
     const open = (items || []).filter((x) => x && x.id && x.label && !x.done);
-    if (!open.length) {
+    /* P0-3：仅 1 项时气泡即层1，sticky 隐藏避免同构重复；多项才钉顶跳转 */
+    if (!open.length || open.length === 1) {
       return `<div class="ask-sticky empty" data-testid="ask-sticky" hidden></div>`;
     }
     const chips = open.map((x) =>
       `<button type="button" class="ask-sticky-chip" data-ask-jump="${escapeHtml(x.id)}" data-testid="ask-sticky-chip">${escapeHtml(x.label)}</button>`
     ).join("");
-    return `<div class="ask-sticky" data-testid="ask-sticky">
-      <span class="ask-sticky-k">当前要你拍</span>
+    return `<div class="ask-sticky slim" data-testid="ask-sticky">
+      <span class="ask-sticky-k">跳转</span>
       <div class="ask-sticky-chips">${chips}</div>
-      <span class="ask-sticky-n tiny muted">${open.length} 项</span>
+      <span class="ask-sticky-n tiny muted">${open.length}</span>
     </div>`;
   }
   function bindAskSticky(root) {
@@ -1378,7 +1408,8 @@
     const dens = !!cfg.dens;
     const roster = cfg.roster || [];
     const lead = roster.find((e) => e.kind === "lead") || roster[0] || { name: cfg.leadName || "负责人", av: "负", photo: null, busy: "", status: "doing" };
-    const foldLabel = dens ? "展开编制" : "收起";
+    const rosterFolded = cfg.rosterFolded != null ? !!cfg.rosterFolded : true;
+    const foldLabel = rosterFolded ? "编制" : "收起";
     const rosterChips = roster.map((e) => `
       <button type="button" class="expert-chip av-only" data-testid="${escapeHtml(cfg.expertPrefix || "expert")}-${escapeHtml(e.id)}" title="${escapeHtml(e.name + " · " + (e.busy || e.role || ""))}">
         ${avatarHtml(e.photo, e.av)}
@@ -1389,12 +1420,15 @@
     return `
       <div class="side-pane" data-testid="${escapeHtml(cfg.sidePaneTestId)}">
         <div class="ai-id-zone" data-testid="${escapeHtml(cfg.idZoneTestId)}">
-          <button type="button" class="ai-id-row" data-testid="${escapeHtml(cfg.identityTestId || "ai-identity")}" title="助理详情">
-            ${avatarHtml(lead.photo, lead.av)}
-            <span class="ai-id-meta"><strong>${escapeHtml(lead.name)}</strong><span class="ai-id-st">${escapeHtml(idStatus)}</span></span>
-          </button>
-          <div class="who-block ai-roster single-rail av-rail ${dens ? "collapsed roster-folded" : ""}" data-testid="${escapeHtml(cfg.rosterWrapTestId)}">
-            <div class="who-head"><button type="button" class="ghost tiny roster-fold-btn" id="${escapeHtml(cfg.foldBtnId)}" data-testid="${escapeHtml(cfg.foldBtnTestId)}">${foldLabel}</button></div>
+          <div class="ai-id-bar">
+            <button type="button" class="ai-id-row" data-testid="${escapeHtml(cfg.identityTestId || "ai-identity")}" title="助理详情">
+              ${avatarHtml(lead.photo, lead.av)}
+              <span class="ai-id-meta"><strong>${escapeHtml(lead.name)}</strong><span class="ai-id-st">${escapeHtml(idStatus)}</span></span>
+            </button>
+            <button type="button" class="ghost tiny roster-fold-btn" id="${escapeHtml(cfg.foldBtnId)}" data-testid="${escapeHtml(cfg.foldBtnTestId)}">${foldLabel}</button>
+          </div>
+          <div class="who-block ai-roster single-rail av-rail ${rosterFolded ? "collapsed roster-folded" : ""}" data-testid="${escapeHtml(cfg.rosterWrapTestId)}">
+            <div class="who-head" hidden></div>
             <div class="roster" data-testid="${escapeHtml(cfg.rosterTestId)}">${rosterChips}</div>
           </div>
         </div>
@@ -1549,10 +1583,15 @@
     const metaEl = $("#d4DeptMeta");
     if (metaEl) {
       const c = caseById(state.activeCaseId) || caseById("pc1");
-      metaEl.innerHTML = deptMetaHtml({
+      const stepChip = `<span class="step-now-chip" data-testid="d4-step-chip">本步 · ${escapeHtml(d4CurrentStep().label)}</span>`;
+      metaEl.innerHTML = stepChip + deptMetaHtml({
         caseTitle: (c && c.title) || state.caseName || "当前案",
         prefShort: prefShortText(state.activeCaseId || "pc1")
       });
+    }
+    const paneHeadStrong = document.querySelector("#viewDept .pane-head strong");
+    if (paneHeadStrong) {
+      paneHeadStrong.textContent = `交底书 · ${d4CurrentStep().label}`;
     }
     const mh = $("#d4ModeHint");
     if (mh) {
@@ -1592,12 +1631,14 @@
     const whoBlock = document.querySelector("#viewDept .who-block");
     if (whoBlock) {
       whoBlock.classList.add("av-rail", "single-rail");
-      whoBlock.classList.toggle("collapsed", isLight);
-      const folded = isLight || !!state.rosterFolded;
+      /* P0-2：默认只留负责人行；展开才见全编制头像 */
+      const folded = state.rosterFolded !== false;
+      state.rosterFolded = folded;
+      whoBlock.classList.toggle("collapsed", folded || isLight);
       whoBlock.classList.toggle("roster-folded", folded);
       const foldBtnEarly = $("#btnRosterFold");
       if (foldBtnEarly) {
-        foldBtnEarly.textContent = folded ? "展开" : "收起";
+        foldBtnEarly.textContent = folded ? "编制" : "收起";
         foldBtnEarly.onclick = () => {
           state.rosterFolded = !state.rosterFolded;
           if (!state.rosterFolded && state.densityMode === "light") setDensityMode("author");
@@ -1729,29 +1770,33 @@
       const openQc = qc.filter((q) => q.status !== "green");
       const qcBlock = openQc.length
         ? `<div class="qc-progress-line qc-by-step qc-step-main${flashId === "qc-card" ? " anchor-flash" : ""}" data-testid="qc-card" id="qc-card">
-              <strong>质检 · 本步只展未过项</strong>
+              <div class="qc-card-k">未过项 · ${openQc.length}</div>
+              <strong>先关红黄，再谈可交⑤</strong>
               <span class="tiny muted" data-testid="qc-method">已绿 ${greens}/${qc.length} · 全绿≠交⑤</span>
+              <div class="qc-open-list">
               ${openQc.map((q) => {
                 const tag = q.status === "yellow" ? '<span class="tag warn">黄</span>' : '<span class="tag ask">红</span>';
-                return `<span class="qc-fix-row" data-testid="qc-yellow-item">${escapeHtml(q.name)} ${tag}</span>`;
+                return `<div class="qc-fix-row" data-testid="qc-yellow-item"><span class="qc-item-name">${escapeHtml(q.name)}</span> ${tag}</div>`;
               }).join("")}
+              </div>
               <span class="qc-yellow-form" data-testid="qc-yellow-form">
                 <button type="button" class="primary qc-fix-btn" id="btnQcData" data-testid="qc-fix-data">补数据转绿</button>
                 <button type="button" class="qc-fix-btn ghost-risk" id="btnQcRisk" data-testid="qc-fix-risk">认风险</button>
               </span>
             </div>`
-        : `<div class="qc-progress-line qc-by-step" data-testid="qc-card" id="qc-card">
-              <strong>质检</strong>
+        : `<div class="qc-progress-line qc-by-step qc-step-main qc-all-ok" data-testid="qc-card" id="qc-card">
+              <strong>质检已全绿</strong>
               <span class="tag ok" data-testid="qc-all-green">已全绿${state.yellowRiskAccepted ? "（含认风险）" : ""} · ${greens}/${qc.length}</span>
               <span class="tiny muted" data-testid="qc-method">可进可交⑤</span>
             </div>`;
-      mainStepHtml = `<div class="step-focus-card" data-testid="d4-qc-focus">
-          <div class="sf-k">本步</div>
-          <strong>质检循环 · 未过项</strong>
-          <p class="tiny muted">文书折起备查 · 先关红黄再谈可交⑤</p>
-        </div>
-        <details class="paper-fold" data-testid="d4-paper-fold"><summary class="tiny">展开交底正文（备查）</summary>${paperHtml}</details>
-        ${qcBlock}`;
+      mainStepHtml = `<div class="qc-stage" data-testid="d4-qc-focus">
+          <div class="qc-stage-head">
+            <div class="sf-k">本步 · 质检</div>
+            <p class="tiny muted">本屏只处理未过项 · 交底正文折起备查</p>
+          </div>
+          ${qcBlock}
+          <details class="paper-fold quiet" data-testid="d4-paper-fold"><summary class="tiny">展开交底正文（备查）</summary>${paperHtml}</details>
+        </div>`;
     } else if (stepId === "hand" || stepId === "done") {
       mainStepHtml = `<div class="step-focus-card end-check-card" data-testid="d4-hand-focus">
           <div class="sf-k">本步要你拍</div>
@@ -1830,11 +1875,13 @@
     /* 一步一事：对话里只钉当前步硬请示 */
     if (stepNow === "fact" || (stepNow === "draft" && !state.factConfirmed)) {
       if (!state.factConfirmed) {
-        const body = `${askExcerptHtml(DEMO.disclosure.factAsk, "fact-evidence")}
-          ${judgmentReasonHtml("fact", "接受结论 · 技术方案与材料一致")}`;
+        const body = askBubbleBodyHtml(DEMO.disclosure.factAsk, {
+          chainTestId: "fact-evidence",
+          reasonGateId: "fact",
+          reasonPreset: "接受结论 · 技术方案与材料一致"
+        });
         const acts = `<button type="button" class="ask-confirm" id="btnFact" data-testid="confirm-fact">确认事实</button>
-            <button type="button">还要改</button>
-            <button type="button" class="ghost">暂停</button>`;
+            <button type="button" class="ghost ask-secondary">还要改</button>`;
         reportBubbles.push(agentReportBubble({
           testid: "ask-fact", gradeId: "d4-fact", title: "确认交底事实",
           lead, bodyHtml: body, actsHtml: acts
@@ -1847,12 +1894,14 @@
       }
     } else if (stepNow === "qc") {
       reportBubbles.push(agentReportBubble({
-        testid: "ask-qc", gradeId: "d4-qc", title: hasYellowOpen ? "质检未过 · 请处理黄项" : "质检已全绿",
+        testid: "ask-qc", gradeId: "d4-qc", title: hasYellowOpen ? "质检未过 · 请在主栏处理" : "质检已全绿",
         lead,
         bodyHtml: hasYellowOpen
-          ? `<p class="tiny">主栏只展未过项 · 补数据或认风险后进「可交⑤」</p><div class="doubt-bar" data-testid="doubt-bar"><strong>拿不准</strong> · q4 效果依据偏弱</div>`
-          : `<p class="tiny">全绿已写入 · 下一步是可交⑤硬请示</p>`,
-        actsHtml: hasYellowOpen ? "" : `<span class="tiny muted">跟闸自动进可交⑤</span>`,
+          ? `<p class="ask-conclusion lite">主栏未过项 · 补数据或认风险</p>
+             <details class="ask-more" data-testid="ask-more-qc"><summary>展开说明</summary>
+             <div class="doubt-bar" data-testid="doubt-bar"><strong>拿不准</strong> · q4 效果依据偏弱</div></details>`
+          : `<p class="ask-conclusion lite">全绿已写入 · 下一步可交⑤</p>`,
+        actsHtml: hasYellowOpen ? "" : `<span class="tiny muted">跟闸进可交⑤</span>`,
         done: !hasYellowOpen,
         doneLabel: !hasYellowOpen ? "质检全绿" : undefined
       }));
@@ -1865,12 +1914,16 @@
     } else if (stepNow === "hand" || stepNow === "done") {
       if (!state.canHand5) {
         const blocked = !state.allGreen || !state.factConfirmed;
-        const body = `${askExcerptHtml(DEMO.disclosure.hand5Ask, "hand5-evidence")}
-          <p class="tiny">前置：交底质检全绿 + 事实确认。黄项处理不能代替本确认。</p>
-          ${!blocked ? judgmentReasonHtml("hand5", "全绿+事实已确认 · 授权交⑤开写") : ""}
-          ${blocked ? `<p class="tiny" style="margin-top:8px;color:var(--ask)">尚未满足：${!state.allGreen ? "未全绿 " : ""}${!state.factConfirmed ? "未事实确认" : ""}</p>` : ""}`;
+        const body = askBubbleBodyHtml(DEMO.disclosure.hand5Ask, {
+          chainTestId: "hand5-evidence",
+          reasonGateId: blocked ? null : "hand5",
+          reasonPreset: "全绿+事实已确认 · 授权交⑤开写",
+          extraHtml: blocked
+            ? `<p class="tiny" style="color:var(--ask)">尚未满足：${!state.allGreen ? "未全绿 " : ""}${!state.factConfirmed ? "未事实确认" : ""}</p>`
+            : `<p class="tiny muted">前置：全绿 + 事实确认 · 黄项处理≠本确认</p>`
+        });
         const acts = `<button type="button" class="ask-confirm" id="btnHand5" data-testid="confirm-hand5" ${blocked ? "disabled" : ""}>确认可交⑤</button>
-            <button type="button" class="ghost">暂不交</button>`;
+            <button type="button" class="ghost ask-secondary">暂不交</button>`;
         reportBubbles.push(agentReportBubble({
           testid: "ask-hand5", gradeId: "d4-hand5", title: "可否交申请部（⑤）？",
           lead, bodyHtml: body, actsHtml: acts
@@ -1917,16 +1970,23 @@
       const filtered = feedItems.filter((b) => b.you || b.expertId === ae.id || b.who === ae.name);
       if (filtered.length) feedItems = filtered;
     }
-    const chatHtml = feedItems.map((b) => {
+    const toolIdxs = feedItems.map((b, i) => (b.tools && b.tools.length ? i : -1)).filter((i) => i >= 0);
+    const keepToolIdx = new Set(toolIdxs.slice(-1)); /* 只留最近一条带工具的，静音 */
+    const chatHtml = feedItems.map((b, i) => {
       const ex = b.expertId ? expertById(b.expertId) : DEMO.disclosure.roster.find((r) => r.name === b.who);
       const av = b.you
         ? `<span class="av you">你</span>`
         : avatarHtml(ex && ex.photo, (ex && ex.av) || (b.who || "?").slice(0, 1));
-      const tools = (b.tools || []).map((x) => `<span class="tool-chip">${escapeHtml(x)}</span>`).join("");
+      const toolList = b.tools || [];
+      const tools = toolList.map((x) => `<span class="tool-chip">${escapeHtml(x)}</span>`).join("");
+      const showTools = tools && (keepToolIdx.has(i) || toolIdxs.length <= 1);
+      const toolsBlock = showTools
+        ? `<details class="tool-chips-fold"><summary class="tool-chips-sum">工具 · ${toolList.length}</summary><div class="tool-chips" data-testid="tool-chips">${tools}</div></details>`
+        : (tools ? `<div class="tool-chips" data-testid="tool-chips" hidden>${tools}</div>` : "");
       return `<div class="bubble ${b.you ? "you" : ""}" data-testid="feed-bubble">
         <div class="bubble-head">${av}<div class="who">${escapeHtml(b.who)}</div></div>
         <div class="bubble-text">${escapeHtml(b.text)}</div>
-        ${tools ? `<div class="tool-chips" data-testid="tool-chips">${tools}</div>` : ""}
+        ${toolsBlock}
       </div>`;
     }).join("");
     const stickyItems = [];
@@ -2043,9 +2103,11 @@
         d5Reports.push(agentReportBubble({
           testid: "ask-understand", gradeId: "d5-understand", title: "确认开案理解",
           lead: aLead,
-          bodyHtml: `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.apply.understandAsk || {}).conclusion || DEMO.apply.understand)}</p>
-          ${evidenceDetailsHtml(DEMO.apply.understandAsk || { source: "交底技术方案", reasoning: DEMO.apply.understand, compare: "开案复述 vs 交底要点", confidence: "high", confidenceNote: "与交底一致" }, "understand-evidence")}
-          ${judgmentReasonHtml("understand", "接受开案理解 · 三点组合无遗漏")}`,
+          bodyHtml: askBubbleBodyHtml(DEMO.apply.understandAsk || {
+            conclusion: DEMO.apply.understand,
+            source: "交底技术方案", reasoning: DEMO.apply.understand,
+            compare: "开案复述 vs 交底要点", confidence: "high", confidenceNote: "与交底一致"
+          }, { chainTestId: "understand-evidence", reasonGateId: "understand", reasonPreset: "接受开案理解 · 三点组合无遗漏" }),
           actsHtml: `<button type="button" class="ask-confirm" id="btnUnd" data-testid="confirm-understand">确认理解</button>`
         }));
       } else {
@@ -2056,11 +2118,13 @@
         d5Reports.push(agentReportBubble({
           testid: "ask-apply-or-not", gradeId: "d5-apply", title: "申不申？",
           lead: aLead,
-          bodyHtml: `${!a.understand ? `<p class="tiny">A 未确认前本钮不可用。</p>` : `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.apply.applyOrNotAsk || {}).conclusion || DEMO.apply.noveltyHint)}</p>
-          ${evidenceDetailsHtml(DEMO.apply.applyOrNotAsk, "apply-evidence")}
-          ${judgmentReasonHtml("apply", "建议申请 · 接受查新对比风险")}`}`,
+          bodyHtml: !a.understand
+            ? `<p class="ask-conclusion lite">先确认开案理解（A）</p>`
+            : askBubbleBodyHtml(DEMO.apply.applyOrNotAsk || { conclusion: DEMO.apply.noveltyHint }, {
+                chainTestId: "apply-evidence", reasonGateId: "apply", reasonPreset: "建议申请 · 接受查新对比风险"
+              }),
           actsHtml: `<button type="button" class="ask-confirm" id="btnYes" data-testid="confirm-apply-yes" ${a.understand ? "" : "disabled"}>申请</button>
-             <button type="button" class="ghost" id="btnNo" data-testid="confirm-apply-no" ${a.understand ? "" : "disabled"}>不申结案</button>`
+             <button type="button" class="ghost ask-secondary" id="btnNo" data-testid="confirm-apply-no" ${a.understand ? "" : "disabled"}>不申结案</button>`
         }));
       } else {
         d5Reports.push(agentReportBubble({
@@ -2073,12 +2137,15 @@
       /* C 过线/递交 */
       if (!a.submit) {
         const cBody = a.applyOrNot !== "yes"
-          ? `<p class="tiny">须先拍「申不申」且过线。过线 ≠ 递交。</p>`
+          ? `<p class="ask-conclusion lite">须先拍「申不申」且过线</p>`
           : (!a.overLine
-            ? `<p class="tiny">须先过线（主栏黄项）。过线 ≠ 递交。</p>`
-            : `${evidenceDetailsHtml(DEMO.apply.submitAsk, "submit5-evidence")}
-            ${submitManifestHtml(DEMO.apply.submitAsk, "submit5-manifest")}
-            ${judgmentReasonHtml("submit5", "文件齐 · 确认递交")}`);
+            ? `<p class="ask-conclusion lite">须先过线（主栏黄项）· 过线≠递交</p>`
+            : askBubbleBodyHtml(DEMO.apply.submitAsk, {
+                chainTestId: "submit5-evidence",
+                reasonGateId: "submit5",
+                reasonPreset: "文件齐 · 确认递交",
+                extraHtml: submitManifestHtml(DEMO.apply.submitAsk, "submit5-manifest")
+              }));
         d5Reports.push(agentReportBubble({
           testid: "ask-submit5", gradeId: "d5-submit", title: "确认递交申请？",
           lead: aLead, bodyHtml: cBody,
@@ -2110,6 +2177,7 @@
     const d5Sticky = askStickyHtml(d5StickyItems);
     const d5Side = chainSideHtml({
       dens: aDens,
+      rosterFolded: state.applyRosterFolded !== false,
       sidePaneTestId: "ai-pane-d5",
       idZoneTestId: "ai-id-zone-d5",
       rosterWrapTestId: "d5-roster-wrap",
@@ -2314,7 +2382,11 @@
     const d5mh = $("#d5ModeHint");
     if (d5mh) d5mh.onclick = () => { state.applyDensity = state.applyDensity === "light" ? "author" : "light"; toast(state.applyDensity === "light" ? "轻量" : "主笔", { soft: true }); render(); };
     const d5rf = $("#btnD5RosterFold");
-    if (d5rf) d5rf.onclick = () => { state.applyDensity = "author"; render(); };
+    if (d5rf) d5rf.onclick = () => {
+      state.applyRosterFolded = !(state.applyRosterFolded !== false);
+      if (!state.applyRosterFolded) state.applyDensity = "author";
+      render();
+    };
     /* density toggle buttons removed */
     const o = $("#btnOver"); if (o) o.addEventListener("click", () => {
       if (!(state.apply.applyOrNot === "yes" && state.apply.understand)) return;
@@ -2617,7 +2689,11 @@
     const d6mh = $("#d6ModeHint");
     if (d6mh) d6mh.onclick = () => { state.replyDensity = state.replyDensity === "light" ? "author" : "light"; toast(state.replyDensity === "light" ? "轻量" : "主笔", { soft: true }); render(); };
     const d6rf = $("#btnD6RosterFold");
-    if (d6rf) d6rf.onclick = () => { state.replyDensity = "author"; render(); };
+    if (d6rf) d6rf.onclick = () => {
+      state.replyRosterFolded = !(state.replyRosterFolded !== false);
+      if (!state.replyRosterFolded) state.replyDensity = "author";
+      render();
+    };
     /* density toggle removed */
     const bup = $("#btnUpgrade"); if (bup) bup.addEventListener("click", () => {
       DEMO.reply.upgraded = true;

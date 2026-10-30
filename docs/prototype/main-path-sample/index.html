@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Novada Team · 主链样机</title>
-  <link rel="stylesheet" href="./styles.css?v=railclean2" />
+  <link rel="stylesheet" href="./styles.css?v=railfix1b" />
 </head>
 <body>
   <div class="app">
@@ -170,13 +170,14 @@
           <div class="side-pane" data-testid="ai-pane">
             <!-- 身份一行 + 编制头像横排（对标 Kimi/Cursor 对话栏） -->
             <div class="ai-id-zone" data-testid="ai-id-zone">
-              <button type="button" class="ai-id-row" id="aiIdentity" data-testid="ai-identity" title="助理详情"></button>
+              <div class="ai-id-bar">
+                <button type="button" class="ai-id-row" id="aiIdentity" data-testid="ai-identity" title="助理详情"></button>
+                <button type="button" class="ghost tiny roster-fold-btn" id="btnRosterFold" data-testid="roster-fold">编制</button>
+              </div>
               <!-- smoke 兼容：leadBar 隐藏占位 -->
               <div class="lead-bar ai-identity" data-testid="lead-bar" id="leadBar" hidden></div>
-              <div class="who-block ai-roster single-rail av-rail" data-testid="roster-wrap">
-                <div class="who-head">
-                  <button type="button" class="ghost tiny roster-fold-btn" id="btnRosterFold" data-testid="roster-fold">收起</button>
-                </div>
+              <div class="who-block ai-roster single-rail av-rail collapsed roster-folded" data-testid="roster-wrap">
+                <div class="who-head" hidden></div>
                 <div class="roster" id="roster" data-testid="roster"></div>
               </div>
             </div>
@@ -247,7 +248,7 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="./demo-data.js?v=railclean2"></script>
-  <script src="./app.js?v=railclean2"></script>
+  <script src="./demo-data.js?v=railfix1b"></script>
+  <script src="./app.js?v=railfix1b"></script>
 </body>
 </html>
