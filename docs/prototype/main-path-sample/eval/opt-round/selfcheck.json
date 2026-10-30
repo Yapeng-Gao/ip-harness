@@ -1,0 +1,31 @@
+{
+  "lobby": {
+    "hasAttn": false,
+    "scheduleText": "定时4",
+    "has定时全文": true,
+    "hasKimi": false,
+    "hasScaffold": false,
+    "greet": "早上好，Leslie。\n\n今天待拍 3 · 推进中 3。点顶栏「要你拍的」处理。"
+  },
+  "d4": {
+    "composerVisible": true,
+    "composerTop": 781,
+    "composerBottom": 889,
+    "scrollH": 900,
+    "vh": 900,
+    "chromeH": 220,
+    "bodyScroll": false
+  },
+  "light": {
+    "densityLight": true,
+    "rosterH": 0,
+    "taskH": 0,
+    "leadH": 0,
+    "rosterDisplay": "flex",
+    "composerVisible": true
+  },
+  "search": {
+    "hits": 4,
+    "flyVisible": true
+  }
+}

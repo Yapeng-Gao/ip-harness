@@ -54,7 +54,8 @@
     thinLineConfirmed: {},
     searchPinAsk: null,
     invitedExperts: {},
-    taskStripOpen: false /* 部内并行案默认折叠 */
+    taskStripOpen: false, /* 部内并行案默认折叠 */
+    searchFilter: "全部" /* 壳搜索筛选 */
   };
 
   function deptById(id) { return DEMO.depts.find((d) => d.id === id); }
@@ -183,6 +184,153 @@
       <p class="risk-line" data-testid="submit-risk"><strong>容错/风险</strong> ${escapeHtml(ask.risk || "")}</p>
     </div>`;
   }
+
+
+  function markPhrase(text, marks) {
+    let out = escapeHtml(text || "");
+    (marks || []).forEach((m) => {
+      if (!m) return;
+      const esc = escapeHtml(m);
+      out = out.split(esc).join(`<mark class="diff-mark">${esc}</mark>`);
+    });
+    return out;
+  }
+
+  function normalizeDiffPairs(diffs) {
+    if (!diffs || !diffs.length) return [];
+    if (diffs[0] && diffs[0].left != null) return diffs;
+    const pairs = [];
+    for (let i = 0; i < diffs.length; i += 2) {
+      const a = diffs[i] || {};
+      const b = diffs[i + 1] || {};
+      pairs.push({
+        id: `legacy-${i}`,
+        change: "改",
+        leftLabel: a.side || "源",
+        rightLabel: b.side || "目标",
+        left: a.text || "",
+        right: b.text || "",
+        markLeft: [],
+        markRight: []
+      });
+    }
+    return pairs;
+  }
+
+  function renderDiffBoard(diffs, opts = {}) {
+    const pairs = normalizeDiffPairs(diffs);
+    const tid = opts.testid || "diff-board";
+    if (!pairs.length) {
+      return `<div class="diff-board empty" data-testid="${tid}"><div class="empty-state">暂无差分条目</div></div>`;
+    }
+    const rows = pairs.map((d, i) => {
+      const ch = d.change || "改";
+      const chCls = ch === "增" ? "add" : ch === "删" ? "del" : "chg";
+      const go = d.go ? ` data-diff-go="${escapeHtml(d.go)}"` : "";
+      return `<button type="button" class="diff-pair" data-testid="diff-pair" data-diff-id="${escapeHtml(d.id || String(i))}"${go}>
+        <div class="diff-pair-meta"><span class="diff-chg ${chCls}">${escapeHtml(ch)}</span><span class="tiny muted">点行可定位相关段</span></div>
+        <div class="diff-cols">
+          <div class="diff-side from">
+            <div class="ds">${escapeHtml(d.leftLabel || "源")}</div>
+            <div class="diff-text">${markPhrase(d.left, d.markLeft)}</div>
+          </div>
+          <div class="diff-side to">
+            <div class="ds">${escapeHtml(d.rightLabel || "目标")}</div>
+            <div class="diff-text">${markPhrase(d.right, d.markRight)}</div>
+          </div>
+        </div>
+      </button>`;
+    }).join("");
+    return `<div class="diff-board" data-testid="${tid}">
+      <div class="diff-hint tiny" data-testid="diff-hint">示意·非可批 diff · 左右对照 + 行级高亮（非真算法）</div>
+      ${rows}
+    </div>`;
+  }
+
+  function renderPriorArtHits(hits, testid) {
+    const list = hits || [];
+    if (!list.length) return "";
+    return `<div class="prior-hits" data-testid="${testid || "prior-hits"}">
+      <div class="prior-head"><strong>检索命中</strong><span class="tiny muted">示意 · 可点定位</span></div>
+      ${list.map((h) => {
+        const snip = h.match
+          ? escapeHtml(h.snippet || "").split(escapeHtml(h.match)).join(`<em class="hit-em">${escapeHtml(h.match)}</em>`)
+          : escapeHtml(h.snippet || "");
+        return `<button type="button" class="prior-hit" data-testid="prior-hit" data-prior-go="${escapeHtml(h.go || "")}">
+          <span class="ph-tag">${escapeHtml(h.tag || "命中")}</span>
+          <div class="ph-body"><strong>${escapeHtml(h.title)}</strong>
+            <div class="fm">${escapeHtml(h.meta || "")}</div>
+            <div class="ph-snip">${snip}</div>
+          </div>
+          <span class="ph-go">↗</span>
+        </button>`;
+      }).join("")}
+    </div>`;
+  }
+
+  function bindDiffBoard(root) {
+    function flashEl(el) {
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      el.classList.add("anchor-flash");
+      setTimeout(() => el.classList.remove("anchor-flash"), 1600);
+    }
+    function resolveGo(go) {
+      if (!go) return null;
+      return document.getElementById(go)
+        || document.getElementById("claim-" + go)
+        || document.querySelector('[data-testid="claim-' + go + '"]');
+    }
+    (root || document).querySelectorAll("[data-diff-go]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const go = btn.dataset.diffGo;
+        if (!go) return;
+        let el = resolveGo(go);
+        if (el) { flashEl(el); toast("已定位差分相关段"); return; }
+        /* 差分 tab 上目标可能在权项/说明书 — 切过去再定位 */
+        if (go.startsWith("claim") || go.startsWith("c")) {
+          state.applyDocTab = "claims";
+          state.applyClaimHighlight = go.replace(/^claim-/, "");
+          render();
+          requestAnimationFrame(() => flashEl(resolveGo(go) || resolveGo(go.replace(/^claim-/, ""))));
+          toast("已切权项并定位差分");
+          return;
+        }
+        if (go.startsWith("sp-") || go.startsWith("rp-")) {
+          if (go.startsWith("rp-")) {
+            state.replyDocTab = "reply";
+            state.replySecHighlight = go;
+            render();
+          } else {
+            state.applyDocTab = "spec";
+            render();
+          }
+          requestAnimationFrame(() => flashEl(document.getElementById(go)));
+          toast("已定位差分相关段");
+          return;
+        }
+        state.highlightAnchor = go;
+        scrollToAnchor(go);
+        toast("已定位差分相关段");
+      });
+    });
+    (root || document).querySelectorAll("[data-prior-go]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const go = btn.dataset.priorGo;
+        if (!go) return;
+        if (go.startsWith("sp-")) {
+          state.applyDocTab = "spec";
+          render();
+          requestAnimationFrame(() => flashEl(document.getElementById(go)));
+          toast("已定位说明书段（检索命中）");
+          return;
+        }
+        flashEl(resolveGo(go));
+        toast("已定位检索命中段");
+      });
+    });
+  }
+
 
   function goLobby() {
     if (!state.gateDone) { state.view = "gate"; render(); return; }
@@ -529,6 +677,13 @@
       return;
     }
     if (go === "d6") { state.view = "reply"; render(); return; }
+    if (go === "d5-diff") {
+      state.applyDocTab = "diff";
+      const agencyBypass = state.role === "agency";
+      const woBypass = !!state.workOrderOpened;
+      openDept("d5", { fromWorkOrder: agencyBypass || woBypass, agencyEscort: agencyBypass && !woBypass });
+      return;
+    }
     if (go === "d5") {
       /* N-P1-2：仅代理陪同可绕 B2；企业须工单/接单路径，否则挡板 */
       const agencyBypass = state.role === "agency";
@@ -635,15 +790,33 @@
     fly.hidden = false;
     const closeBtn = `<button type="button" class="ghost" id="btnFlyClose" data-testid="fly-close">关闭</button>`;
     if (state.shellPanel === "search") {
-      const hits = DEMO.searchHits || [];
+      const allHits = DEMO.searchHits || [];
+      const filters = ["全部", "案卷", "专家", "请示", "检索"];
+      const filt = state.searchFilter || "全部";
+      const hits = filt === "全部" ? allHits : allHits.filter((h) => h.kind === filt);
+      const filtHtml = filters.map((f) => {
+        const n = f === "全部" ? allHits.length : allHits.filter((h) => h.kind === f).length;
+        return `<button type="button" class="fly-filter ${filt === f ? "on" : ""}" data-sfilter="${f}" data-testid="fly-filter">${escapeHtml(f)}<span class="fn">${n}</span></button>`;
+      }).join("");
       card.innerHTML = `
         <div class="fly-head"><strong>搜索</strong>${closeBtn}</div>
-        <input class="fly-search-input" id="flySearchInput" data-testid="fly-search-input" placeholder="案卷 / 专家 / 请示…" />
-        <p class="fly-hint">演示命中 · 点一条进对应案</p>
-        ${hits.map((h, i) => `<button type="button" class="fly-item" data-fly-go="${escapeHtml(h.go || "")}" data-testid="fly-hit">
+        <input class="fly-search-input" id="flySearchInput" data-testid="fly-search-input" placeholder="案卷 / 专家 / 请示 / 检索…" value="" />
+        <div class="fly-filters" data-testid="fly-filters">${filtHtml}</div>
+        <p class="fly-hint">演示命中 · 点条进入 · 高亮为匹配词</p>
+        ${hits.length ? hits.map((h) => {
+          const raw = h.snippet || h.summary || h.sub || "";
+          const snip = h.match
+            ? escapeHtml(raw).split(escapeHtml(h.match)).join(`<em class="hit-em">${escapeHtml(h.match)}</em>`)
+            : escapeHtml(raw);
+          return `<button type="button" class="fly-item fly-hit-bar" data-fly-go="${escapeHtml(h.go || "")}" data-testid="fly-hit">
           <span class="fk">${escapeHtml(h.kind)}</span>
-          <div><strong>${escapeHtml(h.title)}</strong><div class="fm">${escapeHtml(h.sub || "")}</div>${h.summary ? `<div class="fm fly-summary" data-testid="fly-hit-summary">${escapeHtml(h.summary)}</div>` : ""}</div>
-        </button>`).join("")}`;
+          <div class="fh-main"><strong>${escapeHtml(h.title)}</strong>
+            <div class="fm">${escapeHtml(h.sub || "")}</div>
+            ${snip ? `<div class="fh-snip" data-testid="fly-hit-summary">${snip}</div>` : ""}
+          </div>
+          <span class="fh-go" aria-hidden="true">进入</span>
+        </button>`;
+        }).join("") : `<div class="empty-state" data-testid="fly-empty">此筛选下暂无命中</div>`}`;
     } else if (state.shellPanel === "notify") {
       const seeds = buildLobbyTodos();
       const rows = seeds.length ? seeds : [{ kind: "c", text: "各部门暂无要你拍的事", go: "", tag: "空" }];
@@ -679,6 +852,22 @@
     }
     const bc = $("#btnFlyClose");
     if (bc) bc.addEventListener("click", () => { closeShellPanel(); });
+    card.querySelectorAll("[data-sfilter]").forEach((b) => {
+      b.addEventListener("click", () => {
+        state.searchFilter = b.dataset.sfilter || "全部";
+        renderShellPanel();
+      });
+    });
+    const fin = $("#flySearchInput");
+    if (fin) {
+      fin.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const q = (fin.value || "").trim();
+          if (!q) return;
+          toast(`演示检索「${q.slice(0, 24)}」· 下列为假命中`);
+        }
+      });
+    }
     card.querySelectorAll("[data-fly-go]").forEach((b) => {
       b.addEventListener("click", () => {
         const go = b.dataset.flyGo;
@@ -1206,11 +1395,14 @@
           t: i === 3 ? "（上一确认稿）壳体设螺旋水道；端盖鳍片；单密封圈——尚未改为双密封。" : s.t
         }))
       : DEMO.disclosure.sections;
-    const d4Diff = ver === "prev" ? `<div class="diff-grid d4-ver-diff" data-testid="d4-ver-diff">
-        <div class="diff-hint tiny" data-testid="diff-hint">示意·非可批 diff（可辨差分示意，非真算法）</div>
-        <div class="diff-row from-src"><span class="ds">上一确认稿</span><div>关键连接处采用单密封圈</div></div>
-        <div class="diff-row to-dst"><span class="ds">当前稿</span><div>关键连接处采用双密封圈</div></div>
-      </div>` : "";
+    const d4Diff = ver === "prev" ? `<div class="d4-ver-diff" data-testid="d4-ver-diff">${renderDiffBoard([
+        {
+          id: "d4v1", change: "改", leftLabel: "上一确认稿", rightLabel: "当前稿", go: "sec-tech",
+          left: "关键连接处采用单密封圈",
+          right: "关键连接处采用双密封圈",
+          markLeft: ["单密封圈"], markRight: ["双密封圈"]
+        }
+      ], { testid: "d4-diff-board" })}</div>` : "";
     $("#docMain").innerHTML = `
       ${verBar}
       ${prefBannerHtml()}
@@ -1345,6 +1537,7 @@
     const bh = $("#btnHand5"); if (bh) bh.addEventListener("click", confirmCanHand5);
     const wo = $("#btnOpenWO"); if (wo) wo.addEventListener("click", openWorkOrder);
     bindExcerptClicks($("#sideAsks"));
+    bindDiffBoard(document);
 
     /* 侧栏层2 · 依据/结构旁路（大纲 §4.4.4） */
     const ev = $("#sideEvidence");
@@ -1527,12 +1720,9 @@
     } else {
       docInner = `<div class="doc-page" data-testid="d5-doc-diff">
         <div class="page-kicker">交底 ↔ 申请 · 对照差分</div>
-        <div class="diff-hint tiny" data-testid="diff-hint">示意·非可批 diff（可辨差分示意，非真算法）</div>
         <h3 style="margin:0 0 10px">一眼对照</h3>
-        <div class="diff-grid">${diffs.map((d, i) => {
-          const cls = i % 2 === 1 ? "to-dst" : "from-src";
-          return `<div class="diff-row ${cls}"><span class="ds">${escapeHtml(d.side)}</span><div>${escapeHtml(d.text)}</div></div>`;
-        }).join("")}</div>
+        ${renderDiffBoard(diffs, { testid: "d5-diff-board" })}
+        ${renderPriorArtHits(DEMO.apply.priorArtHits || [], "d5-prior-hits")}
       </div>`;
     }
     const tabBtn = (id, label) => `<button type="button" class="doc-tab ${tab === id ? "on" : ""}" data-apply-tab="${id}" data-testid="d5-tab-${id}">${label}</button>`;
@@ -1796,6 +1986,7 @@
         if (el) { el.classList.add("claim-hi"); el.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
       });
     });
+    bindDiffBoard($("#applyBody") || document); /* diff-bind-apply */
   }
 
   function renderReply() {
@@ -1824,12 +2015,8 @@
     } else {
       docInner = `<div class="doc-page" data-testid="d6-doc-diff">
         <div class="page-kicker">通知书 ↔ 答复 · 对照</div>
-        <div class="diff-hint tiny" data-testid="diff-hint">示意·非可批 diff（可辨差分示意，非真算法）</div>
         <h3 style="margin:0 0 10px">一眼对照</h3>
-        <div class="diff-grid">${diffs.map((d, i) => {
-          const cls = i % 2 === 1 ? "to-dst" : "from-src";
-          return `<div class="diff-row ${cls}"><span class="ds">${escapeHtml(d.side)}</span><div>${escapeHtml(d.text)}</div></div>`;
-        }).join("")}</div>
+        ${renderDiffBoard(diffs, { testid: "d6-diff-board" })}
       </div>`;
     }
     const tabBtn = (id, label) => `<button type="button" class="doc-tab ${tab === id ? "on" : ""}" data-reply-tab="${id}" data-testid="d6-tab-${id}">${label}</button>`;
@@ -2043,6 +2230,7 @@
         if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
       });
     });
+    bindDiffBoard($("#replyBody") || document); /* diff-bind-reply */
   }
 
   function renderThin() {

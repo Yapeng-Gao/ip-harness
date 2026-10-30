@@ -1783,3 +1783,203 @@ button.primary.qc-fix-btn {
   display: flex;
   flex-direction: column;
 }
+
+
+/* ── Opt round · diff+search+polish 2026-10-30 ── */
+.diff-board { display: grid; gap: 10px; margin-top: 4px; }
+.diff-board .diff-hint { margin-bottom: 2px; }
+.diff-pair {
+  display: block; width: 100%; text-align: left;
+  padding: 10px 12px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--surface);
+  box-shadow: var(--shadow-sm); cursor: pointer;
+  transition: border-color .12s, box-shadow .12s, background .12s;
+}
+.diff-pair:hover {
+  border-color: var(--brand-soft-2);
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--brand-soft-2), var(--shadow-sm);
+}
+.diff-pair-meta {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin-bottom: 8px;
+}
+.diff-chg {
+  font-size: 10.5px; font-weight: 800; letter-spacing: .06em;
+  padding: 2px 7px; border-radius: 999px;
+  background: var(--brand-soft); color: var(--brand);
+  border: 1px solid var(--brand-soft-2);
+}
+.diff-chg.add { background: var(--ok-soft); color: var(--ok); border-color: var(--ok-border); }
+.diff-chg.del { background: var(--danger-soft); color: var(--danger); border-color: var(--danger-border); }
+.diff-chg.chg { background: var(--warn-soft); color: var(--warn); border-color: var(--warn-border); }
+.diff-cols {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+@media (max-width: 900px) {
+  .diff-cols { grid-template-columns: 1fr; }
+}
+.diff-side {
+  padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--rail);
+  min-height: 64px;
+}
+.diff-side.from { border-color: var(--line-2); }
+.diff-side.to {
+  border-color: var(--ok-border);
+  background: color-mix(in srgb, var(--ok-soft) 70%, var(--rail));
+}
+.diff-side .ds {
+  font-size: 10.5px; font-weight: 800; letter-spacing: .04em;
+  color: var(--brand); margin-bottom: 6px;
+}
+.diff-side.to .ds { color: var(--ok); }
+.diff-text {
+  font-size: 12.5px; line-height: 1.55; color: var(--ink-2);
+  font-family: var(--font-doc);
+}
+mark.diff-mark, .diff-mark {
+  background: color-mix(in srgb, #fde68a 80%, transparent);
+  color: inherit; padding: 0 2px; border-radius: 3px;
+  box-decoration-break: clone;
+}
+.diff-side.to mark.diff-mark {
+  background: color-mix(in srgb, #86efac 55%, transparent);
+}
+
+/* 检索命中条（⑤ 差分旁 + 壳搜索） */
+.prior-hits {
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  display: grid; gap: 8px;
+}
+.prior-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 8px; margin-bottom: 2px;
+}
+.prior-head strong { font-size: 12.5px; color: var(--brand); }
+.prior-hit, .fly-hit-bar {
+  display: flex; gap: 10px; align-items: flex-start;
+  width: 100%; text-align: left;
+}
+.prior-hit {
+  padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--rail);
+  box-shadow: none; cursor: pointer;
+}
+.prior-hit:hover { background: #fff; border-color: var(--brand-soft-2); }
+.ph-tag, .fly-item .fk {
+  flex-shrink: 0;
+}
+.ph-tag {
+  font-size: 10.5px; font-weight: 800; padding: 3px 7px; border-radius: 6px;
+  background: var(--brand); color: #fff; letter-spacing: .04em;
+}
+.ph-body { flex: 1; min-width: 0; }
+.ph-body strong { font-size: 13px; display: block; }
+.ph-snip, .fh-snip {
+  margin-top: 4px; font-size: 12px; color: var(--ink-2);
+  line-height: 1.45;
+  padding: 6px 8px; border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-soft) 55%, var(--surface));
+  border: 1px solid var(--brand-soft-2);
+}
+.ph-go, .fh-go {
+  flex-shrink: 0; align-self: center;
+  font-size: 11px; font-weight: 700; color: var(--brand);
+  padding: 4px 8px; border-radius: 999px;
+  background: var(--brand-soft); border: 1px solid var(--brand-soft-2);
+}
+em.hit-em {
+  font-style: normal; font-weight: 800;
+  color: var(--brand);
+  background: color-mix(in srgb, #fde68a 70%, transparent);
+  padding: 0 2px; border-radius: 3px;
+}
+
+.fly-filters {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin: 0 0 10px;
+}
+.fly-filter {
+  font-size: 11.5px; padding: 5px 10px; border-radius: 999px;
+  background: var(--rail); border: 1px solid var(--line);
+  color: var(--muted); font-weight: 650; box-shadow: none;
+}
+.fly-filter.on {
+  background: var(--brand-soft); color: var(--brand);
+  border-color: var(--brand-soft-2);
+}
+.fly-filter .fn {
+  margin-left: 4px; font-variant-numeric: tabular-nums;
+  opacity: .75;
+}
+.fly-hit-bar .fh-main { flex: 1; min-width: 0; }
+.empty-state {
+  padding: 18px 12px; text-align: center;
+  color: var(--muted); font-size: 12.5px;
+  border: 1px dashed var(--line); border-radius: 10px;
+  background: var(--rail);
+}
+
+/* 精致度：首页 + ④ 再收一截（墨蓝） */
+.lobby-greet h1 {
+  font-size: 22px; font-weight: 750;
+  letter-spacing: -.015em; color: var(--ink);
+}
+.lobby-greet p { font-size: 13.5px; }
+.lobby-greet strong { color: var(--ask); }
+.dept-home-card > .tiny,
+.dept-home-card .dept-doc-hint { color: var(--muted-2); }
+.dept-door {
+  padding: 12px 12px 10px;
+  border-radius: 12px;
+}
+.dept-door.main-chain {
+  border-color: color-mix(in srgb, var(--brand-soft-2) 80%, var(--line));
+  background: linear-gradient(180deg, #fff 0%, var(--brand-soft) 180%);
+}
+.dept-door.main-chain strong { color: var(--brand); }
+.entrust-card .eyebrow,
+.dept-home-card .eyebrow {
+  color: var(--brand-3); font-weight: 750; letter-spacing: .1em;
+}
+
+.side-pane .pane-head {
+  background: linear-gradient(180deg, var(--brand-soft), var(--surface));
+  border-bottom: 1px solid var(--brand-soft-2);
+}
+.side-pane .pane-head strong {
+  color: var(--brand); font-size: 13px; letter-spacing: .01em;
+}
+.main-pane .pane-head {
+  background: var(--surface-2);
+}
+.dept-top {
+  gap: 8px;
+}
+.dept-top h1 {
+  font-size: 16px; font-weight: 750; letter-spacing: -.01em;
+  color: var(--brand);
+}
+.feed:empty::after,
+.feed:not(:has(*))::after {
+  content: "暂无团队动态";
+  display: block; padding: 12px; color: var(--muted);
+  font-size: 12.5px; text-align: center;
+}
+.doc-body h3 {
+  font-size: 16px; color: var(--ink);
+  letter-spacing: -.01em;
+}
+.wb-chrome {
+  scrollbar-width: thin;
+}
+.composer {
+  background: color-mix(in srgb, var(--surface) 92%, var(--brand-soft));
+  border-top: 1px solid var(--brand-soft-2);
+}
+.composer-to { color: var(--brand); }
+
+/* 旧 diff-row 兼容（若仍有） */
+.diff-grid { display: grid; gap: 8px; }

@@ -1,0 +1,204 @@
+PASS  Gate shows
+PASS  Gate card
+PASS  after gate → lobby
+PASS  L1 shows 前台/委托
+PASS  L1 shows 8 dept doors — got 8
+PASS  L1 委托 composer
+PASS  L1 用语不用分诊 — 统一委托 · 前台
+交给前台接待
+接待弄清去向后进部 · 熟客可直达
+写交底
+递
+PASS  L1 问候计数
+PASS  L1 无 attn 双 chip（计数不三重）
+PASS  L1 无首页待办墙
+PASS  L1 无首页推进轨
+PASS  L1 八部仍在
+PASS  L1 问候含待拍计数 — 早上好，Leslie。
+
+今天待拍 3 · 推进中 3。点顶栏「要你拍的」处理。
+PASS  L1 案卷条可扫
+PASS  Shell ⌘K densify
+PASS  Shell 定时全文
+PASS  Shell 要你拍的入口
+PASS  Shell 正在推进入口
+PASS  Shell 案卷唯一入口
+PASS  Shell 无重复案卷抽屉钮
+PASS  搜索飞层可开
+PASS  搜索命中假数据 — hits=5
+PASS  定时催办面板有货 — sch=4
+PASS  通知飞层有货
+PASS  顶栏要你拍的飞层有货 — got 3
+PASS  顶栏推进飞层有货 — got 3
+PASS  sample/upload → F2 analysis
+PASS  P0 R-哲2 前台材料置信可见 — conf=6
+PASS  P0 R-哲2 mid 标存疑可进部 — 电机冷却结构技术说明.docx
+技术说明·灵感草稿 · 描述水道布局与散热鳍片组合
+高
+装配示意-侧视.png
+图纸照片
+PASS  without F3 confirm cannot enter D4
+PASS  P0 去向卡有依据链
+PASS  P0 去向卡有拍板理由
+PASS  P0 R-哲3/L-哲3 确认去向写判断档案 — 前台·确认去向
+PASS  P0 去向理由含不选⑤
+PASS  after confirm → D4 has 编制 + main产出 — roster=6
+PASS  D4 编制用照片头像岗 — photos=6
+PASS  D4 四步时间线 — got 4
+PASS  D4 并行任务条默认折叠
+PASS  D4 展开后有并行案卡
+PASS  D4 轨迹回放
+PASS  D4 侧栏假 composer
+PASS  P0 视口持有 body 不整页狂滚 — {"scrollH":900,"bodyOverflow":"hidden","composerTop":781,"composerVisible":true,"wbTop":327,"vh":900}
+PASS  P0 composer 首屏可见 — {"scrollH":900,"bodyOverflow":"hidden","composerTop":781,"composerVisible":true,"wbTop":327,"vh":900}
+PASS  P0 workbench 较早露头 — wbTop=327
+PASS  清脚手架旁白无 Kimi/文书面板 — ok
+PASS  部内并行默认折叠
+PASS  主栏质检收成进度行
+PASS  D4 硬请示含依据摘录
+PASS  D4 feed 有工具轨迹芯片
+PASS  D4 密度态切换
+PASS  D4 带教提示可关
+PASS  带教已淡出
+PASS  D4 侧栏依据层
+PASS  D4 @材料入口
+PASS  @材料浮层
+PASS  @材料写入 composer — @电机冷却结构技术说明.docx 
+PASS  D4 版本切换
+PASS  上一确认稿可切
+PASS  点编制切 1:1
+PASS  看产出锚主栏段 — sec-tech count=1
+PASS  composer 演示进 feed — 你
+你 → 成稿专家
+请把双密封写进实施例
+成稿专家
+草案已落主栏。效果数据标了「样机测」——若要硬数字请你补测报告。
+
+PASS  依据摘录可点
+PASS  P0 D4-哲2 事实卡 T4 依据链
+PASS  P0 D4-哲2 四件套字段
+PASS  P0 D4-哲3 无一对全绿钮
+PASS  P0 D4-哲3 黄项处理入口
+PASS  D4a hand5 disabled before gates
+PASS  P0 D4-哲3 补数据后全绿
+PASS  D4a still blocked without fact confirm
+PASS  P0 D4-哲4/HA-哲4 事实确认写判断档案
+PASS  P0 D4-哲4 可交⑤写判断档案
+PASS  after gates → can open H45
+PASS  H45 work order visible
+PASS  DOC has 5 tabs with content
+PASS  P0 R-哲2 案卷材料置信
+PASS  P0 Doc-哲1 操作记录 tab
+PASS  P0 Doc-哲1 判断档案 tab 名实分离
+PASS  P0 Doc-哲1 判断档案有条目 — 判断档案
+
+T10 · 结论 / 选项 / 理由 / 依据锚 / 置信
+
+可沉淀为偏好
+你上次要求：效果必须标测法（样机测 / 仿真 / 文献）
+来自 电机冷却
+PASS  P0 无旧「判断痕迹」页签
+PASS  B2 blocks ⑤ without 交底 path
+PASS  D5 shows A/B/C strip
+PASS  D5 侧栏 composer
+PASS  D5 文书 tabs
+PASS  D5 权项分页默认
+PASS  D5 说明书分页可切
+PASS  D5 差分对照可切
+PASS  D5 seg A/B/C labels
+PASS  B 申不申 disabled before A
+PASS  B enabled after A confirm
+PASS  P0 HA-哲1 申不申依据链
+PASS  C 确认递交 disabled before overline
+PASS  P0 HA-哲4 申不申写判断档案
+PASS  P0 HA-哲2 递交清单
+PASS  P0 HA-哲2 风险声明
+PASS  C 确认递交 enabled after overline
+PASS  hard asks recorded in traces — 操作·确认递交|操作·⑤过线|操作·申不申|操作·理解确认|工单④→⑤|操作·可交⑤|操作·事实确认|操作·质检黄项处理|侧栏驾驭（演示）|操作·确认去向|前台分析|进入工作台
+PASS  P0 HA-哲2/4 ⑤递交写判断档案
+PASS  thin dept enterable
+PASS  thin shows 禁超卖 — 禁超卖：勿把建项说成完整论证报告；≠③保护去向；≠⑤申不申
+PASS  thin densify composer stub
+PASS  D6 gates visible
+PASS  D6 侧栏 composer
+PASS  D6 文书 tabs
+PASS  D6 差分对照可切
+PASS  ⑥ limit disabled before contention
+PASS  P0 HA-哲3 策略双选项
+PASS  P0 HA-哲3 策略依据链
+PASS  P0 HA-哲3 影响一句话 — 方案 A · 建议
+缩限：独权写入双密封+轴向错位
+影响：保护范围变窄；授权概率升高；放弃「纯鳍片宽保护」。
+方案 B
+
+PASS  P0 HA-哲3/4 策略写判断档案
+PASS  P0 HA-哲2 ⑥递交清单
+PASS  ⑥ hard asks advance only after confirm
+PASS  顶栏要你拍的仍有货 — fly=1
+PASS  顶栏待办可进⑥
+PASS  五维 轻量真收壳 — {"who":"none","lead":"none","strip":"none"}
+PASS  A待办进④默认轻量态 — shell=1 btn=1
+PASS  轻量有要你拍结论区或硬请示
+PASS  可切回主笔
+PASS  顶栏推进案 ≥2 — cards=3
+PASS  点推进案进部台
+PASS  进部后仍有任务条
+PASS  壳级案卷打开抽屉
+PASS  P1 G-设2 代理陪同⑤待办
+PASS  P1 G-设2 飞层含陪同⑤ — 要你拍的
+关闭
+
+「要你拍的」＝原通知铃合并入口 · 非拍类催办在「定时」
+
+待你拍
+交底部：待你确认交底事实
+陪同⑤
+陪同客户 · 模块化热管理案：待拍「申不
+PASS  P2 G-哲2 首次三入口 tip
+PASS  P1 L-设2 主链门加重
+PASS  P1 F-哲3 请示命中含结论摘要
+PASS  P1 F-设1 铃与拍合并提示
+PASS  P1 F-设1 merge hint
+PASS  P1 D4-哲7 黄项存疑条
+PASS  P1 D4-哲8 跨案偏好条
+PASS  P1 D4-设3 质检去相关手段
+PASS  P2 D4-哲6 风格标签
+PASS  P1 HA-设1 硬请示分级
+PASS  P1 D4-设4 结束检查表摘要
+PASS  P2 Ro-设2 请来入口
+PASS  P2 Ro-设2 请来后状态
+PASS  P2 Ro-哲2 1:1 岗交付契约
+PASS  P2 D4-设2 1:1 不替代硬请示
+PASS  P2 D4-设5/D5-设1 示意 diff 标注
+PASS  P1 H-设2 三行契约
+PASS  P1 H-哲2 接单前三项
+PASS  P1 H-哲2 未勾不可接单
+PASS  P1 H-哲2 勾后可接单
+PASS  P1 D5-哲4 编制席
+PASS  P1 D5-哲5 密度态
+PASS  P1 D5-哲3 黄项过线入口
+PASS  P1 D5-哲3 无闷头「演示：质检过线」文案
+PASS  P1 D5-设2 composer 落主栏高亮
+PASS  P1 D6-哲3 编制席
+PASS  P1 D6-哲3 密度
+PASS  P2 D6-哲4 已升级催办
+PASS  P1 D6-设2 composer 落主栏
+PASS  P2 T-设2 薄部头像
+PASS  P2 T-哲3 合格线示意请示
+PASS  P2 B-2 缺口清单
+PASS  P1 Doc-设2 可沉淀偏好
+PASS  P1 Doc-哲2 检查表可点回
+PASS  P2 Doc-工2/E-3 样机范围注
+PASS  P2 L-设3 无「案卷底座」重名
+PASS  P2 D4-工2 闸表数据
+PASS  N-P1-2 企业 goLobbyTodo(d5) 无工单 → B2
+PASS  N-P1-2 代理陪同可绕 B2 进⑤
+PASS  N-P1-1 ⑤A 依据链 understand-evidence
+PASS  N-P1-1 ⑤A 含来源/对比行
+PASS  N-P2-1 ⑤轻量收主栏 hint
+PASS  N-P2-1 ⑥轻量收主栏 hint
+PASS  N-P2-2 示意沉淀写入 preferences 列表
+PASS  N-P2-3 精致度 CSS 含 light-fold / 墨蓝不动
+
+Report: /Users/gyp-mac/data/innopara/code/ip-harness/tools/_tmp_shots/sample-accept/smoke-report.json
+ALL PASS
