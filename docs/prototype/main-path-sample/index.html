@@ -20,13 +20,21 @@
         <button type="button" class="nav-tab on" id="navLobby" data-testid="nav-lobby">大厅</button>
         <button type="button" class="nav-tab" id="navCases" data-testid="nav-cases" title="案卷抽屉">案卷</button>
       </nav>
-      <div class="shell-search" title="演示 · 全局搜索后期" data-testid="shell-search">
+      <button type="button" class="shell-search" id="btnShellSearch" title="搜案卷 / 专家 / 请示" data-testid="shell-search">
         <span class="sk">⌘K</span>
         <span>搜案卷 / 专家 / 请示…</span>
-      </div>
+      </button>
       <div class="shell-spacer"></div>
+      <button type="button" class="icon-btn" id="btnSchedule" data-testid="btn-schedule" title="定时 / 催办">
+        定时<span class="badge-dot soft" id="scheduleDot">4</span>
+      </button>
       <button type="button" class="icon-btn" id="btnNotify" data-testid="btn-notify" title="要你拍的">
         铃<span class="badge-dot" id="notifyDot">3</span>
+      </button>
+      <button type="button" class="case-switch-chip" id="btnCaseSwitch" data-testid="btn-case-switch" title="切换进行中案">
+        <span class="cs-k">案</span>
+        <span id="caseSwitchLabel">切换案卷</span>
+        <span class="cs-caret">▾</span>
       </button>
       <div class="role-toggle" data-testid="role-toggle">
         <button type="button" class="role on" data-role="ent">企业研发</button>
@@ -39,6 +47,10 @@
       <button type="button" class="case-chip empty" id="caseChip"><span>暂无打开案卷</span></button>
       <button type="button" id="btnOpenDoc">案卷抽屉</button>
     </header>
+
+    <div class="shell-fly" id="shellFly" data-testid="shell-fly" hidden>
+      <div class="shell-fly-card" id="shellFlyCard"></div>
+    </div>
 
 
     <!-- Gate · 登录/选工作台（对标 Kimi login 密度，不采集账户） -->
@@ -156,6 +168,7 @@
           <div class="shell-spacer"></div>
           <button type="button" id="btnDeptDoc" data-testid="open-doc-d4">案卷抽屉</button>
         </div>
+        <div class="task-strip" id="d4TaskStrip" data-testid="task-strip"></div>
         <div class="lead-bar" data-testid="lead-bar" id="leadBar">
           <span class="avatar"><img src="./avatars/04.jpg" alt="" width="40" height="40" /></span>
           <div>

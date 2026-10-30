@@ -67,6 +67,33 @@ try {
   check("L1 进行中轨", await page.locator('[data-testid="progress-rail"]').count() === 1);
   check("L1 问候计数", await page.locator('[data-testid="lobby-greet"]').count() === 1);
   check("Shell ⌘K densify", await page.locator('[data-testid="shell-search"]').count() === 1);
+  check("Shell 定时/催办入口", await page.locator('[data-testid="btn-schedule"]').count() === 1);
+  check("Shell 案切换", await page.locator('[data-testid="btn-case-switch"]').count() === 1);
+
+  // 壳级导航 · 搜索面板
+  await page.click('[data-testid="shell-search"]');
+  await sleep(200);
+  check("搜索飞层可开", await page.locator('[data-testid="shell-fly"]:not([hidden])').count() === 1
+    || await page.locator('[data-testid="fly-hit"]').count() >= 1);
+  const hitN = await page.locator('[data-testid="fly-hit"]').count();
+  check("搜索命中假数据", hitN >= 2, `hits=${hitN}`);
+  await page.click('[data-testid="fly-close"]').catch(() => {});
+  await sleep(150);
+
+  // 定时/催办面板
+  await page.click('[data-testid="btn-schedule"]');
+  await sleep(200);
+  const schN = await page.locator('[data-testid="fly-schedule"]').count();
+  check("定时催办面板有货", schN >= 2, `sch=${schN}`);
+  await page.click('[data-testid="fly-close"]').catch(() => {});
+  await sleep(100);
+
+  // 通知面板
+  await page.click('[data-testid="btn-notify"]');
+  await sleep(200);
+  check("通知飞层有货", await page.locator('[data-testid="fly-notify"]').count() >= 1);
+  await page.click('[data-testid="fly-close"]').catch(() => {});
+  await sleep(100);
 
   const todoN = await page.locator('[data-testid="todo-item"]').count();
   check("L1 要你拍的 has 2–3 sample todos", todoN >= 2 && todoN <= 6, `got ${todoN}`);
@@ -97,6 +124,8 @@ try {
 
   const tl = await page.locator('[data-testid="d4-timeline-inner"] .tl-step').count();
   check("D4 四步时间线", tl === 4, `got ${tl}`);
+  check("D4 并行任务条", await page.locator('[data-testid="task-strip"] .task-chip').count() >= 2);
+  check("D4 轨迹回放", await page.locator('[data-testid="task-trace"]').count() === 1);
   check("D4 侧栏假 composer", await page.locator('[data-testid="d4-composer"]').count() === 1);
   check("D4 硬请示含依据摘录", await page.locator('[data-testid="ask-excerpt"]').count() >= 1);
   check("D4 feed 有工具轨迹芯片", await page.locator('[data-testid="tool-chips"]').count() >= 1);
@@ -179,6 +208,16 @@ try {
   await sleep(250);
   check("D5 shows A/B/C strip", await page.locator('[data-testid="d5-abc"]').count() === 1);
   check("D5 侧栏 composer", await page.locator('[data-testid="d5-composer"]').count() === 1);
+  check("D5 文书 tabs", await page.locator('[data-testid="d5-doc-tabs"]').count() === 1);
+  check("D5 权项分页默认", await page.locator('[data-testid="d5-doc-claims"]').count() === 1);
+  await page.click('[data-testid="d5-tab-spec"]');
+  await sleep(150);
+  check("D5 说明书分页可切", await page.locator('[data-testid="d5-doc-spec"]').count() === 1);
+  await page.click('[data-testid="d5-tab-diff"]');
+  await sleep(150);
+  check("D5 差分对照可切", await page.locator('[data-testid="d5-doc-diff"]').count() === 1);
+  await page.click('[data-testid="d5-tab-claims"]');
+  await sleep(100);
   check("D5 seg A/B/C labels", (await page.locator('[data-testid="seg-a"]').count()) === 1
     && (await page.locator('[data-testid="seg-b"]').count()) === 1
     && (await page.locator('[data-testid="seg-c"]').count()) === 1);
@@ -218,6 +257,12 @@ try {
   await sleep(200);
   check("D6 gates visible", await page.locator('[data-testid="d6-gates"]').count() === 1);
   check("D6 侧栏 composer", await page.locator('[data-testid="d6-composer"]').count() === 1);
+  check("D6 文书 tabs", await page.locator('[data-testid="d6-doc-tabs"]').count() === 1);
+  await page.click('[data-testid="d6-tab-diff"]');
+  await sleep(150);
+  check("D6 差分对照可切", await page.locator('[data-testid="d6-doc-diff"]').count() === 1);
+  await page.click('[data-testid="d6-tab-reply"]');
+  await sleep(100);
   const limDisabled = await page.locator('[data-testid="confirm-limit"][disabled]').count();
   check("⑥ limit disabled before contention", limDisabled === 1);
   await page.click('[data-testid="confirm-contention"]');
@@ -252,6 +297,21 @@ try {
     }
   }
   check("大厅待办可进⑥", hitReply);
+
+  // 并行任务：回大厅点另一案 → 进⑤且任务条高亮变化
+  await page.evaluate(() => window.__SAMPLE__.goLobby());
+  await sleep(200);
+  const cards = page.locator('[data-testid="prog-card"]');
+  const nCards = await cards.count();
+  check("大厅并行案卡 ≥2", nCards >= 2, `cards=${nCards}`);
+  if (nCards >= 2) {
+    await cards.nth(1).click();
+    await sleep(300);
+    const onApply = await page.locator("#viewApply.on").count();
+    const strip = await page.locator('[data-testid="task-strip"]').count();
+    check("点并行案进部台", onApply === 1 || (await page.locator("#viewDept.on").count()) === 1 || (await page.locator("#viewReply.on").count()) === 1);
+    check("进部后仍有任务条", strip >= 1);
+  }
 
   await page.screenshot({ path: path.join(outDir, "smoke-final.png"), fullPage: true });
 } catch (e) {

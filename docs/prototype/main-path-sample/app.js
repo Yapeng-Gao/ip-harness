@@ -32,7 +32,11 @@
     toastTimer: null,
     thinDept: null,
     blockReason: null,
-    sideComposeExtra: []
+    sideComposeExtra: [],
+    activeCaseId: "pc1",
+    shellPanel: null, /* search | notify | schedule | cases | null */
+    applyDocTab: "claims", /* claims | spec | diff */
+    replyDocTab: "reply" /* reply | oa | diff */
   };
 
   function deptById(id) { return DEMO.depts.find((d) => d.id === id); }
@@ -80,6 +84,7 @@
     if (id === "d5") {
       if (opts.fromWorkOrder || (state.workOrderOpened && state.canHand5)) {
         state.view = "apply";
+        if (!opts.keepCase) state.activeCaseId = "pc2";
         render();
         return;
       }
@@ -89,7 +94,7 @@
       return;
     }
 
-    if (id === "d6") { state.view = "reply"; render(); return; }
+    if (id === "d6") { state.view = "reply"; if (!opts.keepCase) state.activeCaseId = "pc3"; render(); return; }
 
     if (d.thin) {
       state.view = "thin";
@@ -106,6 +111,7 @@
       state.enteredD4 = true;
       state.caseOpen = true;
       state.caseName = state.caseName || "电机冷却结构 · 交底案";
+      if (!opts.keepCase) state.activeCaseId = "pc1";
       if (!state.disclosureReady) {
         state.disclosureReady = true;
         DEMO.disclosure.qc.forEach((q) => {
@@ -315,6 +321,145 @@
     if (go === "h45") { if (state.canHand5) openWorkOrder(); else openDept("d4", { direct: true }); }
   }
 
+
+  function caseById(id) {
+    return (DEMO.progressCases || []).find((c) => c.id === id);
+  }
+
+  function closeShellPanel() {
+    state.shellPanel = null;
+    const fly = $("#shellFly");
+    if (fly) fly.hidden = true;
+  }
+
+  function toggleShellPanel(name) {
+    if (!state.gateDone) return;
+    if (state.shellPanel === name) { closeShellPanel(); renderShellTop(); return; }
+    state.shellPanel = name;
+    renderShellPanel();
+  }
+
+  function switchParallelCase(id, navigate = true) {
+    const c = caseById(id);
+    if (!c) return;
+    state.activeCaseId = id;
+    closeShellPanel();
+    if (!navigate) { render(); return; }
+    if (c.go === "d4-fact" || c.go === "d4-hand") {
+      openDept("d4", { direct: true, keepCase: true });
+      requestAnimationFrame(() => {
+        const el = document.querySelector(c.go === "d4-hand" ? '[data-testid="ask-hand5"]' : '[data-testid="ask-fact"]');
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    } else if (c.go === "d5") {
+      /* 并行演示：进行中案可进⑤台（不走 B2 挡），真实门槛仍由 smoke 的 openDept 直调覆盖 */
+      openDept("d5", { fromWorkOrder: true, keepCase: true });
+    } else if (c.go === "d6") {
+      state.view = "reply";
+      render();
+    } else {
+      render();
+    }
+    toast(`已切到「${c.title}」`);
+  }
+
+  function taskStripHtml(preferId) {
+    const cases = DEMO.progressCases || [];
+    if (!cases.length) return "";
+    const active = preferId || state.activeCaseId || cases[0].id;
+    const cur = caseById(active) || cases[0];
+    const chips = cases.map((c) => {
+      const on = c.id === active ? "on" : "";
+      return `<button type="button" class="task-chip ${on}" data-task-case="${escapeHtml(c.id)}" data-testid="task-chip">
+        <strong>${escapeHtml(c.title)}</strong>
+        <span class="tm">${escapeHtml(c.dept)} · ${escapeHtml(c.status)}</span>
+      </button>`;
+    }).join("");
+    const traces = (cur.traces || []).map((t) =>
+      `<div class="ttr-row"><span class="at">${escapeHtml(t.at)}</span><span><b>${escapeHtml(t.who)}</b> · ${escapeHtml(t.act)}</span></div>`
+    ).join("");
+    return `${chips}
+      <div class="task-trace-rail" data-testid="task-trace">
+        <div class="ttr-h">轨迹回放 · ${escapeHtml(cur.title)}</div>
+        ${traces || `<div class="tiny muted">暂无轨迹</div>`}
+        <div class="tiny muted" style="margin-top:6px">${escapeHtml(cur.summary || "")}</div>
+      </div>`;
+  }
+
+  function bindTaskStrip(root) {
+    (root || document).querySelectorAll("[data-task-case]").forEach((b) => {
+      b.addEventListener("click", () => switchParallelCase(b.dataset.taskCase, true));
+    });
+  }
+
+  function renderShellPanel() {
+    const fly = $("#shellFly");
+    const card = $("#shellFlyCard");
+    if (!fly || !card) return;
+    if (!state.shellPanel) { fly.hidden = true; return; }
+    fly.hidden = false;
+    const closeBtn = `<button type="button" class="ghost" id="btnFlyClose" data-testid="fly-close">关闭</button>`;
+    if (state.shellPanel === "search") {
+      const hits = DEMO.searchHits || [];
+      card.innerHTML = `
+        <div class="fly-head"><strong>搜索</strong>${closeBtn}</div>
+        <input class="fly-search-input" id="flySearchInput" data-testid="fly-search-input" placeholder="案卷 / 专家 / 请示…" />
+        <p class="fly-hint">演示命中 · 点一条进对应案</p>
+        ${hits.map((h, i) => `<button type="button" class="fly-item" data-fly-go="${escapeHtml(h.go || "")}" data-testid="fly-hit">
+          <span class="fk">${escapeHtml(h.kind)}</span>
+          <div><strong>${escapeHtml(h.title)}</strong><div class="fm">${escapeHtml(h.sub || "")}</div></div>
+        </button>`).join("")}`;
+    } else if (state.shellPanel === "notify") {
+      const seeds = DEMO.lobbySeed || [];
+      card.innerHTML = `
+        <div class="fly-head"><strong>要你拍的</strong>${closeBtn}</div>
+        <p class="fly-hint">通知密度演示 · 与大厅待办同源</p>
+        ${seeds.map((s) => `<button type="button" class="fly-item" data-fly-go="${escapeHtml(s.go)}" data-testid="fly-notify">
+          <span class="fk urge">${escapeHtml(s.tag || "待拍")}</span>
+          <div><strong>${escapeHtml(s.text)}</strong><div class="fm">${escapeHtml(s.sub || "")}</div></div>
+        </button>`).join("")}`;
+    } else if (state.shellPanel === "schedule") {
+      const items = DEMO.scheduleItems || [];
+      card.innerHTML = `
+        <div class="fly-head"><strong>定时 / 催办</strong>${closeBtn}</div>
+        <p class="fly-hint">能力 port 上屏 · 假数据 · 不写真后端</p>
+        ${items.map((s) => `<button type="button" class="fly-item" data-fly-go="${escapeHtml(s.go || "")}" data-testid="fly-schedule">
+          <span class="fk ${s.kind === "催办" ? "urge" : "timer"}">${escapeHtml(s.kind)}</span>
+          <div><strong>${escapeHtml(s.title)}</strong><div class="fm">${escapeHtml(s.when)} · ${escapeHtml(s.case)}</div></div>
+        </button>`).join("")}`;
+    } else if (state.shellPanel === "cases") {
+      const cases = DEMO.caseSwitch || DEMO.progressCases || [];
+      card.innerHTML = `
+        <div class="fly-head"><strong>切换进行中案</strong>${closeBtn}</div>
+        <p class="fly-hint">并行任务 · 切案时主栏/请示跟着变</p>
+        ${cases.map((c) => {
+          const full = caseById(c.id) || c;
+          const on = c.id === state.activeCaseId ? " · 当前" : "";
+          return `<button type="button" class="fly-item" data-case-id="${escapeHtml(c.id)}" data-testid="fly-case">
+            <span class="fk">${escapeHtml(full.dept || c.dept || "案")}</span>
+            <div><strong>${escapeHtml(full.title || c.title)}${on}</strong><div class="fm">${escapeHtml((full.status || "") + (full.summary ? " · " + full.summary : ""))}</div></div>
+          </button>`;
+        }).join("")}`;
+    }
+    const bc = $("#btnFlyClose");
+    if (bc) bc.addEventListener("click", () => { closeShellPanel(); });
+    card.querySelectorAll("[data-fly-go]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const go = b.dataset.flyGo;
+        closeShellPanel();
+        if (!go) { toast("演示项 · 无跳转"); return; }
+        /* sync active case if matching */
+        const hit = (DEMO.progressCases || []).find((c) => c.go === go);
+        if (hit) state.activeCaseId = hit.id;
+        goLobbyTodo(go);
+      });
+    });
+    card.querySelectorAll("[data-case-id]").forEach((b) => {
+      b.addEventListener("click", () => switchParallelCase(b.dataset.caseId, true));
+    });
+  }
+
+
   function renderShellTop() {
     document.body.classList.toggle("gate-mode-on", state.view === "gate" || !state.gateDone);
     const app = $(".app");
@@ -337,6 +482,22 @@
     $$(".role-toggle .role").forEach((b) => b.classList.toggle("on", b.dataset.role === state.role));
     const nl = $("#navLobby");
     if (nl) nl.classList.toggle("on", state.view === "lobby");
+    const csl = $("#caseSwitchLabel");
+    if (csl) {
+      const ac = caseById(state.activeCaseId);
+      csl.textContent = ac ? (ac.title.length > 10 ? ac.title.slice(0, 10) + "…" : ac.title) : "切换案卷";
+    }
+    const sdot = $("#scheduleDot");
+    if (sdot) {
+      const n = (DEMO.scheduleItems || []).length;
+      sdot.textContent = String(n);
+      sdot.style.display = n ? "" : "none";
+    }
+    if (state.shellPanel) renderShellPanel();
+    else {
+      const fly = $("#shellFly");
+      if (fly) fly.hidden = true;
+    }
   }
 
   function renderGate() {
@@ -413,13 +574,21 @@
     const rail = $("#progressRail");
     if (rail) {
       const cases = DEMO.progressCases || [];
-      rail.innerHTML = cases.map((c) => `<button type="button" class="prog-card" data-prog="${escapeHtml(c.go)}" data-testid="prog-card">
-          <div><strong>${escapeHtml(c.title)}</strong><div class="pm">${escapeHtml(c.dept)}</div></div>
+      rail.innerHTML = cases.map((c) => {
+        const on = c.id === state.activeCaseId ? "on" : "";
+        const tr = (c.traces || []).slice(0, 2).map((t) => `<span>${escapeHtml(t.who)}·${escapeHtml(t.act)}</span>`).join("");
+        return `<button type="button" class="prog-card ${on}" data-prog-id="${escapeHtml(c.id)}" data-testid="prog-card">
+          <div>
+            <strong>${escapeHtml(c.title)}</strong>
+            <div class="pm">${escapeHtml(c.dept)} · ${escapeHtml(c.summary || "")}</div>
+            ${tr ? `<div class="ptrace">${tr}</div>` : ""}
+          </div>
           <span class="pst">${escapeHtml(c.status)}</span>
-        </button>`).join("");
-      $$("[data-prog]").forEach((b) => b.addEventListener("click", () => goLobbyTodo(b.dataset.prog)));
+        </button>`;
+      }).join("");
+      $$("[data-prog-id]").forEach((b) => b.addEventListener("click", () => switchParallelCase(b.dataset.progId, true)));
       const pm = $("#progressMeta");
-      if (pm) pm.textContent = `${cases.length} 个业务对象 · 可点进部`;
+      if (pm) pm.textContent = `${cases.length} 个并行案 · 点切换 · 轨迹可扫`;
     }
 
     $("#deptWall").innerHTML = DEMO.depts.map((d) => {
@@ -595,6 +764,13 @@
     const lineEl = $("#deptLineStatus");
     lineEl.textContent = state.allGreen ? "交底质检全绿" : "未过线 / 质检进行中";
     lineEl.className = "line-status" + (state.allGreen ? " ok" : "");
+
+    const strip = $("#d4TaskStrip");
+    if (strip) {
+      if (!state.activeCaseId || !caseById(state.activeCaseId)) state.activeCaseId = "pc1";
+      strip.innerHTML = taskStripHtml(state.activeCaseId);
+      bindTaskStrip(strip);
+    }
 
     const lead = DEMO.disclosure.roster.find((e) => e.kind === "lead") || DEMO.disclosure.roster[0];
     const leadBar = $("#leadBar");
@@ -830,6 +1006,39 @@
     const segB = !a.understand ? "todo" : (a.applyOrNot ? "done" : "now");
     const segC = a.applyOrNot !== "yes" ? "todo" : (a.submit ? "done" : "now");
     const segCls = (s) => s === "done" ? "seg done" : (s === "now" ? "seg now" : "seg");
+    const tab = state.applyDocTab || "claims";
+    const claims = DEMO.apply.claims || [];
+    const specs = DEMO.apply.specSections || [];
+    const diffs = DEMO.apply.diffs || [];
+    let docInner = "";
+    if (tab === "claims") {
+      docInner = `<div class="doc-page" data-testid="d5-doc-claims">
+        <div class="page-kicker">权利要求书 · 第 1 页（示意分页）</div>
+        <h3 style="margin:0 0 10px;font-family:var(--font-doc)">权利要求书</h3>
+        ${claims.map((c) => `<div class="claim-row" id="claim-${escapeHtml(c.id)}">
+          <div class="claim-no">${escapeHtml(c.no)}<span class="ck">${escapeHtml(c.kind)}</span></div>
+          <p>${escapeHtml(c.text)}</p>
+        </div>`).join("")}
+      </div>`;
+    } else if (tab === "spec") {
+      docInner = `<div class="doc-page" data-testid="d5-doc-spec">
+        <div class="page-kicker">说明书 · 分页稿（示意）</div>
+        <h3 style="margin:0 0 10px;font-family:var(--font-doc)">说明书</h3>
+        ${specs.map((s) => `<div class="sec" id="${escapeHtml(s.id)}"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`).join("")}
+        <div class="sec"><strong>查新摘要</strong><p>${escapeHtml(DEMO.apply.noveltyHint)}</p></div>
+      </div>`;
+    } else {
+      docInner = `<div class="doc-page" data-testid="d5-doc-diff">
+        <div class="page-kicker">交底 ↔ 申请 · 对照差分</div>
+        <h3 style="margin:0 0 10px">一眼对照</h3>
+        <div class="diff-grid">${diffs.map((d, i) => {
+          const cls = i % 2 === 1 ? "to-dst" : "from-src";
+          return `<div class="diff-row ${cls}"><span class="ds">${escapeHtml(d.side)}</span><div>${escapeHtml(d.text)}</div></div>`;
+        }).join("")}</div>
+      </div>`;
+    }
+    const tabBtn = (id, label) => `<button type="button" class="doc-tab ${tab === id ? "on" : ""}" data-apply-tab="${id}" data-testid="d5-tab-${id}">${label}</button>`;
+
     $("#applyBody").innerHTML = `
       <div class="dept-top">
         <button type="button" class="ghost" id="btnApplyBack">← 工作台</button>
@@ -838,6 +1047,7 @@
         <div class="shell-spacer"></div>
         <button type="button" id="btnApplyDoc">案卷抽屉</button>
       </div>
+      <div class="task-strip" id="d5TaskStrip" data-testid="task-strip">${taskStripHtml(state.activeCaseId || "pc2")}</div>
       <div class="lead-bar">
         <span class="avatar"><img src="./avatars/05.jpg" alt="" width="40" height="40" /></span>
         <div>
@@ -847,15 +1057,14 @@
       </div>
       <div class="apply-layout">
         <div class="main-pane">
-          <div class="pane-head"><strong>主产出 · 申请文件（示意）</strong><span class="pane-tag">权项 / 说明书</span></div>
+          <div class="pane-head"><strong>主产出 · 申请文件</strong><span class="pane-tag">权项 | 说明书 | 差分</span></div>
           <div class="pane-body">
-            <div class="doc-body">
-              <h3>发明专利申请文件（草案）</h3>
-              <p class="tiny muted">主栏持有成稿；侧栏分段硬请示驾驭。</p>
-              <div class="sec"><strong>独权示意</strong><p>${escapeHtml(DEMO.apply.claimsHint)}</p></div>
-              <div class="sec"><strong>说明书示意</strong><p>${escapeHtml(DEMO.apply.specHint)}</p></div>
-              <div class="sec"><strong>查新摘要</strong><p>${escapeHtml(DEMO.apply.noveltyHint)}</p></div>
+            <div class="doc-tabs" data-testid="d5-doc-tabs">
+              ${tabBtn("claims", "权项")}
+              ${tabBtn("spec", "说明书")}
+              ${tabBtn("diff", "差分对照")}
             </div>
+            ${docInner}
             <div class="qc-card" style="margin-top:12px">
               <strong>C 段 · 质检过线</strong>
               <div class="tiny muted" style="margin:4px 0 8px">过线只证明「文件可递交」，须另点确认递交。</div>
@@ -917,6 +1126,12 @@
           </div>
         </div>
       </div>`;
+    const d5s = $("#d5TaskStrip");
+    if (d5s) bindTaskStrip(d5s);
+    $$("[data-apply-tab]").forEach((b) => b.addEventListener("click", () => {
+      state.applyDocTab = b.dataset.applyTab;
+      render();
+    }));
     $("#btnApplyBack").addEventListener("click", goLobby);
     $("#btnApplyDoc").addEventListener("click", () => openDrawer());
     const u = $("#btnUnd"); if (u) u.addEventListener("click", () => { state.apply.understand = true; addTrace("硬请示·理解确认", "⑤ A"); render(); });
@@ -936,7 +1151,7 @@
       if (!state.apply.overLine) return;
       state.apply.submit = true; addTrace("硬请示·确认递交", "⑤ C"); toast("已确认递交（演示·非 Toast 代替硬请示）"); render();
     });
-    $("#btnToReply").addEventListener("click", () => { state.view = "reply"; render(); });
+    $("#btnToReply").addEventListener("click", () => { state.view = "reply"; state.activeCaseId = "pc3"; render(); });
     const acs = $("#btnApplyCompose");
     if (acs) acs.addEventListener("click", () => {
       const v = ($("#applyComposerInput") && $("#applyComposerInput").value || "").trim();
@@ -949,6 +1164,36 @@
 
   function renderReply() {
     const r = state.reply;
+    const tab = state.replyDocTab || "reply";
+    const sections = DEMO.reply.replySections || [];
+    const diffs = DEMO.reply.diffs || [];
+    let docInner = "";
+    if (tab === "reply") {
+      docInner = `<div class="doc-page" data-testid="d6-doc-reply">
+        <div class="page-kicker">答复书 · 分页稿（示意）</div>
+        <h3 style="margin:0 0 10px;font-family:var(--font-doc)">审查意见答复书（草案）</h3>
+        ${sections.map((s) => `<div class="sec" id="${escapeHtml(s.id)}"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`).join("")}
+      </div>`;
+    } else if (tab === "oa") {
+      docInner = `<div class="doc-page" data-testid="d6-doc-oa">
+        <div class="page-kicker">通知书摘录</div>
+        <h3 style="margin:0 0 10px">审查意见通知书（摘）</h3>
+        <div class="sec"><strong>期限</strong><p>${escapeHtml(DEMO.reply.deadline)}</p></div>
+        <div class="sec"><strong>意见正文摘录</strong><p>${escapeHtml(DEMO.reply.oaExcerpt || "")}</p></div>
+        <div class="sec"><strong>争点列表</strong><ul>${DEMO.reply.issues.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul></div>
+      </div>`;
+    } else {
+      docInner = `<div class="doc-page" data-testid="d6-doc-diff">
+        <div class="page-kicker">通知书 ↔ 答复 · 对照</div>
+        <h3 style="margin:0 0 10px">一眼对照</h3>
+        <div class="diff-grid">${diffs.map((d, i) => {
+          const cls = i % 2 === 1 ? "to-dst" : "from-src";
+          return `<div class="diff-row ${cls}"><span class="ds">${escapeHtml(d.side)}</span><div>${escapeHtml(d.text)}</div></div>`;
+        }).join("")}</div>
+      </div>`;
+    }
+    const tabBtn = (id, label) => `<button type="button" class="doc-tab ${tab === id ? "on" : ""}" data-reply-tab="${id}" data-testid="d6-tab-${id}">${label}</button>`;
+
     $("#replyBody").innerHTML = `
       <div class="dept-top">
         <button type="button" class="ghost" id="btnReplyBack">← 工作台</button>
@@ -957,6 +1202,7 @@
         <div class="shell-spacer"></div>
         <button type="button" id="btnReplyDoc">案卷抽屉</button>
       </div>
+      <div class="task-strip" id="d6TaskStrip" data-testid="task-strip">${taskStripHtml("pc3")}</div>
       <div class="lead-bar">
         <span class="avatar"><img src="./avatars/06.jpg" alt="" width="40" height="40" /></span>
         <div>
@@ -966,18 +1212,18 @@
       </div>
       <div class="reply-layout">
         <div class="main-pane">
-          <div class="pane-head"><strong>主产出 · 答复稿（示意）</strong><span class="pane-tag">本轮 D</span></div>
+          <div class="pane-head"><strong>主产出 · 答复稿</strong><span class="pane-tag">答复 | 通知书 | 差分</span></div>
           <div class="pane-body">
             <div class="deadline-banner">
               <strong>答复截止：${escapeHtml(DEMO.reply.deadline)}</strong>
               <div class="tiny">超期须升级可见，不可静默。</div>
             </div>
-            <div class="doc-body">
-              <h3>审查意见答复书（草案）</h3>
-              <p class="tiny muted">主栏持有答复成稿；侧栏硬请示分步确认。</p>
-              <div class="sec"><strong>争点中立复述</strong><p>${escapeHtml(DEMO.reply.contention)}</p></div>
-              <div class="sec"><strong>审查员意见要点</strong><ul>${DEMO.reply.issues.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul></div>
+            <div class="doc-tabs" data-testid="d6-doc-tabs">
+              ${tabBtn("reply", "答复书")}
+              ${tabBtn("oa", "通知书")}
+              ${tabBtn("diff", "差分对照")}
             </div>
+            ${docInner}
           </div>
         </div>
         <div class="side-pane">
@@ -1021,6 +1267,18 @@
           </div>
         </div>
       </div>`;
+    const d6s = $("#d6TaskStrip");
+    if (d6s) {
+      /* ensure active highlight pc3 when in reply */
+      if (state.activeCaseId !== "pc3") {
+        /* keep user's choice but strip defaults visual via taskStripHtml arg */
+      }
+      bindTaskStrip(d6s);
+    }
+    $$("[data-reply-tab]").forEach((b) => b.addEventListener("click", () => {
+      state.replyDocTab = b.dataset.replyTab;
+      render();
+    }));
     $("#btnReplyBack").addEventListener("click", goLobby);
     $("#btnReplyDoc").addEventListener("click", () => openDrawer());
     const bc = $("#btnContention"); if (bc) bc.addEventListener("click", () => { state.reply.contentionOk = true; addTrace("硬请示·争点理解", "⑥ A"); render(); });
@@ -1163,7 +1421,18 @@
     $("#btnBrand").addEventListener("click", () => { if (state.gateDone) goLobby(); });
     const navL = $("#navLobby"); if (navL) navL.addEventListener("click", () => { if (state.gateDone) goLobby(); });
     const navC = $("#navCases"); if (navC) navC.addEventListener("click", () => { if (state.gateDone) openDrawer("materials"); });
-    const nfy = $("#btnNotify"); if (nfy) nfy.addEventListener("click", () => { if (state.gateDone) goLobby(); });
+    const nfy = $("#btnNotify"); if (nfy) nfy.addEventListener("click", () => toggleShellPanel("notify"));
+    const bsch = $("#btnSchedule"); if (bsch) bsch.addEventListener("click", () => toggleShellPanel("schedule"));
+    const bss = $("#btnShellSearch"); if (bss) bss.addEventListener("click", () => toggleShellPanel("search"));
+    const bcs = $("#btnCaseSwitch"); if (bcs) bcs.addEventListener("click", () => toggleShellPanel("cases"));
+    document.addEventListener("keydown", (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        if (!state.gateDone) return;
+        e.preventDefault();
+        toggleShellPanel("search");
+      }
+      if (e.key === "Escape") closeShellPanel();
+    });
     $$(".role-toggle .role").forEach((b) => b.addEventListener("click", () => {
       state.role = b.dataset.role; renderShellTop(); toast(state.role === "agency" ? "已切代理所视角（演示）" : "已切企业研发视角（演示）");
     }));
@@ -1199,7 +1468,8 @@
     window.__SAMPLE__ = {
       state, loadSample, confirmDestination, enterConfirmedDept, makeAllGreen,
       confirmFact, confirmCanHand5, openWorkOrder, openDept, openDrawer, goLobby, openFront, render, closeDrawer,
-      focusExpert, revealExpertOutput, sendComposerDemo, goLobbyTodo, enterFromGate
+      focusExpert, revealExpertOutput, sendComposerDemo, goLobbyTodo, enterFromGate,
+      switchParallelCase, toggleShellPanel, closeShellPanel
     };
   }
 
