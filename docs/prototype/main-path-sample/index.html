@@ -110,7 +110,7 @@
           </div>
           <div class="roster" id="roster" data-testid="roster"></div>
         </div>
-        <div class="stage-bar" id="stageBar"></div>
+        <div class="stage-bar" id="stageBar" data-testid="d4-timeline"></div>
         <div class="workbench">
           <div class="main-pane">
             <div class="pane-head">
@@ -120,15 +120,23 @@
             <div class="pane-body" id="docMain"></div>
           </div>
           <div class="side-pane">
-            <div class="pane-head">
-              <strong>侧栏 · 硬请示优先</strong>
-              <span class="pane-tag">对话驾驭</span>
+            <div class="pane-head" id="sideHead">
+              <strong id="sideHeadTitle">侧栏 · 硬请示优先</strong>
+              <span class="pane-tag" id="sideHeadTag">对话驾驭</span>
             </div>
-            <div class="pane-body">
+            <div class="pane-body" id="sideBody">
+              <div id="sideFocus"></div>
               <div id="sideAsks"></div>
               <div>
                 <div class="tiny muted" style="margin-bottom:6px">团队动态（辅）</div>
-                <div class="feed" id="feed"></div>
+                <div class="feed" id="feed" data-testid="d4-feed"></div>
+              </div>
+            </div>
+            <div class="composer" id="composer" data-testid="d4-composer">
+              <div class="composer-to" id="composerTo">对：交底部负责人 · 团队</div>
+              <div class="composer-row">
+                <textarea id="composerInput" rows="1" placeholder="打一句驾驭（演示）· 可 @材料" data-testid="composer-input"></textarea>
+                <button type="button" class="primary" id="btnComposerSend" data-testid="composer-send">发送</button>
               </div>
             </div>
           </div>

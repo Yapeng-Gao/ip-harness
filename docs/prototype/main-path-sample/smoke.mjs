@@ -58,6 +58,9 @@ try {
   check("L1 shows 前台", front === 1);
   check("L1 shows 8 dept doors", doors === 8, `got ${doors}`);
 
+  const todoN = await page.locator('[data-testid="todo-item"]').count();
+  check("L1 要你拍的 has 2–3 sample todos", todoN >= 2 && todoN <= 6, `got ${todoN}`);
+
   await page.click('[data-testid="open-front"]');
   await page.click('[data-testid="load-sample"]');
   await page.waitForSelector('[data-testid="analyzing"]', { timeout: 2000 }).catch(() => {});
@@ -81,6 +84,37 @@ try {
   const main = await page.locator('[data-testid="d4-main"]').count();
   check("after confirm → D4 has 编制 + main产出", roster >= 5 && main === 1, `roster=${roster}`);
   check("D4 编制用照片头像岗", photos >= 5, `photos=${photos}`);
+
+  const tl = await page.locator('[data-testid="d4-timeline-inner"] .tl-step').count();
+  check("D4 四步时间线", tl === 4, `got ${tl}`);
+  check("D4 侧栏假 composer", await page.locator('[data-testid="d4-composer"]').count() === 1);
+  check("D4 硬请示含依据摘录", await page.locator('[data-testid="ask-excerpt"]').count() >= 1);
+
+  // 点编制 → 1:1 聚焦 + 看产出
+  await page.click('[data-testid="expert-writer"]');
+  await sleep(200);
+  check("点编制切 1:1", await page.locator('[data-testid="side-1to1"]').count() === 1);
+  await page.click('[data-testid="btn-see-output"]');
+  await sleep(350);
+  const flash = await page.locator("#sec-tech.anchor-flash, #sec-tech").count();
+  check("看产出锚主栏段", flash >= 1, `sec-tech count=${flash}`);
+
+  // composer 打一句
+  await page.fill('[data-testid="composer-input"]', "请把双密封写进实施例");
+  await page.click('[data-testid="composer-send"]');
+  await sleep(200);
+  const feedText = await page.locator('[data-testid="d4-feed"]').innerText();
+  check("composer 演示进 feed", feedText.includes("双密封"), feedText.slice(0, 60));
+
+  // 点依据摘录 → 主栏定位（回团队后硬请示仍在）
+  await page.click('[data-testid="btn-back-team"]').catch(() => {});
+  await sleep(150);
+  const exCount = await page.locator('[data-testid="ask-excerpt"]').count();
+  if (exCount) {
+    await page.click('[data-testid="ask-excerpt"]');
+    await sleep(300);
+  }
+  check("依据摘录可点", exCount >= 1);
 
   const handDisabled = await page.locator('[data-testid="confirm-hand5"][disabled]').count();
   check("D4a hand5 disabled before gates", handDisabled === 1);
@@ -180,6 +214,30 @@ try {
   await sleep(150);
   const r = await page.evaluate(() => window.__SAMPLE__.state.reply);
   check("⑥ hard asks advance only after confirm", r.contentionOk && r.limitOk && r.submit);
+
+  // 大厅待办回流：重置⑥痕迹后回大厅，样例「答复」应再出现
+  await page.evaluate(() => {
+    window.__SAMPLE__.state.reply = { contentionOk: false, limitOk: false, submit: false };
+    window.__SAMPLE__.goLobby();
+  });
+  await sleep(250);
+  const goBtns = page.locator('[data-testid="todo-go"]');
+  const nGo = await goBtns.count();
+  check("大厅仍有可点待办", nGo >= 1, `go=${nGo}`);
+  let hitReply = false;
+  const nItems = await page.locator('[data-testid="todo-item"]').count();
+  for (let i = 0; i < nItems; i++) {
+    const row = page.locator('[data-testid="todo-item"]').nth(i);
+    const t = await row.innerText();
+    if (t.includes("答复")) {
+      await row.locator('[data-testid="todo-go"]').click();
+      await sleep(250);
+      hitReply = (await page.locator("#viewReply.on").count()) === 1
+        || (await page.locator('[data-testid="d6-gates"]').count()) === 1;
+      break;
+    }
+  }
+  check("大厅待办可进⑥", hitReply);
 
   await page.screenshot({ path: path.join(outDir, "smoke-final.png"), fullPage: true });
 } catch (e) {

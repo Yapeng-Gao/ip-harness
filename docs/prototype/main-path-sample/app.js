@@ -22,6 +22,9 @@
     drawerOpen: false,
     drawerTab: "materials",
     activeExpert: "writer",
+    sideMode: "team", /* team | 1to1 */
+    highlightAnchor: null,
+    feedExtra: [],
     traces: [],
     toastTimer: null,
     thinDept: null,
@@ -211,7 +214,90 @@
     return ({ doing: "进行中", done: "已完成", wait: "待审", idle: "未请来" })[st] || st || "";
   }
 
+  function expertById(id) {
+    return DEMO.disclosure.roster.find((e) => e.id === id);
+  }
 
+  function focusExpert(id) {
+    const e = expertById(id);
+    if (!e) return;
+    state.activeExpert = id;
+    state.sideMode = "1to1";
+    toast(`已切到与「${e.name}」1:1`);
+    render();
+  }
+
+  function revealExpertOutput(id) {
+    const e = expertById(id);
+    if (!e) return;
+    state.activeExpert = id;
+    state.highlightAnchor = e.outputAnchor || "doc-top";
+    if (state.view !== "dept") {
+      openDept("d4", { direct: true });
+      return;
+    }
+    render();
+    requestAnimationFrame(() => scrollToAnchor(state.highlightAnchor));
+  }
+
+  function scrollToAnchor(anchor) {
+    if (!anchor) return;
+    const el = document.getElementById(anchor);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("anchor-flash");
+    setTimeout(() => el.classList.remove("anchor-flash"), 1800);
+  }
+
+  function bindExcerptClicks(root) {
+    (root || document).querySelectorAll("[data-excerpt-anchor]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const a = btn.dataset.excerptAnchor;
+        state.highlightAnchor = a;
+        scrollToAnchor(a);
+        toast("已定位主栏依据段");
+      });
+    });
+  }
+
+  function sendComposerDemo() {
+    const input = $("#composerInput");
+    const text0 = (input && input.value || "").trim();
+    if (!text0) { toast("先打一句再说（演示）"); return; }
+    const e = expertById(state.activeExpert) || expertById("lead");
+    const toName = state.sideMode === "1to1" && e ? e.name : "交底部负责人";
+    state.feedExtra.unshift({
+      who: `你 → ${toName}`,
+      text: text0,
+      you: true,
+      expertId: null
+    });
+    if (input) input.value = "";
+    addTrace("侧栏驾驭（演示）", `对 ${toName}：${text0.slice(0, 80)}`);
+    toast("已发送（演示 · 不调后端）");
+    render();
+  }
+
+  function goLobbyTodo(go) {
+    if (go === "d4-fact" || go === "d4-hand") {
+      openDept("d4", { direct: true });
+      if (go === "d4-hand") {
+        requestAnimationFrame(() => {
+          const el = document.querySelector('[data-testid="ask-hand5"]');
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      } else {
+        requestAnimationFrame(() => {
+          const el = document.querySelector('[data-testid="ask-fact"]');
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      }
+      return;
+    }
+    if (go === "d6") { state.view = "reply"; render(); return; }
+    if (go === "d5") { openDept("d5", { fromWorkOrder: state.workOrderOpened }); return; }
+    if (go === "h45") { if (state.canHand5) openWorkOrder(); else openDept("d4", { direct: true }); }
+  }
 
   function renderShellTop() {
     const chip = $("#caseChip");
@@ -230,17 +316,32 @@
       todos.push({ kind: "a", text: "前台：去向已确认，待领进交底部", action: () => openFront() });
     }
     if (state.enteredD4 && !state.factConfirmed) {
-      todos.push({ kind: "a", text: "交底部：待你确认交底事实", action: () => openDept("d4", { direct: true }) });
+      todos.push({ kind: "a", text: "交底部：待你确认交底事实", action: () => goLobbyTodo("d4-fact") });
     } else if (state.enteredD4 && state.allGreen && !state.canHand5) {
-      todos.push({ kind: "a", text: "交底部：全绿后待你拍「可交⑤」", action: () => openDept("d4", { direct: true }) });
+      todos.push({ kind: "a", text: "交底部：全绿后待你拍「可交⑤」", action: () => goLobbyTodo("d4-hand") });
     } else if (state.canHand5 && !state.workOrderOpened) {
-      todos.push({ kind: "c", text: "进行中：可开④→⑤工单", action: () => openDept("d4", { direct: true }) });
+      todos.push({ kind: "c", text: "进行中：可开④→⑤工单", action: () => goLobbyTodo("h45") });
     }
-    if (!todos.length) todos.push({ kind: "c", text: "暂无待确认事项", action: null });
+    if (state.apply.understand && state.apply.applyOrNot === null) {
+      todos.push({ kind: "a", text: "申请部：理解已确认 · 待拍申不申", action: () => openDept("d5", { fromWorkOrder: true }) });
+    }
+    /* 进厅即有货：样例 A/C 回流；被 live 覆盖则跳过 */
+    const covered = new Set();
+    if (state.factConfirmed) covered.add("fact");
+    if (state.canHand5) covered.add("hand");
+    if (state.reply && state.reply.submit) covered.add("reply");
+    if (state.enteredD4 && !state.factConfirmed) covered.add("fact");
+    if (state.enteredD4 && state.allGreen && !state.canHand5) covered.add("hand");
+    (DEMO.lobbySeed || []).forEach((s) => {
+      if (covered.has(s.cover)) return;
+      if (todos.some((t) => t.text === s.text)) return;
+      todos.push({ kind: s.kind, text: s.text, action: () => goLobbyTodo(s.go), seed: true });
+    });
+    if (!todos.length) todos.push({ kind: "c", text: "各部门暂无要你拍的事", action: null });
 
-    $("#todoList").innerHTML = todos.map((t, i) => `<li>
+    $("#todoList").innerHTML = todos.map((t, i) => `<li data-testid="todo-item">
         <span class="badge ${t.kind}">${t.kind === "a" ? "待你拍" : t.kind === "b" ? "催办" : "进行中"}</span>
-        <div><div>${escapeHtml(t.text)}</div>${t.action ? `<button class="ghost tiny" data-todo-go="${i}" style="margin-top:6px;padding:4px 8px">去处理</button>` : ""}</div>
+        <div><div>${escapeHtml(t.text)}</div>${t.action ? `<button class="ghost tiny" data-todo-go="${i}" data-testid="todo-go" style="margin-top:6px;padding:4px 8px">去处理</button>` : ""}</div>
       </li>`).join("");
     $$("[data-todo-go]").forEach((btn) => {
       btn.addEventListener("click", () => { const t = todos[+btn.dataset.todoGo]; if (t && t.action) t.action(); });
@@ -416,13 +517,14 @@
           <div class="tiny muted">主持分活与汇报 · 不是前台。专家向你（领导）请示关键结论。</div>
         </div>`;
     }
+
     $("#roster").innerHTML = DEMO.disclosure.roster.map((e) => {
       const active = state.activeExpert === e.id ? "active" : "";
       const qcCls = e.kind === "qc" ? "qc" : "";
       const idleCls = e.status === "idle" ? "idle" : "";
       const tagCls = e.tag === "协" ? "tag-role sub" : "tag-role";
       const st = e.status || "doing";
-      return `<button type="button" class="expert-chip ${qcCls} ${idleCls} ${active}" data-expert="${e.id}" title="${escapeHtml(e.role)}">
+      return `<button type="button" class="expert-chip ${qcCls} ${idleCls} ${active}" data-expert="${e.id}" data-testid="expert-${e.id}" title="${escapeHtml(e.role)}">
           ${avatarHtml(e.photo, e.av)}
           <span class="meta">
             <span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="${tagCls}">${escapeHtml(e.tag || "")}</span></span>
@@ -431,28 +533,43 @@
           </span>
         </button>`;
     }).join("");
-    $$("[data-expert]").forEach((b) => b.addEventListener("click", () => { state.activeExpert = b.dataset.expert; render(); }));
+    $$("[data-expert]").forEach((b) => b.addEventListener("click", () => focusExpert(b.dataset.expert)));
 
+    /* 四步可读时间线（非 pill 堆） */
     const stages = [
-      { id: "draft", label: "成稿", done: true },
-      { id: "qc", label: "质检循环", done: state.allGreen, on: !state.allGreen },
-      { id: "fact", label: "事实确认", done: state.factConfirmed, wait: state.allGreen && !state.factConfirmed },
-      { id: "hand", label: "可交⑤", done: state.canHand5, wait: state.allGreen && state.factConfirmed && !state.canHand5 }
+      { id: "draft", label: "成稿", hint: "草案已落主栏", done: true, on: false, wait: false },
+      { id: "qc", label: "质检循环", hint: state.allGreen ? "已全绿" : "复检红黄项", done: state.allGreen, on: !state.allGreen, wait: false },
+      { id: "fact", label: "事实确认", hint: state.factConfirmed ? "你已拍板" : "待你确认", done: state.factConfirmed, on: false, wait: state.allGreen && !state.factConfirmed },
+      { id: "hand", label: "可交⑤", hint: state.canHand5 ? "可开④→⑤工单" : "硬请示未关", done: state.canHand5, on: false, wait: state.allGreen && state.factConfirmed && !state.canHand5 }
     ];
-    $("#stageBar").innerHTML = stages.map((s) => {
-      let cls = "stage";
-      if (s.done) cls += " done";
-      else if (s.wait) cls += " wait";
-      else if (s.on) cls += " on";
-      return `<span class="${cls}">${s.label}</span>`;
-    }).join("");
+    $("#stageBar").innerHTML = `<div class="timeline" data-testid="d4-timeline-inner">
+      <div class="tl-track">
+        ${stages.map((s, i) => {
+          let cls = "tl-step";
+          if (s.done) cls += " done";
+          else if (s.wait) cls += " wait";
+          else if (s.on) cls += " on";
+          const mark = s.done ? "✓" : String(i + 1);
+          const line = i < stages.length - 1
+            ? `<div class="tl-line ${s.done ? "done" : ""}"></div>` : "";
+          return `<div class="${cls}" data-testid="tl-${s.id}">
+              <div class="tl-dot">${mark}</div>
+              <div class="tl-meta"><strong>${escapeHtml(s.label)}</strong><span>${escapeHtml(s.hint)}</span></div>
+            </div>${line}`;
+        }).join("")}
+      </div>
+    </div>`;
 
+    const flashId = state.highlightAnchor;
     $("#docMain").innerHTML = `
-      <div class="doc-body" data-testid="d4-main">
+      <div class="doc-body" data-testid="d4-main" id="doc-top">
         <h3>${escapeHtml(DEMO.disclosure.title)}</h3>
-        <p class="tiny muted">主产出全文区 · 非聊天碎片</p>
-        ${DEMO.disclosure.sections.map((s) => `<div class="sec"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`).join("")}
-        <div class="qc-card" data-testid="qc-card">
+        <p class="tiny muted">主产出全文区 · 非聊天碎片 · 点编制「看产出」或硬请示依据可定位</p>
+        ${DEMO.disclosure.sections.map((s) => {
+          const flash = flashId === s.id ? " anchor-flash" : "";
+          return `<div class="sec${flash}" id="${escapeHtml(s.id)}"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`;
+        }).join("")}
+        <div class="qc-card${flashId === "qc-card" ? " anchor-flash" : ""}" data-testid="qc-card" id="qc-card">
           <strong>质检分卡</strong>
           <div class="tiny muted" style="margin:4px 0 8px">与成稿分卡；全绿 ≠ 已交⑤</div>
           ${qc.map((q) => {
@@ -467,13 +584,58 @@
     const bg = $("#btnAllGreen");
     if (bg) bg.addEventListener("click", makeAllGreen);
 
+    /* 侧栏聚焦条：1:1 / 看产出 */
+    const ae = expertById(state.activeExpert) || lead;
+    const focusEl = $("#sideFocus");
+    if (focusEl) {
+      if (state.sideMode === "1to1" && ae) {
+        focusEl.innerHTML = `<div class="focus-card" data-testid="side-1to1">
+          <div class="focus-row">
+            ${avatarHtml(ae.photo, ae.av)}
+            <div>
+              <strong>1:1 · ${escapeHtml(ae.name)}</strong>
+              <div class="tiny muted">${escapeHtml(ae.blurb || ae.role)}</div>
+            </div>
+          </div>
+          <div class="focus-acts">
+            <button type="button" class="primary" data-testid="btn-see-output" id="btnSeeOutput">看产出</button>
+            <button type="button" class="ghost" id="btnBackTeam" data-testid="btn-back-team">回团队</button>
+          </div>
+        </div>`;
+        const so = $("#btnSeeOutput");
+        if (so) so.addEventListener("click", () => revealExpertOutput(ae.id));
+        const bt = $("#btnBackTeam");
+        if (bt) bt.addEventListener("click", () => { state.sideMode = "team"; render(); });
+      } else {
+        focusEl.innerHTML = `<div class="focus-hint tiny muted" data-testid="side-team">点编制名片 → 切 1:1；再点「看产出」锚主栏段</div>`;
+      }
+    }
+
+    const sideTitle = $("#sideHeadTitle");
+    const sideTag = $("#sideHeadTag");
+    if (sideTitle) {
+      sideTitle.textContent = state.sideMode === "1to1" && ae
+        ? `侧栏 · 与${ae.name} 1:1`
+        : "侧栏 · 硬请示优先";
+    }
+    if (sideTag) sideTag.textContent = state.sideMode === "1to1" ? "1:1 驾驭" : "对话驾驭";
+
+    function askExcerptHtml(ask) {
+      if (!ask) return "";
+      return `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml(ask.conclusion)}</p>
+        <button type="button" class="ask-excerpt" data-excerpt-anchor="${escapeHtml(ask.anchor)}" data-testid="ask-excerpt">
+          <span class="ex-label">${escapeHtml(ask.label)}</span>
+          <span class="ex-text">${escapeHtml(ask.text)}</span>
+        </button>`;
+    }
+
     let asks = "";
     if (!state.factConfirmed) {
       asks += `
         <div class="hard-ask" data-testid="ask-fact">
           <div class="label">【硬请示】</div>
           <h3>确认交底事实</h3>
-          <p class="tiny">技术方案与效果描述是否与你所知一致？</p>
+          ${askExcerptHtml(DEMO.disclosure.factAsk)}
           <div class="acts">
             <button type="button" class="ask-confirm" id="btnFact" data-testid="confirm-fact">确认事实</button>
             <button type="button">还要改</button>
@@ -489,6 +651,7 @@
         <div class="hard-ask ${blocked ? "blocked-hint" : ""}" data-testid="ask-hand5">
           <div class="label">【硬请示】</div>
           <h3>可否交申请部（⑤）？</h3>
+          ${askExcerptHtml(DEMO.disclosure.hand5Ask)}
           <p class="tiny">前置：交底质检全绿 + 事实确认。全绿按钮不能代替本确认。</p>
           <div class="acts">
             <button type="button" class="ask-confirm" id="btnHand5" data-testid="confirm-hand5" ${blocked ? "disabled" : ""}>确认可交⑤</button>
@@ -505,7 +668,37 @@
     const bf = $("#btnFact"); if (bf) bf.addEventListener("click", confirmFact);
     const bh = $("#btnHand5"); if (bh) bh.addEventListener("click", confirmCanHand5);
     const wo = $("#btnOpenWO"); if (wo) wo.addEventListener("click", openWorkOrder);
-    $("#feed").innerHTML = DEMO.disclosure.feed.map((b) => `<div class="bubble"><div class="who">${escapeHtml(b.who)}</div>${escapeHtml(b.text)}</div>`).join("");
+    bindExcerptClicks($("#sideAsks"));
+
+    /* feed + 头像 */
+    const baseFeed = DEMO.disclosure.feed.map((b) => ({ ...b }));
+    let feedItems = [...state.feedExtra, ...baseFeed];
+    if (state.sideMode === "1to1" && ae) {
+      const filtered = feedItems.filter((b) => b.you || b.expertId === ae.id || b.who === ae.name);
+      if (filtered.length) feedItems = filtered;
+    }
+    $("#feed").innerHTML = feedItems.map((b) => {
+      const ex = b.expertId ? expertById(b.expertId) : DEMO.disclosure.roster.find((r) => r.name === b.who);
+      const av = b.you
+        ? `<span class="av you">你</span>`
+        : avatarHtml(ex && ex.photo, (ex && ex.av) || (b.who || "?").slice(0, 1));
+      return `<div class="bubble ${b.you ? "you" : ""}">
+        <div class="bubble-head">${av}<div class="who">${escapeHtml(b.who)}</div></div>
+        <div class="bubble-text">${escapeHtml(b.text)}</div>
+      </div>`;
+    }).join("");
+
+    /* composer 指向 */
+    const cTo = $("#composerTo");
+    if (cTo) {
+      cTo.textContent = state.sideMode === "1to1" && ae
+        ? `对：${ae.name} · 1:1`
+        : `对：${lead ? lead.name : "交底部负责人"} · 团队`;
+    }
+    if (flashId) {
+      requestAnimationFrame(() => scrollToAnchor(flashId));
+      state.highlightAnchor = null;
+    }
   }
 
   function renderWorkOrder() {
@@ -820,12 +1013,19 @@
     $("#btnOpenDoc").addEventListener("click", () => openDrawer());
     $("#btnDeptLobby").addEventListener("click", goLobby);
     $("#btnDeptDoc").addEventListener("click", () => openDrawer());
+    const cs = $("#btnComposerSend");
+    if (cs) cs.addEventListener("click", sendComposerDemo);
+    const ci = $("#composerInput");
+    if (ci) ci.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendComposerDemo(); }
+    });
     $("#drawerClose").addEventListener("click", closeDrawer);
     $("#drawerBackdrop").addEventListener("click", closeDrawer);
     $$("[data-dtab]").forEach((b) => b.addEventListener("click", () => { state.drawerTab = b.dataset.dtab; renderDrawer(); }));
     window.__SAMPLE__ = {
       state, loadSample, confirmDestination, enterConfirmedDept, makeAllGreen,
-      confirmFact, confirmCanHand5, openWorkOrder, openDept, openDrawer, goLobby, openFront, render, closeDrawer
+      confirmFact, confirmCanHand5, openWorkOrder, openDept, openDrawer, goLobby, openFront, render, closeDrawer,
+      focusExpert, revealExpertOutput, sendComposerDemo, goLobbyTodo
     };
   }
 

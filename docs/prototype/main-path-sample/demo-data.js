@@ -39,12 +39,12 @@ window.DEMO = {
   disclosure: {
     title: "一种电机冷却结构的发明交底书（草案）",
     sections: [
-      { h: "技术领域", t: "本实用新型/发明涉及电机散热领域，尤其是带水道与鳍片组合的冷却结构。" },
-      { h: "背景技术", t: "现有风冷在高功率密度下温升偏高；纯水冷结构复杂、泄漏风险大。" },
-      { h: "发明内容 · 技术问题", t: "在不显著增加体积的前提下，提高散热效率并降低泄漏风险。" },
-      { h: "技术方案", t: "壳体设螺旋水道；转子端盖集成散热鳍片；进水口与出水口错位布置。关键连接处采用双密封圈。" },
-      { h: "有益效果", t: "同功率温升下降约 12℃（样机测）；装配工时可减 15%。" },
-      { h: "具体实施方式", t: "实施例一：铝合金壳体 + 尼龙端盖鳍片……（演示稿，可点专家追问修改）" }
+      { id: "sec-field", h: "技术领域", t: "本实用新型/发明涉及电机散热领域，尤其是带水道与鳍片组合的冷却结构。" },
+      { id: "sec-bg", h: "背景技术", t: "现有风冷在高功率密度下温升偏高；纯水冷结构复杂、泄漏风险大。" },
+      { id: "sec-problem", h: "发明内容 · 技术问题", t: "在不显著增加体积的前提下，提高散热效率并降低泄漏风险。" },
+      { id: "sec-tech", h: "技术方案", t: "壳体设螺旋水道；转子端盖集成散热鳍片；进水口与出水口错位布置。关键连接处采用双密封圈。" },
+      { id: "sec-effect", h: "有益效果", t: "同功率温升下降约 12℃（样机测）；装配工时可减 15%。" },
+      { id: "sec-mode", h: "具体实施方式", t: "实施例一：铝合金壳体 + 尼龙端盖鳍片……（演示稿，可点专家追问修改）" }
     ],
     qc: [
       { id: "q1", name: "技术领域清晰", status: "green" },
@@ -54,19 +54,36 @@ window.DEMO = {
       { id: "q5", name: "实施方式可复现", status: "green" }
     ],
     roster: [
-      { id: "lead", name: "交底部负责人", role: "主持分活 / 打包工单", av: "负", photo: "04.jpg", kind: "lead", tag: "主", status: "doing", busy: "汇总中" },
-      { id: "writer", name: "成稿专家", role: "材料 · 提纲 · 起草", av: "成", photo: "07.jpg", kind: "writer", tag: "主", status: "doing", busy: "成稿中" },
-      { id: "polish", name: "润色专家", role: "改表述不改技术含义", av: "润", photo: "11.jpg", kind: "polish", tag: "协", status: "wait", busy: "待审" },
-      { id: "search", name: "检索专家", role: "交底向查新（选做）", av: "检", photo: "02.jpg", kind: "search", tag: "协", status: "idle", busy: "未请来" },
-      { id: "qc", name: "质检专家", role: "检测循环 · 不可与成稿糊", av: "质", photo: "08.jpg", kind: "qc", tag: "主", status: "doing", busy: "复检中" },
-      { id: "advisor", name: "代理顾问", role: "成色视角（选做）", av: "顾", photo: "09.jpg", kind: "advisor", tag: "协", status: "idle", busy: "未请来" }
+      { id: "lead", name: "交底部负责人", role: "主持分活 / 打包工单", av: "负", photo: "04.jpg", kind: "lead", tag: "主", status: "doing", busy: "汇总中", outputAnchor: "doc-top", blurb: "主持分活与硬请示打包" },
+      { id: "writer", name: "成稿专家", role: "材料 · 提纲 · 起草", av: "成", photo: "07.jpg", kind: "writer", tag: "主", status: "doing", busy: "成稿中", outputAnchor: "sec-tech", blurb: "主笔技术方案与实施方式" },
+      { id: "polish", name: "润色专家", role: "改表述不改技术含义", av: "润", photo: "11.jpg", kind: "polish", tag: "协", status: "wait", busy: "待审", outputAnchor: "sec-effect", blurb: "润色效果表述，待审" },
+      { id: "search", name: "检索专家", role: "交底向查新（选做）", av: "检", photo: "02.jpg", kind: "search", tag: "协", status: "idle", busy: "未请来", outputAnchor: "sec-bg", blurb: "选做查新 · 未请来" },
+      { id: "qc", name: "质检专家", role: "检测循环 · 不可与成稿糊", av: "质", photo: "08.jpg", kind: "qc", tag: "主", status: "doing", busy: "复检中", outputAnchor: "qc-card", blurb: "质检分卡 · 盯红黄项" },
+      { id: "advisor", name: "代理顾问", role: "成色视角（选做）", av: "顾", photo: "09.jpg", kind: "advisor", tag: "协", status: "idle", busy: "未请来", outputAnchor: "sec-problem", blurb: "成色视角 · 未请来" }
     ],
     feed: [
-      { who: "交底部负责人", text: "材料够开写。已请成稿专家出草案；润色待命；质检席单独盯红项。检索/顾问未请来——要加走建议后请示。" },
-      { who: "成稿专家", text: "草案已落主栏。效果数据标了「样机测」——若要硬数字请你补测报告。" },
-      { who: "质检专家", text: "q4 暂黄：效果依据偏弱。可认风险过，或补数据后再绿。" }
-    ]
+      { who: "交底部负责人", expertId: "lead", text: "材料够开写。已请成稿专家出草案；润色待命；质检席单独盯红项。检索/顾问未请来——要加走建议后请示。" },
+      { who: "成稿专家", expertId: "writer", text: "草案已落主栏。效果数据标了「样机测」——若要硬数字请你补测报告。" },
+      { who: "质检专家", expertId: "qc", text: "q4 暂黄：效果依据偏弱。可认风险过，或补数据后再绿。" }
+    ],
+    factAsk: {
+      conclusion: "技术方案与「样机测」效果描述与本案材料一致，可据当前稿确认交底事实。",
+      anchor: "sec-tech",
+      label: "依据摘录 · 技术方案",
+      text: "壳体设螺旋水道；转子端盖集成散热鳍片；进水口与出水口错位布置。关键连接处采用双密封圈。"
+    },
+    hand5Ask: {
+      conclusion: "交底质检全绿且事实已确认后，可交申请部撰写——本确认 ≠ 已开工单。",
+      anchor: "qc-card",
+      label: "依据摘录 · 质检分卡",
+      text: "全绿项齐 · q4 效果依据已补（演示）。过线 ≠ 已交⑤。"
+    }
   },
+  lobbySeed: [
+    { id: "seed-fact", kind: "a", text: "交底部 · 电机冷却案：待确认交底事实", go: "d4-fact", cover: "fact" },
+    { id: "seed-hand", kind: "a", text: "交底部 · 全绿后待拍「可交⑤」（样例痕迹）", go: "d4-hand", cover: "hand" },
+    { id: "seed-reply", kind: "c", text: "答复部 · 审查意见剩余约 14 天（样例）", go: "d6", cover: "reply" }
+  ],
   apply: {
     understand: "本案核心：螺旋水道 + 端盖鳍片 + 双密封，解决高功率密度温升与泄漏。",
     noveltyHint: "申请向查新摘要（示意）：最接近 D1 公开螺旋水道；区别＝端盖鳍片+双密封组合。",

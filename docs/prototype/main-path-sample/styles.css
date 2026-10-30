@@ -495,7 +495,7 @@ button.ask-confirm:hover:not(:disabled) {
 .status-pill.wait { background: var(--ask-bg); color: var(--ask); border: 1px solid var(--ask-border); }
 .status-pill.idle { background: var(--rail); color: var(--muted); border: 1px solid var(--line); }
 
-.stage-bar { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 20px 0; }
+.stage-bar { padding: 10px 20px 0; }
 .stage {
   font-size: 11.5px; padding: 4px 10px; border-radius: 999px;
   background: var(--rail); color: var(--muted); border: 1px solid var(--line);
@@ -503,6 +503,50 @@ button.ask-confirm:hover:not(:disabled) {
 .stage.on { background: var(--brand-soft); color: var(--brand); border-color: var(--brand-soft-2); font-weight: 600; }
 .stage.done { background: var(--ok-soft); color: var(--ok); border-color: var(--ok-border); }
 .stage.wait { background: var(--ask-bg); color: var(--ask); border-color: var(--ask-border); font-weight: 700; }
+
+/* 四步可读时间线（对标 Kimi 段进度 · 纸墨非橙） */
+.timeline {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+}
+.tl-track {
+  display: flex; align-items: flex-start; gap: 0;
+  overflow-x: auto;
+}
+.tl-step {
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 6px; min-width: 108px; flex: 1;
+}
+.tl-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 12px; font-weight: 700;
+  background: var(--rail); color: var(--muted);
+  border: 1.5px solid var(--line-2);
+}
+.tl-meta { display: flex; flex-direction: column; gap: 2px; padding-right: 8px; }
+.tl-meta strong { font-size: 12.5px; font-weight: 650; color: var(--ink); }
+.tl-meta span { font-size: 11px; color: var(--muted); line-height: 1.35; }
+.tl-line {
+  width: 28px; height: 2px; margin-top: 12px; flex-shrink: 0;
+  background: var(--line-2); border-radius: 1px; align-self: flex-start;
+}
+.tl-line.done { background: var(--ok-border); }
+.tl-step.done .tl-dot {
+  background: var(--ok-soft); color: var(--ok); border-color: var(--ok-border);
+}
+.tl-step.on .tl-dot {
+  background: var(--brand-soft); color: var(--brand); border-color: var(--brand-3);
+  box-shadow: 0 0 0 3px rgba(27, 58, 95, .12);
+}
+.tl-step.wait .tl-dot {
+  background: var(--ask-bg); color: var(--ask); border-color: var(--ask-border);
+  box-shadow: 0 0 0 3px var(--ask-glow);
+}
+.tl-step.wait .tl-meta strong { color: var(--ask); }
 
 .workbench {
   display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, .88fr);
@@ -565,15 +609,102 @@ button.ask-confirm:hover:not(:disabled) {
 .qc-row:last-of-type { border-bottom: 0; }
 
 .side-pane .pane-body { display: flex; flex-direction: column; gap: 12px; }
+.side-pane { position: relative; }
 .feed {
   border: 1px solid var(--line); border-radius: 10px; background: #fbfcfe;
-  padding: 10px; display: grid; gap: 8px; max-height: 240px; overflow: auto;
+  padding: 10px; display: grid; gap: 8px; max-height: 200px; overflow: auto;
 }
 .bubble {
   font-size: 12px; padding: 8px 10px; border-radius: 8px;
   background: #fff; border: 1px solid var(--line);
 }
-.bubble .who { font-weight: 700; color: var(--brand); margin-bottom: 2px; font-size: 11.5px; }
+.bubble.you { background: var(--brand-soft); border-color: var(--brand-soft-2); }
+.bubble-head {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+}
+.bubble-head .av {
+  width: 22px; height: 22px; border-radius: 50%; overflow: hidden;
+  display: grid; place-items: center; font-size: 10px; font-weight: 700;
+  background: linear-gradient(145deg, #4a6fa5, #2a5280); color: #fff; flex-shrink: 0;
+}
+.bubble-head .av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bubble-head .av.you { background: var(--brand); }
+.bubble .who { font-weight: 700; color: var(--brand); font-size: 11.5px; margin: 0; }
+.bubble-text { color: var(--ink-2); line-height: 1.45; }
+
+/* 硬请示：结论 + 可点依据摘录 */
+.ask-conclusion {
+  margin: 0 0 8px; font-size: 13px; color: var(--ink-2); line-height: 1.5;
+}
+.ask-conclusion strong { color: var(--ink); }
+.ask-excerpt {
+  display: block; width: 100%; text-align: left;
+  padding: 10px 12px; margin: 0 0 4px;
+  border-radius: 10px; border: 1px dashed var(--ask-border);
+  background: #fff; box-shadow: none;
+  transition: border-color .12s, background .12s;
+}
+.ask-excerpt:hover {
+  border-style: solid; border-color: var(--ask);
+  background: var(--ask-bg);
+}
+.ask-excerpt .ex-label {
+  display: block; font-size: 11px; font-weight: 700;
+  color: var(--ask); margin-bottom: 4px;
+}
+.ask-excerpt .ex-text {
+  display: block; font-size: 12.5px; color: var(--ink-2); line-height: 1.45;
+}
+
+/* 编制 1:1 聚焦 */
+.focus-card {
+  padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--brand-soft-2); background: var(--brand-soft);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.focus-row { display: flex; align-items: center; gap: 8px; }
+.focus-row .av {
+  width: 32px; height: 32px; border-radius: 50%; overflow: hidden;
+  display: grid; place-items: center; font-size: 11px; font-weight: 700;
+  background: linear-gradient(145deg, #4a6fa5, #2a5280); color: #fff; flex-shrink: 0;
+}
+.focus-row .av img { width: 100%; height: 100%; object-fit: cover; }
+.focus-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.focus-hint { padding: 2px 0 0; }
+
+/* 主栏锚点高亮 */
+.sec.anchor-flash, .qc-card.anchor-flash, #doc-top.anchor-flash {
+  outline: 2px solid var(--brand-3);
+  outline-offset: 3px;
+  background: color-mix(in srgb, var(--brand-soft) 70%, var(--doc-paper));
+  transition: outline-color .3s, background .3s;
+}
+
+/* 侧栏底假 composer */
+.composer {
+  border-top: 1px solid var(--line);
+  padding: 10px 12px 12px;
+  background: linear-gradient(180deg, var(--rail), var(--surface-2));
+  flex-shrink: 0;
+}
+.composer-to {
+  font-size: 11px; font-weight: 650; color: var(--brand);
+  margin-bottom: 6px;
+}
+.composer-row {
+  display: flex; gap: 8px; align-items: flex-end;
+}
+.composer-row textarea {
+  flex: 1; resize: none; min-height: 38px; max-height: 88px;
+  padding: 8px 10px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink); line-height: 1.4;
+}
+.composer-row textarea:focus {
+  outline: none; border-color: var(--brand-3);
+  box-shadow: 0 0 0 3px rgba(27, 58, 95, .12);
+}
+.composer-row .primary { flex-shrink: 0; padding: 8px 14px; }
 
 /* Work order / apply / reply cards */
 .wo-card {
