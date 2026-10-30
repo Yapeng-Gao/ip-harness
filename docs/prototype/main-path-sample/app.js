@@ -64,15 +64,16 @@
   function toast(msg, opts) {
     const el = $("#toast");
     if (!el) return;
-    const soft = opts && opts.soft;
+    const soft = !!(opts && opts.soft);
+    /* soft ≤1.4s · 顶右角不挡主栏文书；普通略短 */
+    const ms = (opts && opts.ms) || (soft ? 1200 : 1600);
     el.textContent = msg;
-    el.classList.toggle("soft", !!soft);
+    el.classList.toggle("soft", soft);
     el.classList.add("on");
     clearTimeout(state.toastTimer);
     state.toastTimer = setTimeout(() => {
-      el.classList.remove("on");
-      el.classList.remove("soft");
-    }, soft ? 1100 : 2200);
+      el.classList.remove("on", "soft");
+    }, ms);
   }
 
   function nowStamp() {
@@ -320,22 +321,23 @@
       const ch = d.change || "改";
       const chCls = ch === "增" ? "add" : ch === "删" ? "del" : "chg";
       const go = d.go ? ` data-diff-go="${escapeHtml(d.go)}"` : "";
+      const ln = d.line || (i + 1);
       return `<button type="button" class="diff-pair" data-testid="diff-pair" data-diff-id="${escapeHtml(d.id || String(i))}"${go}>
-        <div class="diff-pair-meta"><span class="diff-chg ${chCls}">${escapeHtml(ch)}</span><span class="tiny muted">点行可定位相关段</span></div>
+        <div class="diff-pair-meta"><span class="diff-chg ${chCls}">${escapeHtml(ch)}</span><span class="diff-ln">L${ln}</span><span class="tiny muted">点行定位</span></div>
         <div class="diff-cols">
           <div class="diff-side from">
             <div class="ds">${escapeHtml(d.leftLabel || "源")}</div>
-            <div class="diff-text">${markPhrase(d.left, d.markLeft)}</div>
+            <div class="diff-text"><span class="diff-gutter" aria-hidden="true">${ln}</span><span class="diff-body">${markPhrase(d.left, d.markLeft)}</span></div>
           </div>
           <div class="diff-side to">
             <div class="ds">${escapeHtml(d.rightLabel || "目标")}</div>
-            <div class="diff-text">${markPhrase(d.right, d.markRight)}</div>
+            <div class="diff-text"><span class="diff-gutter" aria-hidden="true">${ln}</span><span class="diff-body">${markPhrase(d.right, d.markRight)}</span></div>
           </div>
         </div>
       </button>`;
     }).join("");
     return `<div class="diff-board" data-testid="${tid}">
-      <div class="diff-hint tiny" data-testid="diff-hint">示意·非可批 diff · 左右对照 + 行级高亮（非真算法）</div>
+      <div class="diff-hint tiny" data-testid="diff-hint"><span class="fixture-badge" data-testid="diff-fixture">样机假数据</span> 左右对照 · 点行定位主栏相关段</div>
       ${rows}
     </div>`;
   }
@@ -344,7 +346,7 @@
     const list = hits || [];
     if (!list.length) return "";
     return `<div class="prior-hits" data-testid="${testid || "prior-hits"}">
-      <div class="prior-head"><strong>检索命中</strong><span class="tiny muted">示意 · 可点定位</span></div>
+      <div class="prior-head"><strong>检索命中</strong><span class="fixture-badge" data-testid="prior-fixture">样机假命中</span><span class="tiny muted">点条定位主栏</span></div>
       ${list.map((h) => {
         const snip = h.match
           ? escapeHtml(h.snippet || "").split(escapeHtml(h.match)).join(`<em class="hit-em">${escapeHtml(h.match)}</em>`)
@@ -1350,7 +1352,78 @@
     if (pop) pop.hidden = true;
   }
 
-  function renderDept() {
+
+  /** ④⑤⑥ 共用侧栏壳片段（编制单行 + sticky + 对话 + composer） */
+  function chainSideHtml(cfg) {
+    const dens = !!cfg.dens;
+    const roster = cfg.roster || [];
+    const foldLabel = dens ? "展开编制" : "收起";
+    const rosterChips = roster.map((e) => `
+      <button type="button" class="expert-chip" data-testid="${escapeHtml(cfg.expertPrefix || "expert")}-${escapeHtml(e.id)}">
+        ${avatarHtml(e.photo, e.av)}
+        <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
+        <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
+        ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
+      </button>`).join("");
+    return `
+      <div class="side-pane" data-testid="${escapeHtml(cfg.sidePaneTestId)}">
+        <div class="ai-id-zone" data-testid="${escapeHtml(cfg.idZoneTestId)}">
+          <div class="who-block ai-roster single-rail ${dens ? "collapsed roster-folded" : ""}" data-testid="${escapeHtml(cfg.rosterWrapTestId)}">
+            <div class="who-head"><strong>编制</strong><button type="button" class="ghost tiny" id="${escapeHtml(cfg.foldBtnId)}" data-testid="${escapeHtml(cfg.foldBtnTestId)}">${foldLabel}</button></div>
+            <div class="roster" data-testid="${escapeHtml(cfg.rosterTestId)}">${rosterChips}</div>
+          </div>
+        </div>
+        <div class="pane-body" data-testid="${escapeHtml(cfg.sideBodyTestId)}">
+          <div class="feed-wrap feed-primary" data-testid="${escapeHtml(cfg.feedWrapTestId)}">
+            <div class="feed-h"><strong>对话</strong><span class="pane-tag">汇报 · 要你拍</span></div>
+            ${cfg.stickyHtml || ""}
+            <div class="feed" data-testid="${escapeHtml(cfg.feedTestId)}"${cfg.feedExtraAttr || ""}>${cfg.feedHtml || ""}</div>
+          </div>
+          <div hidden data-testid="${escapeHtml(cfg.gatesTestId)}"></div>
+          <div hidden data-testid="${escapeHtml(cfg.askZoneTestId)}"></div>
+        </div>
+        <div class="composer" data-testid="${escapeHtml(cfg.composerTestId)}">
+          <div class="composer-to">${escapeHtml(cfg.composerTo || "")}</div>
+          <div class="composer-row">
+            <textarea id="${escapeHtml(cfg.composerInputId)}" rows="1" placeholder="${escapeHtml(cfg.composerPh || "")}" data-testid="${escapeHtml(cfg.composerInputTestId)}"></textarea>
+            <button type="button" class="primary" id="${escapeHtml(cfg.composerSendId)}" data-testid="${escapeHtml(cfg.composerSendTestId)}">发送</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /** ④⑤⑥ 共用壳顶 + workbench 栅格外壳 */
+  function chainShellHtml(cfg) {
+    const dens = !!cfg.dens;
+    return `
+      <div class="dept-shell ${dens ? "density-light" : "density-author"}">
+      <div class="dept-top">
+        <button type="button" class="ghost" id="${escapeHtml(cfg.backId)}">← 回大厅</button>
+        <h1>${escapeHtml(cfg.title)}</h1>
+        <span class="line-status ${cfg.lineOk ? "ok" : ""}">${escapeHtml(cfg.lineText || "")}</span>
+        ${cfg.metaHtml || ""}
+        <div class="task-strip in-top" id="${escapeHtml(cfg.stripId)}" data-testid="task-strip">${cfg.stripHtml || ""}</div>
+        ${cfg.topExtra || ""}
+        <span class="mode-hint tiny" id="${escapeHtml(cfg.modeHintId)}" data-testid="${escapeHtml(cfg.modeHintTestId)}">${dens ? "轻量" : "主笔"}</span>
+      </div>
+      <div class="wb-chrome" data-testid="${escapeHtml(cfg.chromeTestId)}" hidden></div>
+      <div class="workbench ${escapeHtml(cfg.layoutClass || "")} ${dens ? "density-light" : ""}" data-testid="${escapeHtml(cfg.layoutTestId)}">
+        <div class="main-pane">
+          <div class="pane-head"><strong>${escapeHtml(cfg.mainTitle)}</strong><span class="pane-tag">${escapeHtml(cfg.mainTag || "")}</span></div>
+          ${cfg.mainExtra || ""}
+          ${dens ? `<div class="light-fold-hint" data-testid="${escapeHtml(cfg.lightFoldTestId)}">轻量 · 主栏收拢 · 请示在对话</div>` : ""}
+          <div class="pane-body ${dens ? "light-folded" : ""}">
+            ${cfg.mainBody || ""}
+          </div>
+        </div>
+        ${cfg.sideHtml || ""}
+      </div>
+      </div>`;
+  }
+
+  function renderWorkbench() {
+    if (state.view === "dept") {
+
     const qc = DEMO.disclosure.qc;
     state.allGreen = qc.every((q) => q.status === "green");
     const lineEl = $("#deptLineStatus");
@@ -1726,93 +1799,10 @@
       requestAnimationFrame(() => scrollToAnchor(flashId));
       state.highlightAnchor = null;
     }
-  }
-
-  function renderWorkOrder() {
-    const ck = state.woChecks;
-    const allCk = ck.in1 && ck.in2 && ck.in3;
-    $("#woBody").innerHTML = `
-      <div class="dept-shell wo-shell">
-        <div class="dept-top">
-          <button type="button" class="ghost" id="btnWoLobbyTop">← 回大厅</button>
-          <h1>④ → ⑤ 工单</h1>
-          <span class="line-status">接单门槛</span>
-        </div>
-        <div class="workbench wo-wb">
-        <div class="main-pane"><div class="pane-head"><strong>主栏 · 交办工单</strong><span class="pane-tag">H45</span></div>
-        <div class="pane-body">
-      <div class="wo-card in-shell" data-testid="h45">
-        <span class="tag ask">工单 · 现在做⑤</span>
-        <h2>④ → ⑤ 交办工单</h2>
-        <p class="muted">打包方交产出，接单方开新线程；旁注三线分词。</p>
-        <div class="wo-agents">
-          <div class="wo-agent">${avatarHtml("04.jpg", "负")}<div><strong>交底部负责人</strong><div class="tiny muted">打包 · 结束检查表</div></div></div>
-          <div class="wo-agent">${avatarHtml("05.jpg", "申")}<div><strong>申请部负责人</strong><div class="tiny muted">接单 · 开 A/B/C</div></div></div>
-        </div>
-        <div class="wo-meta">
-          <div><label>打包方</label>交底部负责人</div>
-          <div><label>接单方</label>申请部负责人</div>
-          <div><label>④ 合格线</label><span class="tag ok">交底已全绿</span></div>
-          <div><label>⑤ 合格线</label><span class="tag warn">申请尚未过线</span></div>
-        </div>
-        <div class="contract-table" data-testid="wo-contracts">
-          <div class="ct-row"><span class="ct-k">输入契约</span><span>合格交底全绿 + 事实确认 + 材料包</span></div>
-          <div class="ct-row"><span class="ct-k">输出契约</span><span>申请文件可递交（过线）+ 申不申结论</span></div>
-          <div class="ct-row"><span class="ct-k">质量契约</span><span>权项-交底一致 · 形式要件 · 过线≠递交</span></div>
-        </div>
-        <div class="wo-accept-checks" data-testid="wo-accept-checks">
-          <div class="tiny" style="font-weight:700;margin-bottom:6px">接单前勾结束检查表三项</div>
-          <label class="wo-ck"><input type="checkbox" data-wock="in1" ${ck.in1 ? "checked" : ""} data-testid="wo-ck-1"/> 交底全绿已核</label>
-          <label class="wo-ck"><input type="checkbox" data-wock="in2" ${ck.in2 ? "checked" : ""} data-testid="wo-ck-2"/> 事实确认已核</label>
-          <label class="wo-ck"><input type="checkbox" data-wock="in3" ${ck.in3 ? "checked" : ""} data-testid="wo-ck-3"/> 材料包齐全</label>
-        </div>
-        <div class="agent-steps">
-          <div class="agent-step done"><span class="as-t">过线</span><span>交底全绿 + 事实 + 可交⑤</span></div>
-          <div class="agent-step done"><span class="as-t">打包</span><span>材料包 / 结束检查表摘要已列</span></div>
-          <div class="agent-step on"><span class="as-t">接单</span><span>勾三项后申请部接单进入⑤</span></div>
-        </div>
-        <div class="row-actions">
-          <button type="button" class="primary" id="btnAcceptWO" data-testid="accept-wo" ${allCk ? "" : "disabled"}>申请部接单进入</button>
-          <button type="button" id="btnBackD4">返回交底部</button>
-          <button type="button" class="ghost" id="btnWoLobby">← 回大厅</button>
-        </div>
-        ${!allCk ? `<p class="tiny muted" data-testid="wo-need-check">请先勾选结束检查表三项再接单</p>` : ""}
-      </div>
-        </div></div>
-        <div class="side-pane" data-testid="ai-pane-h45">
-          <div class="ai-id-zone"><div class="who-block ai-roster single-rail"><div class="who-head"><strong>编制</strong></div>
-            <div class="roster">
-              <button type="button" class="expert-chip">${avatarHtml("04.jpg","负")}<span class="meta"><span class="name-row"><strong>交底部负责人</strong></span><span class="status-pill done">打包</span></span></button>
-              <button type="button" class="expert-chip">${avatarHtml("05.jpg","申")}<span class="meta"><span class="name-row"><strong>申请部负责人</strong></span><span class="status-pill wait">接单</span></span></button>
-            </div>
-          </div></div>
-          <div class="pane-body"><div class="feed-wrap feed-primary"><div class="feed-h"><strong>对话</strong><span class="pane-tag">工单汇报</span></div>
-            <div class="feed"><div class="bubble report"><div class="bubble-head">${avatarHtml("05.jpg","申")}<div class="who">申请部负责人<span class="rpt-tag">向你汇报</span></div></div>
-              <div class="bubble-text report-body"><div class="rpt-q">接单前请勾三项</div><p class="tiny">勾齐结束检查表后点「申请部接单进入」。</p></div>
-            </div></div>
-          </div></div>
-          <div class="composer"><div class="composer-to">对：接单方</div><div class="composer-row"><button type="button" class="ghost" id="btnWoLobby2">回大厅</button></div></div>
-        </div>
-        </div>
-      </div>`;
-    $$("[data-wock]").forEach((inp) => inp.addEventListener("change", () => {
-      state.woChecks[inp.dataset.wock] = !!inp.checked;
-      render();
-    }));
-    $("#btnAcceptWO").addEventListener("click", () => {
-      if (!(state.woChecks.in1 && state.woChecks.in2 && state.woChecks.in3)) {
-        toast("请先勾结束检查表三项");
         return;
-      }
-      openDept("d5", { fromWorkOrder: true });
-    });
-    $("#btnBackD4").addEventListener("click", () => openDept("d4", { direct: true }));
-    $("#btnWoLobby").addEventListener("click", goLobby);
-    const wotop = $("#btnWoLobbyTop"); if (wotop) wotop.addEventListener("click", goLobby);
-    const wol2 = $("#btnWoLobby2"); if (wol2) wol2.addEventListener("click", goLobby);
-  }
+    }
+    if (state.view === "apply") {
 
-  function renderApply() {
     const a = state.apply;
     const segA = a.understand ? "done" : "now";
     const segB = !a.understand ? "todo" : (a.applyOrNot ? "done" : "now");
@@ -1915,27 +1905,33 @@
       { id: "ask-apply-or-not", label: "申不申", done: !!a.applyOrNot },
       { id: "ask-submit5", label: "确认递交", done: !!a.submit }
     ]);
-    $("#applyBody").innerHTML = `
-      <div class="dept-shell ${aDens ? "density-light" : "density-author"}">
-      <div class="dept-top">
-        <button type="button" class="ghost" id="btnApplyBack">← 回大厅</button>
-        <h1>⑤ 申请部</h1>
-        <span class="line-status ${a.overLine ? "ok" : ""}">${a.overLine ? "申请文件可递交（过线）" : "未过线 / 进行中"}</span>
-        ${deptMetaHtml({ caseTitle: (caseById(state.activeCaseId || "pc2") || {}).title || "申请撰写", prefShort: prefShortText(state.activeCaseId || "pc2") })}
-        <div class="task-strip in-top" id="d5TaskStrip" data-testid="task-strip">${taskStripHtml(state.activeCaseId || "pc2")}</div>
-        <span class="mode-hint tiny" id="d5ModeHint" data-testid="d5-mode-hint">${aDens ? "轻量" : "主笔"}</span>
-      </div>
-      <div class="wb-chrome" data-testid="d5-chrome" hidden></div>
-      <div class="workbench apply-layout ${aDens ? "density-light" : ""}" data-testid="d5-layout">
-        <div class="main-pane">
-          <div class="pane-head"><strong>主产出 · 申请文件</strong><span class="pane-tag">权项 | 说明书 | 差分</span></div>
-          <div class="abc-strip abc-thin" data-testid="d5-abc">
-            <div class="${segCls(segA)}" data-testid="seg-a"><span class="seg-k">A</span>理解${a.understand ? " · 已确认" : " · 待你确认"}</div>
-            <div class="${segCls(segB)}" data-testid="seg-b"><span class="seg-k">B</span>申不申${a.applyOrNot === "yes" ? " · 要申" : a.applyOrNot === "no" ? " · 不申" : a.understand ? " · 待你拍" : ""}</div>
-            <div class="${segCls(segC)}" data-testid="seg-c"><span class="seg-k">C</span>递交${a.submit ? " · 已确认" : a.overLine ? " · 过线待递交" : ""}</div>
-          </div>
-          ${aDens ? `<div class="light-fold-hint" data-testid="d5-light-fold">轻量 · 主栏收拢 · 请示在对话</div>` : ""}
-          <div class="pane-body ${aDens ? "light-folded" : ""}">
+    const d5Side = chainSideHtml({
+      dens: aDens,
+      sidePaneTestId: "ai-pane-d5",
+      idZoneTestId: "ai-id-zone-d5",
+      rosterWrapTestId: "d5-roster-wrap",
+      foldBtnId: "btnD5RosterFold",
+      foldBtnTestId: "d5-roster-fold",
+      rosterTestId: "d5-roster",
+      expertPrefix: "d5-expert",
+      roster: aRoster,
+      sideBodyTestId: "d5-side-body",
+      feedWrapTestId: "feed-wrap-d5",
+      stickyHtml: d5Sticky,
+      feedTestId: "d5-feed",
+      feedExtraAttr: ' data-testid-gates="d5-gates"',
+      feedHtml: d5ReportHtml + d5ChatHtml,
+      gatesTestId: "d5-gates",
+      askZoneTestId: "ai-ask-zone-d5",
+      composerTestId: "d5-composer",
+      composerTo: "对：申请部负责人 · 团队",
+      composerInputId: "applyComposerInput",
+      composerInputTestId: "d5-composer-input",
+      composerSendId: "btnApplyCompose",
+      composerSendTestId: "d5-composer-send",
+      composerPh: "驾驭一句（演示）· 如收紧独权"
+    });
+    const d5MainBody = `
             <div class="doc-tabs" data-testid="d5-doc-tabs">
               ${tabBtn("claims", "权项")}
               ${tabBtn("spec", "说明书")}
@@ -1955,41 +1951,32 @@
                     <button type="button" class="qc-fix-btn ghost-risk" id="btnOverRisk" data-testid="d5-qc-risk" ${a.applyOrNot === "yes" && a.understand ? "" : "disabled"}>认风险过线</button>
                   </span>`
                 : `<span class="tag ok" data-testid="d5-overlined">已过线${state.applyYellowRisk ? "（含认风险）" : ""}</span>`}
-            </div>
-          </div>
-        </div>
-        <div class="side-pane" data-testid="ai-pane-d5">
-          <div class="ai-id-zone" data-testid="ai-id-zone-d5">
-            <div class="who-block ai-roster single-rail ${aDens ? "collapsed roster-folded" : ""}" data-testid="d5-roster-wrap">
-              <div class="who-head"><strong>编制</strong><button type="button" class="ghost tiny" id="btnD5RosterFold" data-testid="d5-roster-fold">${aDens ? "展开编制" : "收起"}</button></div>
-              <div class="roster" data-testid="d5-roster">${aRoster.map((e) => `
-                <button type="button" class="expert-chip" data-testid="d5-expert-${escapeHtml(e.id)}">
-                  ${avatarHtml(e.photo, e.av)}
-                  <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
-                  <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
-                  ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
-                </button>`).join("")}</div>
-            </div>
-          </div>
-          <div class="pane-body" data-testid="d5-side-body">
-            <div class="feed-wrap feed-primary" data-testid="feed-wrap-d5">
-              <div class="feed-h"><strong>对话</strong><span class="pane-tag">汇报 · 要你拍</span></div>
-              ${d5Sticky}
-              <div class="feed" data-testid="d5-feed" data-testid-gates="d5-gates">${d5ReportHtml}${d5ChatHtml}</div>
-            </div>
-            <div hidden data-testid="d5-gates"></div>
-            <div hidden data-testid="ai-ask-zone-d5"></div>
-          </div>
-          <div class="composer" data-testid="d5-composer">
-            <div class="composer-to">对：申请部负责人 · 团队</div>
-            <div class="composer-row">
-              <textarea id="applyComposerInput" rows="1" placeholder="驾驭一句（演示）· 如收紧独权" data-testid="d5-composer-input"></textarea>
-              <button type="button" class="primary" id="btnApplyCompose" data-testid="d5-composer-send">发送</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>`;
+            </div>`;
+    $("#applyBody").innerHTML = chainShellHtml({
+      dens: aDens,
+      backId: "btnApplyBack",
+      title: "⑤ 申请部",
+      lineOk: !!a.overLine,
+      lineText: a.overLine ? "申请文件可递交（过线）" : "未过线 / 进行中",
+      metaHtml: deptMetaHtml({ caseTitle: (caseById(state.activeCaseId || "pc2") || {}).title || "申请撰写", prefShort: prefShortText(state.activeCaseId || "pc2") }),
+      stripId: "d5TaskStrip",
+      stripHtml: taskStripHtml(state.activeCaseId || "pc2"),
+      modeHintId: "d5ModeHint",
+      modeHintTestId: "d5-mode-hint",
+      chromeTestId: "d5-chrome",
+      layoutClass: "apply-layout",
+      layoutTestId: "d5-layout",
+      mainTitle: "主产出 · 申请文件",
+      mainTag: "权项 | 说明书 | 差分",
+      mainExtra: `<div class="abc-strip abc-thin" data-testid="d5-abc">
+            <div class="${segCls(segA)}" data-testid="seg-a"><span class="seg-k">A</span>理解${a.understand ? " · 已确认" : " · 待你确认"}</div>
+            <div class="${segCls(segB)}" data-testid="seg-b"><span class="seg-k">B</span>申不申${a.applyOrNot === "yes" ? " · 要申" : a.applyOrNot === "no" ? " · 不申" : a.understand ? " · 待你拍" : ""}</div>
+            <div class="${segCls(segC)}" data-testid="seg-c"><span class="seg-k">C</span>递交${a.submit ? " · 已确认" : a.overLine ? " · 过线待递交" : ""}</div>
+          </div>`,
+      lightFoldTestId: "d5-light-fold",
+      mainBody: d5MainBody,
+      sideHtml: d5Side
+    });
     const d5s = $("#d5TaskStrip");
     if (d5s) bindTaskStrip(d5s);
     bindAskSticky($("#applyBody"));
@@ -2125,9 +2112,10 @@
       });
     });
     bindDiffBoard($("#applyBody") || document); /* diff-bind-apply */
-  }
+        return;
+    }
+    if (state.view === "reply") {
 
-  function renderReply() {
     const r = state.reply;
     const tab = state.replyDocTab || "reply";
     const sections = DEMO.reply.replySections || [];
@@ -2230,68 +2218,67 @@
       { id: "ask-limit", label: "策略/缩限", done: !!r.limitOk },
       { id: "ask-reply-submit", label: "本轮递交", done: !!r.submit }
     ]);
-    $("#replyBody").innerHTML = `
-      <div class="dept-shell ${rDens ? "density-light" : "density-author"}">
-      <div class="dept-top">
-        <button type="button" class="ghost" id="btnReplyBack">← 回大厅</button>
-        <h1>⑥ 答复部</h1>
-        <span class="line-status">本轮答复进行中</span>
-        ${deptMetaHtml({
-          caseTitle: (caseById("pc3") || {}).title || "低功耗膜分离 · 首通 OA",
-          deadline: DEMO.reply.deadline,
-          upgraded: DEMO.reply.upgraded,
-          prefShort: prefShortText("pc3")
-        })}
-        <div class="task-strip in-top" id="d6TaskStrip" data-testid="task-strip">${taskStripHtml("pc3")}</div>
-        ${!DEMO.reply.upgraded ? `<button type="button" class="ghost tiny" id="btnUpgrade" data-testid="btn-upgrade">升级催办</button>` : `<span class="tag ask" data-testid="upgrade-badge">已升级催办</span>`}
-        <span class="mode-hint tiny" id="d6ModeHint" data-testid="d6-mode-hint">${rDens ? "轻量" : "主笔"}</span>
-      </div>
-      <div class="wb-chrome" data-testid="d6-chrome" hidden></div>
-      <div class="workbench reply-layout ${rDens ? "density-light" : ""}" data-testid="d6-layout">
-        <div class="main-pane">
-          <div class="pane-head"><strong>主产出 · 答复稿</strong><span class="pane-tag">答复 | 通知书 | 差分</span></div>
-          ${rDens ? `<div class="light-fold-hint" data-testid="d6-light-fold">轻量 · 主栏收拢 · 请示在对话</div>` : ""}
-          <div class="pane-body ${rDens ? "light-folded" : ""}">
+    const d6Side = chainSideHtml({
+      dens: rDens,
+      sidePaneTestId: "ai-pane-d6",
+      idZoneTestId: "ai-id-zone-d6",
+      rosterWrapTestId: "d6-roster-wrap",
+      foldBtnId: "btnD6RosterFold",
+      foldBtnTestId: "d6-roster-fold",
+      rosterTestId: "d6-roster",
+      expertPrefix: "d6-expert",
+      roster: rRoster,
+      sideBodyTestId: "d6-side-body",
+      feedWrapTestId: "feed-wrap-d6",
+      stickyHtml: d6Sticky,
+      feedTestId: "d6-feed",
+      feedHtml: d6ReportHtml + d6ChatHtml,
+      gatesTestId: "d6-gates",
+      askZoneTestId: "ai-ask-zone-d6",
+      composerTestId: "d6-composer",
+      composerTo: "对：答复部负责人 · 团队",
+      composerInputId: "replyComposerInput",
+      composerInputTestId: "d6-composer-input",
+      composerSendId: "btnReplyCompose",
+      composerSendTestId: "d6-composer-send",
+      composerPh: "驾驭一句（演示）· 如坚持双密封争点"
+    });
+    const d6MainBody = `
             <div class="doc-tabs" data-testid="d6-doc-tabs">
               ${tabBtn("reply", "答复书")}
               ${tabBtn("oa", "通知书")}
               ${tabBtn("diff", "差分对照")}
             </div>
-            ${docInner}
-          </div>
-        </div>
-        <div class="side-pane" data-testid="ai-pane-d6">
-          <div class="ai-id-zone" data-testid="ai-id-zone-d6">
-            <div class="who-block ai-roster single-rail ${rDens ? "collapsed roster-folded" : ""}" data-testid="d6-roster-wrap">
-              <div class="who-head"><strong>编制</strong><button type="button" class="ghost tiny" id="btnD6RosterFold" data-testid="d6-roster-fold">${rDens ? "展开编制" : "收起"}</button></div>
-              <div class="roster" data-testid="d6-roster">${rRoster.map((e) => `
-                <button type="button" class="expert-chip" data-testid="d6-expert-${escapeHtml(e.id)}">
-                  ${avatarHtml(e.photo, e.av)}
-                  <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
-                  <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
-                  ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
-                </button>`).join("")}</div>
-            </div>
-          </div>
-          <div class="pane-body" data-testid="d6-side-body">
-            <div class="feed-wrap feed-primary" data-testid="feed-wrap-d6">
-              <div class="feed-h"><strong>对话</strong><span class="pane-tag">汇报 · 要你拍</span></div>
-              ${d6Sticky}
-              <div class="feed" data-testid="d6-feed">${d6ReportHtml}${d6ChatHtml}</div>
-            </div>
-            <div hidden data-testid="d6-gates"></div>
-            <div hidden data-testid="ai-ask-zone-d6"></div>
-          </div>
-          <div class="composer" data-testid="d6-composer">
-            <div class="composer-to">对：答复部负责人 · 团队</div>
-            <div class="composer-row">
-              <textarea id="replyComposerInput" rows="1" placeholder="驾驭一句（演示）· 如坚持双密封争点" data-testid="d6-composer-input"></textarea>
-              <button type="button" class="primary" id="btnReplyCompose" data-testid="d6-composer-send">发送</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>`;
+            ${docInner}`;
+    const d6TopExtra = !DEMO.reply.upgraded
+      ? `<button type="button" class="ghost tiny" id="btnUpgrade" data-testid="btn-upgrade">升级催办</button>`
+      : `<span class="tag ask" data-testid="upgrade-badge">已升级催办</span>`;
+    $("#replyBody").innerHTML = chainShellHtml({
+      dens: rDens,
+      backId: "btnReplyBack",
+      title: "⑥ 答复部",
+      lineOk: false,
+      lineText: "本轮答复进行中",
+      metaHtml: deptMetaHtml({
+        caseTitle: (caseById("pc3") || {}).title || "低功耗膜分离 · 首通 OA",
+        deadline: DEMO.reply.deadline,
+        upgraded: DEMO.reply.upgraded,
+        prefShort: prefShortText("pc3")
+      }),
+      stripId: "d6TaskStrip",
+      stripHtml: taskStripHtml("pc3"),
+      topExtra: d6TopExtra,
+      modeHintId: "d6ModeHint",
+      modeHintTestId: "d6-mode-hint",
+      chromeTestId: "d6-chrome",
+      layoutClass: "reply-layout",
+      layoutTestId: "d6-layout",
+      mainTitle: "主产出 · 答复稿",
+      mainTag: "答复 | 通知书 | 差分",
+      lightFoldTestId: "d6-light-fold",
+      mainBody: d6MainBody,
+      sideHtml: d6Side
+    });
     const d6s = $("#d6TaskStrip");
     if (d6s) {
       bindTaskStrip(d6s);
@@ -2396,7 +2383,98 @@
       });
     });
     bindDiffBoard($("#replyBody") || document); /* diff-bind-reply */
+        return;
+    }
   }
+
+
+  function renderWorkOrder() {
+    const ck = state.woChecks;
+    const allCk = ck.in1 && ck.in2 && ck.in3;
+    $("#woBody").innerHTML = `
+      <div class="dept-shell wo-shell">
+        <div class="dept-top">
+          <button type="button" class="ghost" id="btnWoLobbyTop">← 回大厅</button>
+          <h1>④ → ⑤ 工单</h1>
+          <span class="line-status">接单门槛</span>
+        </div>
+        <div class="workbench wo-wb">
+        <div class="main-pane"><div class="pane-head"><strong>主栏 · 交办工单</strong><span class="pane-tag">H45</span></div>
+        <div class="pane-body">
+      <div class="wo-card in-shell" data-testid="h45">
+        <span class="tag ask">工单 · 现在做⑤</span>
+        <h2>④ → ⑤ 交办工单</h2>
+        <p class="muted">打包方交产出，接单方开新线程；旁注三线分词。</p>
+        <div class="wo-agents">
+          <div class="wo-agent">${avatarHtml("04.jpg", "负")}<div><strong>交底部负责人</strong><div class="tiny muted">打包 · 结束检查表</div></div></div>
+          <div class="wo-agent">${avatarHtml("05.jpg", "申")}<div><strong>申请部负责人</strong><div class="tiny muted">接单 · 开 A/B/C</div></div></div>
+        </div>
+        <div class="wo-meta">
+          <div><label>打包方</label>交底部负责人</div>
+          <div><label>接单方</label>申请部负责人</div>
+          <div><label>④ 合格线</label><span class="tag ok">交底已全绿</span></div>
+          <div><label>⑤ 合格线</label><span class="tag warn">申请尚未过线</span></div>
+        </div>
+        <div class="contract-table" data-testid="wo-contracts">
+          <div class="ct-row"><span class="ct-k">输入契约</span><span>合格交底全绿 + 事实确认 + 材料包</span></div>
+          <div class="ct-row"><span class="ct-k">输出契约</span><span>申请文件可递交（过线）+ 申不申结论</span></div>
+          <div class="ct-row"><span class="ct-k">质量契约</span><span>权项-交底一致 · 形式要件 · 过线≠递交</span></div>
+        </div>
+        <div class="wo-accept-checks" data-testid="wo-accept-checks">
+          <div class="tiny" style="font-weight:700;margin-bottom:6px">接单前勾结束检查表三项</div>
+          <label class="wo-ck"><input type="checkbox" data-wock="in1" ${ck.in1 ? "checked" : ""} data-testid="wo-ck-1"/> 交底全绿已核</label>
+          <label class="wo-ck"><input type="checkbox" data-wock="in2" ${ck.in2 ? "checked" : ""} data-testid="wo-ck-2"/> 事实确认已核</label>
+          <label class="wo-ck"><input type="checkbox" data-wock="in3" ${ck.in3 ? "checked" : ""} data-testid="wo-ck-3"/> 材料包齐全</label>
+        </div>
+        <div class="agent-steps">
+          <div class="agent-step done"><span class="as-t">过线</span><span>交底全绿 + 事实 + 可交⑤</span></div>
+          <div class="agent-step done"><span class="as-t">打包</span><span>材料包 / 结束检查表摘要已列</span></div>
+          <div class="agent-step on"><span class="as-t">接单</span><span>勾三项后申请部接单进入⑤</span></div>
+        </div>
+        <div class="row-actions">
+          <button type="button" class="primary" id="btnAcceptWO" data-testid="accept-wo" ${allCk ? "" : "disabled"}>申请部接单进入</button>
+          <button type="button" id="btnBackD4">返回交底部</button>
+          <button type="button" class="ghost" id="btnWoLobby">← 回大厅</button>
+        </div>
+        ${!allCk ? `<p class="tiny muted" data-testid="wo-need-check">请先勾选结束检查表三项再接单</p>` : ""}
+      </div>
+        </div></div>
+        <div class="side-pane" data-testid="ai-pane-h45">
+          <div class="ai-id-zone"><div class="who-block ai-roster single-rail"><div class="who-head"><strong>编制</strong></div>
+            <div class="roster">
+              <button type="button" class="expert-chip">${avatarHtml("04.jpg","负")}<span class="meta"><span class="name-row"><strong>交底部负责人</strong></span><span class="status-pill done">打包</span></span></button>
+              <button type="button" class="expert-chip">${avatarHtml("05.jpg","申")}<span class="meta"><span class="name-row"><strong>申请部负责人</strong></span><span class="status-pill wait">接单</span></span></button>
+            </div>
+          </div></div>
+          <div class="pane-body"><div class="feed-wrap feed-primary"><div class="feed-h"><strong>对话</strong><span class="pane-tag">工单汇报</span></div>
+            <div class="feed"><div class="bubble report"><div class="bubble-head">${avatarHtml("05.jpg","申")}<div class="who">申请部负责人<span class="rpt-tag">向你汇报</span></div></div>
+              <div class="bubble-text report-body"><div class="rpt-q">接单前请勾三项</div><p class="tiny">勾齐结束检查表后点「申请部接单进入」。</p></div>
+            </div></div>
+          </div></div>
+          <div class="composer"><div class="composer-to">对：接单方</div><div class="composer-row"><button type="button" class="ghost" id="btnWoLobby2">回大厅</button></div></div>
+        </div>
+        </div>
+      </div>`;
+    $$("[data-wock]").forEach((inp) => inp.addEventListener("change", () => {
+      state.woChecks[inp.dataset.wock] = !!inp.checked;
+      render();
+    }));
+    $("#btnAcceptWO").addEventListener("click", () => {
+      if (!(state.woChecks.in1 && state.woChecks.in2 && state.woChecks.in3)) {
+        toast("请先勾结束检查表三项");
+        return;
+      }
+      openDept("d5", { fromWorkOrder: true });
+    });
+    $("#btnBackD4").addEventListener("click", () => openDept("d4", { direct: true }));
+    $("#btnWoLobby").addEventListener("click", goLobby);
+    const wotop = $("#btnWoLobbyTop"); if (wotop) wotop.addEventListener("click", goLobby);
+    const wol2 = $("#btnWoLobby2"); if (wol2) wol2.addEventListener("click", goLobby);
+  }
+
+
+
+
 
   function renderThin() {
     const d = deptById(state.thinDept);
@@ -2691,10 +2769,8 @@
     if (state.view === "gate") renderGate();
     if (state.view === "lobby") renderLobby();
     if (state.view === "front") renderFront();
-    if (state.view === "dept") renderDept();
+    if (state.view === "dept" || state.view === "apply" || state.view === "reply") renderWorkbench();
     if (state.view === "workorder") renderWorkOrder();
-    if (state.view === "apply") renderApply();
-    if (state.view === "reply") renderReply();
     if (state.view === "thin") renderThin();
     if (state.view === "block") renderBlock();
     renderDrawer();
