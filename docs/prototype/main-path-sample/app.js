@@ -135,14 +135,14 @@
     const L = lead || { name: "负责人", av: "负", photo: null };
     const grade = gradeId ? gradeBadge(gradeId) : "";
     if (done) {
-      return `<div class="bubble report done" data-testid="${testid}">
+      return `<div class="bubble report done chatty" data-testid="${testid}">
         <div class="bubble-head">${avatarHtml(L.photo, L.av)}<div class="who">${escapeHtml(L.name)}<span class="rpt-tag">已确认</span></div>${grade}</div>
         <div class="bubble-text"><div class="rpt-q">${escapeHtml(doneLabel || title)}</div></div>
         ${actsHtml ? `<div class="acts report-acts">${actsHtml}</div>` : ""}
       </div>`;
     }
-    return `<div class="bubble report" data-testid="${testid}">
-      <div class="bubble-head">${avatarHtml(L.photo, L.av)}<div class="who">${escapeHtml(L.name)}<span class="rpt-tag">向你汇报</span></div>${grade}</div>
+    return `<div class="bubble report chatty" data-testid="${testid}">
+      <div class="bubble-head">${avatarHtml(L.photo, L.av)}<div class="who">${escapeHtml(L.name)}<span class="rpt-tag">要你拍</span></div>${grade}</div>
       <div class="bubble-text report-body">
         <div class="rpt-q">${escapeHtml(title)}</div>
         ${bodyHtml || ""}
@@ -154,15 +154,18 @@
   function evidenceDetailsHtml(ev, testid) {
     if (!ev) return "";
     const chain = evidenceChainHtml(ev, testid || "evidence-chain");
-    return `<details class="rpt-ev" open data-testid="${(testid || "evidence")}-details">
-      <summary>依据（来源 · 推演 · 对比 · 置信）</summary>
+    /* 默认不占栏：点开才看依据链（对标对话栏，勿 open） */
+    return `<details class="rpt-ev" data-testid="${(testid || "evidence")}-details">
+      <summary>本步闸口 · 依据</summary>
       ${chain}
     </details>`;
   }
 
   function askExcerptHtml(ask, chainTestId) {
     if (!ask) return "";
-    return `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml(ask.conclusion || "")}</p>
+    const conc = ask.conclusion || "";
+    const short = conc.length > 72 ? conc.slice(0, 72) + "…" : conc;
+    return `<p class="ask-conclusion" title="${escapeHtml(conc)}">${escapeHtml(short)}</p>
       ${ask.label || ask.text ? `<button type="button" class="ask-excerpt" data-excerpt-anchor="${escapeHtml(ask.anchor || "")}" data-testid="ask-excerpt">
         <span class="ex-label">${escapeHtml(ask.label || "依据摘录")}</span>
         <span class="ex-text">${escapeHtml(ask.text || "")}</span>
@@ -263,10 +266,11 @@
 
   function judgmentReasonHtml(gateId, preset) {
     const pre = preset || "接受结论";
-    return `<div class="jr-box" data-testid="jr-box-${gateId}">
-      <label class="jr-label tiny">拍板理由（写入判断档案）</label>
+    /* 对话栏默认折起理由，避免汇报卡变成表单墙；值仍可读写 */
+    return `<details class="jr-box jr-fold" data-testid="jr-box-${gateId}">
+      <summary class="jr-label tiny">拍板理由</summary>
       <textarea class="jr-input" data-jr="${gateId}" data-testid="jr-${gateId}" rows="2" placeholder="为何接受 / 修改点 / 认风险…">${escapeHtml(pre)}</textarea>
-    </div>`;
+    </details>`;
   }
 
   function readJudgmentReason(gateId) {
@@ -1369,29 +1373,34 @@
   }
 
 
-  /** ④⑤⑥ 共用侧栏壳片段（编制单行 + sticky + 对话 + composer） */
+  /** ④⑤⑥ 共用侧栏壳：身份一行 + 编制头像横排 + 对话吃高 + composer */
   function chainSideHtml(cfg) {
     const dens = !!cfg.dens;
     const roster = cfg.roster || [];
+    const lead = roster.find((e) => e.kind === "lead") || roster[0] || { name: cfg.leadName || "负责人", av: "负", photo: null, busy: "", status: "doing" };
     const foldLabel = dens ? "展开编制" : "收起";
     const rosterChips = roster.map((e) => `
-      <button type="button" class="expert-chip" data-testid="${escapeHtml(cfg.expertPrefix || "expert")}-${escapeHtml(e.id)}">
+      <button type="button" class="expert-chip av-only" data-testid="${escapeHtml(cfg.expertPrefix || "expert")}-${escapeHtml(e.id)}" title="${escapeHtml(e.name + " · " + (e.busy || e.role || ""))}">
         ${avatarHtml(e.photo, e.av)}
-        <span class="meta"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
-        <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span>
-        ${e.style ? `<span class="style-tag">${escapeHtml(e.style)}</span>` : ""}</span>
+        <span class="meta sr-only"><span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="tag-role">${escapeHtml(e.tag || "")}</span></span>
+        <span class="status-pill ${e.status}">${escapeHtml(statusLabel(e.status))}</span></span>
       </button>`).join("");
+    const idStatus = dens ? "轻量" : (lead.busy || statusLabel(lead.status || "doing") || "进行中");
     return `
       <div class="side-pane" data-testid="${escapeHtml(cfg.sidePaneTestId)}">
         <div class="ai-id-zone" data-testid="${escapeHtml(cfg.idZoneTestId)}">
-          <div class="who-block ai-roster single-rail ${dens ? "collapsed roster-folded" : ""}" data-testid="${escapeHtml(cfg.rosterWrapTestId)}">
-            <div class="who-head"><strong>编制</strong><button type="button" class="ghost tiny" id="${escapeHtml(cfg.foldBtnId)}" data-testid="${escapeHtml(cfg.foldBtnTestId)}">${foldLabel}</button></div>
+          <button type="button" class="ai-id-row" data-testid="${escapeHtml(cfg.identityTestId || "ai-identity")}" title="助理详情">
+            ${avatarHtml(lead.photo, lead.av)}
+            <span class="ai-id-meta"><strong>${escapeHtml(lead.name)}</strong><span class="ai-id-st">${escapeHtml(idStatus)}</span></span>
+          </button>
+          <div class="who-block ai-roster single-rail av-rail ${dens ? "collapsed roster-folded" : ""}" data-testid="${escapeHtml(cfg.rosterWrapTestId)}">
+            <div class="who-head"><button type="button" class="ghost tiny roster-fold-btn" id="${escapeHtml(cfg.foldBtnId)}" data-testid="${escapeHtml(cfg.foldBtnTestId)}">${foldLabel}</button></div>
             <div class="roster" data-testid="${escapeHtml(cfg.rosterTestId)}">${rosterChips}</div>
           </div>
         </div>
         <div class="pane-body" data-testid="${escapeHtml(cfg.sideBodyTestId)}">
           <div class="feed-wrap feed-primary" data-testid="${escapeHtml(cfg.feedWrapTestId)}">
-            <div class="feed-h"><strong>对话</strong><span class="pane-tag">汇报 · 要你拍</span></div>
+            <div class="feed-h feed-h-slim" hidden></div>
             ${cfg.stickyHtml || ""}
             <div class="feed" data-testid="${escapeHtml(cfg.feedTestId)}"${cfg.feedExtraAttr || ""}>${cfg.feedHtml || ""}</div>
           </div>
@@ -1568,16 +1577,27 @@
     }
 
     const leadBar = $("#leadBar");
-    if (leadBar) leadBar.hidden = true; /* 负责人只在编制横滑席出现一次，不另起身份条 */
+    if (leadBar) leadBar.hidden = true; /* smoke 兼容占位 · 可视身份用 #aiIdentity */
+
+    const idRow = $("#aiIdentity");
+    if (idRow && lead) {
+      const st = isLight ? "轻量" : (lead.busy || statusLabel(lead.status || "doing") || "进行中");
+      idRow.innerHTML = `${avatarHtml(lead.photo, lead.av)}<span class="ai-id-meta"><strong>${escapeHtml(lead.name)}</strong><span class="ai-id-st">${escapeHtml(st)}</span></span>`;
+      idRow.title = `${lead.name} · ${lead.role || "部门助理"}（点开详情）`;
+      idRow.onclick = () => {
+        if (lead.id) focusExpert(lead.id);
+      };
+    }
 
     const whoBlock = document.querySelector("#viewDept .who-block");
     if (whoBlock) {
+      whoBlock.classList.add("av-rail", "single-rail");
       whoBlock.classList.toggle("collapsed", isLight);
       const folded = isLight || !!state.rosterFolded;
       whoBlock.classList.toggle("roster-folded", folded);
       const foldBtnEarly = $("#btnRosterFold");
       if (foldBtnEarly) {
-        foldBtnEarly.textContent = folded ? "展开编制" : "收起";
+        foldBtnEarly.textContent = folded ? "展开" : "收起";
         foldBtnEarly.onclick = () => {
           state.rosterFolded = !state.rosterFolded;
           if (!state.rosterFolded && state.densityMode === "light") setDensityMode("author");
@@ -1603,15 +1623,18 @@
       const tagCls = e.tag === "协" ? "tag-role sub" : "tag-role";
       const pulse = st0 === "doing" ? "doing-pulse" : "";
       const style = e.style ? `<span class="style-tag" data-testid="expert-style">${escapeHtml(e.style)}</span>` : "";
-      const invite = st0 === "idle" ? `<span class="invite-hint" data-invite="${e.id}" data-testid="invite-${e.id}">请来</span>` : "";
-      return `<button type="button" class="expert-chip ${qcCls} ${idleCls} ${active} ${pulse}" data-expert="${e.id}" data-testid="expert-${e.id}" title="${escapeHtml(e.role)}">
+      const tip = `${e.name} · ${statusLabel(st0)}${e.busy ? " · " + e.busy : ""}${st0 === "idle" ? " · 点请来" : " · 点开 1:1"}`;
+      const invited = !!state.invitedExperts[e.id];
+      return `<button type="button" class="expert-chip av-only ${qcCls} ${idleCls} ${active} ${pulse}" data-expert="${e.id}" data-testid="expert-${e.id}" title="${escapeHtml(tip)}">
           ${avatarHtml(e.photo, e.av)}
-          <span class="meta">
-            <span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="${tagCls}">${escapeHtml(e.tag || "")}</span>${invite}</span>
+          <span class="meta sr-only">
+            <span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="${tagCls}">${escapeHtml(e.tag || "")}</span></span>
             <span class="status-pill ${st0}">${escapeHtml(statusLabel(st0))}</span>
-            <span class="st">${escapeHtml(state.invitedExperts[e.id] ? "已请来 · 工作中" : (e.busy || e.role))}</span>
+            <span class="st">${escapeHtml(invited ? "已请来 · 工作中" : (e.busy || e.role))}</span>
             ${style}
           </span>
+          ${st0 === "idle" && !invited ? `<span class="av-invite invite-hint" data-invite="${e.id}" data-testid="invite-${e.id}" title="请来">+</span>` : ""}
+          ${invited ? `<span class="av-invited-flag" aria-hidden="true">已请来</span>` : ""}
         </button>`;
     }).join("");
     $$("#roster [data-expert]").forEach((b) => b.addEventListener("click", (ev) => {
@@ -1787,16 +1810,20 @@
         const bt = $("#btnBackTeam");
         if (bt) bt.addEventListener("click", () => { state.sideMode = "team"; render(); });
       } else {
-        focusEl.innerHTML = `<div class="focus-hint tiny muted" data-testid="side-team">点编制名片 → 切 1:1；再点「看产出」锚主栏段</div>`;
+        /* 团队态：不占栏脚手架旁白；点头像再出 1:1 */
+        focusEl.innerHTML = `<div class="focus-hint" data-testid="side-team" hidden></div>`;
       }
     }
 
     const sideTag = $("#sideHeadTag");
     if (sideTag) {
+      sideTag.hidden = true;
       sideTag.textContent = state.sideMode === "1to1" && ae
         ? `1:1 · ${ae.name}`
         : "要你拍";
     }
+    const feedH = document.querySelector("#feedWrap .feed-h");
+    if (feedH) feedH.hidden = true;
     const hasYellowOpen = !(DEMO.disclosure.qc.every((q) => q.status === "green"));
     const reportBubbles = [];
     const stepNow = d4CurrentStep().id;
@@ -2734,13 +2761,13 @@
       </div>
         </div></div>
         <div class="side-pane" data-testid="ai-pane-h45">
-          <div class="ai-id-zone"><div class="who-block ai-roster single-rail"><div class="who-head"><strong>编制</strong></div>
+          <div class="ai-id-zone"><div class="who-block ai-roster single-rail av-rail"><div class="who-head"></div>
             <div class="roster">
-              <button type="button" class="expert-chip">${avatarHtml("04.jpg","负")}<span class="meta"><span class="name-row"><strong>交底部负责人</strong></span><span class="status-pill done">打包</span></span></button>
-              <button type="button" class="expert-chip">${avatarHtml("05.jpg","申")}<span class="meta"><span class="name-row"><strong>申请部负责人</strong></span><span class="status-pill wait">接单</span></span></button>
+              <button type="button" class="expert-chip av-only" title="交底部负责人">${avatarHtml("04.jpg","负")}<span class="meta sr-only"><span class="name-row"><strong>交底部负责人</strong></span><span class="status-pill done">打包</span></span></button>
+              <button type="button" class="expert-chip av-only" title="申请部负责人">${avatarHtml("05.jpg","申")}<span class="meta sr-only"><span class="name-row"><strong>申请部负责人</strong></span><span class="status-pill wait">接单</span></span></button>
             </div>
           </div></div>
-          <div class="pane-body"><div class="feed-wrap feed-primary"><div class="feed-h"><strong>对话</strong><span class="pane-tag">工单汇报</span></div>
+          <div class="pane-body"><div class="feed-wrap feed-primary"><div class="feed-h feed-h-slim" hidden></div>
             <div class="feed"><div class="bubble report"><div class="bubble-head">${avatarHtml("05.jpg","申")}<div class="who">申请部负责人<span class="rpt-tag">向你汇报</span></div></div>
               <div class="bubble-text report-body"><div class="rpt-q">接单前请勾三项</div><p class="tiny">勾齐结束检查表后点「申请部接单进入」。</p></div>
             </div></div>
@@ -2836,12 +2863,16 @@
           </div>
           <div class="side-pane" data-testid="ai-pane-thin">
             <div class="ai-id-zone">
-              <div class="who-block ai-roster single-rail" data-testid="thin-roster-wrap">
-                <div class="who-head"><strong>编制</strong><span class="tiny muted">薄占位</span></div>
+              <button type="button" class="ai-id-row" data-testid="ai-identity-thin" title="助理详情">
+                ${avatarHtml(photo, lead.av)}
+                <span class="ai-id-meta"><strong>${escapeHtml(lead.name)}</strong><span class="ai-id-st">薄占位 · 示意</span></span>
+              </button>
+              <div class="who-block ai-roster single-rail av-rail" data-testid="thin-roster-wrap">
+                <div class="who-head"></div>
                 <div class="roster" data-testid="thin-roster">
-                  <button type="button" class="expert-chip" data-testid="thin-lead">
+                  <button type="button" class="expert-chip av-only" data-testid="thin-lead" title="${escapeHtml(lead.name)}">
                     ${avatarHtml(photo, lead.av)}
-                    <span class="meta"><span class="name-row"><strong>${escapeHtml(lead.name)}</strong><span class="tag-role">主</span></span>
+                    <span class="meta sr-only"><span class="name-row"><strong>${escapeHtml(lead.name)}</strong><span class="tag-role">主</span></span>
                     <span class="status-pill wait">示意</span>
                     <span class="st">${escapeHtml(d.desc)}</span></span>
                   </button>
@@ -2851,7 +2882,7 @@
             </div>
             <div class="pane-body">
               <div class="feed-wrap feed-primary" data-testid="feed-wrap-thin">
-                <div class="feed-h"><strong>对话</strong><span class="pane-tag">本步请示</span></div>
+                <div class="feed-h feed-h-slim" hidden></div>
                 ${sticky}
                 <div class="feed" data-testid="thin-feed">${report}
                   <div class="bubble" data-testid="feed-bubble"><div class="bubble-head">${avatarHtml(photo, lead.av)}<div class="who">${escapeHtml(lead.name)}</div></div><div class="bubble-text">薄部按步示意 · 一步一事。</div></div>
@@ -2918,12 +2949,12 @@
         </div>
         </div>
         <div class="side-pane" data-testid="ai-pane-b2">
-          <div class="ai-id-zone"><div class="who-block ai-roster single-rail"><div class="who-head"><strong>编制</strong></div>
-            <div class="roster"><button type="button" class="expert-chip">${avatarHtml("05.jpg","申")}<span class="meta"><span class="name-row"><strong>申请部负责人</strong></span><span class="status-pill wait">挡</span></span></button></div>
+          <div class="ai-id-zone"><div class="who-block ai-roster single-rail av-rail"><div class="who-head"></div>
+            <button type="button" class="ai-id-row" data-testid="ai-identity-b2">${avatarHtml("05.jpg","申")}<span class="ai-id-meta"><strong>申请部负责人</strong><span class="ai-id-st">门槛</span></span></button><div class="who-block ai-roster single-rail av-rail"><div class="roster"><button type="button" class="expert-chip av-only" title="申请部负责人">${avatarHtml("05.jpg","申")}<span class="meta sr-only"><span class="name-row"><strong>申请部负责人</strong></span><span class="status-pill wait">挡</span></span></button></div></div>
           </div></div>
           <div class="pane-body">
             <div class="feed-wrap feed-primary">
-              <div class="feed-h"><strong>对话</strong><span class="pane-tag">门槛汇报</span></div>
+              <div class="feed-h feed-h-slim" hidden></div>
               <div class="feed"><div class="bubble report" data-testid="b2-report"><div class="bubble-head">${avatarHtml("05.jpg","申")}<div class="who">申请部负责人<span class="rpt-tag">向你汇报</span></div></div>
                 <div class="bubble-text report-body"><div class="rpt-q">进⑤门槛未过</div><p class="tiny">缺全绿交底 / 可交⑤ / 工单接单。请先去④补缺口。</p></div>
                 <div class="acts report-acts"><button type="button" class="ask-confirm" id="btnBlockTo4Side">去交底部</button></div>

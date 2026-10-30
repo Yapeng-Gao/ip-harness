@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Novada Team · 主链样机</title>
-  <link rel="stylesheet" href="./styles.css?v=stepkill3" />
+  <link rel="stylesheet" href="./styles.css?v=railclean2" />
 </head>
 <body>
   <div class="app">
@@ -168,24 +168,24 @@
 <div class="pane-body" id="docMain"></div>
           </div>
           <div class="side-pane" data-testid="ai-pane">
-            <!-- 编制单行横滑（负责人只在席内一次，不另起身份条） -->
+            <!-- 身份一行 + 编制头像横排（对标 Kimi/Cursor 对话栏） -->
             <div class="ai-id-zone" data-testid="ai-id-zone">
-              <div class="who-block ai-roster single-rail" data-testid="roster-wrap">
+              <button type="button" class="ai-id-row" id="aiIdentity" data-testid="ai-identity" title="助理详情"></button>
+              <!-- smoke 兼容：leadBar 隐藏占位 -->
+              <div class="lead-bar ai-identity" data-testid="lead-bar" id="leadBar" hidden></div>
+              <div class="who-block ai-roster single-rail av-rail" data-testid="roster-wrap">
                 <div class="who-head">
-                  <strong>编制</strong>
                   <button type="button" class="ghost tiny roster-fold-btn" id="btnRosterFold" data-testid="roster-fold">收起</button>
                 </div>
                 <div class="roster" id="roster" data-testid="roster"></div>
               </div>
-              <!-- 兼容旧 smoke：leadBar 隐藏占位，不占视觉两行 -->
-              <div class="lead-bar ai-identity" data-testid="lead-bar" id="leadBar" hidden></div>
             </div>
             <div class="pane-body" id="sideBody">
               <div id="sideFocus"></div>
               <div id="sideEvidence"></div>
-              <!-- 对话流：汇报/硬请示/拿不准/重要节点都在此 -->
+              <!-- 对话流吃高：硬请示 sticky + 气泡 -->
               <div id="feedWrap" class="feed-wrap feed-primary" data-testid="feed-wrap">
-                <div class="feed-h"><strong>对话</strong><span class="pane-tag" id="sideHeadTag">汇报 · 要你拍</span></div>
+                <div class="feed-h feed-h-slim" hidden><strong>对话</strong><span class="pane-tag" id="sideHeadTag">要你拍</span></div>
                 <div class="feed" id="feed" data-testid="d4-feed"></div>
               </div>
               <div id="sideAsks" hidden data-testid="ai-ask-zone"></div>
@@ -247,7 +247,7 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="./demo-data.js?v=stepkill3"></script>
-  <script src="./app.js?v=stepkill3"></script>
+  <script src="./demo-data.js?v=railclean2"></script>
+  <script src="./app.js?v=railclean2"></script>
 </body>
 </html>
