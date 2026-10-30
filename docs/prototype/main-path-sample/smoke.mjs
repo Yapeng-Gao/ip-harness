@@ -53,10 +53,20 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 try {
   await page.goto(BASE, { waitUntil: "networkidle" });
 
+  check("Gate shows", await page.locator('[data-testid="view-gate"].on').count() === 1);
+  check("Gate card", await page.locator('[data-testid="gate-card"]').count() === 1);
+  await page.click('[data-testid="gate-enter"]');
+  await sleep(300);
+  check("after gate → lobby", await page.locator('[data-testid="view-lobby"].on').count() === 1);
+
   const front = await page.locator('[data-testid="front-desk-card"]').count();
   const doors = await page.locator("#deptWall .dept-door").count();
-  check("L1 shows 前台", front === 1);
+  check("L1 shows 前台/委托", front === 1);
   check("L1 shows 8 dept doors", doors === 8, `got ${doors}`);
+  check("L1 委托 composer", await page.locator('[data-testid="entrust-input"]').count() === 1);
+  check("L1 进行中轨", await page.locator('[data-testid="progress-rail"]').count() === 1);
+  check("L1 问候计数", await page.locator('[data-testid="lobby-greet"]').count() === 1);
+  check("Shell ⌘K densify", await page.locator('[data-testid="shell-search"]').count() === 1);
 
   const todoN = await page.locator('[data-testid="todo-item"]').count();
   check("L1 要你拍的 has 2–3 sample todos", todoN >= 2 && todoN <= 6, `got ${todoN}`);
@@ -89,6 +99,7 @@ try {
   check("D4 四步时间线", tl === 4, `got ${tl}`);
   check("D4 侧栏假 composer", await page.locator('[data-testid="d4-composer"]').count() === 1);
   check("D4 硬请示含依据摘录", await page.locator('[data-testid="ask-excerpt"]').count() >= 1);
+  check("D4 feed 有工具轨迹芯片", await page.locator('[data-testid="tool-chips"]').count() >= 1);
 
   // 点编制 → 1:1 聚焦 + 看产出
   await page.click('[data-testid="expert-writer"]');
@@ -167,6 +178,7 @@ try {
   });
   await sleep(250);
   check("D5 shows A/B/C strip", await page.locator('[data-testid="d5-abc"]').count() === 1);
+  check("D5 侧栏 composer", await page.locator('[data-testid="d5-composer"]').count() === 1);
   check("D5 seg A/B/C labels", (await page.locator('[data-testid="seg-a"]').count()) === 1
     && (await page.locator('[data-testid="seg-b"]').count()) === 1
     && (await page.locator('[data-testid="seg-c"]').count()) === 1);
@@ -195,6 +207,7 @@ try {
   check("thin dept enterable", await page.locator('[data-testid="thin-dept"]').count() === 1);
   const ban = await page.locator('[data-testid="thin-ban"]').innerText();
   check("thin shows 禁超卖", ban.includes("禁超卖") && ban.length > 8, ban.slice(0, 80));
+  check("thin densify composer stub", await page.locator('[data-testid="thin-composer"]').count() === 1);
 
   // ⑥ 硬请示：争点 → 缩限 → 递交
   await page.evaluate(() => {
@@ -204,6 +217,7 @@ try {
   });
   await sleep(200);
   check("D6 gates visible", await page.locator('[data-testid="d6-gates"]').count() === 1);
+  check("D6 侧栏 composer", await page.locator('[data-testid="d6-composer"]').count() === 1);
   const limDisabled = await page.locator('[data-testid="confirm-limit"][disabled]').count();
   check("⑥ limit disabled before contention", limDisabled === 1);
   await page.click('[data-testid="confirm-contention"]');

@@ -3,7 +3,10 @@
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 
   const state = {
-    view: "lobby",
+    view: "gate",
+    gateDone: false,
+    role: "ent", /* ent | agency */
+    demoMode: "existing", /* existing | first */
     fdStep: "f1",
     files: [],
     analyzing: false,
@@ -28,7 +31,8 @@
     traces: [],
     toastTimer: null,
     thinDept: null,
-    blockReason: null
+    blockReason: null,
+    sideComposeExtra: []
   };
 
   function deptById(id) { return DEMO.depts.find((d) => d.id === id); }
@@ -49,7 +53,19 @@
     });
   }
 
-  function goLobby() { state.view = "lobby"; render(); }
+  function goLobby() {
+    if (!state.gateDone) { state.view = "gate"; render(); return; }
+    state.view = "lobby";
+    render();
+  }
+
+  function enterFromGate() {
+    state.gateDone = true;
+    state.view = "lobby";
+    addTrace("进入工作台", state.role === "agency" ? "代理所演示" : "企业研发演示");
+    toast(state.demoMode === "first" ? "首次脚手架可跳过 · 已进大厅" : "已进入 · 要你拍的有货");
+    render();
+  }
 
   function openFront() {
     state.view = "front";
@@ -300,13 +316,41 @@
   }
 
   function renderShellTop() {
+    document.body.classList.toggle("gate-mode-on", state.view === "gate" || !state.gateDone);
+    const app = $(".app");
+    if (app) app.classList.toggle("gate-mode-on", state.view === "gate" || !state.gateDone);
     const chip = $("#caseChip");
+    if (!chip) return;
     if (state.caseOpen && state.caseName) {
       chip.classList.remove("empty");
       chip.innerHTML = `<strong>案卷</strong><span>${escapeHtml(state.caseName)}</span>`;
     } else {
       chip.classList.add("empty");
       chip.innerHTML = `<span>暂无打开案卷</span>`;
+    }
+    const dot = $("#notifyDot");
+    if (dot) {
+      const n = (DEMO.lobbySeed || []).length;
+      dot.textContent = String(Math.max(n, state.enteredD4 && !state.factConfirmed ? 1 : n));
+      dot.style.display = n ? "" : "none";
+    }
+    $$(".role-toggle .role").forEach((b) => b.classList.toggle("on", b.dataset.role === state.role));
+    const nl = $("#navLobby");
+    if (nl) nl.classList.toggle("on", state.view === "lobby");
+  }
+
+  function renderGate() {
+    $$("#gateIds .gate-id").forEach((b) => b.classList.toggle("on", b.dataset.role === state.role));
+    $$("#gate-mode .gm, .gate-mode .gm").forEach((b) => b.classList.toggle("on", b.dataset.mode === state.demoMode));
+    const hint = $("#gateModeHint");
+    if (hint) {
+      hint.textContent = state.demoMode === "first"
+        ? "首次：带教可跳过 · 仍进八部大厅，不另造经营首页。"
+        : "已有工作：进厅即见「要你拍的」与进行中案 · 不是空目录。";
+    }
+    const enter = $("#btnGateEnter");
+    if (enter) {
+      enter.textContent = state.role === "agency" ? "进入代理所工作区 →" : "进入企业研发工作区 →";
     }
   }
 
@@ -335,17 +379,48 @@
     (DEMO.lobbySeed || []).forEach((s) => {
       if (covered.has(s.cover)) return;
       if (todos.some((t) => t.text === s.text)) return;
-      todos.push({ kind: s.kind, text: s.text, action: () => goLobbyTodo(s.go), seed: true });
+      todos.push({ kind: s.kind, text: s.text, tag: s.tag, sub: s.sub, cta: s.cta, action: () => goLobbyTodo(s.go), seed: true });
     });
     if (!todos.length) todos.push({ kind: "c", text: "各部门暂无要你拍的事", action: null });
 
-    $("#todoList").innerHTML = todos.map((t, i) => `<li data-testid="todo-item">
-        <span class="badge ${t.kind}">${t.kind === "a" ? "待你拍" : t.kind === "b" ? "催办" : "进行中"}</span>
-        <div><div>${escapeHtml(t.text)}</div>${t.action ? `<button class="ghost tiny" data-todo-go="${i}" data-testid="todo-go" style="margin-top:6px;padding:4px 8px">去处理</button>` : ""}</div>
-      </li>`).join("");
+    const greetN = $("#lobbyTodoCount");
+    if (greetN) greetN.textContent = String(todos.filter((x) => x.action).length || todos.length);
+    const sub = $("#lobbyGreetSub");
+    if (sub) {
+      const n = todos.filter((x) => x.action).length;
+      sub.innerHTML = n
+        ? `今天有 <strong id="lobbyTodoCount">${n}</strong> 件事需要你处理 · 专家在办，关键节点等你拍板。`
+        : `各部门暂无硬请示 · 可交给前台开新案，或点八部进厅。`;
+    }
+
+    $("#todoList").innerHTML = todos.map((t, i) => {
+      const tag = t.tag || (t.kind === "a" ? "待你拍" : t.kind === "b" ? "催办" : "进行中");
+      const sub = t.sub ? `<div class="todo-meta">${escapeHtml(t.sub)}</div>` : "";
+      const cta = t.cta || "去处理";
+      return `<li data-testid="todo-item">
+        <span class="badge ${t.kind}">${escapeHtml(tag)}</span>
+        <div style="flex:1;min-width:0">
+          <div>${escapeHtml(t.text)}</div>
+          ${sub}
+          ${t.action ? `<button type="button" class="todo-cta" data-todo-go="${i}" data-testid="todo-go">${escapeHtml(cta)}</button>` : ""}
+        </div>
+      </li>`;
+    }).join("");
     $$("[data-todo-go]").forEach((btn) => {
       btn.addEventListener("click", () => { const t = todos[+btn.dataset.todoGo]; if (t && t.action) t.action(); });
     });
+
+    const rail = $("#progressRail");
+    if (rail) {
+      const cases = DEMO.progressCases || [];
+      rail.innerHTML = cases.map((c) => `<button type="button" class="prog-card" data-prog="${escapeHtml(c.go)}" data-testid="prog-card">
+          <div><strong>${escapeHtml(c.title)}</strong><div class="pm">${escapeHtml(c.dept)}</div></div>
+          <span class="pst">${escapeHtml(c.status)}</span>
+        </button>`).join("");
+      $$("[data-prog]").forEach((b) => b.addEventListener("click", () => goLobbyTodo(b.dataset.prog)));
+      const pm = $("#progressMeta");
+      if (pm) pm.textContent = `${cases.length} 个业务对象 · 可点进部`;
+    }
 
     $("#deptWall").innerHTML = DEMO.depts.map((d) => {
       const has = (d.id === "d4" && state.enteredD4 && (!state.factConfirmed || (state.allGreen && !state.canHand5)))
@@ -404,8 +479,13 @@
               </label>
               <button type="button" id="btnSample" class="primary" data-testid="load-sample">加载样例材料</button>
             </div>
-            ${state.analyzing ? `<p style="margin-top:14px;color:var(--brand);font-weight:600" data-testid="analyzing">正在分析材料…</p>` : ""}
-            ${state.files.length ? `<div class="file-list">${state.files.map((f) => `<div class="file-row"><strong>${escapeHtml(f.name)}</strong><span class="muted tiny">${escapeHtml(f.type)}</span></div>`).join("")}</div>` : ""}
+            ${state.analyzing ? `<div style="margin-top:14px" data-testid="analyzing">
+              <p style="color:var(--brand);font-weight:600;margin:0 0 8px">前台 agent 正在分析…</p>
+              <div class="agent-steps">${(DEMO.frontTrajectory || []).map((s, i) =>
+                `<div class="agent-step ${i < 2 ? "done" : "on"}"><span class="as-t">${escapeHtml(s.t)}</span><span>${escapeHtml(s.d)}</span></div>`
+              ).join("")}</div>
+            </div>` : ""}
+            ${state.files.length ? `<div class="file-list">${state.files.map((f) => `<div class="file-row"><span class="fico">件</span><div><strong>${escapeHtml(f.name)}</strong><div class="tiny muted">${escapeHtml(f.type)}</div></div></div>`).join("")}</div>` : ""}
           </div>
         </div>`;
       $("#btnSample").addEventListener("click", loadSample);
@@ -417,7 +497,14 @@
     } else if (state.fdStep === "f2") {
       const main = deptById(DEMO.suggest.main.dept);
       pane.innerHTML = `
-        <div class="analysis-grid" data-testid="f2-analysis">
+        <div data-testid="f2-analysis">
+        <div class="card" style="margin-bottom:12px" data-testid="front-traj">
+          <div class="card-head"><h2>前台执行轨迹</h2><span class="tiny muted">对标 agent 工具步骤</span></div>
+          <div class="agent-steps">${(DEMO.frontTrajectory || []).map((s) =>
+            `<div class="agent-step done"><span class="as-t">${escapeHtml(s.t)}</span><span>${escapeHtml(s.d)}</span></div>`
+          ).join("")}</div>
+        </div>
+        <div class="analysis-grid">
           <div class="card">
             <h2>分析结果</h2>
             <p class="tiny muted">材料清单 · 置信可见</p>
@@ -448,6 +535,7 @@
               <button type="button" class="primary" id="btnToConfirm" data-testid="to-f3">进入确认去向</button>
             </div>
           </div>
+        </div>
         </div>`;
       $("#btnToConfirm").addEventListener("click", () => { state.fdStep = "f3"; render(); });
     } else if (state.fdStep === "f3") {
@@ -524,7 +612,8 @@
       const idleCls = e.status === "idle" ? "idle" : "";
       const tagCls = e.tag === "协" ? "tag-role sub" : "tag-role";
       const st = e.status || "doing";
-      return `<button type="button" class="expert-chip ${qcCls} ${idleCls} ${active}" data-expert="${e.id}" data-testid="expert-${e.id}" title="${escapeHtml(e.role)}">
+      const pulse = st === "doing" ? "doing-pulse" : "";
+      return `<button type="button" class="expert-chip ${qcCls} ${idleCls} ${active} ${pulse}" data-expert="${e.id}" data-testid="expert-${e.id}" title="${escapeHtml(e.role)}">
           ${avatarHtml(e.photo, e.av)}
           <span class="meta">
             <span class="name-row"><strong>${escapeHtml(e.name)}</strong><span class="${tagCls}">${escapeHtml(e.tag || "")}</span></span>
@@ -682,9 +771,11 @@
       const av = b.you
         ? `<span class="av you">你</span>`
         : avatarHtml(ex && ex.photo, (ex && ex.av) || (b.who || "?").slice(0, 1));
-      return `<div class="bubble ${b.you ? "you" : ""}">
+      const tools = (b.tools || []).map((x) => `<span class="tool-chip">${escapeHtml(x)}</span>`).join("");
+      return `<div class="bubble ${b.you ? "you" : ""}" data-testid="feed-bubble">
         <div class="bubble-head">${av}<div class="who">${escapeHtml(b.who)}</div></div>
         <div class="bubble-text">${escapeHtml(b.text)}</div>
+        ${tools ? `<div class="tool-chips" data-testid="tool-chips">${tools}</div>` : ""}
       </div>`;
     }).join("");
 
@@ -706,14 +797,22 @@
       <div class="wo-card" data-testid="h45">
         <span class="tag ask">工单 · 现在做⑤</span>
         <h2>④ → ⑤ 交办工单</h2>
-        <p class="muted">打包方＝交底部负责人；接单方＝申请部负责人。旁注三线分词。</p>
+        <p class="muted">像 Codex/WorkBuddy 的任务交接：打包方交产出，接单方开新线程；旁注三线分词。</p>
+        <div class="wo-agents">
+          <div class="wo-agent">${avatarHtml("04.jpg", "负")}<div><strong>交底部负责人</strong><div class="tiny muted">打包 · 结束检查表</div></div></div>
+          <div class="wo-agent">${avatarHtml("05.jpg", "申")}<div><strong>申请部负责人</strong><div class="tiny muted">接单 · 开 A/B/C</div></div></div>
+        </div>
         <div class="wo-meta">
           <div><label>打包方</label>交底部负责人</div>
           <div><label>接单方</label>申请部负责人</div>
           <div><label>④ 合格线</label><span class="tag ok">交底已全绿</span></div>
           <div><label>⑤ 合格线</label><span class="tag warn">申请尚未过线</span></div>
         </div>
-        <p class="tiny">结束检查表摘要：事实已确认 · 可交⑤已确认 · 材料包已列。</p>
+        <div class="agent-steps">
+          <div class="agent-step done"><span class="as-t">过线</span><span>交底全绿 + 事实 + 可交⑤</span></div>
+          <div class="agent-step done"><span class="as-t">打包</span><span>材料包 / 结束检查表摘要已列</span></div>
+          <div class="agent-step on"><span class="as-t">接单</span><span>待申请部负责人接单进入⑤</span></div>
+        </div>
         <div class="row-actions">
           <button type="button" class="primary" id="btnAcceptWO" data-testid="accept-wo">申请部接单进入</button>
           <button type="button" id="btnBackD4">返回交底部</button>
@@ -809,6 +908,13 @@
               <div class="row-actions"><button type="button" id="btnToReply" data-testid="to-reply">有 OA 时 → ⑥答复</button></div>
             </div>
           </div>
+          <div class="composer" data-testid="d5-composer">
+            <div class="composer-to">对：申请部负责人 · 团队</div>
+            <div class="composer-row">
+              <textarea id="applyComposerInput" rows="1" placeholder="驾驭一句（演示）· 如收紧独权" data-testid="d5-composer-input"></textarea>
+              <button type="button" class="primary" id="btnApplyCompose" data-testid="d5-composer-send">发送</button>
+            </div>
+          </div>
         </div>
       </div>`;
     $("#btnApplyBack").addEventListener("click", goLobby);
@@ -831,6 +937,14 @@
       state.apply.submit = true; addTrace("硬请示·确认递交", "⑤ C"); toast("已确认递交（演示·非 Toast 代替硬请示）"); render();
     });
     $("#btnToReply").addEventListener("click", () => { state.view = "reply"; render(); });
+    const acs = $("#btnApplyCompose");
+    if (acs) acs.addEventListener("click", () => {
+      const v = ($("#applyComposerInput") && $("#applyComposerInput").value || "").trim();
+      if (!v) { toast("先打一句再说（演示）"); return; }
+      addTrace("⑤侧栏驾驭（演示）", v.slice(0, 80));
+      toast("已发送给申请部负责人（演示）");
+      if ($("#applyComposerInput")) $("#applyComposerInput").value = "";
+    });
   }
 
   function renderReply() {
@@ -898,6 +1012,13 @@
               </div>
             </div>
           </div>
+          <div class="composer" data-testid="d6-composer">
+            <div class="composer-to">对：答复部负责人 · 团队</div>
+            <div class="composer-row">
+              <textarea id="replyComposerInput" rows="1" placeholder="驾驭一句（演示）· 如坚持双密封争点" data-testid="d6-composer-input"></textarea>
+              <button type="button" class="primary" id="btnReplyCompose" data-testid="d6-composer-send">发送</button>
+            </div>
+          </div>
         </div>
       </div>`;
     $("#btnReplyBack").addEventListener("click", goLobby);
@@ -911,22 +1032,51 @@
       if (!state.reply.limitOk) return;
       state.reply.submit = true; addTrace("硬请示·确认本轮递交", "⑥"); render();
     });
+    const rcs = $("#btnReplyCompose");
+    if (rcs) rcs.addEventListener("click", () => {
+      const v = ($("#replyComposerInput") && $("#replyComposerInput").value || "").trim();
+      if (!v) { toast("先打一句再说（演示）"); return; }
+      addTrace("⑥侧栏驾驭（演示）", v.slice(0, 80));
+      toast("已发送给答复部负责人（演示）");
+      if ($("#replyComposerInput")) $("#replyComposerInput").value = "";
+    });
   }
 
   function renderThin() {
     const d = deptById(state.thinDept);
     $("#thinBody").innerHTML = `
-      <div class="thin-panel" data-testid="thin-dept">
-        <div class="avatar" style="margin:0 auto 8px;width:48px;height:48px;font-size:16px">${d.num}</div>
-        <h2>${escapeHtml(d.name)}</h2>
-        <p class="muted">${escapeHtml(d.desc)}</p>
-        <div class="sep"></div>
-        <p style="text-align:left"><strong>进得去：</strong>本部门门可从大厅点入（样机薄占位）。</p>
-        <p style="text-align:left"><strong>本部门合格线：</strong>${escapeHtml(d.line)}</p>
-        <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
-        <p class="tiny muted">一期薄部：进得去 + 合格线一句话 + 禁超卖；不做细作业。</p>
-        <div class="row-actions" style="justify-content:center">
-          <button type="button" class="primary" id="btnThinLobby">回工作台</button>
+      <div class="thin-shell">
+        <div class="dept-top">
+          <button type="button" class="ghost" id="btnThinLobby">← 工作台</button>
+          <h1>${escapeHtml(d.num)} ${escapeHtml(d.name)}</h1>
+          <span class="line-status">薄占位 · 合格线示意</span>
+        </div>
+        <div class="lead-bar">
+          <span class="avatar">${escapeHtml(d.num)}</span>
+          <div>
+            <strong>${escapeHtml(d.name)}负责人</strong>
+            <div class="tiny muted">${escapeHtml(d.desc)} · 一期薄部，不造细作业台。</div>
+          </div>
+        </div>
+        <div class="thin-panel" data-testid="thin-dept">
+          <div class="mini-wb">
+            <div class="mw-card">
+              <strong>本部门合格线</strong>
+              <p class="tiny" style="margin:6px 0 0">${escapeHtml(d.line)}</p>
+            </div>
+            <div class="mw-card">
+              <strong>agent 状态</strong>
+              <p class="tiny" style="margin:6px 0 0">编制未展开 · 进得去 · 可回大厅派别的部</p>
+            </div>
+          </div>
+          <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
+          <div class="side-composer-stub" data-testid="thin-composer">
+            <div class="composer-to">对：${escapeHtml(d.name)}负责人（薄部示意）</div>
+            <div class="composer-row">
+              <textarea rows="1" disabled placeholder="薄部暂不开放细驾驭 · 请回大厅或进④⑤⑥"></textarea>
+              <button type="button" disabled>发送</button>
+            </div>
+          </div>
         </div>
       </div>`;
     $("#btnThinLobby").addEventListener("click", goLobby);
@@ -934,14 +1084,23 @@
 
   function renderBlock() {
     $("#blockBody").innerHTML = `
-      <div class="block-panel" data-testid="b2-block">
-        <h2>进入门槛未过</h2>
-        <p>要进申请部，需要合格交底（④全绿）并完成「可交⑤」与工单接单。</p>
-        <p class="tiny">当前：无交底冲⑤会被挡回（B2）。</p>
-        <div class="row-actions" style="justify-content:center">
-          <button type="button" class="primary" id="btnBlockTo4">去交底部</button>
-          <button type="button" id="btnBlockLobby">回工作台</button>
-          <button type="button" class="ghost" id="btnBlockFront">找前台</button>
+      <div class="block-shell">
+        <div class="dept-top">
+          <button type="button" class="ghost" id="btnBlockLobby">← 工作台</button>
+          <h1>⑤ 申请部 · 进不去</h1>
+          <span class="line-status">门槛未过</span>
+        </div>
+        <div class="block-panel" data-testid="b2-block">
+          <h2>进入门槛未过（B2）</h2>
+          <p>要进申请部，需要合格交底（④全绿）并完成「可交⑤」与工单接单——agent 不会越权开写。</p>
+          <div class="agent-steps" style="margin:12px 0;text-align:left">
+            <div class="agent-step"><span class="as-t">检</span><span>无④全绿交底路径</span></div>
+            <div class="agent-step"><span class="as-t">挡</span><span>B2 回退 · 请先走交底部或前台</span></div>
+          </div>
+          <div class="row-actions">
+            <button type="button" class="primary" id="btnBlockTo4">去交底部</button>
+            <button type="button" class="ghost" id="btnBlockFront">找前台</button>
+          </div>
         </div>
       </div>`;
     $("#btnBlockTo4").addEventListener("click", () => openDept("d4", { direct: true }));
@@ -983,10 +1142,12 @@
     renderShellTop();
     $$(".view").forEach((v) => v.classList.remove("on"));
     const map = {
-      lobby: "#viewLobby", front: "#viewFront", dept: "#viewDept", workorder: "#viewWO",
+      gate: "#viewGate", lobby: "#viewLobby", front: "#viewFront", dept: "#viewDept", workorder: "#viewWO",
       apply: "#viewApply", reply: "#viewReply", thin: "#viewThin", block: "#viewBlock"
     };
-    $(map[state.view] || "#viewLobby").classList.add("on");
+    const sel = map[state.view] || (state.gateDone ? "#viewLobby" : "#viewGate");
+    $(sel).classList.add("on");
+    if (state.view === "gate") renderGate();
     if (state.view === "lobby") renderLobby();
     if (state.view === "front") renderFront();
     if (state.view === "dept") renderDept();
@@ -999,9 +1160,22 @@
   }
 
   function bindGlobal() {
-    $("#btnBrand").addEventListener("click", goLobby);
+    $("#btnBrand").addEventListener("click", () => { if (state.gateDone) goLobby(); });
+    const navL = $("#navLobby"); if (navL) navL.addEventListener("click", () => { if (state.gateDone) goLobby(); });
+    const navC = $("#navCases"); if (navC) navC.addEventListener("click", () => { if (state.gateDone) openDrawer("materials"); });
+    const nfy = $("#btnNotify"); if (nfy) nfy.addEventListener("click", () => { if (state.gateDone) goLobby(); });
+    $$(".role-toggle .role").forEach((b) => b.addEventListener("click", () => {
+      state.role = b.dataset.role; renderShellTop(); toast(state.role === "agency" ? "已切代理所视角（演示）" : "已切企业研发视角（演示）");
+    }));
+    $$("#gateIds .gate-id").forEach((b) => b.addEventListener("click", () => { state.role = b.dataset.role; renderGate(); }));
+    $$(".gate-mode .gm").forEach((b) => b.addEventListener("click", () => { state.demoMode = b.dataset.mode; renderGate(); }));
+    const ge = $("#btnGateEnter"); if (ge) ge.addEventListener("click", enterFromGate);
     $("#caseChip").addEventListener("click", () => openDrawer("materials"));
-    $("#btnFront").addEventListener("click", openFront);
+    $("#btnFront").addEventListener("click", () => {
+      const ei = $("#entrustInput");
+      if (ei && ei.value.trim()) addTrace("委托前台", ei.value.trim().slice(0, 80));
+      openFront();
+    });
     const fl = $("#btnFrontLobby"); if (fl) fl.addEventListener("click", goLobby);
     const ld4 = $("#btnLobbyD4"); if (ld4) ld4.addEventListener("click", () => openDept("d4", { direct: true }));
     $$("[data-goal]").forEach((b) => b.addEventListener("click", () => {
@@ -1025,7 +1199,7 @@
     window.__SAMPLE__ = {
       state, loadSample, confirmDestination, enterConfirmedDept, makeAllGreen,
       confirmFact, confirmCanHand5, openWorkOrder, openDept, openDrawer, goLobby, openFront, render, closeDrawer,
-      focusExpert, revealExpertOutput, sendComposerDemo, goLobbyTodo
+      focusExpert, revealExpertOutput, sendComposerDemo, goLobbyTodo, enterFromGate
     };
   }
 

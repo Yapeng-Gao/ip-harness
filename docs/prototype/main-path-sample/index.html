@@ -8,7 +8,7 @@
 </head>
 <body>
   <div class="app">
-    <header class="shell-top">
+    <header class="shell-top" id="shellTop">
       <button type="button" class="brand-mark" id="btnBrand" title="回工作台">
         <span class="brand-logo">NT</span>
         <span class="brand-text">
@@ -16,7 +16,22 @@
           <span>专家向你汇报 · 关键处你来确认</span>
         </span>
       </button>
+      <nav class="shell-nav" aria-label="主导航">
+        <button type="button" class="nav-tab on" id="navLobby" data-testid="nav-lobby">大厅</button>
+        <button type="button" class="nav-tab" id="navCases" data-testid="nav-cases" title="案卷抽屉">案卷</button>
+      </nav>
+      <div class="shell-search" title="演示 · 全局搜索后期" data-testid="shell-search">
+        <span class="sk">⌘K</span>
+        <span>搜案卷 / 专家 / 请示…</span>
+      </div>
       <div class="shell-spacer"></div>
+      <button type="button" class="icon-btn" id="btnNotify" data-testid="btn-notify" title="要你拍的">
+        铃<span class="badge-dot" id="notifyDot">3</span>
+      </button>
+      <div class="role-toggle" data-testid="role-toggle">
+        <button type="button" class="role on" data-role="ent">企业研发</button>
+        <button type="button" class="role" data-role="agency">代理所</button>
+      </div>
       <div class="user-chip" title="领导＝当前用户">
         <span class="uav">你</span>
         <span>Leslie<span class="urole"> · 领导</span></span>
@@ -25,51 +40,96 @@
       <button type="button" id="btnOpenDoc">案卷抽屉</button>
     </header>
 
-    <!-- L1 大厅 -->
-    <section class="view on" id="viewLobby" data-testid="view-lobby">
-      <div class="view-body">
-        <div class="lobby-hero">
-          <div>
-            <h1>进 Novada Team 办事</h1>
-            <p>像带一支知产团队：前台弄清去向，八部各办一事；专家向你汇报，关键节点由你拍板。</p>
+
+    <!-- Gate · 登录/选工作台（对标 Kimi login 密度，不采集账户） -->
+    <section class="view on" id="viewGate" data-testid="view-gate">
+      <div class="gate-wrap">
+        <div class="gate-copy">
+          <div class="gate-kicker"><span class="live-dot"></span>进入你的知产工作空间</div>
+          <h1>继续推进工作，而不是重新开始。</h1>
+          <p>案卷、文书、证据、版本与确认记录，都在同一业务底座里延续。专家向你汇报，关键处你来拍板。</p>
+          <p class="tiny muted">身份决定空间 · 企业与代理所各看权限内的活。演示身份不采集账户。</p>
+        </div>
+        <div class="gate-card" data-testid="gate-card">
+          <div class="eyebrow">演示身份</div>
+          <h2>选择你的工作台</h2>
+          <div class="gate-ids" id="gateIds">
+            <button type="button" class="gate-id on" data-role="ent" data-testid="gate-ent">
+              <strong>企业研发</strong>
+              <span>溢彩科技 · Leslie</span>
+            </button>
+            <button type="button" class="gate-id" data-role="agency" data-testid="gate-agency">
+              <strong>代理所</strong>
+              <span>衡知代理 · 演示顾问</span>
+            </button>
           </div>
-          <div class="hero-meta">
-            <div class="goal-pills" id="goalPills">
-              <button type="button" class="goal-pill" data-goal="d4">写交底</button>
-              <button type="button" class="goal-pill" data-goal="d5">递申请</button>
-              <button type="button" class="goal-pill" data-goal="d6">答审查意见</button>
+          <div class="gate-mode" data-testid="gate-mode">
+            <button type="button" class="gm on" data-mode="existing">已有工作</button>
+            <button type="button" class="gm" data-mode="first">首次使用</button>
+          </div>
+          <p class="tiny muted" id="gateModeHint">进厅即见「要你拍的」与进行中案 · 不是空目录。</p>
+          <button type="button" class="primary gate-enter" id="btnGateEnter" data-testid="gate-enter">进入企业研发工作区 →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- L1 大厅 -->
+    <section class="view" id="viewLobby" data-testid="view-lobby">
+      <div class="view-body lobby-body">
+        <div class="lobby-greet" data-testid="lobby-greet">
+          <h1 id="lobbyGreetTitle">早上好，Leslie。</h1>
+          <p id="lobbyGreetSub">今天有 <strong id="lobbyTodoCount">3</strong> 件事需要你处理 · 专家在办，关键节点等你拍板。</p>
+        </div>
+
+        <div class="card entrust-card" data-testid="front-desk-card">
+          <div class="entrust-head">
+            <span class="avatar sm"><img src="./avatars/01.jpg" alt="" width="32" height="32" /></span>
+            <div>
+              <div class="eyebrow">统一委托 · 前台</div>
+              <strong>交给前台分诊</strong>
+            </div>
+            <span class="tiny muted">你确认去向后才进部 · 接待不派活</span>
+          </div>
+          <div class="entrust-box">
+            <textarea id="entrustInput" rows="2" placeholder="跨部门目标，或直接说：把这份技术说明写成交底…" data-testid="entrust-input"></textarea>
+            <div class="entrust-foot">
+              <div class="goal-pills" id="goalPills">
+                <button type="button" class="goal-pill dark" data-goal="d4">写交底</button>
+                <button type="button" class="goal-pill dark" data-goal="d5">递申请</button>
+                <button type="button" class="goal-pill dark" data-goal="d6">答审查意见</button>
+              </div>
+              <div class="entrust-acts">
+                <button type="button" class="ghost" id="btnLobbyD4">直达交底部</button>
+                <button type="button" class="primary" id="btnFront" data-testid="open-front">交给前台</button>
+              </div>
             </div>
           </div>
         </div>
-        <div class="lobby-grid">
-          <div>
-            <div class="card front-desk" data-testid="front-desk-card">
-              <div class="eyebrow">Start · 接待</div>
-              <h2>前台 · 从这儿开始</h2>
-              <p class="muted">上传材料 → 自动分析 → 建议去向 → <strong>你确认后再进部门</strong>。接待只引导，不进部派活。</p>
-              <div class="row-actions" style="margin-top:0">
-                <button type="button" class="primary" id="btnFront" data-testid="open-front">上传 / 开始</button>
-                <button type="button" class="ghost" id="btnLobbyD4">直达交底部</button>
-              </div>
-            </div>
-            <div class="card" style="margin-top:14px">
-              <div class="card-head">
-                <h2>要你拍的 / 进行中</h2>
-                <span class="tiny muted">不是运营看板</span>
-              </div>
-              <ul class="todo-list" id="todoList"></ul>
-            </div>
-          </div>
-          <div class="card">
+
+        <div class="lobby-grid agent-home">
+          <div class="card todo-card">
             <div class="card-head">
-              <h2>八个部门</h2>
-              <span class="tiny muted">①～⑧ 均可进 · ④⑤⑥ 厚做 · 其余薄占位</span>
+              <h2>要你拍的</h2>
+              <span class="tiny muted">按期限与流程影响 · 非运营看板</span>
             </div>
-            <div class="dept-wall" id="deptWall" data-testid="dept-wall"></div>
+            <ul class="todo-list" id="todoList"></ul>
+          </div>
+          <div class="card progress-card" data-testid="progress-rail">
+            <div class="card-head">
+              <h2>公司正在推进</h2>
+              <span class="tiny muted" id="progressMeta">进行中案 · 可点进部</span>
+            </div>
+            <div class="progress-rail" id="progressRail"></div>
+            <div class="sep"></div>
+            <div class="card-head" style="margin-bottom:8px">
+              <h2>八个部门</h2>
+              <span class="tiny muted">④⑤⑥ 厚 · 其余薄占位</span>
+            </div>
+            <div class="dept-wall dense" id="deptWall" data-testid="dept-wall"></div>
           </div>
         </div>
         <div class="case-bar" data-testid="case-bar">
-          <strong>案卷</strong>
+          <strong>案卷底座</strong>
           <span id="caseBarText" class="muted">尚无案卷</span>
         </div>
       </div>

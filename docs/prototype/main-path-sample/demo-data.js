@@ -62,9 +62,10 @@ window.DEMO = {
       { id: "advisor", name: "代理顾问", role: "成色视角（选做）", av: "顾", photo: "09.jpg", kind: "advisor", tag: "协", status: "idle", busy: "未请来", outputAnchor: "sec-problem", blurb: "成色视角 · 未请来" }
     ],
     feed: [
-      { who: "交底部负责人", expertId: "lead", text: "材料够开写。已请成稿专家出草案；润色待命；质检席单独盯红项。检索/顾问未请来——要加走建议后请示。" },
-      { who: "成稿专家", expertId: "writer", text: "草案已落主栏。效果数据标了「样机测」——若要硬数字请你补测报告。" },
-      { who: "质检专家", expertId: "qc", text: "q4 暂黄：效果依据偏弱。可认风险过，或补数据后再绿。" }
+      { who: "交底部负责人", expertId: "lead", text: "材料够开写。已请成稿专家出草案；润色待命；质检席单独盯红项。", tools: ["分活", "组编制"] },
+      { who: "成稿专家", expertId: "writer", text: "草案已落主栏。效果数据标了「样机测」——若要硬数字请你补测报告。", tools: ["读材料", "写 · 技术方案"] },
+      { who: "质检专家", expertId: "qc", text: "q4 暂黄：效果依据偏弱。可认风险过，或补数据后再绿。", tools: ["检 · q4", "标黄"] },
+      { who: "成稿专家", expertId: "writer", text: "对照图纸补了进水口错位描述。", tools: ["对照图纸", "改段"] }
     ],
     factAsk: {
       conclusion: "技术方案与「样机测」效果描述与本案材料一致，可据当前稿确认交底事实。",
@@ -80,9 +81,20 @@ window.DEMO = {
     }
   },
   lobbySeed: [
-    { id: "seed-fact", kind: "a", text: "交底部 · 电机冷却案：待确认交底事实", go: "d4-fact", cover: "fact" },
-    { id: "seed-hand", kind: "a", text: "交底部 · 全绿后待拍「可交⑤」（样例痕迹）", go: "d4-hand", cover: "hand" },
-    { id: "seed-reply", kind: "c", text: "答复部 · 审查意见剩余约 14 天（样例）", go: "d6", cover: "reply" }
+    { id: "seed-fact", kind: "a", tag: "技术事实", text: "交底部 · 电机冷却案：待确认交底事实", sub: "电机冷却结构 · 今日 14:30", go: "d4-fact", cover: "fact", cta: "核对依据" },
+    { id: "seed-hand", kind: "a", tag: "节点交付", text: "交底部 · 全绿后待拍「可交⑤」", sub: "交底质检 · 今日 17:00", go: "d4-hand", cover: "hand", cta: "去拍板" },
+    { id: "seed-reply", kind: "c", tag: "期限", text: "答复部 · 审查意见剩余约 14 天", sub: "电机冷却 · 截止 2026-11-12", go: "d6", cover: "reply", cta: "进答复部" }
+  ],
+  progressCases: [
+    { id: "pc1", title: "电机冷却结构 · 交底案", dept: "④ 交底部", status: "待你确认事实", go: "d4-fact" },
+    { id: "pc2", title: "模块化热管理 · 申请撰写", dept: "⑤ 申请部", status: "质检中", go: "d5" },
+    { id: "pc3", title: "低功耗膜分离 · 首通 OA", dept: "⑥ 答复部", status: "剩余 18 天", go: "d6" }
+  ],
+  frontTrajectory: [
+    { t: "收件", d: "已接收 3 份材料入案卷暂存" },
+    { t: "分类", d: "技术说明 · 图纸 · 口述补充" },
+    { t: "意图", d: "主假设：先写成交底再申请" },
+    { t: "建议", d: "主推 ④ 交底部 · 备选 ⑤ / ③" }
   ],
   apply: {
     understand: "本案核心：螺旋水道 + 端盖鳍片 + 双密封，解决高功率密度温升与泄漏。",
