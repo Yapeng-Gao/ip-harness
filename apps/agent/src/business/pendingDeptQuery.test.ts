@@ -7,7 +7,9 @@ import {
   confirmKindFromDeptQuery,
   deptSlugForConfirmKind,
   normalizeDeptQuery,
+  pendingAuditPath,
   pendingDetailPath,
+  workbenchAskPath,
 } from './pendingDeptQuery.ts'
 
 describe('pendingDeptQuery', () => {
@@ -38,6 +40,25 @@ describe('pendingDeptQuery', () => {
     assert.equal(
       pendingDetailPath('bcf-1', 'decision'),
       '/agent/pending/bcf-1?dept=intake',
+    )
+  })
+
+  it('builds workbench ask path (soft jump)', () => {
+    assert.equal(
+      workbenchAskPath('c1', 'disclosure_ready', { confirmId: 'bcf-1' }),
+      '/agent/cases/c1/depts/disclosure?ask=bcf-1',
+    )
+    assert.equal(
+      workbenchAskPath('c1', 'go_nogo'),
+      '/agent/cases/c1/depts/intake?ask=1',
+    )
+  })
+
+  it('builds audit path', () => {
+    assert.equal(pendingAuditPath('bcf-1'), '/agent/pending/bcf-1?audit=1')
+    assert.equal(
+      pendingAuditPath('bcf-1', 'disclosure'),
+      '/agent/pending/bcf-1?dept=disclosure&audit=1',
     )
   })
 })

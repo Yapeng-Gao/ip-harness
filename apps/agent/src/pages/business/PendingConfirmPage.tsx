@@ -22,7 +22,8 @@ import {
   confirmKindFromDeptQuery,
   deptSlugForConfirmKind,
   normalizeDeptQuery,
-  pendingDetailPath,
+  pendingAuditPath,
+  workbenchAskPath,
 } from '../../business/pendingDeptQuery'
 import { useEntryRole } from '../../business/useEntryRole'
 import { buildHitlAssistReview } from '../../business/hitlAssist'
@@ -54,12 +55,17 @@ export function PendingConfirmInboxPage() {
     return d ? deptLabel(d) : deptQuery
   })()
 
-  // 有 ?dept= 且恰一条 → 直达详情（原型按部 payload）
+  const auditMode = params.get('audit') === '1'
+  // 有 ?dept= 且恰一条 → 软跳工作台（审计模式才进详情）
   if (deptQuery && kindFilter && inbox.length === 1) {
     const only = inbox[0]!
     return (
       <Navigate
-        to={pendingDetailPath(only.id, deptQuery)}
+        to={
+          auditMode
+            ? pendingAuditPath(only.id, deptQuery)
+            : workbenchAskPath(only.caseId, only.kind, { confirmId: only.id })
+        }
         replace
       />
     )
@@ -73,6 +79,10 @@ export function PendingConfirmInboxPage() {
       data-dept-filter={deptQuery ?? ''}
     >
       <div className="mx-auto max-w-2xl">
+        <p className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600" data-testid="pending-soft-hint">
+          拍板主路径在部门工作台右栏。本页为审计列表
+          {auditMode ? '（audit）' : '——点条目会软跳回工作台'}。
+        </p>
         <div className="mb-3 text-[11px] text-slate-400">
           <Link to="/agent/cases" className="focus-ring rounded-sm hover:underline">
             多案流水
@@ -133,10 +143,16 @@ export function PendingConfirmInboxPage() {
               return (
                 <li key={item.id}>
                   <Link
-                    to={pendingDetailPath(
-                      item.id,
-                      deptSlugForConfirmKind(item.kind) ?? deptQuery,
-                    )}
+                    to={
+                      auditMode
+                        ? pendingAuditPath(
+                            item.id,
+                            deptSlugForConfirmKind(item.kind) ?? deptQuery,
+                          )
+                        : workbenchAskPath(item.caseId, item.kind, {
+                            confirmId: item.id,
+                          })
+                    }
                     className="focus-ring block rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-amber-300"
                     data-testid={`pending-row-${item.id}`}
                     data-dept={deptSlugForConfirmKind(item.kind) ?? ''}
@@ -192,6 +208,7 @@ export function PendingConfirmDetailPage() {
   )
 
   const item = getConfirm(confirmId)
+  const auditMode = searchParams.get('audit') === '1'
   const c = item ? getCase(item.caseId) : undefined
   const ownerSeat = item ? CONFIRM_META[item.kind].seatId : null
   const decision = item ? confirmDecisionMeta(item.kind) : null
@@ -240,12 +257,22 @@ export function PendingConfirmDetailPage() {
         <div className="text-center text-sm text-slate-600">
           找不到该确认项
           <div>
-            <Link to="/agent/pending" className="text-xs underline">
-              返回收件箱
+            <Link to="/agent/pending?audit=1" className="text-xs underline">
+              返回审计列表
             </Link>
           </div>
         </div>
       </div>
+    )
+  }
+
+  // P0③：主路径废独立确认页 —— 软跳回部门工作台右栏；?audit=1 留薄审计
+  if (item.status === 'pending' && !auditMode) {
+    return (
+      <Navigate
+        to={workbenchAskPath(item.caseId, item.kind, { confirmId: item.id })}
+        replace
+      />
     )
   }
 

@@ -13,8 +13,8 @@ import { OnboardingStrip } from '../components/departments/OnboardingStrip'
 type View = 'org' | 'network' | 'board'
 
 /**
- * 组织编制 · /agent/departments
- * 全库 HR/配置旁路：常设部门与专家 skill。作业入口在「案子 → 公司首页七部」。
+ * 专业/编制 · /agent/departments
+ * 对齐编制总览：让该部能开工。作业主路径仍是大厅 → 公司案 → 部门工作台。
  */
 export function DepartmentsPage() {
   const { enabledDepts } = useOrgConfig()
@@ -44,7 +44,7 @@ export function DepartmentsPage() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2">
           <Building2 className="h-4 w-4 text-slate-600" strokeWidth={1.75} aria-hidden />
           <h1 className="text-[16px] font-semibold tracking-tight text-slate-900">
-            组织编制
+            专业 / 编制
           </h1>
           <span className="text-[11px] text-slate-500">
             全库配置旁路 · 作业以{' '}
@@ -60,12 +60,12 @@ export function DepartmentsPage() {
 
           <div className="ml-auto flex items-center gap-2">
             <Link
-              to="/agent/pending"
+              to="/agent/pending?audit=1"
               className="focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2.5 text-[12px] font-medium text-slate-700 hover:bg-slate-50"
               data-testid="departments-pending-link"
             >
               <ListChecks className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
-              待我确认
+              待确认审计
               {counts.total > 0 && (
                 <span className="tabular rounded-full bg-amber-600 px-1.5 py-px text-[10px] font-semibold text-white">
                   {counts.total > 9 ? '9+' : counts.total}

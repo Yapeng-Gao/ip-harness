@@ -10,7 +10,7 @@ import { orgDeptByLeadSeat } from '../../departments/orgDepts'
 import { deptLabel } from '../../business/deptRoster'
 import {
   deptSlugForConfirmKind,
-  pendingDetailPath,
+  workbenchAskPath,
 } from '../../business/pendingDeptQuery'
 
 /**
@@ -37,10 +37,10 @@ export function HomeTodoStrip() {
           暂无待确认——部门交卷后会停在这里请你拍板
         </span>
         <Link
-          to="/agent/pending"
+          to="/agent/pending?audit=1"
           className="focus-ring ml-auto shrink-0 rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:underline"
         >
-          全部待办
+          审计列表
         </Link>
       </div>
     )
@@ -60,11 +60,11 @@ export function HomeTodoStrip() {
           {pending.length}
         </span>
         <Link
-          to="/agent/pending"
+          to="/agent/pending?audit=1"
           className="focus-ring ml-auto rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-amber-800 hover:underline"
           data-testid="home-todo-all"
         >
-          全部
+          审计
         </Link>
       </div>
       <ul className="space-y-0.5">
@@ -83,10 +83,9 @@ export function HomeTodoStrip() {
           return (
             <li key={item.id}>
               <Link
-                to={pendingDetailPath(
-                  item.id,
-                  deptSlugForConfirmKind(item.kind),
-                )}
+                to={workbenchAskPath(item.caseId, item.kind, {
+                  confirmId: item.id,
+                })}
                 className="focus-ring flex min-h-8 items-start gap-2 rounded-[var(--radius-sm)] px-1.5 py-1 text-[12px] leading-snug text-amber-950 hover:bg-amber-100/70"
                 data-testid={`home-todo-${item.id}`}
                 data-dept={deptSlugForConfirmKind(item.kind) ?? ''}

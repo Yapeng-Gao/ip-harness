@@ -31,10 +31,10 @@ export function WelcomePage() {
       <div className="mx-auto w-full max-w-4xl">
         <div className="mb-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <div className="shell-brand-mark flex h-8 w-8 items-center justify-center text-[11px] font-semibold">
-              IP
+            <div className="shell-brand-mark flex h-8 w-8 items-center justify-center text-[10px] font-semibold">
+              NT
             </div>
-            <span className="text-sm font-semibold text-slate-800">样机 · 宣传站</span>
+            <span className="text-sm font-semibold text-slate-800">Novada Team · 宣传站</span>
           </div>
           <Link
             to="/agent/login"

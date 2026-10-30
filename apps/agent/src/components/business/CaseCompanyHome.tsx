@@ -31,6 +31,7 @@ import {
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import { DeptStatusDot } from '../departments/DeptStatusDot'
+import { workbenchAskPath } from '../../business/pendingDeptQuery'
 import { DeptSideDrawer } from '../departments/DeptSideDrawer'
 import { ExpertAvatar } from '../departments/ExpertAvatar'
 
@@ -104,7 +105,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             className="text-[13px] font-medium text-slate-800"
             data-testid="company-tagline"
           >
-            一案一家外挂 IP 部
+            一案一家 Novada Team
           </p>
           <span
             className="font-mono text-[11px] text-slate-400"
@@ -114,7 +115,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </span>
         </div>
         <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
-          七部等宽总览。点某部开右侧抽屉看专家与交卷态；主按钮去当前部门干活。
+          案况总览。点某部开抽屉；主按钮去当前部门——拍板在工作台右栏。
         </p>
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
           <h2 className="text-[16px] font-semibold text-slate-900">{title}</h2>
@@ -138,7 +139,13 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
           <Link
-            to={pending[0] ? `/agent/pending/${pending[0].id}` : '/agent/pending'}
+            to={
+              pending[0]
+                ? workbenchAskPath(caseId, pending[0].kind, {
+                    confirmId: pending[0].id,
+                  })
+                : currentHref
+            }
             className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-950"
             data-testid="company-pending-link"
           >
@@ -181,7 +188,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             id="seven-dept-map-title"
             className="text-[13px] font-semibold text-slate-900"
           >
-            上手七部
+            主链部门
           </h3>
           <span className="text-[11px] text-slate-500">
             交底 → 查新 → 立项 → 撰写 → 附图 → 递交 → 答复

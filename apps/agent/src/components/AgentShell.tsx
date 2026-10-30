@@ -133,15 +133,15 @@ export function AgentShell() {
       : inCatalog
         ? '专家工作台'
         : inDepartments
-          ? '组织编制'
+          ? '专业 / 编制'
           : inAssets
             ? '资产'
             : inBusiness
               ? entryRole === 'agency'
                 ? '案盘'
-                : activeBizCase?.title ?? '外挂 IP 部'
+                : activeBizCase?.title ?? 'Novada Team'
               : inHome
-                ? '产品首页'
+                ? '大厅'
                 : inPatentProject
                   ? '项目'
                   : '工作台'
@@ -165,8 +165,8 @@ export function AgentShell() {
         data-entry-role={entryRole}
       >
         <div className="flex items-center gap-2">
-          <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[10px] font-semibold">
-            IP
+          <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[9px] font-semibold" title="Novada Team">
+            NT
           </div>
           <div className="text-sm font-semibold tracking-tight text-slate-900">
             {pageTitle}

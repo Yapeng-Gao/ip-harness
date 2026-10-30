@@ -588,7 +588,7 @@ export function BusinessCaseSidebar() {
 
         {pending.length > 0 && (
           <Link
-            to={`/agent/pending?caseId=${encodeURIComponent(activeCaseId!)}`}
+            to={`/agent/pending?audit=1&caseId=${encodeURIComponent(activeCaseId!)}`}
             className="mt-2 flex items-center justify-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-1.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100"
             data-testid="business-case-pending-link"
           >

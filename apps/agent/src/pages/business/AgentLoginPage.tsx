@@ -49,19 +49,19 @@ export function AgentLoginPage() {
     >
       <div className="w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[var(--shadow-rest)] sm:p-8">
         <div className="mb-6 flex items-center gap-2">
-          <div className="shell-brand-mark flex h-8 w-8 items-center justify-center text-[11px] font-semibold">
-            IP
+          <div className="shell-brand-mark flex h-8 w-8 items-center justify-center text-[10px] font-semibold">
+            NT
           </div>
           <div>
             <div className="text-base font-semibold tracking-tight text-slate-900">
-              外挂知识产权部
+              Novada Team
             </div>
-            <p className="text-xs text-slate-500">把知产工作当成公司里的一个部门来跑</p>
+            <p className="text-xs text-slate-500">专家向你汇报 · 按部门办事</p>
           </div>
         </div>
 
         <p className="mb-4 text-sm text-slate-600">
-          选择入口角色后进入产品首页；再从首页按角色进入案盘或公司首页。
+          选择入口角色后进入 Novada Team 大厅；再从大厅进部门或公司案首页。
         </p>
 
         <fieldset className="mb-5">

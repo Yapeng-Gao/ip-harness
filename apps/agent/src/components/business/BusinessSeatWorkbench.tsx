@@ -1,3 +1,4 @@
+import { workbenchAskPath } from '../../business/pendingDeptQuery'
 import { Link } from 'react-router-dom'
 import {
   useEffect,
@@ -662,7 +663,9 @@ export function BusinessSeatWorkbench({
             {pendingForSeat.map((item) => (
               <li key={item.id}>
                 <Link
-                  to={`/agent/pending/${item.id}`}
+                  to={workbenchAskPath(item.caseId, item.kind, {
+                    confirmId: item.id,
+                  })}
                   className="text-xs font-medium text-amber-950 underline"
                   data-testid={`business-seat-pending-${item.id}`}
                 >

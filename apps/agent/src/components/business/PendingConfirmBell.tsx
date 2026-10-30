@@ -10,8 +10,8 @@ export function PendingConfirmBell() {
   const pending = getPendingConfirms(activeCaseId)
   const n = pending.length
   const to = activeCaseId
-    ? `/agent/pending?caseId=${encodeURIComponent(activeCaseId)}`
-    : '/agent/pending'
+    ? `/agent/pending?audit=1&caseId=${encodeURIComponent(activeCaseId)}`
+    : '/agent/pending?audit=1'
   return (
     <Link
       to={to}

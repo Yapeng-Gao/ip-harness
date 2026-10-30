@@ -55,3 +55,25 @@ export function pendingDetailPath(
   if (!slug) return base
   return `${base}?dept=${encodeURIComponent(slug)}`
 }
+
+/** 拍板主路径：回对应部门工作台右栏（真源废独立确认页主路径） */
+export function workbenchAskPath(
+  caseId: string,
+  kind: BusinessConfirmKind,
+  opts?: { confirmId?: string | null },
+): string {
+  const slug = deptSlugForConfirmKind(kind)
+  if (!slug) return `/agent/cases/${encodeURIComponent(caseId)}`
+  const q = new URLSearchParams()
+  q.set('ask', opts?.confirmId?.trim() || '1')
+  return `/agent/cases/${encodeURIComponent(caseId)}/depts/${slug}?${q.toString()}`
+}
+
+/** 薄审计面（不抢拍板）；主路径请用 workbenchAskPath */
+export function pendingAuditPath(
+  confirmId: string,
+  deptSlugParam?: string | null,
+): string {
+  const base = pendingDetailPath(confirmId, deptSlugParam)
+  return base.includes('?') ? `${base}&audit=1` : `${base}?audit=1`
+}

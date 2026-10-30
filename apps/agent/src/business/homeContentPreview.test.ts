@@ -74,17 +74,17 @@ describe('homeContentPreview (§4.0p / 批 A shelf narrative)', () => {
   })
 
   it('category title is a short shelf headline', () => {
-    assert.ok(HOME_CATEGORY_TITLE.includes('知识产权') || HOME_CATEGORY_TITLE.includes('专利'))
+    assert.ok(HOME_CATEGORY_TITLE.includes('Novada') || HOME_CATEGORY_TITLE.includes('Team'))
     assert.ok(HOME_CATEGORY_TITLE.length <= 20)
-    assert.equal(HOME_CATEGORY_TITLE, '外挂知识产权部')
+    assert.equal(HOME_CATEGORY_TITLE, 'Novada Team')
   })
 
-  it('positioning and CTAs match批 A copy', () => {
-    assert.ok(HOME_POSITIONING.includes('七个可交卷的部门'))
-    assert.ok(HOME_POSITIONING.includes('你来拍板'))
+  it('positioning and CTAs match Novada Team / 批 A copy', () => {
+    assert.ok(HOME_POSITIONING.includes('Novada Team'))
+    assert.ok(HOME_POSITIONING.includes('请示你拍') || HOME_POSITIONING.includes('你来拍板'))
     assert.equal(HOME_CTA_PRIMARY, '登录干活')
     assert.ok(HOME_CTA_SECONDARY.includes('货架'))
-    assert.ok(HOME_FOOTER.includes('宣传站'))
+    assert.ok(HOME_FOOTER.includes('Novada Team') || HOME_FOOTER.includes('宣传站'))
     assert.ok(HOME_FOOTER.includes('无交卷'))
   })
 

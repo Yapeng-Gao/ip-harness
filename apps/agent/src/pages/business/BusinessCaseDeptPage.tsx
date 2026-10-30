@@ -50,9 +50,19 @@ import {
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import type { ProjectExpertId } from '../../projects/types'
-import { CheckCircle2, Circle, ArrowRight, Building2, PanelLeft, MessageSquare, X } from 'lucide-react'
+import { ArrowRight, Building2, PanelLeft, MessageSquare, X } from 'lucide-react'
 import { formatArtifactSavedAt } from '../../business/artifactVersions'
-import { pendingDetailPath } from '../../business/pendingDeptQuery'
+import {
+  pendingAuditPath,
+  workbenchAskPath,
+} from '../../business/pendingDeptQuery'
+import {
+  isThinShellDept,
+  resolveCurrentStep,
+  stepfulKindForDept,
+  stepsForKind,
+  THIN_LINE_BY_DEPT,
+} from '../../business/workbenchSteps'
 
 function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
   const known = DEPT_HANDOFF[deptId]
@@ -87,7 +97,6 @@ export function BusinessCaseDeptPage() {
     getProgress,
     getPendingConfirms,
     primaryCta,
-    stageLabel,
     lastReturnHint,
     clearReturnHint,
   } = useBusinessCases()
@@ -138,6 +147,10 @@ export function BusinessCaseDeptPage() {
   /** 窄屏：左目录可收起；右栏改底抽屉（G1 交卷可达） */
   const [leftOpen, setLeftOpen] = useState(true)
   const [mobileRightOpen, setMobileRightOpen] = useState(false)
+  /** 演示：强制当前步（不改闸口真值） */
+  const [forceStepId, setForceStepId] = useState<string | null>(
+    params.get('step') || null,
+  )
 
   const activeSeat: ProjectExpertId = (() => {
     if (pickedSeat && seatIds.includes(pickedSeat)) return pickedSeat
@@ -153,6 +166,13 @@ export function BusinessCaseDeptPage() {
       setMobileRightOpen(true)
     }
   }, [seatFromUrl, seatIds, pickedSeat])
+
+  const askParam = params.get('ask')
+  useEffect(() => {
+    if (!askParam) return
+    setSeatOpen(true)
+    setMobileRightOpen(true)
+  }, [askParam])
 
   const thread = getThread(caseId, activeSeat)
   const stepIndex = thread?.stepIndex ?? 0
@@ -232,8 +252,14 @@ export function BusinessCaseDeptPage() {
   }, [handoff.deliverable, versions])
 
   const onSubmit = () => {
+    if (cta.action === 'confirm' && cta.confirmId && kindForDept) {
+      navigate(
+        workbenchAskPath(caseId, kindForDept, { confirmId: cta.confirmId }),
+      )
+      return
+    }
     if (cta.action === 'confirm' && cta.confirmId) {
-      navigate(pendingDetailPath(cta.confirmId, slug || undefined))
+      navigate(pendingAuditPath(cta.confirmId, slug || undefined))
       return
     }
     if (!canSubmit) return
@@ -345,6 +371,30 @@ export function BusinessCaseDeptPage() {
     }
   })
 
+  const stepKind = stepfulKindForDept(dept.id)
+  const thinShell = isThinShellDept(dept.id)
+  const thinMeta = THIN_LINE_BY_DEPT[dept.id]
+  const currentStep =
+    stepKind != null
+      ? resolveCurrentStep(stepKind, {
+          stepIndex,
+          awaitingConfirm: awaitingThis,
+          leadDone,
+          forceStepId,
+          deptId: dept.id,
+        })
+      : null
+  const stepList = stepKind != null ? stepsForKind(stepKind) : []
+  const qualifyLine =
+    thinMeta?.line ||
+    (stepKind === 'd4'
+      ? '交底质检全绿'
+      : stepKind === 'd5'
+        ? '申请文件可递交（过线）'
+        : stepKind === 'd6'
+          ? '本轮答复可递交（D 过线）'
+          : handoff.deliverable.slice(0, 36) || '本站合格线')
+
   const centerTitle =
     selectedMaterialId === 'attachments'
       ? '附件'
@@ -381,6 +431,9 @@ export function BusinessCaseDeptPage() {
       data-layout="cursor-three-pane"
       data-left-open={leftOpen ? '1' : '0'}
       data-mobile-right-open={mobileRightOpen ? '1' : '0'}
+      data-step-kind={stepKind ?? 'thin'}
+      data-step-id={currentStep?.id ?? ''}
+      data-ask={askParam ?? ''}
     >
       {/* 顶栏：案 / 部门 / 铃铛 / 期限；不放交卷主 CTA（§2） */}
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
@@ -400,38 +453,41 @@ export function BusinessCaseDeptPage() {
             <h1 className="text-[18px] font-semibold text-slate-900">
               {deptLabel(dept)}
             </h1>
-            <p className="mt-0.5 max-w-xl text-xs text-slate-500">
-              {handoff.purpose || dept.blurb}
-              {' · '}
-              {stageLabel(prog.stageId)}
+            <p
+              className="mt-0.5 max-w-xl text-xs text-slate-600"
+              data-testid="dept-qualify-line"
+            >
+              合格线：{qualifyLine}
               {st ? ` · ${st}` : ''}
+              {currentStep ? ` · 本步 ${currentStep.label}` : thinShell ? ' · 薄部同壳' : ''}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
+              to="/agent"
+              className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
+              data-testid="dept-back-hall"
+            >
+              回大厅
+            </Link>
+            <Link
               to={companyHref}
               className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
             >
-              回公司首页
+              公司首页
             </Link>
             <Link
               to={
-                pending[0]
-                  ? pendingDetailPath(pending[0].id, slug || undefined)
-                  : slug
-                    ? `/agent/pending?dept=${encodeURIComponent(slug)}`
-                    : '/agent/pending'
+                pending[0] && kindForDept
+                  ? workbenchAskPath(caseId, pending[0].kind, {
+                      confirmId: pending[0].id,
+                    })
+                  : `/agent/pending?audit=1&caseId=${encodeURIComponent(caseId)}`
               }
               className="btn-press focus-ring rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] font-medium text-amber-950"
               data-testid="dept-pending-link"
             >
-              铃铛{pending.length > 0 ? ` · ${pending.length}` : ''}
-            </Link>
-            <Link
-              to={`/agent/cases/${caseId}/docket`}
-              className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
-            >
-              期限
+              要你拍{pending.length > 0 ? ` · ${pending.length}` : ''}
             </Link>
           </div>
         </header>
@@ -482,58 +538,125 @@ export function BusinessCaseDeptPage() {
             data-testid="dept-deliverable"
             aria-labelledby="dept-output-title"
           >
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="flex items-baseline justify-between gap-2">
+            {stepKind && currentStep && selectedMaterialId === 'deliverable' ? (
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div className="flex flex-wrap items-center gap-2" data-testid="dept-step-demo">
+                  <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                    本步
+                  </span>
+                  {stepList.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setForceStepId(s.id)}
+                      className={`btn-press focus-ring rounded-full border px-2 py-0.5 text-[10px] ${
+                        s.id === currentStep.id
+                          ? 'border-slate-900 bg-slate-900 text-white'
+                          : 'border-slate-200 bg-white text-slate-600'
+                      }`}
+                      data-testid={`dept-step-${s.id}`}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setForceStepId(null)}
+                    className="btn-press focus-ring rounded-full border border-dashed border-slate-300 px-2 py-0.5 text-[10px] text-slate-500"
+                    data-testid="dept-step-auto"
+                  >
+                    跟闸
+                  </button>
+                </div>
+                <div className="mt-3 flex items-baseline justify-between gap-2">
+                  <h2
+                    id="dept-output-title"
+                    className="text-[13px] font-semibold text-slate-900"
+                  >
+                    {currentStep.label}
+                    <span className="ml-2 text-[11px] font-normal text-slate-500">
+                      {currentStep.hint}
+                    </span>
+                  </h2>
+                  <span className="text-[10px] text-slate-400">
+                    主栏=本步交付物 · 拍板在右栏
+                  </span>
+                </div>
+                <p
+                  className="mt-1 text-[12px] leading-relaxed text-slate-600"
+                  data-testid="dept-step-caption"
+                >
+                  {currentStep.mainFocus}
+                </p>
+                <pre
+                  className="mt-3 max-h-[min(70vh,36rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
+                  data-testid="dept-output-body"
+                >
+                  {currentStep.mainBody}
+                </pre>
+                {askParam ? (
+                  <p
+                    className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-950"
+                    data-testid="dept-ask-banner"
+                  >
+                    有要你拍的硬请示 —— 请看右侧对话（跟本部门负责人）。
+                  </p>
+                ) : null}
+              </div>
+            ) : thinShell && selectedMaterialId === 'deliverable' ? (
+              <div
+                className="rounded-xl border border-dashed border-slate-300 bg-white p-6 shadow-sm"
+                data-testid="dept-thin-empty"
+              >
                 <h2
                   id="dept-output-title"
-                  className="text-[13px] font-semibold text-slate-900"
+                  className="text-[14px] font-semibold text-slate-900"
                 >
-                  {centerTitle}
+                  {deptLabel(dept)} · 同壳空态
                 </h2>
-                <span className="text-[10px] text-slate-400">
-                  中栏=产出正文 · 对话/交卷在右栏
-                </span>
-              </div>
-              {selectedMaterialId === 'deliverable' ? (
-                <p className="mt-1 text-[12px] leading-relaxed text-slate-600">
-                  {handoff.deliverable}
+                <p className="mt-2 text-[12px] text-slate-600" data-testid="dept-qualify-line-body">
+                  合格线：{thinMeta?.line ?? qualifyLine}
                 </p>
-              ) : null}
-              <pre
-                className="mt-3 max-h-[min(70vh,36rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
-                data-testid="dept-output-body"
-              >
-                {centerBody}
-              </pre>
-              {/* 与当前产出相关的齐套可附旁，不抢阅读 */}
-              {selectedMaterialId === 'deliverable' ? (
-                <ul
-                  className="mt-3 flex flex-wrap gap-2"
-                  data-testid="dept-checklist-inline"
-                  aria-label="与本产出相关的齐套项"
+                {thinMeta?.ban ? (
+                  <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+                    边界：{thinMeta.ban}
+                  </p>
+                ) : null}
+                <p className="mt-4 text-[12px] text-slate-500">
+                  薄部一期可进得去；主交付物未满时不堆假进度墙。硬请示仍在右栏对话。
+                </p>
+                {askParam ? (
+                  <p
+                    className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-950"
+                    data-testid="dept-ask-banner"
+                  >
+                    有要你拍的硬请示 —— 请看右侧对话。
+                  </p>
+                ) : null}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div className="flex items-baseline justify-between gap-2">
+                  <h2
+                    id="dept-output-title"
+                    className="text-[13px] font-semibold text-slate-900"
+                  >
+                    {centerTitle}
+                  </h2>
+                  <span className="text-[10px] text-slate-400">
+                    中栏=产出正文 · 对话在右栏
+                  </span>
+                </div>
+                <pre
+                  className="mt-3 max-h-[min(70vh,36rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
+                  data-testid="dept-output-body"
                 >
-                  {checklistItems.map((item) => (
-                    <li
-                      key={item.label}
-                      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] ${
-                        item.done
-                          ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                          : 'border-slate-200 bg-white text-slate-500'
-                      }`}
-                    >
-                      {item.done ? (
-                        <CheckCircle2 className="h-3 w-3" aria-hidden />
-                      ) : (
-                        <Circle className="h-3 w-3" aria-hidden />
-                      )}
-                      {item.label}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
+                  {centerBody}
+                </pre>
+              </div>
+            )}
             <p className="text-center text-[11px] text-slate-400">
-              演示环境：进度与确认为样机闭环，非真递交局端。
+              演示环境：按步主栏 · 非真递交局端。
             </p>
           </section>
         </main>
@@ -748,7 +871,13 @@ export function BusinessCaseDeptPage() {
                     </p>
                     {cta.confirmId ? (
                       <Link
-                        to={pendingDetailPath(cta.confirmId, slug || undefined)}
+                        to={
+                          kindForDept
+                            ? workbenchAskPath(caseId, kindForDept, {
+                                confirmId: cta.confirmId,
+                              })
+                            : pendingAuditPath(cta.confirmId, slug || undefined)
+                        }
                         className="btn-press focus-ring mt-2 inline-flex rounded-full bg-amber-600 px-3 py-1 text-[11px] font-semibold text-white"
                         data-testid="dept-right-confirm-link"
                       >
@@ -842,7 +971,13 @@ export function BusinessCaseDeptPage() {
                       }
                       onAdvanced={(confirmId) => {
                         if (confirmId)
-                          navigate(pendingDetailPath(confirmId, slug || undefined))
+                          navigate(
+                            kindForDept
+                              ? workbenchAskPath(caseId, kindForDept, {
+                                  confirmId,
+                                })
+                              : pendingAuditPath(confirmId, slug || undefined),
+                          )
                       }}
                       onSwitchSeat={switchSeat}
                     />

@@ -9,11 +9,11 @@ import type { OrgDeptId } from '../departments/orgDepts'
 import { MAIN_CHAIN_DEPT_IDS, MAIN_CHAIN_DEPTS } from '../departments/orgDepts'
 
 /** Hero 大标题 */
-export const HOME_CATEGORY_TITLE = '外挂知识产权部'
+export const HOME_CATEGORY_TITLE = 'Novada Team'
 
 /** 定位句（含「要干活，先登录。」） */
 export const HOME_POSITIONING =
-  '把办专利的全流程，拆成七个可交卷的部门。专家出建议稿，你来拍板。要干活，先登录。'
+  'Novada Team · 专家向你汇报。把办专利全流程拆成八个部门；关键结论请示你拍。要干活，先登录。'
 
 /** @deprecated 兼容旧名；内容即定位句短品类，勿当口号堆 */
 export const HOME_CATEGORY_SUB = '办专利全流程'
@@ -21,10 +21,10 @@ export const HOME_CATEGORY_SUB = '办专利全流程'
 /** 主 CTA */
 export const HOME_CTA_PRIMARY = '登录干活'
 /** 次 CTA（锚 #shelf） */
-export const HOME_CTA_SECONDARY = '先看七部货架'
+export const HOME_CTA_SECONDARY = '先看八部货架'
 
 /** 页脚 */
-export const HOME_FOOTER = '宣传站 · 未登录可达 · 无交卷 / 齐套 / 拍板'
+export const HOME_FOOTER = 'Novada Team · 宣传站 · 未登录可达 · 无交卷 / 齐套 / 拍板'
 
 /** E · 示范案（高亮墙用；假数据，非真作业） */
 export const HOME_DEMO_CASE = {
