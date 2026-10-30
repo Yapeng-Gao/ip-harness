@@ -288,19 +288,23 @@ try {
     && await page.locator('[data-testid="ec-compare"]').count() >= 1
     && await page.locator('[data-testid="ec-confidence"]').count() >= 1);
   check("P0 D4-哲3 无一对全绿钮", await page.locator('[data-testid="make-green"]').count() === 0);
-  check("P0 D4-哲3 黄项处理入口", await page.locator('[data-testid="qc-yellow-fix"]').count() === 1);
+  /* 真源步序：进部在事实确认 — 黄项/可交⑤不在本步 */
+  check("D4 默认本步事实确认", await page.locator('[data-testid="d4-step-fact"].on').count() === 1);
+  check("D4 事实步无黄项墙", await page.locator('[data-testid="qc-yellow-form"]').count() === 0);
+  check("D4 事实步无可交⑤钮", await page.locator('[data-testid="confirm-hand5"]').count() === 0);
 
-  const handDisabled = await page.locator('[data-testid="confirm-hand5"][disabled]').count();
-  check("D4a hand5 disabled before gates", handDisabled === 1);
-  await page.click('[data-testid="qc-fix-data"]');
-  await sleep(200);
-  check("P0 D4-哲3 补数据后全绿", await page.locator('[data-testid="qc-all-green"]').count() === 1);
-  const stillDisabled = await page.locator('[data-testid="confirm-hand5"][disabled]').count();
-  check("D4a still blocked without fact confirm", stillDisabled === 1);
   await page.click('[data-testid="confirm-fact"]');
   await sleep(200);
   const jFact = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("事实")));
   check("P0 D4-哲4/HA-哲4 事实确认写判断档案", jFact);
+  check("D4 事实后进质检步", await page.locator('[data-testid="d4-step-qc"].on').count() === 1);
+  check("P0 D4-哲3 黄项处理入口", await page.locator('[data-testid="qc-yellow-form"]').count() === 1);
+  check("D4 质检步无可交⑤", await page.locator('[data-testid="confirm-hand5"]').count() === 0);
+
+  await page.click('[data-testid="qc-fix-data"]');
+  await sleep(200);
+  check("P0 D4-哲3 补数据后全绿", await page.locator('[data-testid="qc-all-green"]').count() === 1);
+  check("D4 全绿后进可交⑤步", await page.locator('[data-testid="d4-step-hand"].on').count() === 1);
   await page.click('[data-testid="confirm-hand5"]');
   await sleep(200);
   const jHand = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("可交")));
@@ -359,9 +363,36 @@ try {
     s.openDept("d5", { fromWorkOrder: true });
   });
   await sleep(250);
-  check("D5 shows 当前步薄条", await page.locator('[data-testid="d5-abc"]').count() === 1);
+  check("D5 shows 本步条", await page.locator('[data-testid="d5-abc"]').count() === 1);
+  check("D5 本步演示切换", await page.locator('[data-testid="d5-step-demo"]').count() === 1);
   check("D5 侧栏 composer", await page.locator('[data-testid="d5-composer"]').count() === 1);
-  check("D5 文书 tabs", await page.locator('[data-testid="d5-doc-tabs"]').count() === 1);
+  check("D5 默认 A 理解步", await page.locator('[data-testid="d5-step-a"].on').count() === 1);
+  check("D5 A 步无撰写 tabs 可见", await page.evaluate(() => {
+    const t = document.querySelector('[data-testid="d5-doc-tabs"]');
+    return !t || t.hidden || getComputedStyle(t).display === "none";
+  }));
+  check("D5 A 步无申不申钮", await page.locator('[data-testid="confirm-apply-yes"]').count() === 0);
+  check("D5 seg A/B/C anchors retained", (await page.locator('[data-testid="seg-a"]').count()) === 1
+    && (await page.locator('[data-testid="seg-b"]').count()) === 1
+    && (await page.locator('[data-testid="seg-c"]').count()) === 1);
+  await page.click('[data-testid="confirm-understand"]');
+  await sleep(150);
+  check("D5 A后进 B", await page.locator('[data-testid="d5-step-b"].on').count() === 1);
+  const bYesEnabled = await page.locator('[data-testid="confirm-apply-yes"]:not([disabled])').count();
+  check("B enabled after A confirm", bYesEnabled === 1);
+  check("P0 HA-哲1 申不申依据链", await page.locator('[data-testid="apply-evidence"]').count() === 1);
+  check("B 步无递交钮", await page.locator('[data-testid="confirm-submit5"]').count() === 0);
+  await page.click('[data-testid="confirm-apply-yes"]');
+  await sleep(150);
+  const jApply = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("申不申") && j.option.includes("申请")));
+  check("P0 HA-哲4 申不申写判断档案", jApply);
+  check("D5 B后进 C 过线", await page.locator('[data-testid="d5-step-c-qc"].on').count() === 1);
+  const submitBefore = await page.locator('[data-testid="confirm-submit5"][disabled]').count();
+  check("C 确认递交 disabled before overline", submitBefore === 1);
+  check("D5 C tabs 可见", await page.evaluate(() => {
+    const t = document.querySelector('[data-testid="d5-doc-tabs"]');
+    return !!(t && !t.hidden);
+  }));
   check("D5 权项分页默认", await page.locator('[data-testid="d5-doc-claims"]').count() === 1);
   await page.click('[data-testid="d5-tab-spec"]');
   await sleep(150);
@@ -371,22 +402,6 @@ try {
   check("D5 差分对照可切", await page.locator('[data-testid="d5-doc-diff"]').count() === 1);
   await page.click('[data-testid="d5-tab-claims"]');
   await sleep(100);
-  check("D5 seg A/B/C anchors retained", (await page.locator('[data-testid="seg-a"]').count()) === 1
-    && (await page.locator('[data-testid="seg-b"]').count()) === 1
-    && (await page.locator('[data-testid="seg-c"]').count()) === 1);
-  const bYesDisabled = await page.locator('[data-testid="confirm-apply-yes"][disabled]').count();
-  check("B 申不申 disabled before A", bYesDisabled === 1);
-  await page.click('[data-testid="confirm-understand"]');
-  await sleep(150);
-  const bYesEnabled = await page.locator('[data-testid="confirm-apply-yes"]:not([disabled])').count();
-  check("B enabled after A confirm", bYesEnabled === 1);
-  check("P0 HA-哲1 申不申依据链", await page.locator('[data-testid="apply-evidence"]').count() === 1);
-  const submitBefore = await page.locator('[data-testid="confirm-submit5"][disabled]').count();
-  check("C 确认递交 disabled before overline", submitBefore === 1);
-  await page.click('[data-testid="confirm-apply-yes"]');
-  await sleep(150);
-  const jApply = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("申不申") && j.option.includes("申请")));
-  check("P0 HA-哲4 申不申写判断档案", jApply);
   await page.click('[data-testid="make-overline"]');
   await sleep(150);
   check("P0 HA-哲2 递交清单", await page.locator('[data-testid="submit5-manifest"]').count() === 1);
@@ -418,16 +433,17 @@ try {
   await sleep(200);
   check("D6 gates visible", await page.locator('[data-testid="d6-gates"]').count() === 1);
   check("D6 侧栏 composer", await page.locator('[data-testid="d6-composer"]').count() === 1);
-  check("D6 文书 tabs", await page.locator('[data-testid="d6-doc-tabs"]').count() === 1);
-  await page.click('[data-testid="d6-tab-diff"]');
-  await sleep(150);
-  check("D6 差分对照可切", await page.locator('[data-testid="d6-doc-diff"]').count() === 1);
-  await page.click('[data-testid="d6-tab-reply"]');
+  check("D6 本步条", await page.locator('[data-testid="d6-step-bar"]').count() === 1);
+  check("D6 默认 A 争点", await page.locator('[data-testid="d6-step-a"].on').count() === 1);
+  check("D6 A 步 tabs 隐藏", await page.evaluate(() => {
+    const t = document.querySelector('[data-testid="d6-doc-tabs"]');
+    return !t || t.hidden;
+  }));
   await sleep(100);
-  const limDisabled = await page.locator('[data-testid="confirm-limit"][disabled]').count();
-  check("⑥ limit disabled before contention", limDisabled === 1);
+  check("⑥ A步无策略钮", await page.locator('[data-testid="confirm-limit"]').count() === 0);
   await page.click('[data-testid="confirm-contention"]');
   await sleep(150);
+  check("⑥ A后进 B", await page.locator('[data-testid="d6-step-b"].on').count() === 1);
   check("P0 HA-哲3 策略双选项", await page.locator('[data-testid="strategy-opts"]').count() === 1
     && await page.locator('[data-testid="strat-A"]').count() === 1
     && await page.locator('[data-testid="strat-B"]').count() === 1);
@@ -440,6 +456,16 @@ try {
   await sleep(150);
   const jStrat = await page.evaluate(() => window.__SAMPLE__.state.judgments.some(j => j.gate.includes("策略") && (j.option || "").includes("A")));
   check("P0 HA-哲3/4 策略写判断档案", jStrat);
+  check("⑥ B后进 C/D", await page.locator('[data-testid="d6-step-c"].on').count() === 1);
+  check("D6 C tabs 可见", await page.evaluate(() => {
+    const t = document.querySelector('[data-testid="d6-doc-tabs"]');
+    return !!(t && !t.hidden);
+  }));
+  await page.click('[data-testid="d6-tab-diff"]');
+  await sleep(150);
+  check("D6 差分对照可切", await page.locator('[data-testid="d6-doc-diff"]').count() === 1);
+  await page.click('[data-testid="d6-tab-reply"]');
+  await sleep(100);
   check("P0 HA-哲2 ⑥递交清单", await page.locator('[data-testid="reply-submit-manifest"]').count() === 1);
   await page.click('[data-testid="confirm-reply-submit"]');
   await sleep(150);
@@ -580,12 +606,38 @@ try {
     s.openDept("d4", { direct: true });
   });
   await sleep(250);
-  check("P1 D4-哲7 黄项存疑条", await page.locator('[data-testid="doubt-bar"]').count() === 1);
+  /* 进部默认事实步 — 偏好/分级/风格在本步可验 */
   check("P1 D4-哲8 跨案偏好条", await page.locator('[data-testid="pref-chip"], [data-testid="pref-banner"]').count() >= 1);
-  check("P1 D4-设3 质检去相关手段", await page.locator('[data-testid="qc-method"]').count() === 1);
   check("P2 D4-哲6 风格标签", await page.locator('[data-testid="expert-style"]').count() >= 1);
   check("P1 HA-设1 硬请示分级", await page.locator('[data-testid="gate-grade"]').count() >= 1);
+  /* 演示切到质检步：存疑条 + 质检手段 */
+  await page.click('[data-testid="d4-step-qc"]');
+  await sleep(150);
+  check("P1 D4-哲7 黄项存疑条", await page.locator('[data-testid="doubt-bar"]').count() === 1);
+  check("P1 D4-设3 质检去相关手段", await page.locator('[data-testid="qc-method"]').count() === 1);
+  /* 演示切可交⑤：结束检查表 */
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    DEMO.disclosure.qc.forEach((q) => { q.status = "green"; });
+    s.state.allGreen = true;
+    s.state.factConfirmed = true;
+    s.state.d4StepForce = "hand";
+    s.render();
+  });
+  await sleep(150);
   check("P1 D4-设4 结束检查表摘要", await page.locator('[data-testid="end-checklist"]').count() === 1);
+  /* 回事实步做编制/请来/1:1；再切成稿看 diff */
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    DEMO.disclosure.qc.forEach((q, i) => { q.status = i === 3 ? "yellow" : "green"; });
+    s.state.allGreen = false;
+    s.state.factConfirmed = false;
+    s.state.canHand5 = false;
+    s.state.d4StepForce = "fact";
+    s.state.sideMode = "team";
+    s.render();
+  });
+  await sleep(150);
   await page.click('[data-testid="expert-search"]');
   await sleep(120);
   check("P2 Ro-设2 请来入口", await page.locator('[data-testid="invite-search"]').count() === 1);
@@ -597,8 +649,14 @@ try {
   await sleep(120);
   check("P2 Ro-哲2 1:1 岗交付契约", await page.locator('[data-testid="1to1-contract"]').count() === 1);
   check("P2 D4-设2 1:1 不替代硬请示", await page.locator('[data-testid="1to1-no-replace"]').count() === 1);
-  await page.click('[data-testid="ver-prev"]');
-  await sleep(120);
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.d4StepForce = "draft";
+    s.state.docVersion = "prev";
+    s.state.sideMode = "team";
+    s.render();
+  });
+  await sleep(150);
   check("P2 D4-设5/D5-设1 示意 diff 标注", await page.locator('[data-testid="diff-hint"]').count() >= 1);
 
   // H45 checks
@@ -633,7 +691,7 @@ try {
   check("P1 D5-哲4 编制席", await page.locator('[data-testid="d5-roster"] .expert-chip').count() >= 2);
   check("P1 D5 无密度三钮", await page.locator('[data-testid="d5-density"]').count() === 0);
   check("P1 D5 硬请示在对话流", await page.locator('[data-testid="d5-feed"] [data-testid="ask-understand"], [data-testid="d5-feed"] [data-testid="ask-apply-or-not"], [data-testid="d5-feed"] [data-testid="ask-submit5"]').count() >= 1);
-  check("P1 D5-哲3 黄项过线入口", await page.locator('[data-testid="d5-qc-yellow-fix"]').count() === 1);
+  check("P1 D5-哲3 黄项过线入口", await page.locator('[data-testid="d5-qc-yellow-form"]').count() === 1);
   check("P1 D5-哲3 无闷头「演示：质检过线」文案", !(await page.locator('[data-testid="d5-qc-card"]').innerText()).includes("演示：质检过线"));
   await page.fill('[data-testid="d5-composer-input"]', "收紧独权双密封");
   await page.click('[data-testid="d5-composer-send"]');
@@ -661,6 +719,15 @@ try {
   await page.click('[data-testid="btn-upgrade"]');
   await sleep(120);
   check("P2 D6-哲4 已升级催办", await page.locator('[data-testid="upgrade-badge"]').count() === 1);
+  await page.evaluate(() => {
+    const s = window.__SAMPLE__;
+    s.state.reply = { contentionOk: true, limitOk: true, submit: false };
+    s.state.d6StepForce = null;
+    s.render();
+  });
+  await sleep(150);
+  check("P1 D6 进 C 后有答复稿", await page.locator('[data-testid="d6-doc-reply"]').count() === 1
+    && await page.evaluate(() => !document.querySelector('[data-testid="d6-doc-reply"]').hidden));
   await page.fill('[data-testid="d6-composer-input"]', "坚持双密封争点");
   await page.click('[data-testid="d6-composer-send"]');
   await sleep(200);
@@ -670,7 +737,7 @@ try {
   // thin + B2 + drawer
   await page.evaluate(() => window.__SAMPLE__.openDept("d1"));
   await sleep(150);
-  check("P2 T-设2 薄部头像", await page.locator('#thinBody .avatar img, #viewThin .avatar img').count() >= 1);
+  check("P2 T-设2 薄部头像", await page.locator('#thinBody .av img, #viewThin .av img, [data-testid="thin-lead"] img').count() >= 1);
   check("P2 T-哲3 合格线示意请示", await page.locator('[data-testid="thin-line-ask"]').count() === 1);
   await page.evaluate(() => {
     const s = window.__SAMPLE__;

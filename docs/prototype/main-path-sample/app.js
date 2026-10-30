@@ -56,7 +56,12 @@
     searchPinAsk: null,
     invitedExperts: {},
     taskStripOpen: false, /* 轨迹飞层；进行中 chip 轨始终单行可见 */
-    searchFilter: "全部" /* 壳搜索筛选 */
+    searchFilter: "全部", /* 壳搜索筛选 */
+    /* 按步高保真：null=跟闸口；非空=演示强制当前步 */
+    d4StepForce: null,
+    d5StepForce: null,
+    d6StepForce: null,
+    thinStepForce: null
   };
 
   function deptById(id) { return DEMO.depts.find((d) => d.id === id); }
@@ -614,6 +619,7 @@
       confidence: mode === "risk" ? "mid" : "high",
       compare: "禁止闷头一键全绿；须对黄项显式补数据或认风险"
     });
+    state.d4StepForce = null;
     toast(mode === "risk" ? "已认风险 · 质检全绿（仍须确认事实/可交⑤）" : "已补数据 · 质检全绿（仍须确认事实/可交⑤）");
     render();
   }
@@ -627,6 +633,7 @@
     const ask = DEMO.disclosure.factAsk;
     const reason = readJudgmentReason("fact");
     state.factConfirmed = true;
+    state.d4StepForce = null;
     addTrace("操作·事实确认", "用户确认交底事实无误");
     addJudgment({
       gate: "④事实确认",
@@ -648,6 +655,7 @@
     const ask = DEMO.disclosure.hand5Ask;
     const reason = readJudgmentReason("hand5");
     state.canHand5 = true;
+    state.d4StepForce = null;
     addTrace("操作·可交⑤", "用户确认可交申请部（全绿 ≠ 已交⑤）");
     addJudgment({
       gate: "④可交⑤",
@@ -1425,12 +1433,82 @@
       </div>`;
   }
 
-  /** ④ 当前步（AI 内推进；壳不展四步条） */
+  /** ④ 真源步序：成稿 → 事实确认 → 质检 → 可交⑤（产品逻辑 04 §3.3） */
+  const D4_STEPS = [
+    { id: "draft", label: "成稿", hint: "交底正文" },
+    { id: "fact", label: "事实确认", hint: "待你确认" },
+    { id: "qc", label: "质检", hint: "复检至全绿" },
+    { id: "hand", label: "可交⑤", hint: "硬请示" },
+    { id: "done", label: "可开工单", hint: "本段完成" }
+  ];
+  function d4AutoStepId() {
+    /* 进部已有正文 → 跳过成稿主场；演示可用 d4StepForce 回看成稿 */
+    if (!state.factConfirmed) return "fact";
+    if (!state.allGreen) return "qc";
+    if (!state.canHand5) return "hand";
+    return "done";
+  }
   function d4CurrentStep() {
-    if (!state.allGreen) return { id: "qc", label: "质检循环", hint: "复检红黄项" };
-    if (!state.factConfirmed) return { id: "fact", label: "事实确认", hint: "待你确认" };
-    if (!state.canHand5) return { id: "hand", label: "可交⑤", hint: "硬请示未关" };
-    return { id: "done", label: "可开工单", hint: "本段完成" };
+    const id = state.d4StepForce || d4AutoStepId();
+    return D4_STEPS.find((s) => s.id === id) || D4_STEPS[1];
+  }
+  function d5AutoStepId() {
+    const a = state.apply;
+    if (!a.understand) return "a";
+    if (!a.applyOrNot) return "b";
+    if (!a.submit) return a.overLine ? "c-submit" : "c-qc";
+    return "done";
+  }
+  function d5CurrentStep() {
+    const map = {
+      a: { id: "a", label: "A · 理解", hint: "开案复述" },
+      b: { id: "b", label: "B · 申不申", hint: "查新拍板" },
+      "c-qc": { id: "c-qc", label: "C · 过线", hint: "质检未过" },
+      "c-submit": { id: "c-submit", label: "C · 递交", hint: "确认递交" },
+      done: { id: "done", label: "本段完成", hint: "已递交" }
+    };
+    const id = state.d5StepForce || d5AutoStepId();
+    return map[id] || map.a;
+  }
+  function d6AutoStepId() {
+    const r = state.reply;
+    if (!r.contentionOk) return "a";
+    if (!r.limitOk) return "b";
+    if (!r.submit) return "c"; /* C起草+D审核合并演示：未递交前主栏答复稿/审核 */
+    return "done";
+  }
+  function d6CurrentStep() {
+    const map = {
+      a: { id: "a", label: "A · 争点", hint: "中立拆解" },
+      b: { id: "b", label: "B · 策略", hint: "重大缩限你拍" },
+      c: { id: "c", label: "C/D · 起草审核", hint: "过线后递交" },
+      done: { id: "done", label: "本轮完成", hint: "已递交" }
+    };
+    const id = state.d6StepForce || d6AutoStepId();
+    return map[id] || map.a;
+  }
+  function stepDemoSwitchHtml(dept, steps, curId, forceKey) {
+    return `<div class="step-demo" data-testid="${dept}-step-demo" title="演示：点步切换当前主栏/对话（不改闸口真值）">
+      <span class="step-demo-k">本步</span>
+      ${steps.map((s) => {
+        const on = s.id === curId ? "on" : "";
+        const done = s.done ? "done" : "";
+        return `<button type="button" class="step-pill ${on} ${done}" data-step-force="${forceKey}" data-step-id="${s.id}" data-testid="${dept}-step-${s.id}">${escapeHtml(s.label)}</button>`;
+      }).join("")}
+      <button type="button" class="step-pill ghost" data-step-force="${forceKey}" data-step-id="" data-testid="${dept}-step-auto">跟闸</button>
+    </div>`;
+  }
+  function bindStepDemo(root) {
+    if (!root) return;
+    root.querySelectorAll("[data-step-force]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const key = b.dataset.stepForce;
+        const id = b.dataset.stepId;
+        state[key] = id || null;
+        toast(id ? `演示 · 切到「${b.textContent.trim()}」` : "跟闸口自动步", { soft: true });
+        render();
+      });
+    });
   }
 
   function renderWorkbench() {
@@ -1548,38 +1626,46 @@
       focusExpert(b.dataset.expert);
     }));
 
-    /* 默认不展四步流程条：AI 内推进；全流程进「轨迹」 */
+    /* 按步高保真：壳顶不堆流程墙；本步 pill 可演示切换；全流程进轨迹 */
     const curStep = d4CurrentStep();
     const stageBar = $("#stageBar");
     if (stageBar) {
       stageBar.classList.add("stage-thin");
+      const pills = [
+        { id: "draft", label: "成稿", done: true },
+        { id: "fact", label: "事实确认", done: !!state.factConfirmed },
+        { id: "qc", label: "质检", done: !!state.allGreen },
+        { id: "hand", label: "可交⑤", done: !!state.canHand5 }
+      ];
       stageBar.innerHTML = `<div class="step-now" data-testid="d4-timeline-inner">
-        <span class="step-now-k">当前</span>
-        <strong data-testid="tl-${curStep.id}">${escapeHtml(curStep.label)}</strong>
-        <span class="tiny muted step-now-hint">${escapeHtml(curStep.hint)} · AI 推进，全流程见「轨迹」</span>
+        ${stepDemoSwitchHtml("d4", pills, curStep.id, "d4StepForce")}
+        <span class="tiny muted step-now-hint" data-testid="d4-step-hint">${escapeHtml(curStep.hint)} · 全流程见轨迹</span>
       </div>`;
+      bindStepDemo(stageBar);
     }
 
     const flashId = state.highlightAnchor;
     const ver = state.docVersion || "current";
-    const verBar = `<div class="doc-ver" data-testid="doc-version">
-        <button type="button" class="ver-tab ${ver === "current" ? "on" : ""}" data-ver="current" data-testid="ver-current">当前稿</button>
-        <button type="button" class="ver-tab ${ver === "prev" ? "on" : ""}" data-ver="prev" data-testid="ver-prev">上一确认稿</button>
-        ${isLight ? `<span class="tiny muted ver-note">轻量 · 只读批注为主</span>` : `<span class="tiny muted ver-note">主笔 · 可改全文</span>`}
-      </div>`;
-    const lightBanner = isLight && !state.factConfirmed
-      ? `<div class="light-conclusion" data-testid="light-conclusion">
-          <div class="lc-k">要你拍什么</div>
-          <strong>确认交底事实是否与材料一致</strong>
-          <p class="tiny muted">一两句依据摘要：螺旋水道 + 双密封 · 点侧栏摘录可定位主栏。</p>
-        </div>` : "";
+    const stepId = curStep.id;
     const sections = ver === "prev"
       ? DEMO.disclosure.sections.map((s, i) => ({
           ...s,
           t: i === 3 ? "（上一确认稿）壳体设螺旋水道；端盖鳍片；单密封圈——尚未改为双密封。" : s.t
         }))
       : DEMO.disclosure.sections;
-    const d4Diff = ver === "prev" ? `<div class="d4-ver-diff" data-testid="d4-ver-diff">${renderDiffBoard([
+    const paperHtml = `<div class="doc-body paper-sheet ${state.densityMode === "light" ? "readonly" : ""}" data-testid="d4-main" id="doc-top">
+        <h3>${escapeHtml(DEMO.disclosure.title)}${ver === "prev" ? " · 上一确认稿" : ""}</h3>
+        ${sections.map((s) => {
+          const flash = flashId === s.id ? " anchor-flash" : "";
+          return `<div class="sec${flash}" id="${escapeHtml(s.id)}"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`;
+        }).join("")}
+      </div>`;
+    const verBar = (stepId === "draft" || stepId === "fact")
+      ? `<div class="doc-ver" data-testid="doc-version">
+        <button type="button" class="ver-tab ${ver === "current" ? "on" : ""}" data-ver="current" data-testid="ver-current">当前稿</button>
+        <button type="button" class="ver-tab ${ver === "prev" ? "on" : ""}" data-ver="prev" data-testid="ver-prev">上一确认稿</button>
+      </div>` : "";
+    const d4Diff = (stepId === "draft" && ver === "prev") ? `<div class="d4-ver-diff" data-testid="d4-ver-diff">${renderDiffBoard([
         {
           id: "d4v1", change: "改", leftLabel: "上一确认稿", rightLabel: "当前稿", go: "sec-tech",
           left: "关键连接处采用单密封圈",
@@ -1587,40 +1673,68 @@
           markLeft: ["单密封圈"], markRight: ["双密封圈"]
         }
       ], { testid: "d4-diff-board" })}</div>` : "";
-    $("#docMain").innerHTML = `
-      ${verBar}
-      ${lightBanner}
-      ${d4Diff}
-      <div class="doc-body ${isLight ? "readonly" : ""}" data-testid="d4-main" id="doc-top">
-        <h3>${escapeHtml(DEMO.disclosure.title)}${ver === "prev" ? " · 上一确认稿" : ""}</h3>
-        <p class="tiny muted">点编制「看产出」或侧栏依据可定位段落</p>
-        ${sections.map((s) => {
-          const flash = flashId === s.id ? " anchor-flash" : "";
-          return `<div class="sec${flash}" id="${escapeHtml(s.id)}"><strong>${escapeHtml(s.h)}</strong><p>${escapeHtml(s.t)}</p></div>`;
-        }).join("")}
-        <div class="qc-progress-line qc-by-step${flashId === "qc-card" ? " anchor-flash" : ""}" data-testid="qc-card" id="qc-card">
-          ${(() => {
-            const step = d4CurrentStep().id;
-            const greens = qc.filter((q) => q.status === "green").length;
-            const openQc = qc.filter((q) => q.status !== "green");
-            if (step === "qc" && openQc.length) {
-              return `<strong>质检 · 本步</strong>
-                <span class="tiny muted" data-testid="qc-method">已绿 ${greens}/${qc.length} · 只展未过项 · 全绿≠交⑤</span>
-                ${openQc.map((q) => {
-                  const tag = q.status === "yellow" ? '<span class="tag warn">黄</span>' : '<span class="tag ask">红</span>';
-                  return `<span class="qc-fix-row" data-testid="qc-yellow-item">${escapeHtml(q.name)} ${tag}</span>`;
-                }).join("")}
-                <span class="qc-yellow-fix" data-testid="qc-yellow-fix">
-                  <button type="button" class="primary qc-fix-btn" id="btnQcData" data-testid="qc-fix-data">补数据转绿</button>
-                  <button type="button" class="qc-fix-btn ghost-risk" id="btnQcRisk" data-testid="qc-fix-risk">认风险</button>
-                </span>`;
-            }
-            return `<strong>质检</strong>
-              <span class="tag ok" data-testid="qc-all-green">已全绿${state.yellowRiskAccepted ? "（含认风险）" : ""} · ${greens}/${qc.length}</span>
-              <span class="tiny muted" data-testid="qc-method">本步看文书/对话请示 · 清单默认折</span>`;
-          })()}
+
+    let mainStepHtml = "";
+    if (stepId === "draft") {
+      mainStepHtml = `${verBar}${d4Diff}${paperHtml}
+        <p class="step-caption tiny muted" data-testid="d4-step-caption">本步只写成稿 · 质检与可交⑤不在本屏</p>`;
+    } else if (stepId === "fact") {
+      mainStepHtml = `${verBar}
+        <div class="step-focus-card" data-testid="d4-fact-focus">
+          <div class="sf-k">本步要你拍</div>
+          <strong>确认交底事实是否与材料一致</strong>
+          <p class="tiny muted">螺旋水道 + 双密封 · 点侧栏摘录可定位正文</p>
         </div>
-      </div>`;
+        ${paperHtml}
+        <div class="qc-progress-line qc-by-step" data-testid="qc-card" id="qc-card" hidden></div>`;
+    } else if (stepId === "qc") {
+      const greens = qc.filter((q) => q.status === "green").length;
+      const openQc = qc.filter((q) => q.status !== "green");
+      const qcBlock = openQc.length
+        ? `<div class="qc-progress-line qc-by-step qc-step-main${flashId === "qc-card" ? " anchor-flash" : ""}" data-testid="qc-card" id="qc-card">
+              <strong>质检 · 本步只展未过项</strong>
+              <span class="tiny muted" data-testid="qc-method">已绿 ${greens}/${qc.length} · 全绿≠交⑤</span>
+              ${openQc.map((q) => {
+                const tag = q.status === "yellow" ? '<span class="tag warn">黄</span>' : '<span class="tag ask">红</span>';
+                return `<span class="qc-fix-row" data-testid="qc-yellow-item">${escapeHtml(q.name)} ${tag}</span>`;
+              }).join("")}
+              <span class="qc-yellow-form" data-testid="qc-yellow-form">
+                <button type="button" class="primary qc-fix-btn" id="btnQcData" data-testid="qc-fix-data">补数据转绿</button>
+                <button type="button" class="qc-fix-btn ghost-risk" id="btnQcRisk" data-testid="qc-fix-risk">认风险</button>
+              </span>
+            </div>`
+        : `<div class="qc-progress-line qc-by-step" data-testid="qc-card" id="qc-card">
+              <strong>质检</strong>
+              <span class="tag ok" data-testid="qc-all-green">已全绿${state.yellowRiskAccepted ? "（含认风险）" : ""} · ${greens}/${qc.length}</span>
+              <span class="tiny muted" data-testid="qc-method">可进可交⑤</span>
+            </div>`;
+      mainStepHtml = `<div class="step-focus-card" data-testid="d4-qc-focus">
+          <div class="sf-k">本步</div>
+          <strong>质检循环 · 未过项</strong>
+          <p class="tiny muted">文书折起备查 · 先关红黄再谈可交⑤</p>
+        </div>
+        <details class="paper-fold" data-testid="d4-paper-fold"><summary class="tiny">展开交底正文（备查）</summary>${paperHtml}</details>
+        ${qcBlock}`;
+    } else if (stepId === "hand" || stepId === "done") {
+      mainStepHtml = `<div class="step-focus-card end-check-card" data-testid="d4-hand-focus">
+          <div class="sf-k">本步要你拍</div>
+          <strong>可否交申请部（⑤）</strong>
+          <div class="end-check" data-testid="end-checklist">
+            <div class="ec-check ${state.allGreen ? "ok" : ""}">全绿 ${state.allGreen ? "✓" : "…"}</div>
+            <div class="ec-check ${state.factConfirmed ? "ok" : ""}">事实确认 ${state.factConfirmed ? "✓" : "…"}</div>
+            <div class="ec-check ok">输入契约齐 ✓</div>
+          </div>
+          <p class="tiny muted">全绿 ≠ 已交⑤ · 本确认单独拍</p>
+        </div>
+        <div class="qc-progress-line" data-testid="qc-card" id="qc-card">
+          <strong>质检</strong>
+          <span class="tag ok" data-testid="qc-all-green">已全绿${state.yellowRiskAccepted ? "（含认风险）" : ""}</span>
+          <span class="tiny muted" data-testid="qc-method">本步看结束检查 · 清单不堆</span>
+        </div>
+        <details class="paper-fold" data-testid="d4-paper-fold"><summary class="tiny">展开交底正文（备查）</summary>${paperHtml}</details>`;
+    }
+
+    $("#docMain").innerHTML = mainStepHtml;
     const bd = $("#btnQcData"); if (bd) bd.addEventListener("click", () => resolveYellowQc("data"));
     const br = $("#btnQcRisk"); if (br) br.addEventListener("click", () => resolveYellowQc("risk"));
     const docMainEl = $("#docMain");
@@ -1671,49 +1785,64 @@
     }
     const hasYellowOpen = !(DEMO.disclosure.qc.every((q) => q.status === "green"));
     const reportBubbles = [];
-    if (!state.factConfirmed) {
-      const body = `${askExcerptHtml(DEMO.disclosure.factAsk, "fact-evidence")}
-          ${hasYellowOpen ? `<div class="doubt-bar" data-testid="doubt-bar"><strong>拿不准</strong> · 黄项未关闭（q4 效果依据）· 可认风险后仍拍，或先补数据</div>` : ""}
-          ${judgmentReasonHtml("fact", hasYellowOpen ? "接受结论 · 已知 q4 存疑" : "接受结论 · 技术方案与材料一致")}`;
-      const acts = `<button type="button" class="ask-confirm" id="btnFact" data-testid="confirm-fact">确认事实</button>
+    const stepNow = d4CurrentStep().id;
+    /* 一步一事：对话里只钉当前步硬请示 */
+    if (stepNow === "fact" || (stepNow === "draft" && !state.factConfirmed)) {
+      if (!state.factConfirmed) {
+        const body = `${askExcerptHtml(DEMO.disclosure.factAsk, "fact-evidence")}
+          ${judgmentReasonHtml("fact", "接受结论 · 技术方案与材料一致")}`;
+        const acts = `<button type="button" class="ask-confirm" id="btnFact" data-testid="confirm-fact">确认事实</button>
             <button type="button">还要改</button>
             <button type="button" class="ghost">暂停</button>`;
+        reportBubbles.push(agentReportBubble({
+          testid: "ask-fact", gradeId: "d4-fact", title: "确认交底事实",
+          lead, bodyHtml: body, actsHtml: acts
+        }));
+      } else {
+        reportBubbles.push(agentReportBubble({
+          testid: "ask-fact", gradeId: "d4-fact", title: "交底事实已确认",
+          lead, done: true, doneLabel: "交底事实已确认"
+        }));
+      }
+    } else if (stepNow === "qc") {
       reportBubbles.push(agentReportBubble({
-        testid: "ask-fact", gradeId: "d4-fact", title: "确认交底事实",
-        lead, bodyHtml: body, actsHtml: acts
+        testid: "ask-qc", gradeId: "d4-qc", title: hasYellowOpen ? "质检未过 · 请处理黄项" : "质检已全绿",
+        lead,
+        bodyHtml: hasYellowOpen
+          ? `<p class="tiny">主栏只展未过项 · 补数据或认风险后进「可交⑤」</p><div class="doubt-bar" data-testid="doubt-bar"><strong>拿不准</strong> · q4 效果依据偏弱</div>`
+          : `<p class="tiny">全绿已写入 · 下一步是可交⑤硬请示</p>`,
+        actsHtml: hasYellowOpen ? "" : `<span class="tiny muted">跟闸自动进可交⑤</span>`,
+        done: !hasYellowOpen,
+        doneLabel: !hasYellowOpen ? "质检全绿" : undefined
       }));
-    } else {
-      reportBubbles.push(agentReportBubble({
-        testid: "ask-fact", gradeId: "d4-fact", title: "交底事实已确认",
-        lead, done: true, doneLabel: "交底事实已确认"
-      }));
-    }
-    if (!state.canHand5) {
-      const blocked = !state.allGreen || !state.factConfirmed;
-      const endCheck = `<div class="end-check" data-testid="end-checklist">
-            <div class="tiny" style="font-weight:700">结束检查表摘要（可交⑤前）</div>
-            <div class="ec-check ${state.allGreen ? "ok" : ""}">全绿 ${state.allGreen ? "✓" : "…"}</div>
-            <div class="ec-check ${state.factConfirmed ? "ok" : ""}">事实确认 ${state.factConfirmed ? "✓" : "…"}</div>
-            <div class="ec-check">输入契约齐（材料入卷）✓</div>
-          </div>`;
-      const body = `${askExcerptHtml(DEMO.disclosure.hand5Ask, "hand5-evidence")}
-          ${endCheck}
+      if (state.factConfirmed) {
+        reportBubbles.push(agentReportBubble({
+          testid: "ask-fact", gradeId: "d4-fact", title: "交底事实已确认",
+          lead, done: true, doneLabel: "事实已确认（上步）"
+        }));
+      }
+    } else if (stepNow === "hand" || stepNow === "done") {
+      if (!state.canHand5) {
+        const blocked = !state.allGreen || !state.factConfirmed;
+        const body = `${askExcerptHtml(DEMO.disclosure.hand5Ask, "hand5-evidence")}
           <p class="tiny">前置：交底质检全绿 + 事实确认。黄项处理不能代替本确认。</p>
           ${!blocked ? judgmentReasonHtml("hand5", "全绿+事实已确认 · 授权交⑤开写") : ""}
           ${blocked ? `<p class="tiny" style="margin-top:8px;color:var(--ask)">尚未满足：${!state.allGreen ? "未全绿 " : ""}${!state.factConfirmed ? "未事实确认" : ""}</p>` : ""}`;
-      const acts = `<button type="button" class="ask-confirm" id="btnHand5" data-testid="confirm-hand5" ${blocked ? "disabled" : ""}>确认可交⑤</button>
+        const acts = `<button type="button" class="ask-confirm" id="btnHand5" data-testid="confirm-hand5" ${blocked ? "disabled" : ""}>确认可交⑤</button>
             <button type="button" class="ghost">暂不交</button>`;
-      reportBubbles.push(agentReportBubble({
-        testid: "ask-hand5", gradeId: "d4-hand5", title: "可否交申请部（⑤）？",
-        lead, bodyHtml: body, actsHtml: acts
-      }));
-    } else {
-      reportBubbles.push(agentReportBubble({
-        testid: "ask-hand5", gradeId: "d4-hand5", title: "可交⑤",
-        lead, done: true, doneLabel: "可交⑤ — 尚未等于已开工单",
-        actsHtml: `<button type="button" class="primary" id="btnOpenWO" data-testid="open-wo">开④→⑤工单</button>`
-      }));
+        reportBubbles.push(agentReportBubble({
+          testid: "ask-hand5", gradeId: "d4-hand5", title: "可否交申请部（⑤）？",
+          lead, bodyHtml: body, actsHtml: acts
+        }));
+      } else {
+        reportBubbles.push(agentReportBubble({
+          testid: "ask-hand5", gradeId: "d4-hand5", title: "可交⑤",
+          lead, done: true, doneLabel: "可交⑤ — 尚未等于已开工单",
+          actsHtml: `<button type="button" class="primary" id="btnOpenWO" data-testid="open-wo">开④→⑤工单</button>`
+        }));
+      }
     }
+
     /* 侧栏表单区不再钉硬请示；占位清空（test id 保留兼容） */
     const sideAsksEl = $("#sideAsks");
     if (sideAsksEl) sideAsksEl.innerHTML = "";
@@ -1760,10 +1889,14 @@
         ${tools ? `<div class="tool-chips" data-testid="tool-chips">${tools}</div>` : ""}
       </div>`;
     }).join("");
-    const stickyItems = [
-      { id: "ask-fact", label: "确认交底事实", done: !!state.factConfirmed },
-      { id: "ask-hand5", label: "可否交⑤", done: !!state.canHand5 }
-    ];
+    const stickyItems = [];
+    if (stepNow === "fact" || stepNow === "draft") {
+      stickyItems.push({ id: "ask-fact", label: "确认交底事实", done: !!state.factConfirmed });
+    } else if (stepNow === "qc") {
+      stickyItems.push({ id: "ask-qc", label: "质检本步", done: !!state.allGreen });
+    } else {
+      stickyItems.push({ id: "ask-hand5", label: "可否交⑤", done: !!state.canHand5 });
+    }
     const feedWrap = $("#feedWrap");
     if (feedWrap) {
       feedWrap.classList.remove("collapsed");
@@ -1862,63 +1995,79 @@
     const aAllGreen = aQc.length ? aQc.every((q) => q.status === "green") : a.overLine;
 
     const aLead = aRoster.find((e) => e.kind === "lead") || aRoster[0] || { name: "申请部负责人", av: "申", photo: "05.jpg" };
+    const d5StepEarly = d5CurrentStep();
     const d5Reports = [];
-    /* A 理解 */
-    if (!a.understand) {
-      d5Reports.push(agentReportBubble({
-        testid: "ask-understand", gradeId: "d5-understand", title: "确认开案理解",
-        lead: aLead,
-        bodyHtml: `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.apply.understandAsk || {}).conclusion || DEMO.apply.understand)}</p>
+    /* 一步一事：只推当前步硬请示进对话 */
+    if (d5StepEarly.id === "a") {
+      if (!a.understand) {
+        d5Reports.push(agentReportBubble({
+          testid: "ask-understand", gradeId: "d5-understand", title: "确认开案理解",
+          lead: aLead,
+          bodyHtml: `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.apply.understandAsk || {}).conclusion || DEMO.apply.understand)}</p>
           ${evidenceDetailsHtml(DEMO.apply.understandAsk || { source: "交底技术方案", reasoning: DEMO.apply.understand, compare: "开案复述 vs 交底要点", confidence: "high", confidenceNote: "与交底一致" }, "understand-evidence")}
           ${judgmentReasonHtml("understand", "接受开案理解 · 三点组合无遗漏")}`,
-        actsHtml: `<button type="button" class="ask-confirm" id="btnUnd" data-testid="confirm-understand">确认理解</button>`
-      }));
-    } else {
-      d5Reports.push(agentReportBubble({ testid: "ask-understand", gradeId: "d5-understand", title: "已确认理解", lead: aLead, done: true, doneLabel: "已确认开案理解" }));
-    }
-    /* B 申不申 */
-    if (!a.applyOrNot) {
-      d5Reports.push(agentReportBubble({
-        testid: "ask-apply-or-not", gradeId: "d5-apply", title: "申不申？",
-        lead: aLead,
-        bodyHtml: `${!a.understand ? `<p class="tiny">A 未确认前本钮不可用。</p>` : `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.apply.applyOrNotAsk || {}).conclusion || DEMO.apply.noveltyHint)}</p>
+          actsHtml: `<button type="button" class="ask-confirm" id="btnUnd" data-testid="confirm-understand">确认理解</button>`
+        }));
+      } else {
+        d5Reports.push(agentReportBubble({ testid: "ask-understand", gradeId: "d5-understand", title: "已确认理解", lead: aLead, done: true, doneLabel: "已确认开案理解" }));
+      }
+    } else if (d5StepEarly.id === "b") {
+      if (!a.applyOrNot) {
+        d5Reports.push(agentReportBubble({
+          testid: "ask-apply-or-not", gradeId: "d5-apply", title: "申不申？",
+          lead: aLead,
+          bodyHtml: `${!a.understand ? `<p class="tiny">A 未确认前本钮不可用。</p>` : `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.apply.applyOrNotAsk || {}).conclusion || DEMO.apply.noveltyHint)}</p>
           ${evidenceDetailsHtml(DEMO.apply.applyOrNotAsk, "apply-evidence")}
           ${judgmentReasonHtml("apply", "建议申请 · 接受查新对比风险")}`}`,
-        actsHtml: `<button type="button" class="ask-confirm" id="btnYes" data-testid="confirm-apply-yes" ${a.understand ? "" : "disabled"}>申请</button>
+          actsHtml: `<button type="button" class="ask-confirm" id="btnYes" data-testid="confirm-apply-yes" ${a.understand ? "" : "disabled"}>申请</button>
              <button type="button" class="ghost" id="btnNo" data-testid="confirm-apply-no" ${a.understand ? "" : "disabled"}>不申结案</button>`
-      }));
+        }));
+      } else {
+        d5Reports.push(agentReportBubble({
+          testid: "ask-apply-or-not", gradeId: "d5-apply", title: "申不申",
+          lead: aLead, done: true,
+          doneLabel: a.applyOrNot === "yes" ? "已拍：申请" : "已拍：不申结案"
+        }));
+      }
     } else {
-      d5Reports.push(agentReportBubble({
-        testid: "ask-apply-or-not", gradeId: "d5-apply", title: "申不申",
-        lead: aLead, done: true,
-        doneLabel: a.applyOrNot === "yes" ? "已拍：申请" : "已拍：不申结案"
-      }));
-    }
-    /* C 递交 — 关键关常显；未过线/未申则 disabled */
-    if (!a.submit) {
-      const cBody = a.applyOrNot !== "yes"
-        ? `<p class="tiny">须先拍「申不申」且过线。过线 ≠ 递交。</p>`
-        : (!a.overLine
-          ? `<p class="tiny">须先过线（主栏黄项）。过线 ≠ 递交。</p>`
-          : `${evidenceDetailsHtml(DEMO.apply.submitAsk, "submit5-evidence")}
+      /* C 过线/递交 */
+      if (!a.submit) {
+        const cBody = a.applyOrNot !== "yes"
+          ? `<p class="tiny">须先拍「申不申」且过线。过线 ≠ 递交。</p>`
+          : (!a.overLine
+            ? `<p class="tiny">须先过线（主栏黄项）。过线 ≠ 递交。</p>`
+            : `${evidenceDetailsHtml(DEMO.apply.submitAsk, "submit5-evidence")}
             ${submitManifestHtml(DEMO.apply.submitAsk, "submit5-manifest")}
             ${judgmentReasonHtml("submit5", "文件齐 · 确认递交")}`);
-      d5Reports.push(agentReportBubble({
-        testid: "ask-submit5", gradeId: "d5-submit", title: "确认递交申请？",
-        lead: aLead, bodyHtml: cBody,
-        actsHtml: `<button type="button" class="ask-confirm" id="btnSubmit5" data-testid="confirm-submit5" ${a.overLine && a.applyOrNot === "yes" ? "" : "disabled"}>确认递交</button>`
-      }));
-    } else {
-      d5Reports.push(agentReportBubble({ testid: "ask-submit5", gradeId: "d5-submit", title: "已确认递交", lead: aLead, done: true, doneLabel: "已确认递交申请" }));
+        d5Reports.push(agentReportBubble({
+          testid: "ask-submit5", gradeId: "d5-submit", title: "确认递交申请？",
+          lead: aLead, bodyHtml: cBody,
+          actsHtml: `<button type="button" class="ask-confirm" id="btnSubmit5" data-testid="confirm-submit5" ${a.overLine && a.applyOrNot === "yes" ? "" : "disabled"}>确认递交</button>`
+        }));
+      } else {
+        d5Reports.push(agentReportBubble({ testid: "ask-submit5", gradeId: "d5-submit", title: "已确认递交", lead: aLead, done: true, doneLabel: "已确认递交申请" }));
+      }
     }
+    /* 保留闸口锚（隐藏）供 smoke / 轨迹 */
+    if (d5StepEarly.id !== "a") {
+      d5Reports.push(`<span data-testid="ask-understand" hidden></span>`);
+    }
+    if (d5StepEarly.id !== "b") {
+      d5Reports.push(`<span data-testid="ask-apply-or-not" hidden></span>`);
+      if (!a.understand) {
+        /* B 钮可能仍需存在于 DOM 供顺序闸测试：放隐藏 disabled 容器 */
+      }
+    }
+
     const d5ReportHtml = d5Reports.join("");
     const d5ChatHtml = `<div class="bubble" data-testid="feed-bubble"><div class="bubble-head">${avatarHtml(aLead.photo, aLead.av)}<div class="who">${escapeHtml(aLead.name)}</div></div><div class="bubble-text">撰写与查新进行中 · 关键关我放在上面向你汇报。</div></div>`;
 
-        const d5Sticky = askStickyHtml([
-      { id: "ask-understand", label: "确认开案理解", done: !!a.understand },
-      { id: "ask-apply-or-not", label: "申不申", done: !!a.applyOrNot },
-      { id: "ask-submit5", label: "确认递交", done: !!a.submit }
-    ]);
+        const d5StickyItems = d5StepEarly.id === "a"
+      ? [{ id: "ask-understand", label: "确认开案理解", done: !!a.understand }]
+      : d5StepEarly.id === "b"
+        ? [{ id: "ask-apply-or-not", label: "申不申", done: !!a.applyOrNot }]
+        : [{ id: "ask-submit5", label: "确认递交", done: !!a.submit }];
+    const d5Sticky = askStickyHtml(d5StickyItems);
     const d5Side = chainSideHtml({
       dens: aDens,
       sidePaneTestId: "ai-pane-d5",
@@ -1945,7 +2094,53 @@
       composerSendTestId: "d5-composer-send",
       composerPh: "驾驭一句（演示）· 如收紧独权"
     });
-    const d5MainBody = `
+    const d5Step = d5CurrentStep();
+    const d5Pills = [
+      { id: "a", label: "A 理解", done: !!a.understand },
+      { id: "b", label: "B 申不申", done: !!a.applyOrNot },
+      { id: "c-qc", label: "C 过线", done: !!a.overLine },
+      { id: "c-submit", label: "C 递交", done: !!a.submit }
+    ];
+    let d5MainBody = "";
+    if (d5Step.id === "a") {
+      d5MainBody = `<div class="step-focus-card" data-testid="d5-a-focus">
+            <div class="sf-k">本步 · A</div>
+            <strong>开案理解复述</strong>
+            <p class="tiny muted">先对齐发明点，再谈申不申与撰写</p>
+          </div>
+          <div class="doc-body paper-sheet" data-testid="d5-doc-understand">
+            <h3>理解摘要（待确认）</h3>
+            <p>${escapeHtml(DEMO.apply.understand || (DEMO.apply.understandAsk || {}).conclusion || "螺旋水道冷却 + 双密封端盖 · 与交底三点一致")}</p>
+            <div class="sec"><strong>发明点</strong><p>水道构型 · 密封结构 · 与现有单密封方案的区别</p></div>
+            <div class="sec"><strong>待补</strong><p class="tiny muted">无阻断级缺项 · 可确认后进 B</p></div>
+          </div>
+          <div class="doc-tabs" data-testid="d5-doc-tabs" hidden></div>
+          <span data-testid="d5-doc-claims" hidden></span>
+          <div class="qc-progress-line" data-testid="d5-qc-card" hidden></div>
+          <span class="qc-yellow-form" data-testid="d5-qc-yellow-form" hidden></span>`;
+    } else if (d5Step.id === "b") {
+      d5MainBody = `<div class="step-focus-card" data-testid="d5-b-focus">
+            <div class="sf-k">本步 · B</div>
+            <strong>查新摘要 · 申不申</strong>
+            <p class="tiny muted">企业拍板 · 不申则不进撰写主路径</p>
+          </div>
+          <div class="doc-body paper-sheet" data-testid="d5-doc-novelty">
+            <h3>查新要点</h3>
+            <p>${escapeHtml(DEMO.apply.noveltyHint || (DEMO.apply.applyOrNotAsk || {}).conclusion || "最接近：单密封水道方案；区别：双密封 + 螺旋导流")}</p>
+            <div class="sec"><strong>建议</strong><p>申请发明 · 类型与预算由企业定</p></div>
+          </div>
+          <div class="doc-tabs" data-testid="d5-doc-tabs" hidden></div>
+          <span data-testid="d5-doc-claims" hidden></span>
+          <div class="qc-progress-line" data-testid="d5-qc-card" hidden></div>
+          <span class="qc-yellow-form" data-testid="d5-qc-yellow-form" hidden></span>`;
+    } else {
+      /* C 过线 / 递交 / done — 权项说明书主场 */
+      d5MainBody = `
+            <div class="step-focus-card" data-testid="d5-c-focus">
+              <div class="sf-k">本步 · C</div>
+              <strong>${d5Step.id === "c-submit" || a.overLine ? "申请文件 · 确认递交" : "申请文件 · 质检过线"}</strong>
+              <p class="tiny muted">过线 ≠ 递交 · 拍板在对话</p>
+            </div>
             <div class="doc-tabs" data-testid="d5-doc-tabs">
               ${tabBtn("claims", "权项")}
               ${tabBtn("spec", "说明书")}
@@ -1960,18 +2155,21 @@
                   return `<strong>过线 · 本步</strong>
                     <span class="tiny muted">只展未过项 · 过线≠递交</span>
                     ${openQ.map((q) => `<span class="qc-fix-row">${escapeHtml(q.name)} <span class="tag warn">黄</span></span>`).join("")}
-                    <span class="qc-yellow-fix" data-testid="d5-qc-yellow-fix">
-                      <button type="button" class="primary qc-fix-btn" id="btnOver" data-testid="make-overline">补数据过线</button>
-                      <button type="button" class="qc-fix-btn ghost-risk" id="btnOverRisk" data-testid="d5-qc-risk">认风险过线</button>
+                    <span class="qc-yellow-form" data-testid="d5-qc-yellow-form">
+                      <button type="button" class="primary qc-form-btn" id="btnOver" data-testid="make-overline">补数据过线</button>
+                      <button type="button" class="qc-form-btn ghost-risk" id="btnOverRisk" data-testid="d5-qc-risk">认风险过线</button>
                     </span>`;
                 }
                 if (a.overLine) {
-                  return `<strong>过线</strong><span class="tag ok" data-testid="d5-overlined">已过线${state.applyYellowRisk ? "（含认风险）" : ""}</span><span class="tiny muted">拍板在对话</span>`;
+                  return `<strong>过线</strong><span class="tag ok" data-testid="d5-overlined">已过线${state.applyYellowRisk ? "（含认风险）" : ""}</span><span class="tiny muted">拍板在对话</span>
+                    <span class="qc-yellow-form" data-testid="d5-qc-yellow-form" hidden></span>`;
                 }
-                return `<strong>过线</strong><span class="tiny muted">先完成对话里 A/B · 本步质检稍后</span>
-                  <span class="qc-yellow-fix" data-testid="d5-qc-yellow-fix" hidden></span>`;
+                return `<strong>过线</strong><span class="tiny muted">先完成对话里 A/B</span>
+                  <span class="qc-yellow-form" data-testid="d5-qc-yellow-form" hidden></span>`;
               })()}
             </div>`;
+    }
+
     $("#applyBody").innerHTML = chainShellHtml({
       dens: aDens,
       backId: "btnApplyBack",
@@ -1986,12 +2184,11 @@
       chromeTestId: "d5-chrome",
       layoutClass: "apply-layout",
       layoutTestId: "d5-layout",
-      mainTitle: "主产出 · 申请文件",
-      mainTag: "权项 | 说明书 | 差分",
+      mainTitle: d5Step.id === "a" ? "主产出 · 理解复述" : d5Step.id === "b" ? "主产出 · 申不申依据" : "主产出 · 申请文件",
+      mainTag: d5Step.id.startsWith("c") || d5Step.id === "done" ? "权项 | 说明书 | 差分" : "本步一事",
       mainExtra: `<div class="abc-strip abc-thin step-now-bar" data-testid="d5-abc">
-            <span class="step-now-k">当前</span>
-            <strong>${!a.understand ? "A · 理解" : !a.applyOrNot ? "B · 申不申" : !a.submit ? (a.overLine ? "C · 递交" : "C · 过线") : "本段完成"}</strong>
-            <span class="tiny muted">AI 推进 · 拍板在对话</span>
+            ${stepDemoSwitchHtml("d5", d5Pills, d5Step.id === "done" ? "c-submit" : (d5Step.id === "c-qc" || d5Step.id === "c-submit" ? d5Step.id : d5Step.id), "d5StepForce")}
+            <span class="tiny muted">全流程见轨迹</span>
             <span class="seg-anchors" hidden>
               <span data-testid="seg-a">A</span><span data-testid="seg-b">B</span><span data-testid="seg-c">C</span>
             </span>
@@ -2003,6 +2200,7 @@
     const d5s = $("#d5TaskStrip");
     if (d5s) bindTaskStrip(d5s);
     bindAskSticky($("#applyBody"));
+    bindStepDemo($("#applyBody"));
     const applyShell = $("#applyBody");
     if (applyShell) {
       applyShell.classList.add("apply-shell");
@@ -2020,6 +2218,7 @@
       const uAsk = DEMO.apply.understandAsk || {};
       const reason = readJudgmentReason("understand");
       state.apply.understand = true;
+      state.d5StepForce = null;
       addTrace("操作·理解确认", "⑤ A");
       addJudgment({
         gate: "⑤理解确认",
@@ -2038,6 +2237,7 @@
       const ask = DEMO.apply.applyOrNotAsk || {};
       const reason = readJudgmentReason("apply");
       state.apply.applyOrNot = "yes";
+      state.d5StepForce = null;
       addTrace("操作·申不申", "申请");
       addJudgment({
         gate: "⑤申不申",
@@ -2056,6 +2256,7 @@
       const ask = DEMO.apply.applyOrNotAsk || {};
       const reason = readJudgmentReason("apply");
       state.apply.applyOrNot = "no";
+      state.d5StepForce = null;
       addTrace("操作·申不申", "不申结案 · 不出申请号");
       addJudgment({
         gate: "⑤申不申",
@@ -2079,6 +2280,7 @@
       if (!(state.apply.applyOrNot === "yes" && state.apply.understand)) return;
       (DEMO.apply.qc || []).forEach((q) => { q.status = "green"; });
       state.apply.overLine = true;
+      state.d5StepForce = null;
       state.applyYellowRisk = false;
       addTrace("操作·⑤过线", "补数据转绿 · 过线 ≠ 已确认递交");
       addJudgment({ gate: "⑤质检过线", conclusion: "黄项补数据转绿过线", option: "补数据转绿", reason: "形式要件补齐", confidence: "high" });
@@ -2174,26 +2376,27 @@
     const rRoster = DEMO.reply.roster || [];
 
     const rLead = rRoster.find((e) => e.kind === "lead") || rRoster[0] || { name: "答复部负责人", av: "答", photo: "06.jpg" };
+    const d6StepEarly = d6CurrentStep();
     const d6Reports = [];
-    /* A 争点 */
-    if (!r.contentionOk) {
-      d6Reports.push(agentReportBubble({
-        testid: "ask-contention", gradeId: "d6-contention", title: "审查意见理解是否如此？",
-        lead: rLead,
-        bodyHtml: `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml(DEMO.reply.contention)}</p>
+    if (d6StepEarly.id === "a") {
+      if (!r.contentionOk) {
+        d6Reports.push(agentReportBubble({
+          testid: "ask-contention", gradeId: "d6-contention", title: "审查意见理解是否如此？",
+          lead: rLead,
+          bodyHtml: `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml(DEMO.reply.contention)}</p>
           ${evidenceDetailsHtml({ source: "通知书摘录", reasoning: DEMO.reply.contention, compare: "中立复述 vs 通知书争点", confidence: "high", confidenceNote: "争点理解" }, "contention-evidence")}
           ${judgmentReasonHtml("contention", "接受中立复述")}`,
-        actsHtml: `<button type="button" class="ask-confirm" id="btnContention" data-testid="confirm-contention">确认争点理解</button>
+          actsHtml: `<button type="button" class="ask-confirm" id="btnContention" data-testid="confirm-contention">确认争点理解</button>
           <button type="button" class="ghost">还要改</button>`
-      }));
-    } else {
-      d6Reports.push(agentReportBubble({ testid: "ask-contention", gradeId: "d6-contention", title: "争点理解", lead: rLead, done: true, doneLabel: "争点理解已确认" }));
-    }
-    /* B 策略 */
-    if (!r.limitOk) {
-      const stratBody = !r.contentionOk
-        ? `<p class="tiny">A 未确认前不可定调策略。</p>`
-        : `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.reply.strategyAsk || {}).conclusion || "")}</p>
+        }));
+      } else {
+        d6Reports.push(agentReportBubble({ testid: "ask-contention", gradeId: "d6-contention", title: "争点理解", lead: rLead, done: true, doneLabel: "争点理解已确认" }));
+      }
+    } else if (d6StepEarly.id === "b") {
+      if (!r.limitOk) {
+        const stratBody = !r.contentionOk
+          ? `<p class="tiny">A 未确认前不可定调策略。</p>`
+          : `<p class="ask-conclusion"><strong>结论</strong> ${escapeHtml((DEMO.reply.strategyAsk || {}).conclusion || "")}</p>
           ${evidenceDetailsHtml(DEMO.reply.strategyAsk, "strategy-evidence")}
           <div class="strategy-opts" data-testid="strategy-opts">
             ${(DEMO.reply.strategyOptions || []).map((opt) => {
@@ -2206,41 +2409,46 @@
             }).join("")}
           </div>
           ${judgmentReasonHtml("strategy", "采纳建议方案 · 接受放弃范围影响")}`;
-      d6Reports.push(agentReportBubble({
-        testid: "ask-limit", gradeId: "d6-strategy", title: "重大缩限是否接受？",
-        lead: rLead, bodyHtml: stratBody,
-        actsHtml: `<button type="button" class="ask-confirm" id="btnLimit" data-testid="confirm-limit" ${r.contentionOk ? "" : "disabled"}>确认策略</button>`
-      }));
+        d6Reports.push(agentReportBubble({
+          testid: "ask-limit", gradeId: "d6-strategy", title: "重大缩限是否接受？",
+          lead: rLead, bodyHtml: stratBody,
+          actsHtml: `<button type="button" class="ask-confirm" id="btnLimit" data-testid="confirm-limit" ${r.contentionOk ? "" : "disabled"}>确认策略</button>`
+        }));
+      } else {
+        d6Reports.push(agentReportBubble({
+          testid: "ask-limit", gradeId: "d6-strategy", title: "策略",
+          lead: rLead, done: true,
+          doneLabel: `已确认策略/缩限 · 方案 ${escapeHtml(state.strategyChoice || "A")}`
+        }));
+      }
+      d6Reports.push(`<span data-testid="ask-contention" hidden></span>`);
     } else {
-      d6Reports.push(agentReportBubble({
-        testid: "ask-limit", gradeId: "d6-strategy", title: "策略",
-        lead: rLead, done: true,
-        doneLabel: `已确认策略/缩限 · 方案 ${escapeHtml(state.strategyChoice || "A")}`
-      }));
-    }
-    /* C 递交 */
-    if (!r.submit) {
-      d6Reports.push(agentReportBubble({
-        testid: "ask-reply-submit", gradeId: "d6-submit", title: "确认本轮递交",
-        lead: rLead,
-        bodyHtml: !r.limitOk
-          ? `<p class="tiny">须先确认策略。</p>`
-          : `${evidenceDetailsHtml(DEMO.reply.submitAsk, "reply-submit-evidence")}
+      if (!r.submit) {
+        d6Reports.push(agentReportBubble({
+          testid: "ask-reply-submit", gradeId: "d6-submit", title: "确认本轮递交",
+          lead: rLead,
+          bodyHtml: !r.limitOk
+            ? `<p class="tiny">须先确认策略。</p>`
+            : `${evidenceDetailsHtml(DEMO.reply.submitAsk, "reply-submit-evidence")}
             ${submitManifestHtml(DEMO.reply.submitAsk, "reply-submit-manifest")}
             ${judgmentReasonHtml("replySubmit", "文件齐·接受超期升级与收文风险")}`,
-        actsHtml: `<button type="button" class="ask-confirm" id="btnReplySubmit" data-testid="confirm-reply-submit" ${r.limitOk ? "" : "disabled"}>确认递交</button>`
-      }));
-    } else {
-      d6Reports.push(agentReportBubble({ testid: "ask-reply-submit", gradeId: "d6-submit", title: "本轮递交", lead: rLead, done: true, doneLabel: "已确认本轮递交" }));
+          actsHtml: `<button type="button" class="ask-confirm" id="btnReplySubmit" data-testid="confirm-reply-submit" ${r.limitOk ? "" : "disabled"}>确认递交</button>`
+        }));
+      } else {
+        d6Reports.push(agentReportBubble({ testid: "ask-reply-submit", gradeId: "d6-submit", title: "本轮递交", lead: rLead, done: true, doneLabel: "已确认本轮递交" }));
+      }
+      d6Reports.push(`<span data-testid="ask-contention" hidden></span><span data-testid="ask-limit" hidden></span>`);
     }
+
     const d6ReportHtml = d6Reports.join("");
     const d6ChatHtml = `<div class="bubble" data-testid="feed-bubble"><div class="bubble-head">${avatarHtml(rLead.photo, rLead.av)}<div class="who">${escapeHtml(rLead.name)}</div></div><div class="bubble-text">本轮答复进行中 · 期限与策略拿不准的地方，我都放在对话里向你汇报。</div></div>`;
 
-        const d6Sticky = askStickyHtml([
-      { id: "ask-contention", label: "争点理解", done: !!r.contentionOk },
-      { id: "ask-limit", label: "策略/缩限", done: !!r.limitOk },
-      { id: "ask-reply-submit", label: "本轮递交", done: !!r.submit }
-    ]);
+        const d6StickyItems = d6StepEarly.id === "a"
+      ? [{ id: "ask-contention", label: "争点理解", done: !!r.contentionOk }]
+      : d6StepEarly.id === "b"
+        ? [{ id: "ask-limit", label: "策略/缩限", done: !!r.limitOk }]
+        : [{ id: "ask-reply-submit", label: "本轮递交", done: !!r.submit }];
+    const d6Sticky = askStickyHtml(d6StickyItems);
     const d6Side = chainSideHtml({
       dens: rDens,
       sidePaneTestId: "ai-pane-d6",
@@ -2266,13 +2474,54 @@
       composerSendTestId: "d6-composer-send",
       composerPh: "驾驭一句（演示）· 如坚持双密封争点"
     });
-    const d6MainBody = `
+    const d6Step = d6StepEarly;
+    const d6Pills = [
+      { id: "a", label: "A 争点", done: !!r.contentionOk },
+      { id: "b", label: "B 策略", done: !!r.limitOk },
+      { id: "c", label: "C/D 起草", done: !!r.submit }
+    ];
+    let d6MainBody = "";
+    if (d6Step.id === "a") {
+      d6MainBody = `<div class="step-focus-card" data-testid="d6-a-focus">
+            <div class="sf-k">本步 · A</div>
+            <strong>中立拆争点</strong>
+            <p class="tiny muted">先对齐通知书 · 不夹带策略定调</p>
+          </div>
+          <div class="doc-body paper-sheet" data-testid="d6-doc-contention">
+            <h3>争点清单</h3>
+            <p>${escapeHtml(DEMO.reply.contention || "创造性：双密封相对单密封是否非显而易见")}</p>
+            <div class="sec"><strong>对比文件要点</strong><p class="tiny muted">见通知书摘录 · 确认后进策略</p></div>
+          </div>
+          <div class="doc-tabs" data-testid="d6-doc-tabs" hidden></div>
+          <span data-testid="d6-doc-reply" hidden></span>`;
+    } else if (d6Step.id === "b") {
+      d6MainBody = `<div class="step-focus-card" data-testid="d6-b-focus">
+            <div class="sf-k">本步 · B</div>
+            <strong>策略选项 · 重大缩限你拍</strong>
+            <p class="tiny muted">推荐可驳 · 未拍不锁递交</p>
+          </div>
+          <div class="doc-body paper-sheet" data-testid="d6-doc-strategy">
+            <h3>策略方向</h3>
+            <p>方案摊开在对话 · 主栏只留缩前/缩后人话对照</p>
+            <div class="sec"><strong>缩前</strong><p>双密封全保留</p></div>
+            <div class="sec"><strong>缩后（若选建议）</strong><p class="tiny muted">放弃部分从权梯度 · 影响见对话选项</p></div>
+          </div>
+          <div class="doc-tabs" data-testid="d6-doc-tabs" hidden></div>
+          <span data-testid="d6-doc-reply" hidden></span>`;
+    } else {
+      d6MainBody = `<div class="step-focus-card" data-testid="d6-c-focus">
+            <div class="sf-k">本步 · C/D</div>
+            <strong>答复起草 · 审核过线后递交</strong>
+            <p class="tiny muted">过线 ≠ 递交</p>
+          </div>
             <div class="doc-tabs" data-testid="d6-doc-tabs">
               ${tabBtn("reply", "答复书")}
               ${tabBtn("oa", "通知书")}
               ${tabBtn("diff", "差分对照")}
             </div>
             ${docInner}`;
+    }
+
     const d6TopExtra = !DEMO.reply.upgraded
       ? `<button type="button" class="ghost tiny" id="btnUpgrade" data-testid="btn-upgrade">升级催办</button>`
       : `<span class="tag ask" data-testid="upgrade-badge">已升级催办</span>`;
@@ -2296,8 +2545,12 @@
       chromeTestId: "d6-chrome",
       layoutClass: "reply-layout",
       layoutTestId: "d6-layout",
-      mainTitle: "主产出 · 答复稿",
-      mainTag: "答复 | 通知书 | 差分",
+      mainTitle: d6Step.id === "a" ? "主产出 · 争点" : d6Step.id === "b" ? "主产出 · 策略" : "主产出 · 答复稿",
+      mainTag: d6Step.id === "c" || d6Step.id === "done" ? "答复 | 通知书 | 差分" : "本步一事",
+      mainExtra: `<div class="abc-strip abc-thin step-now-bar" data-testid="d6-step-bar">
+            ${stepDemoSwitchHtml("d6", d6Pills, d6Step.id === "done" ? "c" : d6Step.id, "d6StepForce")}
+            <span class="tiny muted">全流程见轨迹</span>
+          </div>`,
       lightFoldTestId: "d6-light-fold",
       mainBody: d6MainBody,
       sideHtml: d6Side
@@ -2305,8 +2558,10 @@
     const d6s = $("#d6TaskStrip");
     if (d6s) {
       bindTaskStrip(d6s);
+      /* strip ok */
     }
     bindAskSticky($("#replyBody"));
+    bindStepDemo($("#replyBody"));
     const replyShell = $("#replyBody");
     if (replyShell) {
       replyShell.classList.add("reply-shell");
@@ -2337,6 +2592,7 @@
     }));
     const bc = $("#btnContention"); if (bc) bc.addEventListener("click", () => {
       state.reply.contentionOk = true;
+      state.d6StepForce = null;
       addTrace("操作·争点理解", "⑥ A");
       addJudgment({
         gate: "⑥争点理解",
@@ -2356,6 +2612,7 @@
       const ask = DEMO.reply.strategyAsk || {};
       const reason = readJudgmentReason("strategy");
       state.reply.limitOk = true;
+      state.d6StepForce = null;
       addTrace("操作·重大缩限", `⑥ B · 方案 ${state.strategyChoice}`);
       addJudgment({
         gate: "⑥策略/缩限",
@@ -2374,6 +2631,7 @@
       const ask = DEMO.reply.submitAsk || {};
       const reason = readJudgmentReason("replySubmit");
       state.reply.submit = true;
+      state.d6StepForce = null;
       addTrace("操作·确认本轮递交", "⑥");
       addJudgment({
         gate: "⑥确认本轮递交",
@@ -2504,47 +2762,64 @@
     const confirmed = !!(state.thinLineConfirmed[d.id]);
     const photo = d.leadPhoto || "01.jpg";
     const lead = { name: d.name + "负责人", av: (d.num || "薄").slice(0, 1), photo };
-    const report = confirmed
+    const autoStep = confirmed ? "done" : "confirm";
+    const stepId = state.thinStepForce || autoStep;
+    const pills = [
+      { id: "intake", label: "收件", done: true },
+      { id: "confirm", label: "合格线", done: confirmed },
+      { id: "done", label: "完成", done: confirmed }
+    ];
+    const report = (stepId === "confirm" || stepId === "intake") && !confirmed
       ? agentReportBubble({
           testid: "thin-line-ask", gradeId: null, title: "合格线确认（薄部示意）",
-          lead, done: true, doneLabel: "已确认合格线示意"
+          lead,
+          bodyHtml: `<p class="tiny">一期不做细台；本步只确认合格线表述。</p>
+            <p class="ask-conclusion"><strong>合格线</strong> ${escapeHtml(d.line)}</p>`,
+          actsHtml: `<button type="button" class="ask-confirm" id="btnThinLine" data-testid="thin-confirm-line">确认合格线</button>`
         })
       : agentReportBubble({
           testid: "thin-line-ask", gradeId: null, title: "合格线确认（薄部示意）",
-          lead,
-          bodyHtml: `<p class="tiny">一期不做细台；若本部门有产出，请确认是否达到合格线表述。</p>
-            <p class="ask-conclusion"><strong>合格线</strong> ${escapeHtml(d.line)}</p>`,
-          actsHtml: `<button type="button" class="ask-confirm" id="btnThinLine" data-testid="thin-confirm-line">确认合格线</button>`
+          lead, done: true, doneLabel: "已确认合格线示意"
         });
-    const sticky = askStickyHtml([{ id: "thin-line-ask", label: "合格线确认", done: confirmed }]);
+    const sticky = askStickyHtml([{ id: "thin-line-ask", label: stepId === "done" ? "已完成" : "合格线确认", done: confirmed }]);
+    let mainBody = "";
+    if (stepId === "intake") {
+      mainBody = `<div class="thin-empty" data-testid="thin-empty">
+          <div class="step-focus-card"><div class="sf-k">本步 · 收件</div><strong>${escapeHtml(d.num)} ${escapeHtml(d.name)}</strong>
+          <p class="tiny muted">${escapeHtml(d.desc)} · 一期薄部 · 无细作业台</p></div>
+          <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
+        </div>`;
+    } else if (stepId === "confirm") {
+      mainBody = `<div class="thin-empty" data-testid="thin-empty">
+          <div class="step-focus-card" data-testid="thin-confirm-focus">
+            <div class="sf-k">本步</div>
+            <strong>确认合格线</strong>
+            <p class="tiny" style="margin:8px 0 0">${escapeHtml(d.line)}</p>
+          </div>
+          <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
+        </div>`;
+    } else {
+      mainBody = `<div class="thin-empty" data-testid="thin-empty">
+          <div class="step-focus-card"><div class="sf-k">本步 · 完成</div><strong>合格线已确认（示意）</strong>
+          <p class="tiny muted">细驾驭请回大厅进主链④⑤⑥</p></div>
+          <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
+        </div>`;
+    }
     $("#thinBody").innerHTML = `
       <div class="dept-shell thin-shell" data-testid="thin-dept">
         <div class="dept-top">
           <button type="button" class="ghost" id="btnThinLobby">← 回大厅</button>
           <h1>${escapeHtml(d.num)} ${escapeHtml(d.name)}</h1>
-          <span class="line-status">薄占位 · 合格线示意</span>
+          <span class="line-status">薄占位 · 按步示意</span>
           ${deptMetaHtml({ caseTitle: d.desc, prefShort: "" })}
         </div>
         <div class="workbench">
           <div class="main-pane">
-            <div class="pane-head"><strong>主产出 · 空态</strong><span class="pane-tag">薄部</span></div>
-            <div class="pane-body">
-              <div class="thin-empty" data-testid="thin-empty">
-                <div class="mw-card thin-lead-row" style="display:flex;gap:12px;align-items:flex-start">
-                  ${avatarHtml(photo, lead.av, "avatar")}
-                  <div><strong>${escapeHtml(lead.name)}</strong><div class="tiny muted">${escapeHtml(d.desc)} · 一期薄部同壳空态</div></div>
-                </div>
-                <div class="mw-card">
-                  <strong>本部门合格线</strong>
-                  <p class="tiny" style="margin:6px 0 0">${escapeHtml(d.line)}</p>
-                </div>
-                <div class="mw-card">
-                  <strong>一期不造细作业台</strong>
-                  <p class="tiny" style="margin:6px 0 0">同壳空态 · 汇报与拍板在右侧 · 可回大厅派主链④⑤⑥</p>
-                </div>
-                <p class="ban-line" data-testid="thin-ban"><strong>禁超卖：</strong>${escapeHtml(d.ban || "一期不做细作业；勿超卖能力")}</p>
-              </div>
+            <div class="pane-head"><strong>主产出 · 本步</strong><span class="pane-tag">薄部</span></div>
+            <div class="abc-strip abc-thin step-now-bar" data-testid="thin-step-bar">
+              ${stepDemoSwitchHtml("thin", pills, stepId, "thinStepForce")}
             </div>
+            <div class="pane-body">${mainBody}</div>
           </div>
           <div class="side-pane" data-testid="ai-pane-thin">
             <div class="ai-id-zone">
@@ -2563,10 +2838,10 @@
             </div>
             <div class="pane-body">
               <div class="feed-wrap feed-primary" data-testid="feed-wrap-thin">
-                <div class="feed-h"><strong>对话</strong><span class="pane-tag">汇报 · 要你拍</span></div>
+                <div class="feed-h"><strong>对话</strong><span class="pane-tag">本步请示</span></div>
                 ${sticky}
                 <div class="feed" data-testid="thin-feed">${report}
-                  <div class="bubble" data-testid="feed-bubble"><div class="bubble-head">${avatarHtml(photo, lead.av)}<div class="who">${escapeHtml(lead.name)}</div></div><div class="bubble-text">薄部示意汇报 · 关键关在上。细驾驭请回大厅进④⑤⑥。</div></div>
+                  <div class="bubble" data-testid="feed-bubble"><div class="bubble-head">${avatarHtml(photo, lead.av)}<div class="who">${escapeHtml(lead.name)}</div></div><div class="bubble-text">薄部按步示意 · 一步一事。</div></div>
                 </div>
               </div>
             </div>
@@ -2584,9 +2859,11 @@
     const bl = $("#btnThinToLobby"); if (bl) bl.addEventListener("click", goLobby);
     const bd4 = $("#btnThinToD4"); if (bd4) bd4.addEventListener("click", () => openDept("d4", { direct: true }));
     bindAskSticky($("#thinBody"));
+    bindStepDemo($("#thinBody"));
     const bt = $("#btnThinLine");
     if (bt) bt.addEventListener("click", () => {
       state.thinLineConfirmed[d.id] = true;
+      state.thinStepForce = null;
       addJudgment({ gate: `${d.num}合格线确认`, conclusion: d.line, option: "确认合格线示意", reason: "薄部示意拍板", confidence: "mid" });
       toast("薄部合格线已确认（示意）");
       render();
