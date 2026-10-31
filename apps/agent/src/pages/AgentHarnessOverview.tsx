@@ -138,65 +138,60 @@ export function AgentHarnessOverview() {
         }}
       />
 
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <select
-          value={caseId}
-          onChange={(e) => {
-            setPickerTouched(true)
-            setCaseId(e.target.value)
-          }}
-          className="ui-input ui-input-sm focus-ring max-w-[240px] truncate"
-          aria-label="关联案件（可选）"
-        >
-          <option value="">自动（按 Agent 阶段）</option>
-          {visibleCases.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.title} · {getStageMeta(c.stage).shortName}
-            </option>
-          ))}
-        </select>
-        <span className="text-[11px] text-slate-400">
-          {caseId
-            ? '已选：新建会话将带上所选案件'
-            : '可不选 · 无案也可开会话'}
-        </span>
-      </div>
-
-      {/* Dense CTA row — Catalog density language */}
+      {/* 并薄：开会话主路径在助手目录；本页纸面说明为主 */}
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={newSession}
-          className="btn-press focus-ring cta-work inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium"
-        >
-          <Plus className="h-3.5 w-3.5" aria-hidden />
-          样机开会话
-        </button>
         <Link
           to="/agent/agents"
-          className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50"
+          data-testid="harness-to-catalog"
         >
           <FolderOpen className="h-3.5 w-3.5" aria-hidden />
-          助手目录
+          去助手目录开会话
         </Link>
         <Link
           to="/agent/sessions"
           className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
           <MessageSquare className="h-3.5 w-3.5" aria-hidden />
-          最近会话
+          函件史
         </Link>
       </div>
 
-      <div className="mb-6 max-w-4xl">
-        <div className="mb-2 flex items-baseline justify-between">
-          <h2 className="text-[13px] font-semibold text-slate-900">Agent</h2>
-          <Link to="/agent/agents" className="ui-link-weak">
-            全部 Agent
+      <details className="mb-6 max-w-4xl" data-testid="harness-catalog-fold">
+        <summary className="cursor-pointer select-none text-[12px] font-medium text-slate-600 hover:text-slate-900">
+          可选 · 纸面内挑助手开会话（旁路·同助手目录）
+        </summary>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <select
+            value={caseId}
+            onChange={(e) => {
+              setPickerTouched(true)
+              setCaseId(e.target.value)
+            }}
+            className="ui-input ui-input-sm focus-ring max-w-[240px] truncate"
+            aria-label="关联案件（可选）"
+          >
+            <option value="">自动（按助手阶段）</option>
+            {visibleCases.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.title} · {getStageMeta(c.stage).shortName}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={newSession}
+            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-dashed border-slate-300 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600"
+            data-testid="harness-new-session-compat"
+          >
+            <Plus className="h-3 w-3" aria-hidden />
+            兼容 · 样机开会话
+          </button>
+          <Link to="/agent/agents" className="ui-link-weak text-[11px]">
+            完整助手目录
           </Link>
         </div>
-
-        <ul className="agent-harness-list">
+        <ul className="agent-harness-list mt-3">
           {AGENT_CATALOG.map((a) => {
             const stage = getStageMeta(a.stage)
             return (
@@ -258,7 +253,7 @@ export function AgentHarnessOverview() {
             )
           })}
         </ul>
-      </div>
+      </details>
 
       {recent.length > 0 && (
         <div className="mb-6 max-w-4xl">

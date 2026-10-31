@@ -21,7 +21,7 @@ const BRANCHES: {
     id: 'b1',
     title: '直达交底部',
     blurb: '跳过前站 · 进交底',
-    mustSee: '跳过①②③ · ④短收件+进入检查表',
+    mustSee: '跳过前站 · 交底部短收件+进入检查表',
     forbid: '假装已激发/已挖点',
     href: (id) =>
       id ? `/agent/cases/${id}/depts/disclosure?branch=b1` : '/agent/cases/new',
@@ -30,7 +30,7 @@ const BRANCHES: {
     id: 'b2',
     title: '自带交底→申请部',
     blurb: '有交底 · 进申请',
-    mustSee: '⑤进入检查表；不过→退④',
+    mustSee: '申请部进入检查表；不过→退交底部',
     forbid: '未全绿硬写申请',
     href: (id, agency) =>
       id
@@ -43,7 +43,7 @@ const BRANCHES: {
     id: 'b3',
     title: '建议回交底',
     blurb: '材料不足 · 回交底',
-    mustSee: '只有技术说明时建议回④',
+    mustSee: '只有技术说明时建议回交底部',
     forbid: '用「先查新」绕过交底门槛',
     href: (id) =>
       id ? `/agent/cases/${id}/depts/draft?branch=b3` : '/agent/cases/new',
@@ -52,15 +52,15 @@ const BRANCHES: {
     id: 'b4',
     title: '通知书→答复部',
     blurb: '有通知 · 进答复',
-    mustSee: '⑥短收件；须现行申请文件',
-    forbid: '凭交底直接答 OA',
+    mustSee: '答复部短收件；须现行申请文件',
+    forbid: '凭交底直接答审查意见',
     href: (id) => (id ? `/agent/cases/${id}/depts/oa?branch=b4` : '/agent/cases/new'),
   },
   {
     id: 'b5',
     title: '不申结案',
     blurb: '拍不申 · 无申请号',
-    mustSee: '⑤B 拍不申 · 不出申请号',
+    mustSee: '申请部拍不申 · 不出申请号',
     forbid: '不申却出申请号',
     href: (id) =>
       id ? `/agent/cases/${id}/depts/draft?step=b&branch=b5` : '/agent/cases/new',
@@ -77,7 +77,7 @@ const BRANCHES: {
     id: 'b7',
     title: '复盘只读不拍',
     blurb: '复盘报告 · 不改台账',
-    mustSee: '报告可交 · 不回写⑦',
+    mustSee: '报告可交 · 不回写维护台账',
     forbid: '未拍却改台账',
     href: (id) =>
       id ? `/agent/cases/${id}/depts/monetize?branch=b7` : '/agent/cases/new',
@@ -86,8 +86,8 @@ const BRANCHES: {
     id: 'b8',
     title: '情报官（资产）',
     blurb: '竞对年报 · 走资产',
-    mustSee: '竞对年报走情报官（非⑧）',
-    forbid: '⑧/③糊弄专报',
+    mustSee: '竞对年报走情报官（非复盘部）',
+    forbid: '用复盘或挖掘糊弄专报',
     href: () => '/agent/assets?branch=b8',
   },
 ]

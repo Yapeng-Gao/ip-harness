@@ -201,7 +201,7 @@ export function HomeComposer({
       title: goalText.slice(0, 40) || undefined,
       attachments: attached,
       mentions: mentions.map(
-        (m) => `${m.kind === 'dept' ? '@部门' : '@专家'} ${m.label}`,
+        (m) => `${m.kind === 'dept' ? '@部门' : '@编制'} ${m.label}`,
       ),
       casePlan,
     }
@@ -317,7 +317,7 @@ export function HomeComposer({
           }}
           onKeyDown={onKeyDown}
           rows={1}
-          placeholder="描述要办的事，或 @ 一个部门 / 专家…"
+          placeholder="描述要办的事，或 @ 一个部门 / 编制…"
           className="focus-ring block max-h-[10rem] min-h-[2.5rem] w-full resize-none rounded-[var(--radius-md)] border-0 bg-transparent px-2 py-1.5 text-[14px] leading-[1.45] text-slate-900 placeholder:text-slate-500"
           data-testid="home-composer-input"
           disabled={phase === 'plan'}
@@ -333,7 +333,7 @@ export function HomeComposer({
             />
             <ToolButton
               icon={AtSign}
-              label="专家"
+              label="点名"
               onClick={() => setPicker(picker === 'expert' ? null : 'expert')}
               expanded={picker === 'expert'}
             />
@@ -426,7 +426,7 @@ export function HomeComposer({
         )}
 
         {picker === 'expert' && phase === 'compose' && (
-          <PickerPanel title="点名专家" onClose={() => setPicker(null)}>
+          <PickerPanel title="点名编制" onClose={() => setPicker(null)}>
             {experts.map(({ id, def }) => (
               <button
                 key={id}

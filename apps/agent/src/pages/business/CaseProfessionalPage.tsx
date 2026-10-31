@@ -192,8 +192,7 @@ export function CaseProfessionalPage() {
           data-testid="case-professional-hint"
           role="status"
         >
-          本案编制名册（一期）· 看谁能接、谁在办、哪有缺口 · 进部台办理 ·
-          辅链零件默认收折 · 本页不改交卷 · 非第二套进门 · 样机示意非官报
+          一期编制名册 · 进部台办理 · 辅链默认收折 · 本页不改交卷 · 样机示意
         </p>
 
         <h1
@@ -254,7 +253,6 @@ export function CaseProfessionalPage() {
               data-dept-status={line.kind}
             >
               <div className="flex items-baseline gap-1.5">
-                <span className="text-[11px] text-slate-400">{door.num}</span>
                 <h2 className="text-[14px] font-semibold text-slate-900">
                   {deptLabel(dept)}
                 </h2>
@@ -345,7 +343,7 @@ export function CaseProfessionalPage() {
                     }}
                   >
                     <Plus className="h-3 w-3" aria-hidden />
-                    添加专家
+                    加编制名
                   </button>
                 )}
               </div>
