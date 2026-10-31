@@ -2253,8 +2253,47 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 真日历同步 / 真局端期限 | **仍后置** |
 | 真官报 / 真鉴权 / 真递交 / 真报价付款 | **仍后置** |
+| 会话史 / 讨论组诚实加深 | → **§60 会话史/讨论组旁路诚实态**（已落地） |
 
 ### 59.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 期限诚实条 + DEMO 行 + 日历同步护栏；smoke PASS_DEADLINE_HONEST；shots `.tmp/deadline-honest-shots/`；写入 §59 |
+| 2026-10-31 CST | §59.3 增 → §60 会话史/讨论组旁路诚实态 |
+
+## 60. 会话史 / 讨论组旁路诚实态（2026-10-31 Asia/Shanghai）
+
+> **问题：** §59.3 —— SoftEmpty 会话/讨论组（§52）已有，示意史与邀请/多端同步 CTA 未与 Official/Auth/Billing/Deadline 同族诚实条。属**产品理念 / 产品设计 / 使用成本**。  
+> **真源：** SoftEmpty sessions/case-room；Office 会话/讨论/纪要语感；禁假「已同步全员」、假讨论组真拉人；真多端同步 / 真 IM 仍后置；不宣称四维落地。
+
+### 60.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| SessionDemoHonestBanner | 会话列表琥珀条（会话示意 / 本地样机史·非多端同步）；讨论组条（讨论示意 / 本地互喊·非即时通讯）+ CTA 护栏 |
+| DEMO | `data-session-demo` / `data-room-demo` / `data-session-row-demo`；讨论组 DEMO · 示意讨论组 徽；去掉 eng `projectId=` 壳 |
+| CTA | 会话「同步到其他设备」「邀请同事」disabled + `data-cta-guard`；讨论组「邀请同事（后置）」同护栏；互喊按钮文案仍含「示意」 |
+| SoftEmpty | sessions-empty / sessions-filter / case-room-empty 保留；不与 billing/auth/deadline/official 叠 |
+| 不做 | 真多端同步、真 IM、假全员已对齐、真拉人；碰 main-path-sample；右栏仍 leader-chat |
+
+### 60.2 六维（机制报告，不宣称落地）
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 列表仍聚合本地样机会话+项目线程；讨论组仍须先组队；互喊仍为示意链 |
+| 产品理念 | 明示非即时通讯 / 非多端同步；邀请与同步后置可见 |
+| 产品逻辑 | 旁路会话史/讨论组不抢公司→工作台；硬请示仍在聊天气泡 |
+| 产品设计 | 与 Official/Auth/Billing/Deadline 诚实条同族；单条 session banner |
+| 产品形态 | 会话/讨论/纪要，非 channel/webhook |
+| 使用成本 | 护栏一眼可见；展开「为何是示意」 |
+
+**仍不宣称四维/六维落地。**
+
+### 60.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真多端同步 / 真 IM / 真拉人 | **仍后置** |
+| 真官报 / 真鉴权 / 真递交 / 真报价付款 / 真日历 | **仍后置** |
+
+### 60.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 会话/讨论诚实条 + DEMO 徽 + 邀请/同步护栏；smoke PASS_SESSION_HONEST；shots `.tmp/session-honest-shots/`；写入 §60 |

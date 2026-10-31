@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { SoftEmpty } from '../../components/soft/SoftEmpty'
+import { SessionDemoHonestBanner } from '../../components/business/SessionDemoHonestBanner'
 import { businessSeatLabel, seatsForCase } from '../../business/businessSeats'
 import { recommendTeamForStage } from '../../business/deptRoster'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
@@ -60,7 +61,6 @@ export function BusinessCaseRoomPage() {
   const { getCase, getProgress, isBusinessCase, setCaseTeam } =
     useBusinessCases()
   const {
-    getProject,
     roomMessages,
     appendRoomMessage,
     clearRoomMessages,
@@ -72,7 +72,6 @@ export function BusinessCaseRoomPage() {
 
   const c = getCase(caseId)
   const prog = getProgress(caseId)
-  const project = getProject(caseId)
   const biz = isBusinessCase(caseId)
 
   const allSeatIds = useMemo(
@@ -185,7 +184,12 @@ export function BusinessCaseRoomPage() {
       data-case-id={caseId}
       data-project-id={caseId}
       data-team-size={seatIds.length}
+      data-session-demo="1"
+      data-room-demo="1"
     >
+      <div className="shrink-0 border-b border-slate-100 px-3 py-2">
+        <SessionDemoHonestBanner surface="room" />
+      </div>
       <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-3 py-2">
         <Link
           to={`/agent/cases/${caseId}`}
@@ -200,12 +204,24 @@ export function BusinessCaseRoomPage() {
         <span className="rounded border border-violet-200 bg-violet-50 px-1.5 py-px text-[10px] text-violet-800">
           {teamEmpty ? '未组队' : `${seatIds.length} 人`}
         </span>
-        {project ? (
-          <span className="text-[10px] text-slate-400">
-            projectId={caseId}
-          </span>
-        ) : null}
+        <span
+          className="rounded bg-amber-100 px-1.5 py-px text-[10px] font-semibold text-amber-900"
+          data-testid="business-case-room-demo-chip"
+        >
+          DEMO · 示意讨论组
+        </span>
         <div className="ml-auto flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            disabled
+            title="后置 · 无真邀请"
+            className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[11px] font-medium text-slate-400 disabled:cursor-not-allowed"
+            data-testid="business-case-room-invite-disabled"
+            data-cta-guard="1"
+            aria-disabled="true"
+          >
+            邀请同事（后置）
+          </button>
           <button
             type="button"
             data-testid="business-case-room-shout"

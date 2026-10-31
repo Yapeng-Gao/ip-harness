@@ -6,6 +6,7 @@ import { useApp } from '@shared/context/AppContext'
 import { getAgent } from '@shared/data/agents'
 import { PageHeader } from '@shared/components/PageHeader'
 import { SoftEmpty } from '../components/soft/SoftEmpty'
+import { SessionDemoHonestBanner } from '../components/business/SessionDemoHonestBanner'
 import {
   sessionBizBadges,
   BIZ_BADGE_CLASS,
@@ -150,7 +151,39 @@ export function AgentSessionsList() {
         : '通用单聊 + 项目专家线程 · 可用来源筛选；项目夹入口仍在「项目」'
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-8">
+    <div
+      className="flex-1 overflow-y-auto px-6 py-8 lg:px-8"
+      data-testid="agent-sessions-page"
+      data-session-demo="1"
+    >
+      <SessionDemoHonestBanner surface="sessions" className="mb-3" />
+      <div
+        className="mb-3 flex flex-wrap items-center gap-2"
+        data-testid="sessions-demo-actions"
+      >
+        <button
+          type="button"
+          disabled
+          title="后置 · 无真多端同步"
+          className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-400 disabled:cursor-not-allowed"
+          data-testid="sessions-sync-disabled"
+          data-cta-guard="1"
+          aria-disabled="true"
+        >
+          同步到其他设备（后置）
+        </button>
+        <button
+          type="button"
+          disabled
+          title="后置 · 无真邀请"
+          className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-400 disabled:cursor-not-allowed"
+          data-testid="sessions-invite-disabled"
+          data-cta-guard="1"
+          aria-disabled="true"
+        >
+          邀请同事（后置）
+        </button>
+      </div>
       <PageHeader
         title={listTitle}
         context={listContext}
@@ -324,6 +357,7 @@ export function AgentSessionsList() {
                         : 'sessions-row-general'
                     }
                     className="focus-row cursor-pointer hover:bg-slate-50/80"
+                    data-session-row-demo="1"
                     onClick={() => openRow(row)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
