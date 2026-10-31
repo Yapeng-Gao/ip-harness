@@ -101,7 +101,11 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
       data-testid="case-company-home"
       data-case-id={caseId}
     >
-      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section
+        className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+        data-testid="company-hero"
+        data-company-dedupe="cta-v1"
+      >
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <p
             className="text-[13px] font-medium text-slate-800"
@@ -117,7 +121,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </span>
         </div>
         <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
-          案况总览。点某部开抽屉；主按钮去当前部门——拍板在工作台右栏。
+          本案总览：八部地图为主；点部开抽屉进干活。拍板在工作台右栏——不是第二套大厅。
         </p>
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
           <h2 className="text-[16px] font-semibold text-slate-900">{title}</h2>
@@ -125,13 +129,13 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             <span className="text-[12px] text-slate-500">{summary}</span>
           ) : null}
         </div>
-        <p className="mt-2 text-[12px] text-slate-600">
-          当前部门：
-          <span className="font-semibold text-slate-900">
-            {deptLabel(currentDept)}
-          </span>
-        </p>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-2.5 flex flex-wrap items-center gap-2">
+          <p className="text-[12px] text-slate-600">
+            当前：
+            <span className="font-semibold text-slate-900">
+              {deptLabel(currentDept)}
+            </span>
+          </p>
           <Link
             to={currentHref}
             className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white"
@@ -140,60 +144,73 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             去当前部门
             <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
-          <Link
-            to={
-              pending[0]
-                ? workbenchAskPath(caseId, pending[0].kind, {
-                    confirmId: pending[0].id,
-                  })
-                : currentHref
-            }
-            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-950"
-            data-testid="company-pending-link"
-          >
-            <Bell className="h-3.5 w-3.5" aria-hidden />
-            待确认{pending.length > 0 ? ` · ${pending.length}` : ''}
-          </Link>
+          {pending.length > 0 ? (
+            <Link
+              to={workbenchAskPath(caseId, pending[0]!.kind, {
+                confirmId: pending[0]!.id,
+              })}
+              className="btn-press focus-ring inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-950"
+              data-testid="company-pending-link"
+            >
+              <Bell className="h-3 w-3" aria-hidden />
+              待你拍 · {pending.length}
+            </Link>
+          ) : (
+            <span
+              className="text-[11px] text-slate-400"
+              data-testid="company-pending-link"
+              data-pending="0"
+            >
+              暂无待你拍
+            </span>
+          )}
+        </div>
+        <nav
+          className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 border-t border-slate-100 pt-2.5 text-[11px] text-slate-500"
+          aria-label="本案次要入口"
+          data-testid="company-logistics-links"
+        >
           <Link
             to={`/agent/cases/${caseId}/depts/disclosure?docket=1`}
-            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="company-link-case-file"
           >
             案卷
           </Link>
+          <span aria-hidden className="text-slate-300">
+            ·
+          </span>
           <Link
             to={`/agent/cases/${caseId}/docket`}
-            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="company-link-docket"
           >
             近期限
           </Link>
-        </div>
-        <p
-          className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-400"
-          data-testid="company-logistics-links"
-        >
-          <span>后勤</span>
+          <span aria-hidden className="text-slate-300">
+            ·
+          </span>
           <Link
             to={`/agent/cases/${caseId}/billing`}
-            className="focus-ring rounded-sm underline-offset-2 hover:text-slate-600 hover:underline"
+            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="company-link-billing"
           >
             账单
           </Link>
+          <span aria-hidden className="text-slate-300">
+            ·
+          </span>
           <Link
             to={`/agent/cases/${caseId}/members`}
-            className="focus-ring rounded-sm underline-offset-2 hover:text-slate-600 hover:underline"
+            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="company-link-members"
           >
             成员
           </Link>
-        </p>
+        </nav>
       </section>
 
       <ThreeLineStatusStrip prog={prog} dense />
-
-      <HealthBillStrip caseTitle={title} />
 
       <section aria-labelledby="eight-dept-map-title">
         <div className="mb-2 flex items-baseline gap-2">
@@ -201,10 +218,10 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             id="eight-dept-map-title"
             className="text-[13px] font-semibold text-slate-900"
           >
-            主链部门
+            八个部门
           </h3>
           <span className="text-[11px] text-slate-500">
-            ①立项 → ②激发 → ③挖掘 → ④交底 → ⑤申请 → ⑥答复 → ⑦维护 → ⑧复盘
+            本案地图 · 点开抽屉再进干活 · ①→⑧
           </span>
         </div>
         <ol
@@ -312,9 +329,9 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           ) : (
             <ChevronRight className="h-3.5 w-3.5" aria-hidden />
           )}
-          更多部门
+          辅链能力
           <span className="font-normal text-slate-400">
-            （辅链 · 查新/附图/递交等 · 非八部大门 · 默认折叠）
+            （查新/附图等 · 不占八部大门 · 默认折叠）
           </span>
         </button>
         {moreOpen && (
@@ -336,6 +353,18 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </ul>
         )}
       </section>
+
+      <details
+        className="rounded-lg border border-dashed border-slate-200 bg-slate-50/50 px-3 py-2"
+        data-testid="company-health-fold"
+      >
+        <summary className="cursor-pointer select-none text-[11px] font-medium text-slate-600">
+          健康账单（演示 · 默认收起 · 非 KPI）
+        </summary>
+        <div className="mt-2">
+          <HealthBillStrip caseTitle={title} />
+        </div>
+      </details>
 
       {drawerDept ? (
         <DeptSideDrawer
