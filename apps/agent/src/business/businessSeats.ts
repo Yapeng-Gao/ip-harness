@@ -238,11 +238,11 @@ export function expertsInNode(seatId: string): NodeExpert[] {
 export type TeamRosterRow = {
   id: ProjectExpertId
   label: string
-  /** 仅多人节点出现，用来在组队列表里分组 */
+  /** 仅多人节点出现，用来在编制席列表里分组 */
   group?: string
 }
 
-/** 组队名单：单人节点一行用节点名；多人节点按专家勾选。 */
+/** 编制席名单：单人节点一行用节点名；多人节点按专家勾选。 */
 export function teamRosterRows(seatIds: ProjectExpertId[]): TeamRosterRow[] {
   const rows: TeamRosterRow[] = []
   const seen = new Set<string>()

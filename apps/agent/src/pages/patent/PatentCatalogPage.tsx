@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { CheckSquare, Square, Users, MessageSquare, FolderKanban } from 'lucide-react'
+import { CheckSquare, Square, Users, FolderKanban } from 'lucide-react'
 import {
   COLD_START_BLOCKED,
   PATENT_CATALOG_IDS,
@@ -98,19 +98,15 @@ export function PatentCatalogPage() {
     return ids
   }, [selected])
 
-  const onCreateTeam = (openRoom?: boolean) => {
+  const onCreateTeam = () => {
     const p = createProject({
       title: title.trim() || '专利专班',
-      summary: `专家工作台组队 · ${teamIds.length} 席 · 演示16=${pack16Count}`,
+      summary: `专家工作台专班 · ${teamIds.length} 席 · 演示16=${pack16Count}`,
       kind: 'domain',
       domainPackId: 'patent',
       expertIds: teamIds,
     })
-    navigate(
-      openRoom
-        ? `/agent/projects/${p.id}/room`
-        : `/agent/projects/${p.id}`,
-    )
+    navigate(`/agent/projects/${p.id}`)
   }
 
   const openSeat = (id: ProjectExpertId) => {
@@ -254,21 +250,12 @@ export function PatentCatalogPage() {
           </label>
           <button
             type="button"
-            onClick={() => onCreateTeam(false)}
+            onClick={() => onCreateTeam()}
             className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
             data-testid="patent-team-create"
           >
             <Users className="h-3.5 w-3.5" aria-hidden />
             组成专班并建项目
-          </button>
-          <button
-            type="button"
-            onClick={() => onCreateTeam(true)}
-            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900"
-            data-testid="patent-team-create-room"
-          >
-            <MessageSquare className="h-3.5 w-3.5" aria-hidden />
-            组队并开群聊
           </button>
           <Link
             to="/agent/projects"

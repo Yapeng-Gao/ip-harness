@@ -156,7 +156,7 @@ export function AgentSessionsList() {
       data-testid="agent-sessions-page"
       data-session-demo="1"
     >
-      <SessionDemoHonestBanner surface="sessions" className="mb-3" />
+      <SessionDemoHonestBanner className="mb-3" />
       <div
         className="mb-3 flex flex-wrap items-center gap-2"
         data-testid="sessions-demo-actions"

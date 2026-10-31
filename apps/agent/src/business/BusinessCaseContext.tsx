@@ -190,7 +190,7 @@ export type CaseProgress = {
   researchPass?: ResearchPass
   doneSeatIds: ProjectExpertId[]
   moreSeatIds: ProjectExpertId[]
-  /** 本案讨论团队（主责 expert id）；默认空 = 未组队 */
+  /** 本案编制席勾选（主责 expert id）；默认空；组队 UI 已卸 */
   teamMemberIds: ProjectExpertId[]
   /** 建案向导「本案计划」骨架（可空） */
   casePlan?: string
@@ -538,7 +538,7 @@ type BusinessCaseContextValue = {
     ok: boolean,
     note?: string,
   ) => { ok: boolean; reason?: string }
-  /** 本案讨论团队（勾选主责）；空 = 未组队 */
+  /** 本案编制席勾选（主责）；空；组队 UI 已卸 */
   setCaseTeam: (caseId: string, memberIds: ProjectExpertId[]) => void
   /** 案子助手改写 / 补全本案计划 */
   updateCasePlan: (caseId: string, casePlan: string) => void

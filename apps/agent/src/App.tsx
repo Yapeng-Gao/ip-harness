@@ -22,12 +22,10 @@ import { ProjectWorkspacePage } from './pages/projects/ProjectWorkspacePage'
 import { AgentLabGallery } from './pages/AgentLabGallery'
 import { RedirectToAgentLab } from './pages/RedirectToAgentLab'
 import { PatentSeatPage } from './pages/patent/PatentSeatPage'
-import { PatentRoomPage } from './pages/patent/PatentRoomPage'
 import { BusinessCasesPage } from './pages/business/BusinessCasesPage'
 import { BusinessCaseNewPage } from './pages/business/BusinessCaseNewPage'
 import { BusinessCasePage } from './pages/business/BusinessCasePage'
 import { BusinessCaseDeptPage } from './pages/business/BusinessCaseDeptPage'
-import { BusinessCaseRoomPage } from './pages/business/BusinessCaseRoomPage'
 import {
   PendingConfirmDetailPage,
   PendingConfirmInboxPage,
@@ -79,7 +77,7 @@ export default function App() {
                 <Route path="cases/:caseId/billing" element={<CaseBillingPage />} />
                 <Route path="cases/:caseId/members" element={<CaseMembersPage />} />
                 <Route path="cases/:caseId/professional" element={<CaseProfessionalPage />} />
-                <Route path="cases/:caseId/room" element={<BusinessCaseRoomPage />} />
+                <Route path="cases/:caseId/room" element={<Navigate to=".." relative="path" replace />} />
                 <Route path="pending" element={<PendingConfirmInboxPage />} />
                 <Route path="pending/:confirmId" element={<PendingConfirmDetailPage />} />
                 <Route path="departments" element={<DepartmentsPage />} />
@@ -102,7 +100,7 @@ export default function App() {
                 <Route path="projects" element={<ProjectListPage />} />
                 <Route path="projects/:projectId" element={<ProjectWorkspacePage />} />
                 <Route path="projects/:projectId/bots/:botId" element={<ProjectWorkspacePage />} />
-                <Route path="projects/:projectId/room" element={<PatentRoomPage />} />
+                <Route path="projects/:projectId/room" element={<Navigate to=".." relative="path" replace />} />
                 <Route path="projects/:projectId/experts/:expertId" element={<ProjectWorkspacePage />} />
                 <Route path="skills" element={<Navigate to="/agent" replace />} />
                 <Route path="tools" element={<Navigate to="/agent" replace />} />

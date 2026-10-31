@@ -307,7 +307,7 @@ const STAGE_LEAD_SEATS: Record<BusinessStageId, ProjectExpertId[]> = {
 }
 
 const STAGE_RECOMMEND_BLURB: Record<BusinessStageId, string> = {
-  prepare: '准备阶段先拉查新对齐方向；组队讨论不产闸。',
+  prepare: '准备阶段先拉查新对齐方向；跨部对照不产闸。',
   intake: '立项要对齐查新结论与立项；上下游各带一人便于口径一致。',
   drafting: '撰写申请需交底、权要、附图同场；上下游各带一人防术语漂移。',
   filing: '递交前对齐递交与相邻撰写、附图口径。',

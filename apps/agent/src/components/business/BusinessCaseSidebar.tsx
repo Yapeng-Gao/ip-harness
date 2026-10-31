@@ -5,8 +5,6 @@ import {
   Search,
   ChevronDown,
   FolderKanban,
-  MessagesSquare,
-  Users,
 } from 'lucide-react'
 import {
   CONFIRM_META,
@@ -23,7 +21,6 @@ import {
 } from '../../business/drillRoster'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { useEntryRole } from '../../business/useEntryRole'
-import { CaseTeamPanel } from './CaseTeamPanel'
 import type { ProjectExpertId } from '../../projects/types'
 import {
   MAIN_CHAIN_DEPTS,
@@ -56,7 +53,6 @@ export function BusinessCaseSidebar() {
   const [allOpen, setAllOpen] = useState(true)
   const [deptsOpen, setDeptsOpen] = useState(true)
   const [moreOpen, setMoreOpen] = useState(false)
-  const [teamOpen, setTeamOpen] = useState(false)
   const [q, setQ] = useState('')
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set())
 
@@ -312,8 +308,6 @@ export function BusinessCaseSidebar() {
     })
   }, [cases, q, getProgress, stageLabel])
 
-  const teamCount = prog?.teamMemberIds?.length ?? 0
-
   const caseListSection = (
     <>
       <button
@@ -507,29 +501,6 @@ export function BusinessCaseSidebar() {
             </div>
           ))}
 
-        {!drillMode && activeCaseId && (
-          <>
-            <button
-              type="button"
-              onClick={() => setTeamOpen((v) => !v)}
-              className="focus-ring mt-2 flex w-full items-center justify-between rounded-md px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 hover:bg-white/70 hover:text-slate-700"
-              aria-expanded={teamOpen}
-              data-testid="business-side-team-toggle"
-            >
-              <span className="flex items-center gap-1">
-                <Users className="h-3 w-3" aria-hidden />
-                本案团队
-                {teamCount > 0 ? ` · ${teamCount}` : ''}
-              </span>
-              <ChevronDown
-                className={`h-3.5 w-3.5 transition ${teamOpen ? 'rotate-0' : '-rotate-90'}`}
-                aria-hidden
-              />
-            </button>
-            {teamOpen && <CaseTeamPanel caseId={activeCaseId} compact />}
-          </>
-        )}
-
         {!drillMode && (
           <div className="mt-2 space-y-1.5">
             {prog?.casePlan?.trim() ? (
@@ -582,17 +553,6 @@ export function BusinessCaseSidebar() {
           title="案级专业能力 / 编制"
         >
           专业 / 编制
-        </Link>
-
-        <Link
-          to={`/agent/cases/${activeCaseId}/room`}
-          className="mt-2 flex items-center justify-center gap-1 rounded-md border border-violet-200 bg-violet-50 px-2 py-1.5 text-[10px] font-medium text-violet-900 hover:bg-violet-100"
-          data-testid="business-case-group-chat"
-          title="本案讨论组群聊"
-        >
-          <MessagesSquare className="h-3 w-3 shrink-0" aria-hidden />
-          组队讨论
-          {teamCount > 0 ? ` · ${teamCount}` : ''}
         </Link>
 
         {pending.length > 0 && (

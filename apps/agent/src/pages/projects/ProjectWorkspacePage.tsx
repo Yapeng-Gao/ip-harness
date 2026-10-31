@@ -104,15 +104,7 @@ export function ProjectWorkspacePage() {
               </span>
             )}
             <span>{project.caseId ? '已绑案件' : '未绑案件'}</span>
-            {isPatent && (
-              <Link
-                to={`/agent/projects/${projectId}/room`}
-                className="ml-auto rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-900"
-                data-testid="open-patent-room"
-              >
-                开群聊 room
-              </Link>
-            )}
+            
             <Link to="/agent" className="text-slate-400 underline">
               Catalog
             </Link>

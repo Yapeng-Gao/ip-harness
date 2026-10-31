@@ -114,8 +114,8 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
     body: '当前筛选下没有条目 · 可切换来源或清除状态筛选。',
   },
   'case-room-empty': {
-    title: '讨论组还没有消息',
-    body: '可点「讨论组互喊示意」，或直接输入一条留言。',
+    title: '讨论组已卸',
+    body: '组队/讨论组产品面已去掉；请回公司案首页从部门席继续。',
   },
   'case-process-empty': {
     title: '暂无过程行',

@@ -76,7 +76,7 @@ export function PatentSeatPage() {
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-sm text-slate-600">
         <p>禁止专家截入：{getProjectExpert(seatId).name} 须从建项目起。</p>
         <Link to="/agent" className="underline">
-          回 Catalog 组队
+          回 Catalog
         </Link>
       </div>
     )
