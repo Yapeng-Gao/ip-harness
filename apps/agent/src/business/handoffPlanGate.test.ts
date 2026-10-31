@@ -21,7 +21,7 @@ describe('handoffPlanGate', () => {
     if (!g.allow) {
       assert.equal(g.code, 'no_submit')
       assert.equal(g.cta, 'go_chapter')
-      assert.match(g.hint, /未交卷/)
+      assert.match(g.hint, /交卷/)
     }
   })
 

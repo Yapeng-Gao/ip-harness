@@ -108,6 +108,7 @@ export function BusinessSeatWorkbench({
     getPendingConfirms,
     getCaseConfirms,
     getProgress,
+    getKitChecklist,
   } = useBusinessCases()
   const { getThread, appendMessage, patchThread } = useProjectFolder()
   const def = getProjectExpert(seatId)
@@ -122,8 +123,9 @@ export function BusinessSeatWorkbench({
     return planAdvanceHandoffGate({
       activeDeptSlug: active.deptSlug,
       confirms: getCaseConfirms(caseId),
+      checklist: getKitChecklist(caseId, active.deptSlug),
     })
-  }, [prog.delegate, seatDept, caseId, getCaseConfirms])
+  }, [prog.delegate, seatDept, caseId, getCaseConfirms, getKitChecklist, prog.kitDoneByDept])
   const dual = deliverableForExpert(seatId)
   const seatLabel = businessSeatLabel(seatId)
   /** 本案任一 pending：会话 chip 藏/降灰，顶栏「去确认」独占主视线 */

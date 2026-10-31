@@ -152,6 +152,9 @@ export function BusinessCaseDeptPage() {
     recordJudgment,
     savePreferenceById,
     precipitateJudgment,
+    getKitChecklist,
+    toggleKitCheck,
+    seedKitComplete,
   } = useBusinessCases()
   const { getThread, patchThread } = useProjectFolder()
   const { deptLabel } = useOrgConfig()
@@ -354,11 +357,11 @@ export function BusinessCaseDeptPage() {
     }
   }
 
-  const checklistReady = leadDone || st === '待确认' || st === '已完成' || awaitingThis
-  const checklistItems = handoff.checklist.map((label, i) => ({
-    label,
-    done: checklistReady || (leadDone ? true : i === 0 && stepIndex > 0),
-  }))
+  /** 齐套逐项联办完闸：以 progress.kitDoneByDept 为准（未勾=缺；样机可勾齐） */
+  const checklistItems = useMemo(() => {
+    if (!slug) return [] as { label: string; done: boolean }[]
+    return getKitChecklist(caseId, slug)
+  }, [caseId, slug, getKitChecklist, prog.kitDoneByDept])
   const allChecklistDone = canSubmitDeliverable(checklistItems)
   const missingLabels = missingChecklistLabels(checklistItems)
   const canSubmit =
@@ -1536,6 +1539,30 @@ export function BusinessCaseDeptPage() {
                     </p>
                     <p className="mt-0.5 font-medium">齐套未齐，还不能交卷。</p>
                     <ul
+                      className="mt-1 space-y-1 text-[11px] text-slate-700"
+                      data-testid="dept-checklist-items"
+                      data-kit-interactive="1"
+                    >
+                      {checklistItems.map((x) => (
+                        <li key={x.label} className="flex items-start gap-2">
+                          <label className="flex cursor-pointer items-start gap-1.5">
+                            <input
+                              type="checkbox"
+                              className="mt-0.5"
+                              checked={x.done}
+                              data-testid={`dept-kit-check-${x.label}`}
+                              onChange={() => {
+                                if (slug) toggleKitCheck(caseId, slug, x.label)
+                              }}
+                            />
+                            <span className={x.done ? 'text-slate-400 line-through' : ''}>
+                              {x.label}
+                            </span>
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                    <ul
                       className="mt-1 list-disc space-y-0.5 pl-4 text-[11px] text-slate-600"
                       data-testid="dept-checklist-missing"
                     >
@@ -1545,6 +1572,17 @@ export function BusinessCaseDeptPage() {
                           <li key={x.label}>{x.label}</li>
                         ))}
                     </ul>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring mt-2 rounded-full border border-dashed border-violet-600/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-violet-950/80 hover:bg-white"
+                      data-testid="dept-seed-kit"
+                      title="样机勾齐本稿齐套 · 非一键交卷 · 非官报"
+                      onClick={() => {
+                        if (slug) seedKitComplete(caseId, slug)
+                      }}
+                    >
+                      样机·勾齐齐套
+                    </button>
                     <details
                       className="mt-2 rounded-md border border-violet-100 bg-white/70 px-2 py-1.5"
                       data-testid="ask-more"

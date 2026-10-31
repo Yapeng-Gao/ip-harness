@@ -53,6 +53,12 @@ import {
   planAdvanceHandoffGate,
 } from './handoffPlanGate'
 import {
+  kitLabelsForDeptSlug,
+  resolveKitChecklist,
+  seedAllKitDone,
+  toggleKitDoneLabel,
+} from './kitChecklistGate'
+import {
   advancePlanChain,
   appendChainAdvanceNote,
   type PlanChainStep,
@@ -180,6 +186,11 @@ export type CaseProgress = {
   casePlan?: string
   /** 最近一次助手委托分发（计划可调→分发）；与 casePlan 同源可恢复 */
   delegate?: CaseDelegateDispatch
+  /**
+   * 齐套逐项勾选 · deptSlug → 已勾标签（样机；G1）
+   * 缺 key=未触碰，席内可回落启发式
+   */
+  kitDoneByDept?: Record<string, string[]>
   updatedAt: string
 }
 
@@ -550,6 +561,22 @@ type BusinessCaseContextValue = {
   seedPlanHandoffPass: (
     caseId: string,
   ) => { ok: boolean; kind?: BusinessConfirmKind; reason?: string }
+  /** 本章齐套逐项（合并持久勾选） */
+  getKitChecklist: (
+    caseId: string,
+    deptSlug: string,
+  ) => { label: string; done: boolean }[]
+  toggleKitCheck: (
+    caseId: string,
+    deptSlug: string,
+    label: string,
+    force?: boolean,
+  ) => void
+  /** 样机：勾齐本章齐套（非一键交卷/非官报） */
+  seedKitComplete: (
+    caseId: string,
+    deptSlug: string,
+  ) => { ok: boolean; labels: string[] }
   /** 启用前研等「更多部门」（写入 moreSeatIds） */
   /** T10 · 本案判断档案（硬请示写回） */
   getJudgments: (caseId?: string) => JudgmentRecord[]
@@ -2263,9 +2290,17 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           reason: `当前在办是「${active.label}」，与本站不符`,
         }
       }
+      const labels = kitLabelsForDeptSlug(active.deptSlug)
+      const doneLabels = cur.kitDoneByDept?.[active.deptSlug]
+      const checklist = resolveKitChecklist({
+        labels,
+        doneLabels,
+        kitTouched: doneLabels !== undefined,
+      })
       const gate = planAdvanceHandoffGate({
         activeDeptSlug: active.deptSlug,
         confirms: confirms.filter((c) => c.caseId === caseId),
+        checklist,
       })
       if (!gate.allow) {
         return { ok: false, reason: gate.hint }
@@ -2369,6 +2404,21 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           ...rest,
         ]
       })
+      const labels = kitLabelsForDeptSlug(active.deptSlug)
+      setProgressById((prev) => {
+        const c = prev[caseId] ?? cur ?? emptyProgress(caseId)
+        return {
+          ...prev,
+          [caseId]: {
+            ...c,
+            kitDoneByDept: {
+              ...(c.kitDoneByDept ?? {}),
+              [active.deptSlug]: seedAllKitDone(labels),
+            },
+            updatedAt: at,
+          },
+        }
+      })
       appendLogs([
         {
           id: processLogId('seed-handoff'),
@@ -2381,6 +2431,80 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       return { ok: true, kind }
     },
     [appendLogs, confirms, progressById],
+  )
+
+
+  const getKitChecklist = useCallback(
+    (caseId: string, deptSlug: string) => {
+      const cur = progressById[caseId]
+      const labels = kitLabelsForDeptSlug(deptSlug)
+      const doneLabels = cur?.kitDoneByDept?.[deptSlug]
+      return resolveKitChecklist({
+        labels,
+        doneLabels,
+        kitTouched: doneLabels !== undefined,
+      })
+    },
+    [progressById],
+  )
+
+  const toggleKitCheck = useCallback(
+    (caseId: string, deptSlug: string, label: string, force?: boolean) => {
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        const labels = kitLabelsForDeptSlug(deptSlug)
+        const prevDone = cur.kitDoneByDept?.[deptSlug]
+        // 首次触碰：若无记录，从空开始再 toggle（显式逐项）
+        const base = prevDone !== undefined ? prevDone : []
+        const nextDone = toggleKitDoneLabel(base, label, force).filter((l) =>
+          labels.includes(l),
+        )
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            kitDoneByDept: {
+              ...(cur.kitDoneByDept ?? {}),
+              [deptSlug]: nextDone,
+            },
+            updatedAt: nowIso(),
+          },
+        }
+      })
+    },
+    [],
+  )
+
+  const seedKitComplete = useCallback(
+    (caseId: string, deptSlug: string) => {
+      const labels = kitLabelsForDeptSlug(deptSlug)
+      const at = nowIso()
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            kitDoneByDept: {
+              ...(cur.kitDoneByDept ?? {}),
+              [deptSlug]: seedAllKitDone(labels),
+            },
+            updatedAt: at,
+          },
+        }
+      })
+      appendLogs([
+        {
+          id: processLogId('seed-kit'),
+          caseId,
+          at,
+          kind: 'monitor_event',
+          message: `样机勾齐本稿齐套 · ${deptSlug}（${labels.length}项 · 非真官报）`,
+        },
+      ])
+      return { ok: true, labels }
+    },
+    [appendLogs],
   )
 
   const enableMoreDepartments = useCallback((caseId: string) => {
@@ -2522,6 +2646,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       recordDelegateDispatch,
       advancePlanChainStep,
       seedPlanHandoffPass,
+      getKitChecklist,
+      toggleKitCheck,
+      seedKitComplete,
       enableMoreDepartments,
       getJudgments,
       getPreferences,
@@ -2563,6 +2690,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       recordDelegateDispatch,
       advancePlanChainStep,
       seedPlanHandoffPass,
+      getKitChecklist,
+      toggleKitCheck,
+      seedKitComplete,
       enableMoreDepartments,
       getJudgments,
       getPreferences,

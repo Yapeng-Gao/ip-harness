@@ -61,6 +61,8 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
     cases,
     advancePlanChainStep,
     seedPlanHandoffPass,
+    getKitChecklist,
+    seedKitComplete,
   } = useBusinessCases()
   const { deptLabel } = useOrgConfig()
   const [moreOpen, setMoreOpen] = useState(false)
@@ -71,13 +73,19 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
 
   const caseConfirms = getCaseConfirms(caseId)
   const activePlanStep = prog.delegate?.chain?.find((s) => s.status === 'active')
+  const planKitChecklist = useMemo(() => {
+    if (!activePlanStep) return []
+    return getKitChecklist(caseId, activePlanStep.deptSlug)
+  }, [activePlanStep, caseId, getKitChecklist, prog.kitDoneByDept])
+
   const planHandoffGate = useMemo(() => {
     if (!activePlanStep) return null
     return planAdvanceHandoffGate({
       activeDeptSlug: activePlanStep.deptSlug,
       confirms: caseConfirms,
+      checklist: planKitChecklist,
     })
-  }, [activePlanStep, caseConfirms])
+  }, [activePlanStep, caseConfirms, planKitChecklist])
 
   const currentSeat = useMemo(
     () =>
@@ -458,6 +466,15 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
                   >
                     去拍板 · 通过后办完本章
                   </Link>
+                ) : planHandoffGate.cta === 'go_kit' ? (
+                  <Link
+                    to={`/agent/cases/${caseId}/depts/${prog.delegate.deptSlug}?delegate=1&kit=1`}
+                    className="btn-press focus-ring rounded-full bg-violet-800 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-violet-700"
+                    data-testid="company-plan-go-kit"
+                    data-handoff-gate={planHandoffGate.code}
+                  >
+                    先去勾齐套
+                  </Link>
                 ) : (
                   <Link
                     to={`/agent/cases/${caseId}/depts/${prog.delegate.deptSlug}?delegate=1`}
@@ -471,7 +488,24 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
               ) : null}
               {prog.delegate.chain?.some((s) => s.status === 'active') &&
               planHandoffGate &&
-              !planHandoffGate.allow ? (
+              !planHandoffGate.allow &&
+              planHandoffGate.code === 'kit_incomplete' ? (
+                <button
+                  type="button"
+                  className="btn-press focus-ring rounded-full border border-dashed border-violet-700/40 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-violet-950/80 hover:bg-white"
+                  data-testid="company-plan-seed-kit"
+                  title="样机勾齐本稿齐套 · 非一键交卷 · 非官报"
+                  onClick={() => {
+                    if (activePlanStep) seedKitComplete(caseId, activePlanStep.deptSlug)
+                  }}
+                >
+                  样机·勾齐齐套
+                </button>
+              ) : null}
+              {prog.delegate.chain?.some((s) => s.status === 'active') &&
+              planHandoffGate &&
+              !planHandoffGate.allow &&
+              planHandoffGate.code !== 'kit_incomplete' ? (
                 <button
                   type="button"
                   className="btn-press focus-ring rounded-full border border-dashed border-emerald-700/40 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-emerald-950/80 hover:bg-white"
@@ -483,6 +517,18 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
                 >
                   样机·补记本稿已通过
                 </button>
+              ) : null}
+              {!planHandoffGate?.allow &&
+              planHandoffGate?.code === 'kit_incomplete' &&
+              planHandoffGate.missing?.length ? (
+                <ul
+                  className="mt-1 w-full list-disc pl-4 text-[10px] text-violet-900/70"
+                  data-testid="company-plan-kit-missing"
+                >
+                  {planHandoffGate.missing.map((m) => (
+                    <li key={m}>{m}</li>
+                  ))}
+                </ul>
               ) : null}
             </div>
           ) : null}
