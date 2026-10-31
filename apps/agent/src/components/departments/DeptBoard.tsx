@@ -15,7 +15,7 @@ import { DeptStatusDot } from './DeptStatusDot'
 type View = 'org' | 'board'
 
 /**
- * 部门页 · 组织架构 / 项目看板 两视图
+ * 部门页 · 组织架构 / 各部门进展 两视图
  * 看板是 项目 × 部门 的状态矩阵，全部读既有 context。
  */
 export function DeptViewSwitch() {
@@ -30,7 +30,7 @@ export function DeptViewSwitch() {
       {(
         [
           { id: 'org', label: '组织架构', Icon: LayoutGrid },
-          { id: 'board', label: '项目看板', Icon: Table2 },
+          { id: 'board', label: '各部门进展', Icon: Table2 },
         ] as const
       ).map(({ id, label, Icon }) => (
         <button
@@ -45,7 +45,7 @@ export function DeptViewSwitch() {
           {label}
         </button>
       ))}
-      <span className="sr-only">当前视图：{view === 'org' ? '组织架构' : '项目看板'}</span>
+      <span className="sr-only">当前视图：{view === 'org' ? '组织架构' : '各部门进展'}</span>
     </div>
   )
 }

@@ -109,7 +109,7 @@ export function DepartmentsPage() {
                 className="segmented-item inline-flex items-center gap-1"
                 data-testid="dept-view-board"
               >
-                项目看板
+                各部门进展
               </button>
             </div>
           </div>

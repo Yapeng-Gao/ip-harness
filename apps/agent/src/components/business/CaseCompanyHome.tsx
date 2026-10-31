@@ -751,7 +751,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             ) : (
               <ChevronRight className="h-3.5 w-3.5" aria-hidden />
             )}
-            {mapExpanded ? '收起其余部' : '展开其余七部'}
+            {mapExpanded ? '收起其余部门' : '展开其余部门'}
           </button>
         </div>
         <ol
