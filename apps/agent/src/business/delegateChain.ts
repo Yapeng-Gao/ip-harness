@@ -106,7 +106,79 @@ export function resolveFirstStep(
   return enabled.find((s) => s.canBeFirst) ?? enabled[0]
 }
 
-/** 写入开案/过程的计划文案（可被 casePlanDrive 解析） */
+/** 启用步骤按当前顺序（辅链） */
+export function enabledPlanChain(
+  steps: readonly PlanStep[],
+): PlanStep[] {
+  return steps.filter((s) => s.enabled)
+}
+
+/** 上移/下移一步（示意可调序；越界 no-op） */
+export function movePlanStep(
+  steps: readonly PlanStep[],
+  id: string,
+  dir: 'up' | 'down',
+): PlanStep[] {
+  const list = [...steps]
+  const i = list.findIndex((s) => s.id === id)
+  if (i < 0) return list
+  const j = dir === 'up' ? i - 1 : i + 1
+  if (j < 0 || j >= list.length) return list
+  const tmp = list[i]!
+  list[i] = list[j]!
+  list[j] = tmp
+  return list
+}
+
+export type PlanChainStepStatus = 'active' | 'queued' | 'skipped'
+
+export type PlanChainStep = {
+  id: string
+  label: string
+  deptSlug: string
+  status: PlanChainStepStatus
+}
+
+/** 分发时固化辅链：首站 active，其余启用 queued，关掉 skipped */
+export function buildPlanChain(
+  steps: readonly PlanStep[],
+  firstStepId?: string | null,
+): PlanChainStep[] {
+  const first = resolveFirstStep(steps, firstStepId)
+  return steps.map((s) => {
+    if (!s.enabled) {
+      return {
+        id: s.id,
+        label: s.label,
+        deptSlug: s.slug,
+        status: 'skipped' as const,
+      }
+    }
+    if (first && s.id === first.id) {
+      return {
+        id: s.id,
+        label: s.label,
+        deptSlug: s.slug,
+        status: 'active' as const,
+      }
+    }
+    return {
+      id: s.id,
+      label: s.label,
+      deptSlug: s.slug,
+      status: 'queued' as const,
+    }
+  })
+}
+
+/** 辅链中下一站（queued 的第一个） */
+export function nextQueuedStep(
+  chain: readonly PlanChainStep[] | undefined | null,
+): PlanChainStep | undefined {
+  return chain?.find((s) => s.status === 'queued')
+}
+
+/** 写入开案/过程的计划文案（可被 casePlanDrive 解析；含多步辅链） */
 export function formatCasePlanText(input: {
   goalKind: GoalKind
   goalText: string
@@ -114,17 +186,22 @@ export function formatCasePlanText(input: {
   firstStepId?: string | null
 }): string {
   const first = resolveFirstStep(input.steps, input.firstStepId)
+  const chain = enabledPlanChain(input.steps)
+  const numbered = chain
+    .map((s, i) => `${i + 1}.${s.label}`)
+    .join(' → ')
+  const queuedAfter = chain.filter((s) => first && s.id !== first.id)
   const lines = [
-    `目标类型：${GOAL_KIND_LABEL[input.goalKind]}`,
-    `用户目标：${input.goalText.trim().slice(0, 120)}`,
+    `来稿类型：${GOAL_KIND_LABEL[input.goalKind]}`,
+    `来稿意图：${input.goalText.trim().slice(0, 120)}`,
     first
-      ? `起点部门：${first.label}\n下一步：去${first.label.split('·')[0]!.trim()}开干`
-      : '下一步：请先勾选计划步骤',
-    `计划步骤：${input.steps
-      .filter((s) => s.enabled)
-      .map((s) => s.label)
-      .join(' → ')}`,
-    '（样机示意 · 非官报）',
+      ? `开篇章节：${first.label}\n下一步：先办${first.label.split('·')[0]!.trim()}`
+      : '下一步：请先勾选要办的章节',
+    `本稿排期：${numbered || '（尚未勾选章节）'}`,
+    queuedAfter.length
+      ? `开篇之后待办：${queuedAfter.map((s) => s.label).join(' → ')}`
+      : '开篇之后待办：无（本篇一站办完）',
+    '（样机示意 · 非官报 · 排期可改稿）',
   ]
   return lines.join('\n')
 }

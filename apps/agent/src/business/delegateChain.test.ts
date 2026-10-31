@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import {
+  buildPlanChain,
   classifyGoal,
   formatCasePlanText,
+  movePlanStep,
+  nextQueuedStep,
   planStepsForGoal,
   resolveFirstStep,
 } from './delegateChain'
@@ -36,5 +39,35 @@ describe('delegateChain', () => {
     })
     assert.match(text, /审查答复/)
     assert.match(text, /样机示意/)
+  })
+})
+
+describe('plan multi-step chain', () => {
+  it('moves steps and builds active/queued/skipped', () => {
+    const steps = planStepsForGoal('protect_start')
+    assert.equal(steps[0]?.id, 'intake')
+    const moved = movePlanStep(steps, 'disclosure', 'up')
+    assert.equal(moved[0]?.id, 'disclosure')
+    assert.equal(moved[1]?.id, 'intake')
+    const toggled = moved.map((s) =>
+      s.id === 'draft' ? { ...s, enabled: false } : s,
+    )
+    const chain = buildPlanChain(toggled, 'disclosure')
+    assert.equal(chain.find((c) => c.id === 'disclosure')?.status, 'active')
+    assert.equal(chain.find((c) => c.id === 'intake')?.status, 'queued')
+    assert.equal(chain.find((c) => c.id === 'draft')?.status, 'skipped')
+    assert.equal(nextQueuedStep(chain)?.id, 'intake')
+  })
+
+  it('format uses 排期 office wording', () => {
+    const steps = planStepsForGoal('protect_start')
+    const text = formatCasePlanText({
+      goalKind: 'protect_start',
+      goalText: '散热开案',
+      steps,
+    })
+    assert.match(text, /本稿排期/)
+    assert.match(text, /开篇之后待办/)
+    assert.match(text, /排期可改稿/)
   })
 })

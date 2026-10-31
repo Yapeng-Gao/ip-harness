@@ -4,6 +4,8 @@ import {
   AtSign,
   Building2,
   Check,
+  ChevronDown,
+  ChevronUp,
   Paperclip,
   Send,
   Upload,
@@ -17,9 +19,12 @@ import { ORG_DEPTS, type OrgDept } from '../../departments/orgDepts'
 import { getProjectExpert } from '../../projects/experts'
 import type { ProjectExpertId } from '../../projects/types'
 import {
+  buildPlanChain,
   classifyGoal,
+  enabledPlanChain,
   formatCasePlanText,
   GOAL_KIND_LABEL,
+  movePlanStep,
   planStepsForGoal,
   resolveFirstStep,
   writeLastDispatch,
@@ -151,6 +156,10 @@ export function HomeComposer({
     )
   }
 
+  const moveStep = (id: string, dir: 'up' | 'down') => {
+    setSteps((prev) => movePlanStep(prev, id, dir))
+  }
+
   const dispatch = () => {
     const first = resolveFirstStep(steps, firstStepId)
     if (!first) return
@@ -160,6 +169,7 @@ export function HomeComposer({
       steps,
       firstStepId,
     })
+    const chain = buildPlanChain(steps, firstStepId)
     writeLastDispatch({
       at: new Date().toISOString(),
       goalText,
@@ -175,6 +185,7 @@ export function HomeComposer({
         goalText,
         deptSlug: first.slug,
         stepLabel: first.label,
+        chain,
       })
     }
     onDispatched?.()
@@ -201,6 +212,8 @@ export function HomeComposer({
     .map((id) => docs.find((d) => d.id === id))
     .filter((d): d is NonNullable<typeof d> => !!d)
   const first = resolveFirstStep(steps, firstStepId)
+  const chainPreview = enabledPlanChain(steps)
+  const queuedAfterFirst = chainPreview.filter((s) => first && s.id !== first.id)
 
   return (
     <div
@@ -403,15 +416,16 @@ export function HomeComposer({
           </PickerPanel>
         )}
 
-        {phase === 'plan' ? (
+                {phase === 'plan' ? (
           <div
             className="mt-3 rounded-lg border border-slate-200 bg-slate-50/80 p-2.5"
             data-testid="home-delegate-plan"
             data-goal-kind={goalKind}
+            data-plan-multi="1"
           >
             <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
               <p className="text-[12px] font-semibold text-slate-900">
-                计划可调
+                办事排期 · 可改稿
               </p>
               <span
                 className="rounded-full bg-white px-2 py-0.5 text-[10px] font-medium text-slate-600 ring-1 ring-slate-200"
@@ -420,7 +434,7 @@ export function HomeComposer({
                 {GOAL_KIND_LABEL[goalKind]}
               </span>
               <span className="text-[10px] text-slate-400">
-                样机示意 · 点芯片改首站/开关步骤
+                样机示意 · 调先后、勾选章节、定开篇
               </span>
             </div>
             <p
@@ -428,16 +442,42 @@ export function HomeComposer({
               data-testid="home-delegate-goal-text"
               title={goalText}
             >
-              目标：{goalText}
+              来稿意图：{goalText}
             </p>
-            <ul
-              className="flex flex-wrap gap-1.5"
-              data-testid="home-delegate-plan-chips"
+            <ol
+              className="space-y-1"
+              data-testid="home-delegate-plan-chain"
+              aria-label="计划辅链步骤"
             >
-              {steps.map((s) => {
+              {steps.map((s, idx) => {
                 const isFirst = first?.id === s.id
                 return (
-                  <li key={s.id}>
+                  <li
+                    key={s.id}
+                    className={`flex flex-wrap items-center gap-1 rounded-lg border px-1.5 py-1 ${
+                      !s.enabled
+                        ? 'border-dashed border-slate-200 bg-transparent'
+                        : isFirst
+                          ? 'border-slate-900 bg-white'
+                          : 'border-slate-200 bg-white'
+                    }`}
+                    data-testid={`home-plan-step-${s.id}`}
+                    data-enabled={s.enabled ? '1' : '0'}
+                    data-first={isFirst ? '1' : '0'}
+                    data-ord={idx}
+                  >
+                    <span
+                      className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold tabular ${
+                        !s.enabled
+                          ? 'bg-slate-100 text-slate-400'
+                          : isFirst
+                            ? 'bg-slate-900 text-white'
+                            : 'bg-slate-100 text-slate-600'
+                      }`}
+                      data-testid={`home-plan-ord-${s.id}`}
+                    >
+                      {idx + 1}
+                    </span>
                     <button
                       type="button"
                       data-testid={`home-plan-chip-${s.id}`}
@@ -452,40 +492,103 @@ export function HomeComposer({
                         if (s.canBeFirst) setFirstStepId(s.id)
                         else toggleStep(s.id)
                       }}
-                      onContextMenu={(e) => {
-                        e.preventDefault()
-                        toggleStep(s.id)
-                      }}
-                      className={`btn-press focus-ring inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                      className={`btn-press focus-ring min-w-0 flex-1 truncate rounded-md px-1.5 py-0.5 text-left text-[11px] font-medium ${
                         !s.enabled
-                          ? 'border border-dashed border-slate-300 bg-transparent text-slate-400 line-through'
+                          ? 'text-slate-400 line-through'
                           : isFirst
-                            ? 'border border-slate-900 bg-slate-900 text-white'
-                            : 'border border-slate-200 bg-white text-slate-800'
+                            ? 'text-slate-900'
+                            : 'text-slate-800'
                       }`}
                       title={
                         s.enabled
                           ? s.canBeFirst
-                            ? '点击设为首站；右键开关'
-                            : '右键开关步骤'
-                          : '点击重新启用'
+                            ? '点此定为开篇首站'
+                            : '点此暂不办这一节'
+                          : '点此重新纳入排期'
                       }
                     >
                       {isFirst && s.enabled ? (
-                        <Check className="h-3 w-3" aria-hidden />
+                        <Check
+                          className="mr-1 inline h-3 w-3 text-slate-900"
+                          aria-hidden
+                        />
                       ) : null}
                       {s.label}
+                      {isFirst && s.enabled ? (
+                        <span className="ml-1 text-[10px] font-normal text-slate-500">
+                          · 开篇
+                        </span>
+                      ) : null}
                     </button>
+                    <div className="flex shrink-0 items-center gap-0.5">
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded p-0.5 text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+                        data-testid={`home-plan-up-${s.id}`}
+                        aria-label={`上移 ${s.label}`}
+                        disabled={idx === 0}
+                        onClick={() => moveStep(s.id, 'up')}
+                      >
+                        <ChevronUp className="h-3.5 w-3.5" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded p-0.5 text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+                        data-testid={`home-plan-down-${s.id}`}
+                        aria-label={`下移 ${s.label}`}
+                        disabled={idx === steps.length - 1}
+                        onClick={() => moveStep(s.id, 'down')}
+                      >
+                        <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded px-1.5 py-0.5 text-[10px] font-medium text-slate-600 hover:bg-slate-100"
+                        data-testid={`home-plan-toggle-${s.id}`}
+                        onClick={() => toggleStep(s.id)}
+                      >
+                        {s.enabled ? '暂缓' : '纳入'}
+                      </button>
+                    </div>
                   </li>
                 )
               })}
+            </ol>
+            <p
+              className="mt-2 text-[11px] leading-relaxed text-slate-600"
+              data-testid="home-delegate-plan-preview"
+            >
+              本稿排期：
+              {chainPreview.length === 0
+                ? '尚未勾选章节'
+                : chainPreview
+                    .map((s, i) => `${i + 1}.${s.label.split('·')[0]!.trim()}`)
+                    .join(' → ')}
+              {queuedAfterFirst.length > 0 ? (
+                <span className="text-slate-500">
+                  {' '}
+                  · 开篇之后待办{' '}
+                  {queuedAfterFirst
+                    .map((s) => s.label.split('·')[0]!.trim())
+                    .join('、')}
+                </span>
+              ) : null}
+            </p>
+            <ul
+              className="sr-only"
+              data-testid="home-delegate-plan-chips"
+              aria-hidden
+            >
+              {steps.map((s) => (
+                <li key={s.id}>{s.label}</li>
+              ))}
             </ul>
             {goalKind === 'generic' ? (
               <p
                 className="mt-2 text-[11px] text-amber-800"
                 data-testid="home-delegate-narrow-hint"
               >
-                目标偏宽 · 示意先立项收窄（禁直接万能聊天顶替）
+                来稿偏宽 · 示意先立项收窄题旨（勿直接当成闲聊窗）
               </p>
             ) : null}
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -495,7 +598,7 @@ export function HomeComposer({
                 className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
                 data-testid="home-delegate-back"
               >
-                改目标
+                改来稿
               </button>
               <button
                 type="button"
@@ -505,7 +608,8 @@ export function HomeComposer({
                 data-testid="home-delegate-dispatch"
               >
                 <Send className="h-3.5 w-3.5" aria-hidden />
-                分发到{first ? first.label.split('·')[0]!.trim() : '…'}
+                发出排期 · 开篇
+                {first ? first.label.split('·')[0]!.trim() : '…'}
               </button>
             </div>
           </div>
@@ -513,7 +617,7 @@ export function HomeComposer({
       </div>
 
       <p className="mt-1.5 px-1 text-[11px] text-slate-500">
-        样机 · 提目标→计划可调→分发→待接力 · Enter 出计划，Shift+Enter 换行
+        样机 · 提来稿意图→排期可改→发出开篇→待接力 · Enter 出排期，Shift+Enter 换行
       </p>
     </div>
   )

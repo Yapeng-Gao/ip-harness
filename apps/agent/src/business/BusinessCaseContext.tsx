@@ -48,6 +48,7 @@ import {
   type ProcessLogEntry,
 } from './packLoops'
 import { resolveCasePlanStart } from './casePlanDrive'
+import type { PlanChainStep } from './delegateChain'
 import {
   buildJudgmentFromConfirm,
   preferenceCandidateFromJudgment,
@@ -150,6 +151,8 @@ export type CaseDelegateDispatch = {
   goalText: string
   deptSlug: string
   stepLabel: string
+  /** 多步辅链快照（首站 active + 后续 queued；样机） */
+  chain?: PlanChainStep[]
 }
 export type CaseProgress = {
   caseId: string
@@ -518,6 +521,7 @@ type BusinessCaseContextValue = {
       goalText: string
       deptSlug: string
       stepLabel: string
+      chain?: PlanChainStep[]
     },
   ) => void
   /** 启用前研等「更多部门」（写入 moreSeatIds） */
@@ -2131,10 +2135,13 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         goalText: string
         deptSlug: string
         stepLabel: string
+        chain?: PlanChainStep[]
       },
     ) => {
       const text = input.casePlan.trim()
       const at = nowIso()
+      const chain = input.chain
+      const queuedN = chain?.filter((s) => s.status === 'queued').length ?? 0
       setProgressById((prev) => {
         const cur = prev[caseId] ?? emptyProgress(caseId)
         return {
@@ -2148,6 +2155,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
               goalText: input.goalText.trim().slice(0, 120),
               deptSlug: input.deptSlug,
               stepLabel: input.stepLabel,
+              chain: chain && chain.length ? chain : undefined,
             },
             updatedAt: at,
           },
@@ -2159,7 +2167,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           caseId,
           at,
           kind: 'monitor_event',
-          message: `顾言分发 · ${input.stepLabel}（样机示意）`,
+          message: `顾言分发辅链 · ${input.stepLabel}${
+            queuedN ? ` · 后续${queuedN}站` : ''
+          }（样机示意）`,
           detail: input.goalText.trim().slice(0, 80) || undefined,
         },
       ])

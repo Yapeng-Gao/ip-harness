@@ -346,7 +346,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           aria-label="本案委托计划"
         >
           <p className="text-[11px] font-semibold text-emerald-950">
-            本案计划（已写入进度 · 刷新可恢复）
+            本案排期（已写入进度 · 刷新可恢复）
           </p>
           <p
             className="mt-1 whitespace-pre-wrap text-[11px] leading-relaxed text-emerald-900/90"
@@ -354,13 +354,45 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           >
             {(prog.casePlan ?? prog.delegate?.goalText ?? '').slice(0, 280)}
           </p>
+          {prog.delegate?.chain && prog.delegate.chain.length > 0 ? (
+            <ol
+              className="mt-2 space-y-0.5"
+              data-testid="company-plan-chain"
+              aria-label="排期辅链"
+            >
+              {prog.delegate.chain.map((s, i) => (
+                <li
+                  key={s.id}
+                  className="flex items-center gap-1.5 text-[11px] text-emerald-950/90"
+                  data-testid={`company-plan-chain-${s.id}`}
+                  data-status={s.status}
+                >
+                  <span className="tabular text-emerald-800/70">{i + 1}.</span>
+                  <span
+                    className={
+                      s.status === 'skipped' ? 'line-through opacity-50' : ''
+                    }
+                  >
+                    {s.label}
+                  </span>
+                  <span className="rounded-full bg-white/80 px-1.5 py-px text-[10px] font-medium text-emerald-900/80 ring-1 ring-emerald-200/80">
+                    {s.status === 'active'
+                      ? '开篇在办'
+                      : s.status === 'queued'
+                        ? '其后待办'
+                        : '已暂缓'}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          ) : null}
           {prog.delegate ? (
             <Link
               to={`/agent/cases/${caseId}/depts/${prog.delegate.deptSlug}?delegate=1`}
               className="btn-press focus-ring mt-2 inline-flex text-[11px] font-semibold text-emerald-950 underline-offset-2 hover:underline"
               data-testid="company-plan-go"
             >
-              去计划首站 · {prog.delegate.stepLabel}
+              去开篇章节 · {prog.delegate.stepLabel}
             </Link>
           ) : null}
         </section>

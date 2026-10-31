@@ -41,11 +41,15 @@ export function HomeRelayStrip({ refreshKey = 0 }: Props) {
     }>
     fromProgress.sort((a, b) => b.d.at.localeCompare(a.d.at))
     for (const row of fromProgress.slice(0, 3)) {
+      const next = row.d.chain?.find((s) => s.status === 'queued')
+      const titleBase = row.d.goalText.slice(0, 28) || row.title
       rows.push({
         id: `dispatched-${row.caseId}`,
-        title: row.d.goalText.slice(0, 36) || row.title,
+        title: next
+          ? `${titleBase} · 其后 ${next.label.split('·')[0]!.trim()}`
+          : titleBase,
         kind: 'dispatched',
-        badge: '已分发',
+        badge: '已发排期',
         href: `/agent/cases/${row.caseId}/depts/${row.d.deptSlug}?delegate=1`,
       })
     }
@@ -125,7 +129,7 @@ export function HomeRelayStrip({ refreshKey = 0 }: Props) {
           待接力
         </h3>
         <span className="text-[10px] text-slate-400">
-          progress 可恢复 · 样机示意
+          排期可恢复 · 样机示意
         </span>
         <span
           className="ml-auto tabular rounded-full bg-slate-100 px-1.5 py-px text-[10px] font-semibold text-slate-600"
@@ -139,7 +143,7 @@ export function HomeRelayStrip({ refreshKey = 0 }: Props) {
           className="text-[12px] text-slate-500"
           data-testid="home-relay-empty"
         >
-          暂无待接力 · 上方委托分发后写入本案进度
+          暂无待接力 · 上方发出排期后写入本案进度
         </p>
       ) : (
         <ul className="space-y-1" data-testid="home-relay-list">
