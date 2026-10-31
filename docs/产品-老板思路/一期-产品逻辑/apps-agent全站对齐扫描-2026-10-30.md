@@ -1942,9 +1942,47 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 | 项 | 说明 |
 |---|---|
 | 真官报 / 真检索 / 真递交 | **仍后置** |
-| 全站其余旁路空态（账单/期限/会话史） | 可后续按同 SoftEmpty 收 |
+| 全站其余旁路空态（账单/期限/会话史） | → §52 旁路空态 SoftEmpty |
 
 ### 51.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 空态统一+附件细交互；smoke PASS_EMPTY_ATTACH；shots `.tmp/empty-attach-shots/`；写入 §51 |
+| 2026-10-31 CST | §51.3 增 → §52 旁路空态 SoftEmpty |
+
+## 52. 旁路空态 SoftEmpty（2026-10-31 Asia/Shanghai）
+
+> **问题：** §51.3 —— 账单/期限/会话史/讨论组/过程/待确认旁路空态未收进 SoftEmpty。属**产品设计 / 使用成本**。  
+> **真源：** 延续 `officeEmpty`；账单官费/服务费分口袋、无假金额；期限 filed/oa 示意行语义不变；禁假官报。
+
+### 52.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| officeEmpty 扩种 | billing / docket / sessions(-filter) / case-room / case-process / pending |
+| SoftEmpty 接入 | CaseBillingPage 空注；CaseDocketPage；AgentSessionsList（替 EmptyState）；BusinessCaseRoomPage；CaseProcessPanel；PendingConfirmPage |
+| 语义保留 | `data-billing=pockets-v1`；报价/付款 disabled；期限空→回公司 CTA；会话筛选空→sessions-filter |
+| 不做 | 真报价/付款/官报；假金额；碰 main-path-sample；宣称四维/六维落地 |
+
+### 52.2 六维（机制报告，不宣称落地）
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 旁路空态不改主链闸/齐套 |
+| 产品理念 | 金额/官报示意说清后置 |
+| 产品逻辑 | 后勤横切仍不抢公司→工作台 |
+| 产品设计 | SoftEmpty 统一 tone |
+| 产品形态 | 函件夹/期限表/账单口袋隐喻 |
+| 使用成本 | 空→下一步（回公司/新建会话） |
+
+**仍不宣称四维/六维落地。**
+
+### 52.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真官报 / 真检索 / 真递交 | **仍后置** |
+| 真报价/付款通道 | **仍后置** |
+| 其它实验室/画廊空态 | 非主路径，可后置 |
+
+### 52.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 旁路空态 SoftEmpty；smoke PASS_SIDE_EMPTY；shots `.tmp/side-empty-shots/`；写入 §52 |

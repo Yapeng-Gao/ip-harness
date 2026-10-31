@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import { SoftEmpty } from '../../components/soft/SoftEmpty'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 
 /**
@@ -199,12 +200,12 @@ export function CaseBillingPage() {
           </Link>
         </div>
 
-        <p
-          className="mt-4 text-center text-[11px] text-slate-400"
-          data-testid="case-billing-empty-note"
-        >
-          尚未报价 · 结构已分口袋，金额不以演示数冒充应付
-        </p>
+        <SoftEmpty
+          kind="billing-empty"
+          density="compact"
+          testId="case-billing-empty-note"
+          className="mt-4 border-0 bg-transparent px-0 py-1 text-center"
+        />
       </div>
     </div>
   )

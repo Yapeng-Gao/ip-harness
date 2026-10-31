@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { SoftEmpty } from '../../components/soft/SoftEmpty'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import type { CaseProgress } from '../../business/BusinessCaseContext'
 
@@ -202,22 +203,20 @@ export function CaseDocketPage() {
         </div>
 
         {filtered.length === 0 ? (
-          <div
-            className="mt-6 rounded-xl border border-dashed border-slate-200 bg-white px-4 py-10 text-center"
-            data-testid="case-docket-empty"
-          >
-            <p className="text-sm text-slate-500">本案暂无期限事件</p>
-            <p className="mt-1 text-[11px] text-slate-400">
-              递交/进答复轮后会出现示意行；逾期不可静默。
-            </p>
-            <Link
-              to={home}
-              className="btn-press focus-ring mt-4 inline-flex rounded-md bg-slate-900 px-3 py-1.5 text-[12px] font-semibold text-white"
-              data-testid="case-docket-empty-company"
-            >
-              回公司办主链
-            </Link>
-          </div>
+          <SoftEmpty
+            kind="docket-empty"
+            testId="case-docket-empty"
+            className="mt-6 bg-white py-10"
+            action={
+              <Link
+                to={home}
+                className="btn-press focus-ring inline-flex rounded-md bg-slate-900 px-3 py-1.5 text-[12px] font-semibold text-white"
+                data-testid="case-docket-empty-company"
+              >
+                回公司办主链
+              </Link>
+            }
+          />
         ) : (
           <ul
             className="mt-5 space-y-2"

@@ -16,6 +16,13 @@ export type OfficeEmptyKind =
   | 'wb-versions'
   | 'wb-body'
   | 'professional-missing'
+  | 'billing-empty'
+  | 'docket-empty'
+  | 'sessions-empty'
+  | 'sessions-filter'
+  | 'case-room-empty'
+  | 'case-process-empty'
+  | 'pending-empty'
   | 'generic'
 
 export type OfficeEmptyCopy = {
@@ -81,6 +88,37 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
   'professional-missing': {
     title: '找不到这个案子',
     body: '专业编制须带案 · 请先开案子或从案盘进入。',
+  },
+  'billing-empty': {
+    title: '尚未报价',
+    body: '官费与服务费已分口袋列示 · 金额不以演示数冒充应付。',
+    next: '报价/付款通道后置 · 可先回公司办主链',
+  },
+  'docket-empty': {
+    title: '本案暂无期限事件',
+    body: '递交或进入答复轮后会出现示意行；逾期不会静默。',
+    next: '非真官报期限 · 可先回公司办主链',
+  },
+  'sessions-empty': {
+    title: '暂无会话历史',
+    body: '这里聚合通用单聊与项目专家线程，像往来函件夹。',
+    next: '可新建会话，或从「项目」打开专家线程',
+  },
+  'sessions-filter': {
+    title: '无匹配的会话历史',
+    body: '当前筛选下没有条目 · 可切换来源或清除状态筛选。',
+  },
+  'case-room-empty': {
+    title: '讨论组还没有消息',
+    body: '可点「讨论组互喊示意」，或直接输入一条留言。',
+  },
+  'case-process-empty': {
+    title: '暂无过程行',
+    body: '各部交卷、回流与确认后，过程会记在这里。',
+  },
+  'pending-empty': {
+    title: '暂无需要你确认的事项',
+    body: '部门交卷后的硬请示会停在这里，请你拍板。',
   },
   generic: {
     title: '这里还是空的',

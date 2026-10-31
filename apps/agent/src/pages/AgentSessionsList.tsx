@@ -4,7 +4,8 @@ import { Plus, Search, Pencil, Archive } from 'lucide-react'
 import { useAgents } from '@shared/context/AgentContext'
 import { useApp } from '@shared/context/AppContext'
 import { getAgent } from '@shared/data/agents'
-import { PageHeader, EmptyState } from '@shared/components/PageHeader'
+import { PageHeader } from '@shared/components/PageHeader'
+import { SoftEmpty } from '../components/soft/SoftEmpty'
 import {
   sessionBizBadges,
   BIZ_BADGE_CLASS,
@@ -222,25 +223,46 @@ export function AgentSessionsList() {
 
       <div className="overflow-hidden border border-slate-200 bg-white">
         {sorted.length === 0 ? (
-          <EmptyState
-            title={urlFilter || sourceFilter !== 'all' ? '无匹配历史' : '暂无会话历史'}
-            description={
-              urlFilter || sourceFilter !== 'all'
-                ? '当前筛选下没有条目。可切换来源 chip，或点左侧「全部」清除状态筛选。项目夹仍可从「项目」进入。'
-                : '这里聚合通用单聊与项目专家线程。新建会话，或从「项目」打开专家线程。'
-            }
-            primary={{
-              label: '新建会话',
-              onClick: newSession,
-              icon: <Plus className="h-4 w-4" aria-hidden />,
-            }}
-            secondary={{
-              label: '打开工作台待办',
-              onClick: () => {
-                window.location.href = workbenchHref('/workbench')
-              },
-            }}
-          />
+          <div
+            className="px-4 py-10"
+            data-testid="sessions-empty-wrap"
+            data-empty-tone="office"
+          >
+            <SoftEmpty
+              kind={
+                urlFilter ||
+                sourceFilter !== 'all' ||
+                sessionSearch.trim().length > 0
+                  ? 'sessions-filter'
+                  : 'sessions-empty'
+              }
+              testId="sessions-empty"
+              className="mx-auto max-w-md border-0 bg-transparent"
+              action={
+                <div className="flex flex-wrap justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={newSession}
+                    className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
+                    data-testid="sessions-empty-new"
+                  >
+                    <Plus className="h-4 w-4" aria-hidden />
+                    新建会话
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.href = workbenchHref('/workbench')
+                    }}
+                    className="btn-press focus-ring inline-flex rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[13px] font-medium text-slate-700 hover:bg-slate-50"
+                    data-testid="sessions-empty-workbench"
+                  >
+                    打开工作台待办
+                  </button>
+                </div>
+              }
+            />
+          </div>
         ) : (
           <table className="w-full text-left text-sm" data-testid="sessions-aggregated-table">
             <thead className="border-b border-slate-100 bg-slate-50/80 text-[11px] font-medium text-slate-400">

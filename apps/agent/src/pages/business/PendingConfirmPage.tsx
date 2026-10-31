@@ -3,6 +3,7 @@ import {
   orgDeptByLeadSeat,
 } from '../../departments/orgDepts'
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { SoftEmpty } from '../../components/soft/SoftEmpty'
 import { useEffect, useMemo, useState } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
@@ -158,12 +159,11 @@ export function PendingConfirmInboxPage() {
         ) : null}
 
         {inbox.length === 0 ? (
-          <p
-            className="mt-8 rounded-xl border border-dashed border-slate-200 bg-white px-4 py-10 text-center text-sm text-slate-500"
-            data-testid="pending-empty"
-          >
-            暂无需要你确认的事项
-          </p>
+          <SoftEmpty
+            kind="pending-empty"
+            testId="pending-empty"
+            className="mt-8 bg-white py-10"
+          />
         ) : (
           <ul className="mt-5 space-y-2">
             {inbox.map((item) => {

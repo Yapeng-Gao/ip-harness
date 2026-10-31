@@ -1,3 +1,4 @@
+import { SoftEmpty } from '../soft/SoftEmpty'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { businessSeatLabel } from '../../business/businessSeats'
 import type { ProcessLogEntry } from '../../business/packLoops'
@@ -169,9 +170,12 @@ export function CaseProcessPanel({
       )}
 
       {logs.length === 0 ? (
-        <p className="text-xs text-slate-400" data-testid="case-process-empty">
-          暂无过程行
-        </p>
+        <SoftEmpty
+          kind="case-process-empty"
+          density="compact"
+          testId="case-process-empty"
+          className="border-0 bg-transparent px-0 py-1"
+        />
       ) : (
         <ul className="max-h-64 space-y-1.5 overflow-y-auto">
           {logs.map((log) => (

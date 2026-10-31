@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
+import { SoftEmpty } from '../../components/soft/SoftEmpty'
 import { businessSeatLabel, seatsForCase } from '../../business/businessSeats'
 import { recommendTeamForStage } from '../../business/deptRoster'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
@@ -272,12 +273,12 @@ export function BusinessCaseRoomPage() {
           data-testid="business-case-room-feed"
         >
           {msgs.length === 0 && !teamEmpty && (
-            <p
-              className="py-8 text-center text-[12px] text-slate-400"
-              data-testid="business-case-room-empty"
-            >
-              还没有消息 · 可点「讨论组互喊示意」或直接输入
-            </p>
+            <SoftEmpty
+              kind="case-room-empty"
+              density="compact"
+              testId="business-case-room-empty"
+              className="mx-auto max-w-sm border-0 bg-transparent py-8 text-center"
+            />
           )}
           {msgs.map((m) => (
             <BizRoomBubble key={m.id} m={m} />
