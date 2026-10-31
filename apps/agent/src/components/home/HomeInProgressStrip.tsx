@@ -52,7 +52,7 @@ export function HomeInProgressStrip({ latestId }: Props) {
   if (rows.length === 0) {
     return (
       <div
-        className="mb-5 rounded-xl border border-dashed border-slate-200 bg-white px-3 py-2.5 text-[12px] text-slate-500"
+        className="rounded-lg border border-dashed border-slate-200/80 bg-slate-50/50 px-3 py-2 text-[12px] text-slate-500"
         data-testid="home-in-progress-empty"
       >
         暂无进行中工单 · ④打包「现在做⑤」或进入答复后会出现在这里
@@ -62,7 +62,7 @@ export function HomeInProgressStrip({ latestId }: Props) {
 
   return (
     <section
-      className="mb-5 rounded-xl border border-sky-200 bg-sky-50/70 px-3 py-2.5 shadow-sm"
+      className="rounded-lg bg-sky-50/50 px-1.5 py-1"
       data-testid="home-in-progress"
       aria-labelledby="home-in-progress-title"
     >

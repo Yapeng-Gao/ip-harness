@@ -1,8 +1,7 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Building2, MessageCircle, Plus } from 'lucide-react'
-import { HomeTodoStrip } from '../components/home/HomeTodoStrip'
-import { HomeInProgressStrip } from '../components/home/HomeInProgressStrip'
+import { HomeBossTodoBoard } from '../components/home/HomeBossTodoBoard'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
   ENTRY_ROLE_LABEL,
@@ -15,14 +14,14 @@ import { reopenAllTeachTips } from '../business/teachingFade'
 
 /**
  * 大厅 · /agent
- * 真源：01-接待与引导 + 交互大纲 —— Novada Team；待办 · 接待弱引导 · 八部可见 · 案卷条。
- * 禁医院分诊用语；禁把旧「项目专家」当首页。
+ * 真源：01-接待与引导 + 交互大纲 §2–3 —— 老板待办(A/B/C) · 接待 · 目标入口(薄) · 八部 · 案卷条。
+ * 禁医院分诊；禁目标入口与八部两套主导航打架；禁待办拆成多张卡片墙。
  */
 export function HomePage() {
   const [params] = useSearchParams()
   const branchQ = params.get('branch')
   const { entryRole } = useEntryRole()
-  const { cases, getProgress, getProcessLogs, getPendingConfirms } = useBusinessCases()
+  const { cases, getProgress, getProcessLogs } = useBusinessCases()
 
   const getLogAt = useMemo(
     () => (id: string) => {
@@ -43,12 +42,37 @@ export function HomePage() {
     ? cases.find((c) => c.id === latestId)
     : undefined
 
+  const goalPills = [
+    {
+      id: 'disclosure',
+      label: '写交底',
+      href: latestId
+        ? `/agent/cases/${latestId}/depts/disclosure`
+        : '/agent/cases/new',
+    },
+    {
+      id: 'draft',
+      label: '递申请',
+      href: latestId
+        ? `/agent/cases/${latestId}/depts/draft`
+        : '/agent/cases/new',
+    },
+    {
+      id: 'oa',
+      label: '答审查意见',
+      href: latestId
+        ? `/agent/cases/${latestId}/depts/oa`
+        : '/agent/cases/new',
+    },
+  ]
+
   return (
     <div
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="agent-home-page"
       data-home="hall"
       data-entry-role={entryRole}
+      data-hall-dedupe="boss-todo-v1"
     >
       <div className="mx-auto w-full max-w-4xl">
         <header className="mb-5" data-testid="home-hall-tagline">
@@ -83,7 +107,7 @@ export function HomePage() {
                   className="ml-1 text-[12px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
                   data-testid="home-case-file-link"
                 >
-                  · 案卷
+                  · 打开案卷
                 </Link>
               </>
             ) : (
@@ -92,17 +116,10 @@ export function HomePage() {
           </p>
         </header>
 
-        <div className="mb-5" data-testid="home-pending-entry">
-          <HomeTodoStrip />
-        </div>
+        {/* 老板待办 A/B/C · 交互大纲 §2.2 单区 */}
+        <HomeBossTodoBoard latestId={latestId} />
 
-        {/* ⑥ 期限催办 · 大厅可见 */}
-        <OaDeadlineNudge latestId={latestId} cases={cases} getPendingConfirms={getPendingConfirms} getProgress={getProgress} />
-
-        {/* 进行中工单 · 00 §165 / 交互大纲 §2 */}
-        <HomeInProgressStrip latestId={latestId} />
-
-        {/* 接待 · 弱引导 */}
+        {/* 接待 · 弱引导 · 非唯一闸门 */}
         <section
           className="mb-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
           data-testid="home-reception"
@@ -135,15 +152,16 @@ export function HomePage() {
                   {latestId ? '去交底部开写' : '先开案子再接待'}
                   <ArrowRight className="h-3 w-3" aria-hidden />
                 </Link>
-                <Link
-                  to={latestId ? `/agent/cases/${latestId}` : '/agent/cases/new'}
-                  className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
-                  data-testid="home-go-company"
-                >
-                  <Building2 className="h-3 w-3" aria-hidden />
-                  {latestId ? '公司案首页' : '开案子'}
-                </Link>
-                {!latestId ? (
+                {latestId ? (
+                  <Link
+                    to={`/agent/cases/${latestId}`}
+                    className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
+                    data-testid="home-go-company"
+                  >
+                    <Building2 className="h-3 w-3" aria-hidden />
+                    公司案首页
+                  </Link>
+                ) : (
                   <Link
                     to="/agent/cases/new"
                     className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
@@ -152,73 +170,46 @@ export function HomePage() {
                     <Plus className="h-3 w-3" aria-hidden />
                     开案子
                   </Link>
-                ) : null}
+                )}
               </div>
             </div>
           </div>
         </section>
 
-        {/* 目标入口 · 交互大纲 §3.1 可薄；仍落到①～⑧ */}
+        {/* 目标入口 · 薄 pills · 落到①～⑧ · 不与八部抢主导航 */}
         <section
-          className="mb-5"
+          className="mb-4"
           aria-labelledby="home-goal-entries-title"
           data-testid="home-goal-entries"
+          data-goal-density="pills"
         >
-          <div className="mb-2 flex items-baseline gap-2">
+          <div className="mb-1.5 flex items-baseline gap-2">
             <h2
               id="home-goal-entries-title"
-              className="text-[13px] font-semibold text-slate-900"
+              className="text-[12px] font-semibold text-slate-700"
             >
-              今天想办哪件事
+              今天想办
             </h2>
-            <span className="text-[11px] text-slate-500">目标入口 · 落到部门</span>
+            <span className="text-[11px] text-slate-400">
+              薄入口 · 仍进对应部（非第二套导航）
+            </span>
           </div>
-          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-            {[
-              {
-                id: 'disclosure',
-                label: '写交底',
-                desc: '交底部 · 技术事实成稿到全绿',
-                href: latestId
-                  ? `/agent/cases/${latestId}/depts/disclosure`
-                  : '/agent/cases/new',
-              },
-              {
-                id: 'draft',
-                label: '递申请',
-                desc: '申请部 · A理解 / B申不申 / C递交',
-                href: latestId
-                  ? `/agent/cases/${latestId}/depts/draft`
-                  : '/agent/cases/new',
-              },
-              {
-                id: 'oa',
-                label: '答审查意见',
-                desc: '答复部 · 争点 · 策略 · 本轮递交',
-                href: latestId
-                  ? `/agent/cases/${latestId}/depts/oa`
-                  : '/agent/cases/new',
-              },
-            ].map((g) => (
+          <ul className="flex flex-wrap gap-1.5">
+            {goalPills.map((g) => (
               <li key={g.id}>
                 <Link
                   to={g.href}
-                  className="btn-press focus-ring flex h-full flex-col rounded-xl border border-slate-200 bg-slate-50/80 p-3 hover:border-slate-300 hover:bg-white"
+                  className="btn-press focus-ring inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-medium text-slate-800 hover:border-slate-300 hover:bg-white"
                   data-testid={`home-goal-${g.id}`}
                 >
-                  <span className="text-[13px] font-semibold text-slate-900">
-                    {g.label}
-                  </span>
-                  <span className="mt-1 text-[11px] leading-snug text-slate-500">
-                    {g.desc}
-                  </span>
+                  {g.label}
                 </Link>
               </li>
             ))}
           </ul>
         </section>
 
-        {/* 八部门 */}
+        {/* 八部门 · 主导航大门 */}
         <section aria-labelledby="home-eight-depts-title" className="mb-5">
           <div className="mb-2 flex items-baseline gap-2">
             <h2
@@ -271,10 +262,7 @@ export function HomePage() {
               支路深链 · {branchQ.toUpperCase()}
             </p>
             <p className="mt-0.5 text-[12px] text-amber-900/90">
-              大厅只开门；机制验收请进对应部门工作台（进入检查 / 退④ / 不出号等在部内兑现）。
-            </p>
-            <p className="mt-1 text-[10px] text-amber-800/70">
-              点上方支路门卡片进入 · 勿在大厅假装已过线
+              大厅只开门；机制验收请进对应部门工作台。
             </p>
           </div>
         ) : null}
@@ -286,7 +274,7 @@ export function HomePage() {
           >
             <p className="text-[13px] font-semibold text-violet-950">代理陪同⑤</p>
             <p className="mt-0.5 text-[12px] text-violet-900/90">
-              可绕 B2 进申请部壳诊断/陪同；不装交底已过线。企业无工单仍走门槛挡板。
+              可绕 B2 进申请部壳诊断/陪同；不装交底已过线。
             </p>
             <Link
               to={`/agent/cases/${latestId}/depts/draft?escort=1&branch=b2`}
@@ -303,32 +291,12 @@ export function HomePage() {
           aria-label="次要入口"
           data-testid="home-secondary-actions"
         >
-          {isAgency ? (
-            <Link
-              to="/agent/cases"
-              className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-              data-testid="home-action-primary"
-            >
-              案盘 / 多案流水
-            </Link>
-          ) : (
-            <Link
-              to="/agent/cases"
-              className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-              data-testid="home-action-cases"
-            >
-              案盘
-            </Link>
-          )}
-          <span aria-hidden className="text-slate-300">
-            ·
-          </span>
           <Link
-            to="/agent/pending?audit=1"
+            to="/agent/cases"
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="home-action-pending"
+            data-testid={isAgency ? 'home-action-primary' : 'home-action-cases'}
           >
-            待确认审计（薄）
+            {isAgency ? '案盘 / 多案流水' : '案盘'}
           </Link>
           <span aria-hidden className="text-slate-300">
             ·
@@ -340,24 +308,10 @@ export function HomePage() {
           >
             专业 / 编制
           </Link>
-          {latestId ? (
-            <>
-              <span aria-hidden className="text-slate-300">
-                ·
-              </span>
-              <Link
-                to={`/agent/cases/${latestId}/depts/disclosure?docket=1`}
-                className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-                data-testid="home-action-case-file"
-              >
-                案卷抽屉
-              </Link>
-            </>
-          ) : null}
         </nav>
 
         <footer className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
-          <span>Novada Team 大厅 · 拍板在部门工作台右栏 · 样机本地会话</span>
+          <span>Novada Team 大厅 · 拍板在部门工作台右栏</span>
           <button
             type="button"
             className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-600"
@@ -372,66 +326,5 @@ export function HomePage() {
         </footer>
       </div>
     </div>
-  )
-}
-
-function OaDeadlineNudge(props: {
-  latestId: string | undefined
-  cases: ReturnType<typeof useBusinessCases>['cases']
-  getPendingConfirms: ReturnType<typeof useBusinessCases>['getPendingConfirms']
-  getProgress: ReturnType<typeof useBusinessCases>['getProgress']
-}) {
-  const oaPending = props.cases.flatMap((c) =>
-    props
-      .getPendingConfirms(c.id)
-      .filter((p) => p.kind === 'oa_strategy' && p.status === 'pending')
-      .map((p) => ({ caseId: c.id, title: c.title, item: p })),
-  )
-  const filedNeedingWatch = props.cases.filter((c) => {
-    const prog = props.getProgress(c.id)
-    return Boolean(prog.filed) && (prog.stageId === 'oa' || (prog.oaRound ?? 0) > 0)
-  })
-  if (oaPending.length === 0 && filedNeedingWatch.length === 0) return null
-  const top = oaPending[0]
-  const href = top
-    ? `/agent/cases/${top.caseId}/depts/oa?ask=oa_strategy&confirmId=${encodeURIComponent(top.item.id)}`
-    : filedNeedingWatch[0]
-      ? `/agent/cases/${filedNeedingWatch[0]!.id}/depts/oa`
-      : props.latestId
-        ? `/agent/cases/${props.latestId}/depts/oa`
-        : '/agent/cases'
-  return (
-    <section
-      className="mb-5 rounded-xl border border-rose-200 bg-rose-50/90 px-4 py-3 shadow-sm"
-      data-testid="home-oa-nudge"
-      aria-labelledby="home-oa-nudge-title"
-    >
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0">
-          <h2
-            id="home-oa-nudge-title"
-            className="text-[13px] font-semibold text-rose-950"
-          >
-            ⑥ 答复期限催办
-          </h2>
-          <p className="mt-0.5 text-[12px] leading-relaxed text-rose-900/90">
-            {top
-              ? `「${top.title}」有待拍答复策略 · 逾期风险演示（非真官方期限接口）`
-              : `已递交案 ${filedNeedingWatch.length} 件处于答复阶段 · 请进答复部盯期限`}
-          </p>
-          <p className="mt-1 text-[10px] text-rose-800/70">
-            催办示意 · 非官报通道 / 非短信邮件已通
-          </p>
-        </div>
-        <Link
-          to={href}
-          className="btn-press focus-ring inline-flex shrink-0 items-center gap-1 rounded-md bg-rose-900 px-2.5 py-1.5 text-[11px] font-semibold text-white"
-          data-testid="home-oa-nudge-cta"
-        >
-          去答复部
-          <ArrowRight className="h-3 w-3" aria-hidden />
-        </Link>
-      </div>
-    </section>
   )
 }

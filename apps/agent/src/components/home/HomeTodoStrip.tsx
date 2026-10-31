@@ -25,7 +25,7 @@ export function HomeTodoStrip() {
   if (pending.length === 0) {
     return (
       <div
-        className="flex items-center gap-2 rounded-[var(--radius-md)] border border-slate-200 bg-white px-3 py-2.5 shadow-[var(--shadow-rest)]"
+        className="flex items-center gap-2 rounded-lg px-1.5 py-1.5"
         data-testid="home-todo-empty"
       >
         <CheckCheck
@@ -50,7 +50,7 @@ export function HomeTodoStrip() {
   return (
     <section
       aria-label="待我确认"
-      className="rounded-[var(--radius-md)] border border-amber-200/90 bg-amber-50/60 px-3 py-2.5"
+      className="rounded-lg bg-amber-50/50 px-1.5 py-1"
       data-testid="home-todo-strip"
     >
       <div className="mb-1.5 flex items-center gap-1.5">
