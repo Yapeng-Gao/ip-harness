@@ -73,6 +73,7 @@ import {
   sideAuxMaterialId,
 } from '../../business/sideAuxBodyLink'
 import { KIT_STEP_SYNC_HONEST } from '../../business/kitStepSync'
+import { KIT_DIFF_AUTO_HONEST } from '../../business/kitDiffAuto'
 import {
   AUX_VERSION_BIND_HONEST,
   bindSideAuxBodyToRevision,
@@ -175,6 +176,7 @@ export function BusinessCaseDeptPage() {
     toggleKitCheck,
     seedKitComplete,
     syncKitFromSeatStep,
+    syncKitFromDiff,
   } = useBusinessCases()
   const { getThread, patchThread } = useProjectFolder()
   const { deptLabel } = useOrgConfig()
@@ -857,6 +859,23 @@ export function BusinessCaseDeptPage() {
     }
     return artifactBody || handoff.deliverable || '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'
   })()
+
+  // 齐套 ↔ 正文 / 差分 / 材料树自动勾（样机；空稿收束；hold 须内容 warrant）
+  useEffect(() => {
+    if (!dept || !slug) return
+    syncKitFromDiff(caseId, slug, {
+      materialId: selectedMaterialId,
+      bodyText: centerBody,
+    })
+  }, [
+    caseId,
+    slug,
+    dept,
+    selectedMaterialId,
+    centerBody,
+    syncKitFromDiff,
+  ])
+
 
   return (
     <div
@@ -1888,6 +1907,27 @@ export function BusinessCaseDeptPage() {
                       data-testid="dept-kit-step-sync-hint"
                     >
                       {KIT_STEP_SYNC_HONEST} · 右栏推进本步会自动勾上若干齐套项；也可点「按本席步进勾齐套」。末项如决议/权属仍须手勾或样机勾齐。
+                    </p>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring mt-2 rounded-full border border-dashed border-sky-500/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-sky-950/80 hover:bg-white"
+                      data-testid="dept-sync-kit-from-diff"
+                      title={KIT_DIFF_AUTO_HONEST}
+                      onClick={() => {
+                        if (slug)
+                          syncKitFromDiff(caseId, slug, {
+                            materialId: selectedMaterialId,
+                            bodyText: centerBody,
+                          })
+                      }}
+                    >
+                      按正文/差分勾齐套
+                    </button>
+                    <p
+                      className="mt-1.5 text-[9px] text-sky-900/70"
+                      data-testid="dept-kit-diff-auto-hint"
+                    >
+                      {KIT_DIFF_AUTO_HONEST} · 点本稿零件、看差分示意或改中栏正文，会自动勾上对应齐套项；空稿收束。权属/决议等末项须正文明确对应才自动勾。
                     </p>
                     <details
                       className="mt-2 rounded-md border border-violet-100 bg-white/70 px-2 py-1.5"

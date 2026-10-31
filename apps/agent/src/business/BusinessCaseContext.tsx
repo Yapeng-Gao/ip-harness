@@ -65,6 +65,10 @@ import {
   shrinkKitDoneToStep,
 } from './kitStepSync'
 import {
+  buildDiffAutoInput,
+  mergeKitDoneWithDiff,
+} from './kitDiffAuto'
+import {
   advancePlanChain,
   appendChainAdvanceNote,
   type PlanChainStep,
@@ -588,6 +592,16 @@ type BusinessCaseContextValue = {
     caseId: string,
     seatId: ProjectExpertId,
   ) => { ok: boolean; done: string[]; stepIndex: number }
+  /** 按正文 / 差分 / 材料树同步齐套（样机；hold 仅内容 warrant 时勾） */
+  syncKitFromDiff: (
+    caseId: string,
+    deptSlug: string,
+    input: {
+      materialId: string
+      bodyText: string
+      forceEmpty?: boolean
+    },
+  ) => { ok: boolean; done: string[] }
   /** 启用前研等「更多部门」（写入 moreSeatIds） */
   /** T10 · 本案判断档案（硬请示写回） */
   getJudgments: (caseId?: string) => JudgmentRecord[]
@@ -2617,6 +2631,50 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     [getThread],
   )
 
+  const syncKitFromDiff = useCallback(
+    (
+      caseId: string,
+      slug: string,
+      input: {
+        materialId: string
+        bodyText: string
+        forceEmpty?: boolean
+      },
+    ) => {
+      const labels = kitLabelsForDeptSlug(slug)
+      const hold = kitHoldLabelsForDeptSlug(slug)
+      const at = nowIso()
+      let merged: string[] = []
+      setProgressById((prev) => {
+        const prog = prev[caseId] ?? emptyProgress(caseId)
+        merged = mergeKitDoneWithDiff(
+          buildDiffAutoInput({
+            labels,
+            prevDone: prog.kitDoneByDept?.[slug],
+            deptSlug: slug,
+            materialId: input.materialId,
+            bodyText: input.bodyText,
+            holdLabels: hold,
+            forceEmpty: input.forceEmpty,
+          }),
+        )
+        return {
+          ...prev,
+          [caseId]: {
+            ...prog,
+            kitDoneByDept: {
+              ...(prog.kitDoneByDept ?? {}),
+              [slug]: merged,
+            },
+            updatedAt: at,
+          },
+        }
+      })
+      return { ok: true as const, done: merged }
+    },
+    [],
+  )
+
 const enableMoreDepartments = useCallback((caseId: string) => {
     const add = [
       ...BUSINESS_MORE_SEAT_IDS,
@@ -2760,6 +2818,7 @@ const enableMoreDepartments = useCallback((caseId: string) => {
       toggleKitCheck,
       seedKitComplete,
       syncKitFromSeatStep,
+      syncKitFromDiff,
       enableMoreDepartments,
       getJudgments,
       getPreferences,
@@ -2805,6 +2864,7 @@ const enableMoreDepartments = useCallback((caseId: string) => {
       toggleKitCheck,
       seedKitComplete,
       syncKitFromSeatStep,
+      syncKitFromDiff,
       enableMoreDepartments,
       getJudgments,
       getPreferences,
