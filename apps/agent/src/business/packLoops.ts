@@ -59,7 +59,7 @@ export type ProcessLogEntry = {
   seatId?: ProjectExpertId
   attempt?: number
   maxAttempts?: number
-  /** 灰显：HITL④ 不乐观回流示意 */
+  /** 灰显：查新不乐观回流示意 */
   muted?: boolean
   /** OA 第 N 通 */
   oaRound?: number
@@ -174,7 +174,7 @@ export function selfHealScript(
   return lines
 }
 
-/** HITL③/⑤ 驳回带批注重跑 */
+/** 交底/申请驳回带批注重跑 */
 export function hitlReturnLog(
   caseId: string,
   kind: BusinessConfirmKind,
@@ -246,7 +246,7 @@ export function seatFeedbackLog(
   }
 }
 
-/** HITL④ 不乐观 → 回流示意（可灰） */
+/** 查新不乐观 → 回流示意（可灰） */
 export function researchPessimisticLog(caseId: string): ProcessLogEntry {
   return {
     id: processLogId('pes'),
@@ -313,7 +313,7 @@ export function layoutFlywheelLog(caseId: string): ProcessLogEntry {
   }
 }
 
-/** 布局待拍板（HITL①） */
+/** 布局待拍板（确认点） */
 export function layoutPendingLog(caseId: string): ProcessLogEntry {
   return {
     id: processLogId('lay'),

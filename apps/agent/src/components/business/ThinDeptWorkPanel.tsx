@@ -13,13 +13,13 @@ type StepId = 'entry' | 'work' | 'done'
 const ENTRY_BY_DEPT: Partial<Record<OrgDeptId, string[]>> = {
   'dept-intake': ['方向一句话非空', '发明人/联系人可联系', '密级已标'],
   'dept-inspire': ['问题卡点已写', '技术领域粗分', '不要求已有交底'],
-  'dept-mining': ['研发资料可挂', '创新方向一句话', '不假装已交④'],
+  'dept-mining': ['研发资料可挂', '创新方向一句话', '不假装已交到交底部'],
   'dept-annuity': ['已有申请号/授权号（演示可旁路）', '期限日历非空', '缴费主体明确'],
-  'dept-monetize': ['复盘时段已定', '可引用①～⑦摘要', '不代替情报官专报'],
+  'dept-monetize': ['复盘时段已定', '可引用主链摘要', '不代替情报官专报'],
 }
 
 /**
- * ①②③⑦⑧ 厚作业主栏 · 分步（进入检查→主作业→合格线）+ 可点零件
+ * 薄部作业主栏 · 分步（进入检查→主作业→合格线）+ 可点零件
  * 对齐交互大纲 4.4.7 / 各部 §0 薄合格线；非真检索/官报。
  */
 export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
@@ -36,7 +36,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
     if (deptId === 'dept-inspire') return ['问题卡点草稿', '领域粗分']
     if (deptId === 'dept-mining') return ['研发资料包', '创新方向一句话']
     if (deptId === 'dept-annuity') return ['申请号/授权号', '缴费主体']
-    if (deptId === 'dept-monetize') return ['①～⑦摘要', '复盘时段']
+    if (deptId === 'dept-monetize') return ['主链摘要', '复盘时段']
     return ['材料可挂（演示）']
   }, [deptId])
 
@@ -68,21 +68,26 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
 
   return (
     <div className="mt-3 space-y-3" data-testid="dept-thin-work-panel" data-dept={deptId} data-step={step}>
-      <div className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2">
+      <div className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2" data-testid="thin-qualify-block">
         <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
           合格线
         </p>
         <p className="mt-0.5 text-[12px] text-slate-800">{meta.line}</p>
-        <p className="mt-1 text-[11px] text-slate-500">{meta.ban}</p>
+        <details className="mt-1" data-testid="thin-ban-fold">
+          <summary className="cursor-pointer select-none text-[10px] text-slate-500">
+            边界（默折）
+          </summary>
+          <p className="mt-1 text-[11px] text-slate-500">{meta.ban}</p>
+        </details>
       </div>
 
-      {/* 分步 pill · 对齐④⑤⑥ 按步减负 */}
+      {/* 分步 pill · 按步减负 */}
       <div className="flex flex-wrap items-center gap-1.5" data-testid="thin-work-steps">
         {(
           [
-            ['entry', '① 进入检查'],
-            ['work', '② 主作业'],
-            ['done', '③ 结束线'],
+            ['entry', '进入检查'],
+            ['work', '主作业'],
+            ['done', '结束线'],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -147,13 +152,13 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
 
       {step === 'work' ? (
         <>
-          <div
+          <details
             className="rounded-lg border border-slate-200 bg-slate-50/70 px-3 py-2"
             data-testid="thin-materials-attach"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              材料挂接（演示）
-            </p>
+            <summary className="cursor-pointer select-none text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              材料挂接（默折 · 演示）
+            </summary>
             <ul className="mt-1.5 space-y-1">
               {materialList.map((label) => (
                 <li key={label}>
@@ -176,7 +181,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                 </li>
               ))}
             </ul>
-          </div>
+          </details>
           {deptId === 'dept-intake' ? (
             <div className="rounded-xl border border-slate-200 bg-white p-3" data-testid="thin-intake-card">
               <dl className="grid grid-cols-[5rem_1fr] gap-x-2 gap-y-1.5 text-[12px]">
@@ -324,11 +329,11 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                   className="mt-2 rounded-lg border border-violet-100 bg-violet-50/60 px-3 py-2 text-[11px]"
                   data-testid="thin-work-detail"
                 >
-                  点选「{detail}」· 可并入交④点包或仅留分析报告路径。
+                  点选「{detail}」· 可并入交底部点包或仅留分析报告路径。
                 </div>
               ) : null}
               <div className="mt-3 flex flex-wrap gap-2">
-                {['确认点包交④', '只要分析报告', '改拆案'].map((l) => (
+                {['确认点包交到交底部', '只要分析报告', '改拆案'].map((l) => (
                   <button
                     key={l}
                     type="button"
@@ -372,7 +377,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                 </tbody>
               </table>
               <div className="mt-3 flex flex-wrap gap-2">
-                {['确认缴费', '暂缓', '转⑧评估'].map((l) => (
+                {['确认缴费', '暂缓', '转复盘评估'].map((l) => (
                   <button
                     key={l}
                     type="button"
@@ -488,10 +493,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
             材料：{Object.entries(materials).filter(([, v]) => v).map(([k]) => k).join('、') || '未挂（可回主作业补）'}
           </p>
           <p className="mt-1 text-[10px] text-violet-800" data-testid="thin-done-handoff-hint">
-            下一站须本部门合格线 + 右栏硬请示；此处不装已交工单。
-          </p>
-          <p className="mt-2 text-[10px] text-slate-500">
-            开「现在做下一部」仍须本部门合格线 + 硬请示（右栏）；此处不装已交工单。
+            下一站须合格线 + 右栏硬请示；此处不装已交工单。
           </p>
           <button
             type="button"

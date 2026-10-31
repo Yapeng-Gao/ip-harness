@@ -11,7 +11,7 @@ type Props = {
 }
 
 /**
- * ④→⑤ 部间工单卡 · 线框 s-handoff / 04§8.1
+ * 交底→申请 部间工单卡 · 线框 s-handoff / 04§8.1
  * 打包方可见；三线分词；结束检查表摘要；进入申请部接单。
  */
 export function DeptHandoffTicket({

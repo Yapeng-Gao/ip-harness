@@ -143,9 +143,11 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
 
       {qcItems.length > 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-3" data-testid="thick-qc-board">
-          <p className="text-[11px] font-semibold text-slate-800">质检分卡 · 点按切换绿/黄/红</p>
+          <p className="text-[11px] font-semibold text-slate-800">质检分卡 · 未过优先</p>
           <ul className="mt-2 space-y-1.5">
-            {qcItems.map((item) => {
+            {qcItems
+              .filter((item) => statusOf(item.id, item.def) !== 'green')
+              .map((item) => {
               const st = statusOf(item.id, item.def)
               return (
                 <li key={item.id}>
@@ -165,6 +167,34 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
               )
             })}
           </ul>
+          {qcItems.some((item) => statusOf(item.id, item.def) === 'green') ? (
+            <details className="mt-2" data-testid="thick-qc-green-fold">
+              <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+                已绿 {qcItems.filter((item) => statusOf(item.id, item.def) === 'green').length}（默折）
+              </summary>
+              <ul className="mt-1.5 space-y-1.5">
+                {qcItems
+                  .filter((item) => statusOf(item.id, item.def) === 'green')
+                  .map((item) => {
+                    const st = statusOf(item.id, item.def)
+                    return (
+                      <li key={item.id}>
+                        <button
+                          type="button"
+                          className={`btn-press focus-ring flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left ${pill(st)}`}
+                          data-testid={`thick-qc-${item.id}`}
+                          data-qc={st}
+                          onClick={() => cycleQc(item.id, item.def)}
+                        >
+                          <span className="text-[12px] font-medium">{item.label}</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wide">绿</span>
+                        </button>
+                      </li>
+                    )
+                  })}
+              </ul>
+            </details>
+          ) : null}
           <p className="mt-2 text-[10px] text-slate-400">
             全绿 ≠ 已交下一站；未拍硬请示不得开工单 / 不得装已递交。
           </p>

@@ -1,5 +1,5 @@
 /**
- * 部间工单（④→⑤）· 对齐 04§8.1 / 交互大纲 / 线框 s-handoff
+ * 部间工单（交底→申请）· 对齐 04§8.1 / 交互大纲 / 线框 s-handoff
  * 演示数据：打包方=交底部负责人；三线分词勿混。
  */
 import type { OrgDeptId } from '../departments/orgDepts'
@@ -17,7 +17,7 @@ export type InterDeptTicketChecklistItem = {
   note?: string
 }
 
-/** ④→⑤ 工单摘要（样机壳；不推进真实状态机） */
+/** 交底→申请 工单摘要（样机壳；不推进真实状态机） */
 export type InterDeptTicket = {
   id: string
   fromDeptId: OrgDeptId

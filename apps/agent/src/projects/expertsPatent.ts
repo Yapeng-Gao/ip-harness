@@ -725,7 +725,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "steps": VALUATION_DEPTH_STEPS,
     "hitlGates": [],
     "domainCommandCandidates": [
-      {"command": null, "label": "提案键 · 不写 packages", "note": "valuation_card · 服务 HITL⑦"}
+      {"command": null, "label": "提案键 · 不写 packages", "note": "valuation_card · 服务年费闸"}
     ],
     "guardrails": ["后置业务可跑", "联动年费仅建议", "提案键勿写 packages"],
     "catalogAgentId": null,

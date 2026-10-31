@@ -1235,14 +1235,10 @@ export function BusinessCaseDeptPage() {
                 >
                   {thinMeta?.workTitle ?? `${deptLabel(dept)} · 同壳作业`}
                 </h2>
-                <p className="mt-2 text-[12px] text-slate-600" data-testid="dept-qualify-line-body">
+                {/* 合格线/边界改由 ThinDeptWorkPanel 单点展示，避免中栏双份 */}
+                <p className="sr-only" data-testid="dept-qualify-line-body">
                   合格线：{thinMeta?.line ?? qualifyLine}
                 </p>
-                {thinMeta?.ban ? (
-                  <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-                    边界：{thinMeta.ban}
-                  </p>
-                ) : null}
                 <ThinDeptWorkPanel
                   deptId={dept.id}
                   caseId={caseId}
@@ -1262,7 +1258,7 @@ export function BusinessCaseDeptPage() {
                   }}
                 />
                 <p className="mt-3 text-[11px] text-slate-500">
-                  示意作业 · 非真零件挂接；官报/真检索不在范围。
+                  示意作业 · 非真挂接。
                 </p>
                 {askParam ? (
                   <p
