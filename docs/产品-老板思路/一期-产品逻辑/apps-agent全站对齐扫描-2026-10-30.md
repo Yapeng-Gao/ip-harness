@@ -163,3 +163,128 @@
 
 **未并（有意）**：样机整页 HTML/CSS；density 三钮；钉顶同文确认卡；lifecycle 七部三 tab。
 
+
+---
+
+## 8. 三 skill 全站实渲扫描 · 2026-10-31（Asia/Shanghai）
+
+> **开闸**：Leslie「服务启动了吗，把所有页面都扫一遍…用三个 skill 扫描」。  
+> **三 skill**（`docs/各产品开发/内部skill/`）：  
+> 1. `XINZHISHU_PRODUCT_PHILOSOPHY_SKILL`（理念 / 14 问）  
+> 2. `RDI_PRODUCT_DESIGN_SKILL_V2`（产品设计 · 模式三既有评审）  
+> 3. `RDI_ENGINEERING_DISCIPLINE_SKILL_V2`（工程纪律 · 真源/审计/回归/文档）  
+> **四维对照**：业务逻辑 · 产品理念 · 产品设计 · 产品逻辑（真源＝一期节点 + 一期-产品逻辑 + 一期-产品理念；**不认** lifecycle 七部三 tab 作权威）。  
+> **实现面**：`apps/agent` @ `fa415ba` · `feature/agent-company-shell`。**禁改** `main-path-sample`。  
+> **服务**：`npm run dev:agent` → **http://localhost:5175/** · PID **43763** · 关键路由 HTTP **200**。  
+> **方法**：Playwright（system Chrome channel）登录态实渲 **33 路由** + 登出态 welcome/login；截图 `/tmp/agent-scan-2026-10-31/`；源码交叉核验。本轮 **只扫+写 md**，未开大功能批。
+
+### 8.1 四维总判（诚实）
+
+| 维度 | 状态 | 一句话 |
+|---|---|---|
+| **产品理念** | **partial → 叙事 landed** | Novada / 领导=当前用户 / 八部大厅 / 废分诊 / 请示语言主路径已落；欢迎页与公司首页仍渗「七部」旧词；T4 依据链、T10 判断沉淀仍 demo 薄 |
+| **产品设计** | **partial** | 同壳工作台+右栏负责人对话+⑤ABC+工单+案卷抽屉+目标入口有；编制总览专业页薄；diff/像素级仍薄于样机 |
+| **产品逻辑** | **主链 partial / 支路 gap** | pending 软跳、合格线文案、④→⑤ 工单、案卷四页有；**大厅八部 vs 公司/侧栏七部双真源未清**；进入门槛硬挡、⑥催办、B 支路未满 |
+| **业务逻辑** | **partial** | 八节点门牌+④⑤⑥按步示意有；①②③⑦⑧ 厚作业未挂；官报通道无；业务深度仍样机 demo |
+
+**不可宣称「四维都落地」。** 主链叙事可演示；组织命名双真源与厚作业是本轮最大窟窿。
+
+### 8.2 逐页证据（实渲）
+
+| 路由 | 实渲要点 | 理念 | 设计 | 产品逻辑 | 业务逻辑 | 分级缺口 |
+|---|---|---|---|---|---|---|
+| `/agent/welcome`（登出） | Novada Team；文案「八个部门」；**仍印「七部货架」「企业走七部」**；货架是旧七站名 | partial | partial | gap 命名 | partial | **P1** 欢迎七部旧词 |
+| `/agent/login`（登出） | Novada Team；角色二选一→大厅 | landed | landed | landed | n/a | — |
+| `/agent` 大厅 | 待办·接待「不叫分诊」·目标入口（写交底/递申请/答审查）·**①～⑧ 八部门牌** | landed | landed | landed | landed 门牌 | — |
+| `/agent/cases` · `/new` | 案盘/开案子；顶栏 NT | thin | thin | thin | thin | P2 |
+| `/agent/cases/:id` 公司首页 | 「一案一家 Novada」；**本案部门仍七部**：交底/查新/立项/撰写/附图/递交/审查答复；`seven-dept-map` | **gap** 叙事拧 | partial | **P0 双真源** | **P0** 非老板八部 | **P0** |
+| `…/depts/intake` ① | 薄同壳·合格线·要你拍；侧栏仍旧七部名 | partial | partial | partial | thin 空态 | P1 厚作业 |
+| `…/inspire` ② | 同上 | partial | partial | partial | thin | P1 |
+| `…/mining` ③ | 同上 | partial | partial | partial | thin | P1 |
+| `…/disclosure` ④ | 合格线全绿·本步可交⑤·案卷·**④→⑤ 工单**·要你拍 | landed 壳 | landed 壳 | landed 壳 | demo 厚 | P1 T4/作业 |
+| `…/draft` ⑤ | 本步 A·理解·ABC；顶栏烙印仍「撰写部」 | partial 名 | landed 步 | partial 名 | demo | **P0** 名 vs 申请部 |
+| `…/oa` ⑥ | 同壳·要你拍；策略双选项示意级 | partial | partial | partial | demo | P1 催办/厚 |
+| `…/annuity` ⑦ | 薄同壳；org 名「年费部」≠大厅「维护部」 | gap 名 | thin | gap 名 | thin | **P1** 命名 |
+| `…/monetize` ⑧ | 薄同壳；org「成果转化部」≠大厅「复盘部」 | gap 名 | thin | gap 名 | thin | **P1** 命名 |
+| `…?docket=1` 案卷抽屉 | 材料/检查表/工单/判断痕迹 demo | landed 壳 | landed 壳 | landed 壳 | demo | P2 密度 |
+| `…?ticket=1` 工单 | ④→⑤ 工单可见 | landed | landed | landed | demo | — |
+| `/agent/cases/:id/docket` | **期限台**（与抽屉分名） | ok 分名 | thin | ok | thin | P2 |
+| `/agent/pending` | 文案「点条目会软跳回工作台」；条目链 `…/depts/…?ask=` | landed | landed | landed | n/a | — |
+| `/agent/pending?audit=1` | 薄审计面保留 | landed | landed | landed | n/a | — |
+| `/agent/departments` | 「专业/编制」；**「公司首页七部」**旁路文案 | gap | thin | gap | n/a | **P1** |
+| `/agent/projects` | 顶条「项目（旁路）」回大厅 | landed 降权 | ok | ok | n/a | — |
+| `/agent/lab`·`sandbox`·`sessions`·`compose`·`harness`·`agents`·`team` | `LabRouteBanner` 实验室/遗骸 | landed 降权 | ok | ok | n/a | P2 内文 |
+| `/agent/assets`·billing·members | 后勤旁路 | thin | thin | thin | thin | P2 |
+
+### 8.3 三 skill 过闸（既有评审三态）
+
+#### A. 理念 14 问（Philosophy）
+
+| ID | 判定 | 证据 |
+|---|---|---|
+| T1 员工还是工具 | **有（主路径）** | 大厅/工作台按部门·专家·请示；实验室路由已降权 |
+| T2 带团队拍板 | **有** | 右栏「要你拍」+ `DeptAskReportBubble` 就地确认/驳回 |
+| T3 组织能力 | **有（叙事）** | Novada Team · 八部；非模型参数卖点 |
+| T4 依据链【P0】 | **弱 / 近否** | 气泡可展开依据示意；缺完整「结论+来源+推演+对比」可签字密度 → **不宣称过 T4** |
+| T5 该到面前 | **有（主闸）** | pending→`?ask=` 软跳；大厅待办 |
+| T6 质检检查点 | **部分** | ④⑤ 合格线/步 pill；真实质检零件未挂 |
+| T7 带教淡出 | **无/弱** | 未见可淡出脚手架 |
+| T8 Agent 风格 | **弱** | 编制头像条有；风格句薄 |
+| T9 低置信示弱 | **弱** | 案卷置信 demo；未系统化 |
+| T10 过程数据【P0】 | **弱** | 判断痕迹抽屉有名；沉淀/偏好未闭环 → **不宣称过 T10** |
+| T11～T14 | **弱/不适用一期** | 成长/生态未试点 |
+
+#### B. 产品设计五步（模式三快答）
+
+| 步 | 有/无/弱 | 注 |
+|---|---|---|
+| 定任务 | **有** | 八节点真源 + 大厅目标入口 |
+| 定分工 | **弱** | 大厅八部 vs org/公司七部 **打架** |
+| 定协同 | **有（壳）** | 右栏负责人对话；1:1/工具次 |
+| 定权责 | **部分** | 硬请示在右栏；进入门槛硬挡不全 |
+| 定健康 | **弱** | 成本/成长账单未上屏 |
+
+#### C. 工程纪律四项
+
+| 纪律 | 判定 | 注 |
+|---|---|---|
+| 真源管理 | **否（P0）** | 文档真源=老板八部；运行时 `MAIN_CHAIN_DEPT_IDS`/`seven-dept-map`/侧栏仍 lifecycle 七部 → **双真源** |
+| 审计留痕 | **部分** | 软跳+判断痕迹抽屉；真审计链 demo |
+| 回归验证 | **有（窄）** | pending/confirmGate/mainChainWalk 等单测绿（前批 17/17）；本轮未重跑 |
+| 文档同步 | **本文件更新中** | 扫描与代码同日；欢迎/公司页文案未跟八部 |
+
+### 8.4 Top P0 / P1 / P2（跨页）
+
+#### P0（必须先清，否则「对齐」是假的）
+
+1. **组织命名双真源**：大厅 `hallDepts`＝老板①～⑧；公司首页 `MAIN_CHAIN_DEPTS` + 侧栏 + ⑤顶栏「撰写部」＝旧上手七部。须统一到一期八部（或明示映射层），并改掉 `seven-dept-map` / 「七部」文案。  
+2. **T4 依据链达不到签字级**（理念 P0）：④⑤⑥ 硬请示仍缺完整来源/推演/对比密度。  
+3. （并列观察，非本轮新发现）**官报递交/真检索/真鉴权**仍不在范围——保持诚实标注，勿当已落地。
+
+#### P1
+
+1. 欢迎页「七部货架 / 企业走七部」→ 改八部叙事。  
+2. `/agent/departments`「公司首页七部」文案。  
+3. ⑦⑧ 对外名：大厅「维护/复盘」vs org「年费/成果转化」对齐。  
+4. ①②③⑦⑧ 厚作业/真实零件（现仅合格线空态）。  
+5. 进入门槛硬挡；⑥大厅期限催办；diff 审批闭环。  
+6. 编制总览「让该部开工」专业页做满。
+
+#### P2
+
+1. 右栏/主栏像素级精致度（相对样机）。  
+2. lab 内页旧 Agent 文案逐条清洗（顶条已降权）。  
+3. 案卷抽屉密度；assets/billing/members 薄后勤。  
+4. T7～T14 带教/成长/生态。
+
+### 8.5 与 §5/§7 进度关系
+
+- §5 所列 P0～P2 **壳级项**（右栏、按步、软跳、大厅八部、Novada、工单、案卷抽屉、实验室横幅、就地拍板）——**实渲确认仍在**。  
+- §7 四维「主链 landed」须降级口径：**壳 landed；命名真源与厚作业未 landed** → 见上表 **partial**。  
+- 下一刀建议（仅记录，本轮未做）：先打 P0① 八部单一真源贯穿公司首页/侧栏/dept 顶栏/欢迎，再补 T4 依据链组件。
+
+### 8.6 修订
+
+| 日期 | 说明 |
+|---|---|
+| 2026-10-31 09:45 CST | 三 skill 全站实渲；服务 PID 43763；33 路由；§8 诚实降级双真源为 P0 |
