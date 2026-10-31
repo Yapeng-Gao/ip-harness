@@ -5,7 +5,7 @@
 import type { OrgDeptId } from '../departments/orgDepts'
 
 export const PROF_AUX_HONEST =
-  '样机示意 · 非真官报 · 非真检索 · 辅链不占①～⑧'
+  '样机示意 · 非真官报 · 非真检索 · 辅链不占主链序号'
 
 export type ManuscriptPart = {
   id: string
@@ -49,7 +49,7 @@ const BUNDLES: Record<string, DeptAuxBundle> = {
       {
         id: 'research-pre',
         label: '查新对照',
-        relation: '辅链挂件 · 不占①立项序号',
+        relation: '辅链挂件 · 不占立项序号',
       },
     ],
   },
@@ -146,7 +146,7 @@ const BUNDLES: Record<string, DeptAuxBundle> = {
       {
         id: 'fig-pack',
         label: '附图成套',
-        relation: '辅链零件 · 非⑤大门',
+        relation: '辅链零件 · 非申请部大门',
       },
       {
         id: 'file-pack',
@@ -236,7 +236,7 @@ export const SIDE_AUX_DEPTS: {
       { id: 'hit-list', label: '对比清单稿', hint: '示意条目 · 非真库结果' },
       { id: 'concl', label: '结论一页', hint: '给主链对照用' },
     ],
-    honest: '查新辅链示意 · 不占①～⑧ · 非真库实查',
+    honest: '查新辅链示意 · 不占主链序号 · 非真库实查',
   },
   {
     id: 'figure',

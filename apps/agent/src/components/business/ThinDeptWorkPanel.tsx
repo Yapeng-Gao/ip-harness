@@ -441,7 +441,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                 ))}
               </div>
               <p className="text-[10px] text-slate-400">
-                B7：只读不拍不得回写⑦台账 · 复盘 ≠ 情报官专报。
+                B7：只读不拍不得回写维护台账 · 复盘 ≠ 情报官专报。
               </p>
             </div>
           ) : null}
@@ -449,12 +449,23 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
           {!['dept-intake', 'dept-inspire', 'dept-mining', 'dept-annuity', 'dept-monetize'].includes(
             deptId,
           ) ? (
-            <pre
-              className="max-h-[min(50vh,28rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
-              data-testid="dept-thin-work-body"
+            <details
+              className="rounded-md border border-slate-100 bg-slate-50/80"
+              data-testid="thin-work-body-fold"
             >
-              {meta.workBody}
-            </pre>
+              <summary
+                className="cursor-pointer select-none px-3 py-1.5 text-[10px] font-medium text-slate-500"
+                data-testid="thin-work-body-summary"
+              >
+                示意全文（默折 · 上方零件优先）
+              </summary>
+              <pre
+                className="max-h-[min(40vh,20rem)] overflow-auto border-t border-slate-100 px-3 py-2 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
+                data-testid="dept-thin-work-body"
+              >
+                {meta.workBody}
+              </pre>
+            </details>
           ) : (
             <pre className="sr-only" data-testid="dept-thin-work-body">
               {meta.workBody}

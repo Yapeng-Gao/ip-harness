@@ -1,4 +1,4 @@
-/** 转化顾问席深度 · HITL⑧ confirm_quote · 禁真签约 */
+/** 转化顾问席深度 · 转化签约闸 confirm_quote · 禁真签约 */
 import type { ExpertStepDef } from '../types'
 
 export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
@@ -75,10 +75,10 @@ export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'validate',
     label: '签约闸 · 待确认',
     script:
-      '【转化】16_monetize_terms 待 Confirm（HITL⑧ · confirm_quote · **禁真签约**）。',
+      '【转化】16_monetize_terms 待 Confirm（转化签约闸 · confirm_quote · **禁真签约**）。',
     tool: {
       name: 'validate_contract_clauses',
-      preview: 'clauses=ok · hitl=⑧',
+      preview: 'clauses=ok · hitl=monetize',
     },
     triggersHitl: true,
     hitlGate: 'confirm_quote',
@@ -103,7 +103,7 @@ export const MONETIZE_DEPTH_SHORTCUTS = [
 
 export const MONETIZE_SAMPLE_ARTIFACT = `# 转化条款草案（样机）
 
-> HITL⑧ · 禁真签约 · 非真报价
+> 转化签约闸 · 禁真签约 · 非真报价
 
 ## 摘要
 
@@ -118,7 +118,7 @@ export const MONETIZE_SAMPLE_WORKLOG_STEPS = `| 1 | 交易范围 | 组合 | CN�
 | 2 | 估值区间 | 公式 | 80–120万 | — |
 | 3 | 条款草案 | term sheet | 骨架 | — |
 | 4 | 条款校验 | validator | 齐 | — |
-| 5 | 签约闸 | HITL⑧ | 待确认 | HITL |`
+| 5 | 签约闸 | 转化确认 | 待确认 | HITL |`
 
 export const MONETIZE_SAMPLE_WORKLOG_CHOICES = `| 口头意向 | 必备条款齐 | 齐 | 禁真签约 |
 | 跳过校验 | 校验过闸 | 校验 | 纪律 |`

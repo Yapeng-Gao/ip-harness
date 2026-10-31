@@ -1251,10 +1251,10 @@ export function BusinessCaseDeptPage() {
                       recordJudgment(
                         buildBranchJudgment({
                           caseId,
-                          gate: '⑧只读不拍',
+                          gate: '只读不拍',
                           conclusion: '本轮只读不拍',
                           option: '只读不拍',
-                          reason: 'B7 · 不回写⑦维持/放弃台账',
+                          reason: 'B7 · 不回写维护部维持/放弃台账',
                           compare: '未拍却改台账 = 禁止',
                         }),
                       )

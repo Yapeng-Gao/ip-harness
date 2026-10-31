@@ -1660,7 +1660,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
               id: uid('bcf'),
               status: 'pending' as const,
               summary: `策略已驳回 · ${noteText}`,
-              processPreview: `【办理过程】确认⑥ 策略驳回重做 · ${noteText}`,
+              processPreview: `【办理过程】答复策略驳回重做 · ${noteText}`,
               createdAt: stamp(),
               returnNote: noteText,
             }

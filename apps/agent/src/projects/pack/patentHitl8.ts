@@ -15,7 +15,7 @@ export type PackHitlGate = {
   note: string
 }
 
-/** Authoritative Pack order: ①布局 … ⑧交易 */
+/** Authoritative Pack order: 布局…交易（确认点 1–8） */
 export const PACK_HITL8: PackHitlGate[] = [
   {
     n: 1,

@@ -494,6 +494,17 @@ export function CaseProfessionalPage() {
           ))}
         </ul>
 
+        {summary.gap + summary.work === 0 ? (
+          <p
+            className="mt-3 rounded-xl border border-dashed border-slate-200 bg-slate-50/70 px-3 py-2.5 text-[12px] text-slate-600"
+            data-testid="case-professional-primary-empty"
+          >
+            暂无缺口/在办 · 各部门在下方「其余」折起；可加编制名或进部台查看。
+          </p>
+        ) : null}
+
+
+
         
         {summary.idle > 0 ? (
           <details
@@ -504,7 +515,7 @@ export function CaseProfessionalPage() {
               className="cursor-pointer select-none text-[12px] font-medium text-slate-600"
               data-testid="case-professional-idle-summary"
             >
-              其余部门 · {summary.idle}（默认收折 · 缺口/在办已上列）
+              其余部门 · {summary.idle}（默折）
             </summary>
             <ul className="mt-3 grid gap-3 sm:grid-cols-2" data-testid="case-professional-idle-cards">
               {cards

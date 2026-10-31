@@ -152,7 +152,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: ['maintain_annuity'],
     readTools: ['list_annuity_due'],
     writeCommands: null,
-    honesty: '后置可跑 · HITL⑦ Confirm 内存 · 禁真缴费',
+    honesty: '后置可跑 · 年费 Confirm 内存 · 禁真缴费',
   },
   {
     expertId: 'expert-valuation',
@@ -170,7 +170,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: ['monetize_terms'],
     readTools: ['draft_term_sheet'],
     writeCommands: null,
-    honesty: '后置可跑 · HITL⑧ Confirm 内存 · 禁真签约',
+    honesty: '后置可跑 · 转化 Confirm 内存 · 禁真签约',
   },
   {
     expertId: 'expert-enforcement',

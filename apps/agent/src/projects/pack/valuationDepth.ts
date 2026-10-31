@@ -1,4 +1,4 @@
-/** 价值评估席深度 · 服务 HITL⑦ · 提案键 valuation_card */
+/** 价值评估席深度 · 服务年费闸 · 提案键 valuation_card */
 import type { ExpertStepDef } from '../types'
 
 export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
@@ -86,7 +86,7 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**交给年费**：分级表驱动缴/放建议；提案键勿写 packages。',
       '',
-      '确认后样机交卷；服务 HITL⑦（年费闸）而非本席独立写库。',
+      '确认后样机交卷；服务年费闸而非本席独立写库。',
     ].join('\n'),
   },
 ]
@@ -100,7 +100,7 @@ export const VALUATION_DEPTH_SHORTCUTS = [
 
 export const VALUATION_SAMPLE_ARTIFACT = `# 价值评估卡（样机）
 
-> 提案键 · 服务 HITL⑦ · 非真估值
+> 提案键 · 服务年费闸 · 非真估值
 
 ## 摘要
 

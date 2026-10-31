@@ -195,8 +195,7 @@ export function SeatValidatorPanel({
         </span>
         {packHitl && (
           <span className="rounded border border-violet-200 bg-violet-50 px-1 text-[9px] text-violet-800">
-            HITL{['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'][packHitl.n - 1]}{' '}
-            {packHitl.label}
+            确认点 · {packHitl.label}
           </span>
         )}
         {thread?.pendingHitl && (

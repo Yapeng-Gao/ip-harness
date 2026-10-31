@@ -54,7 +54,7 @@ const STATUS_UI: Record<
 
 /**
  * 确认点 ×8 总览（席位样机旁路）
- * ⑦⑧ 标「后置」但仍可跑样机（非灰显死胡同）。
+ * 后置闸标「后置」但仍可跑样机（非灰显死胡同）。
  */
 export function PackHitlOverview({
   clearedSeatIds = [],
@@ -79,7 +79,7 @@ export function PackHitlOverview({
           确认点 ×8（样机）
         </h2>
         <span className="text-[10px] text-slate-400">
-          通过校验再确认 · ⑦⑧ 后置也能跑
+          通过校验再确认 · 年费/转化后置也能跑
         </span>
       </div>
       <ol
@@ -105,8 +105,8 @@ export function PackHitlOverview({
                 data-phase={g.phase ? 'true' : 'false'}
               >
                 <div className="flex items-center justify-between gap-1">
-                  <span className="text-[10px] font-bold">
-                    {['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'][g.n - 1]}
+                  <span className="text-[10px] font-medium text-slate-500">
+                    确认点 {g.n}
                   </span>
                   <span className="flex items-center gap-1 text-[9px] uppercase tracking-wide">
                     {g.phase ? (

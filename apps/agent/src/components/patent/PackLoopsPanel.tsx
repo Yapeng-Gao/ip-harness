@@ -89,7 +89,7 @@ export function PackLoopsPanel() {
               审查答复 · 多通外循环（样机）
             </h2>
             <p className="mt-0.5 text-[11px] text-orange-900/80">
-              理由分类 · 子任务汇入 · 确认⑥ 策略确认/驳回 · 第 N 通计数 ·
+              理由分类 · 子任务汇入 · 策略确认/驳回（答复） · 第 N 通计数 ·
               超范围拦截（自修复 {OA_BLOCKER_SELF_HEAL_MAX} 次）· 无真局端
             </p>
             <p

@@ -36,7 +36,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     tool: { name: 'mock_sketch', preview: 'assets=fig-mock-01..03' },
     structuredBody: [
       '- fig-mock-01 系统框图占位',
-      '- fig-mock-02 流程图占位（步骤①–⑤）',
+      '- fig-mock-02 流程图占位（步骤 1–5）',
       '- fig-mock-03 插拔时序占位',
     ].join('\n'),
   },

@@ -314,7 +314,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "专利布局",
     "role": "expert",
     "specialty": "主从案保护网 · layout_plan",
-    "description": "主从案与保护网。产出 05_layout_plan + worklog。【确认①】布局拍板。",
+    "description": "主从案与保护网。产出 05_layout_plan + worklog。【确认点】布局拍板。",
     "tools": [
       "plan_family",
       "map_protection_net",

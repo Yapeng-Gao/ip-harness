@@ -65,12 +65,23 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
       data-step={step.id}
       data-case={caseId}
     >
-      <pre
-        className="max-h-[min(40vh,18rem)] overflow-auto rounded-lg border border-slate-100 bg-slate-50/80 p-3 text-[12px] leading-relaxed text-slate-700 whitespace-pre-wrap"
-        data-testid="dept-output-body"
+      <details
+        className="rounded-lg border border-slate-100 bg-slate-50/60"
+        data-testid="thick-step-body-fold"
       >
-        {step.mainBody}
-      </pre>
+        <summary
+          className="cursor-pointer select-none px-3 py-1.5 text-[10px] font-medium text-slate-500"
+          data-testid="thick-step-body-summary"
+        >
+          本步全文（默折 · 下方交互板优先）
+        </summary>
+        <pre
+          className="max-h-[min(32vh,14rem)] overflow-auto border-t border-slate-100 px-3 py-2 text-[12px] leading-relaxed text-slate-700 whitespace-pre-wrap"
+          data-testid="dept-output-body"
+        >
+          {step.mainBody}
+        </pre>
+      </details>
 
       {kind === 'd4' && step.id === 'draft' ? (
         <div className="rounded-xl border border-slate-200 bg-white p-3" data-testid="thick-d4-draft">

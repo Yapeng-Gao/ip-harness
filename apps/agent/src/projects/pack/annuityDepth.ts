@@ -1,4 +1,4 @@
-/** 年费管家席深度 · HITL⑦ pay_unlock · 禁真缴费 */
+/** 年费管家席深度 · 年费闸 pay_unlock · 禁真缴费 */
 import type { ExpertStepDef } from '../types'
 
 export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
@@ -64,10 +64,10 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'decide',
     label: '缴费/放弃闸 · 待确认',
     script:
-      '【年费】14_maintain_annuity 待 Confirm（HITL⑦ · pay_unlock · **禁真缴费**）。',
+      '【年费】14_maintain_annuity 待 Confirm（年费闸 · pay_unlock · **禁真缴费**）。',
     tool: {
       name: 'propose_pay_or_abandon',
-      preview: 'recommend=pay · hitl=⑦',
+      preview: 'recommend=pay · hitl=annuity',
     },
     triggersHitl: true,
     hitlGate: 'pay_unlock',
@@ -92,7 +92,7 @@ export const ANNUITY_DEPTH_SHORTCUTS = [
 
 export const ANNUITY_SAMPLE_ARTIFACT = `# 年费维护建议（样机）
 
-> HITL⑦ · 禁真缴费 · 假数据
+> 年费闸 · 禁真缴费 · 假数据
 
 ## 摘要
 
@@ -107,7 +107,7 @@ export const ANNUITY_SAMPLE_WORKLOG_STEPS = `| 1 | 到期台账 | 授权后 | �
 | 2 | 滞纳金表 | mock | 阶梯 | — |
 | 3 | 价值联动 | 评分卡 | 核心缴 | — |
 | 4 | 缴/放方案 | 三案 | A/B/C | — |
-| 5 | 缴费/放弃闸 | HITL⑦ | 待确认 | HITL |`
+| 5 | 缴费/放弃闸 | 年费确认 | 待确认 | HITL |`
 
 export const ANNUITY_SAMPLE_WORKLOG_CHOICES = `| 强缴不问价值 | 价值联动 | 联动 | 禁真缴费 |
 | 静默放弃 | 必须HITL | HITL | 纪律 |`
