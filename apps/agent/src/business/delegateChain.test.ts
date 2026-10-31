@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import {
+  advancePlanChain,
+  appendChainAdvanceNote,
   buildPlanChain,
   classifyGoal,
   formatCasePlanText,
@@ -69,5 +71,38 @@ describe('plan multi-step chain', () => {
     assert.match(text, /本稿排期/)
     assert.match(text, /开篇之后待办/)
     assert.match(text, /排期可改稿/)
+  })
+})
+
+
+describe('chain advance', () => {
+  it('active→done and queued→active', () => {
+    const steps = planStepsForGoal('protect_start')
+    const chain = buildPlanChain(steps, 'intake')
+    const r1 = advancePlanChain(chain)
+    assert.equal(r1.completed?.id, 'intake')
+    assert.equal(r1.completed?.status, 'done')
+    assert.equal(r1.next?.id, 'disclosure')
+    assert.equal(r1.next?.status, 'active')
+    assert.equal(
+      r1.chain.find((s) => s.id === 'intake')?.status,
+      'done',
+    )
+    const r2 = advancePlanChain(r1.chain)
+    assert.equal(r2.completed?.id, 'disclosure')
+    assert.equal(r2.next?.id, 'draft')
+    const r3 = advancePlanChain(r2.chain)
+    assert.equal(r3.completed?.id, 'draft')
+    assert.equal(r3.next, undefined)
+    assert.ok(r3.chain.every((s) => s.status !== 'active'))
+  })
+
+  it('append note uses 已办完/新开篇', () => {
+    const steps = planStepsForGoal('protect_start')
+    const chain = buildPlanChain(steps, 'intake')
+    const r = advancePlanChain(chain)
+    const note = appendChainAdvanceNote('本稿排期：x', r)
+    assert.match(note, /已办完：/)
+    assert.match(note, /新开篇：/)
   })
 })

@@ -41,16 +41,26 @@ export function HomeRelayStrip({ refreshKey = 0 }: Props) {
     }>
     fromProgress.sort((a, b) => b.d.at.localeCompare(a.d.at))
     for (const row of fromProgress.slice(0, 3)) {
+      const active = row.d.chain?.find((s) => s.status === 'active')
       const next = row.d.chain?.find((s) => s.status === 'queued')
-      const titleBase = row.d.goalText.slice(0, 28) || row.title
+      const doneN =
+        row.d.chain?.filter((s) => s.status === 'done').length ?? 0
+      const titleBase = row.d.goalText.slice(0, 24) || row.title
+      const slug = active?.deptSlug ?? row.d.deptSlug
+      let title = titleBase
+      if (active) {
+        title = `${titleBase} · 在办 ${active.label.split('·')[0]!.trim()}`
+      } else if (doneN > 0 && !next) {
+        title = `${titleBase} · 排期已结`
+      } else if (next) {
+        title = `${titleBase} · 其后 ${next.label.split('·')[0]!.trim()}`
+      }
       rows.push({
         id: `dispatched-${row.caseId}`,
-        title: next
-          ? `${titleBase} · 其后 ${next.label.split('·')[0]!.trim()}`
-          : titleBase,
+        title,
         kind: 'dispatched',
-        badge: '已发排期',
-        href: `/agent/cases/${row.caseId}/depts/${row.d.deptSlug}?delegate=1`,
+        badge: active ? '排期在办' : doneN > 0 ? '排期已结' : '已发排期',
+        href: `/agent/cases/${row.caseId}/depts/${slug}?delegate=1`,
       })
     }
     // LS 兜底（无案开新路径）

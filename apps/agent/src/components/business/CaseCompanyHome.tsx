@@ -49,7 +49,7 @@ type Props = {
  * + 八部抽屉进干活；浅色壳；禁假指标/执行集群
  */
 export function CaseCompanyHome({ caseId, title, summary }: Props) {
-  const { getProgress, getPendingConfirms, cases } = useBusinessCases()
+  const { getProgress, getPendingConfirms, cases, advancePlanChainStep } = useBusinessCases()
   const { deptLabel } = useOrgConfig()
   const [moreOpen, setMoreOpen] = useState(false)
   const [mapExpanded, setMapExpanded] = useState(false)
@@ -377,24 +377,52 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
                   </span>
                   <span className="rounded-full bg-white/80 px-1.5 py-px text-[10px] font-medium text-emerald-900/80 ring-1 ring-emerald-200/80">
                     {s.status === 'active'
-                      ? '开篇在办'
+                      ? '本章在办'
                       : s.status === 'queued'
                         ? '其后待办'
-                        : '已暂缓'}
+                        : s.status === 'done'
+                          ? '已办完'
+                          : '已暂缓'}
                   </span>
                 </li>
               ))}
             </ol>
           ) : null}
           {prog.delegate ? (
-            <Link
-              to={`/agent/cases/${caseId}/depts/${prog.delegate.deptSlug}?delegate=1`}
-              className="btn-press focus-ring mt-2 inline-flex text-[11px] font-semibold text-emerald-950 underline-offset-2 hover:underline"
-              data-testid="company-plan-go"
-            >
-              去开篇章节 · {prog.delegate.stepLabel}
-            </Link>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <Link
+                to={`/agent/cases/${caseId}/depts/${prog.delegate.deptSlug}?delegate=1`}
+                className="btn-press focus-ring inline-flex text-[11px] font-semibold text-emerald-950 underline-offset-2 hover:underline"
+                data-testid="company-plan-go"
+              >
+                去本章 · {prog.delegate.stepLabel}
+              </Link>
+              {prog.delegate.chain?.some((s) => s.status === 'active') ? (
+                <button
+                  type="button"
+                  className="btn-press focus-ring rounded-full bg-emerald-900 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-emerald-800"
+                  data-testid="company-plan-advance"
+                  onClick={() => {
+                    const r = advancePlanChainStep(caseId)
+                    if (!r.ok) {
+                      // seed 静默即可；文案已在按钮旁
+                      return
+                    }
+                  }}
+                >
+                  {prog.delegate.chain.some((s) => s.status === 'queued')
+                    ? '本章办完 · 推进下一节'
+                    : '本章办完 · 结排期'}
+                </button>
+              ) : null}
+            </div>
           ) : null}
+          <p
+            className="mt-1.5 text-[10px] text-emerald-900/60"
+            data-testid="company-plan-advance-hint"
+          >
+            样机：点「办完」把本章标为已办、其后待办升为在办（非真官报）
+          </p>
         </section>
       ) : null}
 

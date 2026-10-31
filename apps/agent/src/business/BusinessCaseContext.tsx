@@ -48,7 +48,12 @@ import {
   type ProcessLogEntry,
 } from './packLoops'
 import { resolveCasePlanStart } from './casePlanDrive'
-import type { PlanChainStep } from './delegateChain'
+import {
+  advancePlanChain,
+  appendChainAdvanceNote,
+  type PlanChainStep,
+} from './delegateChain'
+import { deptSlug, orgDeptByLeadSeat } from '../departments/orgDepts'
 import {
   buildJudgmentFromConfirm,
   preferenceCandidateFromJudgment,
@@ -524,6 +529,14 @@ type BusinessCaseContextValue = {
       chain?: PlanChainStep[]
     },
   ) => void
+  /**
+   * 本章办完 → 辅链推进下一站（seed/确认共用；样机示意）
+   * @param opts.deptSlug 若给，仅当 active 匹配该部才推进
+   */
+  advancePlanChainStep: (
+    caseId: string,
+    opts?: { deptSlug?: string },
+  ) => { ok: boolean; completedLabel?: string; nextLabel?: string; reason?: string }
   /** 启用前研等「更多部门」（写入 moreSeatIds） */
   /** T10 · 本案判断档案（硬请示写回） */
   getJudgments: (caseId?: string) => JudgmentRecord[]
@@ -1100,9 +1113,8 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         rewindToStep(target.caseId, 'expert-research', 0)
       }
 
-      setProgressById((pprev) => ({
-        ...pprev,
-        [target.caseId]: {
+      setProgressById((pprev) => {
+        const base = {
           ...cur,
           doneSeatIds,
           completedStages,
@@ -1111,8 +1123,40 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           oaRound,
           researchPass: next.researchPass,
           updatedAt: nowIso(),
-        },
-      }))
+        }
+        const dept = orgDeptByLeadSeat(meta.seatId)
+        const active = cur.delegate?.chain?.find((s) => s.status === 'active')
+        if (
+          dept &&
+          cur.delegate?.chain?.length &&
+          active &&
+          active.deptSlug === deptSlug(dept.id)
+        ) {
+          const adv = advancePlanChain(cur.delegate.chain)
+          if (!adv.noop && adv.completed) {
+            const newActive = adv.next
+            return {
+              ...pprev,
+              [target.caseId]: {
+                ...base,
+                casePlan: appendChainAdvanceNote(cur.casePlan, adv),
+                delegate: {
+                  ...cur.delegate,
+                  at: nowIso(),
+                  deptSlug: newActive?.deptSlug ?? cur.delegate.deptSlug,
+                  stepLabel:
+                    newActive?.label ?? `${adv.completed.label}（已办完）`,
+                  chain: adv.chain,
+                },
+              },
+            }
+          }
+        }
+        return {
+          ...pprev,
+          [target.caseId]: base,
+        }
+      })
       setConfirms((prev) =>
         prev.map((c) =>
           c.id === confirmId ? { ...c, status: 'confirmed' as const } : c,
@@ -2177,6 +2221,78 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     [appendLogs],
   )
 
+  const advancePlanChainStep = useCallback(
+    (
+      caseId: string,
+      opts?: { deptSlug?: string },
+    ): {
+      ok: boolean
+      completedLabel?: string
+      nextLabel?: string
+      reason?: string
+    } => {
+      const cur = progressById[caseId]
+      if (!cur?.delegate?.chain?.length) {
+        return { ok: false, reason: '本案尚无排期辅链' }
+      }
+      const active = cur.delegate.chain.find((s) => s.status === 'active')
+      if (!active) {
+        return { ok: false, reason: '没有在办章节可办完' }
+      }
+      if (opts?.deptSlug && active.deptSlug !== opts.deptSlug) {
+        return {
+          ok: false,
+          reason: `当前在办是「${active.label}」，与本站不符`,
+        }
+      }
+      const adv = advancePlanChain(cur.delegate.chain)
+      if (adv.noop || !adv.completed) {
+        return { ok: false, reason: '排期无变化' }
+      }
+      const at = nowIso()
+      const newActive = adv.next
+      setProgressById((prev) => {
+        const c = prev[caseId] ?? cur
+        return {
+          ...prev,
+          [caseId]: {
+            ...c,
+            casePlan: appendChainAdvanceNote(c.casePlan, adv),
+            delegate: c.delegate
+              ? {
+                  ...c.delegate,
+                  at,
+                  deptSlug: newActive?.deptSlug ?? c.delegate.deptSlug,
+                  stepLabel:
+                    newActive?.label ?? `${adv.completed!.label}（已办完）`,
+                  chain: adv.chain,
+                }
+              : c.delegate,
+            updatedAt: at,
+          },
+        }
+      })
+      appendLogs([
+        {
+          id: processLogId('chain-adv'),
+          caseId,
+          at,
+          kind: 'monitor_event',
+          message: newActive
+            ? `本章办完 · ${adv.completed.label} → 新开篇 ${newActive.label}（样机示意）`
+            : `本章办完 · ${adv.completed.label} · 排期已结（样机示意）`,
+          detail: cur.delegate.goalText.slice(0, 80) || undefined,
+        },
+      ])
+      return {
+        ok: true,
+        completedLabel: adv.completed.label,
+        nextLabel: newActive?.label,
+      }
+    },
+    [appendLogs, progressById],
+  )
+
   const enableMoreDepartments = useCallback((caseId: string) => {
     const add = [
       ...BUSINESS_MORE_SEAT_IDS,
@@ -2313,6 +2429,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       setCaseTeam,
       updateCasePlan,
       recordDelegateDispatch,
+      advancePlanChainStep,
       enableMoreDepartments,
       getJudgments,
       getPreferences,
@@ -2351,6 +2468,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       setCaseTeam,
       updateCasePlan,
       recordDelegateDispatch,
+      advancePlanChainStep,
       enableMoreDepartments,
       getJudgments,
       getPreferences,
