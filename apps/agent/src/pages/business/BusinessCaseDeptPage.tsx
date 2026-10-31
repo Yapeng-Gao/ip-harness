@@ -83,9 +83,13 @@ import {
   isDraftDept,
 } from '../../business/caseFileDemo'
 import { ThinDeptWorkPanel } from '../../components/business/ThinDeptWorkPanel'
+import { BranchFlowPanel } from '../../components/business/BranchFlowPanel'
+import { TeachingFadeTip } from '../../components/business/TeachingFadeTip'
 import { lineDiff, diffStats } from '../../business/lineDiff'
 import { buildBranchJudgment } from '../../business/judgmentArchive'
 import { useEntryRole } from '../../business/useEntryRole'
+import { prefsHintForDept } from '../../business/preferenceStore'
+import { styleTagForDept, normalizePeerJobTitle } from '../../business/agentStyle'
 
 function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
   const known = DEPT_HANDOFF[deptId]
@@ -736,6 +740,30 @@ export function BusinessCaseDeptPage() {
             data-testid="dept-deliverable"
             aria-labelledby="dept-output-title"
           >
+            <TeachingFadeTip deptId={dept.id} />
+            {prefsHintForDept(deptLabel(dept)).length > 0 ? (
+              <aside
+                className="rounded-xl border border-emerald-200 bg-emerald-50/70 px-3 py-2"
+                data-testid="pref-dept-hints"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald-800/80">
+                  跨案偏好提示 · 可读可写演示仓
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {prefsHintForDept(deptLabel(dept)).slice(0, 3).map((p) => (
+                    <li key={p.id} className="text-[11px] text-slate-800" data-testid="pref-dept-hint">
+                      {p.text}
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+            ) : null}
+            <BranchFlowPanel
+              branch={params.get('branch')}
+              caseId={caseId}
+              deptSlug={slug || deptSlug(dept.id)}
+              onRecordJudgment={(j) => recordJudgment(j)}
+            />
             {stepKind && currentStep && selectedMaterialId === 'deliverable' ? (
               <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="flex flex-wrap items-center gap-2" data-testid="dept-step-demo">
@@ -1036,6 +1064,13 @@ export function BusinessCaseDeptPage() {
                       本部门负责人
                       {st ? ` · ${handoffPhaseLabel(handoffPhase)}` : ''}
                     </span>
+                    <span
+                      className="rounded-full bg-violet-600/10 px-1.5 py-0.5 text-[9px] font-medium text-violet-800"
+                      data-testid="agent-style-tag"
+                      title={styleTagForDept(dept.id).line}
+                    >
+                      风格 · {styleTagForDept(dept.id).label}
+                    </span>
                   </span>
                 </span>
               </button>
@@ -1095,7 +1130,7 @@ export function BusinessCaseDeptPage() {
                         (peer.kind === 'placeholder' &&
                           activeSeat === peer.leadSeatId &&
                           pickedSeat === peer.leadSeatId))
-                    const label = peerDisplayLabel(dept.id, peer.id, peer.label)
+                    const label = normalizePeerJobTitle(peerDisplayLabel(dept.id, peer.id, peer.label))
                     const adopted = adoptedPeerIds.includes(peer.id)
                     return (
                       <li key={peer.id} className="inline-flex items-center gap-1">
@@ -1163,7 +1198,7 @@ export function BusinessCaseDeptPage() {
                   />
                 </button>
                 {peers.slice(0, 5).map((peer) => {
-                  const label = peerDisplayLabel(dept.id, peer.id, peer.label)
+                  const label = normalizePeerJobTitle(peerDisplayLabel(dept.id, peer.id, peer.label))
                   return (
                     <button
                       key={peer.id}
@@ -1194,6 +1229,12 @@ export function BusinessCaseDeptPage() {
               data-testid="dept-right-chat"
             >
               <div className="shrink-0 space-y-2 px-3 pt-2">
+                <p
+                  className="text-[10px] leading-snug text-slate-400"
+                  data-testid="agent-style-line"
+                >
+                  {styleTagForDept(dept.id).line}
+                </p>
                 {/* 硬请示 = 汇报气泡（一句结论 + 选项）；不另开 sticky 同文卡 */}
                 {/* 多项未关请示：仅跳转 chip（样机 askSticky · 禁同文复述） */}
                 {pendingForDept.length > 1 ? (

@@ -52,8 +52,15 @@ export function AssetsPage() {
         data-testid="assets-b8"
         data-branch="b8"
       >
-        <strong>B8 · 情报官入口（薄）</strong>
-        ：竞对年报/专报走此资产/情报面，不在⑧复盘或③挖掘假装专报。演示壳 · 非真情报通道。
+        <p>
+          <strong>B8 · 情报官入口</strong>
+          ：竞对年报/专报走此资产/情报面，不在⑧复盘或③挖掘假装专报。
+        </p>
+        <ul className="mt-1.5 list-disc space-y-0.5 pl-4 text-[11px] text-slate-600" data-testid="assets-b8-must">
+          <li>须看见：情报材料分类 / 与本案挂接入口（演示）</li>
+          <li>禁：用⑧五块复盘或③点包冒充竞对专报</li>
+          <li>诚实：非真情报检索通道 · 上传不解析</li>
+        </ul>
       </div>
       <div className="flex min-h-0 flex-1 overflow-hidden">
       <AssetTree

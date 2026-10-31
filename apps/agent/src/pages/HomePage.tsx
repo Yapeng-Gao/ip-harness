@@ -10,6 +10,7 @@ import {
 import { useEntryRole } from '../business/useEntryRole'
 import { HALL_DEPT_DOORS, hallDeptHref } from '../business/hallDepts'
 import { BranchDoors } from '../components/business/BranchDoors'
+import { reopenAllTeachTips } from '../business/teachingFade'
 
 /**
  * 大厅 · /agent
@@ -331,8 +332,19 @@ export function HomePage() {
           ) : null}
         </nav>
 
-        <footer className="mt-6 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
-          Novada Team 大厅 · 拍板在部门工作台右栏 · 样机本地会话
+        <footer className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
+          <span>Novada Team 大厅 · 拍板在部门工作台右栏 · 样机本地会话</span>
+          <button
+            type="button"
+            className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-600"
+            data-testid="home-reopen-teach"
+            onClick={() => {
+              reopenAllTeachTips()
+              window.alert('已重开各部门首次说明（进部可见）')
+            }}
+          >
+            重开部门说明（T7）
+          </button>
         </footer>
       </div>
     </div>

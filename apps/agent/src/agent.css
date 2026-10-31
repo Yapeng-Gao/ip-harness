@@ -493,3 +493,26 @@ body,
     animation: dept-drawer-fade-in 0.15s ease both;
   }
 }
+
+
+/* Right-rail fidelity · sample-inspired (apps/agent only) */
+[data-testid='dept-right-chat'] {
+  background: linear-gradient(180deg, #fafbfc 0%, #ffffff 48px);
+}
+[data-testid='ask-sticky'] {
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+}
+[data-testid='dept-ask-bubble-confirm'] {
+  box-shadow: 0 1px 2px rgba(91, 33, 182, 0.06);
+}
+[data-testid='business-seat-composer-wrap'] {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+}
+[data-testid='composer-to'] {
+  letter-spacing: 0.01em;
+}
+[data-testid='teach-fade-tip'][data-show='1'] {
+  animation: dept-drawer-fade-in 0.18s ease both;
+}

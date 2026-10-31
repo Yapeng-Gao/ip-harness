@@ -7,6 +7,11 @@ import type {
   JudgmentRecord,
   PreferenceRecord,
 } from '../../business/judgmentArchive'
+import {
+  addPreferenceManual,
+  listSavedPreferences,
+  removePreference,
+} from '../../business/preferenceStore'
 
 export type CaseFileTab = '材料' | '检查表' | '工单' | '判断档案'
 
@@ -68,8 +73,11 @@ export function CaseFileDrawer({
   initialTab = '材料',
 }: Props) {
   const [tab, setTab] = useState<CaseFileTab>(initialTab)
+  const [storeTick, setStoreTick] = useState(0)
   const panelRef = useRef<HTMLDivElement>(null)
   const restoreFocusRef = useRef<HTMLElement | null>(null)
+  const storePrefs = listSavedPreferences()
+  void storeTick
 
   useEffect(() => {
     if (open) setTab(initialTab)
@@ -316,13 +324,71 @@ export function CaseFileDrawer({
                         type="button"
                         className="btn-press focus-ring mt-2 rounded-full border border-violet-300 bg-white px-2.5 py-1 text-[11px] font-medium text-violet-900"
                         data-testid="btn-precip-pref"
-                        onClick={() => onSavePreference(pr.id)}
+                        onClick={() => {
+                          onSavePreference(pr.id)
+                          setStoreTick((n) => n + 1)
+                        }}
                       >
                         写入偏好列表
                       </button>
                     ) : null}
                   </div>
                 ))}
+              </div>
+
+              <div
+                className="mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2"
+                data-testid="pref-store-panel"
+              >
+                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                  跨案偏好仓 · localStorage
+                </p>
+                <p className="mt-0.5 text-[10px] text-slate-500">
+                  演示可读可写 · 非真知识库引擎
+                </p>
+                <ul className="mt-2 space-y-1.5">
+                  {storePrefs.length === 0 ? (
+                    <li className="text-[11px] text-slate-400">仓空 · 沉淀后出现</li>
+                  ) : (
+                    storePrefs.slice(0, 8).map((sp) => (
+                      <li
+                        key={sp.id}
+                        className="flex items-start justify-between gap-2 rounded-md bg-slate-50 px-2 py-1.5"
+                        data-testid="pref-store-item"
+                      >
+                        <span className="min-w-0 flex-1 text-[11px] text-slate-800">
+                          {sp.text}
+                        </span>
+                        <button
+                          type="button"
+                          className="btn-press focus-ring shrink-0 text-[10px] text-rose-700"
+                          data-testid="pref-store-remove"
+                          onClick={() => {
+                            removePreference(sp.id)
+                            setStoreTick((n) => n + 1)
+                          }}
+                        >
+                          删
+                        </button>
+                      </li>
+                    ))
+                  )}
+                </ul>
+                <button
+                  type="button"
+                  className="btn-press focus-ring mt-2 rounded-full border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700"
+                  data-testid="pref-store-add"
+                  onClick={() => {
+                    addPreferenceManual({
+                      text: '跨案偏好：交底事实先钉再全绿',
+                      from: '案卷手动',
+                      applyOnDept: '交底部',
+                    })
+                    setStoreTick((n) => n + 1)
+                  }}
+                >
+                  手动写入一条演示偏好
+                </button>
               </div>
 
               <ul

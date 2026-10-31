@@ -51,6 +51,12 @@ export function LabRouteBanner({ kind = 'lab', className = '' }: Props) {
           去案盘
         </Link>
       </div>
+      <p
+        className="basis-full text-[10px] leading-snug text-amber-900/70"
+        data-testid="lab-banner-gate"
+      >
+        闸：本页不承接硬请示 / 部间工单 / 判断档案；那些只在案→部工作台。
+      </p>
     </div>
   )
 }

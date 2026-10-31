@@ -56,6 +56,7 @@ import {
   type JudgmentRecord,
   type PreferenceRecord,
 } from './judgmentArchive'
+import { upsertSavedPreferences } from './preferenceStore'
 import {
   downstreamResumeScript,
   feedbackNeedsMoreSeat,
@@ -2174,13 +2175,21 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     })
   }, [])
   const savePreferenceById = useCallback((prefId: string) => {
-    setPreferences((prev) => savePreference(prev, prefId))
+    setPreferences((prev) => {
+      const next = savePreference(prev, prefId)
+      upsertSavedPreferences(next.filter((p) => p.saved))
+      return next
+    })
   }, [])
   const precipitateJudgment = useCallback(
     (judgmentId: string) => {
       const j = judgments.find((x) => x.id === judgmentId)
       if (!j) return
-      setPreferences((prev) => precipitateJudgmentAsPreference(prev, j))
+      setPreferences((prev) => {
+        const next = precipitateJudgmentAsPreference(prev, j)
+        upsertSavedPreferences(next.filter((p) => p.saved))
+        return next
+      })
     },
     [judgments],
   )

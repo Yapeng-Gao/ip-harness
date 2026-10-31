@@ -987,30 +987,43 @@ export function BusinessSeatWorkbench({
                 )}
               </div>
             )}
-            <div className="flex gap-2">
-              <textarea
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={onKey}
-                rows={1}
-                placeholder={
-                  compactRail
-                    ? `对：${seatLabel} · 说一句驾驭`
-                    : `跟「${seatLabel}」说…（环边/回退/feedback 均可）`
-                }
-                className="focus-ring min-h-[2.25rem] flex-1 resize-none rounded-lg border border-slate-200 px-2.5 py-1.5 text-[12px] text-slate-800 placeholder:text-slate-400"
-                data-testid="business-seat-composer"
-                disabled={oaLocked || busy}
-              />
-              <button
-                type="button"
-                onClick={sendUser}
-                disabled={oaLocked || busy || !draft.trim()}
-                className="btn-press focus-ring rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white disabled:opacity-40"
-                data-testid="business-seat-send"
-              >
-                发送
-              </button>
+            <div
+              className={`space-y-1 ${compactRail ? 'border-t border-slate-100 bg-white pt-2' : ''}`}
+              data-testid="business-seat-composer-wrap"
+            >
+              {compactRail ? (
+                <p
+                  className="px-0.5 text-[10px] font-medium text-violet-700"
+                  data-testid="composer-to"
+                >
+                  对：{seatLabel} · 团队
+                </p>
+              ) : null}
+              <div className="flex gap-2">
+                <textarea
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={onKey}
+                  rows={1}
+                  placeholder={
+                    compactRail
+                      ? '说一句驾驭（演示）· 如收紧独权'
+                      : `跟「${seatLabel}」说…（环边/回退/feedback 均可）`
+                  }
+                  className="focus-ring min-h-[2.25rem] flex-1 resize-none rounded-lg border border-slate-200 px-2.5 py-1.5 text-[12px] text-slate-800 placeholder:text-slate-400"
+                  data-testid="business-seat-composer"
+                  disabled={oaLocked || busy}
+                />
+                <button
+                  type="button"
+                  onClick={sendUser}
+                  disabled={oaLocked || busy || !draft.trim()}
+                  className="btn-press focus-ring rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white disabled:opacity-40"
+                  data-testid="business-seat-send"
+                >
+                  发送
+                </button>
+              </div>
             </div>
           </div>
         </section>
