@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { SoftEmpty } from '../../components/soft/SoftEmpty'
+import { DeadlineDemoHonestBanner } from '../../components/business/DeadlineDemoHonestBanner'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import type { CaseProgress } from '../../business/BusinessCaseContext'
 
@@ -109,6 +110,7 @@ export function CaseDocketPage() {
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="case-docket-page"
       data-docket="list-v1"
+      data-docket-demo="1"
       data-case-id={caseId}
     >
       <div className="mx-auto max-w-2xl">
@@ -154,12 +156,13 @@ export function CaseDocketPage() {
           </Link>
         </nav>
 
+        <DeadlineDemoHonestBanner />
         <p
-          className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600"
+          className="mt-2 text-[11px] text-slate-500"
           data-testid="case-docket-thin-hint"
           role="status"
         >
-          后勤横切 · 不抢「公司 → 工作台」主链 · 示意非官报 / 无真期限引擎
+          后勤横切 · 不抢「公司 → 工作台」主链
         </p>
 
         <h1
@@ -169,7 +172,7 @@ export function CaseDocketPage() {
           期限台
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          看见本案法定/程序期限与绝限 · 逾期须可见。案卷（材料/检查表/工单）在工作台顶栏抽屉，不与本台混名。
+          看见本案程序期限与绝限（示意）· 逾期须可见。案卷在工作台顶栏抽屉，不与本台混名；非真日历、非官报接口。
         </p>
 
         <div
@@ -200,6 +203,30 @@ export function CaseDocketPage() {
               {label}
             </button>
           ))}
+        </div>
+
+        <div
+          className="mt-3 flex flex-wrap items-center gap-2"
+          data-testid="case-docket-actions"
+        >
+          <button
+            type="button"
+            disabled
+            title="后置 · 无真日历同步"
+            className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-400 disabled:cursor-not-allowed"
+            data-testid="case-docket-sync-disabled"
+            data-cta-guard="1"
+            aria-disabled="true"
+          >
+            同步到日历（后置）
+          </button>
+          <Link
+            to={home}
+            className="btn-press focus-ring inline-flex rounded-md bg-slate-900 px-3 py-1.5 text-[12px] font-semibold text-white"
+            data-testid="case-docket-to-company"
+          >
+            回公司办主链
+          </Link>
         </div>
 
         {filtered.length === 0 ? (
@@ -236,6 +263,7 @@ export function CaseDocketPage() {
                   }`}
                   data-testid={`case-docket-row-${row.id}`}
                   data-status={row.status}
+                  data-due-demo="1"
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <span
@@ -253,8 +281,15 @@ export function CaseDocketPage() {
                       {row.name}
                     </span>
                   </div>
-                  <div className="mt-0.5 text-[11px] text-slate-500">
-                    {row.dueLabel} · {row.deptLabel} · 点进该部工作台
+                  <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
+                    <span
+                      className="rounded bg-amber-100 px-1 text-[10px] font-semibold text-amber-900"
+                      data-testid="case-docket-demo-chip"
+                    >
+                      DEMO
+                    </span>
+                    <span data-testid={`case-docket-due-${row.id}`}>{row.dueLabel}</span>
+                    <span>· {row.deptLabel} · 点进该部工作台</span>
                   </div>
                   <div className="mt-1 text-[10px] text-slate-400">{row.note}</div>
                 </Link>
