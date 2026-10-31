@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import {
   PanelRightClose,
   PanelRightOpen,
@@ -14,11 +14,10 @@ import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { AgentSessionSidebar } from './AgentSessionSidebar'
 import { PersonaRouteGate } from '@shared/components/PersonaRouteGate'
 import { PendingConfirmBell } from './business/PendingConfirmBell'
-import { EntryRoleSwitcher } from './business/EntryRoleSwitcher'
+import { ShellAccountMenu } from './business/ShellAccountMenu'
 import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
 import { useAgentDebug } from '../business/useAgentDebug'
 import { useEntryRole } from '../business/useEntryRole'
-import { useAuthSession } from '../business/AuthSessionContext'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import { pickLatestCaseId } from '../business/entryRole'
 import {
@@ -34,8 +33,6 @@ export function AgentShell() {
   const loc = useLocation()
   const debug = useAgentDebug()
   const { entryRole } = useEntryRole()
-  const { logout } = useAuthSession()
-  const navigate = useNavigate()
   const {
     getCase: getBizCase,
     cases: bizCases,
@@ -273,12 +270,6 @@ export function AgentShell() {
           </nav>
         ) : null}
 
-        {(inHome || inBusiness) && !inGrokShell && (
-          <>
-            <div className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
-            <EntryRoleSwitcher />
-          </>
-        )}
 
         {!inGrokShell && showTenantChrome && (
           <>
@@ -304,18 +295,8 @@ export function AgentShell() {
           {(inHome || inBusiness || inCatalog || inPatentProject) && (
             <PendingConfirmBell />
           )}
-          {(inHome || inBusiness) && !inGrokShell && (
-            <button
-              type="button"
-              onClick={() => {
-                logout()
-                navigate('/agent/login', { replace: true })
-              }}
-              className="btn-press focus-ring hidden text-xs text-slate-500 hover:text-slate-800 sm:inline"
-              data-testid="auth-logout"
-            >
-              退出
-            </button>
+          {(inHome || inBusiness || inDepartments || inAssets) && !inGrokShell && (
+            <ShellAccountMenu />
           )}
           {!inGrokShell && showTenantChrome && (
             <ProductSwitcher current="agent" size="md" className="hidden sm:grid" />
