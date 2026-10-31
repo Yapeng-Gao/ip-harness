@@ -26,6 +26,8 @@ import {
   resolveShellTab,
 } from '../business/shellTabs'
 import { LabRouteBanner } from './LabRouteBanner'
+import { CaseShellSwitcher } from './business/CaseShellSwitcher'
+import { isCaseLevelShellPath } from '../business/caseShellSwitcher'
 
 export function AgentShell() {
   const { workspace, getCase, getHandoff } = useApp()
@@ -270,6 +272,9 @@ export function AgentShell() {
           </nav>
         ) : null}
 
+        {isCaseLevelShellPath(loc.pathname) && activeBizCaseId ? (
+          <CaseShellSwitcher activeCaseId={activeBizCaseId} />
+        ) : null}
 
         {!inGrokShell && showTenantChrome && (
           <>
