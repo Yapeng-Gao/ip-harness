@@ -108,7 +108,7 @@ export function GeneralGrokShell() {
               className="text-[11px] leading-snug text-slate-400"
               data-testid="general-honesty-weak"
             >
-              样机 · 无真 LLM · L2 团队 bot→bot 协作 · 写库须 HITL
+              样机 · 无真 LLM · L2 多 bot 旁路协作 · 写库须 HITL · 非拉人讨论面
             </p>
             <div data-testid="general-case-bind-slot">
               <CaseBindControls

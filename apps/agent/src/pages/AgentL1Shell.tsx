@@ -51,12 +51,12 @@ export function AgentL1Shell() {
           <Link
             to="/agent/team"
             className="btn-press focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2.5 py-1 text-[12px] font-semibold text-slate-800 shadow-sm hover:bg-slate-50"
-            aria-label="进入团队"
+            aria-label="进入多 bot 壳"
             data-testid="agent-l1-to-team"
-            title="L2 · Grok 多 bot 团队协作"
+            title="L2 · Grok 多 bot 旁路（非拉人讨论）"
           >
             <Users className="h-3.5 w-3.5" aria-hidden />
-            团队
+            多 bot
           </Link>
           <Link
             to="/agent/projects"
@@ -101,7 +101,7 @@ export function AgentL1Shell() {
             className="text-[11px] leading-snug text-slate-400"
             data-testid="general-honesty-weak"
           >
-            样机 · 无真 LLM · L1 单助手 · 写库须 HITL · 「团队」「专利项目」为并列显式入口
+            样机 · 无真 LLM · L1 单助手 · 写库须 HITL · 「多 bot」「专利项目」为并列显式入口（非拉人讨论）
           </p>
           <div data-testid="general-case-bind-slot">
             <CaseBindControls

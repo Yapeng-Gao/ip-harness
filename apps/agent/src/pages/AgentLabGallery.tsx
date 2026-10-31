@@ -61,7 +61,7 @@ const CARDS: LabCard[] = [
     href: '/agent/sandbox',
     cta: '打开沙盒',
     icon: PenLine,
-    secondary: { label: '团队', href: '/agent/team' },
+    secondary: { label: '多 bot 壳', href: '/agent/team' },
   },
   {
     id: 'drill',
@@ -74,8 +74,8 @@ const CARDS: LabCard[] = [
   },
   {
     id: 'l3',
-    version: '幕 3 · 项目 / 群聊',
-    blurb: '同一专家脑 + mid 映射 / room；壳差不是脑差。',
+    version: '幕 3 · 项目（旁路）',
+    blurb: '同一专家脑 + mid 映射；壳差不是脑差。项目旁路，非讨论组。',
     href: '/agent/projects/proj-demo-patent',
     cta: '打开示范项目',
     icon: FolderKanban,
@@ -95,10 +95,10 @@ const CARDS: LabCard[] = [
   },
   {
     id: 'team',
-    version: '历史 · L2 团队',
-    blurb: 'Grok 形多 bot；深度不在此层。',
+    version: '历史 · L2 多 bot 壳',
+    blurb: 'Grok 形多 bot 旁路；非拉人讨论、非编制。',
     href: '/agent/team',
-    cta: '打开团队',
+    cta: '打开多 bot 壳',
     icon: Bot,
   },
   {

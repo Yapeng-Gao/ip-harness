@@ -146,7 +146,7 @@ export function HomePage() {
           />
           <HomeRelayStrip refreshKey={relayRefresh} />
           <p className="mt-1.5 text-[10px] text-slate-500" data-testid="home-delegate-hint">
-            提目标 → 计划可调 → 分发 → 待接力（样机示意）。盯整案切「项目」；选部开工切「专业」。
+            提目标 → 计划可调 → 分发 → 待接力（样机示意）。盯整案切顶栏「项目」（公司案地图）；选部开工切「专业」。
           </p>
         </section>
 
@@ -173,7 +173,7 @@ export function HomePage() {
                 需要帮忙从这儿开始
               </h2>
               <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">
-                接待帮你弄清去向、收材料；已清楚的用上方委托，或弱链进项目盯案。不叫分诊。
+                接待帮你弄清去向、收材料；已清楚的用上方委托，或弱链进公司案盯盘。不叫分诊。
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Link
@@ -262,7 +262,7 @@ export function HomePage() {
               八个部门
             </h2>
             <span className="text-[11px] font-normal text-slate-500">
-              次级 · 盯整案请用顶栏「项目」
+              次级 · 盯整案请用顶栏「项目」（公司地图）
             </span>
           </button>
           <ol
@@ -294,7 +294,7 @@ export function HomePage() {
           </ol>
           {!eightOpen ? (
             <p className="pl-5 text-[11px] text-slate-500" data-testid="home-eight-depts-hint">
-              已折起 · 点上方展开；日常盯案走「项目」公司地图。
+              已折起 · 点上方展开；日常盯案走顶栏「项目」→ 公司案地图（非旁路 /projects）。
             </p>
           ) : null}
         </section>

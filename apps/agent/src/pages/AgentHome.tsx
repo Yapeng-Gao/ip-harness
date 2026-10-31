@@ -99,7 +99,7 @@ export function AgentHome() {
               className="font-medium text-slate-800 underline-offset-2 hover:underline"
               data-testid="compose-back-to-team"
             >
-              团队模式
+              多 bot 壳
             </Link>
             。
           </p>

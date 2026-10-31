@@ -153,7 +153,7 @@ export function AgentShell() {
   const activeBizCase = activeBizCaseId ? getBizCase(activeBizCaseId) : undefined
 
   const pageTitle = inL2Shell
-    ? '团队 · 旁路'
+    ? '多 bot 壳 · 旁路'
     : inSandbox
       ? '通用沙盒'
       : inCatalog
