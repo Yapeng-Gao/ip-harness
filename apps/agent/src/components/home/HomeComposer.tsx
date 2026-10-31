@@ -16,10 +16,10 @@ type Mention = {
 }
 
 /**
- * 首页对话框 · 指令 + 上传资料 → 工作区
+ * 助手档委托墙 · 指令 + 上传资料 → 开办/工作区（vision §3.1d：委托为主内容）
  * - 下拉可选资料（资产库）、@专家、@部门
  * - Enter 提交 → 新案子向导（带 summary / attachments / mentions）
- * - textarea 自动增高；上传不落盘（样机）
+ * - textarea 自动增高；上传不落盘（样机）；非真鉴权/真检索
  */
 export function HomeComposer({ initialAttachId }: { initialAttachId?: string | null }) {
   const navigate = useNavigate()

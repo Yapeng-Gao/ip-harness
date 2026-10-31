@@ -44,14 +44,15 @@ type Props = {
 }
 
 /**
- * 公司首页 · product-pages §4.3 / vision §6.3a
- * 定位句 + 八部等宽卡片网格（当前高亮；卡底≤3专家照片头像）+ 点部右侧抽屉（≤3专家+头像、交卷态一句、去该部干活）
- * + 页级主 CTA「去当前部门」；浅色壳；右侧禁假指标/执行集群/工具引擎
+ * 公司首页 · product-pages §4.3 / vision §6.3a / §3.1d 做满
+ * 墨色缺口卡（卡点/下一步/谁在干）+ 最近案条 + 当前部默认露出（其余可折）
+ * + 八部抽屉进干活；浅色壳；禁假指标/执行集群
  */
 export function CaseCompanyHome({ caseId, title, summary }: Props) {
   const { getProgress, getPendingConfirms, cases } = useBusinessCases()
   const { deptLabel } = useOrgConfig()
   const [moreOpen, setMoreOpen] = useState(false)
+  const [mapExpanded, setMapExpanded] = useState(false)
   const [drawerDeptId, setDrawerDeptId] = useState<OrgDeptId | null>(null)
   const prog = getProgress(caseId)
   const pending = getPendingConfirms(caseId)
@@ -69,6 +70,56 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
     orgDeptByLeadSeat(currentSeat) ?? MAIN_CHAIN_DEPTS[0]!
   const currentHref = `/agent/cases/${caseId}/depts/${deptSlug(currentDept.id)}`
 
+  const currentSt = useMemo(
+    () =>
+      deptStatus({
+        dept: currentDept,
+        progress: prog,
+        pending,
+        confirmKind: confirmKindOf(currentDept),
+      }),
+    [currentDept, prog, pending],
+  )
+
+  const gapBlock = useMemo(() => {
+    const phase = handoffPhaseFromStatus(currentSt)
+    const deptName = deptLabel(currentDept)
+    let checkpoint: string
+    if (phase === '待确认') {
+      checkpoint = `卡点：${deptName}待你拍板`
+    } else if (phase === '退回') {
+      checkpoint = `卡点：${deptName}已驳回 · 回流补齐`
+    } else if (phase === '齐套中') {
+      checkpoint =
+        handoffIncompleteSentence(currentDept.id) ??
+        `卡点：${deptName}齐套中`
+      if (!checkpoint.startsWith('卡点')) {
+        checkpoint = `卡点：${checkpoint}`
+      }
+    } else if (phase === '已确认可往下') {
+      checkpoint = `卡点：${deptName}已确认 · 可往下一部`
+    } else {
+      checkpoint = `卡点：当前停在${deptName} · ${handoffPhaseLabel(phase)}`
+    }
+    const nextStep =
+      phase === '待确认'
+        ? `下一步：进${deptName}右栏拍板`
+        : `下一步：去${deptName}继续`
+    const who =
+      currentDept.peers
+        .slice(0, 3)
+        .map((peer) =>
+          peerDisplayLabel(currentDept.id, peer.id, peer.label),
+        )
+        .join(' · ') || deptName
+    return {
+      checkpoint,
+      nextStep,
+      who: `谁在干：${who}`,
+      statusLine: handoffStatusSentence(currentDept.id, currentSt),
+    }
+  }, [currentDept, currentSt, deptLabel])
+
   const rollups = useMemo(
     () =>
       rollupByDept({
@@ -78,6 +129,21 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
       }),
     [cases, getProgress, getPendingConfirms],
   )
+
+  const recentCases = useMemo(() => {
+    const ranked = cases
+      .map((c) => ({
+        c,
+        at: getProgress(c.id).updatedAt || c.createdAt || '',
+      }))
+      .sort((a, b) => b.at.localeCompare(a.at))
+    const others = ranked.filter((r) => r.c.id !== caseId).slice(0, 4)
+    const self = ranked.find((r) => r.c.id === caseId)
+    return {
+      selfTitle: self?.c.title ?? title,
+      others: others.map((r) => r.c),
+    }
+  }, [cases, caseId, getProgress, title])
 
   const moreDepts: OrgDept[] = useMemo(() => {
     const mainIds = new Set(MAIN_CHAIN_DEPTS.map((d) => d.id))
@@ -95,12 +161,172 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
   const openDrawer = (id: OrgDeptId) => setDrawerDeptId(id)
   const closeDrawer = () => setDrawerDeptId(null)
 
+  const renderDeptCard = (
+    dept: (typeof MAIN_CHAIN_DEPTS)[number],
+    i: number,
+    opts?: { visuallyHidden?: boolean },
+  ) => {
+    const st = deptStatus({
+      dept,
+      progress: prog,
+      pending,
+      confirmKind: confirmKindOf(dept),
+    })
+    const active = dept.id === currentDept.id
+    const selected = drawerDeptId === dept.id
+    const roll = rollups[dept.id]
+    const hidden = Boolean(opts?.visuallyHidden)
+    return (
+      <li
+        key={dept.id}
+        className={hidden ? 'hidden min-w-0' : 'min-w-0'}
+        aria-hidden={hidden || undefined}
+      >
+        <button
+          type="button"
+          className={`btn-press focus-ring flex h-full w-full flex-col items-start gap-1 rounded-lg border px-2.5 py-2.5 text-left transition ${
+            active
+              ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+              : selected
+                ? 'border-slate-400 bg-white text-slate-800 ring-2 ring-slate-300'
+                : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50'
+          }`}
+          onClick={() => openDrawer(dept.id)}
+          aria-pressed={selected}
+          data-testid={`dept-map-card-${dept.id}`}
+          data-active={active ? '1' : '0'}
+          data-drawer-open={selected ? '1' : '0'}
+          data-map-secondary={active || mapExpanded ? '0' : '1'}
+        >
+          <span className="flex w-full items-center gap-1.5">
+            <span
+              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                active
+                  ? 'bg-white/20 text-white'
+                  : 'bg-slate-100 text-slate-600'
+              }`}
+            >
+              {i + 1}
+            </span>
+            <DeptStatusDot status={st} withLabel={false} />
+          </span>
+          <span className="w-full truncate text-[12px] font-semibold leading-snug">
+            {deptLabel(dept)}
+          </span>
+          <span
+            className={`line-clamp-2 text-[10px] leading-snug ${
+              active ? 'text-white/70' : 'text-slate-500'
+            }`}
+            data-testid={`dept-map-phase-${dept.id}`}
+            data-handoff-phase={handoffPhaseFromStatus(st)}
+          >
+            {handoffPhaseFromStatus(st) === '齐套中'
+              ? (handoffIncompleteSentence(dept.id) ??
+                handoffPhaseLabel('齐套中'))
+              : handoffPhaseLabel(handoffPhaseFromStatus(st))}
+            {roll?.pendingCount && st !== '待确认'
+              ? ` · 待确认 ${roll.pendingCount}`
+              : ''}
+          </span>
+          <span
+            className="mt-auto flex items-center pt-1.5"
+            data-testid={`dept-map-avatars-${dept.id}`}
+            aria-hidden
+          >
+            {dept.peers.slice(0, 3).map((peer, pi) => (
+              <span
+                key={peer.id}
+                className={pi > 0 ? '-ml-1.5' : undefined}
+                style={{ zIndex: 3 - pi }}
+              >
+                <ExpertAvatar
+                  name={peerDisplayLabel(
+                    dept.id,
+                    peer.id,
+                    peer.label,
+                  )}
+                  size="sm"
+                  tone={active ? 'onDark' : 'light'}
+                  seed={peer.id}
+                />
+              </span>
+            ))}
+          </span>
+        </button>
+      </li>
+    )
+  }
+
   return (
     <div
       className="mx-auto flex w-full max-w-5xl flex-col gap-5"
       data-testid="case-company-home"
       data-case-id={caseId}
+      data-company-density="gap-recent-v1"
     >
+      {/* P0 · 墨色缺口卡 · 卡点/下一步/谁在干 */}
+      <section
+        className="rounded-xl border border-slate-900 bg-slate-900 p-4 text-white shadow-sm"
+        data-testid="company-gap-cta"
+        aria-labelledby="company-gap-title"
+      >
+        <p
+          id="company-gap-title"
+          className="text-[11px] font-medium uppercase tracking-wider text-white/60"
+        >
+          本案卡点
+        </p>
+        <p
+          className="mt-1.5 text-[15px] font-semibold leading-snug"
+          data-testid="company-gap-checkpoint"
+        >
+          {gapBlock.checkpoint}
+        </p>
+        <p
+          className="mt-1 text-[12px] text-white/80"
+          data-testid="company-gap-next"
+        >
+          {gapBlock.nextStep}
+        </p>
+        <p
+          className="mt-0.5 text-[12px] text-white/70"
+          data-testid="company-gap-who"
+        >
+          {gapBlock.who}
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Link
+            to={currentHref}
+            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-slate-900"
+            data-testid="company-go-current-dept"
+          >
+            卡点 → 去当前部门
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+          </Link>
+          {pending.length > 0 ? (
+            <Link
+              to={workbenchAskPath(caseId, pending[0]!.kind, {
+                confirmId: pending[0]!.id,
+              })}
+              className="btn-press focus-ring inline-flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-500/20 px-2.5 py-1 text-[11px] font-semibold text-amber-50"
+              data-testid="company-pending-link"
+            >
+              <Bell className="h-3 w-3" aria-hidden />
+              待你拍 · {pending.length}
+            </Link>
+          ) : (
+            <span
+              className="text-[11px] text-white/50"
+              data-testid="company-pending-link"
+              data-pending="0"
+            >
+              暂无待你拍
+            </span>
+          )}
+        </div>
+        <p className="mt-2 text-[10px] text-white/45">{gapBlock.statusLine}</p>
+      </section>
+
       <section
         className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
         data-testid="company-hero"
@@ -121,7 +347,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </span>
         </div>
         <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
-          本案总览：八部地图为主；点部开抽屉进干活。拍板在工作台右栏——不是第二套大厅。
+          本案总览：缺口主 CTA 在上；八部地图当前部默认露出。拍板在工作台右栏。
         </p>
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
           <h2 className="text-[16px] font-semibold text-slate-900">{title}</h2>
@@ -129,7 +355,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             <span className="text-[12px] text-slate-500">{summary}</span>
           ) : null}
         </div>
-        <div className="mt-2.5 flex flex-wrap items-center gap-2">
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           <p className="text-[12px] text-slate-600">
             当前：
             <span className="font-semibold text-slate-900">
@@ -138,32 +364,11 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </p>
           <Link
             to={currentHref}
-            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white"
-            data-testid="company-go-current-dept"
+            className="focus-ring text-[11px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
+            data-testid="company-go-current-dept-secondary"
           >
-            去当前部门
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            次入口 · 去当前部门
           </Link>
-          {pending.length > 0 ? (
-            <Link
-              to={workbenchAskPath(caseId, pending[0]!.kind, {
-                confirmId: pending[0]!.id,
-              })}
-              className="btn-press focus-ring inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-950"
-              data-testid="company-pending-link"
-            >
-              <Bell className="h-3 w-3" aria-hidden />
-              待你拍 · {pending.length}
-            </Link>
-          ) : (
-            <span
-              className="text-[11px] text-slate-400"
-              data-testid="company-pending-link"
-              data-pending="0"
-            >
-              暂无待你拍
-            </span>
-          )}
         </div>
         <nav
           className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 border-t border-slate-100 pt-2.5 text-[11px] text-slate-500"
@@ -220,10 +425,57 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
         </nav>
       </section>
 
+      {/* P1 · 最近案条 */}
+      <section
+        className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2.5"
+        data-testid="company-recent-cases"
+        aria-label="本案与最近案"
+      >
+        <div className="mb-1.5 flex flex-wrap items-baseline gap-2">
+          <h3 className="text-[12px] font-semibold text-slate-800">
+            本案 · 最近案
+          </h3>
+          <Link
+            to="/agent/cases"
+            className="focus-ring text-[11px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
+            data-testid="company-recent-all"
+          >
+            全部案子 / 案盘
+          </Link>
+        </div>
+        <ul className="flex flex-col gap-1" data-testid="company-recent-list">
+          <li className="flex items-center gap-2 text-[12px]">
+            <span className="rounded bg-slate-900 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+              本案
+            </span>
+            <span className="font-medium text-slate-900">
+              {recentCases.selfTitle}
+            </span>
+          </li>
+          {recentCases.others.map((c) => (
+            <li key={c.id}>
+              <Link
+                to={`/agent/cases/${c.id}`}
+                className="focus-ring flex items-center gap-2 rounded-md px-0.5 py-0.5 text-[12px] text-slate-700 hover:bg-white hover:text-slate-900"
+                data-testid={`company-recent-case-${c.id}`}
+              >
+                <span className="rounded bg-slate-200 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
+                  最近
+                </span>
+                <span className="truncate font-medium">{c.title}</span>
+              </Link>
+            </li>
+          ))}
+          {recentCases.others.length === 0 ? (
+            <li className="text-[11px] text-slate-500">暂无其他案子</li>
+          ) : null}
+        </ul>
+      </section>
+
       <ThreeLineStatusStrip prog={prog} dense />
 
       <section aria-labelledby="eight-dept-map-title">
-        <div className="mb-2 flex items-baseline gap-2">
+        <div className="mb-2 flex flex-wrap items-center gap-2">
           <h3
             id="eight-dept-map-title"
             className="text-[13px] font-semibold text-slate-900"
@@ -231,99 +483,59 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             八个部门
           </h3>
           <span className="text-[11px] text-slate-500">
-            本案地图 · 点开抽屉再进干活 · ①→⑧
+            当前部默认露出 · 其余可折 · 点开抽屉再进干活
           </span>
+          <button
+            type="button"
+            className="btn-press focus-ring ml-auto inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-700"
+            onClick={() => setMapExpanded((o) => !o)}
+            aria-expanded={mapExpanded}
+            data-testid="eight-dept-map-toggle"
+          >
+            {mapExpanded ? (
+              <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+            ) : (
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+            )}
+            {mapExpanded ? '收起其余部' : '展开其余七部'}
+          </button>
         </div>
         <ol
           className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4"
           data-testid="eight-dept-map"
+          data-folded={mapExpanded ? '0' : '1'}
         >
           {MAIN_CHAIN_DEPTS.map((dept, i) => {
-            const st = deptStatus({
-              dept,
-              progress: prog,
-              pending,
-              confirmKind: confirmKindOf(dept),
-            })
             const active = dept.id === currentDept.id
-            const selected = drawerDeptId === dept.id
-            const roll = rollups[dept.id]
-            return (
-              <li key={dept.id} className="min-w-0">
-                <button
-                  type="button"
-                  className={`btn-press focus-ring flex h-full w-full flex-col items-start gap-1 rounded-lg border px-2.5 py-2.5 text-left transition ${
-                    active
-                      ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
-                      : selected
-                        ? 'border-slate-400 bg-white text-slate-800 ring-2 ring-slate-300'
-                        : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50'
-                  }`}
-                  onClick={() => openDrawer(dept.id)}
-                  aria-pressed={selected}
-                  data-testid={`dept-map-card-${dept.id}`}
-                  data-active={active ? '1' : '0'}
-                  data-drawer-open={selected ? '1' : '0'}
-                >
-                  <span className="flex w-full items-center gap-1.5">
-                    <span
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                        active
-                          ? 'bg-white/20 text-white'
-                          : 'bg-slate-100 text-slate-600'
-                      }`}
-                    >
-                      {i + 1}
-                    </span>
-                    <DeptStatusDot status={st} withLabel={false} />
-                  </span>
-                  <span className="w-full truncate text-[12px] font-semibold leading-snug">
-                    {deptLabel(dept)}
-                  </span>
-                  <span
-                    className={`line-clamp-2 text-[10px] leading-snug ${
-                      active ? 'text-white/70' : 'text-slate-500'
-                    }`}
-                    data-testid={`dept-map-phase-${dept.id}`}
-                    data-handoff-phase={handoffPhaseFromStatus(st)}
-                  >
-                    {handoffPhaseFromStatus(st) === '齐套中'
-                      ? (handoffIncompleteSentence(dept.id) ??
-                        handoffPhaseLabel('齐套中'))
-                      : handoffPhaseLabel(handoffPhaseFromStatus(st))}
-                    {roll?.pendingCount && st !== '待确认'
-                      ? ` · 待确认 ${roll.pendingCount}`
-                      : ''}
-                  </span>
-                  <span
-                    className="mt-auto flex items-center pt-1.5"
-                    data-testid={`dept-map-avatars-${dept.id}`}
-                    aria-hidden
-                  >
-                    {dept.peers.slice(0, 3).map((peer, pi) => (
-                      <span
-                        key={peer.id}
-                        className={pi > 0 ? '-ml-1.5' : undefined}
-                        style={{ zIndex: 3 - pi }}
-                      >
-                        <ExpertAvatar
-                          name={peerDisplayLabel(
-                            dept.id,
-                            peer.id,
-                            peer.label,
-                          )}
-                          size="sm"
-                          tone={active ? 'onDark' : 'light'}
-                          seed={peer.id}
-                        />
-                      </span>
-                    ))}
-                  </span>
-                </button>
-              </li>
-            )
+            if (!mapExpanded && !active) {
+              /* 仍挂 DOM 以保 company-dedupe 八卡计数；视觉折起 */
+              return renderDeptCard(dept, i, { visuallyHidden: true })
+            }
+            return renderDeptCard(dept, i)
           })}
         </ol>
+        {!mapExpanded ? (
+          <ul
+            className="mt-2 flex flex-wrap gap-1.5"
+            data-testid="eight-dept-map-chips"
+            aria-label="其余部门（次级）"
+          >
+            {MAIN_CHAIN_DEPTS.filter((d) => d.id !== currentDept.id).map(
+              (dept) => (
+                <li key={dept.id}>
+                  <button
+                    type="button"
+                    onClick={() => openDrawer(dept.id)}
+                    className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                    data-testid={`dept-map-chip-${dept.id}`}
+                  >
+                    {deptLabel(dept)}
+                  </button>
+                </li>
+              ),
+            )}
+          </ul>
+        ) : null}
       </section>
 
       <section>

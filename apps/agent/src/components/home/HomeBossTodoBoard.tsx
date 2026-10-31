@@ -9,9 +9,9 @@ type Props = {
 }
 
 /**
- * 大厅「老板待办」单区 · 交互大纲 §2.2
+ * 助手轻量轨「老板待办」单区 · 交互大纲 §2.2 / vision §3.1d
  * A 待你拍 / B 期限催办 / C 进行中 —— 同一块，不拆成三张抢视线的卡片墙。
- * 机制：老板第一眼看见要你拍·催办·进行中；点进部处理。非运营 KPI 看板。
+ * 机制：待接力/进行中可见；主叙事是上方委托墙，本区不抢委托。非运营 KPI 看板。
  */
 export function HomeBossTodoBoard({ latestId }: Props) {
   const { cases, getPendingConfirms, getProgress } = useBusinessCases()

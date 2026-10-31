@@ -165,7 +165,7 @@ export function AgentShell() {
                 ? '案盘'
                 : activeBizCase?.title ?? 'Novada Team'
               : inHome
-                ? '大厅'
+                ? 'Novada Team'
                 : inPatentProject
                   ? '项目（旁路）'
                   : inLabPath
