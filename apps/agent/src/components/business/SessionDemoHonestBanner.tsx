@@ -41,7 +41,7 @@ export function SessionDemoHonestBanner({
           className="mt-1 text-[10px] font-medium text-rose-800/85"
           data-testid="session-demo-cta-guard"
         >
-          邀请同事 / 多端同步仅后置壳 · 无即时通讯通道、无外部钩子
+          多端同步仅后置壳 · 无即时通讯通道；硬请示请回部门工作台右栏
         </p>
       ) : null}
       <details className="mt-1" data-testid="session-demo-honest-more">
@@ -52,7 +52,7 @@ export function SessionDemoHonestBanner({
           className="mt-1 text-[11px] leading-relaxed text-amber-950/80"
           data-testid="session-demo-honest-footer"
         >
-          列表为本地样机会话与项目线程聚合。账号多端同步仍后置。组队/讨论组产品面已卸。
+          旁路函件史，非部台右栏硬请示。账号多端同步仍后置；组队/讨论组产品面已卸。
         </p>
       </details>
     </aside>

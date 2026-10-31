@@ -596,11 +596,15 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             一案一家 Novada Team
           </p>
           <span
-            className="font-mono text-[11px] text-slate-400"
-            data-testid="company-case-id"
+            className="rounded bg-amber-100 px-1.5 py-px text-[10px] font-semibold text-amber-900"
+            data-testid="company-case-demo-chip"
           >
-            {caseId}
+            DEMO · 示意案
           </span>
+          <details className="text-[10px] text-slate-400" data-testid="company-case-id-more">
+            <summary className="cursor-pointer select-none hover:text-slate-600">样机编号</summary>
+            <span className="font-mono" data-testid="company-case-id">{caseId}</span>
+          </details>
         </div>
         <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
           本案总览：缺口主 CTA 在上；八部地图当前部默认露出。拍板在工作台右栏。

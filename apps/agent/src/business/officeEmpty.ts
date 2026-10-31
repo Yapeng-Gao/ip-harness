@@ -106,8 +106,8 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
   },
   'sessions-empty': {
     title: '暂无会话历史',
-    body: '这里聚合通用单聊与项目专家线程，像往来函件夹。',
-    next: '可新建会话，或从「项目」打开专家线程',
+    body: '旁路函件夹：聚合通用单聊与专家线程。硬请示仍在部门工作台右栏，不在这里开第二套对话首页。',
+    next: '可回大厅委托，或弱链新建会话；盯整案请用顶栏「项目」进公司案地图',
   },
   'sessions-filter': {
     title: '无匹配的会话历史',

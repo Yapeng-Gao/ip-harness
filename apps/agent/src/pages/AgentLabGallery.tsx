@@ -65,11 +65,11 @@ const CARDS: LabCard[] = [
   },
   {
     id: 'drill',
-    version: '旁路 · 演练全队',
+    version: '旁路 · 席位演练',
     badge: '非冷启动',
-    blurb: '总控 + 14 席分簇调度台。须显式进入；不抢业务简模式。',
+    blurb: '总控 + 14 席分簇调度台（席位演练旁路）。须显式进入；非拉人讨论面、不抢业务简模式。',
     href: '/agent/cases/case-biz-edge-scheduler?drill=1&seat=orchestrator',
-    cta: '打开演练全队',
+    cta: '打开席位演练',
     icon: Sparkles,
   },
   {

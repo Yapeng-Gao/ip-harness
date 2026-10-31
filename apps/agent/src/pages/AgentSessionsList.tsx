@@ -172,17 +172,6 @@ export function AgentSessionsList() {
         >
           同步到其他设备（后置）
         </button>
-        <button
-          type="button"
-          disabled
-          title="后置 · 无真邀请"
-          className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-400 disabled:cursor-not-allowed"
-          data-testid="sessions-invite-disabled"
-          data-cta-guard="1"
-          aria-disabled="true"
-        >
-          邀请同事（后置）
-        </button>
       </div>
       <PageHeader
         title={listTitle}
@@ -275,12 +264,13 @@ export function AgentSessionsList() {
                 <div className="flex flex-wrap justify-center gap-2">
                   <button
                     type="button"
-                    onClick={newSession}
-                    className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
-                    data-testid="sessions-empty-new"
+                    onClick={() => {
+                      window.location.href = '/agent'
+                    }}
+                    className="btn-press focus-ring inline-flex rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
+                    data-testid="sessions-empty-hall"
                   >
-                    <Plus className="h-4 w-4" aria-hidden />
-                    新建会话
+                    回大厅委托
                   </button>
                   <button
                     type="button"
@@ -291,6 +281,15 @@ export function AgentSessionsList() {
                     data-testid="sessions-empty-workbench"
                   >
                     打开工作台待办
+                  </button>
+                  <button
+                    type="button"
+                    onClick={newSession}
+                    className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[13px] font-medium text-slate-600 hover:bg-slate-50"
+                    data-testid="sessions-empty-new"
+                  >
+                    <Plus className="h-4 w-4" aria-hidden />
+                    新建会话（旁路）
                   </button>
                 </div>
               }

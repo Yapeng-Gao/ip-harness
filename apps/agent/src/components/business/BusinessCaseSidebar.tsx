@@ -426,7 +426,7 @@ export function BusinessCaseSidebar() {
           data-testid="business-side-depts-toggle"
         >
           <span>
-            {drillMode ? '演练全队' : isEnterprise ? '本案八部' : '本案部门'}
+            {drillMode ? '席位演练' : isEnterprise ? '本案八部' : '本案部门'}
           </span>
           <ChevronDown
             className={`h-3.5 w-3.5 transition ${deptsOpen ? 'rotate-0' : '-rotate-90'}`}

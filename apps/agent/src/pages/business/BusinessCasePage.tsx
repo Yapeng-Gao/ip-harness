@@ -23,7 +23,7 @@ import { midCaseHref } from '../../lib/deepLinks'
 import type { ProjectExpertId } from '../../projects/types'
 
 /**
- * 公司首页（product-pages §4.3）。?drill=1 仍为演练全队旁路。
+ * 公司首页（product-pages §4.3）。?drill=1 仍为席位演练旁路。
  * 部门作业见 /cases/:id/depts/:slug
  */
 export function BusinessCasePage() {
@@ -193,9 +193,9 @@ export function BusinessCasePage() {
                   onClick={() => setDrill(true)}
                   className="btn-press focus-ring text-[11px] font-medium text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
                   data-testid="drill-enter"
-                  title="旁路：总控+14 · 非业务默认"
+                  title="席位演练旁路：总控+14 · 非业务默认 · 非组队"
                 >
-                  演练全队（调试）
+                  席位演练（旁路·调试）
                 </button>
               </div>
             </details>
@@ -260,7 +260,7 @@ export function BusinessCasePage() {
               className="rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-900"
               data-testid="drill-mode-badge"
             >
-              演练全队
+              席位演练
             </span>
           )}
         </div>
@@ -302,9 +302,9 @@ export function BusinessCasePage() {
                 onClick={() => setDrill(true)}
                 className="btn-press focus-ring rounded-md border border-dashed border-indigo-300 bg-indigo-50/50 px-2.5 py-1.5 text-[11px] font-medium text-indigo-900"
                 data-testid="drill-enter"
-                title="旁路：总控+14 · 非业务默认"
+                title="席位演练旁路：总控+14 · 非业务默认 · 非组队"
               >
-                演练全队
+                席位演练
               </button>
             )}
             <button
@@ -361,7 +361,7 @@ export function BusinessCasePage() {
         )}
         <p className="mt-4 text-center text-[11px] text-slate-400">
           {drillMode
-            ? '演练旁路：总控+14 · 样机调度，非业务冷启动默认'
+            ? '席位演练旁路：总控+14 · 样机调度，非业务冷启动默认'
             : '演示环境：进度与确认为样机闭环，非真递交局端。· 案=项目同一 id'}
         </p>
       </div>
