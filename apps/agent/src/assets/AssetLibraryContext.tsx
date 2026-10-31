@@ -67,7 +67,7 @@ export const ASSET_KIND_LABEL: Record<AssetKind, string> = {
   img: '图片',
 }
 
-const ASSET_LS_KEY = 'ip-harness-agent-assets-v2'
+const ASSET_LS_KEY = 'ip-harness-agent-assets-v3'
 
 function nowIso(): string {
   return new Date().toISOString()
@@ -119,7 +119,7 @@ const SEAT_CATEGORY: Record<string, AssetCategory> = {
   'expert-enforcement': 'official',
 }
 
-/** 种子：复用既有 18 席交付物文件名，避免另造假数据 */
+/** 种子：复用 18 席交付物 title 人话名（§82），避免 NN_*.md 上屏 */
 function seedAssets(): AssetDoc[] {
   const out: AssetDoc[] = []
   const at = new Date()
@@ -128,10 +128,14 @@ function seedAssets(): AssetDoc[] {
     if (seatId === 'orchestrator') continue
     const t = new Date(at.getTime() - i * 36e5).toISOString()
     const category = SEAT_CATEGORY[seatId] ?? 'other'
-    for (const file of [d.artifactFile, d.worklogFile]) {
+    const pairs: Array<{ idSuffix: string; name: string }> = [
+      { idSuffix: 'a', name: `${d.title}.md` },
+      { idSuffix: 'w', name: `${d.title} · 办理摘记.md` },
+    ]
+    for (const pair of pairs) {
       out.push({
-        id: `asset-seed-${d.nn}-${file.includes('worklog') ? 'w' : 'a'}`,
-        name: file,
+        id: `asset-seed-${d.nn}-${pair.idSuffix}`,
+        name: pair.name,
         kind: 'md',
         size: 4096 + i * 512,
         uploadedAt: t,
@@ -172,7 +176,7 @@ function seedAssets(): AssetDoc[] {
   return out
 }
 
-type PersistedAssets = { v: 2; docs: AssetDoc[] }
+type PersistedAssets = { v: 3; docs: AssetDoc[] }
 
 function loadPersisted(): AssetDoc[] | null {
   if (typeof localStorage === 'undefined') return null
@@ -180,7 +184,7 @@ function loadPersisted(): AssetDoc[] | null {
   if (!raw) return null
   try {
     const parsed = JSON.parse(raw) as PersistedAssets
-    if (parsed?.v !== 2 || !Array.isArray(parsed.docs)) return null
+    if (parsed?.v !== 3 || !Array.isArray(parsed.docs)) return null
     return parsed.docs
   } catch {
     return null
@@ -190,7 +194,7 @@ function loadPersisted(): AssetDoc[] | null {
 function persist(docs: AssetDoc[]) {
   if (typeof localStorage === 'undefined') return
   try {
-    localStorage.setItem(ASSET_LS_KEY, JSON.stringify({ v: 2, docs }))
+    localStorage.setItem(ASSET_LS_KEY, JSON.stringify({ v: 3, docs }))
   } catch {
     /* quota / private mode：样机可静默 */
   }

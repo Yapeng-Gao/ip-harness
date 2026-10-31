@@ -79,8 +79,8 @@ export function AssetsPage() {
         data-branch="b8"
       >
         <p>
-          <strong>B8 · 情报官入口</strong>
-          ：竞对年报/专报走此资产/情报面，不在⑧复盘或③挖掘假装专报。
+          <strong>情报官入口（示意）</strong>
+          ：竞对年报/专报走此资产/情报面，不在转化复盘或挖掘点包假装专报。
         </p>
         <ul
           className="mt-1.5 list-disc space-y-0.5 pl-4 text-[11px] text-slate-600"
@@ -89,7 +89,7 @@ export function AssetsPage() {
           <li>
             须看见：左侧「情报材料」分类（现 {intelCount} 份示意）
           </li>
-          <li>禁：用⑧五块复盘或③点包冒充竞对专报</li>
+          <li>禁：用转化复盘或挖掘点包冒充竞对专报</li>
           <li>诚实：非真情报检索通道 · 上传不解析</li>
         </ul>
         <div className="mt-2 flex flex-wrap items-center gap-2" data-testid="assets-b8-case-link">

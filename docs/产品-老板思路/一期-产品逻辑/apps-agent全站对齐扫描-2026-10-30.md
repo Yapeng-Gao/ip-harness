@@ -3245,3 +3245,46 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-10-31 CST | 样本/绑案人话；smoke `PASS_RESCAN_81`；shots `.tmp/rescan-81-shots/`；§81；t625u |
 
+## 82. 资产库种子文件名工程味回退（2026-10-31 Asia/Shanghai）
+
+> **问题：** 续扫 UI/布局/页面逻辑；查回退与旁路工程味。`/agent/assets` 仍露 `05_layout_plan.md` / `*_worklog.md` / `valuation_card` / `16_monetize_terms`。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。不认 lifecycle。
+
+### 82.0 缺口清单
+
+| ID | 面 | 缺口简述 | 维度 | 严重度 | 建议改法 | 本批 |
+|---|---|---|---|---|---|---|
+| G01 | 资产种子名 | NN_*.md / *_worklog.md 上屏 | 展示 | P0 | 用 deliverable.title 人话名 | ✅ |
+| G02 | 持久化 | localStorage v2 锁旧英名 | 逻辑 | P0 | 升 v3 重种子 | ✅ |
+| G03 | B8 旁路文案 | ⑧/③ 圈码工程味 | 展示 | P1 | 人话 | ✅ |
+| G04 | 真集成 | 诚实示意 | 集成 | — | 后置 | 后置 |
+
+### 82.1 本批落地
+
+| # | 对应 | 行为 |
+|---|---|---|
+| A | G01–G02 | AssetLibraryContext 种子人话 + v3 |
+| B | G03 | AssetsPage B8 文案 |
+
+### 82.2 复扫表（改后）
+
+| 面 | 结论 |
+|---|---|
+| /agent/assets | 无 NN_*.md / worklog / 16_monetize |
+| 主链部台/席位 | 承 §81，无回潮 |
+| 回潮 | 无组队/lifecycle 进门 |
+
+### 82.3 六维（机制报告，不宣称落地）
+
+设计：资产展示名人话。使用成本：少调试串。逻辑：内部 artifactFile 键仍可留在交付物表。
+
+### 82.4 后置
+
+真集成；flowSteps Go/No-Go 跨包；main-path-sample 不碰。
+
+### 82.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 资产种子人话；smoke `PASS_RESCAN_82`；shots `.tmp/rescan-82-shots/`；§82；t626u |
+
