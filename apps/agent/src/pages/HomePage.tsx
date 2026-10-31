@@ -73,7 +73,7 @@ export function HomePage() {
 
   return (
     <div
-      className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
+      className="flex-1 overflow-y-auto px-4 py-5 lg:px-8" data-hall-dense="1"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
@@ -124,7 +124,7 @@ export function HomePage() {
 
         {/* P0 · 委托主区 */}
         <section
-          className="mb-5"
+          className="mb-3.5"
           aria-labelledby="home-delegate-title"
           data-testid="home-delegate-zone"
         >
@@ -145,7 +145,7 @@ export function HomePage() {
             onDispatched={() => setRelayRefresh((n) => n + 1)}
           />
           <HomeRelayStrip refreshKey={relayRefresh} />
-          <p className="mt-2 text-[11px] text-slate-500" data-testid="home-delegate-hint">
+          <p className="mt-1.5 text-[10px] text-slate-500" data-testid="home-delegate-hint">
             提目标 → 计划可调 → 分发 → 待接力（样机示意）。盯整案切「项目」；选部开工切「专业」。
           </p>
         </section>
@@ -157,7 +157,7 @@ export function HomePage() {
 
         {/* 接待 · 弱引导 · 非主叙事 */}
         <section
-          className="mb-5 rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-3"
+          className="mb-3.5 rounded-lg border border-dashed border-slate-200 bg-slate-50/60 p-2.5"
           data-testid="home-reception"
           aria-labelledby="home-reception-title"
         >
@@ -205,7 +205,7 @@ export function HomePage() {
 
         {/* 目标入口 · 薄 pills */}
         <section
-          className="mb-4"
+          className="mb-3"
           aria-labelledby="home-goal-entries-title"
           data-testid="home-goal-entries"
           data-goal-density="pills"
@@ -239,7 +239,7 @@ export function HomePage() {
         {/* 八部大门 · 次级可折 · 不抢项目盯案 */}
         <section
           aria-labelledby="home-eight-depts-title"
-          className="mb-5"
+          className="mb-3"
           data-testid="home-eight-depts-fold"
           data-folded={eightOpen ? '0' : '1'}
         >
@@ -274,7 +274,7 @@ export function HomePage() {
               <li key={d.deptId}>
                 <Link
                   to={hallDeptHref(latestId, d)}
-                  className="btn-press focus-ring flex h-full flex-col rounded-xl border border-slate-200 bg-white p-3 shadow-sm hover:border-slate-300 hover:bg-slate-50"
+                  className="btn-press focus-ring flex h-full flex-col rounded-lg border border-slate-200 bg-white p-2.5 shadow-sm hover:border-slate-300 hover:bg-slate-50"
                   data-testid={`home-dept-door-${d.slug}`}
                   data-thin={d.thin ? '1' : '0'}
                 >

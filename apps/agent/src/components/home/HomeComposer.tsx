@@ -220,8 +220,9 @@ export function HomeComposer({
       className="w-full"
       data-testid="home-composer"
       data-delegate-phase={phase}
+      data-composer-dense="1"
     >
-      <div className="rounded-[var(--radius-xl)] border border-slate-200 bg-white p-2.5 shadow-[var(--shadow-rest)] focus-within:border-slate-300 focus-within:shadow-[var(--shadow-elevated)]">
+      <div className="rounded-[var(--radius-xl)] border border-slate-200 bg-white p-2 shadow-[var(--shadow-rest)] focus-within:border-slate-300 focus-within:shadow-[var(--shadow-elevated)]" data-composer-dense="1">
         {(attachedDocs.length > 0 || mentions.length > 0) && (
           <div className="mb-2 flex flex-wrap gap-1.5">
             {attachedDocs.map((d) => (
@@ -287,7 +288,7 @@ export function HomeComposer({
           onKeyDown={onKeyDown}
           rows={1}
           placeholder="描述要办的事，或 @ 一个部门 / 专家…"
-          className="focus-ring block max-h-[11rem] min-h-[2.75rem] w-full resize-none rounded-[var(--radius-md)] border-0 bg-transparent px-2 py-2 text-[15px] leading-[1.45] text-slate-900 placeholder:text-slate-500"
+          className="focus-ring block max-h-[10rem] min-h-[2.5rem] w-full resize-none rounded-[var(--radius-md)] border-0 bg-transparent px-2 py-1.5 text-[14px] leading-[1.45] text-slate-900 placeholder:text-slate-500"
           data-testid="home-composer-input"
           disabled={phase === 'plan'}
         />
@@ -331,7 +332,7 @@ export function HomeComposer({
               type="button"
               onClick={enterPlan}
               disabled={!canSend}
-              className="btn-press focus-ring ml-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-35"
+              className="btn-press focus-ring ml-auto inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-35"
               aria-label="生成计划"
               data-testid="home-composer-send"
             >
@@ -639,7 +640,7 @@ function ToolButton({
       type="button"
       onClick={onClick}
       aria-expanded={expanded}
-      className={`focus-ring inline-flex min-h-9 items-center gap-1 rounded-full px-2.5 text-[12px] font-medium transition-colors duration-150 ${
+      className={`focus-ring inline-flex min-h-8 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition-colors duration-150 ${
         expanded
           ? 'bg-slate-100 text-slate-900'
           : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'

@@ -516,6 +516,7 @@ export function BusinessCaseDeptPage() {
         label: '辅链挂件',
         kind: 'section' as const,
         hint: '查新·附图·递交',
+        defaultCollapsed: true,
         children: SIDE_AUX_DEPTS.flatMap((d) =>
           d.parts.map((part) => {
             const base = `${d.label.replace('（辅链）', '')} · ${part.label}`
@@ -546,6 +547,7 @@ export function BusinessCaseDeptPage() {
           versions.length > 0
             ? `${versions.length} 个另存 + 示意`
             : '示意可点 · 尚无另存',
+        defaultCollapsed: true,
         children: versionChildren,
       },
     ]

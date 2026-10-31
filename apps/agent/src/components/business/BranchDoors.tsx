@@ -101,15 +101,16 @@ export function BranchDoors({ caseId, isAgency = false }: Props) {
 
   return (
     <section
-      className="mb-4"
+      className="mb-3"
       aria-labelledby="home-branch-title"
       data-testid="home-branch-doors"
       data-branch-compact={detailOpen ? '0' : '1'}
+      data-hall-dense="1"
     >
-      <div className="mb-2 flex flex-wrap items-center gap-2">
+      <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
         <h2
           id="home-branch-title"
-          className="text-[13px] font-semibold tracking-tight text-slate-900"
+          className="text-[12px] font-semibold tracking-tight text-slate-900"
         >
           支路门
         </h2>
@@ -133,23 +134,24 @@ export function BranchDoors({ caseId, isAgency = false }: Props) {
         </button>
       </div>
       <ul
-        className={`grid gap-1.5 ${
+        className={`grid gap-1 ${
           detailOpen
             ? 'grid-cols-1 sm:grid-cols-2'
             : 'grid-cols-2 sm:grid-cols-4'
         }`}
+        data-hall-dense="1"
         data-testid="home-branch-list"
       >
         {BRANCHES.map((b) => (
           <li key={b.id}>
             <Link
               to={b.href(caseId, isAgency)}
-              className="btn-press focus-ring flex h-full flex-col rounded-lg border border-dashed border-slate-200/90 bg-white px-2.5 py-2 hover:border-slate-300 hover:bg-slate-50/80"
+              className="btn-press focus-ring flex h-full flex-col rounded-md border border-dashed border-slate-200/90 bg-white px-2 py-1.5 hover:border-slate-300 hover:bg-slate-50/80"
               data-testid={`home-branch-${b.id}`}
               data-branch={b.id}
               title={`须看见：${b.mustSee} · 禁：${b.forbid}`}
             >
-              <span className="text-[12px] font-semibold text-slate-900">
+              <span className="text-[11px] font-semibold text-slate-900">
                 {b.title}
               </span>
               <span className="mt-0.5 text-[10px] leading-snug text-slate-500">
