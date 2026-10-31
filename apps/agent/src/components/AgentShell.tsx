@@ -104,9 +104,13 @@ export function AgentShell() {
   const inBusiness =
     loc.pathname.startsWith('/agent/cases') ||
     loc.pathname.startsWith('/agent/pending')
+  const inProfessional = /\/agent\/cases\/[^/]+\/professional/.test(
+    loc.pathname,
+  )
   const inDepartments =
     loc.pathname === '/agent/departments' ||
-    loc.pathname.startsWith('/agent/departments/')
+    loc.pathname.startsWith('/agent/departments/') ||
+    inProfessional
   const inAssets =
     loc.pathname === '/agent/assets' || loc.pathname.startsWith('/agent/assets/')
   const inCatalog = loc.pathname.startsWith('/agent/seats/')

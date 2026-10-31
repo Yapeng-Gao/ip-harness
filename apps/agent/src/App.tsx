@@ -35,6 +35,7 @@ import {
 import { CaseDocketPage } from './pages/business/CaseDocketPage'
 import { CaseBillingPage } from './pages/business/CaseBillingPage'
 import { CaseMembersPage } from './pages/business/CaseMembersPage'
+import { CaseProfessionalPage } from './pages/business/CaseProfessionalPage'
 import { HomePage } from './pages/HomePage'
 import { WelcomePage } from './pages/WelcomePage'
 import { AgentLoginPage } from './pages/business/AgentLoginPage'
@@ -77,6 +78,7 @@ export default function App() {
                 <Route path="cases/:caseId/docket" element={<CaseDocketPage />} />
                 <Route path="cases/:caseId/billing" element={<CaseBillingPage />} />
                 <Route path="cases/:caseId/members" element={<CaseMembersPage />} />
+                <Route path="cases/:caseId/professional" element={<CaseProfessionalPage />} />
                 <Route path="cases/:caseId/room" element={<BusinessCaseRoomPage />} />
                 <Route path="pending" element={<PendingConfirmInboxPage />} />
                 <Route path="pending/:confirmId" element={<PendingConfirmDetailPage />} />

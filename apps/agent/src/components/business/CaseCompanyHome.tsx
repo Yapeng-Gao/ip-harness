@@ -207,6 +207,16 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           >
             成员
           </Link>
+          <span aria-hidden className="text-slate-300">
+            ·
+          </span>
+          <Link
+            to={`/agent/cases/${caseId}/professional`}
+            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+            data-testid="company-link-professional"
+          >
+            看专业能力 / 编制
+          </Link>
         </nav>
       </section>
 

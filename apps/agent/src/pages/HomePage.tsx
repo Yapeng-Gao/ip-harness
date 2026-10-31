@@ -293,7 +293,11 @@ export function HomePage() {
             ·
           </span>
           <Link
-            to="/agent/departments"
+            to={
+              latestId
+                ? `/agent/cases/${latestId}/professional`
+                : '/agent/cases/new'
+            }
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="home-action-departments"
           >

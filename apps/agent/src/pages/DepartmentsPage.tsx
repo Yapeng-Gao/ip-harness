@@ -50,6 +50,7 @@ export function DepartmentsPage() {
     <div
       className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#f5f5f7]"
       data-testid="departments-page"
+      data-departments="bypass-v1"
     >
       <header className="shrink-0 border-b border-slate-200/80 bg-white px-5 py-3.5 sm:px-6">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2">
@@ -58,15 +59,8 @@ export function DepartmentsPage() {
             专业 / 编制
           </h1>
           <span className="text-[11px] text-slate-500">
-            全库配置旁路 · 作业以{' '}
-            <Link
-              to="/agent/cases"
-              className="font-medium text-sky-700 hover:underline"
-              data-testid="departments-to-cases"
-            >
-              案子 → 公司首页八部
-            </Link>{' '}
-            为主 · {enabledDepts.length} 个常设部门
+            全库配置旁路（非 §4.3a 案级专业面）· 作业以案级专业 / 公司八部为主 ·{' '}
+            {enabledDepts.length} 个常设部门
           </span>
 
           <div className="ml-auto flex items-center gap-2">
@@ -135,7 +129,24 @@ export function DepartmentsPage() {
             让该部开工
           </h2>
           <p className="mt-0.5 text-[11px] text-slate-500">
-            编制在此配置；开工作业仍进公司案 → 八部工作台（非本页假装交卷）。
+            全库配置旁路 · 案级真源在「专业能力 / 编制」：
+            {latestId ? (
+              <Link
+                to={`/agent/cases/${latestId}/professional`}
+                className="ml-1 font-medium text-slate-800 underline-offset-2 hover:underline"
+                data-testid="departments-to-case-professional"
+              >
+                打开本案专业面
+              </Link>
+            ) : (
+              <Link
+                to="/agent/cases/new"
+                className="ml-1 font-medium text-slate-800 underline-offset-2 hover:underline"
+              >
+                先开案子
+              </Link>
+            )}
+            。开工作业仍进八部工作台。
           </p>
           <ul className="mt-2 flex flex-wrap gap-1.5" data-testid="departments-eight-doors">
             {HALL_DEPT_DOORS.map((d) => (
