@@ -64,6 +64,15 @@ import {
   resolvePartBody,
   seedBodyForPart,
 } from '../../business/auxPartBodyLink'
+import {
+  SIDE_AUX_BODY_HONEST,
+  findSideAuxDept,
+  findSideAuxPart,
+  parseSideAuxMaterialId,
+  seedBodyForSideAux,
+  sideAuxMaterialId,
+} from '../../business/sideAuxBodyLink'
+import { SIDE_AUX_DEPTS } from '../../business/professionalAuxParts'
 import { auxBundleFor } from '../../business/professionalAuxParts'
 import {
   pendingAuditPath,
@@ -199,6 +208,8 @@ export function BusinessCaseDeptPage() {
   const [selectedMaterialId, setSelectedMaterialId] = useState('deliverable')
   /** 已按 ?part= 写入中栏种子的零件 id（防重复刷） */
   const [partInsertedId, setPartInsertedId] = useState<string | null>(null)
+  /** 已按 ?side=&sidePart= 写入中栏的辅链挂件 */
+  const [sideInsertedId, setSideInsertedId] = useState<string | null>(null)
   /** 编制默认收；工具/巡检点开再看 */
   const [rosterOpen, setRosterOpen] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)
@@ -235,6 +246,8 @@ export function BusinessCaseDeptPage() {
 
   const askParam = params.get('ask')
   const partParam = params.get('part')
+  const sideParam = params.get('side')
+  const sidePartParam = params.get('sidePart')
   useEffect(() => {
     if (!askParam) return
     setSeatOpen(true)
@@ -280,6 +293,49 @@ export function BusinessCaseDeptPage() {
     getThread,
     patchThread,
     deptLabel,
+  ])
+
+  /** ?side=&sidePart= → 中栏聚焦辅链挂件并写入种子（样机；禁真检索/递交） */
+  useEffect(() => {
+    if (!sideParam || !sidePartParam) return
+    const part = findSideAuxPart(sideParam, sidePartParam)
+    if (!part) return
+    const matId = sideAuxMaterialId(sideParam, sidePartParam)
+    setSelectedMaterialId(matId)
+    if (!activeSeat) return
+    const key = `${sideParam}:${sidePartParam}`
+    if (sideInsertedId === key) return
+    const existing = getThread(caseId, activeSeat)?.artifactMarkdown?.trim() || ''
+    const marker = `挂件「${part.label}」`
+    if (existing && existing.includes(marker)) {
+      setSideInsertedId(key)
+      return
+    }
+    if (
+      !existing ||
+      existing.includes('挂件「') ||
+      existing.includes(SIDE_AUX_BODY_HONEST) ||
+      existing.includes('本稿零件「') ||
+      existing.includes(AUX_BODY_LINK_HONEST)
+    ) {
+      const body = seedBodyForSideAux({
+        sideId: sideParam,
+        part,
+        sideLabel: findSideAuxDept(sideParam)?.label,
+      })
+      patchThread(caseId, activeSeat, { artifactMarkdown: body })
+      setSideInsertedId(key)
+    } else {
+      setSideInsertedId(`${key}:focus-only`)
+    }
+  }, [
+    sideParam,
+    sidePartParam,
+    activeSeat,
+    caseId,
+    sideInsertedId,
+    getThread,
+    patchThread,
   ])
 
   const thread = getThread(caseId, activeSeat)
@@ -422,6 +478,20 @@ export function BusinessCaseDeptPage() {
             },
           ]
         : []),
+      {
+        id: 'side-aux',
+        label: '辅链挂件',
+        kind: 'section' as const,
+        hint: '查新·附图·递交 · 非真库/非真递交',
+        children: SIDE_AUX_DEPTS.flatMap((d) =>
+          d.parts.map((part) => ({
+            id: sideAuxMaterialId(d.id, part.id),
+            label: `${d.label.replace('（辅链）', '')} · ${part.label}`,
+            kind: 'section' as const,
+            hint: part.hint,
+          })),
+        ),
+      },
       {
         id: 'attachments',
         label: '附件',
@@ -610,6 +680,13 @@ export function BusinessCaseDeptPage() {
     dept && parsePartMaterialId(selectedMaterialId)
       ? findManuscriptPart(dept.id, parsePartMaterialId(selectedMaterialId)!)
       : undefined
+  const focusedSideParsed = parseSideAuxMaterialId(selectedMaterialId)
+  const focusedSidePart = focusedSideParsed
+    ? findSideAuxPart(focusedSideParsed.sideId, focusedSideParsed.partId)
+    : undefined
+  const focusedSideLabel = focusedSideParsed
+    ? findSideAuxDept(focusedSideParsed.sideId)?.label
+    : undefined
 
   const centerTitle =
     selectedMaterialId === 'attachments'
@@ -622,9 +699,13 @@ export function BusinessCaseDeptPage() {
             ? '版本'
             : selectedMaterialId === 'manuscript-parts'
               ? '本稿零件'
-              : focusedPart
-                ? `本稿 · ${focusedPart.label}`
-                : '产出正文'
+              : selectedMaterialId === 'side-aux'
+                ? '辅链挂件'
+                : focusedSidePart
+                  ? `辅链 · ${focusedSidePart.label}`
+                  : focusedPart
+                    ? `本稿 · ${focusedPart.label}`
+                    : '产出正文'
 
   const centerBody = (() => {
     if (selectedMaterialId === 'attachments') {
@@ -645,6 +726,20 @@ export function BusinessCaseDeptPage() {
     }
     if (selectedMaterialId === 'manuscript-parts') {
       return '左侧点某一本稿零件，中栏打开该章种子正文；可写入本席成果改稿。'
+    }
+    if (selectedMaterialId === 'side-aux') {
+      return '左侧点查新·附图·递交挂件，中栏打开种子说明；样机示意，非真检索/真递交。'
+    }
+    if (focusedSideParsed && focusedSidePart) {
+      const cur = thread?.artifactMarkdown?.trim() || ''
+      if (cur && cur.includes(`挂件「${focusedSidePart.label}」`)) {
+        return cur
+      }
+      return seedBodyForSideAux({
+        sideId: focusedSideParsed.sideId,
+        part: focusedSidePart,
+        sideLabel: focusedSideLabel,
+      })
     }
     if (dept && parsePartMaterialId(selectedMaterialId)) {
       const resolved = resolvePartBody({
@@ -679,6 +774,9 @@ export function BusinessCaseDeptPage() {
       data-ask={askParam ?? ''}
       data-part={partParam ?? ''}
       data-part-inserted={partInsertedId ? '1' : '0'}
+      data-side={sideParam ?? ''}
+      data-side-part={sidePartParam ?? ''}
+      data-side-inserted={sideInsertedId ? '1' : '0'}
     >
       {/* 顶栏：案 / 部门 / 铃铛 / 期限；不放交卷主 CTA（§2） */}
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
@@ -1047,6 +1145,8 @@ export function BusinessCaseDeptPage() {
                   data-part-id={
                     parsePartMaterialId(selectedMaterialId) ?? undefined
                   }
+                  data-side-id={focusedSideParsed?.sideId}
+                  data-side-part-id={focusedSideParsed?.partId}
                 >
                   {centerBody}
                 </pre>
@@ -1076,6 +1176,43 @@ export function BusinessCaseDeptPage() {
                     </button>
                     <span className="text-[10px] text-slate-500">
                       {AUX_BODY_LINK_HONEST}
+                    </span>
+                  </div>
+                ) : null}
+                {focusedSidePart && focusedSideParsed ? (
+                  <div
+                    className="mt-2 flex flex-wrap items-center gap-2"
+                    data-testid="dept-side-aux-body-actions"
+                  >
+                    <button
+                      type="button"
+                      className="btn-press focus-ring rounded-full bg-violet-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+                      data-testid="dept-side-aux-insert-body"
+                      onClick={() => {
+                        if (!activeSeat) return
+                        const body = seedBodyForSideAux({
+                          sideId: focusedSideParsed.sideId,
+                          part: focusedSidePart,
+                          sideLabel: focusedSideLabel,
+                        })
+                        patchThread(caseId, activeSeat, {
+                          artifactMarkdown: body,
+                        })
+                        setSideInsertedId(
+                          `${focusedSideParsed.sideId}:${focusedSideParsed.partId}`,
+                        )
+                        setSelectedMaterialId(
+                          sideAuxMaterialId(
+                            focusedSideParsed.sideId,
+                            focusedSideParsed.partId,
+                          ),
+                        )
+                      }}
+                    >
+                      写入挂件（种子）
+                    </button>
+                    <span className="text-[10px] text-slate-500">
+                      {SIDE_AUX_BODY_HONEST}
                     </span>
                   </div>
                 ) : null}

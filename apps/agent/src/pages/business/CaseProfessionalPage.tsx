@@ -34,6 +34,10 @@ import {
   type ManuscriptPart,
 } from '../../business/professionalAuxParts'
 import { partWorkbenchHref } from '../../business/auxPartBodyLink'
+import {
+  auxHookToSideTarget,
+  sideAuxWorkbenchHref,
+} from '../../business/sideAuxBodyLink'
 
 /**
  * 专业/编制 · product-pages §4.3a · vision 选部开工
@@ -419,16 +423,37 @@ export function CaseProfessionalPage() {
                   data-testid="case-professional-aux-hooks"
                   aria-label="辅链挂件"
                 >
-                  {auxHooks.map((a) => (
-                    <li
-                      key={a.id}
-                      className="rounded-full border border-dashed border-violet-200 bg-violet-50/70 px-1.5 py-0.5 text-[9px] font-medium text-violet-900"
-                      title={a.relation}
-                      data-testid={`case-professional-aux-${a.id}`}
-                    >
-                      辅 · {a.label}
-                    </li>
-                  ))}
+                  {auxHooks.map((a) => {
+                    const target = auxHookToSideTarget(a.id)
+                    const chipClass =
+                      'rounded-full border border-dashed border-violet-200 bg-violet-50/70 px-1.5 py-0.5 text-[9px] font-medium text-violet-900'
+                    return (
+                      <li key={a.id}>
+                        {target ? (
+                          <Link
+                            to={sideAuxWorkbenchHref({
+                              caseId,
+                              sideId: target.sideId,
+                              partId: target.partId,
+                            })}
+                            className={`${chipClass} underline-offset-2 hover:underline`}
+                            title={`${a.relation} · 打开中栏挂件种子`}
+                            data-testid={`case-professional-aux-${a.id}`}
+                          >
+                            辅 · {a.label}
+                          </Link>
+                        ) : (
+                          <span
+                            className={chipClass}
+                            title={a.relation}
+                            data-testid={`case-professional-aux-${a.id}`}
+                          >
+                            辅 · {a.label}
+                          </span>
+                        )}
+                      </li>
+                    )
+                  })}
                 </ul>
               ) : null}
 
@@ -481,7 +506,7 @@ export function CaseProfessionalPage() {
             className="mt-2 text-[11px] leading-relaxed text-violet-900/90"
             data-testid="case-professional-aux-honest"
           >
-            {PROF_AUX_HONEST}。卡上已露「本稿零件 / 辅链挂件」；此处加厚查新·附图·递交等
+            {PROF_AUX_HONEST}。卡上已露「本稿零件 / 辅链挂件」；点查新·附图·递交挂件进中栏改稿；
             <strong className="font-semibold">非主八部</strong>
             挂件清单。主路径仍是编制 + 在办/缺口 +「让该部接稿」。
           </p>
@@ -506,7 +531,18 @@ export function CaseProfessionalPage() {
                       className="text-[11px] text-slate-700"
                       data-testid={`case-professional-side-part-${part.id}`}
                     >
-                      <span className="font-medium">{part.label}</span>
+                      <Link
+                        to={sideAuxWorkbenchHref({
+                          caseId,
+                          sideId: d.id,
+                          partId: part.id,
+                        })}
+                        className="font-medium text-violet-950 underline-offset-2 hover:underline"
+                        title="打开宿主部台中栏 · 写入辅链挂件种子"
+                        data-testid={`case-professional-side-part-link-${part.id}`}
+                      >
+                        {part.label}
+                      </Link>
                       <span className="text-slate-400"> · {part.hint}</span>
                     </li>
                   ))}
