@@ -506,7 +506,7 @@ export function BusinessCaseDeptPage() {
               id: 'manuscript-parts',
               label: '本稿零件',
               kind: 'section' as const,
-              hint: '点开写入中栏种子 · 非官报',
+              hint: '点开写入章节种子',
               children: partChildren,
             },
           ]
@@ -515,7 +515,7 @@ export function BusinessCaseDeptPage() {
         id: 'side-aux',
         label: '辅链挂件',
         kind: 'section' as const,
-        hint: '查新·附图·递交 · 联成果修订示意',
+        hint: '查新·附图·递交',
         children: SIDE_AUX_DEPTS.flatMap((d) =>
           d.parts.map((part) => {
             const base = `${d.label.replace('（辅链）', '')} · ${part.label}`
@@ -527,7 +527,7 @@ export function BusinessCaseDeptPage() {
               id: sideAuxMaterialId(d.id, part.id),
               label: materialLabelWithRevision({ baseLabel: base, stamp }),
               kind: 'section' as const,
-              hint: `${part.hint} · ${AUX_VERSION_BIND_HONEST}`,
+              hint: part.hint,
             }
           }),
         ),
@@ -1265,7 +1265,7 @@ export function BusinessCaseDeptPage() {
                   </span>
                 </div>
                 <pre
-                  className="mt-3 max-h-[min(70vh,36rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
+                  className="mt-3 max-h-[min(70vh,36rem)] overflow-auto rounded-lg border border-slate-100 bg-slate-50/80 p-3.5 text-[12px] leading-relaxed text-slate-700 whitespace-pre-wrap"
                   data-testid="dept-output-body"
                   data-part-id={
                     parsePartMaterialId(selectedMaterialId) ?? undefined
@@ -1273,8 +1273,11 @@ export function BusinessCaseDeptPage() {
                   data-side-id={focusedSideParsedActive?.sideId}
                   data-side-part-id={focusedSideParsedActive?.partId}
                   data-aux-rev={focusedSidePart ? auxRevStamp.revCode : undefined}
+                  data-empty={centerBody.trim() ? '0' : '1'}
                 >
-                  {centerBody}
+                  {centerBody.trim()
+                    ? centerBody
+                    : '（本稿尚空 · 点左栏零件或辅链写入种子，像打开一份 Word 草稿）'}
                 </pre>
                 {focusedPart ? (
                   <div
@@ -1918,15 +1921,9 @@ export function BusinessCaseDeptPage() {
                     >
                       按本席步进勾齐套
                     </button>
-                    <p
-                      className="mt-1.5 text-[9px] text-violet-800/70"
-                      data-testid="dept-kit-step-sync-hint"
-                    >
-                      {KIT_STEP_SYNC_HONEST} · 右栏推进本步会自动勾上若干齐套项；也可点「按本席步进勾齐套」。末项如决议/权属仍须手勾或样机勾齐。
-                    </p>
                     <button
                       type="button"
-                      className="btn-press focus-ring mt-2 rounded-full border border-dashed border-sky-500/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-sky-950/80 hover:bg-white"
+                      className="btn-press focus-ring ml-2 mt-2 rounded-full border border-dashed border-sky-500/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-sky-950/80 hover:bg-white"
                       data-testid="dept-sync-kit-from-diff"
                       title={KIT_DIFF_AUTO_HONEST}
                       onClick={() => {
@@ -1939,12 +1936,26 @@ export function BusinessCaseDeptPage() {
                     >
                       按正文/差分勾齐套
                     </button>
-                    <p
-                      className="mt-1.5 text-[9px] text-sky-900/70"
-                      data-testid="dept-kit-diff-auto-hint"
+                    <details
+                      className="mt-2 rounded-md border border-violet-100/80 bg-white/60 px-2 py-1"
+                      data-testid="dept-kit-auto-hints"
                     >
-                      {KIT_DIFF_AUTO_HONEST} · 点本稿零件、看差分示意或改中栏正文，会自动勾上对应齐套项；空稿收束。权属/决议等末项须正文明确对应才自动勾。
-                    </p>
+                      <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+                        齐套如何自动勾（示意）
+                      </summary>
+                      <p
+                        className="mt-1.5 text-[9px] leading-relaxed text-violet-800/70"
+                        data-testid="dept-kit-step-sync-hint"
+                      >
+                        {KIT_STEP_SYNC_HONEST} · 右栏推进本步会自动勾上若干齐套项；也可点「按本席步进勾齐套」。末项如决议/权属仍须手勾或样机勾齐。
+                      </p>
+                      <p
+                        className="mt-1 text-[9px] leading-relaxed text-sky-900/70"
+                        data-testid="dept-kit-diff-auto-hint"
+                      >
+                        {KIT_DIFF_AUTO_HONEST} · 点本稿零件、看差分示意或改中栏正文，会自动勾上对应齐套项；空稿收束。权属/决议等末项须正文明确对应才自动勾。
+                      </p>
+                    </details>
                     <details
                       className="mt-2 rounded-md border border-violet-100 bg-white/70 px-2 py-1.5"
                       data-testid="ask-more"

@@ -296,7 +296,7 @@ export function HomeComposer({
           <div className="mt-1.5 flex flex-wrap items-center gap-1">
             <ToolButton
               icon={Paperclip}
-              label="资料"
+              label="附件"
               onClick={() => setPicker(picker === 'assets' ? null : 'assets')}
               expanded={picker === 'assets'}
             />
