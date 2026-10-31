@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Building2, MessageCircle, Plus } from 'lucide-react'
 import { HomeTodoStrip } from '../components/home/HomeTodoStrip'
+import { HomeInProgressStrip } from '../components/home/HomeInProgressStrip'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
   ENTRY_ROLE_LABEL,
@@ -18,6 +19,8 @@ import { reopenAllTeachTips } from '../business/teachingFade'
  * 禁医院分诊用语；禁把旧「项目专家」当首页。
  */
 export function HomePage() {
+  const [params] = useSearchParams()
+  const branchQ = params.get('branch')
   const { entryRole } = useEntryRole()
   const { cases, getProgress, getProcessLogs, getPendingConfirms } = useBusinessCases()
 
@@ -95,6 +98,9 @@ export function HomePage() {
 
         {/* ⑥ 期限催办 · 大厅可见 */}
         <OaDeadlineNudge latestId={latestId} cases={cases} getPendingConfirms={getPendingConfirms} getProgress={getProgress} />
+
+        {/* 进行中工单 · 00 §165 / 交互大纲 §2 */}
+        <HomeInProgressStrip latestId={latestId} />
 
         {/* 接待 · 弱引导 */}
         <section
@@ -254,6 +260,24 @@ export function HomePage() {
         </section>
 
         <BranchDoors caseId={latestId} isAgency={isAgency} />
+
+        {branchQ ? (
+          <div
+            className="mb-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3"
+            data-testid="home-branch-deep"
+            data-branch={branchQ}
+          >
+            <p className="text-[13px] font-semibold text-amber-950">
+              支路深链 · {branchQ.toUpperCase()}
+            </p>
+            <p className="mt-0.5 text-[12px] text-amber-900/90">
+              大厅只开门；机制验收请进对应部门工作台（进入检查 / 退④ / 不出号等在部内兑现）。
+            </p>
+            <p className="mt-1 text-[10px] text-amber-800/70">
+              点上方支路门卡片进入 · 勿在大厅假装已过线
+            </p>
+          </div>
+        ) : null}
 
         {isAgency && latestId ? (
           <div

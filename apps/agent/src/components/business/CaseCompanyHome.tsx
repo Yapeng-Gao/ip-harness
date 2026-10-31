@@ -34,6 +34,8 @@ import { DeptStatusDot } from '../departments/DeptStatusDot'
 import { workbenchAskPath } from '../../business/pendingDeptQuery'
 import { DeptSideDrawer } from '../departments/DeptSideDrawer'
 import { ExpertAvatar } from '../departments/ExpertAvatar'
+import { ThreeLineStatusStrip } from './ThreeLineStatusStrip'
+import { HealthBillStrip } from './HealthBillStrip'
 
 type Props = {
   caseId: string
@@ -189,6 +191,10 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
         </p>
       </section>
 
+      <ThreeLineStatusStrip prog={prog} dense />
+
+      <HealthBillStrip caseTitle={title} />
+
       <section aria-labelledby="eight-dept-map-title">
         <div className="mb-2 flex items-baseline gap-2">
           <h3
@@ -308,7 +314,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           )}
           更多部门
           <span className="font-normal text-slate-400">
-            （布局 / 前研 / 授权后，默认折叠）
+            （辅链 · 查新/附图/递交等 · 非八部大门 · 默认折叠）
           </span>
         </button>
         {moreOpen && (

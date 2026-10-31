@@ -25,6 +25,7 @@ import {
   orgDeptByLeadSeat,
   deptSlug,
   MAIN_CHAIN_DEPTS,
+  MAIN_CHAIN_DEPT_IDS,
   type OrgDeptId,
 } from '../../departments/orgDepts'
 import {
@@ -85,6 +86,8 @@ import {
 import { ThinDeptWorkPanel } from '../../components/business/ThinDeptWorkPanel'
 import { ThickStepWorkPanel } from '../../components/business/ThickStepWorkPanel'
 import { BranchFlowPanel } from '../../components/business/BranchFlowPanel'
+import { AuxChainBanner } from '../../components/business/AuxChainBanner'
+import { ThreeLineStatusStrip } from '../../components/business/ThreeLineStatusStrip'
 import { TeachingFadeTip } from '../../components/business/TeachingFadeTip'
 import { lineDiff, diffStats } from '../../business/lineDiff'
 import { buildBranchJudgment } from '../../business/judgmentArchive'
@@ -742,6 +745,11 @@ export function BusinessCaseDeptPage() {
             aria-labelledby="dept-output-title"
           >
             <TeachingFadeTip deptId={dept.id} />
+            {!MAIN_CHAIN_DEPT_IDS.includes(dept.id) ? (
+              <AuxChainBanner deptLabel={deptLabel(dept)} />
+            ) : (
+              <ThreeLineStatusStrip prog={getProgress(caseId)} dense />
+            )}
             {prefsHintForDept(deptLabel(dept)).length > 0 ? (
               <aside
                 className="rounded-xl border border-emerald-200 bg-emerald-50/70 px-3 py-2"
