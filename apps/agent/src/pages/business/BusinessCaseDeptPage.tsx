@@ -1059,7 +1059,7 @@ export function BusinessCaseDeptPage() {
         <aside
           className={`${
             leftOpen ? 'flex' : 'hidden'
-          } max-h-48 shrink-0 flex-col border-b border-slate-200 bg-white lg:flex lg:max-h-none lg:w-56 lg:border-b-0 lg:border-r`}
+          } max-h-48 shrink-0 flex-col border-b border-slate-200 bg-white lg:flex lg:max-h-none lg:w-52 lg:border-b-0 lg:border-r`}
           data-testid="dept-left-tree"
           data-slot="materials-tree"
           data-collapsed={leftOpen ? '0' : '1'}
@@ -1090,7 +1090,7 @@ export function BusinessCaseDeptPage() {
           data-slot="output-body"
         >
           <section
-            className="mx-auto flex w-full max-w-3xl flex-col gap-3"
+            className="mx-auto flex w-full max-w-3xl flex-col gap-2"
             data-testid="dept-deliverable"
             aria-labelledby="dept-output-title"
           >
@@ -1101,21 +1101,21 @@ export function BusinessCaseDeptPage() {
               <ThreeLineStatusStrip prog={getProgress(caseId)} dense />
             )}
             {prefsHintForDept(deptLabel(dept)).length > 0 ? (
-              <aside
-                className="rounded-xl border border-emerald-200 bg-emerald-50/70 px-3 py-2"
+              <details
+                className="rounded-lg border border-emerald-200/80 bg-emerald-50/50 px-2.5 py-1.5"
                 data-testid="pref-dept-hints"
               >
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald-800/80">
-                  跨案偏好提示 · 可读可写演示仓
-                </p>
-                <ul className="mt-1 space-y-1">
+                <summary className="cursor-pointer select-none text-[10px] font-semibold text-emerald-800/80">
+                  跨案偏好 · {prefsHintForDept(deptLabel(dept)).length} 条（可展开）
+                </summary>
+                <ul className="mt-1.5 space-y-1">
                   {prefsHintForDept(deptLabel(dept)).slice(0, 3).map((p) => (
                     <li key={p.id} className="text-[11px] text-slate-800" data-testid="pref-dept-hint">
                       {p.text}
                     </li>
                   ))}
                 </ul>
-              </aside>
+              </details>
             ) : null}
             <BranchFlowPanel
               branch={params.get('branch')}
@@ -1124,34 +1124,53 @@ export function BusinessCaseDeptPage() {
               onRecordJudgment={(j) => recordJudgment(j)}
             />
             {stepKind && currentStep && selectedMaterialId === 'deliverable' ? (
-              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="flex flex-wrap items-center gap-2" data-testid="dept-step-demo">
+              <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm" data-wb-density="v2">
+                <div
+                  className="flex flex-wrap items-center gap-1.5"
+                  data-testid="dept-step-demo"
+                  data-step-dense="1"
+                >
                   <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
                     本步
                   </span>
-                  {stepList.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => setForceStepId(s.id)}
-                      className={`btn-press focus-ring rounded-full border px-2 py-0.5 text-[10px] ${
-                        s.id === currentStep.id
-                          ? 'border-slate-900 bg-slate-900 text-white'
-                          : 'border-slate-200 bg-white text-slate-600'
-                      }`}
-                      data-testid={`dept-step-${s.id}`}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
                   <button
                     type="button"
-                    onClick={() => setForceStepId(null)}
-                    className="btn-press focus-ring rounded-full border border-dashed border-slate-300 px-2 py-0.5 text-[10px] text-slate-500"
-                    data-testid="dept-step-auto"
+                    onClick={() => setForceStepId(currentStep.id)}
+                    className="btn-press focus-ring rounded-full border border-slate-900 bg-slate-900 px-2.5 py-0.5 text-[10px] font-medium text-white"
+                    data-testid={`dept-step-${currentStep.id}`}
+                    data-step-current="1"
                   >
-                    跟闸
+                    {currentStep.label}
                   </button>
+                  <details className="relative" data-testid="dept-step-more">
+                    <summary className="btn-press focus-ring cursor-pointer list-none rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-500 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+                      换步 · {stepList.length}
+                    </summary>
+                    <div className="absolute left-0 z-10 mt-1 flex min-w-[10rem] flex-col gap-1 rounded-lg border border-slate-200 bg-white p-1.5 shadow-md">
+                      {stepList
+                        .filter((s) => s.id !== currentStep.id)
+                        .map((s) => (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => setForceStepId(s.id)}
+                            className="btn-press focus-ring rounded-md px-2 py-1 text-left text-[10px] text-slate-700 hover:bg-slate-50"
+                            data-testid={`dept-step-${s.id}`}
+                            data-step-menu="1"
+                          >
+                            {s.label}
+                          </button>
+                        ))}
+                      <button
+                        type="button"
+                        onClick={() => setForceStepId(null)}
+                        className="btn-press focus-ring rounded-md border border-dashed border-slate-200 px-2 py-1 text-left text-[10px] text-slate-500"
+                        data-testid="dept-step-auto"
+                      >
+                        跟闸
+                      </button>
+                    </div>
+                  </details>
                 </div>
                 <div className="mt-3 flex items-baseline justify-between gap-2">
                   <h2
@@ -1528,8 +1547,8 @@ export function BusinessCaseDeptPage() {
               />
             ) : null}
 
-            <p className="text-center text-[11px] text-slate-400">
-              演示环境：按步主栏 · 非真递交局端。
+            <p className="text-center text-[10px] text-slate-300" data-testid="dept-demo-footer">
+              示意稿件面 · 非真递交
             </p>
           </section>
         </main>
@@ -1889,55 +1908,67 @@ export function BusinessCaseDeptPage() {
                         </li>
                       ))}
                     </ul>
-                    <ul
-                      className="mt-1 list-disc space-y-0.5 pl-4 text-[11px] text-slate-600"
+                    <p
+                      className="mt-1 text-[10px] text-slate-500"
                       data-testid="dept-checklist-missing"
+                      data-missing-count={missingLabels.length}
                     >
-                      {checklistItems
-                        .filter((x) => !x.done)
-                        .map((x) => (
-                          <li key={x.label}>{x.label}</li>
-                        ))}
-                    </ul>
-                    <button
-                      type="button"
-                      className="btn-press focus-ring mt-2 rounded-full border border-dashed border-violet-600/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-violet-950/80 hover:bg-white"
-                      data-testid="dept-seed-kit"
-                      title="样机勾齐本稿齐套 · 非一键交卷 · 非官报"
-                      onClick={() => {
-                        if (slug) seedKitComplete(caseId, slug)
-                      }}
+                      缺 {missingLabels.length} 项 · 勾上或用下方样机工具
+                    </p>
+                    <div
+                      className="mt-2 flex flex-wrap items-center gap-1.5"
+                      data-testid="dept-kit-tool-row"
                     >
-                      样机·勾齐齐套
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-press focus-ring ml-2 mt-2 rounded-full border border-dashed border-slate-400/50 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-slate-700 hover:bg-white"
-                      data-testid="dept-sync-kit-from-step"
-                      title={KIT_STEP_SYNC_HONEST}
-                      onClick={() => {
-                        if (activeSeat) syncKitFromSeatStep(caseId, activeSeat)
-                      }}
-                    >
-                      按本席步进勾齐套
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-press focus-ring ml-2 mt-2 rounded-full border border-dashed border-sky-500/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-sky-950/80 hover:bg-white"
-                      data-testid="dept-sync-kit-from-diff"
-                      title={KIT_DIFF_AUTO_HONEST}
-                      onClick={() => {
-                        if (slug)
-                          syncKitFromDiff(caseId, slug, {
-                            materialId: selectedMaterialId,
-                            bodyText: centerBody,
-                          })
-                      }}
-                    >
-                      按正文/差分勾齐套
-                    </button>
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded-full border border-dashed border-violet-600/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-violet-950/80 hover:bg-white"
+                        data-testid="dept-seed-kit"
+                        title="样机勾齐本稿齐套 · 非一键交卷 · 非官报"
+                        onClick={() => {
+                          if (slug) seedKitComplete(caseId, slug)
+                        }}
+                      >
+                        样机·勾齐
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded-full border border-dashed border-sky-500/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-sky-950/80 hover:bg-white"
+                        data-testid="dept-sync-kit-from-diff"
+                        title={KIT_DIFF_AUTO_HONEST}
+                        onClick={() => {
+                          if (slug)
+                            syncKitFromDiff(caseId, slug, {
+                              materialId: selectedMaterialId,
+                              bodyText: centerBody,
+                            })
+                        }}
+                      >
+                        按正文勾
+                      </button>
+                      <details
+                        className="rounded-md border border-slate-200/80 bg-white/70 px-2 py-0.5"
+                        data-testid="dept-kit-tools"
+                      >
+                        <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+                          更多
+                        </summary>
+                        <div className="mt-1.5 flex flex-wrap gap-1.5 pb-1">
+                          <button
+                            type="button"
+                            className="btn-press focus-ring rounded-full border border-dashed border-slate-400/50 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-slate-700 hover:bg-white"
+                            data-testid="dept-sync-kit-from-step"
+                            title={KIT_STEP_SYNC_HONEST}
+                            onClick={() => {
+                              if (activeSeat) syncKitFromSeatStep(caseId, activeSeat)
+                            }}
+                          >
+                            按本席步进勾
+                          </button>
+                        </div>
+                      </details>
+                    </div>
                     <details
-                      className="mt-2 rounded-md border border-violet-100/80 bg-white/60 px-2 py-1"
+                      className="mt-1.5 rounded-md border border-violet-100/80 bg-white/60 px-2 py-1"
                       data-testid="dept-kit-auto-hints"
                     >
                       <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">

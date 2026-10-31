@@ -59,14 +59,14 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
 
   return (
     <div
-      className="mt-3 space-y-3"
+      className="mt-2.5 space-y-2.5"
       data-testid="thick-step-work-panel"
       data-kind={kind}
       data-step={step.id}
       data-case={caseId}
     >
       <pre
-        className="max-h-[min(40vh,18rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
+        className="max-h-[min(40vh,18rem)] overflow-auto rounded-lg border border-slate-100 bg-slate-50/80 p-3 text-[12px] leading-relaxed text-slate-700 whitespace-pre-wrap"
         data-testid="dept-output-body"
       >
         {step.mainBody}
