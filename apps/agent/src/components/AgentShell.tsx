@@ -20,6 +20,7 @@ import { useAgentDebug } from '../business/useAgentDebug'
 import { useEntryRole } from '../business/useEntryRole'
 import { useAuthSession } from '../business/AuthSessionContext'
 import { useBusinessCases } from '../business/BusinessCaseContext'
+import { LabRouteBanner } from './LabRouteBanner'
 
 export function AgentShell() {
   const { workspace, getCase, getHandoff } = useApp()
@@ -117,6 +118,17 @@ export function AgentShell() {
     loc.pathname.startsWith('/agent/bots/')
   const inPatentProject = loc.pathname.startsWith('/agent/projects')
   const inGrokShell = inSandbox || inL2Shell
+  const inLabPath =
+    inSandbox ||
+    inL2Shell ||
+    loc.pathname.startsWith('/agent/sessions') ||
+    loc.pathname.startsWith('/agent/compose') ||
+    loc.pathname.startsWith('/agent/agents') ||
+    loc.pathname.startsWith('/agent/harness') ||
+    loc.pathname.startsWith('/agent/lab') ||
+    loc.pathname.startsWith('/agent/gallery') ||
+    loc.pathname.startsWith('/agent/seats')
+  const showLabBanner = inLabPath || inPatentProject
   /** 业务面默认隐藏租户/Persona；?debug=1 显示 */
   const showTenantChrome = debug || inGrokShell || inCatalog
 
@@ -143,8 +155,10 @@ export function AgentShell() {
               : inHome
                 ? '大厅'
                 : inPatentProject
-                  ? '项目'
-                  : '工作台'
+                  ? '项目（旁路）'
+                  : inLabPath
+                    ? '实验室'
+                    : '工作台'
 
   return (
     <div
@@ -247,6 +261,10 @@ export function AgentShell() {
           )}
         </div>
       </header>
+
+      {showLabBanner ? (
+        <LabRouteBanner kind={inPatentProject ? 'projects' : 'lab'} />
+      ) : null}
 
       <div className="flex min-h-0 flex-1">
         {inBusiness && <BusinessCaseSidebar />}

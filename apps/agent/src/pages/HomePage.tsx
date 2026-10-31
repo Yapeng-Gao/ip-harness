@@ -73,6 +73,13 @@ export function HomePage() {
                 >
                   {latestCase.title}
                 </Link>
+                <Link
+                  to={`/agent/cases/${latestCase.id}/depts/disclosure?docket=1`}
+                  className="ml-1 text-[12px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
+                  data-testid="home-case-file-link"
+                >
+                  · 案卷
+                </Link>
               </>
             ) : (
               <span className="text-slate-500"> · 尚无案卷</span>
@@ -223,6 +230,20 @@ export function HomePage() {
           >
             专业 / 编制
           </Link>
+          {latestId ? (
+            <>
+              <span aria-hidden className="text-slate-300">
+                ·
+              </span>
+              <Link
+                to={`/agent/cases/${latestId}/depts/disclosure?docket=1`}
+                className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+                data-testid="home-action-case-file"
+              >
+                案卷抽屉
+              </Link>
+            </>
+          ) : null}
         </nav>
 
         <footer className="mt-6 border-t border-slate-100 pt-3 text-[11px] text-slate-500">

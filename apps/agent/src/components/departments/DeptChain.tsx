@@ -280,11 +280,12 @@ export function DeptCard({
               开会话
             </Link>
             <Link
-              to="/agent/projects"
+              to="/agent/cases/new"
               className="focus-ring inline-flex min-h-8 items-center gap-1 rounded-[var(--radius-sm)] px-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
+              data-testid="dept-chain-to-new-case"
             >
               <Users className="h-3 w-3" strokeWidth={1.75} aria-hidden />
-              建项目
+              开案子
             </Link>
           </div>
         </div>

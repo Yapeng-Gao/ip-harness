@@ -70,7 +70,7 @@ export function HomeProjectRail() {
           data-testid="home-mount-history"
         >
           <History className="h-3.5 w-3.5 text-slate-500" strokeWidth={1.75} aria-hidden />
-          挂载历史项目
+          挂载历史项目（旁路已并入案盘）
           <span className="ml-auto tabular text-[11px] text-slate-500">
             {unmounted.length}
           </span>
@@ -137,7 +137,7 @@ export function HomeProjectRail() {
                   return (
                     <li key={p.id}>
                       <Link
-                        to={`/agent/projects/${p.id}`}
+                        to={`/agent/cases/${p.id}`}
                         className="focus-ring group flex w-full items-start gap-2 rounded-[var(--radius-sm)] px-2.5 py-2 text-[13px] text-slate-700 transition-colors duration-150 hover:bg-white/90 hover:text-slate-900"
                         data-testid={`home-project-${p.id}`}
                       >
@@ -168,7 +168,7 @@ export function HomeProjectRail() {
               </ul>
             )}
             <Link
-              to="/agent/projects"
+              to="/agent/cases"
               className="focus-ring mt-1 flex w-full items-center gap-1.5 rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[11px] font-medium text-slate-500 hover:bg-white/80 hover:text-slate-700"
               data-testid="home-new-project"
             >

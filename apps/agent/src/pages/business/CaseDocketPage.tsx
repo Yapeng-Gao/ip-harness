@@ -48,13 +48,23 @@ export function CaseDocketPage() {
         <p className="mt-1 text-sm text-slate-500">
           看见本案法定/程序期限与绝限（结构壳 · 引擎后续接入）
         </p>
-        <p className="mt-2 text-[12px]">
+        <p className="mt-2 text-[12px] text-slate-500">
+          材料 / 检查表 / 工单 / 判断痕迹请用工作台顶栏「案卷」抽屉，不与期限台混名。
+        </p>
+        <p className="mt-2 flex flex-wrap gap-3 text-[12px]">
           <Link
             to={home}
             className="font-medium text-slate-600 underline-offset-2 hover:underline"
             data-testid="case-docket-back-home"
           >
             ← 回公司首页
+          </Link>
+          <Link
+            to={`${home}/depts/disclosure?docket=1`}
+            className="font-medium text-slate-800 underline-offset-2 hover:underline"
+            data-testid="case-docket-open-case-file"
+          >
+            打开案卷抽屉（交底部）
           </Link>
         </p>
 

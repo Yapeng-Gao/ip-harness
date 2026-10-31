@@ -153,6 +153,13 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             待确认{pending.length > 0 ? ` · ${pending.length}` : ''}
           </Link>
           <Link
+            to={`/agent/cases/${caseId}/depts/disclosure?docket=1`}
+            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+            data-testid="company-link-case-file"
+          >
+            案卷
+          </Link>
+          <Link
             to={`/agent/cases/${caseId}/docket`}
             className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
             data-testid="company-link-docket"

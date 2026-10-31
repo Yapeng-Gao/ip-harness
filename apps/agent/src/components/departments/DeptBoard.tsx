@@ -70,12 +70,13 @@ export function DeptBoard() {
     return (
       <div className="ui-empty mt-4 max-w-xl" data-testid="dept-board-empty">
         <p className="ui-empty-title">还没有项目</p>
-        <p className="ui-empty-desc">从首页或「项目模式」建一个，这里会出现每个部门的推进状态。</p>
+        <p className="ui-empty-desc">从大厅开案子后，这里会出现每个部门的推进状态。</p>
         <Link
-          to="/agent/projects"
+          to="/agent/cases/new"
           className="focus-ring mt-1 inline-flex min-h-9 items-center rounded-[var(--radius-sm)] bg-slate-900 px-3 text-[12px] font-medium text-white"
+          data-testid="dept-board-to-new-case"
         >
-          去建项目
+          去开案子
         </Link>
       </div>
     )
@@ -111,7 +112,7 @@ export function DeptBoard() {
                   {project.title}
                 </Link>
                 {!isCase && (
-                  <span className="ml-1.5 text-[10px] text-slate-500">未转案</span>
+                  <span className="ml-1.5 text-[10px] text-amber-700">旁路项目</span>
                 )}
               </th>
               {MAIN_CHAIN_DEPTS.map((d) => {

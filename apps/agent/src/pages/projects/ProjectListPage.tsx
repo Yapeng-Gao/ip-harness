@@ -33,16 +33,46 @@ export function ProjectListPage() {
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
       <div className="mx-auto w-full max-w-2xl px-4 py-8">
+        <div
+          className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[12px] text-amber-950"
+          data-testid="projects-demote-banner"
+          role="status"
+        >
+          <p className="font-semibold">旧「项目专家台」已降权</p>
+          <p className="mt-0.5 text-amber-900/90">
+            主路径是大厅 → 案卷 → 八部工作台。本页仅深链/实验室保留，不与公司主链抢顶栏。
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Link
+              to="/agent"
+              className="rounded-md bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+              data-testid="projects-to-hall"
+            >
+              回大厅
+            </Link>
+            <Link
+              to="/agent/cases"
+              className="rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium"
+              data-testid="projects-to-cases"
+            >
+              去案盘
+            </Link>
+          </div>
+        </div>
         <h1 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
           <FolderKanban className="h-5 w-5" aria-hidden />
-          项目模式
+          项目模式（旁路）
         </h1>
         <p className="mt-1 text-sm text-slate-600">
-          专利专班项目夹。默认入口是{' '}
+          遗留专班项目夹。请优先用{' '}
           <Link to="/agent" className="underline">
-            /agent 专利 Catalog
+            大厅
           </Link>
-          （可组队建项目）。通用沙盒见{' '}
+          {' '}与{' '}
+          <Link to="/agent/cases" className="underline">
+            案盘
+          </Link>
+          。实验室沙盒见{' '}
           <Link to="/agent/sandbox" className="underline">
             /agent/sandbox
           </Link>

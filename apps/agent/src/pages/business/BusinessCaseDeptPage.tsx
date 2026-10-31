@@ -50,7 +50,7 @@ import {
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import type { ProjectExpertId } from '../../projects/types'
-import { ArrowRight, Building2, PanelLeft, MessageSquare, X } from 'lucide-react'
+import { ArrowRight, Building2, FolderOpen, PanelLeft, MessageSquare, Package, X } from 'lucide-react'
 import { formatArtifactSavedAt } from '../../business/artifactVersions'
 import {
   pendingAuditPath,
@@ -63,6 +63,21 @@ import {
   stepsForKind,
   THIN_LINE_BY_DEPT,
 } from '../../business/workbenchSteps'
+import { DeptHandoffTicket } from '../../components/business/DeptHandoffTicket'
+import { CaseFileDrawer } from '../../components/business/CaseFileDrawer'
+import {
+  disclosureToDraftTicket,
+  draftInheritedHandoffLine,
+} from '../../business/interDeptTicket'
+import {
+  demoCaseFileChecks,
+  demoCaseFileJudgments,
+  demoCaseFileMaterials,
+  demoCaseFileTickets,
+  demoLineBadges,
+  isDisclosureDept,
+  isDraftDept,
+} from '../../business/caseFileDemo'
 
 function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
   const known = DEPT_HANDOFF[deptId]
@@ -150,6 +165,10 @@ export function BusinessCaseDeptPage() {
   /** 演示：强制当前步（不改闸口真值） */
   const [forceStepId, setForceStepId] = useState<string | null>(
     params.get('step') || null,
+  )
+  /** 案卷抽屉 · 交互大纲 §4.5 */
+  const [caseFileOpen, setCaseFileOpen] = useState(
+    params.get('docket') === '1' || params.get('file') === '1',
   )
 
   const activeSeat: ProjectExpertId = (() => {
@@ -355,6 +374,18 @@ export function BusinessCaseDeptPage() {
       : handoffPhaseFromStatus(st)
     : ('齐套中' as const)
 
+  const disclosureDone =
+    Boolean(dept && isDisclosureDept(dept.id) && st === '已完成') ||
+    Boolean(prog.doneSeatIds?.includes('expert-disclosure'))
+  const showHandoffTicket =
+    Boolean(dept) &&
+    (params.get('ticket') === '1' ||
+      (isDisclosureDept(dept?.id) &&
+        (st === '已完成' || handoffPhase === '已确认可往下' || params.get('ticket') === '1')))
+  const showDraftInherit =
+    Boolean(dept && isDraftDept(dept.id) && disclosureDone)
+  const interTicket = disclosureToDraftTicket(caseId)
+
   const switchDepts = MAIN_CHAIN_DEPTS.map((d) => {
     const locked = isDeptAdvanceLocked({
       currentDeptId: dept.id,
@@ -463,6 +494,29 @@ export function BusinessCaseDeptPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCaseFileOpen(true)}
+              className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
+              data-testid="dept-open-case-file"
+            >
+              <FolderOpen className="h-3.5 w-3.5" aria-hidden />
+              案卷
+            </button>
+            {isDisclosureDept(dept.id) && disclosureDone ? (
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.querySelector('[data-testid="dept-handoff-ticket"]')
+                  el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+                }}
+                className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium text-emerald-900"
+                data-testid="dept-open-handoff-ticket"
+              >
+                <Package className="h-3.5 w-3.5" aria-hidden />
+                ④→⑤ 工单
+              </button>
+            ) : null}
             <Link
               to="/agent"
               className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
@@ -655,6 +709,35 @@ export function BusinessCaseDeptPage() {
                 </pre>
               </div>
             )}
+            {showDraftInherit ? (
+              <div
+                className="rounded-xl border border-violet-200 bg-violet-50/80 px-4 py-3 text-[12px] leading-relaxed text-slate-800"
+                data-testid="dept-draft-inherit-handoff"
+                role="status"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-700/80">
+                  接④工单
+                </p>
+                <p className="mt-0.5 font-medium">{draftInheritedHandoffLine()}</p>
+                <p className="mt-1 text-[11px] text-slate-600">
+                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-800">
+                    交底质检全绿
+                  </span>{' '}
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+                    申请尚未过线
+                  </span>
+                </p>
+              </div>
+            ) : null}
+
+            {showHandoffTicket ? (
+              <DeptHandoffTicket
+                caseId={caseId}
+                ticket={interTicket}
+                side={isDraftDept(dept.id) ? 'to' : 'from'}
+              />
+            ) : null}
+
             <p className="text-center text-[11px] text-slate-400">
               演示环境：按步主栏 · 非真递交局端。
             </p>
@@ -878,10 +961,10 @@ export function BusinessCaseDeptPage() {
                               })
                             : pendingAuditPath(cta.confirmId, slug || undefined)
                         }
-                        className="btn-press focus-ring mt-2 inline-flex rounded-full bg-amber-600 px-3 py-1 text-[11px] font-semibold text-white"
+                        className="btn-press focus-ring mt-2 inline-flex rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
                         data-testid="dept-right-confirm-link"
                       >
-                        打开确认页 · 过 / 驳回
+                        在对话里拍板
                       </Link>
                     ) : null}
                   </div>
@@ -1014,32 +1097,43 @@ export function BusinessCaseDeptPage() {
               data-slot="submit-confirm"
               data-testid="dept-right-submit"
             >
-              {/* 待确认时气泡已带主选项；底栏不再复述同文 sticky，只留可达 CTA */}
-              <button
-                type="button"
-                onClick={onSubmit}
-                disabled={!canSubmit && cta.action !== 'confirm' && !awaitingThis}
-                title={
-                  awaitingThis || cta.action === 'confirm'
-                    ? AWAITING_ADVANCE_LOCK_HINT
-                    : !canSubmit
-                      ? missingLabels.length
-                        ? `缺项：${missingLabels.join('、')}`
-                        : '齐套要点未齐，暂不可交卷'
-                      : undefined
-                }
-                className={`btn-press focus-ring inline-flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-2 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${
-                  cta.action === 'confirm' || awaitingThis
-                    ? 'bg-amber-600 text-white'
-                    : 'bg-slate-900 text-white'
-                }`}
-                data-testid="dept-primary-cta"
-                data-can-submit={canSubmit ? '1' : '0'}
-                data-awaiting-confirm={awaitingThis ? '1' : '0'}
-              >
-                {primaryLabel}
-                <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-              </button>
+              {/* 待确认：主选项在汇报气泡；底栏降为次达，禁黄钮堆叠 */}
+              {awaitingThis ? (
+                <p
+                  className="text-center text-[10px] leading-relaxed text-slate-500"
+                  data-testid="dept-primary-cta-demoted"
+                >
+                  拍板请用上方汇报气泡 · 底栏不再叠同文黄钮
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onSubmit}
+                  disabled={!canSubmit && cta.action !== 'confirm'}
+                  title={
+                    cta.action === 'confirm'
+                      ? AWAITING_ADVANCE_LOCK_HINT
+                      : !canSubmit
+                        ? missingLabels.length
+                          ? `缺项：${missingLabels.join('、')}`
+                          : '齐套要点未齐，暂不可交卷'
+                        : undefined
+                  }
+                  className="btn-press focus-ring inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  data-testid="dept-primary-cta"
+                  data-can-submit={canSubmit ? '1' : '0'}
+                  data-awaiting-confirm="0"
+                >
+                  {primaryLabel}
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                </button>
+              )}
+              {/* 兼容闸：待确认时仍挂可达 testid（气泡链） */}
+              {awaitingThis ? (
+                <span className="sr-only" data-testid="dept-primary-cta" data-awaiting-confirm="1" data-can-submit="0">
+                  {primaryLabel}
+                </span>
+              ) : null}
 
               <div className="flex flex-wrap items-center gap-1.5">
                 <button
@@ -1131,17 +1225,29 @@ export function BusinessCaseDeptPage() {
         <button
           type="button"
           onClick={() => setMobileRightOpen(true)}
-          className={`btn-press focus-ring inline-flex flex-[1.4] items-center justify-center gap-1.5 rounded-md px-3 py-2 text-[11px] font-semibold ${
-            awaitingThis || cta.action === 'confirm'
-              ? 'bg-amber-600 text-white'
-              : 'bg-slate-900 text-white'
-          }`}
+          className="btn-press focus-ring inline-flex flex-[1.4] items-center justify-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-[11px] font-semibold text-white"
           data-testid="dept-mobile-open-right"
         >
           <MessageSquare className="h-3.5 w-3.5" aria-hidden />
-          对话
+          对话{awaitingThis ? ' · 待拍' : ''}
         </button>
       </div>
+
+      <CaseFileDrawer
+        open={caseFileOpen}
+        onClose={() => setCaseFileOpen(false)}
+        caseId={caseId}
+        caseTitle={c.title}
+        materials={demoCaseFileMaterials({
+          disclosureDone,
+          draftStarted: Boolean(prog.doneSeatIds?.includes('expert-draft')),
+        })}
+        checks={demoCaseFileChecks({ disclosureDone })}
+        tickets={demoCaseFileTickets(caseId, { disclosureDone })}
+        judgments={demoCaseFileJudgments({ disclosureDone })}
+        lineBadges={demoLineBadges({ disclosureDone })}
+        initialTab={params.get('fileTab') === '工单' ? '工单' : '材料'}
+      />
     </div>
   )
 }

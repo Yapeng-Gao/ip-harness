@@ -371,7 +371,7 @@ export function AgentSessionSidebar() {
                   className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
                   data-testid="sidebar-projects-secondary"
                 >
-                  <FolderKanban className="h-3.5 w-3.5 text-slate-400" /> 项目（次级）
+                  <FolderKanban className="h-3.5 w-3.5 text-slate-400" /> 项目（旁路）
                 </Link>
                 <div className="border-t border-slate-100" />
                 <Link
@@ -450,7 +450,7 @@ export function AgentSessionSidebar() {
                 className="block text-center text-[11px] text-slate-400 hover:text-slate-600 hover:underline"
                 data-testid="home-projects-text-link"
               >
-                项目模式（次级）
+                项目模式（旁路）
               </Link>
             </div>
           </div>
