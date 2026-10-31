@@ -2019,10 +2019,49 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 真官报 / 真检索 / 真鉴权 / 真递交 | **仍后置** |
 | 真报价/付款通道 | **仍后置** |
-| lab SoftEmpty 接线 | kind 已备；画廊无空态分支则未挂 UI |
-| catalog SoftEmpty 可见性 | 依赖 /agent/catalog 是否再开路由（现多旁路至 departments） |
+| lab SoftEmpty 接线 | → **§54 实验室 SoftEmpty 挂 UI**（已落地） |
+| catalog SoftEmpty 可见性 | `/agent/agents` 可达；`/agent/catalog` 仍旁路 departments |
 
 ### 53.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 整站复扫精致度链；smoke PASS_RESCAN_53；shots `.tmp/rescan-53-shots/`；catalog SoftEmpty 补强；写入 §53 |
+| 2026-10-31 CST | §53.3 增 → §54 实验室 SoftEmpty 挂 UI |
+
+## 54. 实验室 SoftEmpty 挂 UI（2026-10-31 Asia/Shanghai）
+
+> **问题：** §53.3 —— `lab-empty` kind 已备未挂画廊空态；实验室旁路立场需 Office 软空而非 eng empty。属**产品设计 / 产品形态 / 使用成本**。  
+> **真源：** UI/seed；Office 语感；no fake 官报；实验室非一期主路径、不可作业交卷；壳层 `LabRouteBanner` 已钉旁路；不宣称四维落地。
+
+### 54.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| SoftEmpty | `AgentLabGallery` 搜索无匹配 → `lab-filter`；真无展品路径 → `lab-empty`；tone=office；CTA 回大厅/案盘/清搜索 |
+| officeEmpty | `lab-empty` 补 next；新增 `lab-filter` |
+| 旁路立场 | `data-lab-nonprimary=1` / `data-lab-no-work=1`；页头 Office 文案；**不**页内再挂 `LabRouteBanner`（避免与壳层双条） |
+| catalog | `/agent/agents` SoftEmpty（§53 已挂）复验；`/agent/catalog` 仍 Navigate→departments |
+| 不做 | 假官报；真集成；宣称四维落地；碰 main-path-sample |
+
+### 54.2 六维（机制报告，不宣称落地）
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 实验室空态不改主链闸/齐套 |
+| 产品理念 | 示意展廊 · 不进主链交卷 / 不硬请示 |
+| 产品逻辑 | 旁路不抢大厅→案→部 |
+| 产品设计 | SoftEmpty 统一 tone；壳层 banner 单条 |
+| 产品形态 | 展廊/幕次隐喻，非 eng empty |
+| 使用成本 | 空→回大厅/案盘；可清搜索 |
+
+**仍不宣称四维/六维落地。**
+
+### 54.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真官报 / 真检索 / 真鉴权 / 真递交 | **仍后置** |
+| 真报价/付款通道 | **仍后置** |
+| `/agent/catalog` 独立目录页 | 仍旁路 departments；目录 SoftEmpty 走 `/agent/agents` |
+
+### 54.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 实验室 SoftEmpty 挂 UI；smoke PASS_LAB_EMPTY；shots `.tmp/lab-empty-shots/`；写入 §54 |

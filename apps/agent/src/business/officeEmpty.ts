@@ -26,6 +26,7 @@ export type OfficeEmptyKind =
   | 'catalog-empty'
   | 'catalog-filter'
   | 'lab-empty'
+  | 'lab-filter'
   | 'generic'
 
 export type OfficeEmptyCopy = {
@@ -134,7 +135,13 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
   },
   'lab-empty': {
     title: '实验室暂无展品',
-    body: '示意画廊 · 不进主链交卷。',
+    body: '示意画廊 · 不进主链交卷，也不可在此作业/硬请示。',
+    next: '回大厅或案盘继续办主链',
+  },
+  'lab-filter': {
+    title: '没有匹配的展品',
+    body: '试试清空搜索；实验室仍是旁路示意，不进主链交卷。',
+    next: '回大厅办主链',
   },
   generic: {
     title: '这里还是空的',

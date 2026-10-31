@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Bot,
@@ -11,6 +12,7 @@ import {
   Briefcase,
 } from 'lucide-react'
 import { agentSessionPath } from '../lib/deepLinks'
+import { SoftEmpty } from '../components/soft/SoftEmpty'
 
 type LabCard = {
   id: string
@@ -110,100 +112,170 @@ const CARDS: LabCard[] = [
 ]
 
 /**
- * Prototype gallery — 五幕导航 + 历史壳（非冷启动）。
+ * Prototype gallery — 五幕导航 + 历史壳（非冷启动 / 不可作业交卷）。
  */
 export function AgentLabGallery() {
+  const [q, setQ] = useState('')
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase()
+    if (!needle) return CARDS
+    return CARDS.filter((c) => {
+      const hay = `${c.version} ${c.blurb} ${c.cta} ${c.badge ?? ''} ${c.id}`.toLowerCase()
+      return hay.includes(needle)
+    })
+  }, [q])
+  const filtering = q.trim().length > 0
+
   return (
     <div
       className="flex flex-1 flex-col overflow-y-auto"
       data-testid="agent-lab-gallery"
+      data-lab-nonprimary="1"
+      data-lab-no-work="1"
     >
       <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
-        <div className="mb-6 flex items-start gap-3">
+        <div className="mb-5 flex items-start gap-3">
           <span
             className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-slate-900 text-white"
             aria-hidden
           >
             <Sparkles className="h-4 w-4" strokeWidth={2} />
           </span>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="text-lg font-semibold tracking-tight text-slate-900">
-              Agent 原型展廊
+              实验室 · 示意展廊
             </h1>
             <p className="mt-1 text-sm leading-relaxed text-slate-600">
-              冷启动是{' '}
+              旁路示意，不进主链交卷、不承接硬请示。办主链请回{' '}
+              <Link
+                to="/agent"
+                className="font-medium text-slate-800 underline-offset-2 hover:underline"
+              >
+                大厅
+              </Link>
+              {' '}或{' '}
               <Link
                 to="/agent/cases"
                 className="font-medium text-slate-800 underline-offset-2 hover:underline"
               >
-                /agent/cases · 多案流水（业务模式）
+                案盘
               </Link>
-              ；下表按演示五幕排列，勿再把 L1 当作默认。
+              。
             </p>
           </div>
         </div>
 
-        <ul
-          className="grid gap-3 sm:grid-cols-2"
-          aria-label="原型卡片"
-          data-testid="agent-lab-cards"
-        >
-          {CARDS.map((card) => {
-            const Icon = card.icon
-            return (
-              <li key={card.id}>
-                <article
-                  className="flex h-full flex-col rounded-[var(--radius-md)] border border-slate-200/90 bg-white p-4 shadow-[var(--shadow-rest)] transition-[box-shadow,border-color] hover:border-slate-300 hover:shadow-md"
-                  data-testid={`agent-lab-card-${card.id}`}
-                >
-                  <div className="flex items-start gap-2.5">
-                    <span
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-600"
-                      aria-hidden
-                    >
-                      <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <h2 className="text-[14px] font-semibold text-slate-900">
-                          {card.version}
-                        </h2>
-                        {card.badge && (
-                          <span className="rounded-full bg-emerald-50 px-1.5 py-px text-[10px] font-semibold text-emerald-800 ring-1 ring-emerald-200/80">
-                            {card.badge}
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-[13px] leading-snug text-slate-600">
-                        {card.blurb}
-                      </p>
-                    </div>
-                  </div>
+        <div className="mb-4">
+          <label className="sr-only" htmlFor="agent-lab-search">
+            搜索展品
+          </label>
+          <input
+            id="agent-lab-search"
+            data-testid="agent-lab-search"
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="找幕次或展品…"
+            className="ui-input ui-input-sm focus-ring w-full max-w-sm"
+          />
+        </div>
 
-                  <div className="mt-auto flex flex-wrap items-center gap-2 pt-3.5">
-                    <Link
-                      to={card.href}
-                      className="btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-md)] bg-slate-900 px-3 text-[12px] font-semibold text-white hover:bg-slate-800"
-                      data-testid={`agent-lab-enter-${card.id}`}
-                    >
-                      {card.cta}
-                      <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-                    </Link>
-                    {card.secondary && (
-                      <Link
-                        to={card.secondary.href}
-                        className="focus-ring rounded px-1.5 py-1 text-[12px] font-medium text-slate-500 hover:text-slate-800"
-                        data-testid={`agent-lab-secondary-${card.id}`}
+        {filtered.length === 0 ? (
+          <SoftEmpty
+            kind={filtering ? 'lab-filter' : 'lab-empty'}
+            testId="agent-lab-empty"
+            action={
+              <div className="flex flex-wrap justify-center gap-2">
+                {filtering ? (
+                  <button
+                    type="button"
+                    className="ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
+                    data-testid="agent-lab-empty-clear"
+                    onClick={() => setQ('')}
+                  >
+                    清除搜索
+                  </button>
+                ) : null}
+                <Link
+                  to="/agent"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring"
+                  data-testid="agent-lab-empty-to-hall"
+                >
+                  回大厅
+                </Link>
+                <Link
+                  to="/agent/cases"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring"
+                  data-testid="agent-lab-empty-to-cases"
+                >
+                  去案盘
+                </Link>
+              </div>
+            }
+          />
+        ) : (
+          <ul
+            className="grid gap-3 sm:grid-cols-2"
+            aria-label="原型卡片"
+            data-testid="agent-lab-cards"
+          >
+            {filtered.map((card) => {
+              const Icon = card.icon
+              return (
+                <li key={card.id}>
+                  <article
+                    className="flex h-full flex-col rounded-[var(--radius-md)] border border-slate-200/90 bg-white p-4 shadow-[var(--shadow-rest)] transition-[box-shadow,border-color] hover:border-slate-300 hover:shadow-md"
+                    data-testid={`agent-lab-card-${card.id}`}
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <span
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-600"
+                        aria-hidden
                       >
-                        {card.secondary.label}
+                        <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <h2 className="text-[14px] font-semibold text-slate-900">
+                            {card.version}
+                          </h2>
+                          {card.badge && (
+                            <span className="rounded-full bg-emerald-50 px-1.5 py-px text-[10px] font-semibold text-emerald-800 ring-1 ring-emerald-200/80">
+                              {card.badge}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-1 text-[13px] leading-snug text-slate-600">
+                          {card.blurb}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-auto flex flex-wrap items-center gap-2 pt-3.5">
+                      <Link
+                        to={card.href}
+                        className="btn-press focus-ring hit-40 inline-flex items-center gap-1.5 rounded-[var(--radius-md)] bg-slate-900 px-3 text-[12px] font-semibold text-white hover:bg-slate-800"
+                        data-testid={`agent-lab-enter-${card.id}`}
+                      >
+                        {card.cta}
+                        <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                       </Link>
-                    )}
-                  </div>
-                </article>
-              </li>
-            )
-          })}
-        </ul>
+                      {card.secondary && (
+                        <Link
+                          to={card.secondary.href}
+                          className="focus-ring rounded px-1.5 py-1 text-[12px] font-medium text-slate-500 hover:text-slate-800"
+                          data-testid={`agent-lab-secondary-${card.id}`}
+                        >
+                          {card.secondary.label}
+                        </Link>
+                      )}
+                    </div>
+                  </article>
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </div>
     </div>
   )
