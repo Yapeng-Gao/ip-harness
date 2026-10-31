@@ -4,7 +4,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react'
 
 type Props = {
   caseId?: string
-  /** agency 可绕 B2 陪同进⑤ */
+  /** agency 可绕自带交底陪同进申请部 */
   isAgency?: boolean
 }
 
@@ -93,7 +93,7 @@ const BRANCHES: {
 ]
 
 /**
- * 支路 B1–B8 入口门 · 故事板验收「路上有没有这扇门」
+ * 支路入口门 · 故事板验收「路上有没有这扇门」
  * 精致度：默认紧凑一句话；须看见/禁 收入展开，降使用成本。
  */
 export function BranchDoors({ caseId, isAgency = false }: Props) {

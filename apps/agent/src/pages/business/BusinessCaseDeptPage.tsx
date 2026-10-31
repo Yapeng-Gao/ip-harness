@@ -1250,7 +1250,7 @@ export function BusinessCaseDeptPage() {
                           gate: '只读不拍',
                           conclusion: '本轮只读不拍',
                           option: '只读不拍',
-                          reason: 'B7 · 不回写维护部维持/放弃台账',
+                          reason: '不回写维护部维持/放弃台账',
                           compare: '未拍却改台账 = 禁止',
                         }),
                       )
@@ -1505,13 +1505,13 @@ export function BusinessCaseDeptPage() {
                 className="rounded-xl border border-rose-200 bg-rose-50/80 px-4 py-3 text-[12px] leading-relaxed text-slate-800"
                 data-testid="branch-b5-panel"
                 role="region"
-                aria-label="B5 不申结案"
+                aria-label="不申结案"
               >
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-rose-800/80">
-                  B5 · 不申结案
+                  支路 · 不申结案
                 </p>
                 <p className="mt-0.5 font-medium">
-                  B 步拍「不申」：结案/转秘密 · <strong>不</strong>出申请号 · 可不进 C
+                  本步拍「不申」：结案/转秘密 · <strong>不</strong>出申请号 · 可不进 C
                 </p>
                 <div
                   className="mt-2 rounded-lg border border-rose-200 bg-white px-3 py-2 text-[11px]"
@@ -1533,7 +1533,7 @@ export function BusinessCaseDeptPage() {
                           gate: '申不申',
                           conclusion: '不申',
                           option: '不申结案',
-                          reason: 'B5 · 不出申请号',
+                          reason: '不出申请号',
                           compare: '不申却出申请号 = 禁止假装',
                         }),
                       )

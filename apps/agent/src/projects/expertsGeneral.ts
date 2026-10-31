@@ -246,7 +246,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
     guardrails: [
       '无自由实施专项流程',
       '弱确认不写库',
-      '与 expert-fto 剧本隔离',
+      '与 FTO 席剧本隔离',
     ],
     catalogAgentId: null,
     accent: 'rose',

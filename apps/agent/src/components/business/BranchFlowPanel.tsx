@@ -10,7 +10,7 @@ type Props = {
 }
 
 /**
- * 支路 B1–B8 进部后的可用演示流 · 故事板「须看见 / 禁假装」
+ * 支路进部后的可用演示流 · 故事板「须看见 / 禁假装」
  * §13：加深可勾检查 / 短收件 / 期限条，仍非完整状态机。
  */
 export function BranchFlowPanel({
@@ -32,7 +32,7 @@ export function BranchFlowPanel({
     const items = [
       ['recv', '短收件：技术事实一页纸（演示）'],
       ['gate', '进入检查表：发明人/领域/密级非空'],
-      ['honest', '未声称「已过②③」'],
+      ['honest', '未声称「已过前序薄部」'],
     ] as const
     const ok = items.every(([id]) => checks[id])
     return (
@@ -42,10 +42,10 @@ export function BranchFlowPanel({
         data-branch="b1"
       >
         <p className="text-[10px] font-semibold uppercase tracking-wide text-indigo-800/80">
-          B1 · 直达④
+          支路 · 直达交底部
         </p>
         <p className="mt-0.5 text-[12px] font-medium text-slate-900">
-          跳过①②③ · 须见短收件+进入检查；禁止假装已激发/已挖点。
+          跳过前序薄部 · 须见短收件+进入检查；禁止假装已激发/已挖点。
         </p>
         <ul className="mt-2 space-y-1.5 text-[11px] text-slate-700" data-testid="branch-b1-checklist">
           {items.map(([id, label]) => (
@@ -73,10 +73,10 @@ export function BranchFlowPanel({
               onRecordJudgment?.(
                 buildBranchJudgment({
                   caseId,
-                  gate: 'B1直达④',
-                  conclusion: '短收件+检查表已见，开干④',
-                  option: '承认跳过①②③',
-                  reason: 'B1 虚线入口 · 不装已激发',
+                  gate: '直达交底部',
+                  conclusion: '短收件+检查表已见，开干交底部',
+                  option: '承认跳过前序薄部',
+                  reason: '虚线入口 · 不装已激发',
                   compare: '假装已挖点 = 禁止',
                 }),
               )
@@ -88,12 +88,12 @@ export function BranchFlowPanel({
             to={`/agent/cases/${caseId}`}
             className="btn-press focus-ring rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-medium text-slate-700"
           >
-            回公司补①②③
+            回公司补前序薄部
           </Link>
         </div>
         {ack === 'b1' ? (
           <p className="mt-2 text-[10px] text-emerald-800" data-testid="branch-b1-acked">
-            已留痕 · 可开干④主栏；不装已过②③。
+            已留痕 · 可开干交底部主栏；不装已过前序。
           </p>
         ) : null}
       </section>
@@ -103,7 +103,7 @@ export function BranchFlowPanel({
   if (b === 'b2') {
     const items = [
       ['disc', '交底材料可挂（或代理陪同旁路）'],
-      ['gate', '⑤进入检查表：发明人/领域/密级'],
+      ['gate', '申请部进入检查表：发明人/领域/密级'],
       ['green', '未全绿不硬写申请'],
     ] as const
     const ok = items.every(([id]) => checks[id])
@@ -114,10 +114,10 @@ export function BranchFlowPanel({
         data-branch="b2"
       >
         <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/80">
-          B2 · 自带交底→⑤
+          支路 · 自带交底→申请部
         </p>
         <p className="mt-0.5 text-[12px] text-slate-800">
-          须跑⑤进入检查；不过→退④补料。代理陪同见顶栏门槛条（不装交底过线）。
+          须跑申请部进入检查；不过→退交底部补料。代理陪同见顶栏门槛条（不装交底过线）。
         </p>
         <ul className="mt-2 space-y-1.5 text-[11px]" data-testid="branch-b2-checklist">
           {items.map(([id, label]) => (
@@ -144,23 +144,23 @@ export function BranchFlowPanel({
               onRecordJudgment?.(
                 buildBranchJudgment({
                   caseId,
-                  gate: 'B2自带交底',
+                  gate: '自带交底',
                   conclusion: '进入检查示意通过',
-                  option: '开干⑤',
-                  reason: 'B2 · 检查表勾齐',
+                  option: '开干申请部',
+                  reason: '检查表勾齐',
                   compare: '未全绿硬写申请 = 禁止',
                 }),
               )
             }
           >
-            {ok ? '检查通过 · 开干⑤' : '勾齐进入检查'}
+            {ok ? '检查通过 · 开干申请部' : '勾齐进入检查'}
           </button>
           <Link
             to={`/agent/cases/${caseId}/depts/disclosure`}
             className="btn-press focus-ring rounded-full border border-amber-400 bg-white px-3 py-1 text-[11px] font-medium text-amber-950"
             data-testid="branch-b2-back-disclosure"
           >
-            退④补料
+            退交底部补料
           </Link>
         </div>
       </section>
@@ -175,10 +175,10 @@ export function BranchFlowPanel({
         data-branch="b3"
       >
         <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-800/80">
-          B3 · 建议改④
+          支路 · 建议改交底部
         </p>
         <p className="mt-0.5 text-[12px] text-slate-800">
-          仅有技术说明、缺交底要件时：建议回④，禁止用「先查新」绕过交底门槛。
+          仅有技术说明、缺交底要件时：建议回交底部，禁止用「先查新」绕过交底门槛。
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           <Link
@@ -186,7 +186,7 @@ export function BranchFlowPanel({
             className="btn-press focus-ring rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
             data-testid="branch-b3-to-disclosure"
           >
-            接受建议 · 去④
+            接受建议 · 去交底部
           </Link>
           <button
             type="button"
@@ -196,7 +196,7 @@ export function BranchFlowPanel({
               onRecordJudgment?.(
                 buildBranchJudgment({
                   caseId,
-                  gate: 'B3建议改④',
+                  gate: '建议改交底部',
                   conclusion: '拒绝「先查新」绕过',
                   option: '坚持补交底',
                   reason: '禁查新绕门槛',
@@ -220,10 +220,10 @@ export function BranchFlowPanel({
         data-branch="b4"
       >
         <p className="text-[10px] font-semibold uppercase tracking-wide text-teal-800/80">
-          B4 · 通知书→⑥
+          支路 · 通知书→答复部
         </p>
         <p className="mt-0.5 text-[12px] text-slate-800">
-          ⑥短收件：须挂现行申请文件；禁止凭交底直接答 OA。
+          答复部短收件：须挂现行申请文件；禁止凭交底直接答 OA。
         </p>
         <ul className="mt-2 text-[11px] text-slate-700" data-testid="branch-b4-intake">
           <li>· 通知书类型：一通（演示）</li>
@@ -248,10 +248,10 @@ export function BranchFlowPanel({
             onRecordJudgment?.(
               buildBranchJudgment({
                 caseId,
-                gate: 'B4通知书进⑥',
+                gate: '通知书进答复部',
                 conclusion: '短收件齐 · 有现行申请',
                 option: '开干答复',
-                reason: 'B4',
+                reason: '通知书支路',
                 compare: '凭交底答 OA = 禁止',
               }),
             )
@@ -271,7 +271,7 @@ export function BranchFlowPanel({
         data-branch="b6"
       >
         <p className="text-[10px] font-semibold uppercase tracking-wide text-rose-800/80">
-          B6 · ⑥超期升级
+          支路 · 答复超期升级
         </p>
         <p className="mt-0.5 text-[12px] font-medium text-slate-900">
           期限升级可见 · 延期 / 放弃 / 抢答须拍 · <strong>禁静默逾期</strong>
@@ -298,7 +298,7 @@ export function BranchFlowPanel({
                 onRecordJudgment?.(
                   buildBranchJudgment({
                     caseId,
-                    gate: 'B6超期升级',
+                    gate: '答复超期升级',
                     conclusion: opt,
                     option: opt,
                     reason: '期限升级可见 · 非静默',
@@ -328,15 +328,15 @@ export function BranchFlowPanel({
         data-branch="b8"
       >
         <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-          B8 · 情报官（非⑧）
+          支路 · 情报官（非复盘部）
         </p>
         <p className="mt-0.5 text-[12px] text-slate-800">
-          竞对年报走情报官另链；禁止用⑧复盘/③挖掘糊弄专报。
+          竞对年报走情报官另链；禁止用复盘部/挖掘部糊弄专报。
         </p>
         <ul className="mt-2 space-y-1 text-[11px] text-slate-600" data-testid="branch-b8-must-see">
           <li>· 须看见：情报官入口（资产页）</li>
-          <li>· 禁：⑧五块报告假装专报</li>
-          <li>· 禁：③点包代替年报分析</li>
+          <li>· 禁：复盘五块报告假装专报</li>
+          <li>· 禁：挖掘点包代替年报分析</li>
         </ul>
         <Link
           to="/agent/assets?branch=b8"

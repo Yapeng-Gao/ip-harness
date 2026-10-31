@@ -697,7 +697,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "年费管家",
     "role": "expert",
     "specialty": "年费/放弃 · 年费台账",
-    "description": "授权后管理 · 期限与滞纳金示意联动价值分级。【确认⑦】年费/放弃。后置样机可演示。",
+    "description": "授权后管理 · 期限与滞纳金示意联动价值分级。【确认点】年费/放弃。后置样机可演示。",
     "tools": ["list_annuity_due", "compute_surcharge", "propose_pay_or_abandon"],
     "shortcuts": ANNUITY_DEPTH_SHORTCUTS,
     "steps": ANNUITY_DEPTH_STEPS,
@@ -712,7 +712,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "defaultTeam": false,
     "ownerLabel": "IP 运营",
     "phase": true,
-    "emptyStateNote": "年费管家为后置业务席：样机可跑完全程（步骤+双文件+校验+确认⑦），无真沙箱/真缴费。"
+    "emptyStateNote": "年费管家为后置业务席：样机可跑完全程（步骤+双文件+校验+确认点），无真沙箱/真缴费。"
   },
   "expert-valuation": {
     "id": "expert-valuation",
@@ -734,14 +734,14 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "defaultTeam": false,
     "ownerLabel": "IP 决策",
     "phase": true,
-    "emptyStateNote": "价值评估师为后置业务席：样机可跑评分剧本与双文件；无独立确认闸（服务确认⑦）。"
+    "emptyStateNote": "价值评估师为后置业务席：样机可跑评分剧本与双文件；无独立确认闸（服务确认点）。"
   },
   "expert-monetize": {
     "id": "expert-monetize",
     "name": "转化顾问",
     "role": "expert",
     "specialty": "许可/转让 · 转化条款",
-    "description": "转化变现示意 · 估值与合同必备条款。【确认⑧】交易签约。后置样机可演示。",
+    "description": "转化变现示意 · 估值与合同必备条款。【确认点】交易签约。后置样机可演示。",
     "tools": ["estimate_deal", "draft_term_sheet", "validate_contract_clauses"],
     "shortcuts": MONETIZE_DEPTH_SHORTCUTS,
     "steps": MONETIZE_DEPTH_STEPS,
@@ -756,7 +756,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "defaultTeam": false,
     "ownerLabel": "商务/IP",
     "phase": true,
-    "emptyStateNote": "转化顾问为后置业务席：样机可跑估值→条款→确认⑧；无真签约。"
+    "emptyStateNote": "转化顾问为后置业务席：样机可跑估值→条款→确认点；无真签约。"
   },
   "expert-enforcement": {
     "id": "expert-enforcement",
@@ -771,7 +771,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "domainCommandCandidates": [
       {"command": null, "label": "提案 · 不假装入库", "note": "维权简报 · ≠FTO · ≠监控告警"}
     ],
-    "guardrails": ["≠ expert-fto", "≠ STAGE watch", "后置业务可跑"],
+    "guardrails": ["≠ FTO 席", "≠ 监控台", "后置业务可跑"],
     "catalogAgentId": null,
     "accent": "zinc",
     "catalogGroup": "phase",
