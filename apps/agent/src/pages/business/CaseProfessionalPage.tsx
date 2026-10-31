@@ -41,8 +41,8 @@ import {
 } from '../../business/sideAuxBodyLink'
 
 /**
- * 专业/编制 · product-pages §4.3a · vision 选部开工
- * 机制：案级能力面——汇总 + 八部卡（编制/在办缺口/本稿零件/辅链挂件）+ 收折进阶辅链零件。
+ * 编制名册 · 一期真源：案级看编制/在办缺口，再进部台；非 lifecycle「专业」第三进门。
+ * 机制：汇总 + 八部卡（编制/在办缺口/本稿零件/辅链挂件）+ 收折进阶辅链零件。
  * 禁：本页改交卷；第一屏技能墙；假编制无案；假官报；抢公司缺口主 CTA。
  */
 
@@ -200,7 +200,7 @@ export function CaseProfessionalPage() {
           className="mt-3 text-[20px] font-semibold text-slate-900"
           data-testid="case-professional-heading"
         >
-          专业能力 / 编制
+          编制名册
         </h1>
         <p className="mt-1 text-sm text-slate-500">
           {c.title} · 谁能接、谁在办、哪有缺口 · 点开工进工作台

@@ -1985,77 +1985,76 @@ export function BusinessCaseDeptPage() {
                         </ul>
                       </details>
                     ) : null}
-                    <div
-                      className="mt-2 flex flex-wrap items-center gap-1.5"
-                      data-testid="dept-kit-tool-row"
-                    >
-                      <button
-                        type="button"
-                        className="btn-press focus-ring rounded-full border border-dashed border-violet-600/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-violet-950/80 hover:bg-white"
-                        data-testid="dept-seed-kit"
-                        title="样机勾齐本稿齐套 · 非一键交卷 · 非官报"
-                        onClick={() => {
-                          if (slug) seedKitComplete(caseId, slug)
-                        }}
-                      >
-                        样机·勾齐
-                      </button>
-                      <button
-                        type="button"
-                        className="btn-press focus-ring rounded-full border border-dashed border-sky-500/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-sky-950/80 hover:bg-white"
-                        data-testid="dept-sync-kit-from-diff"
-                        title={KIT_DIFF_AUTO_HONEST}
-                        onClick={() => {
-                          if (slug)
-                            syncKitFromDiff(caseId, slug, {
-                              materialId: selectedMaterialId,
-                              bodyText: centerBody,
-                            })
-                        }}
-                      >
-                        按正文勾
-                      </button>
-                      <details
-                        className="rounded-md border border-slate-200/80 bg-white/70 px-2 py-0.5"
-                        data-testid="dept-kit-tools"
-                      >
-                        <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
-                          更多
-                        </summary>
-                        <div className="mt-1.5 flex flex-wrap gap-1.5 pb-1">
-                          <button
-                            type="button"
-                            className="btn-press focus-ring rounded-full border border-dashed border-slate-400/50 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-slate-700 hover:bg-white"
-                            data-testid="dept-sync-kit-from-step"
-                            title={KIT_STEP_SYNC_HONEST}
-                            onClick={() => {
-                              if (activeSeat) syncKitFromSeatStep(caseId, activeSeat)
-                            }}
-                          >
-                            按本席步进勾
-                          </button>
-                        </div>
-                      </details>
-                    </div>
                     <details
-                      className="mt-1.5 rounded-md border border-violet-100/80 bg-white/60 px-2 py-1"
-                      data-testid="dept-kit-auto-hints"
+                      className="mt-2 rounded-md border border-violet-100/70 bg-white/50 px-2 py-1"
+                      data-testid="dept-kit-tools-fold"
+                      data-kit-tools-density="folded"
                     >
-                      <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
-                        齐套如何自动勾（示意）
+                      <summary
+                        className="cursor-pointer select-none text-[10px] font-medium text-slate-500"
+                        data-testid="dept-kit-tools-summary"
+                      >
+                        样机齐套工具（收折）
                       </summary>
-                      <p
-                        className="mt-1.5 text-[9px] leading-relaxed text-violet-800/70"
-                        data-testid="dept-kit-step-sync-hint"
+                      <div
+                        className="mt-1.5 flex flex-wrap items-center gap-1.5"
+                        data-testid="dept-kit-tool-row"
                       >
-                        {KIT_STEP_SYNC_HONEST} · 右栏推进本步会自动勾上若干齐套项；也可点「按本席步进勾齐套」。末项如决议/权属仍须手勾或样机勾齐。
-                      </p>
-                      <p
-                        className="mt-1 text-[9px] leading-relaxed text-sky-900/70"
-                        data-testid="dept-kit-diff-auto-hint"
+                        <button
+                          type="button"
+                          className="btn-press focus-ring rounded-full border border-dashed border-violet-600/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-violet-950/80 hover:bg-white"
+                          data-testid="dept-seed-kit"
+                          title="样机勾齐本稿齐套 · 非一键交卷 · 非官报"
+                          onClick={() => {
+                            if (slug) seedKitComplete(caseId, slug)
+                          }}
+                        >
+                          样机·勾齐
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-press focus-ring rounded-full border border-dashed border-sky-500/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-sky-950/80 hover:bg-white"
+                          data-testid="dept-sync-kit-from-diff"
+                          title={KIT_DIFF_AUTO_HONEST}
+                          onClick={() => {
+                            if (slug)
+                              syncKitFromDiff(caseId, slug, {
+                                materialId: selectedMaterialId,
+                                bodyText: centerBody,
+                              })
+                          }}
+                        >
+                          按正文勾
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-press focus-ring rounded-full border border-dashed border-slate-400/50 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-slate-700 hover:bg-white"
+                          data-testid="dept-sync-kit-from-step"
+                          title={KIT_STEP_SYNC_HONEST}
+                          onClick={() => {
+                            if (activeSeat) syncKitFromSeatStep(caseId, activeSeat)
+                          }}
+                        >
+                          按本席步进勾
+                        </button>
+                      </div>
+                      <div
+                        className="mt-1.5 space-y-1 border-t border-violet-100/60 pt-1"
+                        data-testid="dept-kit-auto-hints"
                       >
-                        {KIT_DIFF_AUTO_HONEST} · 点本稿零件、看差分示意或改中栏正文，会自动勾上对应齐套项；空稿收束。权属/决议等末项须正文明确对应才自动勾。
-                      </p>
+                        <p
+                          className="text-[9px] leading-relaxed text-violet-800/70"
+                          data-testid="dept-kit-step-sync-hint"
+                        >
+                          {KIT_STEP_SYNC_HONEST} · 右栏推进本步会自动勾上若干齐套项。末项如决议/权属仍须手勾或样机勾齐。
+                        </p>
+                        <p
+                          className="text-[9px] leading-relaxed text-sky-900/70"
+                          data-testid="dept-kit-diff-auto-hint"
+                        >
+                          {KIT_DIFF_AUTO_HONEST} · 点本稿零件或改中栏正文，会自动勾对应项；空稿收束。
+                        </p>
+                      </div>
                     </details>
                     <details
                       className="mt-2 rounded-md border border-violet-100 bg-white/70 px-2 py-1.5"

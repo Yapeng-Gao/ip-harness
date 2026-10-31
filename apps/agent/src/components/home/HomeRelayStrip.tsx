@@ -1,5 +1,5 @@
 /**
- * 助手「待接力」条 · vision §3.1d
+ * 大厅「待接力」条 · 一期-产品逻辑（非 lifecycle 三档）
  * progress.delegate（刷新可恢复）+ seed 待拍/工单；非官报。
  */
 import { Link } from 'react-router-dom'

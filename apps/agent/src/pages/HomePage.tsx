@@ -17,7 +17,7 @@ import { reopenAllTeachTips } from '../business/teachingFade'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 接待入口 + 八部可见；进公司/部台办主链。
- * lifecycle vision §3.1d「助手/项目/专业」三档已降权收折，勿当进门主叙事。
+ * 旧 lifecycle 顶栏三档已卸挂；勿当进门主叙事。
  * BossTodo = 轻量轨；禁医院分诊；禁待办拆成多张卡片墙。
  */
 export function HomePage() {
@@ -263,7 +263,7 @@ export function HomePage() {
               八个部门
             </h2>
             <span className="text-[11px] font-normal text-slate-500">
-              次级 · 盯整案请进公司案地图（非顶栏旧三档）
+              次级 · 盯整案请进公司案地图
             </span>
           </button>
           <ol
@@ -295,7 +295,7 @@ export function HomePage() {
           </ol>
           {!eightOpen ? (
             <p className="pl-5 text-[11px] text-slate-500" data-testid="home-eight-depts-hint">
-              已折起 · 点上方展开；日常盯案走公司案地图（非旁路 /projects；非 lifecycle 顶栏三档）。
+              已折起 · 点上方展开；日常盯案走公司案地图（非旁路 /projects）。
             </p>
           ) : null}
         </section>
@@ -360,7 +360,7 @@ export function HomePage() {
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="home-action-departments"
           >
-            专业 / 编制
+            编制名册
           </Link>
         </nav>
 

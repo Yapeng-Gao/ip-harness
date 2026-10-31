@@ -19,12 +19,7 @@ import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
 import { useAgentDebug } from '../business/useAgentDebug'
 import { useEntryRole } from '../business/useEntryRole'
 import { useBusinessCases } from '../business/BusinessCaseContext'
-import { pickLatestCaseId } from '../business/entryRole'
-import {
-  professionalLandingHref,
-  projectLandingHref,
-  resolveShellTab,
-} from '../business/shellTabs'
+/* 旧三档着陆保留 shellTabs.ts 供深链/单测；壳顶栏已卸挂（一期真源不认 lifecycle 三档） */
 import { LabRouteBanner } from './LabRouteBanner'
 import { CaseShellSwitcher } from './business/CaseShellSwitcher'
 import { isCaseLevelShellPath } from '../business/caseShellSwitcher'
@@ -35,12 +30,7 @@ export function AgentShell() {
   const loc = useLocation()
   const debug = useAgentDebug()
   const { entryRole } = useEntryRole()
-  const {
-    getCase: getBizCase,
-    cases: bizCases,
-    getProgress: getBizProgress,
-    getProcessLogs,
-  } = useBusinessCases()
+  const { getCase: getBizCase } = useBusinessCases()
   const [rightOpen, setRightOpen] = useState(false)
   /** P1-C · pending-confirm 首次进入自动展开上下文一次（视觉，不改 HITL） */
   const autoExpandedFor = useRef<string | null>(null)
@@ -161,7 +151,7 @@ export function AgentShell() {
       : inCatalog
         ? '专家工作台'
         : inDepartments
-          ? '专业 / 编制'
+          ? '编制'
           : inAssets
             ? '资产'
             : inBusiness
@@ -175,39 +165,6 @@ export function AgentShell() {
                   : inLabPath
                     ? '实验室'
                     : '工作台'
-
-  const getBizLogAt = useMemo(
-    () => (id: string) => {
-      const logs = getProcessLogs(id)
-      if (logs.length === 0) return undefined
-      return logs.reduce((max, l) => (l.at > max ? l.at : max), logs[0]!.at)
-    },
-    [getProcessLogs],
-  )
-  const latestBizCaseId = useMemo(
-    () =>
-      pickLatestCaseId(
-        bizCases,
-        (id) => getBizProgress(id).updatedAt,
-        getBizLogAt,
-      ),
-    [bizCases, getBizProgress, getBizLogAt],
-  )
-  const shellTab = resolveShellTab(loc.pathname)
-  const showShellTabs =
-    (inHome || inBusiness || inDepartments || inAssets) &&
-    !inGrokShell &&
-    !inLabPath
-  const projectHref = projectLandingHref({
-    activeCaseId: activeBizCaseId,
-    latestCaseId: latestBizCaseId,
-    hasCases: bizCases.length > 0,
-  })
-  const professionalHref = professionalLandingHref({
-    activeCaseId: activeBizCaseId,
-    latestCaseId: latestBizCaseId,
-    hasCases: bizCases.length > 0,
-  })
 
   return (
     <div
@@ -228,84 +185,21 @@ export function AgentShell() {
         data-entry-role={entryRole}
       >
         <div className="flex items-center gap-2">
-          <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[9px] font-semibold" title="Novada Team">
+          <Link
+            to="/agent"
+            className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[9px] font-semibold focus-ring rounded-md"
+            title="回大厅"
+            data-testid="shell-brand-hall"
+            aria-label="回大厅"
+          >
             NT
-          </div>
+          </Link>
           <div className="text-sm font-semibold tracking-tight text-slate-900">
             {pageTitle}
           </div>
         </div>
 
-        {showShellTabs ? (
-          <details
-            className="ml-1 max-w-[min(100%,22rem)]"
-            data-testid="shell-tabs-fold"
-            data-lifecycle-legacy="1"
-          >
-            <summary
-              className="cursor-pointer select-none rounded-md border border-dashed border-slate-300/90 bg-slate-50/60 px-2 py-1 text-[11px] font-medium text-slate-500 hover:text-slate-700"
-              data-testid="shell-tabs-fold-summary"
-            >
-              视图 · 旧三档（收折）
-            </summary>
-            <nav
-              className="mt-1 flex flex-wrap items-center gap-0.5 rounded-lg border border-slate-200/90 bg-slate-50/80 p-0.5"
-              data-testid="shell-tabs"
-              data-shell-tabs-role="legacy-lifecycle"
-              aria-label="旧三档视图（lifecycle，非一期进门）"
-            >
-              {(
-                [
-                  {
-                    id: 'assistant' as const,
-                    label: '大厅',
-                    hint: 'lifecycle「助手」',
-                    to: '/agent',
-                  },
-                  {
-                    id: 'project' as const,
-                    label: '本案公司',
-                    hint: 'lifecycle「项目」· 公司案',
-                    to: projectHref,
-                  },
-                  {
-                    id: 'professional' as const,
-                    label: '编制',
-                    hint: 'lifecycle「专业」',
-                    to: professionalHref,
-                  },
-                ] as const
-              ).map((tab) => {
-                const selected = shellTab === tab.id
-                return (
-                  <Link
-                    key={tab.id}
-                    to={tab.to}
-                    title={tab.hint}
-                    data-testid={`shell-tab-${tab.id}`}
-                    data-selected={selected ? '1' : '0'}
-                    data-lifecycle-tab={tab.id}
-                    aria-current={selected ? 'page' : undefined}
-                    className={`btn-press focus-ring rounded-md px-2.5 py-1 text-[12px] font-medium ${
-                      selected
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    {tab.label}
-                  </Link>
-                )
-              })}
-            </nav>
-            <p
-              className="mt-1 px-0.5 text-[10px] leading-snug text-slate-400"
-              data-testid="shell-tabs-legacy-note"
-            >
-              一期进门＝大厅接待+八部 → 公司 → 部台；本三档出自 lifecycle
-              vision §3.1d，非一期节点正文。
-            </p>
-          </details>
-        ) : null}
+        {/* 旧 lifecycle 三档顶栏已卸挂 · 一期进门＝大厅→公司→部台；深链仍可直达 */}
 
         {isCaseLevelShellPath(loc.pathname) && activeBizCaseId ? (
           <CaseShellSwitcher activeCaseId={activeBizCaseId} />
