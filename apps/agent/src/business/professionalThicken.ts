@@ -32,7 +32,7 @@ export function thickenStatus(
       return {
         kind: 'work',
         text: '当前在办',
-        detail: `${lead} 主责 · 交卷后待你拍（示意）`,
+        detail: `${lead} 主责 · 本稿交后待你拍（示意）`,
       }
     case '待确认':
       return {
@@ -44,13 +44,13 @@ export function thickenStatus(
       return {
         kind: 'gap',
         text: '缺口：退回补齐',
-        detail: `${lead} 待按意见改一版`,
+        detail: `${lead} 待按意见改一版稿`,
       }
     case '已完成':
       return {
         kind: 'idle',
-        text: '已交卷',
-        detail: `${lead} 已过本站`,
+        text: '本稿已交',
+        detail: `${lead} 已过本站章节`,
       }
     case '锁定':
       return {
@@ -62,7 +62,7 @@ export function thickenStatus(
       return {
         kind: 'idle',
         text: '未到站',
-        detail: '上游过线后再接活',
+        detail: '上游过线后再接稿',
       }
   }
 }

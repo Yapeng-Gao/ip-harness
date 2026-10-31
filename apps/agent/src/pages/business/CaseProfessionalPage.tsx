@@ -25,10 +25,18 @@ import {
   type ExtraSeat,
   type ThickStatus,
 } from '../../business/professionalThicken'
+import {
+  PROF_AUX_HONEST,
+  SIDE_AUX_DEPTS,
+  auxBundleFor,
+  methodLabelFromSkill,
+  type AuxHook,
+  type ManuscriptPart,
+} from '../../business/professionalAuxParts'
 
 /**
  * 专业/编制 · product-pages §4.3a · vision 选部开工
- * 机制：案级能力面——汇总条 + 八部卡（编制头像条/能力/在办·缺口细行/添加专家示意）+「让该部开工」进工作台。
+ * 机制：案级能力面——汇总 + 八部卡（编制/在办缺口/本稿零件/辅链挂件）+ 收折进阶辅链零件。
  * 禁：本页改交卷；第一屏技能墙；假编制无案；假官报；抢公司缺口主 CTA。
  */
 
@@ -41,6 +49,8 @@ type CardRow = {
   extras: ExtraSeat[]
   href: string
   skillNames: string[]
+  parts: ManuscriptPart[]
+  auxHooks: AuxHook[]
 }
 
 export function CaseProfessionalPage() {
@@ -73,7 +83,8 @@ export function CaseProfessionalPage() {
       const skillNames = cfg.skills
         .filter((s) => s.enabled)
         .slice(0, 3)
-        .map((s) => s.name)
+        .map((s) => methodLabelFromSkill(s.name))
+      const bundle = auxBundleFor(dept.id)
       return {
         door,
         dept,
@@ -83,6 +94,8 @@ export function CaseProfessionalPage() {
         extras: readExtraSeats(caseId, dept.id),
         href: `${home}/depts/${deptSlug(dept.id)}`,
         skillNames,
+        parts: bundle.parts,
+        auxHooks: bundle.aux,
       }
     }).filter(Boolean) as CardRow[]
     return sortProfessionalCards(raw)
@@ -128,7 +141,7 @@ export function CaseProfessionalPage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="case-professional-page"
-      data-professional="caps-v2"
+      data-professional="aux-parts-v1"
       data-case-id={caseId}
     >
       <div className="mx-auto max-w-3xl">
@@ -171,8 +184,8 @@ export function CaseProfessionalPage() {
           data-testid="case-professional-hint"
           role="status"
         >
-          案级能力面 · 选部开工（让部内 bot 接活）· 编制/在办/缺口可看 · 本页不改交卷 ·
-          非第三套产品 · 样机示意非官报
+          案级能力面 · 选部接稿 · 编制/在办/缺口/本稿零件可看 · 辅链零件默认收折 ·
+          本页不改交卷 · 非第三套产品 · 样机示意非官报
         </p>
 
         <h1
@@ -219,7 +232,7 @@ export function CaseProfessionalPage() {
           className="mt-4 grid gap-3 sm:grid-cols-2"
           data-testid="case-professional-cards"
         >
-          {cards.map(({ door, dept, line, seats, extras, href, skillNames }) => (
+          {cards.map(({ door, dept, line, seats, extras, href, skillNames, parts, auxHooks }) => (
             <li
               key={dept.id}
               className={`flex flex-col rounded-xl border bg-white p-3.5 shadow-sm ${
@@ -365,6 +378,51 @@ export function CaseProfessionalPage() {
                 ) : null}
               </div>
 
+              {/* 本稿零件 */}
+              <div
+                className="mt-2.5"
+                data-testid="case-professional-parts"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                  本稿零件
+                </p>
+                <ul className="mt-1 space-y-0.5">
+                  {parts.map((part) => (
+                    <li
+                      key={part.id}
+                      className="flex items-baseline gap-1.5 text-[11px] text-slate-700"
+                      data-testid={`case-professional-part-${part.id}`}
+                    >
+                      <span className="font-medium text-slate-800">
+                        {part.label}
+                      </span>
+                      <span className="truncate text-[10px] text-slate-400">
+                        {part.hint}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {auxHooks.length > 0 ? (
+                <ul
+                  className="mt-2 flex flex-wrap gap-1"
+                  data-testid="case-professional-aux-hooks"
+                  aria-label="辅链挂件"
+                >
+                  {auxHooks.map((a) => (
+                    <li
+                      key={a.id}
+                      className="rounded-full border border-dashed border-violet-200 bg-violet-50/70 px-1.5 py-0.5 text-[9px] font-medium text-violet-900"
+                      title={a.relation}
+                      data-testid={`case-professional-aux-${a.id}`}
+                    >
+                      辅 · {a.label}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
               <div className="mt-auto pt-3">
                 <Link
                   to={href}
@@ -372,9 +430,9 @@ export function CaseProfessionalPage() {
                   data-testid={`case-professional-start-${door.slug}`}
                   data-start-semantic="dept-bots-work"
                 >
-                  <span className="text-[11px] font-semibold">让该部开工</span>
+                  <span className="text-[11px] font-semibold">让该部接稿</span>
                   <span className="text-[9px] font-normal text-slate-300">
-                    部内 bot 接活 → 工作台
+                    部内接活 → 工作台改稿
                   </span>
                 </Link>
               </div>
@@ -383,7 +441,7 @@ export function CaseProfessionalPage() {
                 <ul
                   className="mt-2 flex flex-wrap gap-1"
                   data-testid="case-professional-skill-chips"
-                  aria-label="主责技能示意"
+                  aria-label="办事方法示意"
                 >
                   {skillNames.map((n) => (
                     <li
@@ -400,15 +458,65 @@ export function CaseProfessionalPage() {
         </ul>
 
         <details
-          className="mt-5 rounded-xl border border-dashed border-slate-200 bg-white px-3 py-2"
+          className="mt-5 rounded-xl border border-dashed border-violet-200 bg-violet-50/40 px-3 py-2.5"
           data-testid="case-professional-skills-fold"
+          data-aux-parts="1"
         >
-          <summary className="cursor-pointer text-[12px] font-medium text-slate-600">
-            进阶 · 技能 / MCP（默认收折）
+          <summary
+            className="cursor-pointer text-[12px] font-semibold text-violet-950"
+            data-testid="case-professional-aux-summary"
+          >
+            进阶 · 辅链零件与办事方法（默认收折）
           </summary>
-          <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-            方法配置后置；卡上已露主责技能示意芯片。主路径仍是岗名/职责/在办缺口与「让该部开工」。非第一屏墙 · 非官报。
+          <p
+            className="mt-2 text-[11px] leading-relaxed text-violet-900/90"
+            data-testid="case-professional-aux-honest"
+          >
+            {PROF_AUX_HONEST}。卡上已露「本稿零件 / 辅链挂件」；此处加厚查新·附图·递交等
+            <strong className="font-semibold">非主八部</strong>
+            挂件清单。主路径仍是编制 + 在办/缺口 +「让该部接稿」。
           </p>
+          <ul
+            className="mt-3 grid gap-2 sm:grid-cols-3"
+            data-testid="case-professional-side-aux"
+          >
+            {SIDE_AUX_DEPTS.map((d) => (
+              <li
+                key={d.id}
+                className="rounded-lg border border-violet-200/80 bg-white px-2.5 py-2"
+                data-testid={`case-professional-side-aux-${d.id}`}
+              >
+                <p className="text-[11px] font-semibold text-violet-950">
+                  {d.label}
+                </p>
+                <p className="mt-0.5 text-[10px] text-violet-800/70">{d.honest}</p>
+                <ul className="mt-1.5 space-y-0.5">
+                  {d.parts.map((part) => (
+                    <li
+                      key={part.id}
+                      className="text-[11px] text-slate-700"
+                      data-testid={`case-professional-side-part-${part.id}`}
+                    >
+                      <span className="font-medium">{part.label}</span>
+                      <span className="text-slate-400"> · {part.hint}</span>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+          <div
+            className="mt-3 rounded-lg border border-dashed border-slate-200 bg-white px-2.5 py-2"
+            data-testid="case-professional-methods-note"
+          >
+            <p className="text-[11px] font-semibold text-slate-800">
+              办事方法（卡上芯片同源 · 示意）
+            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+              方法≈怎么改稿/齐套的套路，不是 MCP
+              墙。完整配置仍在部门编制旁路；本页只点到为止。
+            </p>
+          </div>
         </details>
 
         <div className="mt-5 flex flex-wrap gap-2">
