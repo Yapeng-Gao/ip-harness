@@ -42,7 +42,7 @@ import {
 
 /**
  * 编制名册 · 一期真源：案级看编制/在办缺口，再进部台；非 lifecycle「专业」第三进门。
- * 机制：汇总 + 八部卡（编制/在办缺口/本稿零件/辅链挂件）+ 收折进阶辅链零件。
+ * 机制：汇总 + 八部卡（编制/在办缺口/本稿章节/辅助材料）+ 收折进阶辅链零件。
  * 禁：本页改交卷；第一屏技能墙；假编制无案；假官报；抢公司缺口主 CTA。
  */
 
@@ -386,13 +386,13 @@ export function CaseProfessionalPage() {
                 ) : null}
               </div>
 
-              {/* 本稿零件 */}
+              {/* 本稿章节 */}
               <div
                 className="mt-2.5"
                 data-testid="case-professional-parts"
               >
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                  本稿零件
+                  本稿章节
                 </p>
                 <ul className="mt-1 space-y-0.5">
                   {parts.map((part) => (
@@ -424,7 +424,7 @@ export function CaseProfessionalPage() {
                 <ul
                   className="mt-2 flex flex-wrap gap-1"
                   data-testid="case-professional-aux-hooks"
-                  aria-label="辅链挂件"
+                  aria-label="辅助材料"
                 >
                   {auxHooks.map((a) => {
                     const target = auxHookToSideTarget(a.id)
@@ -440,7 +440,7 @@ export function CaseProfessionalPage() {
                               partId: target.partId,
                             })}
                             className={`${chipClass} underline-offset-2 hover:underline`}
-                            title={`${a.relation} · 打开中栏挂件种子`}
+                            title={`${a.relation} · 打开部台中栏（示意）`}
                             data-testid={`case-professional-aux-${a.id}`}
                           >
                             辅 · {a.label}
@@ -509,9 +509,9 @@ export function CaseProfessionalPage() {
             className="mt-2 text-[11px] leading-relaxed text-violet-900/90"
             data-testid="case-professional-aux-honest"
           >
-            {PROF_AUX_HONEST}。卡上已露「本稿零件 / 辅链挂件」；点查新·附图·递交挂件进中栏改稿（联成果修订示意）；
-            <strong className="font-semibold">非主八部</strong>
-            挂件清单。主路径仍是编制 + 在办/缺口 +「进该部台」。
+            {PROF_AUX_HONEST}。卡上可点本稿章节与辅助材料；进部台中栏改稿（样机示意）。
+            <strong className="font-semibold">辅助材料≠八部大门</strong>
+            。主路径仍是编制名册看缺口 → 进部台办理。
           </p>
           <ul
             className="mt-3 grid gap-2 sm:grid-cols-3"
@@ -541,7 +541,7 @@ export function CaseProfessionalPage() {
                           partId: part.id,
                         })}
                         className="font-medium text-violet-950 underline-offset-2 hover:underline"
-                        title="打开宿主部台中栏 · 写入辅链挂件种子"
+                        title="打开部台中栏 · 辅助材料示意"
                         data-testid={`case-professional-side-part-link-${part.id}`}
                       >
                         {part.label}
@@ -561,8 +561,7 @@ export function CaseProfessionalPage() {
               办事方法（卡上芯片同源 · 示意）
             </p>
             <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-              方法≈怎么改稿/齐套的套路，不是 MCP
-              墙。完整配置仍在部门编制旁路；本页只点到为止。
+              方法≈怎么改稿/齐套的套路，不是配置墙。完整编制配置在全库旁路；本案只点到部台为止。
             </p>
           </div>
         </details>

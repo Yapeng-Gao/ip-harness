@@ -1,6 +1,6 @@
 /**
- * 专业面辅链零件 · 本稿零件 / 辅链挂件 / 办事方法（样机；非官报）
- * Office 语感：稿件章节、修订挂件；禁任务板/CLI；辅链≠主八部大门。
+ * 编制名册 · 本稿章节 / 辅助材料 / 办事方法（样机；非官报）
+ * 一期：辅链≠八部大门；禁任务板/CLI；非 lifecycle「专业」第三进门。
  */
 import type { OrgDeptId } from '../departments/orgDepts'
 

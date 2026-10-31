@@ -31,7 +31,7 @@ function shortCaseNo(id: string): string {
 type FilterChip = 'all' | 'pending' | 'deadline' | 'disclosure'
 
 /**
- * /agent/cases · 多案流水（案盘）· product-pages §4.2
+ * /agent/cases · 多案流水（案盘）· 一期：多案清单，点行→公司案（非大厅、非部台）
  * 机制：清单看卡点/下一步/谁在干；点行→公司首页。
  * 禁：把待确认与近期限筛成同一条件；禁用待确认点冒充期限红点；
  * 禁：待确认钮与开新案同权抢主（拍板主路径=工作台右栏；审计另走）。
@@ -117,7 +117,7 @@ export function BusinessCasesPage() {
             </h1>
             <p className="mt-1 text-sm text-slate-500">
               {entryRole === 'enterprise'
-                ? '企业主路径是公司首页；这里回看全部案子 · 点行进该公司'
+                ? '一期：大厅委托 · 公司盯单案 · 本案盘回看多案 · 点行进公司案'
                 : '卡点 · 待你拍 · 谁在干 · 点行进公司首页（拍板仍在部门工作台）'}
             </p>
           </div>

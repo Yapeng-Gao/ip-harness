@@ -74,8 +74,8 @@ const CARDS: LabCard[] = [
   },
   {
     id: 'l3',
-    version: '幕 3 · 项目（旁路）',
-    blurb: '同一专家脑 + mid 映射；壳差不是脑差。项目旁路，非讨论组。',
+    version: '旁路 · 遗留项目夹',
+    blurb: '遗留项目夹示意；一期主路径仍是大厅→公司→部台。非讨论组、非第二套进门。',
     href: '/agent/projects/proj-demo-patent',
     cta: '打开示范项目',
     icon: FolderKanban,

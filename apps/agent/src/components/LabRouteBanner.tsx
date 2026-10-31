@@ -2,13 +2,13 @@ import { Link } from 'react-router-dom'
 import { FlaskConical } from 'lucide-react'
 
 type Props = {
-  /** projects = 旧双轨；lab = 实验室壳 */
+  /** projects = 遗留项目夹旁路；lab = 实验室壳 */
   kind?: 'lab' | 'projects'
   className?: string
 }
 
 /**
- * 旁路/实验室顶条 · 扫描 P1/P2：不抢主链（大厅→案→部）
+ * 旁路/实验室顶条 · 不抢一期主链（大厅接待+八部 → 公司 → 部台）
  */
 export function LabRouteBanner({ kind = 'lab', className = '' }: Props) {
   const isProjects = kind === 'projects'
@@ -24,13 +24,13 @@ export function LabRouteBanner({ kind = 'lab', className = '' }: Props) {
         <span>
           {isProjects ? (
             <>
-              <strong>旧项目专家台</strong>
-              （旁路）· 主路径是大厅 → 案卷 → 八部工作台
+              <strong>遗留项目夹</strong>
+              （旁路）· 一期主路径是大厅接待+八部 → 公司案 → 部台
             </>
           ) : (
             <>
               <strong>实验室 / 旁路壳</strong>
-              · 非一期八部主路径（大厅→案→部）；会话/沙箱/team/bots 仅实验，硬请示与工单请回工作台
+              · 非一期主路径（大厅→公司→部台）；会话/沙箱/多 bot 仅实验，硬请示与工单请回部台
             </>
           )}
         </span>
@@ -55,7 +55,7 @@ export function LabRouteBanner({ kind = 'lab', className = '' }: Props) {
         className="basis-full text-[10px] leading-snug text-amber-900/70"
         data-testid="lab-banner-gate"
       >
-        闸：本页不承接硬请示 / 部间工单 / 判断档案；那些只在案→部工作台。
+        闸：本页不承接硬请示 / 部间工单 / 判断档案；那些只在公司案→部台。
       </p>
     </div>
   )

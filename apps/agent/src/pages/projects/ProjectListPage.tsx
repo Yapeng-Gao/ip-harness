@@ -38,7 +38,7 @@ export function ProjectListPage() {
           data-testid="projects-demote-banner"
           role="status"
         >
-          <p className="font-semibold">旧「项目专家台」已降权</p>
+          <p className="font-semibold">遗留项目夹已降权（旁路）</p>
           <p className="mt-0.5 text-amber-900/90">
             一期主路径是大厅接待+八部 → 公司案 → 部台。本页为遗留深链，勿当第二套产品进门。
           </p>
@@ -61,7 +61,7 @@ export function ProjectListPage() {
         </div>
         <h1 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
           <FolderKanban className="h-5 w-5" aria-hidden />
-          项目模式（旁路）
+          遗留项目夹（旁路）
         </h1>
         <p className="mt-1 text-sm text-slate-600">
           遗留专班项目夹。请优先用{' '}

@@ -541,7 +541,7 @@ export function BusinessSeatWorkbench({
             </p>
           ) : null}
         </div>
-        {/* 刀2：专家台降次级；无并列主 CTA（主 CTA 在案顶） */}
+        {/* 遗留过程旁路收进「更多」；无并列主 CTA */}
         <div className="relative">
           <button
             type="button"
@@ -561,10 +561,10 @@ export function BusinessSeatWorkbench({
                 to={`/agent/projects/${caseId}/bots/${seatId}`}
                 className="block px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-50"
                 data-testid="business-seat-open-expert"
-                title="专家台打开本案过程（同 projectId）"
+                title="遗留过程旁路（非一期主办理）"
                 onClick={() => setMoreOpen(false)}
               >
-                专家台 · 本案
+                过程示意（旁路）
               </Link>
             </div>
           )}
