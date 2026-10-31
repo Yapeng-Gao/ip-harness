@@ -24,6 +24,7 @@ import {
   buildGeneralShellProject,
   isGeneralShellId,
 } from './generalShell'
+import { domainCommandOfficeLabel } from './domainCommandLabels'
 import type {
   AgentProject,
   DomainCommandWriteLog,
@@ -760,7 +761,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
           id: uid('tl'),
           projectId: input.projectId,
           kind: 'domain_command',
-          title: `DomainCommand · ${input.command}`,
+          title: `写库示意 · ${domainCommandOfficeLabel(input.command)}`,
           detail: input.note,
           at: entry.at,
           expertId: input.expertId,
@@ -795,7 +796,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
             id: uid('tl'),
             projectId,
             kind: 'system',
-            title: 'L3 演示 · 已绑 mock 案件 case-mock-l3',
+            title: '演示 · 已绑示意案 case-mock-l3',
             detail: '样机绑定 · 非真 case-core',
             at: stamp(),
           },
@@ -806,20 +807,20 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       appendMessage(projectId, orchId, {
         role: 'assistant',
         content:
-          '【L3 演示】自发拆派撰稿专家：请出假权利要求草稿 → 提请 Confirm → DomainCommand.saveDraft 写库示意。',
+          '【演示】自发拆派撰稿席：请出假权利要求草稿 → 提请确认 → 存稿写库示意。',
         meta: { backend: 'mock' },
       })
       dispatchToExpert({
         projectId,
         toExpertId: 'expert-draft',
-        summary: 'L3 演示：请生成权利要求草稿并提请 Confirm 写库示意',
+        summary: '演示：请生成权利要求草稿并提请确认写库示意',
       })
       jumpToStep(projectId, 'expert-draft', 'claims')
       jumpToStep(projectId, 'expert-draft', 'confirm')
       appendMessage(projectId, orchId, {
         role: 'system',
         content:
-          '【L3】撰稿席已出假权利要求草稿并进入 Confirm。请到撰稿席点确认 → 观察 DomainCommand 写库示意与中台映射。',
+          '【演示】撰稿席已出假权利要求草稿并进入确认。请到撰稿席点确认 → 观察写库示意与中台映射。',
         meta: { backend: 'mock' },
       })
     },
@@ -835,13 +836,13 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     {
       id: 'expert-research',
       summary: '全链路：请跑检索式并出三性意见',
-      receipt: '检索回执：命中 12 · 06_research_report + worklog（mock）',
+      receipt: '检索回执：命中 12 · 查新报告 + 办理摘记（示意）',
       stepId: 'basket',
     },
     {
       id: 'expert-intake',
       summary: '全链路：请吃上游并 go_nogo',
-      receipt: '立项回执：Go · 07_intake_quote + worklog（mock）',
+      receipt: '立项回执：可立 · 立项报价 + 办理摘记（示意）',
       stepId: 'quote',
     },
     {
@@ -969,7 +970,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
         appendMessage(projectId, orchId, {
           role: 'assistant',
           content:
-            '【演示全链路 · done】已收齐 8 席回执。可到交底/撰稿/OA 席走 Confirm→DomainCommand 写库示意；递交席仅闸示意、禁真递交。',
+            '【演示全链路 · 完成】已收齐 8 席回执。可到交底/撰稿/OA 席走确认→写库示意；递交席仅闸示意、禁真递交。',
           meta: { backend: 'mock' },
         })
         setTimeline((prev) => [
@@ -1046,42 +1047,42 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
     {
       id: 'expert-research',
       request: '请出查新+三性意见书（双文件）',
-      result: '已交 06_research_report.md + worklog（步骤表+关键取舍）',
+      result: '已交查新报告 + 办理摘记（步骤表+关键取舍）',
     },
     {
       id: 'expert-intake',
       request: '请吃 01–06 并 go_nogo',
-      result: 'Go · 07_intake_quote.md + worklog',
+      result: '可立 · 立项报价 + 办理摘记',
     },
     {
       id: 'expert-disclosure',
       request: '请整理可实施交底',
-      result: '08_disclosure_pack.md + worklog 已齐',
+      result: '交底包 + 办理摘记已齐',
     },
     {
       id: 'expert-draft',
       request: '请出权要+说明书',
-      result: '09_draft_claims.md + worklog 已齐',
+      result: '权要稿 + 办理摘记已齐',
     },
     {
       id: 'expert-figure',
       request: '请冻图号清单',
-      result: '10_figure_list.md + worklog（并行 FTO）',
+      result: '附图清单 + 办理摘记（并行 FTO）',
     },
     {
       id: 'expert-fto',
       request: '请出 FTO memo + claim chart',
-      result: '11_fto_memo.md + worklog',
+      result: 'FTO 备忘 + 办理摘记',
     },
     {
       id: 'expert-filing',
       request: '请齐套并走 authorize→file 闸（示意）',
-      result: '12_filing_checklist.md · file 示意完成 · 请总控派 OA',
+      result: '递交清单 · 递交示意完成 · 请总控派 OA',
     },
     {
       id: 'expert-oa',
       request: '已 file：请出 OA 答复策略',
-      result: '13_prosecution_response.md + worklog',
+      result: '答复稿 + 办理摘记',
     },
   ]
 
@@ -1102,7 +1103,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
         projectId,
         fromExpertId: orchId,
         toExpertId: 'all',
-        body: '【loop】开始主链自发分派（mock · 无真 LLM）。缺 worklog 不派下家。',
+        body: '【回路】开始主链自发分派（示意 · 无真模型）。缺办理摘记不派下家。',
         kind: 'note',
         spontaneous: true,
       })
@@ -1138,7 +1139,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
             projectId,
             fromExpertId: seat.id,
             toExpertId: orchId,
-            body: `${seat.result}\n过程见对应 worklog。`,
+            body: `${seat.result}\n过程见对应办理摘记。`,
             kind: 'result',
             spontaneous: true,
           })

@@ -134,7 +134,7 @@ export const DRAFT_DEPTH_SHORTCUTS = [
 
 export const DRAFT_SAMPLE_ARTIFACT = `# 权利要求与说明书要点（样机）
 
-> 样机成果 · 非真案卷 · 未 Confirm 不写库
+> 样机成果 · 非真案卷 · 未确认不写库
 
 ## 摘要
 

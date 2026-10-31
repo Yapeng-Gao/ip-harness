@@ -3110,3 +3110,49 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-10-31 CST | 深度预览/midMap 人话；smoke `PASS_RESCAN_78`；shots `.tmp/rescan-78-shots/`；§78；t622u |
 
+
+## 79. DomainCommand 写库列表再并 / 旁路工程味（2026-10-31 Asia/Shanghai）
+
+> **问题：** 续扫 UI/布局/页面逻辑；啃 §78.4 后置「写库列表再并」；查回潮与旁路工程味。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。不认 lifecycle。
+
+### 79.0 缺口清单
+
+| ID | 面 | 缺口简述 | 维度 | 严重度 | 建议改法 | 本批 |
+|---|---|---|---|---|---|---|
+| G01 | 写库标签散落 | MidMap WRITE_LABEL / Bridge toast 裸 command / 时间线 `DomainCommand · cmd` 三套 | 逻辑/展示 | P0 | apps/agent 单源 Office 标签并入 | ✅ |
+| G02 | Bridge/Folder 工程串 | Confirm→DomainCommand、L3、裸 cmd toast 上屏 | 展示 | P0 | 人话「写库示意」 | ✅ |
+| G03 | experts 旁路 note | go_nogo / intake_quote / disclosure_pack / HITL / enforcement_brief | 展示 | P1 | 人话 | ✅ |
+| G04 | 样本/摘记 | draft 样本仍「未 Confirm」 | 展示 | P1 | 人话 | ✅ |
+| G05 | 真集成 | 诚实示意 | 集成 | — | 后置 | 后置 |
+
+### 79.1 本批落地
+
+| # | 对应 | 行为 |
+|---|---|---|
+| A | G01 | `domainCommandLabels.ts` 单源；MidMap/Bridge/Folder 共用 |
+| B | G02 | toast/时间线/会话句去 DomainCommand 裸键 |
+| C | G03–G04 | experts/样本人话 |
+
+### 79.2 复扫表（改后）
+
+| 面 | 结论 |
+|---|---|
+| 写库示意列表 | 命令人话；载荷默折（承 §78） |
+| Bridge 确认回执 | 无 DomainCommand/裸 cmd 抢屏 |
+| 回潮 | 无组队/lifecycle 进门 |
+
+### 79.3 六维（机制报告，不宣称落地）
+
+设计：写库标签单源。使用成本：少调试串。逻辑：写库示意内存不变。
+
+### 79.4 后置
+
+真集成；packages COMMAND_LABELS 仍为审计英名，不在本批改；main-path-sample 不碰。
+
+### 79.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 写库列表再并；smoke `PASS_RESCAN_79`；shots `.tmp/rescan-79-shots/`；§79；t623u |
+

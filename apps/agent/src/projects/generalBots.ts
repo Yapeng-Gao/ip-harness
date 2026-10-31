@@ -115,7 +115,7 @@ export const BOT_TEMPLATE_OPTIONS: BotTemplateOption[] = [
   {
     kind: 'custom',
     label: '自定义（只读 · 无写库）',
-    defaultBrief: '通用助手：回答问题、整理要点；不发起 DomainCommand。',
+    defaultBrief: '通用助手：回答问题、整理要点；不发起写库命令。',
     accent: 'slate',
     catalogAgentId: null,
   },
@@ -130,7 +130,7 @@ export const BOT_TEMPLATE_OPTIONS: BotTemplateOption[] = [
     kind: 'template:expert-search',
     label: '从模板 · 检索能力',
     defaultBrief:
-      '检索向：归纳现有技术要点；写库仍须 HITL→DomainCommand（样机默认只读）。',
+      '检索向：归纳现有技术要点；写库须确认后示意（样机默认只读）。',
     accent: 'sky',
     catalogAgentId: 'agent-research',
   },

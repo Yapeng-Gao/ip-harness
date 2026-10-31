@@ -13,6 +13,7 @@ import type { HitlGateId } from '@shared/types'
 import type { ProjectExpertDef, ProjectThread } from '../../projects/types'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import type { CommandName } from '@ip/domain'
+import { domainCommandOfficeLabel } from '../../projects/domainCommandLabels'
 import { primaryHandoffKeyForExpert } from '../../projects/patentMidMap'
 import { PACK_DEMO_PROJECT_ID } from '../../projects/pack/patentHitlWalk'
 import { Link } from 'react-router-dom'
@@ -40,7 +41,7 @@ type Props = {
 }
 
 /**
- * Bind a real AgentSession so Confirm → sessionHitlAction → DomainCommand stays intact.
+ * 绑真实 AgentSession：确认 → sessionHitlAction → 写库示意链路保持。
  * Orchestrator / read-only FTO still surface honesty; no bypass of dispatchCommand.
  */
 export function ExpertHitlBridge({
@@ -291,15 +292,15 @@ export function ExpertHitlBridge({
                   caseId: writeCaseId,
                   ...(seatKey ? { handoffKey: seatKey } : {}),
                   note: seatKey
-                    ? `L3 Confirm → ${cmd} · ${seatKey}`
-                    : `L3 Confirm → ${cmd}（本席无 handoff 键，不绑 claims）`,
+                    ? `确认后写库 · ${domainCommandOfficeLabel(cmd)} · ${seatKey}`
+                    : `确认后写库 · ${domainCommandOfficeLabel(cmd)}（本席无交接点，不绑权要）`,
                   actor: 'agent',
                 }
               : {
                     type: cmd,
                     caseId: writeCaseId,
                     ...(seatKey && cmd === 'submitResearch' ? { handoffKey: seatKey } : {}),
-                    note: `L3 Confirm → ${cmd} 写库示意`,
+                    note: `确认后写库示意 · ${domainCommandOfficeLabel(cmd)}`,
                     actor: 'agent',
                   }
         recordDomainCommandWrite({
@@ -314,10 +315,10 @@ export function ExpertHitlBridge({
         })
         appendMessage(projectId, expert.id, {
           role: 'system',
-          content: `写库示意 · ${cmd} → 办理节点 ${writeCaseId} · ${reason}`,
+          content: `写库示意 · ${domainCommandOfficeLabel(cmd)} → 办理节点 ${writeCaseId} · ${reason}`,
           meta: { backend: 'mock' },
         })
-        setToast(`${cmd} 已记入写库示意`)
+        setToast(`${domainCommandOfficeLabel(cmd)} · 已记入写库示意`)
       }
 
       if (r.ok) {
@@ -346,7 +347,7 @@ export function ExpertHitlBridge({
       } else if (writeCand?.command) {
         // Formal gate may block (e.g. disclosure not ready); still surface L3 write shape.
         recordL3Write(
-          `正式闸未过（${r.message}）；仍记 DomainCommand 写库示意（样机）`,
+          `正式闸未过（${r.message}）；仍记写库示意（样机）`,
         )
       }
     },
@@ -506,7 +507,7 @@ export function ExpertHitlBridge({
               className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600"
               title={c.note}
             >
-              命令候选：{c.command ?? 'null（只读）'} · {c.label}
+              写库候选：{c.command ? domainCommandOfficeLabel(c.command) : '只读（不写）'} · {c.label}
             </span>
           ))}
         </div>
