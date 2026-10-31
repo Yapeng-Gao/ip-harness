@@ -3,6 +3,11 @@ import { ArrowRight, Bell, ChevronDown, ChevronRight } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
+  HANDOFF_PLAN_GATE_HONEST,
+  confirmKindForPlanSlug,
+  planAdvanceHandoffGate,
+} from '../../business/handoffPlanGate'
+import {
   currentSeatForProgress,
 } from '../../business/businessSeats'
 import {
@@ -49,13 +54,30 @@ type Props = {
  * + 八部抽屉进干活；浅色壳；禁假指标/执行集群
  */
 export function CaseCompanyHome({ caseId, title, summary }: Props) {
-  const { getProgress, getPendingConfirms, cases, advancePlanChainStep } = useBusinessCases()
+  const {
+    getProgress,
+    getPendingConfirms,
+    getCaseConfirms,
+    cases,
+    advancePlanChainStep,
+    seedPlanHandoffPass,
+  } = useBusinessCases()
   const { deptLabel } = useOrgConfig()
   const [moreOpen, setMoreOpen] = useState(false)
   const [mapExpanded, setMapExpanded] = useState(false)
   const [drawerDeptId, setDrawerDeptId] = useState<OrgDeptId | null>(null)
   const prog = getProgress(caseId)
   const pending = getPendingConfirms(caseId)
+
+  const caseConfirms = getCaseConfirms(caseId)
+  const activePlanStep = prog.delegate?.chain?.find((s) => s.status === 'active')
+  const planHandoffGate = useMemo(() => {
+    if (!activePlanStep) return null
+    return planAdvanceHandoffGate({
+      activeDeptSlug: activePlanStep.deptSlug,
+      confirms: caseConfirms,
+    })
+  }, [activePlanStep, caseConfirms])
 
   const currentSeat = useMemo(
     () =>
@@ -397,22 +419,69 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
               >
                 去本章 · {prog.delegate.stepLabel}
               </Link>
-              {prog.delegate.chain?.some((s) => s.status === 'active') ? (
+              {prog.delegate.chain?.some((s) => s.status === 'active') &&
+              planHandoffGate ? (
+                planHandoffGate.allow ? (
+                  <button
+                    type="button"
+                    className="btn-press focus-ring rounded-full bg-emerald-900 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-emerald-800"
+                    data-testid="company-plan-advance"
+                    data-handoff-gate={planHandoffGate.code}
+                    onClick={() => {
+                      advancePlanChainStep(caseId)
+                    }}
+                  >
+                    {prog.delegate.chain.some((s) => s.status === 'queued')
+                      ? '本章办完 · 推进下一节'
+                      : '本章办完 · 结排期'}
+                  </button>
+                ) : planHandoffGate.cta === 'go_confirm' ? (
+                  <Link
+                    to={(() => {
+                      const kind = activePlanStep
+                        ? confirmKindForPlanSlug(activePlanStep.deptSlug)
+                        : null
+                      const hit = kind
+                        ? caseConfirms.find(
+                            (c) => c.kind === kind && c.status === 'pending',
+                          )
+                        : undefined
+                      return kind
+                        ? workbenchAskPath(caseId, kind, {
+                            confirmId: hit?.id,
+                          })
+                        : `/agent/cases/${caseId}`
+                    })()}
+                    className="btn-press focus-ring rounded-full bg-amber-800 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-amber-700"
+                    data-testid="company-plan-go-confirm"
+                    data-handoff-gate={planHandoffGate.code}
+                  >
+                    去拍板 · 通过后办完本章
+                  </Link>
+                ) : (
+                  <Link
+                    to={`/agent/cases/${caseId}/depts/${prog.delegate.deptSlug}?delegate=1`}
+                    className="btn-press focus-ring rounded-full bg-slate-800 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-slate-700"
+                    data-testid="company-plan-go-submit"
+                    data-handoff-gate={planHandoffGate.code}
+                  >
+                    先去本章交卷
+                  </Link>
+                )
+              ) : null}
+              {prog.delegate.chain?.some((s) => s.status === 'active') &&
+              planHandoffGate &&
+              !planHandoffGate.allow ? (
                 <button
                   type="button"
-                  className="btn-press focus-ring rounded-full bg-emerald-900 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-emerald-800"
-                  data-testid="company-plan-advance"
+                  className="btn-press focus-ring rounded-full border border-dashed border-emerald-700/40 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-emerald-950/80 hover:bg-white"
+                  data-testid="company-plan-seed-handoff"
+                  title={HANDOFF_PLAN_GATE_HONEST}
                   onClick={() => {
-                    const r = advancePlanChainStep(caseId)
-                    if (!r.ok) {
-                      // seed 静默即可；文案已在按钮旁
-                      return
-                    }
+                    seedPlanHandoffPass(caseId)
                   }}
                 >
-                  {prog.delegate.chain.some((s) => s.status === 'queued')
-                    ? '本章办完 · 推进下一节'
-                    : '本章办完 · 结排期'}
+                  样机·补记本稿已通过
                 </button>
               ) : null}
             </div>
@@ -420,8 +489,11 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           <p
             className="mt-1.5 text-[10px] text-emerald-900/60"
             data-testid="company-plan-advance-hint"
+            data-handoff-gate={planHandoffGate?.code ?? 'none'}
           >
-            样机：点「办完」把本章标为已办、其后待办升为在办（非真官报）
+            {planHandoffGate
+              ? `${planHandoffGate.hint} · ${HANDOFF_PLAN_GATE_HONEST}`
+              : '排期无在办章 · 样机示意非官报'}
           </p>
         </section>
       ) : null}

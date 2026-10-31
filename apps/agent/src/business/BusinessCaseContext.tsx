@@ -49,6 +49,10 @@ import {
 } from './packLoops'
 import { resolveCasePlanStart } from './casePlanDrive'
 import {
+  confirmKindForPlanSlug,
+  planAdvanceHandoffGate,
+} from './handoffPlanGate'
+import {
   advancePlanChain,
   appendChainAdvanceNote,
   type PlanChainStep,
@@ -529,14 +533,23 @@ type BusinessCaseContextValue = {
       chain?: PlanChainStep[]
     },
   ) => void
+  /** 本案全部确认项（含已通过/已驳回；办完闸用） */
+  getCaseConfirms: (caseId: string) => BusinessConfirmItem[]
   /**
-   * 本章办完 → 辅链推进下一站（seed/确认共用；样机示意）
+   * 本章办完 → 辅链推进下一站（须过交卷闸；确认拍板可自动推进）
    * @param opts.deptSlug 若给，仅当 active 匹配该部才推进
    */
   advancePlanChainStep: (
     caseId: string,
     opts?: { deptSlug?: string },
   ) => { ok: boolean; completedLabel?: string; nextLabel?: string; reason?: string }
+  /**
+   * 样机：为在办章补记「本稿已通过」（不自动翻篇；再点办完或走真拍板）
+   * 非真官报 / 非真递交。
+   */
+  seedPlanHandoffPass: (
+    caseId: string,
+  ) => { ok: boolean; kind?: BusinessConfirmKind; reason?: string }
   /** 启用前研等「更多部门」（写入 moreSeatIds） */
   /** T10 · 本案判断档案（硬请示写回） */
   getJudgments: (caseId?: string) => JudgmentRecord[]
@@ -819,6 +832,11 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           c.status === 'pending' &&
           (caseId ? c.caseId === caseId : true),
       ),
+    [confirms],
+  )
+
+  const getCaseConfirms = useCallback(
+    (caseId: string) => confirms.filter((c) => c.caseId === caseId),
     [confirms],
   )
 
@@ -2245,6 +2263,13 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           reason: `当前在办是「${active.label}」，与本站不符`,
         }
       }
+      const gate = planAdvanceHandoffGate({
+        activeDeptSlug: active.deptSlug,
+        confirms: confirms.filter((c) => c.caseId === caseId),
+      })
+      if (!gate.allow) {
+        return { ok: false, reason: gate.hint }
+      }
       const adv = advancePlanChain(cur.delegate.chain)
       if (adv.noop || !adv.completed) {
         return { ok: false, reason: '排期无变化' }
@@ -2290,7 +2315,72 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         nextLabel: newActive?.label,
       }
     },
-    [appendLogs, progressById],
+    [appendLogs, progressById, confirms],
+  )
+
+  const seedPlanHandoffPass = useCallback(
+    (
+      caseId: string,
+    ): { ok: boolean; kind?: BusinessConfirmKind; reason?: string } => {
+      const cur = progressById[caseId]
+      const active = cur?.delegate?.chain?.find((s) => s.status === 'active')
+      if (!active) {
+        return { ok: false, reason: '没有在办章节' }
+      }
+      const kind = confirmKindForPlanSlug(active.deptSlug)
+      if (!kind) {
+        return { ok: false, reason: '本章无交卷闸，无需补记' }
+      }
+      if (
+        confirms.some(
+          (c) =>
+            c.caseId === caseId &&
+            c.kind === kind &&
+            c.status === 'confirmed',
+        )
+      ) {
+        return { ok: true, kind, reason: '本稿已通过，可直接办完' }
+      }
+      const meta = CONFIRM_META[kind]
+      const at = nowIso()
+      setConfirms((prev) => {
+        const rest = prev.filter(
+          (c) =>
+            !(
+              c.caseId === caseId &&
+              c.kind === kind &&
+              c.status === 'pending'
+            ),
+        )
+        return [
+          {
+            id: uid('seed-handoff'),
+            caseId,
+            kind,
+            title: `${CONFIRM_KIND_LABEL[kind]}（样机补记已通过）`,
+            summary: `排期章「${active.label}」· 样机补记本稿已通过 · 非真官报`,
+            resultPreview: `【成果】样机补记 · ${active.label} 本稿已通过（非真递交/非官报）。`,
+            processPreview:
+              '【办理过程】seedPlanHandoffPass · 办完对齐交卷闸示意',
+            preparedBy: meta.preparedBy,
+            createdAt: at,
+            status: 'confirmed' as const,
+          },
+          ...rest,
+        ]
+      })
+      appendLogs([
+        {
+          id: processLogId('seed-handoff'),
+          caseId,
+          at,
+          kind: 'monitor_event',
+          message: `样机补记本稿已通过 · ${active.label}（非真官报）`,
+        },
+      ])
+      return { ok: true, kind }
+    },
+    [appendLogs, confirms, progressById],
   )
 
   const enableMoreDepartments = useCallback((caseId: string) => {
@@ -2403,6 +2493,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       getCase,
       getProgress,
       getPendingConfirms,
+      getCaseConfirms,
       getConfirm,
       getProcessLogs,
       createCaseFromWizard,
@@ -2430,6 +2521,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       updateCasePlan,
       recordDelegateDispatch,
       advancePlanChainStep,
+      seedPlanHandoffPass,
       enableMoreDepartments,
       getJudgments,
       getPreferences,
@@ -2442,6 +2534,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       getCase,
       getProgress,
       getPendingConfirms,
+      getCaseConfirms,
       getConfirm,
       getProcessLogs,
       createCaseFromWizard,
@@ -2469,6 +2562,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       updateCasePlan,
       recordDelegateDispatch,
       advancePlanChainStep,
+      seedPlanHandoffPass,
       enableMoreDepartments,
       getJudgments,
       getPreferences,

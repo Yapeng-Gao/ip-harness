@@ -1,4 +1,9 @@
 import { workbenchAskPath } from '../../business/pendingDeptQuery'
+import {
+  HANDOFF_PLAN_GATE_HONEST,
+  planAdvanceHandoffGate,
+} from '../../business/handoffPlanGate'
+import { deptSlug, orgDeptByLeadSeat } from '../../departments/orgDepts'
 import { Link } from 'react-router-dom'
 import {
   useEffect,
@@ -101,6 +106,7 @@ export function BusinessSeatWorkbench({
     runHitlReturnRevise,
     lastReturnNoteForSeat,
     getPendingConfirms,
+    getCaseConfirms,
     getProgress,
   } = useBusinessCases()
   const { getThread, appendMessage, patchThread } = useProjectFolder()
@@ -108,6 +114,16 @@ export function BusinessSeatWorkbench({
   const thread = getThread(caseId, seatId)
   const stepIndex = thread?.stepIndex ?? 0
   const prog = getProgress(caseId)
+  const seatDept = orgDeptByLeadSeat(seatId)
+  const seatPlanHandoffGate = useMemo(() => {
+    const active = prog.delegate?.chain?.find((s) => s.status === 'active')
+    if (!active || !seatDept) return null
+    if (active.deptSlug !== deptSlug(seatDept.id)) return null
+    return planAdvanceHandoffGate({
+      activeDeptSlug: active.deptSlug,
+      confirms: getCaseConfirms(caseId),
+    })
+  }, [prog.delegate, seatDept, caseId, getCaseConfirms])
   const dual = deliverableForExpert(seatId)
   const seatLabel = businessSeatLabel(seatId)
   /** 本案任一 pending：会话 chip 藏/降灰，顶栏「去确认」独占主视线 */
@@ -650,6 +666,32 @@ export function BusinessSeatWorkbench({
           </ol>
         </details>
       )}
+
+      {seatPlanHandoffGate ? (
+        <div
+          className={`${compactRail ? 'mb-2 px-2 py-1.5' : 'mb-3 px-3 py-2'} rounded-lg border ${
+            seatPlanHandoffGate.allow
+              ? 'border-emerald-200 bg-emerald-50/80'
+              : seatPlanHandoffGate.code === 'awaiting_confirm'
+                ? 'border-amber-200 bg-amber-50/80'
+                : 'border-slate-200 bg-slate-50'
+          }`}
+          data-testid="seat-handoff-plan-gate"
+          data-handoff-gate={seatPlanHandoffGate.code}
+        >
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-600">
+            排期本章 · 交卷闸
+          </div>
+          <p className="mt-0.5 text-[11px] leading-relaxed text-slate-800">
+            {seatPlanHandoffGate.hint}
+          </p>
+          {!compactRail ? (
+            <p className="mt-0.5 text-[10px] text-slate-500">
+              {HANDOFF_PLAN_GATE_HONEST}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       {!compactRail && pendingForSeat.length > 0 && (
         <div
