@@ -27,6 +27,7 @@ export type OfficeEmptyKind =
   | 'catalog-filter'
   | 'lab-empty'
   | 'lab-filter'
+  | 'auth-demo'
   | 'generic'
 
 export type OfficeEmptyCopy = {
@@ -142,6 +143,11 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
     title: '没有匹配的展品',
     body: '试试清空搜索；实验室仍是旁路示意，不进主链交卷。',
     next: '回大厅办主链',
+  },
+  'auth-demo': {
+    title: '还没有样机会话',
+    body: '选角色进入只写入本地示意会话，不是真实账号登录。',
+    next: '可先看宣传站货架，再进大厅',
   },
   generic: {
     title: '这里还是空的',

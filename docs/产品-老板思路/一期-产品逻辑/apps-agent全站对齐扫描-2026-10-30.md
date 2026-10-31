@@ -2098,8 +2098,47 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 | 真官报 / 真检索 / 真鉴权 / 真递交 | **仍后置** |
 | 真报价/付款通道 | **仍后置** |
 | `/agent/catalog` 独立目录 | 仍旁路；SoftEmpty 在 `/agent/agents` |
+| 登录/薄入口诚实态 | → **§56 登录/薄入口/壳层诚实态**（已落地） |
 
 ### 55.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 整站复扫§55；**无回退**；smoke PASS_RESCAN_55；shots `.tmp/rescan-55-shots/`；写入 §55 |
+| 2026-10-31 CST | §55.3 增 → §56 登录/薄入口/壳层诚实态 |
+
+## 56. 登录 / 薄入口 / 壳层诚实态（2026-10-31 Asia/Shanghai）
+
+> **问题：** §55.3 —— 登录/欢迎/退出是否暗示真鉴权；诚实标是否缺席或与官报 banner 叠床架屋。属**产品理念 / 产品设计 / 使用成本**。  
+> **真源：** 样机会话（localStorage）；Office 语感；禁假 token/假「已登录账号」；真鉴权仍后置；薄入口保持薄；不宣称四维落地。
+
+### 56.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| AuthDemoHonestBanner | 登录 + 宣传站琥珀诚实条（样机会话 / 非真登录·非真鉴权）；`data-auth-demo=1`；大厅不叠 |
+| 文案 | 欢迎「样机入口 · 去登录」；登录脚注「进入 = 本地样机会话 · 无真账号 / 无 token」；菜单「退出样机会话」 |
+| 退出竞态 | logout 后 `setTimeout(0)` 再 `navigate(/agent/login)`，避免 RequireAuth→welcome 抢路由 |
+| officeEmpty | 增 `auth-demo` kind（文案预备） |
+| 不做 | 真鉴权/SSO/密码框；假 token；官报假通道；碰 main-path-sample |
+
+### 56.2 六维（机制报告，不宣称落地）
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 仍本地 `ip-agent-auth-session`；无鉴权闸业务含义变化 |
+| 产品理念 | 明示样机，不装真账号体系 |
+| 产品逻辑 | 未登录→welcome；登录壳独立；大厅不重复诚实条 |
+| 产品设计 | 与 OfficialDemoHonestBanner 同族紧凑琥珀，不叠官报标 |
+| 产品形态 | Office 入口说明，非 eng login form |
+| 使用成本 | 展开「为何是示意」；退出文案一眼可读 |
+
+**仍不宣称四维/六维落地。**
+
+### 56.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真鉴权 / 真登录 / SSO | **仍后置** |
+| 真官报 / 真检索 / 真递交 / 真报价 | **仍后置** |
+
+### 56.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 登录/欢迎诚实条 + 退出竞态；smoke PASS_AUTH_SHELL_HONEST；shots `.tmp/auth-shell-honest-shots/`；写入 §56 |

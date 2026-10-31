@@ -9,6 +9,7 @@ import {
   type EntryRole,
 } from '../../business/entryRole'
 import { useEntryRole } from '../../business/useEntryRole'
+import { AuthDemoHonestBanner } from '../../components/business/AuthDemoHonestBanner'
 
 /** 企业在前：理念默认按最不懂 AI 的企业研发；代理仍可选 */
 const OPTIONS: EntryRole[] = ['enterprise', 'agency']
@@ -50,6 +51,7 @@ export function AgentLoginPage() {
     <div
       className="app-shell-bg flex min-h-full items-center justify-center px-4 py-10"
       data-testid="agent-login-page"
+      data-auth-demo="1"
     >
       <div className="w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[var(--shadow-rest)] sm:p-8">
         <div className="mb-6 flex items-center gap-2">
@@ -64,9 +66,11 @@ export function AgentLoginPage() {
           </div>
         </div>
 
-        <p className="mb-4 text-sm text-slate-600">
+        <p className="mb-3 text-sm text-slate-600">
           选角色后进大厅（接待 + 老板待办 + 八部）。同一套系统，不按角色关门；代理/企业只调惯用密度。
         </p>
+
+        <AuthDemoHonestBanner surface="login" className="mb-4" />
 
         <fieldset className="mb-5">
           <legend className="mb-2 text-xs font-medium text-slate-500">入口角色</legend>
@@ -117,8 +121,8 @@ export function AgentLoginPage() {
           进入
         </button>
 
-        <p className="mt-4 text-center text-[11px] text-slate-400">
-          样机：本地会话，非真登录
+        <p className="mt-4 text-center text-[11px] text-slate-400" data-testid="login-demo-footnote">
+          进入 = 本地样机会话 · 无真账号 / 无 token
         </p>
         <p className="mt-2 text-center text-[11px]">
           <Link

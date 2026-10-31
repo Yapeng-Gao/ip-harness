@@ -2,6 +2,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { HomeContentPreview } from '../components/home/HomeContentPreview'
 import { useAuthSession } from '../business/AuthSessionContext'
+import { AuthDemoHonestBanner } from '../components/business/AuthDemoHonestBanner'
 import {
   HOME_CATEGORY_TITLE,
   HOME_CTA_PRIMARY,
@@ -26,6 +27,7 @@ export function WelcomePage() {
     <div
       className="app-shell-bg min-h-full overflow-y-auto px-4 py-8 lg:px-8"
       data-testid="agent-welcome-page"
+      data-auth-demo="1"
       data-page="welcome"
       data-welcome-dedupe="login-gate-v1"
     >
@@ -42,7 +44,7 @@ export function WelcomePage() {
             className="btn-press focus-ring text-[12px] font-medium text-slate-600 hover:text-slate-900"
             data-testid="welcome-link-login"
           >
-            已有会话？去登录
+            样机入口 · 去登录
           </Link>
         </div>
 
@@ -60,6 +62,8 @@ export function WelcomePage() {
             {HOME_POSITIONING}
           </p>
         </header>
+
+        <AuthDemoHonestBanner surface="welcome" className="mt-5" />
 
         <div className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
           <Link

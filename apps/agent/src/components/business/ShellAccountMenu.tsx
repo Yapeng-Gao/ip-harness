@@ -115,12 +115,15 @@ export function ShellAccountMenu() {
             onClick={() => {
               setOpen(false)
               logout()
-              navigate('/agent/login', { replace: true })
+              // RequireAuth 未登录会 Navigate→welcome；延后一帧再落到登录壳，避免抢路由
+              window.setTimeout(() => {
+                navigate('/agent/login', { replace: true })
+              }, 0)
             }}
             className="btn-press focus-ring flex w-full px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100"
             data-testid="auth-logout"
           >
-            退出
+            退出样机会话
           </button>
         </div>
       ) : null}
