@@ -23,10 +23,10 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
     >
       <div className="border-b border-slate-200 px-3 py-2">
         <div className="text-[10px] font-semibold uppercase tracking-wide text-violet-700">
-          L3 · 中台映射
+          席位 → 办理节点（示意）
         </div>
         <p className="mt-0.5 text-[10px] leading-snug text-slate-500">
-          产出对齐 handoff / DomainCommand；案态以 mid 为准（样机示意）
+          产出对齐交接点 / 指令示意；案态以办理节点为准（样机）
         </p>
       </div>
 
@@ -44,7 +44,7 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
               {row.midStageLabel}
             </div>
             <div className="mt-0.5">
-              <span className="text-slate-400">Handoff · </span>
+              <span className="text-slate-400">交接点 · </span>
               {row.handoffKeys?.join(' · ') ?? '—（无直接写）'}
             </div>
             <div className="mt-0.5">
@@ -88,7 +88,7 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
         </ul>
 
         <div className="mb-1 mt-3 px-1 text-[10px] font-semibold text-slate-500">
-          Confirm → DomainCommand 写库示意
+          确认后 → 写库示意
         </div>
         {writes.length === 0 ? (
           <p

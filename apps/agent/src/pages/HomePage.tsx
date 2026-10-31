@@ -322,16 +322,16 @@ export function HomePage() {
             className="mb-5 rounded-xl border border-violet-200 bg-violet-50/70 px-4 py-3"
             data-testid="home-agency-escort"
           >
-            <p className="text-[13px] font-semibold text-violet-950">代理陪同⑤</p>
+            <p className="text-[13px] font-semibold text-violet-950">代理陪同进申请部</p>
             <p className="mt-0.5 text-[12px] text-violet-900/90">
-              可绕 B2 进申请部壳诊断/陪同；不装交底已过线。
+              可陪同进申请部壳做诊断（示意）；不装交底已过线。
             </p>
             <Link
               to={`/agent/cases/${latestId}/depts/draft?escort=1&branch=b2`}
               className="btn-press focus-ring mt-2 inline-flex rounded-full bg-violet-900 px-3 py-1.5 text-[11px] font-semibold text-white"
               data-testid="home-agency-escort-cta"
             >
-              陪同进⑤
+              陪同进申请部
             </Link>
           </div>
         ) : null}
@@ -375,7 +375,7 @@ export function HomePage() {
               window.alert('已重开各部门首次说明（进部可见）')
             }}
           >
-            重开部门说明（T7）
+            重开部门说明
           </button>
         </footer>
       </div>

@@ -384,7 +384,7 @@ export function AgentSessionSidebar() {
                   onClick={() => setOverflowOpen(false)}
                   className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
                 >
-                  <Network className="h-3.5 w-3.5 text-slate-400" /> 运行说明
+                  <Network className="h-3.5 w-3.5 text-slate-400" /> 纸面运行说明
                 </Link>
               </div>
             )}
@@ -413,7 +413,7 @@ export function AgentSessionSidebar() {
             <p className="text-[11px] leading-relaxed text-slate-500">
               {isHome
                 ? '主区输入后点「开始办理」开工。'
-                : '目录 / 运行说明收起列表；办理请打开会话。'}
+                : '目录 / 纸面运行说明收起列表；办理请打开会话。'}
             </p>
             {statusCounts.needs_human > 0 ? (
               <Link

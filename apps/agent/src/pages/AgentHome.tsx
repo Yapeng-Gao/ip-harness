@@ -133,7 +133,7 @@ export function AgentHome() {
             项目模式
           </Link>
           <Link to="/agent/agents" className="hover:text-slate-700 hover:underline">
-            Catalog · 管理
+            助手目录 · 管理
           </Link>
           {lastSession && (
             <Link
@@ -147,7 +147,7 @@ export function AgentHome() {
 
         <details className="group mt-6" data-testid="compose-legacy-fold">
           <summary className="flex cursor-pointer list-none items-center justify-center gap-1.5 rounded-md px-1 py-1.5 text-[12px] text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
-            <span className="font-medium text-slate-600">兼容 · Catalog 单聊</span>
+            <span className="font-medium text-slate-600">兼容 · 旧助手单聊</span>
             <span className="text-slate-400">（非默认）</span>
             <span className="text-slate-400 transition group-open:rotate-180" aria-hidden>
               ▾
@@ -155,7 +155,7 @@ export function AgentHome() {
           </summary>
           <div className="mt-2 space-y-2 rounded-lg border border-dashed border-slate-200 bg-slate-50/50 p-3">
             <p className="text-[11px] text-slate-500">
-              保留旧「Catalog 下拉单 Composer」路径；P0 默认仍进 research，勿默认 OA。
+              保留旧「助手目录下拉单聊」路径（非默认）；进门不进专班样机，勿默认进答复席。
             </p>
             <button
               type="button"

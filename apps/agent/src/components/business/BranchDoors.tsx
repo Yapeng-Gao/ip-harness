@@ -28,7 +28,7 @@ const BRANCHES: {
   },
   {
     id: 'b2',
-    title: 'B2 自带交底→⑤',
+    title: '自带交底→申请部',
     blurb: '有交底 · 进申请',
     mustSee: '⑤进入检查表；不过→退④',
     forbid: '未全绿硬写申请',
@@ -116,7 +116,7 @@ export function BranchDoors({ caseId, isAgency = false }: Props) {
         </h2>
         <span className="text-[11px] text-slate-500">
           B1–B8 · 虚线入口
-          {isAgency ? ' · 代理可陪同绕 B2' : ''}
+          {isAgency ? ' · 代理可陪同进申请部' : ''}
         </span>
         <button
           type="button"

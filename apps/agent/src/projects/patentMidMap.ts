@@ -76,7 +76,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-research',
     midStage: 'pre_research',
-    midStageLabel: 'pre_research 查新',
+    midStageLabel: '查新（立项前）',
     handoffKeys: ['research_report'],
     readTools: ['commercial_patent_search', 'cluster_hits'],
     writeCommands: ['submitResearch'],
@@ -85,7 +85,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-intake',
     midStage: 'decision',
-    midStageLabel: 'decision · 立项',
+    midStageLabel: '立项决策',
     handoffKeys: ['intake_quote'],
     readTools: ['ingest_upstream', 'draft_intake_quote'],
     writeCommands: ['submitHandoff', 'createCaseFromInsight'],
@@ -94,7 +94,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-disclosure',
     midStage: 'drafting',
-    midStageLabel: '交底 / 进 drafting 前',
+    midStageLabel: '交底 / 进撰稿前',
     handoffKeys: ['disclosure_pack'],
     readTools: ['structure_disclosure', 'pack_disclosure'],
     writeCommands: ['saveDraft', 'submitHandoff'],
@@ -103,7 +103,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-draft',
     midStage: 'drafting',
-    midStageLabel: 'drafting · 权利要求',
+    midStageLabel: '撰稿 · 权利要求',
     handoffKeys: ['draft_claims'],
     readTools: ['draft_claims', 'check_support'],
     writeCommands: ['saveDraft', 'submitClaims', 'submitHandoff'],
@@ -112,7 +112,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-figure',
     midStage: 'drafting_assist',
-    midStageLabel: 'drafting 附图辅助',
+    midStageLabel: '撰稿 · 附图辅助',
     handoffKeys: null,
     readTools: ['list_needed_figures', 'attach_chapter_event'],
     writeCommands: null,
@@ -130,7 +130,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-filing',
     midStage: 'authorize_file',
-    midStageLabel: '授权递交 / authorize→file',
+    midStageLabel: '授权递交（示意）',
     handoffKeys: null,
     readTools: ['filing_checklist', 'formality_scan'],
     writeCommands: ['authorizeFile', 'fileResponse'],
@@ -139,7 +139,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-oa',
     midStage: 'prosecution',
-    midStageLabel: 'prosecution · OA 答复',
+    midStageLabel: '答复 · OA',
     handoffKeys: ['prosecution_response'],
     readTools: ['parse_oa_notice', 'oa_strategy', 'draft_oa_response'],
     writeCommands: ['saveDraft', 'submitHandoff'],
@@ -148,7 +148,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-annuity',
     midStage: 'maintenance',
-    midStageLabel: 'F7 后置 · 年费',
+    midStageLabel: '后置 · 年费',
     handoffKeys: ['maintain_annuity'],
     readTools: ['list_annuity_due'],
     writeCommands: null,
@@ -157,7 +157,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-valuation',
     midStage: 'phase',
-    midStageLabel: 'F7 后置 · 价值',
+    midStageLabel: '后置 · 价值评估',
     handoffKeys: null,
     readTools: ['score_portfolio'],
     writeCommands: null,
@@ -166,7 +166,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-monetize',
     midStage: 'commercialization',
-    midStageLabel: 'F8 后置 · 转化',
+    midStageLabel: '后置 · 转化',
     handoffKeys: ['monetize_terms'],
     readTools: ['draft_term_sheet'],
     writeCommands: null,
@@ -175,7 +175,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'expert-enforcement',
     midStage: 'phase',
-    midStageLabel: 'F9 后置 · 维权（≠FTO≠watch）',
+    midStageLabel: '后置 · 维权（≠FTO≠监控）',
     handoffKeys: null,
     readTools: ['claim_chart_compare'],
     writeCommands: null,

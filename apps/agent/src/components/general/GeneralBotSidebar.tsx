@@ -154,7 +154,7 @@ export function GeneralBotSidebar() {
               data-testid="general-more-catalog"
             >
               <LayoutGrid className="h-3.5 w-3.5 text-slate-400" aria-hidden />
-              Catalog
+              助手目录
             </Link>
             <Link
               to="/agent/compose"

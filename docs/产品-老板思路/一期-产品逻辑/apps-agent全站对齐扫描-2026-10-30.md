@@ -2764,3 +2764,60 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-10-31 CST | Lab 压卡 + harness 纸面 + WalkBar 人话；smoke `PASS_RESCAN_71`；shots `.tmp/rescan-71-shots/`；§71；t615u |
 
+## 72. 全站扫描汇总 + 一批改（2026-10-31 Asia/Shanghai）
+
+> **问题：** 用户要求全部扫描、汇总问题、一块改。覆盖大厅→辅链→旁路全表面。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。不认 lifecycle / main-path-sample / 旧三档。
+
+### 72.0 缺口清单（扫描汇总）
+
+| ID | 面 | 缺口简述 | 维度 | 严重度 | 建议改法 | 本批 |
+|---|---|---|---|---|---|---|
+| G01 | seats 单聊 | 可见「Catalog」「Owner ·」英桩，像第二产品目录 | 展示/设计 | P0 | → 回大厅 / 席位样机目录；Owner→对接 | ✅ |
+| G02 | compose 旁路 | 「Catalog · 管理」「兼容 · Catalog」「P0…research」工程话 | 展示/理念 | P0 | Office：助手目录；兼容收折人话；去 P0 编号 | ✅ |
+| G03 | 编制名册 | 副文仍写「非 lifecycle「专业」档」泄露旧真源争论 | 理念/展示 | P0 | 删 lifecycle 字样，钉一期编制名册意思 | ✅ |
+| G04 | 项目中台条 | 「L3 · 中台映射」「Handoff」「DomainCommand」「F7」上屏 | 展示/原型 | P1 | Office：席位→办理节点；确认后写库示意；后人话阶段名 | ✅ |
+| G05 | sessions 侧栏 | 「运行说明」未标纸面，易当主办理入口 | 行为/成本 | P1 | → 纸面运行说明 | ✅ |
+| G06 | 大厅页脚 | 「重开部门说明（T7）」任务编号外泄 | 展示 | P1 | 去掉 T7 | ✅ |
+| G07 | 大厅代理条 | 「代理陪同⑤」「绕 B2」支路码抢接待心智 | 展示/成本 | P1 | 人话：代理陪同进申请部（示意） | ✅ |
+| G08 | patentMidMap | midStageLabel 含 pre_research/drafting/F7–F9 | 展示 | P1 | 人话阶段名 | ✅ |
+| G09 | Lab/harness | §71 已压卡+纸面降权 | — | — | 复验保持 | 复验 |
+| G10 | 组队/专家台/三档 | 主路径未见回潮 | — | — | 复验 | 复验 |
+| G11 | 账单/期限 | 后置 CTA 已诚实 disabled | — | — | 保持 | 后置真通道 |
+| G12 | 部台①–⑧ | 齐套/步进/右栏密度高但主 CTA 清楚；大拆后置 | 布局 | P2 | 续扫信息墙，不本批大改 | 未改 |
+| G13 | 助手目录↔harness | 仍可再并薄 | 重复 | P2 | 后置 | 未改 |
+| G14 | 真 IM/鉴权/递交/报价/日历 | 无假造 | 集成 | — | 后置 | 后置 |
+| G15 | welcome/login | 进大厅叙事基本对齐 | — | — | 保持 | — |
+| G16 | 公司/案盘 | 缺口主 CTA / 案表进公司清晰 | — | — | 保持 | — |
+
+### 72.1 本批落地机制（P0+清晰 P1）
+
+| # | 对应 | 行为改动 |
+|---|---|---|
+| A | G01–G03 | seats/compose/编制名册 **去 Catalog/Owner/lifecycle 上屏** |
+| B | G04–G08 | MidMap/侧栏/大厅页脚·陪同条 / midStageLabel **Office 人话** |
+| C | G09–G10 | Lab/harness/组队·专家台 **复验不回潮** |
+
+### 72.2 复扫表（改后）
+
+| 面 | 结论 |
+|---|---|
+| 大厅/公司/案盘/部台 | 无专家台/组队/三档；陪同条人话 |
+| seats / projects MidMap | 无 Catalog/L3/DomainCommand 抢屏 |
+| sessions 侧栏 / compose | 纸面/助手目录 Office |
+| Lab/harness | 旁路卡与纸面诚实保持 |
+
+### 72.3 六维（机制报告，不宣称落地）
+
+理念：旧真源字样不上屏。设计：旁路英桩卸净。使用成本：少编号/少 L3。逻辑：主链入口不变。
+
+### 72.4 后置 / 未改
+
+真 IM/鉴权/递交/报价/日历；部台信息墙 P2；助手目录与 harness 并薄；BranchDoors 深链码可再藏；main-path-sample 仍不碰。
+
+### 72.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 全站汇总 + P0/P1 一批改；smoke `PASS_RESCAN_72`；shots `.tmp/rescan-72-shots/`；§72；t616u |
+

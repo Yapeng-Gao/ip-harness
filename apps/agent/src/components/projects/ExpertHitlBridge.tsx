@@ -314,10 +314,10 @@ export function ExpertHitlBridge({
         })
         appendMessage(projectId, expert.id, {
           role: 'system',
-          content: `写库示意 · DomainCommand.${cmd} → mid ${writeCaseId} · ${reason}`,
+          content: `写库示意 · ${cmd} → 办理节点 ${writeCaseId} · ${reason}`,
           meta: { backend: 'mock' },
         })
-        setToast(`DomainCommand.${cmd} 已记入 L3 写库示意`)
+        setToast(`${cmd} 已记入写库示意`)
       }
 
       if (r.ok) {

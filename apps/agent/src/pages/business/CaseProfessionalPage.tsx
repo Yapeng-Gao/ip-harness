@@ -203,7 +203,7 @@ export function CaseProfessionalPage() {
           编制名册
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          {c.title} · 谁能接、谁在办、哪有缺口 · 点部门进部台（非 lifecycle「专业」档）
+          {c.title} · 谁能接、谁在办、哪有缺口 · 点部门进部台（一期编制名册）
         </p>
 
         {/* 汇总条 · 做满密度 */}
