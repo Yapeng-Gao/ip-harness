@@ -89,7 +89,11 @@ import { BranchFlowPanel } from '../../components/business/BranchFlowPanel'
 import { AuxChainBanner } from '../../components/business/AuxChainBanner'
 import { ThreeLineStatusStrip } from '../../components/business/ThreeLineStatusStrip'
 import { TeachingFadeTip } from '../../components/business/TeachingFadeTip'
-import { lineDiff, diffStats } from '../../business/lineDiff'
+import { TrueDiffPanel } from '../../components/business/TrueDiffPanel'
+import {
+  SEED_DIFF_LEFT,
+  SEED_DIFF_RIGHT,
+} from '../../business/trueDiffDemo'
 import { buildBranchJudgment } from '../../business/judgmentArchive'
 import { useEntryRole } from '../../business/useEntryRole'
 import { prefsHintForDept } from '../../business/preferenceStore'
@@ -322,12 +326,20 @@ export function BusinessCaseDeptPage() {
   const versions = thread?.artifactVersions ?? []
 
   const materialNodes: MaterialsTreeNode[] = useMemo(() => {
-    const versionChildren: MaterialsTreeNode[] = versions.map((v, i) => ({
-      id: `version-${i}`,
-      label: `版本 ${i + 1}`,
-      kind: 'version' as const,
-      hint: formatArtifactSavedAt(new Date(v.savedAt)),
-    }))
+    const versionChildren: MaterialsTreeNode[] = [
+      {
+        id: 'seed-diff',
+        label: '差分示意（样机）',
+        kind: 'version' as const,
+        hint: '左右对照 · 非真官报',
+      },
+      ...versions.map((v, i) => ({
+        id: `version-${i}`,
+        label: `版本 ${i + 1}`,
+        kind: 'version' as const,
+        hint: formatArtifactSavedAt(new Date(v.savedAt)),
+      })),
+    ]
     return [
       {
         id: 'deliverable',
@@ -346,9 +358,9 @@ export function BusinessCaseDeptPage() {
         label: '版本',
         kind: 'section',
         hint:
-          versionChildren.length > 0
-            ? `${versionChildren.length} 个另存`
-            : '尚无另存版本',
+          versions.length > 0
+            ? `${versions.length} 个另存 + 示意`
+            : '示意可点 · 尚无另存',
         children: versionChildren,
       },
     ]
@@ -522,20 +534,25 @@ export function BusinessCaseDeptPage() {
   const centerTitle =
     selectedMaterialId === 'attachments'
       ? '附件'
-      : selectedMaterialId.startsWith('version-')
-        ? '版本正文'
-        : selectedMaterialId === 'versions'
-          ? '版本'
-          : '产出正文'
+      : selectedMaterialId === 'seed-diff'
+        ? '差分示意'
+        : selectedMaterialId.startsWith('version-')
+          ? '版本正文'
+          : selectedMaterialId === 'versions'
+            ? '版本'
+            : '产出正文'
 
   const centerBody = (() => {
     if (selectedMaterialId === 'attachments') {
       return '本站附件为样机占位。正式上传与格式检查后置，不在此装完成。'
     }
+    if (selectedMaterialId === 'seed-diff') {
+      return '下方为 seed 左右差分示意（非真官报）。点「左右对照 / 统一差分」切换视图。'
+    }
     if (selectedMaterialId === 'versions') {
       return versions.length === 0
-        ? '尚无另存版本。在右栏专家岗「成果」里可另存。'
-        : '在左侧点某一版本查看正文。'
+        ? '尚无另存版本。可先点「差分示意（样机）」看左右对照；或在右栏专家岗「成果」里另存。'
+        : '在左侧点某一版本查看正文与差分；或点「差分示意（样机）」。'
     }
     if (selectedMaterialId.startsWith('version-')) {
       const idx = Number(selectedMaterialId.replace('version-', ''))
@@ -926,17 +943,37 @@ export function BusinessCaseDeptPage() {
                 >
                   {centerBody}
                 </pre>
+                {selectedMaterialId === 'seed-diff' ? (
+                  <TrueDiffPanel
+                    left={SEED_DIFF_LEFT}
+                    right={SEED_DIFF_RIGHT}
+                    leftTitle="当前稿（seed）"
+                    rightTitle="对照版（seed）"
+                    seedMode
+                  />
+                ) : null}
                 {selectedMaterialId.startsWith('version-') ? (
-                  <VersionDiffPanel
-                    current={
+                  <TrueDiffPanel
+                    left={
                       thread?.artifactMarkdown?.trim() ||
                       deliverableSummary ||
                       handoff.deliverable
                     }
-                    selectedMaterialId={selectedMaterialId}
-                    versions={versions}
-                    onApprove={(markdown) => {
+                    right={(() => {
+                      const idx = Number(
+                        selectedMaterialId.replace('version-', ''),
+                      )
+                      return versions[idx]?.markdown?.trim() || ''
+                    })()}
+                    leftTitle="当前稿"
+                    rightTitle="选中版本"
+                    onApprove={() => {
                       if (!activeSeat) return
+                      const idx = Number(
+                        selectedMaterialId.replace('version-', ''),
+                      )
+                      const markdown = versions[idx]?.markdown?.trim()
+                      if (!markdown) return
                       patchThread(caseId, activeSeat, {
                         artifactMarkdown: markdown,
                       })
@@ -1655,80 +1692,3 @@ export function BusinessCaseDeptPage() {
   )
 }
 
-function VersionDiffPanel({
-  current,
-  selectedMaterialId,
-  versions,
-  onApprove,
-  onKeep,
-}: {
-  current: string
-  selectedMaterialId: string
-  versions: { savedAt: string; markdown: string }[]
-  onApprove: (markdown: string) => void
-  onKeep: () => void
-}) {
-  const idx = Number(selectedMaterialId.replace('version-', ''))
-  const v = versions[idx]
-  const versionText = v?.markdown?.trim() || ''
-  const lines = lineDiff(current, versionText)
-  const stats = diffStats(lines)
-  return (
-    <div
-      className="mt-3 rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2.5"
-      data-testid="dept-version-diff"
-    >
-      <p className="text-[11px] font-semibold text-slate-800">
-        版本对照 · 行级 diff
-      </p>
-      <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
-        +{stats.added} / −{stats.removed} · 认可后写回主栏；非专业 diff 引擎，但是真行对照。
-      </p>
-      <pre
-        className="mt-2 max-h-48 overflow-auto rounded-md border border-slate-200 bg-white p-2 font-mono text-[10px] leading-relaxed"
-        data-testid="dept-version-diff-body"
-      >
-        {lines.slice(0, 80).map((l, i) => (
-          <div
-            key={i}
-            className={
-              l.type === 'add'
-                ? 'bg-emerald-50 text-emerald-900'
-                : l.type === 'del'
-                  ? 'bg-rose-50 text-rose-900'
-                  : 'text-slate-600'
-            }
-          >
-            {l.type === 'add' ? '+' : l.type === 'del' ? '−' : ' '}
-            {l.text || ' '}
-          </div>
-        ))}
-        {lines.length > 80 ? (
-          <div className="text-slate-400">…共 {lines.length} 行</div>
-        ) : null}
-      </pre>
-      <div className="mt-2 flex flex-wrap gap-2">
-        <button
-          type="button"
-          className="btn-press focus-ring rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
-          data-testid="dept-version-approve"
-          disabled={!versionText}
-          onClick={() => {
-            if (!versionText) return
-            onApprove(versionText)
-          }}
-        >
-          认可此版写回
-        </button>
-        <button
-          type="button"
-          className="btn-press focus-ring rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-medium text-slate-700"
-          data-testid="dept-version-keep"
-          onClick={onKeep}
-        >
-          保持当前稿
-        </button>
-      </div>
-    </div>
-  )
-}
