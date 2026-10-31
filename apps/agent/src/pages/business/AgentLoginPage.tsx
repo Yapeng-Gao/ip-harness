@@ -4,16 +4,19 @@ import { Building2, Scale } from 'lucide-react'
 import { useAuthSession } from '../../business/AuthSessionContext'
 import {
   ENTRY_ROLE_LABEL,
+  readEntryRole,
   resolveEntryLandingPath,
   type EntryRole,
 } from '../../business/entryRole'
 import { useEntryRole } from '../../business/useEntryRole'
 
-const OPTIONS: EntryRole[] = ['agency', 'enterprise']
+/** 企业在前：理念默认按最不懂 AI 的企业研发；代理仍可选 */
+const OPTIONS: EntryRole[] = ['enterprise', 'agency']
 
 /**
  * product-pages §4.0 登录壳
- * 定位句 + 角色二选一 + 进入 → 产品首页 /agent（§4.0a）；样机本地会话。
+ * 角色二选一 → 一律先进大厅 /agent；已登录态回跳用已存角色（禁硬写 agency）。
+ * 样机本地会话 · 非真鉴权。
  */
 export function AgentLoginPage() {
   const { loggedIn, login } = useAuthSession()
@@ -24,7 +27,8 @@ export function AgentLoginPage() {
   const [error, setError] = useState<string | null>(null)
 
   if (loggedIn) {
-    return <Navigate to={resolveEntryLandingPath('agency')} replace />
+    const role = readEntryRole() ?? 'enterprise'
+    return <Navigate to={resolveEntryLandingPath(role)} replace />
   }
 
   const enter = () => {
@@ -61,7 +65,7 @@ export function AgentLoginPage() {
         </div>
 
         <p className="mb-4 text-sm text-slate-600">
-          选择入口角色后进入 Novada Team 大厅；再从大厅进部门或公司案首页。
+          选角色后进大厅（接待 + 老板待办 + 八部）。同一套系统，不按角色关门；代理/企业只调惯用密度。
         </p>
 
         <fieldset className="mb-5">

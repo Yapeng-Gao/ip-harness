@@ -27,6 +27,7 @@ export function WelcomePage() {
       className="app-shell-bg min-h-full overflow-y-auto px-4 py-8 lg:px-8"
       data-testid="agent-welcome-page"
       data-page="welcome"
+      data-welcome-dedupe="login-gate-v1"
     >
       <div className="mx-auto w-full max-w-4xl">
         <div className="mb-6 flex items-center justify-between gap-3">
@@ -34,7 +35,7 @@ export function WelcomePage() {
             <div className="shell-brand-mark flex h-8 w-8 items-center justify-center text-[10px] font-semibold">
               NT
             </div>
-            <span className="text-sm font-semibold text-slate-800">Novada Team · 宣传站</span>
+            <span className="text-sm font-semibold text-slate-800">Novada Team · 宣传站（未登录）</span>
           </div>
           <Link
             to="/agent/login"
@@ -78,7 +79,11 @@ export function WelcomePage() {
           </a>
         </div>
 
-        <div className="mt-10">
+        <p className="mt-4 text-[11px] text-slate-400" data-testid="welcome-shelf-note">
+          下面是八部货架示意 · 不可作业；登录后进大厅办事，不在宣传站开干。
+        </p>
+
+        <div className="mt-6">
           <HomeContentPreview showHero={false} />
         </div>
 

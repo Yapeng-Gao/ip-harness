@@ -2,7 +2,7 @@
  * 入口角色（演示落点）· 与租户 workspace 解耦：
  * - 登录后统一落 /agent 首页总览
  * - 首页主 CTA：agency → 案盘；enterprise → 最近公司首页 / 开案子
- * localStorage 键：ip-agent-entry-role；缺省 agency（演示友好）
+ * localStorage 键：ip-agent-entry-role；缺省 enterprise（理念：默认按企业研发）
  */
 export type EntryRole = 'agency' | 'enterprise'
 

@@ -56,8 +56,9 @@ export function HomeContentPreview({ showHero = true }: HomeContentPreviewProps)
           八部货架 · 每部职责一句 + 专家岗示意（只展示，不可作业）
         </p>
         <ol
-          className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7"
+          className="grid grid-cols-2 gap-2 sm:grid-cols-4"
           data-testid="home-chain-micro"
+          data-shelf-cols="4x2"
         >
           {HOME_CHAIN_STATIONS.map((s) => {
             const active = s.deptId === currentId

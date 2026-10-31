@@ -24,12 +24,14 @@ const EntryRoleContext = createContext<EntryRoleContextValue | null>(null)
 function initialRole(workspaceKind: string): EntryRole {
   const stored = readEntryRole()
   if (stored) return stored
-  return workspaceKind === 'enterprise' ? 'enterprise' : 'agency'
+  // 有 workspace 跟 kind；最终缺省 enterprise（理念默认按企业）
+  if (workspaceKind === 'agency') return 'agency'
+  return 'enterprise'
 }
 
 /**
  * 入口角色共享态（顶栏切换器 + /agent 重定向同源）。
- * 无 localStorage 时跟 workspace.kind；最终缺省 agency。
+ * 无 localStorage 时跟 workspace.kind；最终缺省 enterprise。
  */
 export function EntryRoleProvider({ children }: { children: ReactNode }) {
   const { workspace } = useApp()
