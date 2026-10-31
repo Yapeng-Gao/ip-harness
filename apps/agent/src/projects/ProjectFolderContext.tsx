@@ -796,8 +796,8 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
             id: uid('tl'),
             projectId,
             kind: 'system',
-            title: '演示 · 已绑示意案 case-mock-l3',
-            detail: '样机绑定 · 非真 case-core',
+            title: '演示 · 已绑示意案',
+            detail: '样机绑定 · 非真案核',
             at: stamp(),
           },
         ])
@@ -912,8 +912,8 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
             id: uid('tl'),
             projectId,
             kind: 'system',
-            title: '全链路演示 · 已绑示意案 case-mock-l3',
-            detail: '样机绑定 · 非真 case-core',
+            title: '全链路演示 · 已绑示意案',
+            detail: '样机绑定 · 非真案核',
             at: stamp(),
           },
         ])
@@ -1207,7 +1207,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
               ? '已解除案件绑定'
               : '项目已更新',
           detail: patch.caseId
-            ? '样机绑定 · 非真 case-core'
+            ? '样机绑定 · 非真案核'
             : '',
           at: stamp(),
         },

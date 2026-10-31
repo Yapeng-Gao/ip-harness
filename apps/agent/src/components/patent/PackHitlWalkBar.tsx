@@ -148,7 +148,7 @@ export function PackHitlWalkBar({ compact }: Props) {
           <ChevronRight className="h-3 w-3" aria-hidden />
           按序推进
           {cursor < PACK_HITL_WALK_SEATS.length
-            ? ` · 下一闸 ${PACK_HITL_WALK_SEATS[cursor]?.label ?? ''}`
+            ? ` · 下一确认点 ${PACK_HITL_WALK_SEATS[cursor]?.label ?? ''}`
             : ' · 已完'}
         </button>
         <button

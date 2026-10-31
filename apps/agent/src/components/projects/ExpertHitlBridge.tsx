@@ -274,6 +274,10 @@ export function ExpertHitlBridge({
         if (!writeCand?.command) return
         const cmd = writeCand.command as CommandName
         const writeCaseId = effectiveCaseId || 'case-mock-l3'
+        const writeCaseLabel =
+          !writeCaseId || writeCaseId.startsWith('case-mock-')
+            ? '示意案'
+            : writeCaseId
         // Per-seat handoff key (audit 8049acd): disclosure→disclosure_pack, draft→draft_claims,
         // oa→prosecution_response; filing has null — never hard-bind claims.
         const seatKey = primaryHandoffKeyForExpert(expert.id)
@@ -308,14 +312,14 @@ export function ExpertHitlBridge({
           expertId: expert.id,
           command: cmd,
           payload,
-          note: `${writeCand.label} · ${reason} · 中台节点示意案 ${writeCaseId}`,
+          note: `${writeCand.label} · ${reason} · 中台节点示意案 ${writeCaseLabel}`,
         })
         void dispatchCommand(payload as never).catch(() => {
           /* local log already recorded */
         })
         appendMessage(projectId, expert.id, {
           role: 'system',
-          content: `写库示意 · ${domainCommandOfficeLabel(cmd)} → 办理节点 ${writeCaseId} · ${reason}`,
+          content: `写库示意 · ${domainCommandOfficeLabel(cmd)} → 办理节点 ${writeCaseLabel} · ${reason}`,
           meta: { backend: 'mock' },
         })
         setToast(`${domainCommandOfficeLabel(cmd)} · 已记入写库示意`)

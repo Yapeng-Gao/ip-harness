@@ -20,7 +20,11 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
   const { getDomainCommandWrites } = useProjectFolder()
   const row = midMapForExpert(expertId)
   const writes = getDomainCommandWrites(projectId)
-  const caseLabel = caseId ?? 'case-mock-l3'
+  const rawCaseId = caseId ?? 'case-mock-l3'
+  const caseLabel =
+    rawCaseId === 'case-mock-l3' || rawCaseId.startsWith('case-mock-')
+      ? '示意案'
+      : rawCaseId
 
   return (
     <aside

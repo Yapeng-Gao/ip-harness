@@ -3200,3 +3200,48 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-10-31 CST | 英名盖层+旁路回退；smoke `PASS_RESCAN_80`；shots `.tmp/rescan-80-shots/`；§80；t624u |
 
+## 81. 旁路示意案号/样本案号工程味回退（2026-10-31 Asia/Shanghai）
+
+> **问题：** 续扫 UI/布局/页面逻辑；查回退与旁路工程味。席位办理摘记仍露 `mock-demo`；演示绑案露 `case-mock-l3`/`case-core`；部台交付文案用 `artifactKey`。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。不认 lifecycle。
+
+### 81.0 缺口清单
+
+| ID | 面 | 缺口简述 | 维度 | 严重度 | 建议改法 | 本批 |
+|---|---|---|---|---|---|---|
+| G01 | 双文件样本 | 摘记表案号 `mock-demo` | 展示 | P0 | 示意案号 | ✅ |
+| G02 | 演示绑案/中台映射 | `case-mock-l3` / `非真 case-core` 上屏 | 展示 | P0 | 人话示意案 | ✅ |
+| G03 | 部台交付文案 | `dual.artifactKey` 英键 | 展示 | P1 | `dual.title` | ✅ |
+| G04 | 绑案控件 | summary 含 case-core | 展示 | P1 | 人话 | ✅ |
+| G05 | 真集成 | 诚实示意 | 集成 | — | 后置 | 后置 |
+
+### 81.1 本批落地
+
+| # | 对应 | 行为 |
+|---|---|---|
+| A | G01 | patentDeliverables 样本案号 |
+| B | G02 | Folder/MidMap/Bridge 展示人话（内部 id 可留） |
+| C | G03–G04 | 部台 title；绑案 summary |
+
+### 81.2 复扫表（改后）
+
+| 面 | 结论 |
+|---|---|
+| 席位摘记 | 无 mock-demo |
+| 演示绑案句 | 无 case-core / case-mock 抢屏 |
+| 回潮 | 无组队/lifecycle 进门 |
+
+### 81.3 六维（机制报告，不宣称落地）
+
+设计：示意案号人话。使用成本：少调试串。逻辑：内部 caseId 不变。
+
+### 81.4 后置
+
+真集成；flowSteps Go/No-Go 跨包；main-path-sample 不碰。
+
+### 81.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 样本/绑案人话；smoke `PASS_RESCAN_81`；shots `.tmp/rescan-81-shots/`；§81；t625u |
+

@@ -146,7 +146,7 @@ function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
   return {
     purpose: '把本站交卷做齐',
     deliverable: dual
-      ? `本站产出：${dual.artifactKey}（样机摘要）`
+      ? `本站产出：${dual.title}（样机摘要）`
       : '本站权威产出摘要（占位，待业务节点对齐）',
     checklist: ['关键产出已起草', '缺项已清或已说明', '可送确认'],
   }
