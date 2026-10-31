@@ -8,6 +8,10 @@ import {
   planAdvanceHandoffGate,
 } from '../../business/handoffPlanGate'
 import {
+  KIT_STEP_SYNC_HONEST,
+  kitProgressForPlanStep,
+} from '../../business/kitStepSync'
+import {
   currentSeatForProgress,
 } from '../../business/businessSeats'
 import {
@@ -390,12 +394,20 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
               data-testid="company-plan-chain"
               aria-label="排期辅链"
             >
-              {prog.delegate.chain.map((s, i) => (
+              {prog.delegate.chain.map((s, i) => {
+                const kitMeta = kitProgressForPlanStep({
+                  deptSlug: s.deptSlug,
+                  kitDoneByDept: prog.kitDoneByDept,
+                })
+                return (
                 <li
                   key={s.id}
-                  className="flex items-center gap-1.5 text-[11px] text-emerald-950/90"
+                  className="flex flex-wrap items-center gap-1.5 text-[11px] text-emerald-950/90"
                   data-testid={`company-plan-chain-${s.id}`}
                   data-status={s.status}
+                  data-kit-phase={kitMeta.phase}
+                  data-kit-done={String(kitMeta.done)}
+                  data-kit-total={String(kitMeta.total)}
                 >
                   <span className="tabular text-emerald-800/70">{i + 1}.</span>
                   <span
@@ -414,8 +426,24 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
                           ? '已办完'
                           : '已暂缓'}
                   </span>
+                  {s.status !== 'skipped' ? (
+                    <span
+                      className={
+                        kitMeta.phase === 'complete'
+                          ? 'rounded-full bg-emerald-100/90 px-1.5 py-px text-[10px] font-medium text-emerald-900 ring-1 ring-emerald-300/70'
+                          : kitMeta.phase === 'partial'
+                            ? 'rounded-full bg-violet-50 px-1.5 py-px text-[10px] font-medium text-violet-900 ring-1 ring-violet-200/80'
+                            : 'rounded-full bg-white/60 px-1.5 py-px text-[10px] font-medium text-emerald-900/55 ring-1 ring-emerald-100'
+                      }
+                      data-testid={`company-plan-chain-kit-${s.id}`}
+                      title={KIT_STEP_SYNC_HONEST}
+                    >
+                      {kitMeta.short}
+                    </span>
+                  ) : null}
                 </li>
-              ))}
+                )
+              })}
             </ol>
           ) : null}
           {prog.delegate ? (
@@ -532,6 +560,15 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
               ) : null}
             </div>
           ) : null}
+          <p
+            className="mt-1 text-[10px] text-emerald-900/50"
+            data-testid="company-plan-kit-sync-hint"
+          >
+            {KIT_STEP_SYNC_HONEST}
+            {activePlanStep
+              ? ` · 在办章 ${kitProgressForPlanStep({ deptSlug: activePlanStep.deptSlug, kitDoneByDept: prog.kitDoneByDept }).short}`
+              : ''}
+          </p>
           <p
             className="mt-1.5 text-[10px] text-emerald-900/60"
             data-testid="company-plan-advance-hint"

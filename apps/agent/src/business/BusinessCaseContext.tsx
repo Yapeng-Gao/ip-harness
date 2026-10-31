@@ -59,6 +59,12 @@ import {
   toggleKitDoneLabel,
 } from './kitChecklistGate'
 import {
+  KIT_STEP_SYNC_HONEST,
+  kitHoldLabelsForDeptSlug,
+  mergeKitDoneWithStep,
+  shrinkKitDoneToStep,
+} from './kitStepSync'
+import {
   advancePlanChain,
   appendChainAdvanceNote,
   type PlanChainStep,
@@ -577,6 +583,11 @@ type BusinessCaseContextValue = {
     caseId: string,
     deptSlug: string,
   ) => { ok: boolean; labels: string[] }
+  /** 按席当前步进同步齐套（样机；末项 hold 不自动） */
+  syncKitFromSeatStep: (
+    caseId: string,
+    seatId: ProjectExpertId,
+  ) => { ok: boolean; done: string[]; stepIndex: number }
   /** 启用前研等「更多部门」（写入 moreSeatIds） */
   /** T10 · 本案判断档案（硬请示写回） */
   getJudgments: (caseId?: string) => JudgmentRecord[]
@@ -1735,6 +1746,35 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const step = def.steps[next] ?? def.steps[cur]
       const stepLabel = step?.label ?? def.name
       const seatName = businessSeatLabel(seatId)
+      // 齐套 ↔ 步进：按进度单调勾选（末项 hold 不自动）
+      const leadDept = orgDeptByLeadSeat(seatId)
+      if (leadDept) {
+        const slug = deptSlug(leadDept.id)
+        const labels = kitLabelsForDeptSlug(slug)
+        const hold = kitHoldLabelsForDeptSlug(slug)
+        const at = nowIso()
+        setProgressById((prev) => {
+          const prog = prev[caseId] ?? emptyProgress(caseId)
+          const merged = mergeKitDoneWithStep({
+            labels,
+            prevDone: prog.kitDoneByDept?.[slug],
+            stepIndex: next,
+            stepCount: Math.max(def.steps.length, 1),
+            holdLabels: hold,
+          })
+          return {
+            ...prev,
+            [caseId]: {
+              ...prog,
+              kitDoneByDept: {
+                ...(prog.kitDoneByDept ?? {}),
+                [slug]: merged,
+              },
+              updatedAt: at,
+            },
+          }
+        })
+      }
       const logId = processLogId('adv')
       const toolBit = step?.tool
         ? `${step.tool.preview}`
@@ -1749,7 +1789,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           message: `${seatName} · 完成本步「${stepLabel}」`,
           detail: step?.triggersHitl
             ? `交卷待确认 · ${toolBit}`
-            : `做了什么：${step?.script ?? stepLabel} · ${toolBit}`,
+            : `做了什么：${step?.script ?? stepLabel} · ${toolBit} · ${KIT_STEP_SYNC_HONEST}`,
         },
       ])
       if (!step?.triggersHitl) {
@@ -1785,6 +1825,35 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const r = rewindToStep(caseId, seatId, targetIndex)
       if (!r.ok) {
         return { ok: false as const, reason: r.reason }
+      }
+      const def = getProjectExpert(seatId)
+      const leadDept = orgDeptByLeadSeat(seatId)
+      if (leadDept) {
+        const slug = deptSlug(leadDept.id)
+        const labels = kitLabelsForDeptSlug(slug)
+        const hold = kitHoldLabelsForDeptSlug(slug)
+        const at = nowIso()
+        setProgressById((prev) => {
+          const prog = prev[caseId] ?? emptyProgress(caseId)
+          const shrunk = shrinkKitDoneToStep({
+            labels,
+            prevDone: prog.kitDoneByDept?.[slug],
+            stepIndex: targetIndex,
+            stepCount: Math.max(def.steps.length, 1),
+            holdLabels: hold,
+          })
+          return {
+            ...prev,
+            [caseId]: {
+              ...prog,
+              kitDoneByDept: {
+                ...(prog.kitDoneByDept ?? {}),
+                [slug]: shrunk,
+              },
+              updatedAt: at,
+            },
+          }
+        })
       }
       const kind = confirmKindForSeat(seatId)
       const seatName = businessSeatLabel(seatId)
@@ -2507,7 +2576,48 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     [appendLogs],
   )
 
-  const enableMoreDepartments = useCallback((caseId: string) => {
+  
+  const syncKitFromSeatStep = useCallback(
+    (caseId: string, seatId: ProjectExpertId) => {
+      const def = getProjectExpert(seatId)
+      const thread = getThread(caseId, seatId)
+      const stepIndex = thread?.stepIndex ?? 0
+      const leadDept = orgDeptByLeadSeat(seatId)
+      if (!leadDept) {
+        return { ok: false as const, done: [] as string[], stepIndex }
+      }
+      const slug = deptSlug(leadDept.id)
+      const labels = kitLabelsForDeptSlug(slug)
+      const hold = kitHoldLabelsForDeptSlug(slug)
+      const at = nowIso()
+      let merged: string[] = []
+      setProgressById((prev) => {
+        const prog = prev[caseId] ?? emptyProgress(caseId)
+        merged = mergeKitDoneWithStep({
+          labels,
+          prevDone: prog.kitDoneByDept?.[slug],
+          stepIndex,
+          stepCount: Math.max(def.steps.length, 1),
+          holdLabels: hold,
+        })
+        return {
+          ...prev,
+          [caseId]: {
+            ...prog,
+            kitDoneByDept: {
+              ...(prog.kitDoneByDept ?? {}),
+              [slug]: merged,
+            },
+            updatedAt: at,
+          },
+        }
+      })
+      return { ok: true as const, done: merged, stepIndex }
+    },
+    [getThread],
+  )
+
+const enableMoreDepartments = useCallback((caseId: string) => {
     const add = [
       ...BUSINESS_MORE_SEAT_IDS,
       'expert-layout' as ProjectExpertId,
@@ -2649,6 +2759,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       getKitChecklist,
       toggleKitCheck,
       seedKitComplete,
+      syncKitFromSeatStep,
       enableMoreDepartments,
       getJudgments,
       getPreferences,
@@ -2693,6 +2804,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       getKitChecklist,
       toggleKitCheck,
       seedKitComplete,
+      syncKitFromSeatStep,
       enableMoreDepartments,
       getJudgments,
       getPreferences,

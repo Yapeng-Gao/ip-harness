@@ -72,6 +72,7 @@ import {
   seedBodyForSideAux,
   sideAuxMaterialId,
 } from '../../business/sideAuxBodyLink'
+import { KIT_STEP_SYNC_HONEST } from '../../business/kitStepSync'
 import { SIDE_AUX_DEPTS } from '../../business/professionalAuxParts'
 import { auxBundleFor } from '../../business/professionalAuxParts'
 import {
@@ -164,6 +165,7 @@ export function BusinessCaseDeptPage() {
     getKitChecklist,
     toggleKitCheck,
     seedKitComplete,
+    syncKitFromSeatStep,
   } = useBusinessCases()
   const { getThread, patchThread } = useProjectFolder()
   const { deptLabel } = useOrgConfig()
@@ -340,6 +342,14 @@ export function BusinessCaseDeptPage() {
 
   const thread = getThread(caseId, activeSeat)
   const stepIndex = thread?.stepIndex ?? 0
+
+  /** 齐套 ↔ 步进：席步进变化时同步勾选（末项 hold） */
+  useEffect(() => {
+    if (!activeSeat || !dept) return
+    if (orgDeptByLeadSeat(activeSeat)?.id !== dept.id) return
+    if (stepIndex <= 0) return
+    syncKitFromSeatStep(caseId, activeSeat)
+  }, [caseId, activeSeat, dept, stepIndex, syncKitFromSeatStep])
 
   const [workNonce, setWorkNonce] = useState(0)
 
@@ -1720,6 +1730,23 @@ export function BusinessCaseDeptPage() {
                     >
                       样机·勾齐齐套
                     </button>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring ml-2 mt-2 rounded-full border border-dashed border-slate-400/50 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-slate-700 hover:bg-white"
+                      data-testid="dept-sync-kit-from-step"
+                      title={KIT_STEP_SYNC_HONEST}
+                      onClick={() => {
+                        if (activeSeat) syncKitFromSeatStep(caseId, activeSeat)
+                      }}
+                    >
+                      按本席步进勾齐套
+                    </button>
+                    <p
+                      className="mt-1.5 text-[9px] text-violet-800/70"
+                      data-testid="dept-kit-step-sync-hint"
+                    >
+                      {KIT_STEP_SYNC_HONEST} · 右栏推进本步会自动勾上若干齐套项；也可点「按本席步进勾齐套」。末项如决议/权属仍须手勾或样机勾齐。
+                    </p>
                     <details
                       className="mt-2 rounded-md border border-violet-100 bg-white/70 px-2 py-1.5"
                       data-testid="ask-more"
