@@ -576,6 +576,15 @@ export function BusinessCaseSidebar() {
         )}
 
         <Link
+          to={`/agent/cases/${activeCaseId}/professional`}
+          className="mt-2 flex items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-700 hover:bg-slate-50"
+          data-testid="business-side-professional"
+          title="案级专业能力 / 编制"
+        >
+          专业 / 编制
+        </Link>
+
+        <Link
           to={`/agent/cases/${activeCaseId}/room`}
           className="mt-2 flex items-center justify-center gap-1 rounded-md border border-violet-200 bg-violet-50 px-2 py-1.5 text-[10px] font-medium text-violet-900 hover:bg-violet-100"
           data-testid="business-case-group-chat"
