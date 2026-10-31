@@ -6,7 +6,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'context',
     label: '收权要上下文',
     script: '【附图】交底书里的示意图只说明结构。这里按说明书和权要出正式图号。',
-    tool: { name: 'gather_figure_context', preview: 'linked=draft_claims · figs_needed=4' },
+    tool: { name: 'gather_figure_context', preview: '已挂权要 · 需图 4' },
     structuredBody: [
       '**需图类型**',
       '- 系统框图（装置）',
@@ -19,7 +19,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'list',
     label: '图号清单',
     script: '【附图】图1–图4 清单已排；图注术语将校验 ⊆ 权项术语。',
-    tool: { name: 'list_needed_figures', preview: 'figures=4' },
+    tool: { name: 'list_needed_figures', preview: '附图 4' },
     structuredBody: [
       '| 图号 | 类型 | 对应权要 | 状态 |',
       '|------|------|----------|------|',
@@ -33,7 +33,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'sketch',
     label: '草图占位',
     script: '【附图】样机 SVG/占位图已挂；非真文生图。',
-    tool: { name: 'mock_sketch', preview: 'assets=fig-mock-01..03' },
+    tool: { name: 'mock_sketch', preview: '示意草图 ×3' },
     structuredBody: [
       '- fig-mock-01 系统框图占位',
       '- fig-mock-02 流程图占位（步骤 1–5）',
@@ -44,7 +44,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'terms',
     label: '图注术语校验',
     script: '【附图】图注术语与权项差集检查：差集为空则 Pass。',
-    tool: { name: 'ocr_term_check', preview: 'diff=0 · Pass' },
+    tool: { name: 'ocr_term_check', preview: '用语差 0 · 过' },
     structuredBody: [
       '| 图注术语 | 是否在权项/说明书 |',
       '|----------|-------------------|',

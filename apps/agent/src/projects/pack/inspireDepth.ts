@@ -6,7 +6,7 @@ export const INSPIRE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'ingest',
     label: '吃全景',
     script: '【激发】已读全景：机会在多约束×热插拔；预测单点为红海。',
-    tool: { name: 'brainstorm_directions', preview: 'upstream=landscape · focus=三联' },
+    tool: { name: 'brainstorm_directions', preview: '上游全景 · 聚焦三联' },
     structuredBody: [
       '**上游约束**',
       '- 勿独权单押负载预测',
@@ -20,7 +20,7 @@ export const INSPIRE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'pool',
     label: '方向池',
     script: '【激发】方向池 8 条已开；将收敛至 2～3 条可专利方向。',
-    tool: { name: 'brainstorm_directions', preview: 'pool=8 → target=3' },
+    tool: { name: 'brainstorm_directions', preview: '池 8 → 留 3' },
     structuredBody: [
       '| # | 方向草稿 | 来源启发 |',
       '|---|----------|----------|',
@@ -35,7 +35,7 @@ export const INSPIRE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'filter',
     label: '可专利过滤',
     script: '【激发】过滤纯商业模式与纯已知组合；保留 3 条技术向。',
-    tool: { name: 'score_patentability', preview: 'kept=3 · drop=5' },
+    tool: { name: 'score_patentability', preview: '留 3 · 弃 5' },
     structuredBody: [
       '| # | 方向 | 过滤结果 | 理由 |',
       '|---|------|----------|------|',
@@ -51,7 +51,7 @@ export const INSPIRE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'score',
     label: '可专利性评分',
     script: '【激发】Top3 评分：热插拔联动最高；降级作从权。',
-    tool: { name: 'score_patentability', preview: 'top=热插拔联动 · score=0.81' },
+    tool: { name: 'score_patentability', preview: '顶热插拔联动 · 分 0.81' },
     structuredBody: [
       '| 方向 | 新颖性示意 | 可实施 | 建议角色 |',
       '|------|------------|--------|----------|',
@@ -63,10 +63,10 @@ export const INSPIRE_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'brief',
     label: 'brief确认 · 待交',
-    script: '【激发】02_inspire_brief 待确认。过程见 worklog。',
+    script: '【激发】激发简报待确认。过程见办理摘记。',
     tool: {
       name: 'draft_inspire_brief',
-      preview: 'file=02_inspire_brief.md',
+      preview: '激发简报稿',
     },
     triggersHitl: true,
     hitlGate: 'approve_strategy',

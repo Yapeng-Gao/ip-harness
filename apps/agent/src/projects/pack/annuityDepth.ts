@@ -1,4 +1,4 @@
-/** 年费管家席深度 · 年费闸 pay_unlock · 禁真缴费 */
+/** 年费管家席深度 · 年费闸 · 禁真缴费 */
 import type { ExpertStepDef } from '../types'
 
 export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
@@ -7,7 +7,7 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
     label: '到期台账',
     script:
       '【年费】到期清单：CN114882901B 第 3 年 · 截止 2026-11-30 · 官费 ¥2,000（假数据）。',
-    tool: { name: 'list_annuity_due', preview: 'due=1 · window=90d' },
+    tool: { name: 'list_annuity_due', preview: '到期 1 件 · 窗口 90 天' },
     structuredBody: [
       '| 案号（示意） | 年次 | 截止 | 官费 |',
       '|--------------|------|------|------|',
@@ -21,7 +21,7 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'surcharge',
     label: '滞纳金表',
     script: '【年费】滞纳金阶梯 mock：宽限 6 月 · tier2 示意。',
-    tool: { name: 'compute_surcharge', preview: 'grace=6m · surcharge=tier2' },
+    tool: { name: 'compute_surcharge', preview: '宽限 6 月 · 滞纳档 2' },
     structuredBody: [
       '| 阶段 | 时限 | 附加（示意） |',
       '|------|------|--------------|',
@@ -36,7 +36,7 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'grade',
     label: '价值联动',
     script: '【年费】联动价值评估：核心案建议缴；外围可议放弃。',
-    tool: { name: 'compute_surcharge', preview: 'link=valuation_card · core=pay' },
+    tool: { name: 'compute_surcharge', preview: '联动价值评估 · 核心建议缴' },
     structuredBody: [
       '| 案 | 价值分级（来自评估） | 年费建议 |',
       '|----|----------------------|----------|',
@@ -50,8 +50,8 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'options',
     label: '缴/放方案',
-    script: '【年费】两案并列：按期缴 vs 宽限内议；放弃须 HITL。',
-    tool: { name: 'propose_pay_or_abandon', preview: 'opts=pay|grace|abandon' },
+    script: '【年费】两案并列：按期缴 vs 宽限内议；放弃须你确认。',
+    tool: { name: 'propose_pay_or_abandon', preview: '按期缴 / 宽限 / 放弃' },
     structuredBody: [
       '| 方案 | 动作 | 成本示意 | 风险 |',
       '|------|------|----------|------|',
@@ -64,10 +64,10 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'decide',
     label: '缴费/放弃闸 · 待确认',
     script:
-      '【年费】14_maintain_annuity 待 Confirm（年费闸 · pay_unlock · **禁真缴费**）。',
+      '【年费】缴费建议待你确认（年费闸 · **禁真缴费**）。',
     tool: {
       name: 'propose_pay_or_abandon',
-      preview: 'recommend=pay · hitl=annuity',
+      preview: '建议按期缴 · 待年费确认',
     },
     triggersHitl: true,
     hitlGate: 'pay_unlock',

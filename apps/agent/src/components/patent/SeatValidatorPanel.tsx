@@ -28,7 +28,7 @@ type Props = {
 }
 
 /**
- * 样机校验 + self-heal + handoff envelope (no real harness).
+ * 样机校验 + 自愈 + 交接信封（无真 harness）。
  */
 export function SeatValidatorPanel({
   expertId,
@@ -154,7 +154,7 @@ export function SeatValidatorPanel({
     if (projectId) {
       appendMessage(projectId, expertId, {
         role: 'system',
-        content: `【Handoff】${env.type} ${env.from} → ${env.to} · ${env.acceptance}`,
+        content: `【交接】${env.type} ${env.from} → ${env.to} · ${env.acceptance}`,
         meta: { backend: 'mock' },
       })
     }
@@ -200,7 +200,7 @@ export function SeatValidatorPanel({
         )}
         {thread?.pendingHitl && (
           <span className="rounded bg-amber-100 px-1 text-[9px] text-amber-900">
-            HITL 已解锁
+            确认点已解锁
           </span>
         )}
       </div>
@@ -255,7 +255,7 @@ export function SeatValidatorPanel({
           data-testid="handoff-write"
         >
           <Send className="h-3 w-3" aria-hidden />
-          写 Handoff 信封
+          写交接信封
         </button>
       </div>
 

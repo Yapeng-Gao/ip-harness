@@ -13,12 +13,12 @@ import { useProjectFolder } from '../../projects/ProjectFolderContext'
 type Props = {
   expertId: ProjectExpertId
   projectId?: string
-  /** Default show worklog (过程可见硬规则) */
+  /** Default show 办理摘记 (过程可见硬规则) */
   defaultTab?: 'artifact' | 'worklog' | 'both'
 }
 
 /**
- * Dual-file panels: 成果 NN_*.md + 过程 NN_*_worklog.md
+ * Dual-file panels: 成果 + 办理摘记（示意）
  * Spec: agent-patent-shell §3 / PROCESS_VISIBILITY
  * 有 projectId 时与业务面同一 progressive（agent-depth-reliability）
  */
@@ -80,7 +80,7 @@ export function SeatDualFilePanel({
           data-testid="dual-tab-worklog"
         >
           <ScrollText className="h-3 w-3" aria-hidden />
-          过程 worklog
+          办理摘记
         </button>
         <button
           type="button"
@@ -105,13 +105,13 @@ export function SeatDualFilePanel({
       {showBoth ? (
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <PanelBlock
-            title={d.worklogFile}
+            title={d.title + ' · 办理摘记'}
             body={worklogBody}
             testId="dual-worklog-body"
             accent="amber"
           />
           <PanelBlock
-            title={d.artifactFile}
+            title={d.title}
             body={artifactBody}
             testId="dual-artifact-body"
             accent="sky"
@@ -131,7 +131,7 @@ export function SeatDualFilePanel({
       )}
 
       <div className="shrink-0 border-t border-slate-100 px-2 py-1.5 text-[10px] text-slate-400">
-        交卷 = 成果 + 过程 · 缺 worklog 不合格
+        交卷 = 成果 + 办理摘记 · 缺摘记不合格
       </div>
     </aside>
   )

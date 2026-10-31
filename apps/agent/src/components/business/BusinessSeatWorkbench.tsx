@@ -1085,7 +1085,7 @@ export function BusinessSeatWorkbench({
                     className="ml-2 font-mono font-normal text-slate-300"
                     data-testid="business-seat-eng-filename"
                   >
-                    {panel === 'artifact' ? dual.artifactFile : dual.worklogFile}
+                    {panel === 'artifact' ? dual.title : dual.title + ' · 办理摘记'}
                   </span>
                 ) : null}
                 {panel === 'artifact' && thread?.artifactMarkdown ? (

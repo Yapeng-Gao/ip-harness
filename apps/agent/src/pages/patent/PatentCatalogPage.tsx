@@ -259,7 +259,7 @@ export function PatentCatalogPage() {
                         </p>
                         {d && (
                           <p className="mt-1 text-[10px] text-slate-400">
-                            成果示意 · {d.artifactFile} + 工作纪要
+                            成果示意 · {d.title} + 办理摘记
                           </p>
                         )}
                         <div className="mt-2 flex flex-wrap gap-1.5">

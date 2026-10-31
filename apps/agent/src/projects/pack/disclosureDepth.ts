@@ -6,7 +6,7 @@ export const DISCLOSURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'brief',
     label: '读上游附条件',
     script: '【交底】已读立项 Go 附条件：须补联动效果与实施例。',
-    tool: { name: 'read_intake_conditions', preview: 'conditions=3' },
+    tool: { name: 'read_intake_conditions', preview: '附条件 3' },
     structuredBody: [
       '**立项附条件（须落入交底）**',
       '1. 预测↔调度↔热插拔联动的效果数据',
@@ -18,7 +18,7 @@ export const DISCLOSURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'tech',
     label: '六段采集',
     script: '【交底】六段清单已开：背景/问题/方案/效果/实施例/替代。缺项将单项追问。',
-    tool: { name: 'gather_tech_points', preview: 'sections=6 · filled=4 · ask=2' },
+    tool: { name: 'gather_tech_points', preview: '六段 · 已填 4 · 追问 2' },
     structuredBody: [
       '| 段 | 状态 | 摘要 |',
       '|----|------|------|',
@@ -36,7 +36,7 @@ export const DISCLOSURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'ask',
     label: '缺项追问',
     script: '【交底】本轮追问「有益效果」：请给能耗或违约率对比（可相对值）。样机已用占位答复推进。',
-    tool: { name: 'ask_inventor', preview: 'ask=效果数据 · round=1/5' },
+    tool: { name: 'ask_inventor', preview: '追问效果数据 · 第 1/5 轮' },
     structuredBody: [
       '**追问 #1（效果）**',
       '- 问：相对无联合约束基线，违约次数 / 能耗有无观测差值？',
@@ -49,7 +49,7 @@ export const DISCLOSURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'structure',
     label: '交底结构',
     script: '【交底】背景→方案→效果→实施例提纲已结构化（≠权要）。',
-    tool: { name: 'structure_disclosure', preview: 'pack_outline=ok' },
+    tool: { name: 'structure_disclosure', preview: '提纲已结构化' },
     structuredBody: [
       '1. 背景与问题',
       '2. 技术方案（三联组合）',
@@ -62,7 +62,7 @@ export const DISCLOSURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'embodiments',
     label: '实施例',
     script: '【交底】例1 软件方法；例2 装置。步骤与权要特征可映射。',
-    tool: { name: 'outline_embodiments', preview: 'embodiments=2' },
+    tool: { name: 'outline_embodiments', preview: '实施例 2' },
     structuredBody: [
       '**实施例 1 · 方法**：采集 → 预测 → 联合求解 → 下发 → 插拔中断重算',
       '**实施例 2 · 装置**：预测模块 · 约束引擎 · 事件总线 · 执行器',
@@ -74,7 +74,7 @@ export const DISCLOSURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'sketch',
     label: '示意图',
     script: '【交底】示意图已挂进交底书：结构框图 + 方法流程。这是给查新和撰写看的草图，不是申请用的正式附图。',
-    tool: { name: 'attach_disclosure_sketches', preview: 'sketches=2 · 非正式附图' },
+    tool: { name: 'attach_disclosure_sketches', preview: '示意图 2 · 非正式附图' },
     structuredBody: [
       '**交底书附图（示意图）**',
       '- 图A 结构框图：预测模块 · 约束引擎 · 执行器',

@@ -3,6 +3,35 @@ import { PATENT_MID_MAP, midMapForExpert } from '../../projects/patentMidMap'
 import type { DomainCommandWriteLog, ProjectExpertId } from '../../projects/types'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 
+
+const HANDOFF_LABEL: Record<string, string> = {
+  research_report: '查新报告',
+  intake_quote: '立项报价',
+  disclosure_pack: '交底包',
+  draft_claims: '权要稿',
+  prosecution_response: '答复稿',
+  maintain_annuity: '年费台账',
+  monetize_terms: '转化条款',
+}
+
+const WRITE_LABEL: Record<string, string> = {
+  submitResearch: '提交查新',
+  submitHandoff: '提交交接',
+  createCaseFromInsight: '由洞察建案',
+  saveDraft: '存稿',
+  submitClaims: '交权要',
+  authorizeFile: '授权递交',
+  fileResponse: '递交答复',
+}
+
+function handoffKeyLabel(k: string): string {
+  return HANDOFF_LABEL[k] ?? k
+}
+
+function writeCommandLabel(k: string): string {
+  return WRITE_LABEL[k] ?? k
+}
+
 type Props = {
   projectId: string
   expertId: ProjectExpertId
@@ -45,11 +74,11 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
             </div>
             <div className="mt-0.5">
               <span className="text-slate-400">交接点 · </span>
-              {row.handoffKeys?.join(' · ') ?? '—（无直接写）'}
+              {row.handoffKeys?.map(handoffKeyLabel).join(' · ') ?? '—（无直接写）'}
             </div>
             <div className="mt-0.5">
               <span className="text-slate-400">写候选 · </span>
-              {row.writeCommands?.join(' · ') ?? 'null'}
+              {row.writeCommands?.map(writeCommandLabel).join(' · ') ?? '—'}
             </div>
             <div className="mt-1 text-[10px] text-amber-800">{row.honesty}</div>
           </div>
@@ -104,11 +133,16 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
                 key={w.id}
                 className="rounded border border-emerald-200 bg-emerald-50/80 px-2 py-1.5 text-[10px] text-emerald-950"
               >
-                <div className="font-semibold">{w.command}</div>
-                <div className="mt-0.5 font-mono text-[9px] text-emerald-800">
-                  {JSON.stringify(w.payload)}
-                </div>
+                <div className="font-semibold">{writeCommandLabel(w.command)}</div>
                 <div className="mt-0.5 text-emerald-700">{w.note}</div>
+                <details className="mt-0.5" data-testid="patent-dc-payload-fold">
+                  <summary className="cursor-pointer select-none text-[9px] text-emerald-700/80">
+                    内部载荷（默折）
+                  </summary>
+                  <div className="mt-0.5 font-mono text-[9px] text-emerald-800">
+                    {JSON.stringify(w.payload)}
+                  </div>
+                </details>
                 {w.payload && typeof w.payload === 'object' && 'caseId' in (w.payload as object) ? (
                   <div className="mt-0.5 text-slate-500">
                     中台节点示意 · 案 {(w.payload as { caseId?: string }).caseId}

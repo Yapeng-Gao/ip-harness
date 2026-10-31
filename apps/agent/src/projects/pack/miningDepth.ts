@@ -7,7 +7,7 @@ export const MINING_DEPTH_STEPS: ExpertStepDef[] = [
     label: '收技术点',
     script:
       '【挖掘】已收上游：边缘调度 · 动态频率 · 能耗约束 · 热插拔联动。≠立项 Go。',
-    tool: { name: 'parse_tech_points', preview: 'points=4 · from=01–03' },
+    tool: { name: 'parse_tech_points', preview: '要点 4 · 来自上游提案' },
     structuredBody: [
       '| # | 技术点 | 来源 |',
       '|---|--------|------|',
@@ -23,7 +23,7 @@ export const MINING_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'directions',
     label: '可申报提案',
     script: '【挖掘】提案 3 条骨架：主案三联 · 子案接口 · 子案降级。',
-    tool: { name: 'extract_invention_points', preview: 'candidates=3' },
+    tool: { name: 'extract_invention_points', preview: '候选 3 条' },
     structuredBody: [
       '| 提案 | 标题（示意） | 核心手段 |',
       '|------|--------------|----------|',
@@ -36,7 +36,7 @@ export const MINING_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'features',
     label: '特征拆解',
     script: '【挖掘】P1 特征表已拆：独权压联动；从权拆单点。',
-    tool: { name: 'extract_invention_points', preview: 'P1_features=6' },
+    tool: { name: 'extract_invention_points', preview: '主案特征 6' },
     structuredBody: [
       '| 特征 | 独/从 | 对抗高威胁 |',
       '|------|------|------------|',
@@ -52,7 +52,7 @@ export const MINING_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'score',
     label: '提案评分',
     script: '【挖掘】新颖性 0.78 · 可专利性 0.71 · P1 优先推进。',
-    tool: { name: 'score_invention', preview: 'novelty=0.78 · patent=0.71' },
+    tool: { name: 'score_invention', preview: '新颖性 0.78 · 可专利 0.71' },
     structuredBody: [
       '| 提案 | 新颖性 | 可专利性 | 建议 |',
       '|------|--------|----------|------|',
@@ -64,8 +64,8 @@ export const MINING_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'pack',
     label: '提案确认 · 待交',
-    script: '【挖掘】04_mining_pack 待确认。挖掘≠立项决策。',
-    tool: { name: 'pack_mining', preview: 'file=04_mining_pack.md' },
+    script: '【挖掘】挖掘包待确认。挖掘≠立项决策。',
+    tool: { name: 'pack_mining', preview: '挖掘包稿' },
     triggersHitl: true,
     hitlGate: 'approve_strategy',
     structuredBody: [
@@ -73,7 +73,7 @@ export const MINING_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**交付**：P1 主提案 + P2/P3 从案骨架 + 特征表。',
       '',
-      '**交给布局**：mining_pack；写入须你确认。',
+      '**交给布局**：挖掘包；写入须你确认。',
       '',
       '**声明**：本席不替代立项 Go/No-Go。',
     ].join('\n'),

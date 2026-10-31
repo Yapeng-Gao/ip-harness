@@ -80,7 +80,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "专利全链路总控",
     "role": "orchestrator",
     "specialty": "分派 · 双文件验收 · 闸门",
-    "description": "编排专班：拆派、验收成果+worklog、闸门与迭代。禁止直接改 handoff；OA 仅在递交 file 后由本席派发。",
+    "description": "编排专班：拆派、验收成果+办理摘记、闸门与迭代。禁止直接改交接点；OA 仅在递交后由本席派发。",
     "tools": [
       "dispatch_task",
       "summarize_timeline",
@@ -141,7 +141,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "id": "brief",
         "label": "收目标",
-        "script": "【总控】已记下项目目标。请组队或分派；验收须双文件（成果+worklog）齐。"
+        "script": "【总控】已记下项目目标。请组队或分派；验收须双文件（成果+办理摘记）齐。"
       },
       {
         "id": "dispatch",
@@ -151,12 +151,12 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "id": "accept",
         "label": "双文件验收",
-        "script": "【总控】验收：成果 NN_*.md + worklog（步骤表+关键取舍）。缺过程=打回，不派下家。"
+        "script": "【总控】验收：成果 + 办理摘记（步骤表+关键取舍）。缺过程=打回，不派下家。"
       },
       {
         "id": "summarize",
         "label": "汇总",
-        "script": "【总控】已汇总各席回执。写库仍须对应专家 Confirm。"
+        "script": "【总控】已汇总各席回执。写库仍须对应专家确认。"
       }
     ],
     "hitlGates": [],
@@ -168,8 +168,8 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       }
     ],
     "guardrails": [
-      "禁止直接改 handoff",
-      "缺 worklog 不派下家",
+      "禁止直接改交接点",
+      "缺办理摘记不派下家",
       "OA 仅 file 后派"
     ],
     "catalogAgentId": null,
@@ -183,7 +183,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "产业全景",
     "role": "expert",
     "specialty": "赛道全景 · landscape_report",
-    "description": "赛道全景支撑是否立项。产出 01_landscape_report + worklog（提案键，不写 packages）。",
+    "description": "赛道全景支撑是否立项。产出全景报告 + 办理摘记（提案，不假装入库）。",
     "tools": [
       "map_landscape",
       "segment_market",
@@ -197,12 +197,12 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "domainCommandCandidates": [
       {
         "command": null,
-        "label": "提案键·不写库",
-        "note": "01 键未进 contracts"
+        "label": "提案 · 不假装入库",
+        "note": "全景提案未进正式契约库"
       }
     ],
     "guardrails": [
-      "提案键勿假装 contracts",
+      "提案键勿假装已入库",
       "输出非法律意见"
     ],
     "catalogAgentId": "agent-research",
@@ -216,7 +216,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "创新激发",
     "role": "expert",
     "specialty": "可专利方向 · inspire_brief",
-    "description": "收敛可专利方向。产出 02_inspire_brief + worklog。",
+    "description": "收敛可专利方向。产出激发简报 + 办理摘记。",
     "tools": [
       "brainstorm_directions",
       "score_patentability",
@@ -230,12 +230,12 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "domainCommandCandidates": [
       {
         "command": null,
-        "label": "提案键·不写库",
-        "note": "02 键未进 contracts"
+        "label": "提案 · 不假装入库",
+        "note": "激发提案未进正式契约库"
       }
     ],
     "guardrails": [
-      "提案键勿假装 contracts"
+      "提案键勿假装已入库"
     ],
     "catalogAgentId": "agent-research",
     "accent": "fuchsia",
@@ -248,7 +248,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "竞品监控",
     "role": "expert",
     "specialty": "对手威胁 · competitor_watch",
-    "description": "对手威胁分级。产出 03_competitor_watch + worklog。",
+    "description": "对手威胁分级。产出竞品观察 + 办理摘记。",
     "tools": [
       "list_competitors",
       "grade_threat",
@@ -262,12 +262,12 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "domainCommandCandidates": [
       {
         "command": null,
-        "label": "提案键·不写库",
-        "note": "03 键未进 contracts"
+        "label": "提案 · 不假装入库",
+        "note": "竞品提案未进正式契约库"
       }
     ],
     "guardrails": [
-      "提案键勿假装 contracts"
+      "提案键勿假装已入库"
     ],
     "catalogAgentId": "agent-watch",
     "accent": "red",
@@ -280,7 +280,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "专利挖掘",
     "role": "expert",
     "specialty": "可申请提案 · mining_pack",
-    "description": "拆可申请提案/特征。产出 04_mining_pack + worklog。≠立项决策。",
+    "description": "拆可申请提案/特征。产出挖掘包 + 办理摘记。≠立项决策。",
     "tools": [
       "parse_tech_points",
       "extract_invention_points",
@@ -295,13 +295,13 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "domainCommandCandidates": [
       {
         "command": null,
-        "label": "提案键·不写库",
-        "note": "mining_pack 未进 contracts"
+        "label": "提案 · 不假装入库",
+        "note": "挖掘包未进正式契约库"
       }
     ],
     "guardrails": [
       "挖掘≠立项",
-      "提案键勿假装 contracts"
+      "提案键勿假装已入库"
     ],
     "catalogAgentId": "agent-research",
     "accent": "emerald",
@@ -314,7 +314,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "专利布局",
     "role": "expert",
     "specialty": "主从案保护网 · layout_plan",
-    "description": "主从案与保护网。产出 05_layout_plan + worklog。【确认点】布局拍板。",
+    "description": "主从案与保护网。产出布局方案 + 办理摘记。【确认点】布局拍板。",
     "tools": [
       "plan_family",
       "map_protection_net",
@@ -333,7 +333,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       }
     ],
     "guardrails": [
-      "提案键勿假装已写死 contracts"
+      "提案键勿假装已写死入库"
     ],
     "catalogAgentId": "agent-research",
     "accent": "lime",
@@ -346,7 +346,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "检索员（查新暨三性）",
     "role": "expert",
     "specialty": "查新+三性 · research_report",
-    "description": "查新暨三性意见书。产出 06_research_report + worklog。handoff=research_report。",
+    "description": "查新暨三性意见书。产出查新报告 + 办理摘记。交接点＝查新报告。",
     "tools": [
       "commercial_patent_search",
       "cluster_hits",
@@ -367,7 +367,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "command": "submitResearch",
         "label": "提交调研",
-        "note": "Confirm 后 · research_report"
+        "note": "确认后 · 查新报告"
       }
     ],
     "guardrails": [
@@ -408,7 +408,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "command": "createCaseFromInsight",
         "label": "洞察建案",
-        "note": "HITL 后 · 样机内存"
+        "note": "确认后 · 样机内存"
       }
     ],
     "guardrails": [
@@ -426,7 +426,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "交底整理",
     "role": "expert",
     "specialty": "可实施交底 · disclosure_pack",
-    "description": "可实施交底书。产出 08_disclosure_pack + worklog。≠撰写权要。",
+    "description": "可实施交底书。产出交底包 + 办理摘记。≠撰写权要。",
     "tools": [
       "read_intake_conditions",
       "gather_tech_points",
@@ -449,12 +449,12 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "command": "submitHandoff",
         "label": "提交交底交接",
-        "note": "HITL 后"
+        "note": "确认后"
       }
     ],
     "guardrails": [
       "交底≠权要撰写",
-      "未 Confirm 不写库"
+      "未确认不写库"
     ],
     "catalogAgentId": "agent-disclosure",
     "accent": "indigo",
@@ -467,7 +467,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "撰写代理师",
     "role": "expert",
     "specialty": "权要+说明书 · draft_claims",
-    "description": "特征→规划→权要+说明书。产出 09_draft_claims + worklog。",
+    "description": "特征→规划→权要+说明书。产出权要稿 + 办理摘记。",
     "tools": [
       "build_feature_table",
       "plan_claim_tree",
@@ -490,17 +490,17 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "command": "submitClaims",
         "label": "提交权利要求",
-        "note": "HITL 后"
+        "note": "确认后"
       },
       {
         "command": "submitHandoff",
         "label": "提交交接",
-        "note": "HITL 后"
+        "note": "确认后"
       }
     ],
     "guardrails": [
       "撰写≠交底",
-      "未 Confirm 不写库"
+      "未确认不写库"
     ],
     "catalogAgentId": "agent-claims",
     "accent": "violet",
@@ -526,7 +526,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "command": "saveDraft",
         "label": "保存说明书草稿",
-        "note": "副席 · 不单独挂 HITL"
+        "note": "副席 · 不单独挂确认点"
       }
     ],
     "guardrails": [
@@ -544,7 +544,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "制图对接",
     "role": "expert",
     "specialty": "附图任务 · figure_list",
-    "description": "附图任务与冻图号。产出 10_figure_list + worklog。辅席·无独立 handoff key。",
+    "description": "附图任务与冻图号。产出附图清单 + 办理摘记。辅席·无独立交接点。",
     "tools": [
       "gather_figure_context",
       "list_needed_figures",
@@ -561,7 +561,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "command": null,
         "label": "事件挂章",
-        "note": "无独立 handoff key"
+        "note": "无独立交接点"
       }
     ],
     "guardrails": [
@@ -579,7 +579,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "FTO律师",
     "role": "expert",
     "specialty": "自由实施 · fto_memo",
-    "description": "自由实施+claim chart。产出 11_fto_memo + worklog。辅席·≠三性查新；≠ Pack 无效维权顾问（expert-enforcement）。",
+    "description": "自由实施+claim chart。产出 FTO 备忘 + 办理摘记。辅席·≠三性查新；≠ 无效维权顾问席。",
     "tools": [
       "extract_fto_features",
       "fto_hit_scan",
@@ -595,7 +595,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "command": null,
         "label": "默认不写案",
-        "note": "无独立 handoff key"
+        "note": "无独立交接点"
       }
     ],
     "guardrails": [
@@ -613,7 +613,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "递交流程员",
     "role": "expert",
     "specialty": "齐套→authorize→file",
-    "description": "齐套清单。产出 12_filing_checklist + worklog。禁真递交；回执后仅总控派 OA。",
+    "description": "齐套清单。产出递交清单 + 办理摘记。禁真递交；回执后仅总控派 OA。",
     "tools": [
       "check_jurisdiction",
       "filing_checklist",
@@ -654,7 +654,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "OA答复代理师",
     "role": "expert",
     "specialty": "OA策略 · prosecution_response",
-    "description": "OA 策略与陈述。产出 13_prosecution_response + worklog。仅已 file 后由总控派。",
+    "description": "OA 策略与陈述。产出答复稿 + 办理摘记。仅已递交后由总控派。",
     "tools": [
       "parse_oa_notice",
       "oa_reason_classifier",
@@ -683,7 +683,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "guardrails": [
       "仅已 file",
       "无真 OA",
-      "未 Confirm 不写库"
+      "未确认不写库"
     ],
     "catalogAgentId": "agent-oa",
     "accent": "cyan",
@@ -703,9 +703,9 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "steps": ANNUITY_DEPTH_STEPS,
     "hitlGates": ["pay_unlock"],
     "domainCommandCandidates": [
-      {"command": null, "label": "样机示意 · 不写真缴费", "note": "maintain_annuity 心智 · 内存 Confirm"}
+      {"command": null, "label": "样机示意 · 不写真缴费", "note": "年费台账心智 · 内存确认"}
     ],
-    "guardrails": ["后置业务可跑", "禁真缴费", "未 Confirm 不写库"],
+    "guardrails": ["后置业务可跑", "禁真缴费", "未确认不写库"],
     "catalogAgentId": "agent-annuity",
     "accent": "yellow",
     "catalogGroup": "phase",
@@ -725,9 +725,9 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "steps": VALUATION_DEPTH_STEPS,
     "hitlGates": [],
     "domainCommandCandidates": [
-      {"command": null, "label": "提案键 · 不写 packages", "note": "valuation_card · 服务年费闸"}
+      {"command": null, "label": "提案键 · 不假装入库", "note": "评估卡 · 服务年费闸"}
     ],
-    "guardrails": ["后置业务可跑", "联动年费仅建议", "提案键勿写 packages"],
+    "guardrails": ["后置业务可跑", "联动年费仅建议", "提案勿假装入库"],
     "catalogAgentId": null,
     "accent": "purple",
     "catalogGroup": "phase",
@@ -740,16 +740,16 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "id": "expert-monetize",
     "name": "转化顾问",
     "role": "expert",
-    "specialty": "许可/转让 · monetize_terms",
+    "specialty": "许可/转让 · 转化条款",
     "description": "转化变现示意 · 估值与合同必备条款。【确认⑧】交易签约。后置样机可演示。",
     "tools": ["estimate_deal", "draft_term_sheet", "validate_contract_clauses"],
     "shortcuts": MONETIZE_DEPTH_SHORTCUTS,
     "steps": MONETIZE_DEPTH_STEPS,
     "hitlGates": ["confirm_quote"],
     "domainCommandCandidates": [
-      {"command": null, "label": "样机示意 · 不写真签约", "note": "monetize_terms 心智 · 内存 Confirm"}
+      {"command": null, "label": "样机示意 · 不写真签约", "note": "转化条款心智 · 内存确认"}
     ],
-    "guardrails": ["后置业务可跑", "禁真签约", "未 Confirm 不写库"],
+    "guardrails": ["后置业务可跑", "禁真签约", "未确认不写库"],
     "catalogAgentId": "agent-monetize",
     "accent": "emerald",
     "catalogGroup": "phase",
@@ -769,7 +769,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "steps": ENFORCEMENT_DEPTH_STEPS,
     "hitlGates": [],
     "domainCommandCandidates": [
-      {"command": null, "label": "提案键 · 不写 packages", "note": "enforcement_brief · ≠fto · ≠watch_alert"}
+      {"command": null, "label": "提案键 · 不假装入库", "note": "enforcement_brief · ≠fto · ≠watch_alert"}
     ],
     "guardrails": ["≠ expert-fto", "≠ STAGE watch", "后置业务可跑"],
     "catalogAgentId": null,

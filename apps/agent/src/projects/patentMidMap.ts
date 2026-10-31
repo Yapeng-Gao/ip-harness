@@ -5,7 +5,7 @@ import { resolveExpertId } from './experts'
 
 /**
  * L3 · patent bot → mid-platform node mapping (agent-patent-shell §4).
- * 01–05 proposal keys: handoffKeys null (勿写死 packages).
+ * 01–05 提案：交接点为空（勿假装已入库）。
  * No clickable mid deep links.
  */
 export type PatentMidMapRow = {
@@ -26,7 +26,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['dispatch_task', 'summarize_timeline', 'accept_dual_file'],
     writeCommands: null,
-    honesty: '无直接 handoff 写；双文件验收',
+    honesty: '无直接交接点写入；双文件验收（示意）',
   },
   {
     expertId: 'expert-landscape',
@@ -35,7 +35,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['map_landscape', 'draft_landscape_report'],
     writeCommands: null,
-    honesty: '01 提案键 · 未进 contracts',
+    honesty: '全景提案 · 未进正式契约库',
   },
   {
     expertId: 'expert-inspire',
@@ -44,7 +44,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['brainstorm_directions', 'draft_inspire_brief'],
     writeCommands: null,
-    honesty: '02 提案键 · 未进 contracts',
+    honesty: '激发提案 · 未进正式契约库',
   },
   {
     expertId: 'expert-competitor',
@@ -53,7 +53,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['list_competitors', 'draft_competitor_watch'],
     writeCommands: null,
-    honesty: '03 提案键 · 未进 contracts',
+    honesty: '竞品提案 · 未进正式契约库',
   },
   {
     expertId: 'expert-mining',
@@ -62,7 +62,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['extract_invention_points', 'pack_mining'],
     writeCommands: null,
-    honesty: '04 mining_pack ≠ 立项；未进 contracts',
+    honesty: '挖掘包 ≠ 立项；未进正式契约库',
   },
   {
     expertId: 'expert-layout',
@@ -71,7 +71,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['plan_family', 'draft_layout_plan'],
     writeCommands: null,
-    honesty: '05 layout_plan 提案；可对齐 layout_insight 心智',
+    honesty: '布局方案提案；可对齐布局洞察心智',
   },
   {
     expertId: 'expert-research',
@@ -80,7 +80,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: ['research_report'],
     readTools: ['commercial_patent_search', 'cluster_hits'],
     writeCommands: ['submitResearch'],
-    honesty: '通常只读；绑案 Confirm 后才可 submitResearch',
+    honesty: '通常只读；绑案确认后才可提交查新',
   },
   {
     expertId: 'expert-intake',
@@ -89,7 +89,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: ['intake_quote'],
     readTools: ['ingest_upstream', 'draft_intake_quote'],
     writeCommands: ['submitHandoff', 'createCaseFromInsight'],
-    honesty: '须 go_nogo HITL',
+    honesty: '须立不立项确认',
   },
   {
     expertId: 'expert-disclosure',
@@ -98,7 +98,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: ['disclosure_pack'],
     readTools: ['structure_disclosure', 'pack_disclosure'],
     writeCommands: ['saveDraft', 'submitHandoff'],
-    honesty: '交底整理 ≠ 撰稿；HITL 后 saveDraft/submitHandoff',
+    honesty: '交底整理 ≠ 撰稿；确认后才可存稿/交接',
   },
   {
     expertId: 'expert-draft',
@@ -107,7 +107,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: ['draft_claims'],
     readTools: ['draft_claims', 'check_support'],
     writeCommands: ['saveDraft', 'submitClaims', 'submitHandoff'],
-    honesty: '撰稿 ≠ 交底；HITL 后 saveDraft / submitClaims',
+    honesty: '撰稿 ≠ 交底；确认后才可存稿/交权要',
   },
   {
     expertId: 'expert-figure',
@@ -116,7 +116,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['list_needed_figures', 'attach_chapter_event'],
     writeCommands: null,
-    honesty: '辅席 · 无独立 handoff key',
+    honesty: '辅席 · 无独立交接点',
   },
   {
     expertId: 'expert-fto',
@@ -134,7 +134,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['filing_checklist', 'formality_scan'],
     writeCommands: ['authorizeFile', 'fileResponse'],
-    honesty: '禁真递交；仅闸+HITL 示意',
+    honesty: '禁真递交；仅递交闸示意',
   },
   {
     expertId: 'expert-oa',
@@ -143,7 +143,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: ['prosecution_response'],
     readTools: ['parse_oa_notice', 'oa_strategy', 'draft_oa_response'],
     writeCommands: ['saveDraft', 'submitHandoff'],
-    honesty: '仅已 file；无真 OA',
+    honesty: '仅已递交态；无真审查意见',
   },
   {
     expertId: 'expert-annuity',
@@ -152,7 +152,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: ['maintain_annuity'],
     readTools: ['list_annuity_due'],
     writeCommands: null,
-    honesty: '后置可跑 · 年费 Confirm 内存 · 禁真缴费',
+    honesty: '后置可跑 · 年费确认在内存 · 禁真缴费',
   },
   {
     expertId: 'expert-valuation',
@@ -161,7 +161,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['score_portfolio'],
     writeCommands: null,
-    honesty: '后置可跑 · 提案键 valuation_card · 不写 packages',
+    honesty: '后置可跑 · 评估卡提案 · 不假装已入库',
   },
   {
     expertId: 'expert-monetize',
@@ -170,7 +170,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: ['monetize_terms'],
     readTools: ['draft_term_sheet'],
     writeCommands: null,
-    honesty: '后置可跑 · 转化 Confirm 内存 · 禁真签约',
+    honesty: '后置可跑 · 转化确认在内存 · 禁真签约',
   },
   {
     expertId: 'expert-enforcement',
@@ -179,7 +179,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
     handoffKeys: null,
     readTools: ['claim_chart_compare'],
     writeCommands: null,
-    honesty: '提案 enforcement_brief · ≠ expert-fto · 勿借 watch_alert',
+    honesty: '维权简报提案 · ≠ FTO 席 · 勿借监控告警',
   },
 ]
 

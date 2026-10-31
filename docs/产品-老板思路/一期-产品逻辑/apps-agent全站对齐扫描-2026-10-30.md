@@ -3064,3 +3064,49 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-10-31 CST | 中栏再瘦+注释去码；smoke `PASS_RESCAN_77`；shots `.tmp/rescan-77-shots/`；§77；t621u |
 
+## 78. 席位深度预览键名再压 / midMap 人话 / 旁路工程味（2026-10-31 Asia/Shanghai）
+
+> **问题：** 续扫 UI/布局/页面逻辑；啃 §77 后置席位深度预览键名；查回潮与旁路工程味。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。不认 lifecycle。
+
+### 78.0 缺口清单
+
+| ID | 面 | 缺口简述 | 维度 | 严重度 | 建议改法 | 本批 |
+|---|---|---|---|---|---|---|
+| G01 | pack *Depth preview/script | file=05_…、hitl=、confirm_quote、valuation_card 上屏 | 展示 | P1 | 人话预览/交卷句 | ✅ |
+| G02 | midMap honesty | contracts/HITL/submit* 工程句 | 展示 | P1 | Office 诚实句 | ✅ |
+| G03 | MidMap 面板 | handoff/write 英文裸键 + JSON payload | 布局/工程味 | P1 | 人话标签；payload 默折 | ✅ |
+| G04 | experts/目录/双文件 | packages / NN_*.md 上屏 | 展示 | P1 | 人话 + title 展示 | ✅ |
+| G05 | 真集成 | 诚实示意 | 集成 | — | 后置 | 后置 |
+
+### 78.1 本批落地
+
+| # | 对应 | 行为 |
+|---|---|---|
+| A | G01 | Depth script/preview Office |
+| B | G02–G03 | midMap + 面板 |
+| C | G04 | experts 注记；catalog/双文件用 title |
+
+### 78.2 复扫表（改后）
+
+| 面 | 结论 |
+|---|---|
+| 席位工具卡 preview | 无人话外 file=/hitl=/gate= 抢屏 |
+| 席位目录成果行 | 用 title + 办理摘记，非 NN_*.md |
+| midMap 侧栏 | honesty 人话；键名人话；payload 折 |
+| 回潮 | 无组队/lifecycle 进门 |
+
+### 78.3 六维（机制报告，不宣称落地）
+
+设计：旁路键名人话。使用成本：少调试串。逻辑：闸/写库示意不变。
+
+### 78.4 后置
+
+真集成；DomainCommand 写库列表再并；main-path-sample 不碰。
+
+### 78.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 深度预览/midMap 人话；smoke `PASS_RESCAN_78`；shots `.tmp/rescan-78-shots/`；§78；t622u |
+

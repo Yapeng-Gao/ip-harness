@@ -6,7 +6,7 @@ export const FILING_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'jurisdiction',
     label: '国别策略',
     script: '【递交】CN 发明先递；US provisional 观察。禁真递交。',
-    tool: { name: 'check_jurisdiction', preview: 'CN=first-file · US=watch' },
+    tool: { name: 'check_jurisdiction', preview: 'CN 先递 · US 观察' },
     structuredBody: [
       '| 国别 | 路径 | 状态 |',
       '|------|------|------|',
@@ -19,7 +19,7 @@ export const FILING_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'checklist',
     label: '齐套清单',
     script: '【递交】请求书/说明书/权要/摘要/附图 逐项勾选。',
-    tool: { name: 'filing_checklist', preview: 'ready=5/5' },
+    tool: { name: 'filing_checklist', preview: '齐套 5/5' },
     structuredBody: [
       '| 材料 | 状态 | 来源席 |',
       '|------|------|--------|',
@@ -36,7 +36,7 @@ export const FILING_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'formality',
     label: '形式审查点',
     script: '【递交】形式点扫描：2 warn（可带病过样机闸，真场须清）。',
-    tool: { name: 'formality_scan', preview: 'warn=2 · blocker=0' },
+    tool: { name: 'formality_scan', preview: '警告 2 · 阻断 0' },
     structuredBody: [
       '| # | 点 | 级 | 说明 |',
       '|---|-----|----|------|',
@@ -49,7 +49,7 @@ export const FILING_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'deadline',
     label: '期限提示',
     script: '【递交】优先权/法定期限为样机占位；以官方法定表为准。',
-    tool: { name: 'deadline_hint', preview: 'priority_window=mock' },
+    tool: { name: 'deadline_hint', preview: '优先权窗口（示意）' },
     structuredBody: [
       '**KB 样例卡 · 期限表（占位）**',
       '- 本轮无优先权日冲突（示意）',
@@ -60,7 +60,7 @@ export const FILING_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'authorize',
     label: '授权递交 · 待确认',
     script: '【递交】齐套已满，请授权递交示意。**禁真递交官方**；确认后仅样机回执。',
-    tool: { name: 'propose_authorize_file', preview: 'gate=authorize_file · real=false' },
+    tool: { name: 'propose_authorize_file', preview: '递交闸 · 非真递交' },
     triggersHitl: true,
     hitlGate: 'authorize_file',
     structuredBody: [

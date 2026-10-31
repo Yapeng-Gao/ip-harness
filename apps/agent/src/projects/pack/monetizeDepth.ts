@@ -1,4 +1,4 @@
-/** 转化顾问席深度 · 转化签约闸 confirm_quote · 禁真签约 */
+/** 转化顾问席深度 · 转化签约闸 · 禁真签约 */
 import type { ExpertStepDef } from '../types'
 
 export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
@@ -6,7 +6,7 @@ export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'scope',
     label: '交易范围',
     script: '【转化】许可标的：边缘调度模组主案+可选从案；区域拟 CN。',
-    tool: { name: 'estimate_deal', preview: 'asset=主案 · territory=CN' },
+    tool: { name: 'estimate_deal', preview: '标的主案 · 区域 CN' },
     structuredBody: [
       '| 项 | 内容 |',
       '|----|------|',
@@ -22,7 +22,7 @@ export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'value',
     label: '估值区间',
     script: '【转化】许可估值区间 ¥80–120 万（mock 公式 · 非真报价）。',
-    tool: { name: 'estimate_deal', preview: 'low=80w · high=120w' },
+    tool: { name: 'estimate_deal', preview: '¥80–120 万（示意）' },
     structuredBody: [
       '| 方法（示意） | 输出 |',
       '|--------------|------|',
@@ -39,7 +39,7 @@ export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
     script: '【转化】Term sheet：独占区域 / 里程碑款 / 审计权 · 必备条款骨架。',
     tool: {
       name: 'draft_term_sheet',
-      preview: 'exclusive=CN · milestones=3',
+      preview: 'CN 独占 · 里程碑×3',
     },
     structuredBody: [
       '| 条款 | 草案要点 |',
@@ -54,10 +54,10 @@ export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'check',
     label: '条款校验',
-    script: '【转化】必备条款扫描：齐；缺项=0（样机 validator）。',
+    script: '【转化】必备条款扫描：齐；缺项 0（样机校验）。',
     tool: {
       name: 'validate_contract_clauses',
-      preview: 'required=ok · missing=0',
+      preview: '必备齐 · 缺项 0',
     },
     structuredBody: [
       '| 必备项 | 状态 |',
@@ -75,10 +75,10 @@ export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'validate',
     label: '签约闸 · 待确认',
     script:
-      '【转化】16_monetize_terms 待 Confirm（转化签约闸 · confirm_quote · **禁真签约**）。',
+      '【转化】条款稿待你确认（转化签约闸 · **禁真签约**）。',
     tool: {
       name: 'validate_contract_clauses',
-      preview: 'clauses=ok · hitl=monetize',
+      preview: '条款齐 · 待转化确认',
     },
     triggersHitl: true,
     hitlGate: 'confirm_quote',
@@ -89,7 +89,7 @@ export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**确认后**：仅样机 term sheet；**绝不**真签约/真收款。',
       '',
-      '**交给运营/法务**：monetize_terms 心智。',
+      '**交给运营/法务**：条款心智（示意）。',
     ].join('\n'),
   },
 ]
