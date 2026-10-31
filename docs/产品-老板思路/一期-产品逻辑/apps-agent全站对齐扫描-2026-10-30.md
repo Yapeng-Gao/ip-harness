@@ -2060,8 +2060,46 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 | 真官报 / 真检索 / 真鉴权 / 真递交 | **仍后置** |
 | 真报价/付款通道 | **仍后置** |
 | `/agent/catalog` 独立目录页 | 仍旁路 departments；目录 SoftEmpty 走 `/agent/agents` |
+| 精致度链再复扫 | → **§55 整站复扫精致度/SoftEmpty链**（已落地 · 无回退） |
 
 ### 54.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 实验室 SoftEmpty 挂 UI；smoke PASS_LAB_EMPTY；shots `.tmp/lab-empty-shots/`；写入 §54 |
+| 2026-10-31 CST | §54.3 增 → §55 整站复扫（无回退） |
+
+## 55. 整站复扫精致度 / SoftEmpty / 辅链密度链（2026-10-31 Asia/Shanghai）
+
+> **问题：** §54 后 —— dense/fold/SoftEmpty/kit/aux/honest/lab SoftEmpty 是否回退。属**产品设计 / 使用成本 / 产品形态**复验。  
+> **真源：** UI/seed；Office 语感；no fake 官报；真集成仍后置；不宣称四维/六维落地；不碰 main-path-sample。
+
+### 55.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| PASS_RESCAN_55 | `.tmp/rescan-55-smoke.mjs`；shots `.tmp/rescan-55-shots/` |
+| 覆盖 | hall dense+branch+八部折；company/cases/case-new/audit；docket；billing SoftEmpty+双口袋无假金额；members；prof 8；dept bypass；wb tree-fold / aux·versions 默认折 / step·三行 dense / kit hints 折 / TrueDiff+honest compact / DEMO-CN / file CTA 护栏 / 附件 SoftEmpty；sessions SoftEmpty；**lab SoftEmpty lab-filter** + nonprimary/no-work；`/agent/agents` catalog SoftEmpty；`/agent/catalog`→departments |
+| 结论 | **无回退**；本刀无产品码改，仅扫记 + smoke |
+
+### 55.2 六维（机制报告，不宣称落地）
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 复扫不改齐套/交卷闸 |
+| 产品理念 | DEMO-CN / 样机 / 非真官报 / 实验室不进主链 仍钉 |
+| 产品逻辑 | 后勤横切 + 部台辅链 + 实验室旁路 不抢主链 |
+| 产品设计 | dense/fold/SoftEmpty/kit/honest/lab 标记全绿 |
+| 产品形态 | Office 空态 tone；无 ENG/OLD ban |
+| 使用成本 | 默认折辅链；kit 提示折；banner compact；lab 空→回大厅 |
+
+**仍不宣称四维/六维落地。**
+
+### 55.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真官报 / 真检索 / 真鉴权 / 真递交 | **仍后置** |
+| 真报价/付款通道 | **仍后置** |
+| `/agent/catalog` 独立目录 | 仍旁路；SoftEmpty 在 `/agent/agents` |
+
+### 55.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 整站复扫§55；**无回退**；smoke PASS_RESCAN_55；shots `.tmp/rescan-55-shots/`；写入 §55 |
