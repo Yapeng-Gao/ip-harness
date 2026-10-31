@@ -7,12 +7,19 @@ export function HealthBillStrip({ caseTitle }: { caseTitle?: string }) {
     <section
       className="rounded-lg border border-slate-200 bg-white px-3 py-2"
       data-testid="health-bill-strip"
+      data-billing-demo="1"
       aria-label="健康账单演示"
     >
       <div className="flex flex-wrap items-baseline gap-2">
         <h3 className="text-[11px] font-semibold text-slate-800">健康账单（演示）</h3>
+        <span
+          className="rounded-full bg-amber-100 px-1.5 py-px text-[10px] font-semibold text-amber-900"
+          data-testid="health-bill-demo-badge"
+        >
+          示意 · 非真计费
+        </span>
         <span className="text-[10px] text-slate-500">
-          定健康 · 成本可见 · 成长外显 · 非真计费
+          定健康 · 成本可见 · 成长外显
         </span>
       </div>
       <ul className="mt-1.5 grid gap-1 sm:grid-cols-3" data-testid="health-bill-rows">

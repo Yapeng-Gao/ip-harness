@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { SoftEmpty } from '../../components/soft/SoftEmpty'
+import { BillingDemoHonestBanner } from '../../components/business/BillingDemoHonestBanner'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 
 /**
@@ -37,6 +38,7 @@ export function CaseBillingPage() {
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="case-billing-page"
       data-billing="pockets-v1"
+      data-billing-demo="1"
       data-case-id={caseId}
     >
       <div className="mx-auto max-w-2xl">
@@ -82,12 +84,13 @@ export function CaseBillingPage() {
           </Link>
         </nav>
 
+        <BillingDemoHonestBanner className="mb-1" />
         <p
-          className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600"
+          className="mt-2 text-[11px] text-slate-500"
           data-testid="case-billing-thin-hint"
           role="status"
         >
-          后勤横切 · 不抢「公司 → 工作台」主链 · 官费与服务费分口袋 · 无真报价/付款通道
+          后勤横切 · 不抢「公司 → 工作台」主链 · 官费与服务费分口袋
         </p>
 
         <h1
@@ -118,11 +121,11 @@ export function CaseBillingPage() {
           <dl className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-500">
             <div>
               <dt className="font-medium text-slate-600">应收</dt>
-              <dd data-testid="case-billing-receivable">尚未报价</dd>
+              <dd data-testid="case-billing-receivable" data-amount-demo="1">尚未报价 · 示意</dd>
             </div>
             <div>
               <dt className="font-medium text-slate-600">已付</dt>
-              <dd data-testid="case-billing-paid">—</dd>
+              <dd data-testid="case-billing-paid" data-amount-demo="1" data-paid-demo="0">未付款（示意 · 非已付）</dd>
             </div>
           </dl>
         </section>
@@ -142,11 +145,18 @@ export function CaseBillingPage() {
             >
               官费口袋
             </h2>
-            <p className="mt-2 text-[22px] font-semibold tabular-nums text-slate-400">
+            <p
+              className="mt-2 text-[22px] font-semibold tabular-nums text-slate-400"
+              data-testid="case-billing-official-amount"
+              data-amount-demo="1"
+            >
+              <span className="mr-1 rounded bg-amber-100 px-1 text-[10px] font-semibold text-amber-900">
+                DEMO
+              </span>
               —
             </p>
             <p className="mt-1 text-[11px] text-slate-500">
-              官费单独列 · 不与服务费混账 · 无真缴费通道
+              官费单独列 · 不与服务费混账 · 无真缴费通道 · 非应付数
             </p>
           </section>
           <section
@@ -160,11 +170,18 @@ export function CaseBillingPage() {
             >
               服务费口袋
             </h2>
-            <p className="mt-2 text-[22px] font-semibold tabular-nums text-slate-400">
+            <p
+              className="mt-2 text-[22px] font-semibold tabular-nums text-slate-400"
+              data-testid="case-billing-service-amount"
+              data-amount-demo="1"
+            >
+              <span className="mr-1 rounded bg-amber-100 px-1 text-[10px] font-semibold text-amber-900">
+                DEMO
+              </span>
               —
             </p>
             <p className="mt-1 text-[11px] text-slate-500">
-              代理/服务费单独列 · 商务后置接入
+              代理/服务费单独列 · 商务后置接入 · 非应付数
             </p>
           </section>
         </div>
@@ -179,6 +196,8 @@ export function CaseBillingPage() {
             title="后置 · 无真报价通道"
             className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-400 disabled:cursor-not-allowed"
             data-testid="case-billing-quote-disabled"
+            data-cta-guard="1"
+            aria-disabled="true"
           >
             确认报价（后置）
           </button>
@@ -188,6 +207,8 @@ export function CaseBillingPage() {
             title="后置 · 无真付款通道"
             className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-400 disabled:cursor-not-allowed"
             data-testid="case-billing-pay-disabled"
+            data-cta-guard="1"
+            aria-disabled="true"
           >
             登记付款（后置）
           </button>

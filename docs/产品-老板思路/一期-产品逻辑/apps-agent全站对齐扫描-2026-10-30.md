@@ -2137,8 +2137,48 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 真鉴权 / 真登录 / SSO | **仍后置** |
 | 真官报 / 真检索 / 真递交 / 真报价 | **仍后置** |
+| 账单/报价诚实加深 | → **§57 报价/账单诚实示意面**（已落地） |
 
 ### 56.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 登录/欢迎诚实条 + 退出竞态；smoke PASS_AUTH_SHELL_HONEST；shots `.tmp/auth-shell-honest-shots/`；写入 §56 |
+| 2026-10-31 CST | §56.3 增 → §57 报价/账单诚实示意面 |
+
+## 57. 报价 / 账单诚实示意面（2026-10-31 Asia/Shanghai）
+
+> **问题：** §56.3 —— 账单口袋已 SoftEmpty/无假金额，诚实标与 CTA 护栏未与官报/登录同族。属**产品理念 / 产品设计 / 使用成本**。  
+> **真源：** pockets-v1；Office 费用说明；禁假应付/假已付/真结账跳转；真报价付款仍后置；不宣称四维落地。
+
+### 57.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| BillingDemoHonestBanner | 账单页琥珀诚实条（费用示意 / 非真报价·非真付款）+ CTA 护栏；`data-billing-demo=1` |
+| 口袋金额 | 官费/服务费 `DEMO` 徽 + `data-amount-demo`；应收「尚未报价 · 示意」；已付「未付款（示意 · 非已付）」 |
+| CTA | 确认报价/登记付款 disabled + `data-cta-guard`；无支付 href |
+| SoftEmpty | 保留 billing-empty；不与 auth/official banner 叠 |
+| HealthBillStrip | `data-billing-demo` +「示意 · 非真计费」徽 |
+| 不做 | 真付款/假金额可付/假支付成功；碰 main-path-sample |
+
+### 57.2 六维（机制报告，不宣称落地）
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 后勤横切不变；无支付通道 |
+| 产品理念 | 明示示意，不装已报价已付 |
+| 产品逻辑 | 不抢公司→工作台；回公司办主链仍主 CTA |
+| 产品设计 | 与 Official/Auth 诚实条同族；单条 billing banner |
+| 产品形态 | 账单/费用说明，非 checkout |
+| 使用成本 | 护栏一眼可见；展开「为何是示意」 |
+
+**仍不宣称四维/六维落地。**
+
+### 57.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真报价 / 真付款 / 发票通道 | **仍后置** |
+| 真鉴权 / 真官报 / 真检索 / 真递交 | **仍后置** |
+
+### 57.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 账单诚实条 + DEMO 口袋 + CTA 护栏；smoke PASS_BILLING_HONEST；shots `.tmp/billing-honest-shots/`；写入 §57 |
