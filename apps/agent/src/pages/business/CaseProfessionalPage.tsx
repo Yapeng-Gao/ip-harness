@@ -33,6 +33,7 @@ import {
   type AuxHook,
   type ManuscriptPart,
 } from '../../business/professionalAuxParts'
+import { partWorkbenchHref } from '../../business/auxPartBodyLink'
 
 /**
  * 专业/编制 · product-pages §4.3a · vision 选部开工
@@ -184,7 +185,7 @@ export function CaseProfessionalPage() {
           data-testid="case-professional-hint"
           role="status"
         >
-          案级能力面 · 选部接稿 · 编制/在办/缺口/本稿零件可看 · 辅链零件默认收折 ·
+          案级能力面 · 选部接稿 · 点本稿零件进工作台中栏改稿 · 辅链零件默认收折 ·
           本页不改交卷 · 非第三套产品 · 样机示意非官报
         </p>
 
@@ -391,11 +392,19 @@ export function CaseProfessionalPage() {
                     <li
                       key={part.id}
                       className="flex items-baseline gap-1.5 text-[11px] text-slate-700"
-                      data-testid={`case-professional-part-${part.id}`}
                     >
-                      <span className="font-medium text-slate-800">
+                      <Link
+                        to={partWorkbenchHref({
+                          caseId,
+                          deptId: dept.id,
+                          partId: part.id,
+                        })}
+                        className="font-medium text-slate-800 underline-offset-2 hover:underline"
+                        data-testid={`case-professional-part-${part.id}`}
+                        title="打开工作台中栏 · 写入该章种子正文"
+                      >
                         {part.label}
-                      </span>
+                      </Link>
                       <span className="truncate text-[10px] text-slate-400">
                         {part.hint}
                       </span>

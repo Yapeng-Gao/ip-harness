@@ -57,6 +57,15 @@ import type { ProjectExpertId } from '../../projects/types'
 import { ArrowRight, Building2, FolderOpen, PanelLeft, MessageSquare, Package, X } from 'lucide-react'
 import { formatArtifactSavedAt } from '../../business/artifactVersions'
 import {
+  AUX_BODY_LINK_HONEST,
+  findManuscriptPart,
+  partMaterialId,
+  parsePartMaterialId,
+  resolvePartBody,
+  seedBodyForPart,
+} from '../../business/auxPartBodyLink'
+import { auxBundleFor } from '../../business/professionalAuxParts'
+import {
   pendingAuditPath,
   workbenchAskPath,
 } from '../../business/pendingDeptQuery'
@@ -185,6 +194,8 @@ export function BusinessCaseDeptPage() {
   const [seatOpen, setSeatOpen] = useState(true)
   const [adoptedPeerIds, setAdoptedPeerIds] = useState<string[]>([])
   const [selectedMaterialId, setSelectedMaterialId] = useState('deliverable')
+  /** 已按 ?part= 写入中栏种子的零件 id（防重复刷） */
+  const [partInsertedId, setPartInsertedId] = useState<string | null>(null)
   /** 编制默认收；工具/巡检点开再看 */
   const [rosterOpen, setRosterOpen] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)
@@ -220,11 +231,53 @@ export function BusinessCaseDeptPage() {
   }, [seatFromUrl, seatIds, pickedSeat])
 
   const askParam = params.get('ask')
+  const partParam = params.get('part')
   useEffect(() => {
     if (!askParam) return
     setSeatOpen(true)
     setMobileRightOpen(true)
   }, [askParam])
+
+  /** ?part= → 中栏聚焦该零件并写入种子正文（样机；空稿或换零件时写） */
+  useEffect(() => {
+    if (!dept || !partParam) return
+    const part = findManuscriptPart(dept.id, partParam)
+    if (!part) return
+    setSelectedMaterialId(partMaterialId(part.id))
+    if (!activeSeat) return
+    if (partInsertedId === `${dept.id}:${part.id}`) return
+    const existing = getThread(caseId, activeSeat)?.artifactMarkdown?.trim() || ''
+    const marker = `本稿零件「${part.label}」`
+    if (existing && existing.includes(marker)) {
+      setPartInsertedId(`${dept.id}:${part.id}`)
+      return
+    }
+    // 空稿或仍是别的零件种子 → 写入本章种子
+    if (
+      !existing ||
+      existing.includes('本稿零件「') ||
+      existing.includes(AUX_BODY_LINK_HONEST)
+    ) {
+      const body = seedBodyForPart({
+        part,
+        deptLabel: deptLabel(dept),
+      })
+      patchThread(caseId, activeSeat, { artifactMarkdown: body })
+      setPartInsertedId(`${dept.id}:${part.id}`)
+    } else {
+      // 已有用户正文：只聚焦材料树，不覆盖
+      setPartInsertedId(`${dept.id}:${part.id}:focus-only`)
+    }
+  }, [
+    dept,
+    partParam,
+    activeSeat,
+    caseId,
+    partInsertedId,
+    getThread,
+    patchThread,
+    deptLabel,
+  ])
 
   const thread = getThread(caseId, activeSeat)
   const stepIndex = thread?.stepIndex ?? 0
@@ -340,6 +393,14 @@ export function BusinessCaseDeptPage() {
         hint: formatArtifactSavedAt(new Date(v.savedAt)),
       })),
     ]
+    const partChildren: MaterialsTreeNode[] = dept
+      ? auxBundleFor(dept.id).parts.map((part) => ({
+          id: partMaterialId(part.id),
+          label: part.label,
+          kind: 'section' as const,
+          hint: part.hint,
+        }))
+      : []
     return [
       {
         id: 'deliverable',
@@ -347,6 +408,17 @@ export function BusinessCaseDeptPage() {
         kind: 'deliverable',
         hint: handoff.deliverable.slice(0, 28) || '权威产出',
       },
+      ...(partChildren.length > 0
+        ? [
+            {
+              id: 'manuscript-parts',
+              label: '本稿零件',
+              kind: 'section' as const,
+              hint: '点开写入中栏种子 · 非官报',
+              children: partChildren,
+            },
+          ]
+        : []),
       {
         id: 'attachments',
         label: '附件',
@@ -364,7 +436,7 @@ export function BusinessCaseDeptPage() {
         children: versionChildren,
       },
     ]
-  }, [handoff.deliverable, versions])
+  }, [handoff.deliverable, versions, dept])
 
   const onSubmit = () => {
     if (thisDeptConfirmPending && thisDeptConfirmId && kindForDept) {
@@ -531,6 +603,11 @@ export function BusinessCaseDeptPage() {
           ? '本轮答复可递交（D 过线）'
           : handoff.deliverable.slice(0, 36) || '本站合格线')
 
+  const focusedPart =
+    dept && parsePartMaterialId(selectedMaterialId)
+      ? findManuscriptPart(dept.id, parsePartMaterialId(selectedMaterialId)!)
+      : undefined
+
   const centerTitle =
     selectedMaterialId === 'attachments'
       ? '附件'
@@ -540,7 +617,11 @@ export function BusinessCaseDeptPage() {
           ? '版本正文'
           : selectedMaterialId === 'versions'
             ? '版本'
-            : '产出正文'
+            : selectedMaterialId === 'manuscript-parts'
+              ? '本稿零件'
+              : focusedPart
+                ? `本稿 · ${focusedPart.label}`
+                : '产出正文'
 
   const centerBody = (() => {
     if (selectedMaterialId === 'attachments') {
@@ -559,6 +640,24 @@ export function BusinessCaseDeptPage() {
       const v = versions[idx]
       return v?.markdown?.trim() || '该版本无正文。'
     }
+    if (selectedMaterialId === 'manuscript-parts') {
+      return '左侧点某一本稿零件，中栏打开该章种子正文；可写入本席成果改稿。'
+    }
+    if (dept && parsePartMaterialId(selectedMaterialId)) {
+      const resolved = resolvePartBody({
+        deptId: dept.id,
+        materialId: selectedMaterialId,
+        deptLabel: deptLabel(dept),
+      })
+      if (resolved) {
+        // 若本席成果已是该零件种子或用户改稿，优先显示成果
+        const cur = thread?.artifactMarkdown?.trim() || ''
+        if (cur && cur.includes(`本稿零件「${resolved.part.label}」`)) {
+          return cur
+        }
+        return resolved.body
+      }
+    }
     return artifactBody || handoff.deliverable || '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'
   })()
 
@@ -575,6 +674,8 @@ export function BusinessCaseDeptPage() {
       data-step-kind={stepKind ?? 'thin'}
       data-step-id={currentStep?.id ?? ''}
       data-ask={askParam ?? ''}
+      data-part={partParam ?? ''}
+      data-part-inserted={partInsertedId ? '1' : '0'}
     >
       {/* 顶栏：案 / 部门 / 铃铛 / 期限；不放交卷主 CTA（§2） */}
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
@@ -940,9 +1041,41 @@ export function BusinessCaseDeptPage() {
                 <pre
                   className="mt-3 max-h-[min(70vh,36rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
                   data-testid="dept-output-body"
+                  data-part-id={
+                    parsePartMaterialId(selectedMaterialId) ?? undefined
+                  }
                 >
                   {centerBody}
                 </pre>
+                {focusedPart ? (
+                  <div
+                    className="mt-2 flex flex-wrap items-center gap-2"
+                    data-testid="dept-part-body-actions"
+                  >
+                    <button
+                      type="button"
+                      className="btn-press focus-ring rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+                      data-testid="dept-part-insert-body"
+                      onClick={() => {
+                        if (!activeSeat || !dept) return
+                        const body = seedBodyForPart({
+                          part: focusedPart,
+                          deptLabel: deptLabel(dept),
+                        })
+                        patchThread(caseId, activeSeat, {
+                          artifactMarkdown: body,
+                        })
+                        setPartInsertedId(`${dept.id}:${focusedPart.id}`)
+                        setSelectedMaterialId(partMaterialId(focusedPart.id))
+                      }}
+                    >
+                      写入本稿（种子）
+                    </button>
+                    <span className="text-[10px] text-slate-500">
+                      {AUX_BODY_LINK_HONEST}
+                    </span>
+                  </div>
+                ) : null}
                 {selectedMaterialId === 'seed-diff' ? (
                   <TrueDiffPanel
                     left={SEED_DIFF_LEFT}
