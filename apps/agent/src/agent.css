@@ -495,23 +495,53 @@ body,
 }
 
 
-/* Right-rail fidelity · sample-inspired (apps/agent only) */
+/* Right-rail fidelity · sample ask-sticky / report / composer (§13) */
+[data-testid='dept-right-rail'] {
+  background: #fff;
+}
 [data-testid='dept-right-chat'] {
-  background: linear-gradient(180deg, #fafbfc 0%, #ffffff 48px);
+  background: linear-gradient(180deg, #fff7ed 0%, #ffffff 56px);
 }
-[data-testid='ask-sticky'] {
-  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+[data-testid='ask-sticky'],
+.ask-sticky-rail {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
-[data-testid='dept-ask-bubble-confirm'] {
-  box-shadow: 0 1px 2px rgba(91, 33, 182, 0.06);
+[data-testid='ask-sticky-chip'] {
+  border-radius: 999px;
+}
+[data-testid='dept-ask-bubble-confirm'][data-awaiting-banner='1'] {
+  /* amber glow already via Tailwind; keep subtle depth */
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.22), 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+[data-testid='dept-ask-rpt-q'] {
+  text-wrap: balance;
+}
+[data-testid='dept-right-roster-row'] {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+[data-testid='dept-right-identity'] {
+  background: #fff;
 }
 [data-testid='business-seat-composer-wrap'] {
   position: sticky;
   bottom: 0;
-  z-index: 2;
+  z-index: 6;
+  margin-top: auto;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), #fff 40%);
+  padding-top: 0.5rem;
+  border-top: 1px solid #f1f5f9;
 }
 [data-testid='composer-to'] {
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  color: #6d28d9;
+}
+[data-testid='thick-step-work-panel'],
+[data-testid='dept-thin-work-panel'] {
+  animation: dept-drawer-fade-in 0.16s ease both;
 }
 [data-testid='teach-fade-tip'][data-show='1'] {
   animation: dept-drawer-fade-in 0.18s ease both;

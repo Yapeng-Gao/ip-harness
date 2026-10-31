@@ -87,12 +87,12 @@ export function DeptAskReportBubble({
 
   return (
     <div
-      className={`max-w-[95%] rounded-2xl rounded-tl-md border px-3 py-2.5 text-[12px] leading-relaxed shadow-sm ${
+      className={`max-w-[95%] rounded-[14px] border-[1.5px] px-3 py-3 text-[12px] leading-relaxed ${
         done
           ? item.status === 'confirmed'
-            ? 'border-emerald-200 bg-emerald-50/90 text-emerald-950'
-            : 'border-rose-200 bg-rose-50/90 text-rose-950'
-          : 'border-violet-200/80 bg-violet-50 text-slate-900'
+            ? 'border-emerald-300 bg-emerald-50/90 text-emerald-950 shadow-sm'
+            : 'border-rose-300 bg-rose-50/90 text-rose-950 shadow-sm'
+          : 'border-amber-300 bg-gradient-to-b from-amber-50 to-white text-slate-900 shadow-[0_0_0_3px_rgba(251,191,36,0.22)]'
       }`}
       role="status"
       data-testid="dept-ask-bubble-confirm"
@@ -108,7 +108,7 @@ export function DeptAskReportBubble({
       <div className="flex items-start gap-2" data-testid="dept-ask-bubble-head">
         <ExpertAvatar name={leadName} seed={leadSeed} size="sm" />
         <div className="min-w-0 flex-1">
-          <p className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-violet-800">
+          <p className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-amber-900">
             <span className="truncate">{leadName}</span>
             <span
               className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold tracking-wide ${
@@ -116,7 +116,7 @@ export function DeptAskReportBubble({
                   ? item.status === 'confirmed'
                     ? 'bg-emerald-600/15 text-emerald-800'
                     : 'bg-rose-600/15 text-rose-800'
-                  : 'bg-violet-600/15 text-violet-800'
+                  : 'bg-amber-500/15 text-amber-900'
               }`}
               data-testid="dept-ask-rpt-tag"
             >
@@ -128,7 +128,7 @@ export function DeptAskReportBubble({
             </span>
           </p>
           <p
-            className="mt-1 text-[12px] font-semibold leading-snug text-slate-900"
+            className="mt-1 text-[14px] font-bold leading-snug text-slate-900 text-balance"
             data-testid="dept-ask-rpt-q"
           >
             {item.title || decision.decisionShort}
@@ -251,7 +251,7 @@ function AskEvidencePanel(props: {
   })
   return (
     <details
-      className="mt-2 rounded-md border border-violet-100 bg-white/70 px-2 py-1.5"
+      className="mt-2 rounded-md border border-amber-100 bg-white/80 px-2 py-1.5"
       data-testid="ask-more"
       data-t4-sign-ready={bundle.signReady ? '1' : '0'}
     >

@@ -29,6 +29,16 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
   const [detail, setDetail] = useState<string | null>(null)
   const entryItems = ENTRY_BY_DEPT[deptId] || ['材料可挂', '目标一句话', '不装已过线']
   const [checked, setChecked] = useState<Record<number, boolean>>({})
+  const [materials, setMaterials] = useState<Record<string, boolean>>({})
+
+  const materialList = useMemo(() => {
+    if (deptId === 'dept-intake') return ['方向说明一页', '发明人联系方式']
+    if (deptId === 'dept-inspire') return ['问题卡点草稿', '领域粗分']
+    if (deptId === 'dept-mining') return ['研发资料包', '创新方向一句话']
+    if (deptId === 'dept-annuity') return ['申请号/授权号', '缴费主体']
+    if (deptId === 'dept-monetize') return ['①～⑦摘要', '复盘时段']
+    return ['材料可挂（演示）']
+  }, [deptId])
 
   const entryOk = useMemo(
     () => entryItems.every((_, i) => checked[i]),
@@ -137,6 +147,36 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
 
       {step === 'work' ? (
         <>
+          <div
+            className="rounded-lg border border-slate-200 bg-slate-50/70 px-3 py-2"
+            data-testid="thin-materials-attach"
+          >
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              材料挂接（演示）
+            </p>
+            <ul className="mt-1.5 space-y-1">
+              {materialList.map((label) => (
+                <li key={label}>
+                  <label className="flex cursor-pointer items-center gap-2 text-[11px] text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(materials[label])}
+                      onChange={() =>
+                        setMaterials((prev) => ({ ...prev, [label]: !prev[label] }))
+                      }
+                      data-testid={`thin-mat-${label.slice(0, 4)}`}
+                    />
+                    <span>{label}</span>
+                    {materials[label] ? (
+                      <span className="rounded-full bg-emerald-600/15 px-1.5 text-[9px] font-semibold text-emerald-800">
+                        已挂
+                      </span>
+                    ) : null}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
           {deptId === 'dept-intake' ? (
             <div className="rounded-xl border border-slate-200 bg-white p-3" data-testid="thin-intake-card">
               <dl className="grid grid-cols-[5rem_1fr] gap-x-2 gap-y-1.5 text-[12px]">
@@ -432,6 +472,12 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
           <p className="mt-1 text-[12px] text-slate-800">{meta.line}</p>
           <p className="mt-1 text-[11px] text-slate-600">
             {picked ? `本轮点选：${picked}` : '尚未点选主作业零件；可回主作业补选。'}
+          </p>
+          <p className="mt-1 text-[11px] text-slate-600" data-testid="thin-done-materials">
+            材料：{Object.entries(materials).filter(([, v]) => v).map(([k]) => k).join('、') || '未挂（可回主作业补）'}
+          </p>
+          <p className="mt-1 text-[10px] text-violet-800" data-testid="thin-done-handoff-hint">
+            下一站须本部门合格线 + 右栏硬请示；此处不装已交工单。
           </p>
           <p className="mt-2 text-[10px] text-slate-500">
             开「现在做下一部」仍须本部门合格线 + 硬请示（右栏）；此处不装已交工单。

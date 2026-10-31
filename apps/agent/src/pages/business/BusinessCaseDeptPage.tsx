@@ -83,6 +83,7 @@ import {
   isDraftDept,
 } from '../../business/caseFileDemo'
 import { ThinDeptWorkPanel } from '../../components/business/ThinDeptWorkPanel'
+import { ThickStepWorkPanel } from '../../components/business/ThickStepWorkPanel'
 import { BranchFlowPanel } from '../../components/business/BranchFlowPanel'
 import { TeachingFadeTip } from '../../components/business/TeachingFadeTip'
 import { lineDiff, diffStats } from '../../business/lineDiff'
@@ -814,12 +815,26 @@ export function BusinessCaseDeptPage() {
                 >
                   {currentStep.mainFocus}
                 </p>
-                <pre
-                  className="mt-3 max-h-[min(70vh,36rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
-                  data-testid="dept-output-body"
-                >
-                  {currentStep.mainBody}
-                </pre>
+                <ThickStepWorkPanel
+                  kind={stepKind}
+                  step={currentStep}
+                  caseId={caseId}
+                  onRecordNote={(note) => {
+                    // 示意留痕；正式判断仍走右栏硬请示 / 支路面板
+                    if (note.includes('不申')) {
+                      recordJudgment(
+                        buildBranchJudgment({
+                          caseId,
+                          gate: '⑤申不申',
+                          conclusion: '不申（主栏示意）',
+                          option: '不申结案',
+                          reason: '厚步 B 点选 · 正式拍板在右栏',
+                          compare: '不申却出申请号 = 禁止',
+                        }),
+                      )
+                    }
+                  }}
+                />
                 {askParam ? (
                   <p
                     className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-950"
@@ -932,6 +947,14 @@ export function BusinessCaseDeptPage() {
                 <p className="mt-0.5 font-medium">
                   ⑤ B 拍「不申」：结案/转秘密 · <strong>不</strong>出申请号 · 可不进 C
                 </p>
+                <div
+                  className="mt-2 rounded-lg border border-rose-200 bg-white px-3 py-2 text-[11px]"
+                  data-testid="branch-b5-no-appno"
+                >
+                  <p className="font-semibold text-rose-900">结案证明（演示）</p>
+                  <p className="mt-0.5 text-slate-700">申请号：<span className="font-mono text-slate-400">—（不出）</span></p>
+                  <p className="text-slate-700">局端递交：未发起 · 禁假装已递交</p>
+                </div>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <button
                     type="button"
@@ -1097,7 +1120,7 @@ export function BusinessCaseDeptPage() {
                 data-testid="dept-right-experts"
                 data-roster-folded="0"
               >
-                <ul className="flex flex-wrap gap-2" data-testid="dept-right-roster-row">
+                <ul className="flex flex-nowrap gap-2 overflow-x-auto pb-0.5" data-testid="dept-right-roster-row">
                   <li>
                     <button
                       type="button"
@@ -1239,10 +1262,10 @@ export function BusinessCaseDeptPage() {
                 {/* 多项未关请示：仅跳转 chip（样机 askSticky · 禁同文复述） */}
                 {pendingForDept.length > 1 ? (
                   <div
-                    className="flex flex-wrap items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5"
+                    className="ask-sticky-rail sticky top-0 z-[5] flex flex-wrap items-center gap-1.5 rounded-[10px] border border-amber-200/90 bg-gradient-to-b from-amber-50 to-white px-2.5 py-1.5 shadow-sm"
                     data-testid="ask-sticky"
                   >
-                    <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                    <span className="text-[9px] font-extrabold uppercase tracking-wide text-amber-800">
                       跳转
                     </span>
                     {pendingForDept.map((p, i) => (
