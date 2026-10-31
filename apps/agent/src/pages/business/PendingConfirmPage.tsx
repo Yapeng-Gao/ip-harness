@@ -33,8 +33,9 @@ import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 
 /**
- * 「待我确认」收件箱 + 详情（成果优先 / 过程可折 / 助手审校必挂）
- * 支持 ?caseId= 按案过滤；?dept= 按部身份（对齐原型 pending-confirm?dept=）
+ * 确认审计列表 + 详情（§4.11a）
+ * 无 ?audit=1 → 软跳大厅/工作台（废独立确认页主路径）
+ * ?audit=1 → 只读审计；禁通过/驳回主 CTA；去工作台拍板
  */
 export function PendingConfirmInboxPage() {
   const { getPendingConfirms, cases, getCase } = useBusinessCases()
@@ -79,56 +80,79 @@ export function PendingConfirmInboxPage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="pending-confirm-inbox"
+      data-pending-audit="list-v1"
       data-case-filter={filterCaseId ?? ''}
       data-dept-filter={deptQuery ?? ''}
     >
       <div className="mx-auto max-w-2xl">
-        <p className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600" data-testid="pending-soft-hint">
-          拍板主路径在部门工作台右栏（大厅铃铛进）。本页仅审计列表
-          {auditMode ? '（audit）' : '——点条目会软跳回工作台'}。
+        <p
+          className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600"
+          data-testid="pending-soft-hint"
+        >
+          拍板主路径在部门工作台右栏（大厅铃铛进）。本页是确认审计列表，不在此通过/驳回
+          {auditMode ? '' : '——点条目会软跳回工作台'}。
         </p>
-        <div className="mb-3 text-[11px] text-slate-400">
-          <Link to="/agent/cases" className="focus-ring rounded-sm hover:underline">
-            多案流水
+        <nav
+          className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-slate-500"
+          aria-label="审计次要入口"
+          data-testid="pending-secondary"
+        >
+          <Link
+            to="/agent"
+            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+            data-testid="pending-back-hall"
+          >
+            回大厅
           </Link>
-          <span className="mx-1">/</span>
+          <span aria-hidden className="text-slate-300">
+            ·
+          </span>
+          <Link
+            to="/agent/cases"
+            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+            data-testid="pending-to-cases"
+          >
+            案盘
+          </Link>
           {filterCaseId ? (
             <>
+              <span aria-hidden className="text-slate-300">
+                ·
+              </span>
               <Link
                 to={`/agent/cases/${filterCaseId}`}
-                className="focus-ring rounded-sm hover:underline"
+                className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
               >
                 {filterCase?.title ?? '本案'}
               </Link>
-              <span className="mx-1">/</span>
-              待确认
             </>
-          ) : (
-            '待我确认'
-          )}
-        </div>
-        <h1 className="text-[20px] font-semibold text-slate-900">
+          ) : null}
+        </nav>
+        <h1
+          className="text-[20px] font-semibold text-slate-900"
+          data-testid="pending-inbox-heading"
+        >
           {filterCaseId
-            ? '本案待确认'
+            ? '本案确认审计'
             : deptFilterLabel
-              ? `${deptFilterLabel} · 待你确认`
-              : '待我确认'}
+              ? `${deptFilterLabel} · 确认审计`
+              : '确认审计'}
         </h1>
         <p className="mt-1 text-sm text-slate-500">
           {deptFilterLabel
-            ? `按部身份筛选 · ${deptFilterLabel}（?dept=${deptQuery}）`
+            ? `按部筛选 · ${deptFilterLabel} · 只读列表，拍板回工作台`
             : filterCaseId
-              ? '仅显示本案 pending · 与进度同源'
-              : '与案子进度同源 · 确认后该项从收件箱消失 · 详情内有助手审校'}
+              ? '仅本案记录 · 与进度同源 · 不在此拍板'
+              : '谁何时待拍/已过/已驳 · 只读；通过/驳回只在工作台右栏'}
         </p>
         {filterCaseId || deptQuery ? (
           <p className="mt-1 text-[11px] text-slate-400">
             <Link
-              to="/agent/pending"
+              to="/agent/pending?audit=1"
               className="font-medium text-slate-600 underline-offset-2 hover:underline"
               data-testid="pending-show-all"
             >
-              查看全部待确认
+              查看全部审计
             </Link>
           </p>
         ) : null}
@@ -341,6 +365,7 @@ export function PendingConfirmDetailPage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="pending-confirm-detail"
+      data-pending-audit={auditMode ? 'detail-v1' : undefined}
       data-confirm-id={confirmId}
       data-confirm-status={item.status}
       data-actor-kind={actor}
@@ -349,13 +374,22 @@ export function PendingConfirmDetailPage() {
       }
     >
       <div className="mx-auto max-w-3xl">
-        <div className="mb-3 text-[11px] text-slate-400">
-          <Link to="/agent/pending" className="focus-ring rounded-sm hover:underline">
-            待我确认
+        <nav
+          className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-slate-500"
+          aria-label="审计详情次要入口"
+        >
+          <Link
+            to="/agent/pending?audit=1"
+            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:underline"
+            data-testid="pending-detail-back-audit"
+          >
+            确认审计
           </Link>
-          <span className="mx-1">/</span>
-          {item.title}
-        </div>
+          <span aria-hidden className="text-slate-300">
+            ·
+          </span>
+          <span className="text-slate-400">{item.title}</span>
+        </nav>
 
         <div className="flex flex-wrap items-center gap-2">
           <span
@@ -378,8 +412,13 @@ export function PendingConfirmDetailPage() {
               </span>
             )
           })()}
-          <span className="text-[11px] text-slate-500">
-            这是拍板，不是「下一步」
+          <span
+            className="text-[11px] text-slate-500"
+            data-testid="pending-audit-framing"
+          >
+            {auditMode
+              ? '审计只读 · 拍板在工作台右栏'
+              : '这是拍板，不是「下一步」'}
           </span>
         </div>
 
@@ -462,7 +501,30 @@ export function PendingConfirmDetailPage() {
           </section>
         </div>
 
-        {item.status === 'pending' && (
+        {item.status === 'pending' && auditMode ? (
+          <div
+            className="mt-5 space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4"
+            data-testid="pending-audit-actions"
+          >
+            <p className="text-[12px] font-medium text-slate-800">
+              本页只读审计 · 不在此通过 / 驳回
+            </p>
+            <p className="text-[11px] leading-relaxed text-slate-600">
+              拍板主路径在部门工作台右栏。点下面进本案该部，硬请示在对话里。
+            </p>
+            <Link
+              to={workbenchAskPath(item.caseId, item.kind, {
+                confirmId: item.id,
+              })}
+              className="btn-press focus-ring inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+              data-testid="pending-goto-workbench"
+            >
+              去工作台拍板
+            </Link>
+          </div>
+        ) : null}
+
+        {item.status === 'pending' && !auditMode && (
           <div className="mt-4">
             <HitlAssistCard
               kind={item.kind}
@@ -476,7 +538,7 @@ export function PendingConfirmDetailPage() {
           </div>
         )}
 
-        {item.status === 'pending' ? (
+        {item.status === 'pending' && !auditMode ? (
           <div className="mt-5 space-y-3" data-testid="pending-actions">
             <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600">
               <p className="font-medium text-slate-800">以谁的身份拍板（演示）</p>
@@ -560,7 +622,7 @@ export function PendingConfirmDetailPage() {
               通过 → 移交下一部门；驳回 → 回流本台带意见。无人确认不能换部推进。
             </p>
           </div>
-        ) : (
+        ) : item.status !== 'pending' ? (
           <p
             className={`mt-5 text-sm font-medium ${
               item.status === 'confirmed' ? 'text-emerald-700' : 'text-rose-700'
@@ -572,7 +634,7 @@ export function PendingConfirmDetailPage() {
               ? ` · ${item.returnNote}`
               : ''}
           </p>
-        )}
+        ) : null}
 
         {doneMsg && (
           <p className="mt-3 text-xs font-medium text-emerald-700" role="status">
