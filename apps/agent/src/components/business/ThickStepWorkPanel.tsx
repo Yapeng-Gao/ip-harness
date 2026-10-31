@@ -275,7 +275,7 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
             ))}
           </div>
           <p className="mt-2 text-[10px] text-slate-500">
-            正式拍板在右栏 · B5「不申」不得出申请号。
+            正式拍板在右栏 · 「不申」不得出申请号。
           </p>
         </div>
       ) : null}
@@ -383,7 +383,7 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
               </button>
             ))}
           </div>
-          <p className="mt-2 text-[10px] text-slate-400">本轮过线后，右栏再拍本轮递交 · 禁静默逾期见 B6。</p>
+          <p className="mt-2 text-[10px] text-slate-400">本轮过线后，右栏再拍本轮递交 · 禁静默逾期见答复超期升级支路。</p>
         </div>
       ) : null}
 

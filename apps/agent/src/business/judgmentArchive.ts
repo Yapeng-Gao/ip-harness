@@ -124,7 +124,7 @@ export function buildJudgmentFromConfirm(input: {
   }
 }
 
-/** B5 等支路：不经 pending 也可写入判断 */
+/** 不申等支路：不经 pending 也可写入判断 */
 export function buildBranchJudgment(input: {
   caseId: string
   gate: string

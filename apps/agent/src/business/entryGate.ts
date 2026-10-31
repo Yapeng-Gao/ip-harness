@@ -15,7 +15,7 @@ export type EntryGateInput = {
   /** URL 强制旁路演示：?gate=bypass */
   bypass?: boolean
   /**
-   * 代理陪同绕 B2（N-P1-2）：仅 agency + escort 可无交底进⑤壳。
+   * 代理陪同绕自带交底支路（N-P1-2）：仅 agency + escort 可无交底进申请部壳。
    * 企业无工单仍硬挡。
    */
   agencyEscort?: boolean
@@ -62,7 +62,7 @@ export function evaluateEntryGate(input: EntryGateInput): EntryGateResult {
             ok: true,
             title: '代理陪同进入申请部（演示）',
             reason:
-              '代理身份陪同可绕 B2 进申请部壳；企业无工单仍须交底全绿。不装交底已过线。',
+              '代理身份陪同可绕自带交底支路进申请部壳；企业无工单仍须交底全绿。不装交底已过线。',
             honesty: HONEST,
             fixHint: '',
             fixHrefHint: null,
@@ -71,7 +71,7 @@ export function evaluateEntryGate(input: EntryGateInput): EntryGateResult {
         return {
           ok: false,
           title: '申请部 · 进入门槛未过',
-          reason: '开写/递交前须交底全绿（或交底→申请工单已确认可交）。B2：自带交底不过→退交底部/补料。',
+          reason: '开写/递交前须交底全绿（或交底→申请工单已确认可交）。自带交底支路：不过→退交底部/补料。',
           honesty: HONEST,
           fixHint: '先去交底部完成事实确认与全绿，或打开交底→申请工单。',
           fixHrefHint: 'disclosure',

@@ -423,7 +423,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                   className="rounded-lg border border-violet-100 bg-violet-50/60 px-3 py-2 text-[11px]"
                   data-testid="thin-work-detail"
                 >
-                  展开「{detail}」明细（示意）· 正式专报走情报官 B8。
+                  展开「{detail}」明细（示意）· 正式专报走情报官支路。
                 </div>
               ) : null}
               <div className="flex flex-wrap gap-2 pt-1">
@@ -446,7 +446,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                 ))}
               </div>
               <p className="text-[10px] text-slate-400">
-                B7：只读不拍不得回写维护台账 · 复盘 ≠ 情报官专报。
+                支路：只读不拍不得回写维护台账 · 复盘 ≠ 情报官专报。
               </p>
             </div>
           ) : null}
