@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   businessSeatLabel,
   currentSeatForProgress,
+  nextSeatAfterConfirm,
+  normalizeResearchPass,
   seatsForCase,
 } from '../../business/businessSeats'
 import { navigablePeerSeatIds, type DeptPeer } from '../../business/deptRoster'
@@ -20,6 +22,7 @@ import { deliverableForExpert } from '../../projects/patentDeliverables'
 import {
   deptIdFromSlug,
   orgDeptById,
+  orgDeptByLeadSeat,
   deptSlug,
   MAIN_CHAIN_DEPTS,
   type OrgDeptId,
@@ -65,6 +68,7 @@ import {
 } from '../../business/workbenchSteps'
 import { DeptHandoffTicket } from '../../components/business/DeptHandoffTicket'
 import { CaseFileDrawer } from '../../components/business/CaseFileDrawer'
+import { DeptAskReportBubble } from '../../components/business/DeptAskReportBubble'
 import {
   disclosureToDraftTicket,
   draftInheritedHandoffLine,
@@ -111,9 +115,12 @@ export function BusinessCaseDeptPage() {
     getCase,
     getProgress,
     getPendingConfirms,
+    getConfirm,
     primaryCta,
     lastReturnHint,
     clearReturnHint,
+    confirmItem,
+    returnItem,
   } = useBusinessCases()
   const { getThread } = useProjectFolder()
   const { deptLabel } = useOrgConfig()
@@ -170,6 +177,10 @@ export function BusinessCaseDeptPage() {
   const [caseFileOpen, setCaseFileOpen] = useState(
     params.get('docket') === '1' || params.get('file') === '1',
   )
+  const [askBusy, setAskBusy] = useState(false)
+  const [focusConfirmId, setFocusConfirmId] = useState<string | null>(
+    params.get('confirm') || params.get('askId') || null,
+  )
 
   const activeSeat: ProjectExpertId = (() => {
     if (pickedSeat && seatIds.includes(pickedSeat)) return pickedSeat
@@ -213,6 +224,52 @@ export function BusinessCaseDeptPage() {
     : null
   const kindForDept = dept ? confirmKindOf(dept) : null
   const awaitingThis = isAwaitingConfirm(pending, kindForDept)
+  const pendingForDept = useMemo(() => {
+    if (!kindForDept) return [] as typeof pending
+    return pending.filter((p) => p.kind === kindForDept && p.status === 'pending')
+  }, [pending, kindForDept])
+  const askConfirmId =
+    focusConfirmId && pendingForDept.some((p) => p.id === focusConfirmId)
+      ? focusConfirmId
+      : params.get('confirm') && pendingForDept.some((p) => p.id === params.get('confirm'))
+        ? params.get('confirm')!
+        : cta.confirmId && pendingForDept.some((p) => p.id === cta.confirmId)
+          ? cta.confirmId
+          : pendingForDept[0]?.id
+  const pendingAskItem = askConfirmId
+    ? getConfirm(askConfirmId) ?? pendingForDept.find((p) => p.id === askConfirmId)
+    : undefined
+
+  const onAskConfirm = async (confirmId: string) => {
+    setAskBusy(true)
+    try {
+      const synced = await confirmItem(confirmId)
+      if (!synced.businessOk) return
+      const item = getConfirm(confirmId)
+      if (!item) return
+      const pass = normalizeResearchPass(getProgress(caseId).researchPass)
+      const nextSeat = nextSeatAfterConfirm(item.kind, pass)
+      const nextDept = orgDeptByLeadSeat(nextSeat)
+      if (nextDept) {
+        navigate(
+          `/agent/cases/${caseId}/depts/${deptSlug(nextDept.id)}?seat=${nextSeat}`,
+          { state: { confirmed: item.kind } },
+        )
+      }
+    } finally {
+      setAskBusy(false)
+    }
+  }
+
+  const onAskReturn = async (confirmId: string, note: string) => {
+    setAskBusy(true)
+    try {
+      await returnItem(confirmId, note)
+    } finally {
+      setAskBusy(false)
+    }
+  }
+
   const checklistReady = leadDone || st === '待确认' || st === '已完成' || awaitingThis
   const checklistItems = handoff.checklist.map((label, i) => ({
     label,
@@ -918,9 +975,48 @@ export function BusinessCaseDeptPage() {
                 </p>
               </section>
             ) : (
-              <div className="sr-only" data-testid="dept-right-experts" data-roster-folded="1">
-                编制已收起
-              </div>
+              <section
+                className="flex shrink-0 items-center gap-1.5 border-b border-slate-100 px-3 py-1.5"
+                data-testid="dept-right-experts"
+                data-roster-folded="1"
+                aria-label="编制已收起 · 头像条"
+              >
+                <button
+                  type="button"
+                  onClick={openLeadSeat}
+                  className="focus-ring rounded-full"
+                  title={businessSeatLabel(dept.leadSeatId)}
+                  data-testid="dept-side-expert-lead-folded"
+                >
+                  <ExpertAvatar
+                    name={businessSeatLabel(dept.leadSeatId)}
+                    seed={dept.leadSeatId}
+                    size="sm"
+                  />
+                </button>
+                {peers.slice(0, 5).map((peer) => {
+                  const label = peerDisplayLabel(dept.id, peer.id, peer.label)
+                  return (
+                    <button
+                      key={peer.id}
+                      type="button"
+                      onClick={() => {
+                        setRosterOpen(true)
+                        openPeer(peer)
+                      }}
+                      className="focus-ring rounded-full"
+                      title={label}
+                      data-testid={`dept-side-expert-folded-${peer.id}`}
+                    >
+                      <ExpertAvatar name={label} size="sm" />
+                    </button>
+                  )
+                })}
+                {peers.length > 5 ? (
+                  <span className="text-[9px] text-slate-400">+{peers.length - 5}</span>
+                ) : null}
+                <span className="sr-only">编制已收起</span>
+              </section>
             )}
 
             {/* 对话吃高：硬请示气泡 + 席会话 + composer（席内钉底） */}
@@ -931,7 +1027,48 @@ export function BusinessCaseDeptPage() {
             >
               <div className="shrink-0 space-y-2 px-3 pt-2">
                 {/* 硬请示 = 汇报气泡（一句结论 + 选项）；不另开 sticky 同文卡 */}
-                {awaitingThis ? (
+                {/* 多项未关请示：仅跳转 chip（样机 askSticky · 禁同文复述） */}
+                {pendingForDept.length > 1 ? (
+                  <div
+                    className="flex flex-wrap items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5"
+                    data-testid="ask-sticky"
+                  >
+                    <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                      跳转
+                    </span>
+                    {pendingForDept.map((p, i) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setFocusConfirmId(p.id)}
+                        className={`btn-press focus-ring rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                          p.id === askConfirmId
+                            ? 'bg-slate-900 text-white'
+                            : 'border border-slate-200 bg-white text-slate-600'
+                        }`}
+                        data-testid="ask-sticky-chip"
+                        data-ask-jump={p.id}
+                      >
+                        {i + 1}. {(p.title || p.summary).slice(0, 14)}
+                      </button>
+                    ))}
+                    <span className="text-[9px] text-slate-400">{pendingForDept.length}</span>
+                  </div>
+                ) : (
+                  <div className="hidden" data-testid="ask-sticky" hidden />
+                )}
+
+                {awaitingThis && pendingAskItem ? (
+                  <DeptAskReportBubble
+                    item={pendingAskItem}
+                    leadName={businessSeatLabel(dept.leadSeatId)}
+                    leadSeed={dept.leadSeatId}
+                    deptSlug={slug || undefined}
+                    busy={askBusy}
+                    onConfirm={onAskConfirm}
+                    onReturn={onAskReturn}
+                  />
+                ) : awaitingThis ? (
                   <div
                     className="max-w-[95%] rounded-2xl rounded-tl-md bg-violet-50 px-3 py-2 text-[12px] leading-relaxed text-slate-900"
                     role="status"
@@ -939,34 +1076,16 @@ export function BusinessCaseDeptPage() {
                     data-ask-kind="confirm"
                     data-awaiting-banner="1"
                   >
-                    {/* 兼容旧闸：保留 awaiting banner 语义 */}
                     <span className="sr-only" data-testid="dept-awaiting-confirm-banner">
                       待你确认
                     </span>
                     <p className="text-[9px] font-semibold uppercase tracking-wide text-violet-700/80">
                       {businessSeatLabel(dept.leadSeatId)} · 汇报
                     </p>
-                    <p className="mt-0.5 font-medium">
-                      本站已交卷，待你拍板。
-                    </p>
+                    <p className="mt-0.5 font-medium">本站已交卷，待你拍板。</p>
                     <p className="mt-0.5 text-[11px] text-slate-600">
                       {AWAITING_ADVANCE_LOCK_HINT}
                     </p>
-                    {cta.confirmId ? (
-                      <Link
-                        to={
-                          kindForDept
-                            ? workbenchAskPath(caseId, kindForDept, {
-                                confirmId: cta.confirmId,
-                              })
-                            : pendingAuditPath(cta.confirmId, slug || undefined)
-                        }
-                        className="btn-press focus-ring mt-2 inline-flex rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
-                        data-testid="dept-right-confirm-link"
-                      >
-                        在对话里拍板
-                      </Link>
-                    ) : null}
                   </div>
                 ) : null}
 
@@ -1103,7 +1222,7 @@ export function BusinessCaseDeptPage() {
                   className="text-center text-[10px] leading-relaxed text-slate-500"
                   data-testid="dept-primary-cta-demoted"
                 >
-                  拍板请用上方汇报气泡 · 底栏不再叠同文黄钮
+                  拍板请用上方「要你拍」汇报气泡 · 确认/驳回就地完成
                 </p>
               ) : (
                 <button

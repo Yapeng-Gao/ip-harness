@@ -147,6 +147,66 @@ export function HomePage() {
           </div>
         </section>
 
+        {/* 目标入口 · 交互大纲 §3.1 可薄；仍落到①～⑧ */}
+        <section
+          className="mb-5"
+          aria-labelledby="home-goal-entries-title"
+          data-testid="home-goal-entries"
+        >
+          <div className="mb-2 flex items-baseline gap-2">
+            <h2
+              id="home-goal-entries-title"
+              className="text-[13px] font-semibold text-slate-900"
+            >
+              今天想办哪件事
+            </h2>
+            <span className="text-[11px] text-slate-500">目标入口 · 落到部门</span>
+          </div>
+          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {[
+              {
+                id: 'disclosure',
+                label: '写交底',
+                desc: '交底部 · 技术事实成稿到全绿',
+                href: latestId
+                  ? `/agent/cases/${latestId}/depts/disclosure`
+                  : '/agent/cases/new',
+              },
+              {
+                id: 'draft',
+                label: '递申请',
+                desc: '申请部 · A理解 / B申不申 / C递交',
+                href: latestId
+                  ? `/agent/cases/${latestId}/depts/draft`
+                  : '/agent/cases/new',
+              },
+              {
+                id: 'oa',
+                label: '答审查意见',
+                desc: '答复部 · 争点 · 策略 · 本轮递交',
+                href: latestId
+                  ? `/agent/cases/${latestId}/depts/oa`
+                  : '/agent/cases/new',
+              },
+            ].map((g) => (
+              <li key={g.id}>
+                <Link
+                  to={g.href}
+                  className="btn-press focus-ring flex h-full flex-col rounded-xl border border-slate-200 bg-slate-50/80 p-3 hover:border-slate-300 hover:bg-white"
+                  data-testid={`home-goal-${g.id}`}
+                >
+                  <span className="text-[13px] font-semibold text-slate-900">
+                    {g.label}
+                  </span>
+                  <span className="mt-1 text-[11px] leading-snug text-slate-500">
+                    {g.desc}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         {/* 八部门 */}
         <section aria-labelledby="home-eight-depts-title" className="mb-5">
           <div className="mb-2 flex items-baseline gap-2">
