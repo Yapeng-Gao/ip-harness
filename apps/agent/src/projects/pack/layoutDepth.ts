@@ -63,7 +63,7 @@ export const LAYOUT_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'plan',
     label: '布局确认 · 待交',
-    script: '【布局】05_layout_plan 待确认。【HITL①】布局拍板。',
+    script: '【布局】05_layout_plan 待确认。【确认①】布局拍板。',
     tool: { name: 'draft_layout_plan', preview: 'file=05_layout_plan.md' },
     triggersHitl: true,
     hitlGate: 'approve_strategy',
@@ -87,7 +87,7 @@ export const LAYOUT_DEPTH_SHORTCUTS = [
 
 export const LAYOUT_SAMPLE_ARTIFACT = `# 专利布局计划（样机）
 
-> 样机成果 · HITL① 布局拍板
+> 样机成果 · 确认① 布局拍板
 
 ## 摘要
 
@@ -102,7 +102,7 @@ export const LAYOUT_SAMPLE_WORKLOG_STEPS = `| 1 | 主从案 | 挖掘 | 1+2 | —
 | 2 | 国别族 | 路径 | CN先 | — |
 | 3 | 保护网 | 矩阵 | 12格 | — |
 | 4 | 申请时序 | 计划 | M先 | — |
-| 5 | 布局确认 | HITL① | 待确认 | HITL |`
+| 5 | 布局确认 | 确认① | 待确认 | 确认 |`
 
 export const LAYOUT_SAMPLE_WORKLOG_CHOICES = `| 单案 | 主从网 | 主从 | 可查新 |
 | 独权过宽 | 压可论证点 | 缩限 | 纪律 |`

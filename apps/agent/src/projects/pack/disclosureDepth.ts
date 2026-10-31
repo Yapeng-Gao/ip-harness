@@ -4,7 +4,7 @@ import type { ExpertStepDef } from '../types'
 export const DISCLOSURE_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'brief',
-    label: '收立项条件',
+    label: '读上游附条件',
     script: '【交底】已读立项 Go 附条件：须补联动效果与实施例。',
     tool: { name: 'read_intake_conditions', preview: 'conditions=3' },
     structuredBody: [
@@ -119,13 +119,13 @@ export const DISCLOSURE_SAMPLE_ARTIFACT = `# 技术交底书（样机）
 随步骤追加上游条件、六段表、追问、结构、实施例、示意图与交卷摘要。
 `
 
-export const DISCLOSURE_SAMPLE_WORKLOG_STEPS = `| 1 | 收条件 | 立项 | 附条件 | — |
+export const DISCLOSURE_SAMPLE_WORKLOG_STEPS = `| 1 | 读附条件 | 上游 | 立项附条件 | — |
 | 2 | 六段采集 | 发明人 | 表 | — |
 | 3 | 缺项追问 | 交互 | ≤5轮 | — |
 | 4 | 结构 | 提纲 | 五节 | — |
 | 5 | 实施例 | ×2 | 映射 | — |
 | 6 | 示意图 | 图A/图B | 草图 | — |
-| 7 | 确认 | HITL | 待确认 | HITL |`
+| 7 | 确认 | 待拍板 | 待确认 | 确认 |`
 
 export const DISCLOSURE_SAMPLE_WORKLOG_CHOICES = `| 硬编效果 | 追问占位 | 追问 | 可撰写 |
 | 交底写权要 | 只交底 | 只交底 | 可确认 |`

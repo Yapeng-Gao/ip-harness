@@ -1101,7 +1101,7 @@ export function BusinessCaseDeptPage() {
             {!MAIN_CHAIN_DEPT_IDS.includes(dept.id) ? (
               <AuxChainBanner deptLabel={deptLabel(dept)} />
             ) : (
-              <ThreeLineStatusStrip prog={getProgress(caseId)} dense />
+              <ThreeLineStatusStrip prog={getProgress(caseId)} dense foldByDefault />
             )}
             {prefsHintForDept(deptLabel(dept)).length > 0 ? (
               <details

@@ -19,7 +19,7 @@ const BRANCHES: {
 }[] = [
   {
     id: 'b1',
-    title: 'B1 直达④',
+    title: '直达交底部',
     blurb: '跳过前站 · 进交底',
     mustSee: '跳过①②③ · ④短收件+进入检查表',
     forbid: '假装已激发/已挖点',
@@ -41,7 +41,7 @@ const BRANCHES: {
   },
   {
     id: 'b3',
-    title: 'B3 建议改④',
+    title: '建议回交底',
     blurb: '材料不足 · 回交底',
     mustSee: '只有技术说明时建议回④',
     forbid: '用「先查新」绕过交底门槛',
@@ -50,7 +50,7 @@ const BRANCHES: {
   },
   {
     id: 'b4',
-    title: 'B4 通知书→⑥',
+    title: '通知书→答复部',
     blurb: '有通知 · 进答复',
     mustSee: '⑥短收件；须现行申请文件',
     forbid: '凭交底直接答 OA',
@@ -58,7 +58,7 @@ const BRANCHES: {
   },
   {
     id: 'b5',
-    title: 'B5 不申结案',
+    title: '不申结案',
     blurb: '拍不申 · 无申请号',
     mustSee: '⑤B 拍不申 · 不出申请号',
     forbid: '不申却出申请号',
@@ -67,7 +67,7 @@ const BRANCHES: {
   },
   {
     id: 'b6',
-    title: 'B6 ⑥超期',
+    title: '答复超期',
     blurb: '期限升级 · 须拍板',
     mustSee: '期限升级可见 · 延期/放弃/抢答须拍',
     forbid: '静默逾期',
@@ -75,7 +75,7 @@ const BRANCHES: {
   },
   {
     id: 'b7',
-    title: 'B7 ⑧只读不拍',
+    title: '复盘只读不拍',
     blurb: '复盘报告 · 不改台账',
     mustSee: '报告可交 · 不回写⑦',
     forbid: '未拍却改台账',
@@ -84,7 +84,7 @@ const BRANCHES: {
   },
   {
     id: 'b8',
-    title: 'B8 情报官',
+    title: '情报官（资产）',
     blurb: '竞对年报 · 走资产',
     mustSee: '竞对年报走情报官（非⑧）',
     forbid: '⑧/③糊弄专报',
@@ -115,7 +115,7 @@ export function BranchDoors({ caseId, isAgency = false }: Props) {
           支路门
         </h2>
         <span className="text-[11px] text-slate-500">
-          B1–B8 · 虚线入口
+          虚线支路入口
           {isAgency ? ' · 代理可陪同进申请部' : ''}
         </span>
         <button

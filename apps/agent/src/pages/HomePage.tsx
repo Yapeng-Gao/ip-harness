@@ -22,6 +22,16 @@ import { reopenAllTeachTips } from '../business/teachingFade'
  */
 export function HomePage() {
   const [params] = useSearchParams()
+  const BRANCH_DEEP_LABEL: Record<string, string> = {
+    b1: '直达交底部',
+    b2: '自带交底进申请部',
+    b3: '建议回交底',
+    b4: '通知书进答复部',
+    b5: '不申结案',
+    b6: '答复超期',
+    b7: '复盘只读',
+    b8: '情报官（资产）',
+  }
   const branchQ = params.get('branch')
   const attachQ = params.get('attach')
   const { entryRole } = useEntryRole()
@@ -309,10 +319,10 @@ export function HomePage() {
             data-branch={branchQ}
           >
             <p className="text-[13px] font-semibold text-amber-950">
-              支路深链 · {branchQ.toUpperCase()}
+              支路验收 · {BRANCH_DEEP_LABEL[branchQ] ?? '虚线入口'}
             </p>
             <p className="mt-0.5 text-[12px] text-amber-900/90">
-              大厅只开门；机制验收请进对应部门工作台。
+              大厅只开门；请进对应部门工作台看机制（样机示意）。
             </p>
           </div>
         ) : null}

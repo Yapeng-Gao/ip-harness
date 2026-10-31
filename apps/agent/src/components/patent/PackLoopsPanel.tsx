@@ -39,7 +39,7 @@ export function PackLoopsPanel() {
             </h2>
             <p className="mt-0.5 text-[11px] text-violet-800/80">
               查新/撰写自修复≤{SELF_HEAL_MAX} · 超限「需人工接手」· 附图→撰写
-              feedback · HITL 驳回带批注（无真沙箱）
+              feedback · 确认驳回带批注（无真沙箱）
             </p>
           </div>
           <Link
@@ -89,8 +89,8 @@ export function PackLoopsPanel() {
               审查答复 · 多通外循环（样机）
             </h2>
             <p className="mt-0.5 text-[11px] text-orange-900/80">
-              理由分类 · 子任务汇入 · HITL⑥ 策略确认/驳回 · 第 N 通计数 ·
-              超范围 blocker（自修复 {OA_BLOCKER_SELF_HEAL_MAX} 次）· 无真局端
+              理由分类 · 子任务汇入 · 确认⑥ 策略确认/驳回 · 第 N 通计数 ·
+              超范围拦截（自修复 {OA_BLOCKER_SELF_HEAL_MAX} 次）· 无真局端
             </p>
             <p
               className="mt-1 text-[11px] font-semibold text-orange-950"

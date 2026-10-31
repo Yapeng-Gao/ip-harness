@@ -322,7 +322,7 @@ export function layoutPendingLog(caseId: string): ProcessLogEntry {
     kind: 'layout_pending',
     seatId: 'expert-layout',
     message: '布局待拍板 · 请确认布局调整',
-    detail: 'HITL① 布局方案 v(n+1) · 补局建议已就绪',
+    detail: '确认① 布局方案 v(n+1) · 补局建议已就绪',
   }
 }
 
@@ -467,7 +467,7 @@ export function oaStrategyPrepScript(
       oaRound: round,
       oaReason: reason,
       message: `第 ${round} 通 · 答复策略草案已就绪 · 待确认答复策略`,
-      detail: 'HITL⑥ 策略确认闸',
+      detail: '确认⑥ 策略确认闸',
     },
   ]
 }

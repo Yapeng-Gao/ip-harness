@@ -95,7 +95,7 @@ function buildDemo(): {
   const patent: AgentProject = {
     id: DEMO_PATENT_ID,
     title: '边缘调度模组 · 专利演示',
-    summary: 'Pack 16+总控：主链 HITL①–⑥ + 后置 F7–F9 可跑样机',
+    summary: '专利席位样机：主链确认①–⑥ + 后置年费/价值/转化可跑（示意）',
     kind: 'domain',
     domainPackId: 'patent',
     caseBindState: 'none',
@@ -131,7 +131,7 @@ function buildDemo(): {
       projectId: patent.id,
       kind: 'project_created',
       title: '专利演示项目已种子',
-      detail: 'Pack 16 席+总控种子（含后置 F7–F9 可跑）',
+      detail: '专利席位样机种子（含后置年费/价值/转化示意）',
       at: stamp(),
     },
     {
