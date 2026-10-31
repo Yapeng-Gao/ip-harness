@@ -50,7 +50,7 @@ const PACK16 = new Set<ProjectExpertId>([
 ])
 
 /**
- * 专家工作台 · /agent/catalog（原 Catalog；非业务冷启动）
+ * 席位样机目录旁路（原 Catalog；非一期进门；非业务冷启动）
  */
 export function PatentCatalogPage() {
   const navigate = useNavigate()
@@ -101,7 +101,7 @@ export function PatentCatalogPage() {
   const onCreateTeam = () => {
     const p = createProject({
       title: title.trim() || '专利专班',
-      summary: `专家工作台专班 · ${teamIds.length} 席 · 演示16=${pack16Count}`,
+      summary: `席位样机专班（旁路）· ${teamIds.length} 席 · 演示16=${pack16Count}`,
       kind: 'domain',
       domainPackId: 'patent',
       expertIds: teamIds,
@@ -142,17 +142,23 @@ export function PatentCatalogPage() {
       <header className="mx-auto mb-6 max-w-4xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">
-              专家工作台
+            <p
+              className="text-[11px] font-medium uppercase tracking-wider text-amber-800/80"
+              data-testid="patent-catalog-bypass-kicker"
+            >
+              旁路 · 席位样机
+            </p>
+            <h1 className="mt-1 text-[22px] font-semibold tracking-tight text-slate-900">
+              席位样机目录
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              16 个专家席 · 样机校验 · 待确认×8 · 成果 + 办理过程
+              样机席位与回流故事线 · 非一期主办理 · 请回大厅委托或公司案八部
             </p>
             <p
               className="mt-1 text-[11px] font-medium text-violet-700"
               data-testid="pack16-count"
             >
-              演示席 {pack16Count}/16 · 业务默认请回「我的案子」
+              演示席 {pack16Count}/16 · 主路径请回大厅 / 公司案
             </p>
           </div>
           <div className="flex flex-wrap gap-2 text-[11px]">
@@ -174,7 +180,7 @@ export function PatentCatalogPage() {
               className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-slate-500"
               data-testid="patent-to-team"
             >
-              团队旁路
+              多 bot 旁路
             </Link>
             <Link
               to="/agent"

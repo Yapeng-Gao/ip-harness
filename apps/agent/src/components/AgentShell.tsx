@@ -149,7 +149,7 @@ export function AgentShell() {
     : inSandbox
       ? '通用沙盒'
       : inCatalog
-        ? '专家工作台'
+        ? '席位样机（旁路）'
         : inDepartments
           ? '编制'
           : inAssets

@@ -470,7 +470,7 @@ export function ExpertHitlBridge({
       )}
       <div className="px-2 py-1 text-[10px] text-slate-400">
         {bizCase
-          ? '业务案：确认/退回走待我确认 store；下方为专家台示意闸'
+          ? '业务案：确认/退回走待我确认；下方为遗留过程旁路示意闸（非一期主办理）'
           : '确认后写入案件 · 试运行不写'}
       </div>
       <SessionConfirmBar

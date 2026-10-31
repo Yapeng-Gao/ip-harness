@@ -17,8 +17,7 @@ import { PATENT_EXPERTS } from '../../projects/expertsPatent'
 const SHELL_DM_PROJECT = 'proj-demo-patent'
 
 /**
- * Mode A · 单聊 /agent/seats/:seatId
- * F7–F9 keep Phase badge but run full seat chrome (not empty-state dead-end).
+ * 席位样机单聊旁路 /agent/seats/:seatId · 非一期主办理（大厅→公司→部台）
  */
 export function PatentSeatPage() {
   const { seatId: raw } = useParams<{ seatId: string }>()
@@ -76,7 +75,7 @@ export function PatentSeatPage() {
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-sm text-slate-600">
         <p>禁止专家截入：{getProjectExpert(seatId).name} 须从建项目起。</p>
         <Link to="/agent" className="underline">
-          回 Catalog
+          回大厅
         </Link>
       </div>
     )

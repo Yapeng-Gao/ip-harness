@@ -5,7 +5,7 @@ import type { ProcessLogEntry } from '../../business/packLoops'
 
 type Props = {
   caseId: string
-  /** 专家台可展示演示按钮；业务面默认只读过程 */
+  /** 遗留过程旁路可展示演示按钮；业务面默认只读过程 */
   showDemos?: boolean
   /** 推进后闪一下的新日志行 */
   highlightLogId?: string
@@ -111,7 +111,7 @@ function LogRow({
 
 /**
  * 办理过程 / 环边可见 · Knife1–3
- * 业务面人话；专家台可跑演示剧本
+ * 业务面人话；遗留过程旁路可跑演示剧本
  */
 export function CaseProcessPanel({
   caseId,

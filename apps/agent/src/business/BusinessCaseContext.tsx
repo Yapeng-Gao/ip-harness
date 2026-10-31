@@ -816,7 +816,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
             m.expertIds.length > 0 ? m.expertIds : BUSINESS_DEFAULT_TEAM_IDS,
         })
       } else if (existing.caseId !== m.id || existing.caseBindState !== 'bound') {
-        // Catalog / 专家台进同一案：绑案 = projectId，禁平行宇宙
+        // 席位样机 / Catalog 进同一案：绑案 = projectId，禁平行宇宙
         patchProject(m.id, { caseId: m.id, caseBindState: 'bound' })
       }
     }
@@ -1043,10 +1043,10 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
             caseId,
             kind,
             title: CONFIRM_KIND_LABEL[kind],
-            summary: '未启用布局 · 仅专家台可见飞轮故事线',
+            summary: '未启用布局 · 仅遗留过程旁路可见回流故事线',
             resultPreview: '【成果】—',
             processPreview:
-              '【办理过程】布局席未启用 · 过程已写入专家台，业务面不出待确认。',
+              '【办理过程】布局席未启用 · 过程仅写入遗留旁路故事线，业务面不出待确认。',
             preparedBy: CONFIRM_META.layout_adjust.preparedBy,
             createdAt: stamp(),
             status: 'pending',

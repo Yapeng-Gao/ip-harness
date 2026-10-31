@@ -54,7 +54,7 @@ export type ProcessLogEntry = {
   kind: ProcessLogKind
   /** 人话（业务面可上屏） */
   message: string
-  /** 专家台补充一行（仍禁 validator 英文黑话） */
+  /** 遗留过程旁路补充一行（仍禁 validator 英文黑话） */
   detail?: string
   seatId?: ProjectExpertId
   attempt?: number
