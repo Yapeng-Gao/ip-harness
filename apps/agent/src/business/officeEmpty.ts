@@ -23,6 +23,9 @@ export type OfficeEmptyKind =
   | 'case-room-empty'
   | 'case-process-empty'
   | 'pending-empty'
+  | 'catalog-empty'
+  | 'catalog-filter'
+  | 'lab-empty'
   | 'generic'
 
 export type OfficeEmptyCopy = {
@@ -119,6 +122,19 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
   'pending-empty': {
     title: '暂无需要你确认的事项',
     body: '部门交卷后的硬请示会停在这里，请你拍板。',
+  },
+  'catalog-empty': {
+    title: '目录还是空的',
+    body: '当前没有可列的助手条目。',
+    next: '可回大厅继续委托办主链',
+  },
+  'catalog-filter': {
+    title: '没有匹配的助手',
+    body: '试试清空搜索，或换一层 / 阶段再看。',
+  },
+  'lab-empty': {
+    title: '实验室暂无展品',
+    body: '示意画廊 · 不进主链交卷。',
   },
   generic: {
     title: '这里还是空的',

@@ -1980,9 +1980,49 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 真官报 / 真检索 / 真递交 | **仍后置** |
 | 真报价/付款通道 | **仍后置** |
-| 其它实验室/画廊空态 | 非主路径，可后置 |
+| 其它实验室/画廊空态 | → §53 整站复扫（catalog SoftEmpty 已备；lab kind 已备） |
+| 精致度链回退复扫 | → **§53 整站复扫精致度链回退**（已落地） |
 
 ### 52.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 旁路空态 SoftEmpty；smoke PASS_SIDE_EMPTY；shots `.tmp/side-empty-shots/`；写入 §52 |
+| 2026-10-31 CST | §52.3 增 → §53 整站复扫精致度链回退 |
+
+## 53. 整站复扫精致度链回退（2026-10-31 Asia/Shanghai）
+
+> **问题：** §52.3 —— 精致度链（dense / SoftEmpty / fold / kit / honest）整站是否回退；工程残渣是否回流。属**产品设计 / 使用成本 / 产品形态**复验。  
+> **真源：** UI/seed；Office 语感；no fake 官报；真集成仍后置；不宣称四维/六维落地；不碰 main-path-sample。
+
+### 53.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| PASS_RESCAN_53 | `.tmp/rescan-53-smoke.mjs`；shots `.tmp/rescan-53-shots/` |
+| 覆盖 | hall dense+branch compact+八部折；company/cases/case-new/audit；docket；billing SoftEmpty+双口袋无假金额；members roles；prof 8 卡；departments bypass；wb tree-fold / side-aux·versions 默认折 / step·三行 dense / kit hints 折 / seed→TrueDiff+honest compact / aux DEMO-CN / file CTA 护栏 / 附件 SoftEmpty；sessions SoftEmpty；lab ban |
+| 便宜补强 | `officeEmpty` +catalog-empty/catalog-filter/lab-empty；`AgentCatalogPage` SoftEmpty（/agent/catalog 仍可能重定向部门旁路） |
+| 不做 | 假官报；真检索/鉴权/递交；宣称四维落地；碰 main-path-sample |
+
+### 53.2 六维（机制报告，不宣称落地）
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 复扫不改齐套/交卷闸；诚实示意面仍在 |
+| 产品理念 | DEMO-CN / 样机 / 非真官报 文案仍钉 |
+| 产品逻辑 | 后勤横切 + 部台辅链 不抢主链 |
+| 产品设计 | dense/fold/SoftEmpty/kit/honest 标记全绿 |
+| 产品形态 | Office 空态 tone；无 ENG/OLD ban 回流 |
+| 使用成本 | 默认折辅链；kit 提示折；banner compact |
+
+**仍不宣称四维/六维落地。**
+
+### 53.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真官报 / 真检索 / 真鉴权 / 真递交 | **仍后置** |
+| 真报价/付款通道 | **仍后置** |
+| lab SoftEmpty 接线 | kind 已备；画廊无空态分支则未挂 UI |
+| catalog SoftEmpty 可见性 | 依赖 /agent/catalog 是否再开路由（现多旁路至 departments） |
+
+### 53.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 整站复扫精致度链；smoke PASS_RESCAN_53；shots `.tmp/rescan-53-shots/`；catalog SoftEmpty 补强；写入 §53 |

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom'
+import { SoftEmpty } from '../components/soft/SoftEmpty'
 import { Search } from 'lucide-react'
 import { useAgents } from '@shared/context/AgentContext'
 import { useApp } from '@shared/context/AppContext'
@@ -203,13 +204,16 @@ export function AgentCatalogPage() {
       </header>
 
       {filtered.length === 0 ? (
-        <div className="ui-empty max-w-xl">
-          <p className="ui-empty-title">没有匹配的 Agent</p>
-          <p className="ui-empty-desc">
-            {q.trim() || stageFilter !== 'all' || tierFilter !== 'all'
-              ? '试试清空搜索或换一层 / 阶段。'
-              : '当前目录为空。'}
-          </p>
+        <div className="ui-empty max-w-xl" data-testid="agent-catalog-empty-wrap">
+          <SoftEmpty
+            kind={
+              q.trim() || stageFilter !== 'all' || tierFilter !== 'all'
+                ? 'catalog-filter'
+                : 'catalog-empty'
+            }
+            testId="agent-catalog-empty"
+            className="border-0 bg-transparent px-0 py-0"
+          />
           <div className="mt-1 flex flex-wrap justify-center gap-2">
             <button
               type="button"
