@@ -8,6 +8,7 @@ import {
   buildTrueDiff,
   type SideBySideRow,
 } from '../../business/trueDiffDemo'
+import { OFFICIAL_DEMO_HONEST } from '../../business/officialDemoHonest'
 
 type Props = {
   left: string
@@ -150,7 +151,8 @@ export function TrueDiffPanel({
             className="text-[11px] text-slate-500"
             data-testid="true-diff-seed-note"
           >
-            Seed 对照不可写回 · 正式版本请在右栏「另存版本」后点左侧版本节点
+            Seed 对照不可写回 · {OFFICIAL_DEMO_HONEST} ·
+            正式版本请在右栏「另存版本」后点左侧版本节点
           </p>
         ) : (
           <>

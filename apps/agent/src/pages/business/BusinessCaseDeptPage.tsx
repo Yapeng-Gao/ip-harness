@@ -75,6 +75,9 @@ import {
 import { KIT_STEP_SYNC_HONEST } from '../../business/kitStepSync'
 import { KIT_DIFF_AUTO_HONEST } from '../../business/kitDiffAuto'
 import {
+  officialDemoKindFromSide,
+} from '../../business/officialDemoHonest'
+import {
   AUX_VERSION_BIND_HONEST,
   bindSideAuxBodyToRevision,
   buildAuxRevisionStamp,
@@ -119,6 +122,7 @@ import { AuxChainBanner } from '../../components/business/AuxChainBanner'
 import { ThreeLineStatusStrip } from '../../components/business/ThreeLineStatusStrip'
 import { TeachingFadeTip } from '../../components/business/TeachingFadeTip'
 import { TrueDiffPanel } from '../../components/business/TrueDiffPanel'
+import { OfficialDemoHonestBanner } from '../../components/business/OfficialDemoHonestBanner'
 import {
   SEED_DIFF_LEFT,
   SEED_DIFF_RIGHT,
@@ -1302,6 +1306,15 @@ export function BusinessCaseDeptPage() {
                   </div>
                 ) : null}
                 {focusedSidePart && focusedSideParsedActive ? (
+                  <OfficialDemoHonestBanner
+                    kind={officialDemoKindFromSide(
+                      focusedSideParsedActive.sideId,
+                    )}
+                    className="mt-2"
+                    ctaGuard={focusedSideParsedActive.sideId === 'file'}
+                  />
+                ) : null}
+                {focusedSidePart && focusedSideParsedActive ? (
                   <div
                     className="mt-2 flex flex-wrap items-center gap-2"
                     data-testid="dept-side-aux-body-actions"
@@ -1388,13 +1401,16 @@ export function BusinessCaseDeptPage() {
                   </div>
                 ) : null}
                 {selectedMaterialId === 'seed-diff' ? (
-                  <TrueDiffPanel
-                    left={SEED_DIFF_LEFT}
-                    right={SEED_DIFF_RIGHT}
-                    leftTitle="当前稿（seed）"
-                    rightTitle="对照版（seed）"
-                    seedMode
-                  />
+                  <>
+                    <OfficialDemoHonestBanner kind="diff" className="mt-2" />
+                    <TrueDiffPanel
+                      left={SEED_DIFF_LEFT}
+                      right={SEED_DIFF_RIGHT}
+                      leftTitle="当前稿（seed）"
+                      rightTitle="对照版（seed）"
+                      seedMode
+                    />
+                  </>
                 ) : null}
                 {selectedMaterialId.startsWith('version-') ? (
                   <TrueDiffPanel

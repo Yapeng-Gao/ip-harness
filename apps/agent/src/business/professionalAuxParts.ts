@@ -236,7 +236,7 @@ export const SIDE_AUX_DEPTS: {
       { id: 'hit-list', label: '对比清单稿', hint: '示意条目 · 非真库结果' },
       { id: 'concl', label: '结论一页', hint: '给主链对照用' },
     ],
-    honest: '不占①～⑧对外序号',
+    honest: '查新辅链示意 · 不占①～⑧ · 非真库实查',
   },
   {
     id: 'figure',
@@ -245,7 +245,7 @@ export const SIDE_AUX_DEPTS: {
       { id: 'sheet', label: '图面一览', hint: '图号与部件' },
       { id: 'callout', label: '标注校对条', hint: '与权要引用对齐' },
     ],
-    honest: '主链零件感 · 非第九部门',
+    honest: '附图辅链示意 · 主链零件感 · 非第九部门',
   },
   {
     id: 'file',
@@ -254,7 +254,7 @@ export const SIDE_AUX_DEPTS: {
       { id: 'pack', label: '递交包目录', hint: '齐套勾选示意' },
       { id: 'receipt', label: '回执备忘', hint: '非真递交通道' },
     ],
-    honest: '后勤挂件 · 非官报 API',
+    honest: '递交辅链示意 · 后勤挂件 · 禁真递交 / 非官报通道',
   },
 ]
 

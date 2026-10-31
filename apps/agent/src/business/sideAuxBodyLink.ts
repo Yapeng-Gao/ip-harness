@@ -9,9 +9,15 @@ import {
   SIDE_AUX_DEPTS,
   type ManuscriptPart,
 } from './professionalAuxParts'
+import {
+  OFFICIAL_DEMO_HONEST,
+  sampleFilingPackDemo,
+  sampleFilingReceiptDemo,
+  sampleResearchSummaryDemo,
+} from './officialDemoHonest'
 
 export const SIDE_AUX_BODY_HONEST =
-  '辅链挂件联中栏 · 样机示意 · 非真检索 / 非真递交 / 非官报'
+  '辅链挂件联中栏 · 示意稿件 · 非真检索 / 非真递交 / 非官报'
 
 /** 辅链挂件落在哪一主部改稿（不另开第九部门） */
 export const SIDE_AUX_HOST: Record<string, OrgDeptId> = {
@@ -125,43 +131,37 @@ export function seedBodyForSideAux(input: {
 }
 
 const SIDE_SEED_EXTRA: Record<string, string[]> = {
-  'research:hit-list': [
-    '## 对比清单稿（示意）',
-    '| # | 对照点 | 初判 |',
-    '|---|---|---|',
-    '| 1 | （示意条目） | 待核 |',
-    '| 2 | （示意条目） | 待核 |',
-    '',
-    '非真库命中 · 仅给主链对照用。',
-  ],
+  'research:hit-list': sampleResearchSummaryDemo().split('\n'),
   'research:concl': [
     '## 结论一页（示意）',
-    '新颖性 / 创造性要点各一句；交主链立项或交底对照，非官文。',
+    '',
+    `> ${OFFICIAL_DEMO_HONEST}`,
+    '',
+    '新颖性 / 创造性要点各一句（样例措辞）；交主链立项或交底对照。',
+    '**非**三性官文 · **非**商业库实查结论。',
   ],
   'figure:sheet': [
     '## 图面一览（示意）',
+    '',
+    `> ${OFFICIAL_DEMO_HONEST}`,
+    '',
     '| 图号 | 内容 | 与权要 |',
     '|---|---|---|',
-    '| 图1 | 系统框图 | 待对齐 |',
-    '| 图2 | 流程 | 待对齐 |',
+    '| 图1 | 系统框图（示意） | 待对齐 |',
+    '| 图2 | 流程（示意） | 待对齐 |',
+    '',
+    '正式附图另定稿 · 本表仅章节对齐。',
   ],
   'figure:callout': [
-    '## 标注校对条',
+    '## 标注校对条（示意）',
+    '',
+    `> ${OFFICIAL_DEMO_HONEST}`,
+    '',
     '- [ ] 图注 ⊆ 权项术语',
     '- [ ] 图号已冻结（样机）',
   ],
-  'file:pack': [
-    '## 递交包目录（示意）',
-    '- [ ] 请求书',
-    '- [ ] 说明书 / 权要 / 摘要',
-    '- [ ] 附图',
-    '',
-    '**禁真递交官方** · 仅齐套勾选示意。',
-  ],
-  'file:receipt': [
-    '## 回执备忘（示意）',
-    '样机回执占位；非官方通道、非真案号。',
-  ],
+  'file:pack': sampleFilingPackDemo().split('\n'),
+  'file:receipt': sampleFilingReceiptDemo().split('\n'),
 }
 
 export function resolveSideAuxBody(input: {
