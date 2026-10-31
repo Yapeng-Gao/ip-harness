@@ -365,6 +365,8 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
               className="text-[11px] text-white/50"
               data-testid="company-pending-link"
               data-pending="0"
+              data-empty-tone="office"
+              title="各部交卷后的硬请示会出现在这里"
             >
               暂无待你拍
             </span>
@@ -721,7 +723,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             </li>
           ))}
           {recentCases.others.length === 0 ? (
-            <li className="text-[11px] text-slate-500">暂无其他案子</li>
+            <li className="text-[11px] text-slate-500" data-testid="company-other-cases-empty" data-empty-tone="office">暂无其他案子 · 本案之外的案卷切换会出现在这里</li>
           ) : null}
         </ul>
       </section>

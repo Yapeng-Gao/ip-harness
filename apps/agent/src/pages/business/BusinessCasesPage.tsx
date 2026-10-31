@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { SoftEmpty } from '../../components/soft/SoftEmpty'
 import { useMemo, useState } from 'react'
 import { Plus, Search } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
@@ -210,37 +211,44 @@ export function BusinessCasesPage() {
         ) : null}
 
         {rows.length === 0 ? (
-          <div
-            className="mt-8 rounded-xl border border-dashed border-slate-200 bg-white px-4 py-12 text-center"
-            data-testid="business-cases-empty"
-          >
-            <p className="text-sm font-medium text-slate-700">还没有案子</p>
-            <p className="mt-1 text-[12px] text-slate-500">开一个案子，立一条业务线</p>
-            <Link
-              to="/agent/cases/new"
-              className="btn-press focus-ring mt-4 inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
-              data-testid="business-cases-empty-cta"
-            >
-              <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden />
-              开新案子
-            </Link>
-          </div>
+          <SoftEmpty
+            kind="cases-list"
+            testId="business-cases-empty"
+            className="mt-8 bg-white py-12"
+            action={
+              <Link
+                to="/agent/cases/new"
+                className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
+                data-testid="business-cases-empty-cta"
+              >
+                <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden />
+                开新案子
+              </Link>
+            }
+          />
         ) : filtered.length === 0 ? (
           <div
-            className="mt-5 rounded-xl border border-dashed border-slate-200 bg-white px-4 py-8 text-center"
+            className="mt-5"
             data-testid="business-cases-filter-empty"
+            data-empty-tone="office"
           >
-            <p className="text-sm text-slate-600">没有匹配的案子</p>
-            <button
-              type="button"
-              className="mt-2 text-[12px] font-medium text-slate-700 underline-offset-2 hover:underline"
-              onClick={() => {
-                setQuery('')
-                setChip('all')
-              }}
-            >
-              清除筛选
-            </button>
+            <SoftEmpty
+              kind="cases-filter"
+              testId="business-cases-filter-empty-copy"
+              className="bg-white py-8"
+            />
+            <div className="mt-2 text-center">
+              <button
+                type="button"
+                className="text-[12px] font-medium text-slate-700 underline-offset-2 hover:underline"
+                onClick={() => {
+                  setQuery('')
+                  setChip('all')
+                }}
+              >
+                清除筛选
+              </button>
+            </div>
           </div>
         ) : (
           <div

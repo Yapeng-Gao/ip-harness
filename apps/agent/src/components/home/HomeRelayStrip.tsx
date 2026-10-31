@@ -3,6 +3,7 @@
  * progress.delegate（刷新可恢复）+ seed 待拍/工单；非官报。
  */
 import { Link } from 'react-router-dom'
+import { SoftEmpty } from '../soft/SoftEmpty'
 import { useMemo, useState, useEffect } from 'react'
 import { ArrowRightLeft } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
@@ -149,12 +150,12 @@ export function HomeRelayStrip({ refreshKey = 0 }: Props) {
         </span>
       </div>
       {items.length === 0 ? (
-        <p
-          className="text-[12px] text-slate-500"
-          data-testid="home-relay-empty"
-        >
-          暂无待接力 · 上方发出排期后写入本案进度
-        </p>
+        <SoftEmpty
+          kind="hall-relay"
+          density="compact"
+          testId="home-relay-empty"
+          className="border-0 bg-transparent px-0 py-1"
+        />
       ) : (
         <ul className="space-y-1" data-testid="home-relay-list">
           {items.map((r) => (

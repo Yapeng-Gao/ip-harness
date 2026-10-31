@@ -1905,9 +1905,46 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 | 项 | 说明 |
 |---|---|
 | 真官报 / 真检索 / 真递交 | **仍后置** |
-| 空态文案全站统一 / 附件组交互再细 | 可后续 |
+| 空态文案全站统一 / 附件组交互再细 | → §51 空态统一与附件细交互 |
 
 ### 50.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 大厅密度+左树辅链默认折；smoke PASS_HALL_TREE_FOLD；shots `.tmp/hall-tree-fold-shots/`；写入 §50 |
+| 2026-10-31 CST | §50.3 增 → §51 空态统一与附件细交互 |
+
+## 51. 空态统一与附件细交互（2026-10-31 Asia/Shanghai）
+
+> **问题：** §50.3 —— 大厅/公司/案盘/部台/专业空态口吻不一（偏工程「无数据」）；composer 附件芯片密度与增删 affordance 弱。属**产品设计 / 使用成本 / 产品形态**。  
+> **真源：** Office 稿件语感；`SoftEmpty` + `officeEmpty` 统一机制；禁假官报；保留 dense hall / 左树折 / 齐套辅链诚实示意。
+
+### 51.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| officeEmpty / SoftEmpty | `data-empty-tone=office` + `data-empty-kind`；大厅 todo/progress/relay/assets/rail；案盘 list/filter；专业缺案；部台附件/版本/空稿 |
+| 公司 | pending=0 / 其他案子 空态 title 对齐 Office |
+| Composer 附件 | `home-composer-attach-row` 更密芯片；移除钮；「再加」；资料夹空 SoftEmpty |
+| 不做 | 真上传齐套；真官报；碰 main-path-sample；宣称四维/六维落地 |
+
+### 51.2 六维（机制报告，不宣称落地）
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 空态不改变齐套/交卷闸 |
+| 产品理念 | 示意占位说清；不装已上传齐 |
+| 产品逻辑 | 空→下一步提示（开案/写稿/排期） |
+| 产品设计 | 统一软空卡片/条带 |
+| 产品形态 | 稿件/资料夹隐喻，非 eng empty |
+| 使用成本 | 附件芯片更短；增删可见 |
+
+**仍不宣称四维/六维落地。**
+
+### 51.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真官报 / 真检索 / 真递交 | **仍后置** |
+| 全站其余旁路空态（账单/期限/会话史） | 可后续按同 SoftEmpty 收 |
+
+### 51.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 空态统一+附件细交互；smoke PASS_EMPTY_ATTACH；shots `.tmp/empty-attach-shots/`；写入 §51 |

@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import { SoftEmpty } from '../../components/soft/SoftEmpty'
 import { useMemo, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
@@ -118,19 +119,21 @@ export function CaseProfessionalPage() {
       <div
         className="flex flex-1 items-center justify-center p-8"
         data-testid="case-professional-page"
+        data-empty-tone="office"
       >
-        <div className="text-center">
-          <p className="text-sm text-slate-600">找不到这个案子</p>
-          <p className="mt-1 text-[12px] text-slate-500">
-            专业须带案 · 请先开案子或从案盘进入
-          </p>
-          <Link
-            to="/agent/cases"
-            className="mt-3 inline-block text-sm font-medium text-slate-900 underline"
-          >
-            返回案盘
-          </Link>
-        </div>
+        <SoftEmpty
+          kind="professional-missing"
+          testId="case-professional-empty"
+          className="max-w-sm bg-white"
+          action={
+            <Link
+              to="/agent/cases"
+              className="text-sm font-medium text-slate-900 underline underline-offset-2"
+            >
+              返回案盘
+            </Link>
+          }
+        />
       </div>
     )
   }

@@ -117,6 +117,7 @@ import {
 } from '../../business/caseFileDemo'
 import { ThinDeptWorkPanel } from '../../components/business/ThinDeptWorkPanel'
 import { ThickStepWorkPanel } from '../../components/business/ThickStepWorkPanel'
+import { SoftEmpty } from '../../components/soft/SoftEmpty'
 import { BranchFlowPanel } from '../../components/business/BranchFlowPanel'
 import { AuxChainBanner } from '../../components/business/AuxChainBanner'
 import { ThreeLineStatusStrip } from '../../components/business/ThreeLineStatusStrip'
@@ -537,7 +538,7 @@ export function BusinessCaseDeptPage() {
         id: 'attachments',
         label: '附件',
         kind: 'attachment',
-        hint: '样机占位 · 暂无上传',
+        hint: '本站附件夹 · 可点开',
       },
       {
         id: 'versions',
@@ -1285,6 +1286,41 @@ export function BusinessCaseDeptPage() {
                     中栏=产出正文 · 对话在右栏
                   </span>
                 </div>
+                {selectedMaterialId === 'attachments' ? (
+                <div className="mt-3" data-testid="dept-attachments-empty-wrap">
+                  <SoftEmpty
+                    kind="wb-attachments"
+                    testId="dept-attachments-empty"
+                    density="block"
+                    className="bg-white"
+                  />
+                  <p className="sr-only" data-testid="dept-output-body" data-empty="1">
+                    {centerBody}
+                  </p>
+                </div>
+              ) : selectedMaterialId === 'versions' && versions.length === 0 ? (
+                <div className="mt-3">
+                  <SoftEmpty
+                    kind="wb-versions"
+                    testId="dept-versions-empty"
+                    density="block"
+                    className="bg-white"
+                  />
+                  <p className="sr-only" data-testid="dept-output-body" data-empty="1">
+                    {centerBody}
+                  </p>
+                </div>
+              ) : !centerBody.trim() ? (
+                <div className="mt-3">
+                  <SoftEmpty
+                    kind="wb-body"
+                    testId="dept-body-empty"
+                    density="block"
+                    className="bg-white"
+                  />
+                  <p className="sr-only" data-testid="dept-output-body" data-empty="1" />
+                </div>
+              ) : (
                 <pre
                   className="mt-3 max-h-[min(70vh,36rem)] overflow-auto rounded-lg border border-slate-100 bg-slate-50/80 p-3.5 text-[12px] leading-relaxed text-slate-700 whitespace-pre-wrap"
                   data-testid="dept-output-body"
@@ -1294,12 +1330,11 @@ export function BusinessCaseDeptPage() {
                   data-side-id={focusedSideParsedActive?.sideId}
                   data-side-part-id={focusedSideParsedActive?.partId}
                   data-aux-rev={focusedSidePart ? auxRevStamp.revCode : undefined}
-                  data-empty={centerBody.trim() ? '0' : '1'}
+                  data-empty="0"
                 >
-                  {centerBody.trim()
-                    ? centerBody
-                    : '（本稿尚空 · 点左栏零件或辅链写入种子，像打开一份 Word 草稿）'}
+                  {centerBody}
                 </pre>
+              )}
                 {focusedPart ? (
                   <div
                     className="mt-2 flex flex-wrap items-center gap-2"

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Workflow } from 'lucide-react'
 import { useMemo } from 'react'
+import { SoftEmpty } from '../soft/SoftEmpty'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { inProgressTicketLine } from '../../business/threeLineStatus'
 import { disclosureToDraftTicket } from '../../business/interDeptTicket'
@@ -51,12 +52,11 @@ export function HomeInProgressStrip({ latestId }: Props) {
 
   if (rows.length === 0) {
     return (
-      <div
-        className="rounded-lg border border-dashed border-slate-200/80 bg-slate-50/50 px-3 py-2 text-[12px] text-slate-500"
-        data-testid="home-in-progress-empty"
-      >
-        暂无进行中工单 · ④打包「现在做⑤」或进入答复后会出现在这里
-      </div>
+      <SoftEmpty
+        kind="hall-progress"
+        density="compact"
+        testId="home-in-progress-empty"
+      />
     )
   }
 

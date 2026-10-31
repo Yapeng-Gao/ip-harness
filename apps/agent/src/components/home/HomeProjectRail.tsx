@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { SoftEmpty } from '../soft/SoftEmpty'
 import { Briefcase, ChevronDown, FolderKanban, History, Plus } from 'lucide-react'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import { projectKindBadge } from '../../projects/experts'
@@ -85,11 +86,12 @@ export function HomeProjectRail() {
       <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
         <p className="nav-section !mt-1 !mb-1 px-2 text-slate-500">在办案子</p>
         {caseRows.length === 0 ? (
-          <p className="px-2 py-6 text-center text-[12px] leading-relaxed text-slate-500">
-            还没有案子
-            <br />
-            从上面开一个开始
-          </p>
+          <SoftEmpty
+            kind="hall-cases-rail"
+            density="compact"
+            testId="home-project-rail-empty"
+            className="mx-1 border-0 bg-transparent px-1 py-4 text-center"
+          />
         ) : (
           <ul className="space-y-0.5" aria-label="案子列表">
             {caseRows.map((c) => (

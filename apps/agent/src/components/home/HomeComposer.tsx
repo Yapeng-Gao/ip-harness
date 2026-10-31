@@ -14,6 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { useAssetLibrary } from '../../assets/AssetLibraryContext'
+import { SoftEmpty } from '../soft/SoftEmpty'
 import type { BusinessHomeStartState } from '../../pages/business/BusinessCasesPage'
 import { ORG_DEPTS, type OrgDept } from '../../departments/orgDepts'
 import { getProjectExpert } from '../../projects/experts'
@@ -224,39 +225,55 @@ export function HomeComposer({
     >
       <div className="rounded-[var(--radius-xl)] border border-slate-200 bg-white p-2 shadow-[var(--shadow-rest)] focus-within:border-slate-300 focus-within:shadow-[var(--shadow-elevated)]" data-composer-dense="1">
         {(attachedDocs.length > 0 || mentions.length > 0) && (
-          <div className="mb-2 flex flex-wrap gap-1.5">
+          <div
+            className="mb-1.5 flex flex-wrap items-center gap-1"
+            data-testid="home-composer-attach-row"
+            data-attach-count={attachedDocs.length}
+            data-mention-count={mentions.length}
+          >
+            {attachedDocs.length > 0 ? (
+              <span className="mr-0.5 text-[10px] font-medium text-slate-400">
+                附件
+              </span>
+            ) : null}
             {attachedDocs.map((d) => (
               <span
                 key={d.id}
-                className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] text-slate-700"
+                className="group inline-flex max-w-[11rem] items-center gap-0.5 rounded-full border border-slate-200/90 bg-slate-50 py-0.5 pl-1.5 pr-0.5 text-[10px] text-slate-700"
+                data-testid="home-composer-attach-chip"
+                data-doc-id={d.id}
+                title={d.name}
               >
                 <Paperclip
-                  className="h-3 w-3 text-slate-500"
+                  className="h-2.5 w-2.5 shrink-0 text-slate-500"
                   strokeWidth={1.75}
                   aria-hidden
                 />
-                <span className="max-w-[12rem] truncate">{d.name}</span>
+                <span className="min-w-0 truncate">{d.name}</span>
                 <button
                   type="button"
                   onClick={() => setAttached((p) => p.filter((x) => x !== d.id))}
-                  className="focus-ring rounded-full p-0.5 text-slate-500 hover:text-slate-800"
-                  aria-label={`移除 ${d.name}`}
+                  className="focus-ring rounded-full p-0.5 text-slate-400 opacity-70 hover:bg-slate-200/80 hover:text-slate-800 hover:opacity-100 group-hover:opacity-100"
+                  aria-label={`移除附件 ${d.name}`}
+                  data-testid="home-composer-attach-remove"
                 >
-                  <X className="h-3 w-3" aria-hidden />
+                  <X className="h-2.5 w-2.5" aria-hidden />
                 </button>
               </span>
             ))}
             {mentions.map((m) => (
               <span
                 key={`${m.kind}-${m.id}`}
-                className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] text-sky-800"
+                className="group inline-flex max-w-[9rem] items-center gap-0.5 rounded-full border border-sky-200/90 bg-sky-50 py-0.5 pl-1.5 pr-0.5 text-[10px] text-sky-800"
+                data-testid="home-composer-mention-chip"
+                data-mention-kind={m.kind}
               >
                 {m.kind === 'dept' ? (
-                  <Building2 className="h-3 w-3" strokeWidth={1.75} aria-hidden />
+                  <Building2 className="h-2.5 w-2.5" strokeWidth={1.75} aria-hidden />
                 ) : (
-                  <AtSign className="h-3 w-3" strokeWidth={1.75} aria-hidden />
+                  <AtSign className="h-2.5 w-2.5" strokeWidth={1.75} aria-hidden />
                 )}
-                <span className="max-w-[10rem] truncate">{m.label}</span>
+                <span className="min-w-0 truncate">{m.label}</span>
                 <button
                   type="button"
                   onClick={() =>
@@ -264,13 +281,26 @@ export function HomeComposer({
                       p.filter((x) => !(x.kind === m.kind && x.id === m.id)),
                     )
                   }
-                  className="focus-ring rounded-full p-0.5 text-sky-700 hover:text-sky-900"
+                  className="focus-ring rounded-full p-0.5 text-sky-600 opacity-70 hover:bg-sky-100 hover:opacity-100"
                   aria-label={`移除 ${m.label}`}
+                  data-testid="home-composer-mention-remove"
                 >
-                  <X className="h-3 w-3" aria-hidden />
+                  <X className="h-2.5 w-2.5" aria-hidden />
                 </button>
               </span>
             ))}
+            {attachedDocs.length > 0 ? (
+              <button
+                type="button"
+                className="btn-press focus-ring inline-flex items-center gap-0.5 rounded-full border border-dashed border-slate-300 px-1.5 py-0.5 text-[10px] text-slate-500 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700"
+                data-testid="home-composer-attach-add"
+                title="再添加附件"
+                onClick={() => setPicker(picker === 'assets' ? null : 'assets')}
+              >
+                <Paperclip className="h-2.5 w-2.5" aria-hidden />
+                再加
+              </button>
+            ) : null}
           </div>
         )}
 
@@ -344,9 +374,12 @@ export function HomeComposer({
         {picker === 'assets' && phase === 'compose' && (
           <PickerPanel title="选已有资料" onClose={() => setPicker(null)}>
             {recentDocs.length === 0 ? (
-              <p className="px-2 py-2 text-[12px] text-slate-500">
-                资产库还是空的
-              </p>
+              <SoftEmpty
+                kind="hall-assets"
+                density="compact"
+                testId="home-composer-assets-empty"
+                className="mx-1 border-0 bg-transparent px-1 py-1.5"
+              />
             ) : (
               recentDocs.map((d) => (
                 <button

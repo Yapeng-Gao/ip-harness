@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { SoftEmpty } from '../soft/SoftEmpty'
 import { Link } from 'react-router-dom'
 import { Bell, CheckCheck } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
@@ -25,17 +26,21 @@ export function HomeTodoStrip() {
   if (pending.length === 0) {
     return (
       <div
-        className="flex items-center gap-2 rounded-lg px-1.5 py-1.5"
+        className="flex items-start gap-2 rounded-lg px-1.5 py-1.5"
         data-testid="home-todo-empty"
+        data-empty-tone="office"
       >
         <CheckCheck
-          className="h-4 w-4 shrink-0 text-emerald-600"
+          className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"
           strokeWidth={1.75}
           aria-hidden
         />
-        <span className="text-[12px] text-slate-600">
-          暂无待确认——部门交卷后会停在这里请你拍板
-        </span>
+        <SoftEmpty
+          kind="hall-todo"
+          density="compact"
+          testId="home-todo-empty-copy"
+          className="min-w-0 flex-1 border-0 bg-transparent px-0 py-0"
+        />
         <Link
           to="/agent/pending?audit=1"
           className="focus-ring ml-auto shrink-0 rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:underline"
