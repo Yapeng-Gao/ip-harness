@@ -16,7 +16,7 @@ type View = 'org' | 'network' | 'board'
 
 /**
  * 专业/编制 · /agent/departments
- * 对齐编制总览：让该部能开工。作业主路径仍是大厅 → 公司案 → 部门工作台。
+ * 全库编制旁路。一期作业主路径：大厅 → 公司案 → 部台；案级真源在编制名册。
  */
 export function DepartmentsPage() {
   const { enabledDepts } = useOrgConfig()
@@ -56,10 +56,10 @@ export function DepartmentsPage() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2">
           <Building2 className="h-4 w-4 text-slate-600" strokeWidth={1.75} aria-hidden />
           <h1 className="text-[16px] font-semibold tracking-tight text-slate-900">
-            专业 / 编制
+            编制名册（全库旁路）
           </h1>
           <span className="text-[11px] text-slate-500">
-            全库配置旁路（非 §4.3a 案级专业面）· 作业以案级专业 / 公司八部为主 ·{' '}
+            全库配置旁路 · 作业以案级编制名册 / 公司八部为主 ·{' '}
             {enabledDepts.length} 个常设部门
           </span>
 
@@ -126,17 +126,17 @@ export function DepartmentsPage() {
             id="departments-start-title"
             className="text-[13px] font-semibold text-slate-900"
           >
-            让该部开工
+            进部台办理
           </h2>
           <p className="mt-0.5 text-[11px] text-slate-500">
-            全库配置旁路 · 案级真源在「专业能力 / 编制」：
+            全库配置旁路 · 案级真源在「编制名册」：
             {latestId ? (
               <Link
                 to={`/agent/cases/${latestId}/professional`}
                 className="ml-1 font-medium text-slate-800 underline-offset-2 hover:underline"
                 data-testid="departments-to-case-professional"
               >
-                打开本案专业面
+                打开本案编制名册
               </Link>
             ) : (
               <Link

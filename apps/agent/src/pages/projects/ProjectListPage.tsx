@@ -40,7 +40,7 @@ export function ProjectListPage() {
         >
           <p className="font-semibold">旧「项目专家台」已降权</p>
           <p className="mt-0.5 text-amber-900/90">
-            主路径是大厅 → 案卷 → 八部工作台。本页仅深链/实验室保留，不与公司主链抢顶栏。
+            一期主路径是大厅接待+八部 → 公司案 → 部台。本页为遗留深链，勿当第二套产品进门。
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             <Link
@@ -79,11 +79,15 @@ export function ProjectListPage() {
           。
         </p>
 
-        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="mb-2 flex items-center gap-1.5 text-sm font-medium text-slate-800">
+        <details
+          className="mt-6 rounded-xl border border-dashed border-amber-200/80 bg-amber-50/40 p-4"
+          data-testid="projects-create-fold"
+        >
+          <summary className="flex cursor-pointer select-none items-center gap-1.5 text-sm font-medium text-amber-950/80">
             <FolderPlus className="h-4 w-4" aria-hidden />
-            新建项目
-          </div>
+            新建遗留项目夹（旁路·收折）
+          </summary>
+          <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -166,10 +170,10 @@ export function ProjectListPage() {
           >
             创建并打开总控
           </button>
+          </div>
+        </details>
 
-        </div>
-
-        <ul className="mt-6 space-y-2">
+        <ul className="mt-6 space-y-2" data-testid="projects-folder-list">
           {folderProjects.map((p) => {
             const badge = projectKindBadge(p)
             return (

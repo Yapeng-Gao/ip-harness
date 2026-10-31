@@ -145,10 +145,10 @@ export function AgentSessionsList() {
 
   const listContext =
     urlFilter === 'needs_human'
-      ? '通用单聊 + 项目专家线程 · 筛选：待确认'
+      ? '旁路函件史 · 硬请示在部台右栏 · 筛选：待确认'
       : urlFilter
-        ? `通用单聊 + 项目专家线程 · 筛选：${urlFilter}`
-        : '通用单聊 + 项目专家线程 · 可用来源筛选；项目夹入口仍在「项目」'
+        ? `旁路函件史 · 筛选：${urlFilter}`
+        : '旁路函件史 · 非办理主对话；硬请示与工单在大厅→公司→部台'
 
   return (
     <div
@@ -177,7 +177,11 @@ export function AgentSessionsList() {
         title={listTitle}
         context={listContext}
         primary={{
-          label: '新建会话',
+          label: '回大厅',
+          to: '/agent',
+        }}
+        secondary={{
+          label: '新建会话（旁路）',
           onClick: newSession,
           icon: <Plus className="h-4 w-4" aria-hidden />,
         }}
@@ -192,7 +196,7 @@ export function AgentSessionsList() {
               type="search"
               value={sessionSearch}
               onChange={(e) => setSessionSearch(e.target.value)}
-              placeholder="搜索标题 / 目标 / 案件 / 项目"
+              placeholder="搜索标题 / 目标 / 案件"
               aria-label="搜索会话"
               data-testid="sessions-main-search"
               className="focus-ring w-full rounded border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-sm text-slate-800 placeholder:text-slate-400"
@@ -389,7 +393,7 @@ export function AgentSessionsList() {
                           className="flex min-h-[44px] items-center font-medium text-slate-900"
                           title={
                             row.source === 'project'
-                              ? '打开项目专家线程'
+                              ? '打开旁路线程'
                               : '打开会话'
                           }
                         >

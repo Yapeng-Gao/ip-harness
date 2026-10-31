@@ -19,7 +19,7 @@ import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
 import { useAgentDebug } from '../business/useAgentDebug'
 import { useEntryRole } from '../business/useEntryRole'
 import { useBusinessCases } from '../business/BusinessCaseContext'
-/* 旧三档着陆保留 shellTabs.ts 供深链/单测；壳顶栏已卸挂（一期真源不认 lifecycle 三档） */
+/* 旧 lifecycle 三档顶栏与 shellTabs 着陆已卸；一期进门＝大厅→公司→部台 */
 import { LabRouteBanner } from './LabRouteBanner'
 import { CaseShellSwitcher } from './business/CaseShellSwitcher'
 import { isCaseLevelShellPath } from '../business/caseShellSwitcher'

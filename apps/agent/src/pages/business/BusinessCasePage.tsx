@@ -23,7 +23,7 @@ import { midCaseHref } from '../../lib/deepLinks'
 import type { ProjectExpertId } from '../../projects/types'
 
 /**
- * 公司首页（product-pages §4.3）。?drill=1 仍为席位演练旁路。
+ * 公司首页（一期：单案总览+缺口→部台）。?drill=1 仍为席位演练旁路。
  * 部门作业见 /cases/:id/depts/:slug
  */
 export function BusinessCasePage() {

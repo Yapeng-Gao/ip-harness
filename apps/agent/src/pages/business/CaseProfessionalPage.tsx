@@ -155,7 +155,7 @@ export function CaseProfessionalPage() {
       <div className="mx-auto max-w-3xl">
         <nav
           className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-slate-500"
-          aria-label="专业次要入口"
+          aria-label="编制名册次要入口"
           data-testid="case-professional-secondary"
         >
           <Link
@@ -192,8 +192,8 @@ export function CaseProfessionalPage() {
           data-testid="case-professional-hint"
           role="status"
         >
-          案级能力面 · 选部接稿 · 点本稿零件进工作台中栏改稿 · 辅链零件默认收折 ·
-          本页不改交卷 · 非第三套产品 · 样机示意非官报
+          本案编制名册（一期）· 看谁能接、谁在办、哪有缺口 · 进部台办理 ·
+          辅链零件默认收折 · 本页不改交卷 · 非第二套进门 · 样机示意非官报
         </p>
 
         <h1
@@ -203,7 +203,7 @@ export function CaseProfessionalPage() {
           编制名册
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          {c.title} · 谁能接、谁在办、哪有缺口 · 点开工进工作台
+          {c.title} · 谁能接、谁在办、哪有缺口 · 点部门进部台（非 lifecycle「专业」档）
         </p>
 
         {/* 汇总条 · 做满密度 */}
@@ -212,7 +212,7 @@ export function CaseProfessionalPage() {
           data-testid="case-professional-summary"
           aria-label="在办与缺口汇总"
         >
-          <span className="text-[11px] font-semibold text-slate-700">本案编制面</span>
+          <span className="text-[11px] font-semibold text-slate-700">本案编制</span>
           <span
             className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-900"
             data-testid="case-professional-summary-gap"
@@ -467,7 +467,7 @@ export function CaseProfessionalPage() {
                   data-testid={`case-professional-start-${door.slug}`}
                   data-start-semantic="dept-bots-work"
                 >
-                  <span className="text-[11px] font-semibold">让该部接稿</span>
+                  <span className="text-[11px] font-semibold">进该部台</span>
                   <span className="text-[9px] font-normal text-slate-300">
                     部内接活 → 工作台改稿
                   </span>
@@ -511,7 +511,7 @@ export function CaseProfessionalPage() {
           >
             {PROF_AUX_HONEST}。卡上已露「本稿零件 / 辅链挂件」；点查新·附图·递交挂件进中栏改稿（联成果修订示意）；
             <strong className="font-semibold">非主八部</strong>
-            挂件清单。主路径仍是编制 + 在办/缺口 +「让该部接稿」。
+            挂件清单。主路径仍是编制 + 在办/缺口 +「进该部台」。
           </p>
           <ul
             className="mt-3 grid gap-2 sm:grid-cols-3"

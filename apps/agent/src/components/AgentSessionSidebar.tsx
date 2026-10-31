@@ -462,7 +462,7 @@ export function AgentSessionSidebar() {
         ) : (
         <>
         <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-          <span className="nav-section !m-0 !px-0" title="会话历史 · 通用单聊 + 项目专家线程（列表页聚合）">
+          <span className="nav-section !m-0 !px-0" title="会话历史 · 旁路函件史（列表页聚合）">
             会话历史
           </span>
           <div className="relative" ref={filterMenuRef}>
@@ -535,7 +535,7 @@ export function AgentSessionSidebar() {
         </div>
 
         <p className="px-3 pb-1 text-[10px] leading-snug text-slate-400">
-          通用单聊 + 项目专家线程 · 项目夹仍从「项目」进
+          旁路函件史 · 主办理在大厅→公司→部台
         </p>
 
         {!isSessionsList ? (
