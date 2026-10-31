@@ -142,6 +142,15 @@ export type BusinessConfirmItem = {
 }
 
 /** 同源进度 · 时间线 / 待确认 / 侧栏当前步 */
+
+/** 助手委托分发快照 · 进 progress 状态机（LS 同标签可恢复；样机非官报） */
+export type CaseDelegateDispatch = {
+  at: string
+  goalKind: string
+  goalText: string
+  deptSlug: string
+  stepLabel: string
+}
 export type CaseProgress = {
   caseId: string
   stageId: BusinessStageId
@@ -157,6 +166,8 @@ export type CaseProgress = {
   teamMemberIds: ProjectExpertId[]
   /** 建案向导「本案计划」骨架（可空） */
   casePlan?: string
+  /** 最近一次助手委托分发（计划可调→分发）；与 casePlan 同源可恢复 */
+  delegate?: CaseDelegateDispatch
   updatedAt: string
 }
 
@@ -498,6 +509,17 @@ type BusinessCaseContextValue = {
   setCaseTeam: (caseId: string, memberIds: ProjectExpertId[]) => void
   /** 案子助手改写 / 补全本案计划 */
   updateCasePlan: (caseId: string, casePlan: string) => void
+  /** 助手委托分发写入 progress（casePlan + delegate）；刷新可恢复 */
+  recordDelegateDispatch: (
+    caseId: string,
+    input: {
+      casePlan: string
+      goalKind: string
+      goalText: string
+      deptSlug: string
+      stepLabel: string
+    },
+  ) => void
   /** 启用前研等「更多部门」（写入 moreSeatIds） */
   /** T10 · 本案判断档案（硬请示写回） */
   getJudgments: (caseId?: string) => JudgmentRecord[]
@@ -839,6 +861,15 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           moreSeatIds: more,
           teamMemberIds: [],
           casePlan: planText || undefined,
+          delegate: planText
+            ? {
+                at: nowIso(),
+                goalKind: 'protect_start',
+                goalText: (input.summary ?? input.title ?? '').trim().slice(0, 120),
+                deptSlug: planStart.seatId.replace(/^expert-/, ''),
+                stepLabel: planStart.nextStepLabel,
+              }
+            : undefined,
           updatedAt: nowIso(),
         },
       }))
@@ -2091,6 +2122,51 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  const recordDelegateDispatch = useCallback(
+    (
+      caseId: string,
+      input: {
+        casePlan: string
+        goalKind: string
+        goalText: string
+        deptSlug: string
+        stepLabel: string
+      },
+    ) => {
+      const text = input.casePlan.trim()
+      const at = nowIso()
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            casePlan: text || cur.casePlan,
+            delegate: {
+              at,
+              goalKind: input.goalKind,
+              goalText: input.goalText.trim().slice(0, 120),
+              deptSlug: input.deptSlug,
+              stepLabel: input.stepLabel,
+            },
+            updatedAt: at,
+          },
+        }
+      })
+      appendLogs([
+        {
+          id: processLogId('delegate'),
+          caseId,
+          at,
+          kind: 'monitor_event',
+          message: `顾言分发 · ${input.stepLabel}（样机示意）`,
+          detail: input.goalText.trim().slice(0, 80) || undefined,
+        },
+      ])
+    },
+    [appendLogs],
+  )
+
   const enableMoreDepartments = useCallback((caseId: string) => {
     const add = [
       ...BUSINESS_MORE_SEAT_IDS,
@@ -2226,6 +2302,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       acceptDrillDualFile,
       setCaseTeam,
       updateCasePlan,
+      recordDelegateDispatch,
       enableMoreDepartments,
       getJudgments,
       getPreferences,
@@ -2263,6 +2340,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       acceptDrillDualFile,
       setCaseTeam,
       updateCasePlan,
+      recordDelegateDispatch,
       enableMoreDepartments,
       getJudgments,
       getPreferences,

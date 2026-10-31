@@ -1,6 +1,6 @@
 /**
  * 助手「待接力」条 · vision §3.1d
- * seed / 本地分发示意；非官报、非真鉴权。
+ * progress.delegate（刷新可恢复）+ seed 待拍/工单；非官报。
  */
 import { Link } from 'react-router-dom'
 import { useMemo, useState, useEffect } from 'react'
@@ -14,7 +14,6 @@ import {
 import { workbenchAskPath } from '../../business/pendingDeptQuery'
 
 type Props = {
-  /** 触发重读 localStorage（分发后 bump） */
   refreshKey?: number
 }
 
@@ -28,17 +27,45 @@ export function HomeRelayStrip({ refreshKey = 0 }: Props) {
 
   const items = useMemo(() => {
     const rows: RelayItem[] = []
-    const last = readLastDispatch()
-    if (last) {
-      const href = last.caseId
-        ? `/agent/cases/${last.caseId}/depts/${last.deptSlug}?delegate=1`
-        : '/agent/cases/new'
+    // progress 状态机里的分发（跨刷新）
+    const fromProgress = cases
+      .map((c) => {
+        const d = getProgress(c.id).delegate
+        if (!d) return null
+        return { caseId: c.id, title: c.title, d }
+      })
+      .filter(Boolean) as Array<{
+      caseId: string
+      title: string
+      d: NonNullable<ReturnType<typeof getProgress>['delegate']>
+    }>
+    fromProgress.sort((a, b) => b.d.at.localeCompare(a.d.at))
+    for (const row of fromProgress.slice(0, 3)) {
       rows.push({
+        id: `dispatched-${row.caseId}`,
+        title: row.d.goalText.slice(0, 36) || row.title,
+        kind: 'dispatched',
+        badge: '已分发',
+        href: `/agent/cases/${row.caseId}/depts/${row.d.deptSlug}?delegate=1`,
+      })
+    }
+    // LS 兜底（无案开新路径）
+    const last = readLastDispatch()
+    if (last && !last.caseId) {
+      rows.unshift({
+        id: 'dispatched-last-new',
+        title: last.goalText.slice(0, 36) || last.stepLabel,
+        kind: 'dispatched',
+        badge: '待开新',
+        href: '/agent/cases/new',
+      })
+    } else if (last?.caseId && !rows.some((r) => r.id === `dispatched-${last.caseId}`)) {
+      rows.unshift({
         id: 'dispatched-last',
         title: last.goalText.slice(0, 36) || last.stepLabel,
         kind: 'dispatched',
         badge: '刚分发',
-        href,
+        href: `/agent/cases/${last.caseId}/depts/${last.deptSlug}?delegate=1`,
       })
     }
     const pending = getPendingConfirms().slice(0, 3)
@@ -97,7 +124,9 @@ export function HomeRelayStrip({ refreshKey = 0 }: Props) {
         >
           待接力
         </h3>
-        <span className="text-[10px] text-slate-400">样机示意 · 跨部/待拍</span>
+        <span className="text-[10px] text-slate-400">
+          progress 可恢复 · 样机示意
+        </span>
         <span
           className="ml-auto tabular rounded-full bg-slate-100 px-1.5 py-px text-[10px] font-semibold text-slate-600"
           data-testid="home-relay-count"
@@ -110,7 +139,7 @@ export function HomeRelayStrip({ refreshKey = 0 }: Props) {
           className="text-[12px] text-slate-500"
           data-testid="home-relay-empty"
         >
-          暂无待接力 · 上方委托分发后会出现在这里
+          暂无待接力 · 上方委托分发后写入本案进度
         </p>
       ) : (
         <ul className="space-y-1" data-testid="home-relay-list">

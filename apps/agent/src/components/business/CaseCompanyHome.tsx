@@ -84,6 +84,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
   const gapBlock = useMemo(() => {
     const phase = handoffPhaseFromStatus(currentSt)
     const deptName = deptLabel(currentDept)
+    const del = prog.delegate
     let checkpoint: string
     if (phase === '待确认') {
       checkpoint = `卡点：${deptName}待你拍板`
@@ -101,24 +102,35 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
     } else {
       checkpoint = `卡点：当前停在${deptName} · ${handoffPhaseLabel(phase)}`
     }
-    const nextStep =
+    let nextStep =
       phase === '待确认'
         ? `下一步：进${deptName}右栏拍板`
         : `下一步：去${deptName}继续`
-    const who =
+    // 委托计划写入 progress 后，缺口卡反映计划下一步（示意）
+    if (del?.stepLabel) {
+      nextStep = `下一步：${del.stepLabel}（计划）`
+    } else if (prog.casePlan?.includes('下一步：')) {
+      const m = prog.casePlan.match(/下一步[：:]\s*(.+)/)
+      if (m?.[1]) nextStep = `下一步：${m[1].trim()}（计划）`
+    }
+    const whoPeers =
       currentDept.peers
         .slice(0, 3)
         .map((peer) =>
           peerDisplayLabel(currentDept.id, peer.id, peer.label),
         )
         .join(' · ') || deptName
+    const who = del
+      ? `谁在干：顾言已分发 · ${del.stepLabel}`
+      : `谁在干：${whoPeers}`
     return {
       checkpoint,
       nextStep,
-      who: `谁在干：${who}`,
+      who,
       statusLine: handoffStatusSentence(currentDept.id, currentSt),
+      hasPlan: Boolean(del || prog.casePlan?.trim()),
     }
-  }, [currentDept, currentSt, deptLabel])
+  }, [currentDept, currentSt, deptLabel, prog.delegate, prog.casePlan])
 
   const rollups = useMemo(
     () =>
@@ -326,6 +338,33 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
         </div>
         <p className="mt-2 text-[10px] text-white/45">{gapBlock.statusLine}</p>
       </section>
+
+      {gapBlock.hasPlan ? (
+        <section
+          className="rounded-xl border border-emerald-200 bg-emerald-50/70 px-3 py-2.5"
+          data-testid="company-plan-persist"
+          aria-label="本案委托计划"
+        >
+          <p className="text-[11px] font-semibold text-emerald-950">
+            本案计划（已写入进度 · 刷新可恢复）
+          </p>
+          <p
+            className="mt-1 whitespace-pre-wrap text-[11px] leading-relaxed text-emerald-900/90"
+            data-testid="company-plan-text"
+          >
+            {(prog.casePlan ?? prog.delegate?.goalText ?? '').slice(0, 280)}
+          </p>
+          {prog.delegate ? (
+            <Link
+              to={`/agent/cases/${caseId}/depts/${prog.delegate.deptSlug}?delegate=1`}
+              className="btn-press focus-ring mt-2 inline-flex text-[11px] font-semibold text-emerald-950 underline-offset-2 hover:underline"
+              data-testid="company-plan-go"
+            >
+              去计划首站 · {prog.delegate.stepLabel}
+            </Link>
+          ) : null}
+        </section>
+      ) : null}
 
       <section
         className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"

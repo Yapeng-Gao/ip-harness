@@ -1245,7 +1245,7 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 真 diff / 官报 | 同前（仍示意优先） |
 | 专业再加厚 | → §33 已做汇总+编制条+细行+添加专家示意 |
-| 计划持久化进案进度 | 分发写 LS + casePlan 开新；未全量改 progress 状态机 |
+| 计划持久化进案进度 | → §34 已进 progress.delegate |
 
 ### 32.4 修订
 | 时 | 记 |
@@ -1281,10 +1281,47 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 | 项 | 说明 |
 |---|---|
 | 真 diff / 官报 | 仍示意；本批不优先 |
-| 计划持久化进案进度 | 同 §32 |
+| 计划持久化进案进度 | → §34 已写入 progress.delegate / casePlan |
 | 专业辅链零件 | 更多部仍示意密度 |
 
 ### 33.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 专业面再加厚 caps-v2；smoke PASS_PROFESSIONAL_THICKEN；写入 §33 |
+
+## 34. 委托计划持久化进 progress（2026-10-31 Asia/Shanghai）
+
+> **问题：** §33.3 / §32.3 —— 分发只写 lastDispatch LS + 跳转，刷新后 relay/公司缺口不反映本案计划；未进 progress 状态机。属**产品逻辑 / 助手专管↔案进度**。  
+> **真源：** vision 持续委托；计划可调→分发→待接力须跨刷新；样机 LS seed，非官报。
+
+### 34.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| progress.delegate | `CaseDelegateDispatch` 挂 `CaseProgress`；`recordDelegateDispatch` 写 casePlan+delegate+monitor_event |
+| 开新带计划 | `createCaseFromWizard` 有 planText 时同步写 delegate（首站 slug） |
+| Composer | 有最近案时分发先 `recordDelegateDispatch` 再导航 |
+| Relay | 优先读 `getProgress(c).delegate` → 徽章「已分发」；无案 lastDispatch 兜底「待开新/刚分发」 |
+| 公司缺口 | gap 下一步/谁在干反映计划；`company-plan-persist` 条可去首站 |
+| 不做 | 真官报/真检索/真鉴权；不碰 main-path-sample；不宣称四维落地 |
+
+### 34.2 四维（机制，不宣称落地）
+| 维度 | |
+|---|---|
+| 产品逻辑 | 计划进案进度；刷新可恢复；助手分发≠假 toast |
+| 业务逻辑 | 分发事件进 processLogs（monitor_event）；拍板仍在工作台 |
+| 产品设计 | relay「已分发」+ 公司计划条；缺口卡下一步标「（计划）」 |
+| 理念 | LS 样机 seed；禁假后端/假官报 |
+
+**仍不宣称四维落地。**
+
+### 34.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真 diff / 官报 | 仍示意优先；本批不碰 |
+| 计划辅链 / 多步推进 | 首站分发已持久；后续步骤自动推进未做 |
+| 专业辅链零件 | 同 §33 |
+
+### 34.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 委托计划持久化进 progress；smoke PASS_PLAN_PERSIST；写入 §34 |

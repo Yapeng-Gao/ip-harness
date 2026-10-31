@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { useAssetLibrary } from '../../assets/AssetLibraryContext'
 import type { BusinessHomeStartState } from '../../pages/business/BusinessCasesPage'
 import { ORG_DEPTS, type OrgDept } from '../../departments/orgDepts'
@@ -53,6 +54,7 @@ export function HomeComposer({
   onDispatched,
 }: Props) {
   const navigate = useNavigate()
+  const { recordDelegateDispatch } = useBusinessCases()
   const { docs, upload } = useAssetLibrary()
   const [draft, setDraft] = useState('')
   const [attached, setAttached] = useState<string[]>(() =>
@@ -166,6 +168,15 @@ export function HomeComposer({
       deptSlug: first.slug,
       stepLabel: first.label,
     })
+    if (latestCaseId) {
+      recordDelegateDispatch(latestCaseId, {
+        casePlan,
+        goalKind,
+        goalText,
+        deptSlug: first.slug,
+        stepLabel: first.label,
+      })
+    }
     onDispatched?.()
     if (latestCaseId) {
       navigate(
