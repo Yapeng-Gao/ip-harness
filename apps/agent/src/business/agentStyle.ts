@@ -75,4 +75,5 @@ export function normalizePeerJobTitle(raw: string): string {
     .replace(/撰写专家/g, '申请专家')
     .replace(/交底撰写/g, '交底专家')
     .replace(/(^|[·\s])撰写($|[·\s])/g, '$1申请$2')
+    .replace(/(^|[·\s])年费($|[·\s])/g, '$1维护$2')
 }

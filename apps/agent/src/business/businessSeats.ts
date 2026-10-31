@@ -24,7 +24,7 @@ export const BUSINESS_SEAT_LABEL: Record<string, string> = {
   'expert-mining': '挖掘',
   'expert-layout': '布局',
   'expert-fto': '自由实施（FTO）',
-  'expert-annuity': '年费',
+  'expert-annuity': '维护',
   'expert-valuation': '价值',
   'expert-monetize': '转化',
   'expert-enforcement': '维权',

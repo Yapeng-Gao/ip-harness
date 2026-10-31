@@ -12,4 +12,8 @@ describe('agentStyle T8', () => {
   it('normalizes bare 撰写 → 申请', () => {
     assert.equal(normalizePeerJobTitle('撰写'), '申请')
   })
+
+  it('normalizes bare 年费 → 维护', () => {
+    assert.equal(normalizePeerJobTitle('年费'), '维护')
+  })
 })

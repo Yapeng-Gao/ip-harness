@@ -1,4 +1,4 @@
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   PanelRightClose,
   PanelRightOpen,
@@ -20,6 +20,12 @@ import { useAgentDebug } from '../business/useAgentDebug'
 import { useEntryRole } from '../business/useEntryRole'
 import { useAuthSession } from '../business/AuthSessionContext'
 import { useBusinessCases } from '../business/BusinessCaseContext'
+import { pickLatestCaseId } from '../business/entryRole'
+import {
+  professionalLandingHref,
+  projectLandingHref,
+  resolveShellTab,
+} from '../business/shellTabs'
 import { LabRouteBanner } from './LabRouteBanner'
 
 export function AgentShell() {
@@ -30,7 +36,12 @@ export function AgentShell() {
   const { entryRole } = useEntryRole()
   const { logout } = useAuthSession()
   const navigate = useNavigate()
-  const { getCase: getBizCase } = useBusinessCases()
+  const {
+    getCase: getBizCase,
+    cases: bizCases,
+    getProgress: getBizProgress,
+    getProcessLogs,
+  } = useBusinessCases()
   const [rightOpen, setRightOpen] = useState(false)
   /** P1-C · pending-confirm 首次进入自动展开上下文一次（视觉，不改 HITL） */
   const autoExpandedFor = useRef<string | null>(null)
@@ -164,6 +175,39 @@ export function AgentShell() {
                     ? '实验室'
                     : '工作台'
 
+  const getBizLogAt = useMemo(
+    () => (id: string) => {
+      const logs = getProcessLogs(id)
+      if (logs.length === 0) return undefined
+      return logs.reduce((max, l) => (l.at > max ? l.at : max), logs[0]!.at)
+    },
+    [getProcessLogs],
+  )
+  const latestBizCaseId = useMemo(
+    () =>
+      pickLatestCaseId(
+        bizCases,
+        (id) => getBizProgress(id).updatedAt,
+        getBizLogAt,
+      ),
+    [bizCases, getBizProgress, getBizLogAt],
+  )
+  const shellTab = resolveShellTab(loc.pathname)
+  const showShellTabs =
+    (inHome || inBusiness || inDepartments || inAssets) &&
+    !inGrokShell &&
+    !inLabPath
+  const projectHref = projectLandingHref({
+    activeCaseId: activeBizCaseId,
+    latestCaseId: latestBizCaseId,
+    hasCases: bizCases.length > 0,
+  })
+  const professionalHref = professionalLandingHref({
+    activeCaseId: activeBizCaseId,
+    latestCaseId: latestBizCaseId,
+    hasCases: bizCases.length > 0,
+  })
+
   return (
     <div
       className="app-shell-bg flex h-full flex-col overflow-hidden"
@@ -190,6 +234,44 @@ export function AgentShell() {
             {pageTitle}
           </div>
         </div>
+
+        {showShellTabs ? (
+          <nav
+            className="ml-1 flex items-center gap-0.5 rounded-lg border border-slate-200/90 bg-slate-50/80 p-0.5"
+            data-testid="shell-tabs"
+            aria-label="助手、项目、专业"
+          >
+            {(
+              [
+                { id: 'assistant' as const, label: '助手', to: '/agent' },
+                { id: 'project' as const, label: '项目', to: projectHref },
+                {
+                  id: 'professional' as const,
+                  label: '专业',
+                  to: professionalHref,
+                },
+              ] as const
+            ).map((tab) => {
+              const selected = shellTab === tab.id
+              return (
+                <Link
+                  key={tab.id}
+                  to={tab.to}
+                  data-testid={`shell-tab-${tab.id}`}
+                  data-selected={selected ? '1' : '0'}
+                  aria-current={selected ? 'page' : undefined}
+                  className={`btn-press focus-ring rounded-md px-2.5 py-1 text-[12px] font-medium ${
+                    selected
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  {tab.label}
+                </Link>
+              )
+            })}
+          </nav>
+        ) : null}
 
         {(inHome || inBusiness) && !inGrokShell && (
           <>
