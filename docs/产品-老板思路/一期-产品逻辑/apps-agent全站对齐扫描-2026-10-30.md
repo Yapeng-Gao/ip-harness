@@ -2177,8 +2177,45 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 真报价 / 真付款 / 发票通道 | **仍后置** |
 | 真鉴权 / 真官报 / 真检索 / 真递交 | **仍后置** |
+| 诚实标链整站复扫 | → **§58 整站复扫诚实标/SoftEmpty/密度链**（已落地 · 无回退） |
 
 ### 57.4 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 账单诚实条 + DEMO 口袋 + CTA 护栏；smoke PASS_BILLING_HONEST；shots `.tmp/billing-honest-shots/`；写入 §57 |
+| 2026-10-31 CST | §57.3 增 → §58 整站复扫（无回退） |
+
+## 58. 整站复扫诚实标链 + SoftEmpty + 密度/折叠（2026-10-31 Asia/Shanghai）
+
+> **问题：** §57 后 —— Official/Auth/Billing DemoHonestBanner 与 SoftEmpty/dense/fold/kit/aux/lab 是否回退；大厅是否乱叠诚实条；logout→login 竞态是否仍稳。属**产品设计 / 使用成本**复验。  
+> **真源：** UI/seed；Office 语感；no fake 官报/鉴权/付款；真集成仍后置；不宣称四维/六维落地。
+
+### 58.1 本批行为
+| 机制 | 落地 |
+|---|---|
+| PASS_RESCAN_58 | `.tmp/rescan-58-smoke.mjs`；shots `.tmp/rescan-58-shots/` |
+| 诚实标 | 大厅 **零** auth/billing/official 条；账单单条 Billing + CTA 护栏；部台 Official（diff/research/file）；欢迎/登录 Auth；logout→login +「退出样机会话」 |
+| SoftEmpty / dense | hall/billing/wb attach/sessions/lab-filter/catalog；tree-fold；kit hints 折；composer/branch/八部 dense |
+| 结论 | **无回退**；本刀无产品码改 |
+
+### 58.2 六维（机制报告，不宣称落地）
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 复扫不改齐套/交卷/支付闸 |
+| 产品理念 | 三族诚实条各挂对页，不装真通道 |
+| 产品逻辑 | 大厅不堆诚实条；后勤/登录/部台分面 |
+| 产品设计 | dense/fold/SoftEmpty/honest 全绿 |
+| 产品形态 | Office 空态 + 示意徽 |
+| 使用成本 | 退出样机会话文案仍在；logout 落登录壳 |
+
+**仍不宣称四维/六维落地。**
+
+### 58.3 仍开着
+| 项 | 说明 |
+|---|---|
+| 真官报 / 真检索 / 真鉴权 / 真递交 / 真报价付款 | **仍后置** |
+
+### 58.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 整站复扫§58；**无回退**；smoke PASS_RESCAN_58；shots `.tmp/rescan-58-shots/`；写入 §58 |
