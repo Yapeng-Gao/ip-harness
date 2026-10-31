@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Building2, ChevronDown, ChevronRight, MessageCircle } from 'lucide-react'
 import { HomeBossTodoBoard } from '../components/home/HomeBossTodoBoard'
 import { HomeComposer } from '../components/home/HomeComposer'
+import { HomeRelayStrip } from '../components/home/HomeRelayStrip'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
   ENTRY_ROLE_LABEL,
@@ -25,6 +26,7 @@ export function HomePage() {
   const { entryRole } = useEntryRole()
   const { cases, getProgress, getProcessLogs } = useBusinessCases()
   const [eightOpen, setEightOpen] = useState(false)
+  const [relayRefresh, setRelayRefresh] = useState(0)
 
   const getLogAt = useMemo(
     () => (id: string) => {
@@ -76,7 +78,7 @@ export function HomePage() {
       data-home="assistant"
       data-entry-role={entryRole}
       data-hall-dedupe="boss-todo-v1"
-      data-assistant-density="delegate-v1"
+      data-assistant-density="delegate-chain-v1"
     >
       <div className="mx-auto w-full max-w-4xl">
         <header className="mb-4" data-testid="home-hall-tagline">
@@ -134,12 +136,17 @@ export function HomePage() {
               持续委托
             </h2>
             <span className="text-[11px] text-slate-500">
-              说目标 → 开办 · 不只聊天框
+              说目标 → 计划可调 → 分发 · 不只聊天框
             </span>
           </div>
-          <HomeComposer initialAttachId={attachQ} />
+          <HomeComposer
+            initialAttachId={attachQ}
+            latestCaseId={latestId}
+            onDispatched={() => setRelayRefresh((n) => n + 1)}
+          />
+          <HomeRelayStrip refreshKey={relayRefresh} />
           <p className="mt-2 text-[11px] text-slate-500" data-testid="home-delegate-hint">
-            盯整案进度请切顶栏「项目」；选部开工请切「专业」。本档专管交代与接力。
+            提目标 → 计划可调 → 分发 → 待接力（样机示意）。盯整案切「项目」；选部开工切「专业」。
           </p>
         </section>
 

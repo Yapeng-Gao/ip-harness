@@ -18,6 +18,8 @@ export type BusinessHomeStartState = {
   attachments?: string[]
   /** @专家 / @部门 的提及，已格式化为可读串 */
   mentions?: string[]
+  /** 助手委托链生成的计划文案（样机；供 createCaseFromWizard） */
+  casePlan?: string
 }
 
 function shortCaseNo(id: string): string {

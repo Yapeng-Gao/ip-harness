@@ -35,6 +35,7 @@ export function BusinessCaseNewPage() {
     const p = createCaseFromWizard({
       title: name,
       summary: summaryParts.join(' · ') || undefined,
+      casePlan: start?.casePlan,
     })
     navigate(`/agent/cases/${p.id}`)
   }
