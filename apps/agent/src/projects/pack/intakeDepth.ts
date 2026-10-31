@@ -1,6 +1,6 @@
 /**
  * 立项席深度（agent-depth-reliability P2）
- * 对齐 bot-expert-assets「立项评审」：区别特征分析 + 评分卡 mock + go_nogo HITL
+ * 对齐 bot-expert-assets「立项评审」：区别特征分析 + 评分卡 mock + 立不立项确认
  */
 import type { ExpertStepDef } from '../types'
 
@@ -103,7 +103,7 @@ export const INTAKE_DEPTH_STEPS: ExpertStepDef[] = [
 export const INTAKE_DEPTH_SHORTCUTS = [
   { id: 'ingest', label: '吃上游', action: 'jump' as const, stepId: 'ingest' },
   { id: 'score', label: '评分卡', action: 'jump' as const, stepId: 'score' },
-  { id: 'go', label: 'Go/No-Go', action: 'jump' as const, stepId: 'go' },
+  { id: 'go', label: '立不立项', action: 'jump' as const, stepId: 'go' },
   { id: 'report-orch', label: '回报总控', action: 'report' as const },
 ]
 
@@ -117,14 +117,14 @@ export const INTAKE_SAMPLE_ARTIFACT = `# 立项决策书（样机）
 
 ## 正文
 
-随步骤推进将追加上游摄入、区别特征表、评分卡、范围报价与 Go/No-Go 决议。确认前可在「成果」扫读。
+随步骤推进将追加上游摄入、区别特征表、评分卡、范围报价与立不立项决议。确认前可在「成果」扫读。
 `
 
 export const INTAKE_SAMPLE_WORKLOG_STEPS = `| 1 | 吃上游 | 查新 | 要点 | — |
 | 2 | 区别特征 | 对比文件 | 表 | — |
 | 3 | 评分卡 | 公式 | 三轴 | — |
 | 4 | 范围报价 | 草案 | CN | — |
-| 5 | Go/No-Go | HITL | 决议 | HITL |`
+| 5 | 立不立项 | 确认 | 决议 | 确认 |`
 
 export const INTAKE_SAMPLE_WORKLOG_CHOICES = `| No-Go | Go 附条件 | Go 附条件 | 可交底 |
 | 只看分 | 分+区别表 | 分+表 | 可确认 |`

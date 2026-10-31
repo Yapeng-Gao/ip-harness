@@ -118,7 +118,7 @@ export const MONETIZE_SAMPLE_WORKLOG_STEPS = `| 1 | 交易范围 | 组合 | CN�
 | 2 | 估值区间 | 公式 | 80–120万 | — |
 | 3 | 条款草案 | term sheet | 骨架 | — |
 | 4 | 条款校验 | validator | 齐 | — |
-| 5 | 签约闸 | 转化确认 | 待确认 | HITL |`
+| 5 | 签约闸 | 转化确认 | 待确认 | 确认 |`
 
 export const MONETIZE_SAMPLE_WORKLOG_CHOICES = `| 口头意向 | 必备条款齐 | 齐 | 禁真签约 |
 | 跳过校验 | 校验过闸 | 校验 | 纪律 |`

@@ -107,7 +107,7 @@ export const OA_SAMPLE_WORKLOG_STEPS = `| 1 | 读意见 | 一通 | 表 | — |
 | 3 | 策略 | 三案 | 提纲 | — |
 | 4 | 修改 | 对照 | Pass | — |
 | 5 | 草稿 | 陈述 | 骨架 | — |
-| 6 | 确认 | HITL | 待确认 | HITL |`
+| 6 | 确认 | 确认 | 待确认 | 确认 |`
 
 export const OA_SAMPLE_WORKLOG_CHOICES = `| 整篇重写 | 分理由改 | 分理由 | 可确认 |
 | 超范围自修复 | blocker 升级 | blocker | 纪律 |`

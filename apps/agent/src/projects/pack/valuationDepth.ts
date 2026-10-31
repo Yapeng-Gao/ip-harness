@@ -115,7 +115,7 @@ export const VALUATION_SAMPLE_WORKLOG_STEPS = `| 1 | 抽证据 | 案卷 | 引用
 | 2 | 公式输入 | 三轴 | 权重 | — |
 | 3 | 评分卡 | 公式 | 78 | — |
 | 4 | 分级建议 | 核心/外围 | 表 | — |
-| 5 | 评估卡确认 | 交卷 | 待确认 | HITL |`
+| 5 | 评估卡确认 | 交卷 | 待确认 | 确认 |`
 
 export const VALUATION_SAMPLE_WORKLOG_CHOICES = `| 拍脑袋 | 公式工具 | 公式 | 提案键 |
 | 直接放弃 | 交年费议 | 联动 | 可确认 |`

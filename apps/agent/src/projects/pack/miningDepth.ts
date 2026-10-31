@@ -75,7 +75,7 @@ export const MINING_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**交给布局**：挖掘包；写入须你确认。',
       '',
-      '**声明**：本席不替代立项 Go/No-Go。',
+      '**声明**：本席不替代立项（立不立项）。',
     ].join('\n'),
   },
 ]
@@ -103,7 +103,7 @@ export const MINING_SAMPLE_WORKLOG_STEPS = `| 1 | 技术点 | 上游 | 4点 | �
 | 2 | 可申报提案 | 特征 | 3骨架 | — |
 | 3 | 特征拆解 | P1 | 表 | — |
 | 4 | 评分 | 公式 | 优先P1 | — |
-| 5 | 提案确认 | 打包 | 待确认 | HITL |`
+| 5 | 提案确认 | 打包 | 待确认 | 确认 |`
 
 export const MINING_SAMPLE_WORKLOG_CHOICES = `| 单提案 | 主+从2～3 | 主从 | 可布局 |
 | 当立项Go | 仅提案包 | 提案 | 纪律 |`

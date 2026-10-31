@@ -115,7 +115,7 @@ export const ENFORCEMENT_SAMPLE_WORKLOG_STEPS = `| 1 | 特征映射 | 权要 | 6
 | 2 | 覆盖比对 | 产品 | 4/6 | — |
 | 3 | 稳定性 | 评分 | 0.64 | — |
 | 4 | 漏洞信封 | 缺口 | 2条 | — |
-| 5 | 回流布局 | 飞轮 | 待确认 | HITL |`
+| 5 | 回流布局 | 飞轮 | 待确认 | 确认 |`
 
 export const ENFORCEMENT_SAMPLE_WORKLOG_CHOICES = `| 合并FTO | 独立席 | 独立 | ≠fto |
 | 借watch告警 | 只回流布局 | 飞轮 | 纪律 |`

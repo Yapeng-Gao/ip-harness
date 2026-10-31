@@ -122,7 +122,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
       {
         command: null,
         label: '只读样机',
-        note: '通用研究不绑专利 catalog / DomainCommand',
+        note: '通用研究不绑专利席位目录 / 写库命令',
       },
     ],
     guardrails: [

@@ -35,7 +35,7 @@ const CHAIN: {
     to: 'expert-intake',
     flow: 'F5 新申请',
     step: '查新 → 立项',
-    acceptance: '查新结论可支撑 Go/No-Go',
+    acceptance: '查新结论可支撑立不立项',
   },
   {
     from: 'expert-intake',

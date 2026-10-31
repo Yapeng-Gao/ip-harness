@@ -120,7 +120,7 @@ export const LANDSCAPE_SAMPLE_WORKLOG_STEPS = `| 1 | 定赛道 | 主题 | 边界
 | 3 | 技术轨迹 | 近5年 | 三阶段 | — |
 | 4 | 政策标准 | KB占位 | 线索 | — |
 | 5 | 全景合成 | 四象限 | 机会格 | — |
-| 6 | 报告确认 | 摘要 | 待确认 | HITL |`
+| 6 | 报告确认 | 摘要 | 待确认 | 确认 |`
 
 export const LANDSCAPE_SAMPLE_WORKLOG_CHOICES = `| 宽赛道 | 窄赛道压三联 | 窄 | 可激发 |
 | 只列玩家 | 表+四象限 | 可读表 | 可确认 |`

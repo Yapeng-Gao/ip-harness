@@ -281,7 +281,7 @@ export function ExpertHitlBridge({
           cmd === 'createCaseFromInsight'
             ? {
                 type: cmd,
-                title: 'L3 挖掘洞察建案（样机）',
+                title: '挖掘洞察建案（样机）',
                 stage: 'decision',
                 fromInsight: true,
                 actor: 'agent',
@@ -337,7 +337,7 @@ export function ExpertHitlBridge({
             : undefined
           if (pending) confirmItem(pending.id)
         }
-        recordL3Write(`HITL ${action} · 样机内存（非真 case-core）`)
+        recordL3Write(`确认 ${action} · 样机内存（非真案核）`)
       } else if (
         isDemoPack &&
         (action === 'pay_unlock' || action === 'confirm_quote')

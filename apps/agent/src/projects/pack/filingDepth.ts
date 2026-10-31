@@ -98,7 +98,7 @@ export const FILING_SAMPLE_WORKLOG_STEPS = `| 1 | 国别 | 策略 | CN先 | — 
 | 2 | 齐套 | 清单 | 5/5 | — |
 | 3 | 形式点 | 扫描 | warn×2 | — |
 | 4 | 期限 | 占位 | — | — |
-| 5 | 授权 | HITL | 待确认 | HITL |`
+| 5 | 授权 | 确认 | 待确认 | 确认 |`
 
 export const FILING_SAMPLE_WORKLOG_CHOICES = `| 未齐套强授 | 齐套满再授 | 齐套满 | 可确认 |
 | 真递交 | 样机回执 | 样机 | 可派OA |`

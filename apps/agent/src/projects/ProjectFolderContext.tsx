@@ -912,7 +912,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
             id: uid('tl'),
             projectId,
             kind: 'system',
-            title: 'L3 全链路 · 已绑 mock 案件 case-mock-l3',
+            title: '全链路演示 · 已绑示意案 case-mock-l3',
             detail: '样机绑定 · 非真 case-core',
             at: stamp(),
           },

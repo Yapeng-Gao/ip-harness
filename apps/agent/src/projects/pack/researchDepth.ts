@@ -169,7 +169,7 @@ export const RESEARCH_SAMPLE_WORKLOG_STEPS = `| 1 | 划定检索范围 | 交底/
 | 3 | 命中清单 | 示意库 | Top 表 | — |
 | 4 | 聚类对比 | 命中 | 3 簇 | — |
 | 5 | 三性意见 | 对比 | X/Y/A | — |
-| 6 | 报告确认 | 摘要 | 待确认 | HITL |`
+| 6 | 报告确认 | 摘要 | 待确认 | 确认 |`
 
 export const RESEARCH_SAMPLE_WORKLOG_CHOICES = `| 宽扫不缩 | 主式+备用递进 | 递进 | 可立项 |
 | 只报命中数 | 交可读表+三性 | 可读表 | 可确认 |`

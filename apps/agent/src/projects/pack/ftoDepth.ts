@@ -108,7 +108,7 @@ export const FTO_SAMPLE_WORKLOG_STEPS = `| 1 | 产品特征 | 落地 | 6项 | �
 | 2 | 障碍专利 | 扫描 | 4候选 | — |
 | 3 | Claim chart | 对照 | ≥2 | — |
 | 4 | 风险矩阵 | 分级 | 红黄绿 | — |
-| 5 | 备忘确认 | HITL | 待确认 | HITL |`
+| 5 | 备忘确认 | 确认 | 待确认 | 确认 |`
 
 export const FTO_SAMPLE_WORKLOG_CHOICES = `| 放行不问 | 红项须路径 | 分级 | 递交闸 |
 | 当三性查新 | 只做FTO | FTO | 纪律 |`

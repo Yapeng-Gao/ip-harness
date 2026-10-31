@@ -3156,3 +3156,47 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-10-31 CST | 写库列表再并；smoke `PASS_RESCAN_79`；shots `.tmp/rescan-79-shots/`；§79；t623u |
 
+## 80. 旁路工程味回退 / packages 英名壳侧盖层（2026-10-31 Asia/Shanghai）
+
+> **问题：** 续扫 UI/布局/页面逻辑；啃 §79.4「packages 英名若可盖就盖」+ 旁路工程味回退。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。不认 lifecycle。
+
+### 80.0 缺口清单
+
+| ID | 面 | 缺口简述 | 维度 | 严重度 | 建议改法 | 本批 |
+|---|---|---|---|---|---|---|
+| G01 | 会话壳 | `COMMAND_LABELS` 英名（FileResponse 等）上屏 | 展示 | P0 | 改用 `domainCommandOfficeLabel` | ✅ |
+| G02 | Bridge/Folder/通用 | L3 / HITL / DomainCommand 旁路串回潮 | 展示 | P0 | 人话 | ✅ |
+| G03 | Depth 样本表 | 步骤表 HITL 列 / Go/No-Go 工程味 | 展示 | P1 | 确认 / 立不立项 | ✅ |
+| G04 | 校验/回执 | worklog 字样、FileResponse detail | 展示 | P1 | 人话 | ✅ |
+| G05 | 真集成 | 诚实示意 | 集成 | — | 后置 | 后置 |
+
+### 80.1 本批落地
+
+| # | 对应 | 行为 |
+|---|---|---|
+| A | G01 | SessionContextPanel / AgentSessionWorkspace 盖 Office |
+| B | G02–G04 | 旁路/样本/校验人话 |
+
+### 80.2 复扫表（改后）
+
+| 面 | 结论 |
+|---|---|
+| 会话写库标签 | 中文人话，非 FileResponse 英名 |
+| 席位/深度样本 | HITL 列→确认；无 DomainCommand 抢屏 |
+| 回潮 | 无组队/lifecycle 进门 |
+
+### 80.3 六维（机制报告，不宣称落地）
+
+设计：壳侧盖层不改 packages 审计英名。使用成本：会话少英串。逻辑：写库示意不变。
+
+### 80.4 后置
+
+真集成；packages COMMAND_LABELS 本体不动；main-path-sample 不碰。
+
+### 80.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 英名盖层+旁路回退；smoke `PASS_RESCAN_80`；shots `.tmp/rescan-80-shots/`；§80；t624u |
+

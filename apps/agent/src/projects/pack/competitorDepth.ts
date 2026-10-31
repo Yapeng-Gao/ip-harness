@@ -108,7 +108,7 @@ export const COMPETITOR_SAMPLE_WORKLOG_STEPS = `| 1 | 名单 | 全景 | Top5 | �
 | 2 | 公开扫描 | 示意库 | 表 | — |
 | 3 | 威胁分级 | 规则 | 高/中/低 | — |
 | 4 | 监控节奏 | 建议 | W/M | — |
-| 5 | 报告确认 | 摘要 | 待确认 | HITL |`
+| 5 | 报告确认 | 摘要 | 待确认 | 确认 |`
 
 export const COMPETITOR_SAMPLE_WORKLOG_CHOICES = `| 全覆盖 | 聚焦威胁 | 聚焦 | 可转挖 |
 | 只列名 | 挂公开号 | 可核验 | 可确认 |`

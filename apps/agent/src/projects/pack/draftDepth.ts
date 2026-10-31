@@ -1,6 +1,6 @@
 /**
  * 撰写席深度（agent-depth-reliability P2）
- * 对齐 bot-expert-assets「撰写代理人」：权项层级 → 成文 → 四类校验示意 → HITL
+ * 对齐 bot-expert-assets「撰写代理人」：权项层级 → 成文 → 四类校验示意 → 确认点
  */
 import type { ExpertStepDef } from '../types'
 
@@ -150,7 +150,7 @@ export const DRAFT_SAMPLE_WORKLOG_STEPS = `| 1 | 特征表 | 交底/立项 | 表
 | 3 | 权要草案 | 成文 | 骨架 | — |
 | 4 | 说明书要点 | 提纲 | 五节 | — |
 | 5 | 四类校验 | validator | Warn×1 | — |
-| 6 | 策略批准 | HITL | 待确认 | HITL |`
+| 6 | 策略批准 | 确认 | 待确认 | 确认 |`
 
 export const DRAFT_SAMPLE_WORKLOG_CHOICES = `| 先堆全文 | 先层级 | 先层级 | 可校验 |
 | 整篇重写 | 逐条改 Warn | 逐条 | 可确认 |`

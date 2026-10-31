@@ -2237,7 +2237,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         note?.trim() ||
         (ok
           ? '成果+办理过程齐全 · 可派下家'
-          : '过程或缺关键取舍 · 请补 worklog 后再交')
+          : '过程或缺关键取舍 · 请补办理摘记后再交')
       appendLogs([drillAcceptLog(caseId, seatId, ok, noteText)])
       if (ok) {
         appendMessage(caseId, DRILL_ORCH_ID, {

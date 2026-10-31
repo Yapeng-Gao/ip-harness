@@ -107,7 +107,7 @@ export const ANNUITY_SAMPLE_WORKLOG_STEPS = `| 1 | 到期台账 | 授权后 | �
 | 2 | 滞纳金表 | mock | 阶梯 | — |
 | 3 | 价值联动 | 评分卡 | 核心缴 | — |
 | 4 | 缴/放方案 | 三案 | A/B/C | — |
-| 5 | 缴费/放弃闸 | 年费确认 | 待确认 | HITL |`
+| 5 | 缴费/放弃闸 | 年费确认 | 待确认 | 确认 |`
 
 export const ANNUITY_SAMPLE_WORKLOG_CHOICES = `| 强缴不问价值 | 价值联动 | 联动 | 禁真缴费 |
-| 静默放弃 | 必须HITL | HITL | 纪律 |`
+| 静默放弃 | 必须确认 | 确认 | 纪律 |`

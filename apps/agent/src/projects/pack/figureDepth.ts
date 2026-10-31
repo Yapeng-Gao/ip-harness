@@ -95,7 +95,7 @@ export const FIGURE_SAMPLE_WORKLOG_STEPS = `| 1 | 上下文 | 撰写 | 类型 | 
 | 2 | 清单 | 图号 | 表 | — |
 | 3 | 草图 | mock | 占位 | — |
 | 4 | 术语校验 | 差集 | Pass | — |
-| 5 | 冻图号 | HITL | 待确认 | HITL |`
+| 5 | 冻图号 | 确认 | 待确认 | 确认 |`
 
 export const FIGURE_SAMPLE_WORKLOG_CHOICES = `| 先画后号 | 先号后冻 | 先号 | 可递交 |
 | 图注自由 | ⊆权项 | ⊆权项 | 可确认 |`

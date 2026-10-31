@@ -105,7 +105,7 @@ export const INSPIRE_SAMPLE_WORKLOG_STEPS = `| 1 | 吃全景 | 01 | 约束 | —
 | 2 | 方向池 | 启发 | 8条 | — |
 | 3 | 可专利过滤 | 规则 | 留3 | — |
 | 4 | 评分 | 公式示意 | Top表 | — |
-| 5 | brief确认 | 摘要 | 待确认 | HITL |`
+| 5 | brief确认 | 摘要 | 待确认 | 确认 |`
 
 export const INSPIRE_SAMPLE_WORKLOG_CHOICES = `| 发散多点 | 收敛3 | 收敛 | 可挖 |
 | 商业模式入池 | 技术向过滤 | 过滤 | 纪律 |`
