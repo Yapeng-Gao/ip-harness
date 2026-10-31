@@ -681,3 +681,27 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | §13 后三 skill + Playwright 复扫；同轮落地三线/进行中/辅链/定健康；写入 §14；只改 apps/agent + 本扫描 md |
+
+## 15. 中断恢复 + 右栏/实验室再抠 · 2026-10-31（Asia/Shanghai）
+
+> 后台 executor 连续 Activity task failed；在 Mac 上回收未提交的 §14 改码并推送 `63372a7`，再抠右栏 CSS / 实验室横幅（行为对齐样机，非换词交差）。
+
+### 15.1 本批
+| 项 | 机制 |
+|---|---|
+| §14 提交 | `HomeInProgressStrip` / 三线 / 辅链 / 定健康 已推 |
+| 右栏像素 | ask-sticky 琥珀底+描边+chip hover；汇报气泡渐变/完成态；composer 钉底+「对：」加粗；跳转 flash |
+| 实验室横幅 | 明示非八部主路径；硬请示/工单只在案→部 |
+
+### 15.2 四维
+仍 **partial**；不宣称落地。P0 范围外：官报/真检索/真鉴权。P1 仍：厚作业密度、支路≠完整状态机、定健康非真计费。
+
+### 15.3 验收
+- typecheck + business tests
+- 硬刷 `:5175` 右栏 sticky/气泡；进 `/agent/lab` 见新横幅
+
+### 15.4 修订
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 回收 §14 提交；§15 右栏 CSS + LabRouteBanner |
+

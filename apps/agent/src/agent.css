@@ -495,29 +495,71 @@ body,
 }
 
 
-/* Right-rail fidelity · sample ask-sticky / report / composer (§13) */
+/* Right-rail fidelity · sample ask-sticky / report / composer (§13+§15) */
 [data-testid='dept-right-rail'] {
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 [data-testid='dept-right-chat'] {
   background: linear-gradient(180deg, #fff7ed 0%, #ffffff 56px);
+  flex: 1 1 auto;
+  min-height: 0;
 }
 [data-testid='ask-sticky'],
 .ask-sticky-rail {
   position: sticky;
   top: 0;
   z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 6px 10px;
+  margin: 0 0 4px;
+  background: linear-gradient(180deg, #fff7ed, #fff);
+  border: 1px solid #f0c9a0;
+  border-radius: 10px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  flex-shrink: 0;
 }
 [data-testid='ask-sticky-chip'] {
   border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 650;
+  padding: 3px 9px;
+  background: #fff;
+  border: 1px solid #f0c9a0;
+  color: #0f172a;
+  cursor: pointer;
+}
+[data-testid='ask-sticky-chip']:hover {
+  background: #fff7ed;
+}
+[data-testid='ask-sticky-k'] {
+  font-size: 11px;
+  font-weight: 800;
+  color: #b45309;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
 }
 [data-testid='dept-ask-bubble-confirm'][data-awaiting-banner='1'] {
-  /* amber glow already via Tailwind; keep subtle depth */
-  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.22), 0 1px 2px rgba(15, 23, 42, 0.04);
+  background: linear-gradient(180deg, #fff7ed, #fff);
+  border: 1.5px solid #f0c9a0;
+  border-radius: 14px;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.28), 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+[data-testid='dept-ask-bubble-confirm'][data-done='1'] {
+  border-color: #86efac;
+  background: #f0fdf4;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 [data-testid='dept-ask-rpt-q'] {
   text-wrap: balance;
+  font-size: 14px;
+  font-weight: 750;
+  color: #0f172a;
 }
 [data-testid='dept-right-roster-row'] {
   -webkit-overflow-scrolling: touch;
@@ -534,10 +576,13 @@ body,
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), #fff 40%);
   padding-top: 0.5rem;
   border-top: 1px solid #f1f5f9;
+  flex-shrink: 0;
 }
 [data-testid='composer-to'] {
   letter-spacing: 0.02em;
   color: #6d28d9;
+  font-weight: 650;
+  font-size: 11px;
 }
 [data-testid='thick-step-work-panel'],
 [data-testid='dept-thin-work-panel'] {
@@ -545,4 +590,8 @@ body,
 }
 [data-testid='teach-fade-tip'][data-show='1'] {
   animation: dept-drawer-fade-in 0.18s ease both;
+}
+[data-testid='ask-jump-flash'] {
+  outline: 2px solid #b45309;
+  outline-offset: 2px;
 }
