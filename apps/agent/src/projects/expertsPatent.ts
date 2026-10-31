@@ -697,7 +697,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "年费管家",
     "role": "expert",
     "specialty": "年费/放弃 · maintain_annuity",
-    "description": "F7 授权后管理 · 期限+滞纳金表联动价值分级。【HITL⑦】年费/放弃。后置业务可跑样机（非灰显死胡同）。",
+    "description": "授权后管理 · 期限与滞纳金示意联动价值分级。【确认⑦】年费/放弃。后置样机可演示。",
     "tools": ["list_annuity_due", "compute_surcharge", "propose_pay_or_abandon"],
     "shortcuts": ANNUITY_DEPTH_SHORTCUTS,
     "steps": ANNUITY_DEPTH_STEPS,
@@ -712,14 +712,14 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "defaultTeam": false,
     "ownerLabel": "IP 运营",
     "phase": true,
-    "emptyStateNote": "F7 年费管家为后置业务席：样机可跑完全程（步骤+双文件+validator+HITL⑦ Confirm），无真沙箱/真缴费。"
+    "emptyStateNote": "年费管家为后置业务席：样机可跑完全程（步骤+双文件+校验+确认⑦），无真沙箱/真缴费。"
   },
   "expert-valuation": {
     "id": "expert-valuation",
     "name": "价值评估师",
     "role": "expert",
     "specialty": "核心/外围/放弃 · valuation",
-    "description": "F7 价值评分：引用/同族/许可/产品映射。联动年费建议。后置业务可跑样机。",
+    "description": "价值评分示意：引用/同族/许可/产品映射。联动年费建议。后置样机可演示。",
     "tools": ["score_portfolio", "grade_core_periphery", "draft_valuation_card"],
     "shortcuts": VALUATION_DEPTH_SHORTCUTS,
     "steps": VALUATION_DEPTH_STEPS,
@@ -734,14 +734,14 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "defaultTeam": false,
     "ownerLabel": "IP 决策",
     "phase": true,
-    "emptyStateNote": "F7 价值评估师为后置业务席：样机可跑评分剧本与双文件；无独立 HITL（服务 HITL⑦）。"
+    "emptyStateNote": "价值评估师为后置业务席：样机可跑评分剧本与双文件；无独立确认闸（服务确认⑦）。"
   },
   "expert-monetize": {
     "id": "expert-monetize",
     "name": "转化顾问",
     "role": "expert",
     "specialty": "许可/转让 · monetize_terms",
-    "description": "F8 转化变现 · 估值与合同必备条款。【HITL⑧】交易签约。后置业务可跑样机。",
+    "description": "转化变现示意 · 估值与合同必备条款。【确认⑧】交易签约。后置样机可演示。",
     "tools": ["estimate_deal", "draft_term_sheet", "validate_contract_clauses"],
     "shortcuts": MONETIZE_DEPTH_SHORTCUTS,
     "steps": MONETIZE_DEPTH_STEPS,
@@ -756,14 +756,14 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "defaultTeam": false,
     "ownerLabel": "商务/IP",
     "phase": true,
-    "emptyStateNote": "F8 转化顾问为后置业务席：样机可跑估值→条款→HITL⑧ Confirm；无真签约。"
+    "emptyStateNote": "转化顾问为后置业务席：样机可跑估值→条款→确认⑧；无真签约。"
   },
   "expert-enforcement": {
     "id": "expert-enforcement",
     "name": "无效维权顾问",
     "role": "expert",
     "specialty": "无效/维权 · enforcement_brief",
-    "description": "F9 维权防御 · 全面覆盖比对；飞轮回流 F3。≠ FTO（expert-fto）；≠ watch。后置业务可跑样机。",
+    "description": "维权防御示意 · 全面覆盖比对；可回流布局席待拍板。非正式 FTO；≠监测。后置样机可演示。",
     "tools": ["claim_chart_compare", "stability_score", "draft_enforcement_brief"],
     "shortcuts": ENFORCEMENT_DEPTH_SHORTCUTS,
     "steps": ENFORCEMENT_DEPTH_STEPS,
@@ -778,7 +778,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "defaultTeam": false,
     "ownerLabel": "法务/诉讼",
     "phase": true,
-    "emptyStateNote": "F9 无效维权顾问为后置业务席：样机可跑比对+回流信封；id 独立于 expert-fto。"
+    "emptyStateNote": "无效维权顾问为后置业务席：样机可跑比对+回流信封；与 FTO 辅席分开。"
   },
 }
 

@@ -76,7 +76,7 @@ function LogRow({
         )}
         {(log.kind === 'layout_flywheel' || log.kind === 'layout_pending') && (
           <span className="rounded bg-teal-200 px-1 text-[9px] font-semibold text-teal-950">
-            F9→F3
+            布局回流
           </span>
         )}
         {(log.kind === 'escalate' || log.kind === 'oa_blocker') && (
@@ -130,7 +130,7 @@ export function CaseProcessPanel({
         办理过程
       </h2>
       <p className="mb-2 text-[11px] text-slate-500">
-        退回修改 / 再查一轮 / 检查重试 · 第 N 通 · 布局飞轮 · 超限需人工接手（样机）
+        退回修改 / 再查一轮 / 检查重试 · 第 N 通 · 布局回流 · 超限需人工接手（样机）
       </p>
 
       {showDemos && (
@@ -152,8 +152,8 @@ export function CaseProcessPanel({
               ['oa_strategy_reject', 'OA·策略驳回'],
               ['oa_round2', '第2通到达'],
               ['oa_blocker', '超范围blocker'],
-              ['layout_flywheel', '飞轮·漏洞→待拍板'],
-              ['layout_flywheel_biz', '飞轮·启用布局待确认'],
+              ['layout_flywheel', '布局漏洞→待拍板'],
+              ['layout_flywheel_biz', '启用布局·待确认'],
             ] as const
           ).map(([key, label]) => (
             <button

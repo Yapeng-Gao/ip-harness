@@ -113,7 +113,9 @@ export function AgentShell() {
     inProfessional
   const inAssets =
     loc.pathname === '/agent/assets' || loc.pathname.startsWith('/agent/assets/')
-  const inCatalog = loc.pathname.startsWith('/agent/seats/')
+  const inCatalog =
+    loc.pathname === '/agent/seats' ||
+    loc.pathname.startsWith('/agent/seats/')
   const inSandbox =
     loc.pathname === '/agent/sandbox' || loc.pathname.startsWith('/agent/sandbox/')
   const inL2Shell =

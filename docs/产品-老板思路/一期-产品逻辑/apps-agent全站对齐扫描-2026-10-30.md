@@ -2656,3 +2656,39 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-10-31 CST | 专家台口径清零 + 席位样机旁路；smoke `PASS_RESCAN_68`；shots `.tmp/rescan-68-shots/`；§68；t612u |
 
+## 69. 深扫：席位目录接线 / PackLoops 人话 / 卸组队建班（2026-10-31 Asia/Shanghai）
+
+> **问题：** §68 后置 —— PatentCatalog 死页、packLoops Knife/F9 工程味、死路由/重复旁路、七部/三档/组队/专家台/CLI 回潮、主链使用成本。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。
+
+### 69.1 本批落地机制
+
+| # | 缺口 | 行为改动 |
+|---|---|---|
+| A | PatentCatalog 未挂路由死页 +「组成专班」组队回潮面 | 接线 **`/agent/seats`** 为席位样机目录旁路；**卸** 勾选建班 /「组成专班并建项目」；保留单聊/进本案/回流示意 |
+| B | PackLoops / packLoops Knife·F5/F6/F9 工程标识上屏 | 面板标题 → **交底/查新/撰写重试与跨席退回**、**审查答复多通外循环**、布局回流；detail 人话；禁 Knife/F# 上屏 |
+| C | 壳标题对 `/agent/seats` 索引未认旁路 | `inCatalog` 含精确 `/agent/seats` → **席位样机（旁路）** |
+
+### 69.2 复扫表
+
+| 面 | 结论 |
+|---|---|
+| `/agent/seats` | 目录旁路可进；无组成专班；PackLoops 人话 |
+| 大厅/公司/案盘/部台 | 无专家台/组队/三档回潮；齐套仍折 |
+| seats/:id · projects · sessions | 旁路口径；Banner 不叠 |
+| CLI / 七部进门 | 无回潮 |
+
+### 69.3 六维（机制报告，不宣称落地）
+
+理念：样机目录≠组队建班。设计：回流故事线 Office。使用成本：死页可找、少工程黑话。
+
+### 69.4 后置
+
+真 IM/鉴权/递交/报价/日历；`/agent/team`·sandbox 等旁路深链可再收口；PackHitl 英文 Phase/Owner 可再 Office；teamMemberIds 库无 UI 可清。
+
+### 69.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | Catalog→`/agent/seats` + 卸组队建班 + PackLoops 人话；smoke `PASS_RESCAN_69`；shots `.tmp/rescan-69-shots/`；§69；t613u |
+

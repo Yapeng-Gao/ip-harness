@@ -11,9 +11,9 @@ import {
 
 /**
  * 席位样机旁路 · 回流/环边示意面板（非一期主办理）
- * F5：重试 n/3 · 附图退回 · 需人工接手
- * F6：N 通计数 · 策略驳回 · 超范围 0 次自修复
- * F9→F3：布局漏洞回流 → 布局待拍板（≠ FTO）
+ * 内循环：重试 · 附图退回 · 需人工接手
+ * 审查答复：多通计数 · 策略驳回 · 超范围不自修
+ * 布局回流：漏洞报告 → 布局待拍板（非正式 FTO）
  */
 export function PackLoopsPanel() {
   const caseIdF5 = BUSINESS_SEED_IDS.B
@@ -35,7 +35,7 @@ export function PackLoopsPanel() {
         <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
           <div>
             <h2 className="text-xs font-semibold text-violet-900">
-              F5 环边样机 · 内循环 + 跨席
+              交底/查新/撰写 · 重试与跨席退回（样机）
             </h2>
             <p className="mt-0.5 text-[11px] text-violet-800/80">
               查新/撰写自修复≤{SELF_HEAL_MAX} · 超限「需人工接手」· 附图→撰写
@@ -86,7 +86,7 @@ export function PackLoopsPanel() {
         <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
           <div>
             <h2 className="text-xs font-semibold text-orange-950">
-              F6 OA · N 通外循环
+              审查答复 · 多通外循环（样机）
             </h2>
             <p className="mt-0.5 text-[11px] text-orange-900/80">
               理由分类 · 子任务汇入 · HITL⑥ 策略确认/驳回 · 第 N 通计数 ·
@@ -181,7 +181,7 @@ export function PackLoopsPanel() {
             className="rounded-full border border-teal-300 bg-white px-2.5 py-0.5 text-[11px] font-medium text-teal-950"
             data-testid="pack-loops-open-layout-case"
           >
-            打开飞轮案子 · {c9?.title ?? '空白点补局'}
+            打开回流样机案子 · {c9?.title ?? '空白点补局'}
           </Link>
         </div>
         <div className="mb-2 flex flex-wrap gap-1.5">

@@ -22,6 +22,7 @@ import { ProjectWorkspacePage } from './pages/projects/ProjectWorkspacePage'
 import { AgentLabGallery } from './pages/AgentLabGallery'
 import { RedirectToAgentLab } from './pages/RedirectToAgentLab'
 import { PatentSeatPage } from './pages/patent/PatentSeatPage'
+import { PatentCatalogPage } from './pages/patent/PatentCatalogPage'
 import { BusinessCasesPage } from './pages/business/BusinessCasesPage'
 import { BusinessCaseNewPage } from './pages/business/BusinessCaseNewPage'
 import { BusinessCasePage } from './pages/business/BusinessCasePage'
@@ -85,6 +86,8 @@ export default function App() {
                 {/* 2026-10-21：catalog 并入部门页 */}
                 <Route path="catalog" element={<Navigate to="/agent/departments" replace />} />
                 <Route path="experts" element={<Navigate to="/agent/departments" replace />} />
+                {/* 席位样机旁路目录 · 非一期进门；卸组队「组成专班」 */}
+                <Route path="seats" element={<PatentCatalogPage />} />
                 <Route path="seats/:seatId" element={<PatentSeatPage />} />
                 <Route path="sandbox" element={<AgentL1Shell />} />
                 <Route path="team" element={<GeneralGrokShell />} />
