@@ -125,8 +125,8 @@ export function AgentCatalogPage() {
         </h1>
         <p className="mt-1 text-sm text-slate-500">
           选助手开会话（旁路）· 主办理请回大厅委托或公司案八部 · 案可选，可稍后绑定 ·{' '}
-          <Link to="/agent/harness" className="ui-link-weak">
-            运行说明
+          <Link to="/agent/harness" className="ui-link-weak" data-testid="catalog-to-harness-paper">
+            纸面运行说明
           </Link>
         </p>
         <details className="mt-1.5" data-testid="catalog-tier-honesty">

@@ -3,15 +3,11 @@ import { Link } from 'react-router-dom'
 import {
   Bot,
   FolderKanban,
-  History,
-  LayoutGrid,
   Library,
   PenLine,
   ArrowRight,
   Sparkles,
-  Briefcase,
 } from 'lucide-react'
-import { agentSessionPath } from '../lib/deepLinks'
 import { SoftEmpty } from '../components/soft/SoftEmpty'
 
 type LabCard = {
@@ -25,39 +21,21 @@ type LabCard = {
   secondary?: { label: string; href: string }
 }
 
-/** 幕次导航 · agent-depth-reliability / pairing playbook（对齐业务冷启动） */
-const CARDS: LabCard[] = [
+/** 旁路展品 · 不重复卖主链案盘/编制/待确认为大卡片 */
+const BYPASS_CARDS: LabCard[] = [
   {
-    id: 'home',
-    version: '幕 1 · 多案流水',
-    badge: '默认冷启动',
-    blurb: '代理人默认首页：案表（当前部门 / 待确认）→ 点行进公司首页；开新案子短路径。',
-    href: '/agent/cases',
-    cta: '打开多案流水',
-    icon: Briefcase,
-    secondary: { label: '开新案子', href: '/agent/cases/new' },
-  },
-  {
-    id: 'departments',
-    version: '幕 2 · 组织编制',
-    badge: '配置',
-    blurb: '全库编制旁路（八部作业请进案子公司首页）。常设部门与专家 skill。',
-    href: '/agent/departments',
-    cta: '打开组织编制',
-    icon: LayoutGrid,
-  },
-  {
-    id: 'assets',
-    version: '幕 2b · 资产',
-    blurb: '全局资料库：分类树 + 文件列表 + 挂项目 / 带到对话。',
-    href: '/agent/assets',
-    cta: '打开资产',
-    icon: Library,
+    id: 'seats',
+    version: '旁路 · 席位样机目录',
+    badge: '样机',
+    blurb: '席位样机与回流故事线；非一期进门、不组队建班。',
+    href: '/agent/seats',
+    cta: '打开席位目录',
+    icon: Sparkles,
   },
   {
     id: 'warmup',
-    version: '幕 0 · 能力预演',
-    blurb: '沙盒单助手与多 bot 互传旁路；非一期主办理，可跳过。',
+    version: '旁路 · 沙盒 / 多 bot',
+    blurb: '沙盒单助手与多 bot 互传；非一期主办理，可跳过。',
     href: '/agent/sandbox',
     cta: '打开沙盒',
     icon: PenLine,
@@ -67,59 +45,49 @@ const CARDS: LabCard[] = [
     id: 'drill',
     version: '旁路 · 席位演练',
     badge: '非冷启动',
-    blurb: '总控 + 14 席分簇调度台（席位演练旁路）。须显式进入；非拉人讨论面、不抢业务简模式。',
+    blurb: '总控分簇调度示意；须显式进入，不抢公司简模式。',
     href: '/agent/cases/case-biz-edge-scheduler?drill=1&seat=orchestrator',
     cta: '打开席位演练',
-    icon: Sparkles,
+    icon: Bot,
   },
   {
     id: 'l3',
     version: '旁路 · 遗留项目夹',
-    blurb: '遗留项目夹示意；一期主路径仍是大厅→公司→部台。非讨论组、非第二套进门。',
-    href: '/agent/projects/proj-demo-patent',
-    cta: '打开示范项目',
+    blurb: '遗留专班项目夹示意；主路径仍是大厅→公司→部台。',
+    href: '/agent/projects',
+    cta: '打开项目夹列表',
     icon: FolderKanban,
-    secondary: { label: '项目列表', href: '/agent/projects' },
-  },
-  {
-    id: 'hitl',
-    version: '幕 4 · 确认铁律',
-    blurb: '待确认或经典 HITL 会话：确认后才写库示意。',
-    href: '/agent/pending',
-    cta: '待我确认',
-    icon: History,
-    secondary: {
-      label: 'HITL 样机',
-      href: agentSessionPath('sess-oa-1', { focus: 'hitl' }),
-    },
-  },
-  {
-    id: 'team',
-    version: '历史 · 多 bot 壳旁路',
-    blurb: '多 bot 旁路壳；非拉人讨论、非编制、非一期进门。',
-    href: '/agent/team',
-    cta: '打开多 bot 壳',
-    icon: Bot,
+    secondary: { label: '示范项目', href: '/agent/projects/proj-demo-patent' },
   },
   {
     id: 'harness',
-    version: '说明 · Harness',
-    blurb: '编排 / 工具 / HITL / 写入 — 纸面架构鸟瞰。',
+    version: '纸面 · 运行说明',
+    badge: '纸面',
+    blurb: '编排/工具/确认/写入鸟瞰 · 不作业交卷；请回大厅办理。',
     href: '/agent/harness',
-    cta: '打开说明',
+    cta: '打开纸面说明',
     icon: Library,
   },
 ]
 
+/** 主链入口 · 收折文字链，避免与展廊大卡职责叠 */
+const MAIN_SHORTCUTS: { id: string; label: string; href: string }[] = [
+  { id: 'hall', label: '大厅', href: '/agent' },
+  { id: 'cases', label: '案盘', href: '/agent/cases' },
+  { id: 'pending', label: '待我确认', href: '/agent/pending' },
+  { id: 'departments', label: '全库编制', href: '/agent/departments' },
+  { id: 'assets', label: '资产库', href: '/agent/assets' },
+]
+
 /**
- * Prototype gallery — 五幕导航 + 历史壳（非冷启动 / 不可作业交卷）。
+ * 实验室展廊 · 旁路样机卡 + 主链入口收折（非冷启动 / 不可作业交卷）。
  */
 export function AgentLabGallery() {
   const [q, setQ] = useState('')
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase()
-    if (!needle) return CARDS
-    return CARDS.filter((c) => {
+    if (!needle) return BYPASS_CARDS
+    return BYPASS_CARDS.filter((c) => {
       const hay = `${c.version} ${c.blurb} ${c.cta} ${c.badge ?? ''} ${c.id}`.toLowerCase()
       return hay.includes(needle)
     })
@@ -146,7 +114,7 @@ export function AgentLabGallery() {
               实验室 · 示意展廊
             </h1>
             <p className="mt-1 text-sm leading-relaxed text-slate-600">
-              旁路示意，不进主链交卷、不承接硬请示。办主链请回{' '}
+              只陈列旁路样机；案盘/编制/待确认不放大卡抢主链。办主链请回{' '}
               <Link
                 to="/agent"
                 className="font-medium text-slate-800 underline-offset-2 hover:underline"
@@ -179,6 +147,28 @@ export function AgentLabGallery() {
             className="ui-input ui-input-sm focus-ring w-full max-w-sm"
           />
         </div>
+
+        <details
+          className="mb-4 rounded-lg border border-dashed border-slate-200 bg-slate-50/60 px-3 py-2"
+          data-testid="agent-lab-main-fold"
+        >
+          <summary className="cursor-pointer select-none text-[12px] font-medium text-slate-600">
+            主链入口（请优先进大厅 · 非展品大卡）
+          </summary>
+          <ul className="mt-2 flex flex-wrap gap-2" data-testid="agent-lab-main-shortcuts">
+            {MAIN_SHORTCUTS.map((s) => (
+              <li key={s.id}>
+                <Link
+                  to={s.href}
+                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:border-slate-300"
+                  data-testid={`agent-lab-main-${s.id}`}
+                >
+                  {s.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </details>
 
         {filtered.length === 0 ? (
           <SoftEmpty

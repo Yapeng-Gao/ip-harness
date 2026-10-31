@@ -16,7 +16,7 @@ type Props = {
 }
 
 /**
- * Catalog / workspace · 「打开演示项目 → 按序推进」或一键演示 HITL①–⑥
+ * 席位样机旁路 · 「打开演示项目 → 按序推进」或一键演示确认①–⑥
  */
 export function PackHitlWalkBar({ compact }: Props) {
   const navigate = useNavigate()
@@ -56,7 +56,7 @@ export function PackHitlWalkBar({ compact }: Props) {
       setThreadHitl(PACK_DEMO_PROJECT_ID, seatId, true, pack.gate)
       appendMessage(PACK_DEMO_PROJECT_ID, seatId, {
         role: 'system',
-        content: `【演示】样机校验通过 → 已到确认点（${label} / ${pack.gate}）· 可确认`,
+        content: `【演示】样机校验通过 → 已到确认点（${label}）· 可确认`,
         meta: { backend: 'mock' },
       })
     }
@@ -70,14 +70,14 @@ export function PackHitlWalkBar({ compact }: Props) {
   const advanceNext = () => {
     ensureDemo()
     if (cursor >= PACK_HITL_WALK_SEATS.length) {
-      setLog((L) => [...L, '①–⑥ 已走完 · 可进⑦⑧后置席或 OA 示意'])
+      setLog((L) => [...L, '确认①–⑥ 已走完 · 可进后置⑦⑧或审查答复示意'])
       return
     }
     const row = PACK_HITL_WALK_SEATS[cursor]!
     runOne(row.seatId, row.label, row.hitlStepId)
     setLog((L) => [
       ...L,
-      `HITL${['①', '②', '③', '④', '⑤', '⑥'][row.n - 1]} ${row.label} · ${row.seatId}`,
+      `确认${['①', '②', '③', '④', '⑤', '⑥'][row.n - 1]} ${row.label}`,
     ])
     setCursor((c) => c + 1)
     navigate(`/agent/projects/${PACK_DEMO_PROJECT_ID}/bots/${row.seatId}`)
@@ -87,13 +87,13 @@ export function PackHitlWalkBar({ compact }: Props) {
     if (busy) return
     setBusy(true)
     ensureDemo()
-    setLog(['一键演示 HITL①–⑥ 开始…'])
+    setLog(['一键演示确认①–⑥ 开始…'])
     for (let i = 0; i < PACK_HITL_WALK_SEATS.length; i++) {
       const row = PACK_HITL_WALK_SEATS[i]!
       runOne(row.seatId, row.label, row.hitlStepId)
       setLog((L) => [
         ...L,
-        `HITL${['①', '②', '③', '④', '⑤', '⑥'][row.n - 1]} ${row.label} · Pass→HITL`,
+        `确认${['①', '②', '③', '④', '⑤', '⑥'][row.n - 1]} ${row.label} · 已到确认点`,
       ])
       setCursor(i + 1)
       await new Promise((r) => setTimeout(r, 180))
@@ -121,7 +121,7 @@ export function PackHitlWalkBar({ compact }: Props) {
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs font-semibold text-emerald-900">
-          主链演示 · HITL①–⑥
+          样机演示 · 确认①–⑥
         </span>
         <span className="text-[10px] text-slate-500">{MAIN_CHAIN_STORY}</span>
         {readyCount > 0 && (
@@ -176,7 +176,7 @@ export function PackHitlWalkBar({ compact }: Props) {
       </div>
       {log.length > 0 && (
         <ul
-          className="mt-2 max-h-20 space-y-0.5 overflow-y-auto font-mono text-[9px] text-slate-600"
+          className="mt-2 max-h-20 space-y-0.5 overflow-y-auto text-[10px] text-slate-600"
           data-testid="pack-walk-log"
         >
           {log.map((line, i) => (

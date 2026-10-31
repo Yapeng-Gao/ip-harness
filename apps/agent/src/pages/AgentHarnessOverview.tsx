@@ -94,21 +94,46 @@ export function AgentHarnessOverview() {
     .slice(0, 4)
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-6 lg:px-8">
+    <div
+      className="flex-1 overflow-y-auto px-6 py-6 lg:px-8"
+      data-testid="agent-harness-page"
+      data-harness-paper="1"
+    >
+      <div
+        className="mb-4 rounded-lg border border-amber-200 bg-amber-50/70 px-3 py-2 text-[12px] text-amber-950"
+        data-testid="harness-paper-banner"
+        role="note"
+      >
+        <p className="font-semibold">纸面旁路 · 非一期主办理</p>
+        <p className="mt-0.5 text-amber-900/80">
+          本页只说明编排/工具/确认示意，不进大厅→公司→部台交卷。请回{' '}
+          <Link to="/agent" className="font-medium underline underline-offset-2" data-testid="harness-back-hall">
+            大厅
+          </Link>
+          {' '}或{' '}
+          <Link to="/agent/cases" className="font-medium underline underline-offset-2">
+            案盘
+          </Link>
+          ；会话旁路见{' '}
+          <Link to="/agent/sessions" className="underline underline-offset-2">
+            函件史
+          </Link>
+          。
+        </p>
+      </div>
       <PageHeader
-        title="运行时"
+        title="运行说明（纸面）"
         context={
           caseId
-            ? '选 Agent 建会话 · 将带上所选案件，确认后写入案件。平台分层：Core 主闭环 / Assist 辅办 / Beta 非采购闭环。'
-            : '选 Agent 建会话 · 未选案则稍后关联。平台分层纪律：勿把 Assist/Beta 卖成 Core。'
+            ? '旁路：选助手建会话示意 · 确认后写入仍为样机。分层：主办理 / 辅助 / 试用 — 勿把辅助或试用卖成主办理。'
+            : '旁路纸面：选助手建会话示意 · 未选案可稍后关联。勿把辅助或试用卖成主办理。'
         }
         primary={{
-          label: '启动',
-          onClick: newSession,
-          icon: <Plus className="h-4 w-4" aria-hidden />,
+          label: '回大厅',
+          to: '/agent',
         }}
         secondary={{
-          label: 'Agent',
+          label: '助手目录',
           to: '/agent/agents',
         }}
       />
@@ -145,14 +170,14 @@ export function AgentHarnessOverview() {
           className="btn-press focus-ring cta-work inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium"
         >
           <Plus className="h-3.5 w-3.5" aria-hidden />
-          启动
+          样机开会话
         </button>
         <Link
           to="/agent/agents"
           className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
           <FolderOpen className="h-3.5 w-3.5" aria-hidden />
-          Agent
+          助手目录
         </Link>
         <Link
           to="/agent/sessions"

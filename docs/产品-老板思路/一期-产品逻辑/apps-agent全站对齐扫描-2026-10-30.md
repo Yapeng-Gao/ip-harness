@@ -2728,3 +2728,39 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-10-31 CST | 深链收口 + PackHitl/Owner Office + 藏 setCaseTeam；smoke `PASS_RESCAN_70`；shots `.tmp/rescan-70-shots/`；§70；t614u |
 
+## 71. 深扫：Lab 展廊去重压卡 / harness 纸面降权 / WalkBar 日志人话（2026-10-31 Asia/Shanghai）
+
+> **问题：** §70 后置 + 主链 —— Lab 卡片抢主链、harness「运行时」像第二产品、WalkBar 日志 seatId、职责叠/信息墙、回潮。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。
+
+### 71.1 本批落地机制
+
+| # | 缺口 | 行为改动 |
+|---|---|---|
+| A | Lab 9 张大卡含案盘/编制/待确认，与主链职责叠 | 大卡压为 **5 旁路**（席位/沙盒·多bot/演练/项目夹/纸面）；主链入口收折文字链 |
+| B | `/agent/harness` 标题「运行时」+ 启动 CTA 抢主办理 | 诚实条 **纸面旁路**；标题「运行说明（纸面）」；主 CTA **回大厅**；启动降为「样机开会话」 |
+| C | PackHitlWalkBar 日志露出 `expert-*` seatId / HITL 工程味 | 日志仅确认序号+人话标签；标题「样机演示·确认①–⑥」；去 mono |
+
+### 71.2 复扫表
+
+| 面 | 结论 |
+|---|---|
+| Lab | 旁路卡↓；主链不放大卡 |
+| harness | 纸面诚实；不抢大厅 |
+| seats WalkBar | 无 seatId 上屏日志 |
+| 大厅/公司/案盘/部台 | 无专家台/组队/三档回潮 |
+
+### 71.3 六维（机制报告，不宣称落地）
+
+理念：展廊≠第二进门。设计：纸面降权。使用成本：少卡、少工程 id。
+
+### 71.4 后置
+
+真 IM/鉴权/递交/报价/日历；AgentCatalog「助手目录」与 harness 样机会话可再并薄；部台信息墙可续扫；sessions 侧栏 harness 链可再降。
+
+### 71.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | Lab 压卡 + harness 纸面 + WalkBar 人话；smoke `PASS_RESCAN_71`；shots `.tmp/rescan-71-shots/`；§71；t615u |
+
