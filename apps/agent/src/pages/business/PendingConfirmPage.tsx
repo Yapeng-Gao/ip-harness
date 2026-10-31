@@ -56,6 +56,10 @@ export function PendingConfirmInboxPage() {
   })()
 
   const auditMode = params.get('audit') === '1'
+  // 独立收件箱降权：无 audit → 回大厅铃铛主路径（右栏拍板）
+  if (!auditMode && !deptQuery && !filterCaseId) {
+    return <Navigate to="/agent?pending=1" replace />
+  }
   // 有 ?dept= 且恰一条 → 软跳工作台（审计模式才进详情）
   if (deptQuery && kindFilter && inbox.length === 1) {
     const only = inbox[0]!
@@ -80,7 +84,7 @@ export function PendingConfirmInboxPage() {
     >
       <div className="mx-auto max-w-2xl">
         <p className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600" data-testid="pending-soft-hint">
-          拍板主路径在部门工作台右栏。本页为审计列表
+          拍板主路径在部门工作台右栏（大厅铃铛进）。本页仅审计列表
           {auditMode ? '（audit）' : '——点条目会软跳回工作台'}。
         </p>
         <div className="mb-3 text-[11px] text-slate-400">

@@ -1,6 +1,6 @@
 /**
  * 大厅八部门名牌 · 对齐 01-接待与引导 / 交互大纲
- * slug 落到现有 orgDepts；标签用真源①～⑧名（与旧「上手七部」叙事区分）。
+ * slug 落到现有 orgDepts；标签用真源①～⑧名（与历史辅链七席叙事区分）。
  */
 import type { OrgDeptId } from '../departments/orgDepts'
 import { deptSlug } from '../departments/orgDepts'

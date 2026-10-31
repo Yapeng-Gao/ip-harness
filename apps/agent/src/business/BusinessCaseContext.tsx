@@ -49,6 +49,14 @@ import {
 } from './packLoops'
 import { resolveCasePlanStart } from './casePlanDrive'
 import {
+  buildJudgmentFromConfirm,
+  preferenceCandidateFromJudgment,
+  precipitateJudgmentAsPreference,
+  savePreference,
+  type JudgmentRecord,
+  type PreferenceRecord,
+} from './judgmentArchive'
+import {
   downstreamResumeScript,
   feedbackNeedsMoreSeat,
   feedbackToolName,
@@ -178,6 +186,9 @@ type PersistedBusiness = {
   confirms: BusinessConfirmItem[]
   caseMeta: BusinessCaseMeta[]
   processLogs?: ProcessLogEntry[]
+  /** T10 判断档案 · 可选字段，旧持久化缺省 [] */
+  judgments?: JudgmentRecord[]
+  preferences?: PreferenceRecord[]
 }
 
 function seedCaseMeta(): BusinessCaseMeta[] {
@@ -255,6 +266,8 @@ function buildInitialBusinessState(): {
   confirms: BusinessConfirmItem[]
   caseMeta: BusinessCaseMeta[]
   processLogs: ProcessLogEntry[]
+  judgments: JudgmentRecord[]
+  preferences: PreferenceRecord[]
 } {
   const seedIds: string[] = [
     BUSINESS_SEED_IDS.A,
@@ -274,6 +287,8 @@ function buildInitialBusinessState(): {
       confirms: seedConf,
       caseMeta: seedMeta,
       processLogs: seedLogs,
+      judgments: [],
+      preferences: [],
     }
   }
 
@@ -327,7 +342,20 @@ function buildInitialBusinessState(): {
       ? persisted.processLogs
       : seedLogs
 
-  return { caseIds, progressById, confirms, caseMeta, processLogs }
+  const judgments = Array.isArray(persisted.judgments) ? persisted.judgments : []
+  const preferences = Array.isArray(persisted.preferences)
+    ? persisted.preferences
+    : []
+
+  return {
+    caseIds,
+    progressById,
+    confirms,
+    caseMeta,
+    processLogs,
+    judgments,
+    preferences,
+  }
 }
 
 function projectFromMeta(meta: BusinessCaseMeta): AgentProject {
@@ -363,7 +391,10 @@ type BusinessCaseContextValue = {
     caseId: string,
     kind: BusinessConfirmKind,
   ) => BusinessConfirmItem
-  confirmItem: (confirmId: string) => Promise<MidSyncOutcome>
+  confirmItem: (
+    confirmId: string,
+    opts?: { reason?: string; riskAccepted?: boolean },
+  ) => Promise<MidSyncOutcome>
   /** 退回：解锁席 + 按意见改一版（样机）· 不立刻再挂 pending */
   returnItem: (confirmId: string, note?: string) => Promise<MidSyncOutcome>
   /**
@@ -467,7 +498,13 @@ type BusinessCaseContextValue = {
   /** 案子助手改写 / 补全本案计划 */
   updateCasePlan: (caseId: string, casePlan: string) => void
   /** 启用前研等「更多部门」（写入 moreSeatIds） */
-  enableMoreDepartments: (caseId: string) => void
+  /** T10 · 本案判断档案（硬请示写回） */
+  getJudgments: (caseId?: string) => JudgmentRecord[]
+  getPreferences: () => PreferenceRecord[]
+  recordJudgment: (j: JudgmentRecord) => void
+  savePreferenceById: (prefId: string) => void
+  precipitateJudgment: (judgmentId: string) => void
+    enableMoreDepartments: (caseId: string) => void
 }
 
 const BusinessCaseContext = createContext<BusinessCaseContextValue | null>(null)
@@ -643,6 +680,12 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
   const [processLogs, setProcessLogs] = useState<ProcessLogEntry[]>(
     initial.processLogs,
   )
+  const [judgments, setJudgments] = useState<JudgmentRecord[]>(
+    initial.judgments,
+  )
+  const [preferences, setPreferences] = useState<PreferenceRecord[]>(
+    initial.preferences,
+  )
   const [lastReturnHint, setLastReturnHint] = useState<string | null>(null)
 
   const clearReturnHint = useCallback(() => setLastReturnHint(null), [])
@@ -683,8 +726,10 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       confirms,
       caseMeta,
       processLogs,
+      judgments,
+      preferences,
     })
-  }, [caseIds, progressById, confirms, caseMeta, processLogs])
+  }, [caseIds, progressById, confirms, caseMeta, processLogs, judgments, preferences])
 
   const cases = useMemo(() => {
     // Keep order of caseIds；folder 尚未回填时用 caseMeta 合成，避免「找不到这个案子」闪断
@@ -987,7 +1032,10 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
   )
 
   const confirmItem = useCallback(
-    async (confirmId: string): Promise<MidSyncOutcome> => {
+    async (
+      confirmId: string,
+      opts?: { reason?: string; riskAccepted?: boolean },
+    ): Promise<MidSyncOutcome> => {
       const target = confirms.find((c) => c.id === confirmId)
       if (!target || target.status !== 'pending') {
         return {
@@ -1034,6 +1082,27 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           c.id === confirmId ? { ...c, status: 'confirmed' as const } : c,
         ),
       )
+
+      // T10：确认 → 判断档案（非操作考勤）
+      {
+        const j = buildJudgmentFromConfirm({
+          caseId: target.caseId,
+          confirmId: target.id,
+          kind: target.kind,
+          summary: target.summary,
+          resultPreview: target.resultPreview,
+          processPreview: target.processPreview,
+          decision: 'confirmed',
+          reason: opts?.reason?.trim() || '接受结论',
+          riskAccepted: opts?.riskAccepted,
+        })
+        setJudgments((prev) => [j, ...prev].slice(0, 200))
+        setPreferences((prev) => {
+          const cand = preferenceCandidateFromJudgment(j)
+          if (prev.some((p) => p.text === cand.text && !p.saved)) return prev
+          return [cand, ...prev].slice(0, 100)
+        })
+      }
 
       const filedHint =
         target.kind === 'file_authorize'
@@ -1123,6 +1192,21 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
               ? `请按意见调整布局 · ${noteText}`
               : `请按意见修改 · ${noteText}`
       setLastReturnHint(baseHint)
+
+      // T10：驳回理由 → 判断档案
+      {
+        const j = buildJudgmentFromConfirm({
+          caseId: target.caseId,
+          confirmId: target.id,
+          kind: target.kind,
+          summary: target.summary,
+          resultPreview: target.resultPreview,
+          processPreview: target.processPreview,
+          decision: 'returned',
+          reason: noteText,
+        })
+        setJudgments((prev) => [j, ...prev].slice(0, 200))
+      }
 
       // 只标记 returned · 取消同 kind 其它 pending · 不立刻再挂闸（否则席被锁无法改稿）
       setConfirms((prev) =>
@@ -2074,7 +2158,35 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     [confirms, ensureProgress],
   )
 
-  const value = useMemo<BusinessCaseContextValue>(
+
+  const getJudgments = useCallback(
+    (caseId?: string) =>
+      caseId ? judgments.filter((j) => j.caseId === caseId) : judgments,
+    [judgments],
+  )
+  const getPreferences = useCallback(() => preferences, [preferences])
+  const recordJudgment = useCallback((j: JudgmentRecord) => {
+    setJudgments((prev) => [j, ...prev].slice(0, 200))
+    setPreferences((prev) => {
+      const cand = preferenceCandidateFromJudgment(j)
+      if (prev.some((p) => p.text === cand.text)) return prev
+      return [cand, ...prev].slice(0, 100)
+    })
+  }, [])
+  const savePreferenceById = useCallback((prefId: string) => {
+    setPreferences((prev) => savePreference(prev, prefId))
+  }, [])
+  const precipitateJudgment = useCallback(
+    (judgmentId: string) => {
+      const j = judgments.find((x) => x.id === judgmentId)
+      if (!j) return
+      setPreferences((prev) => precipitateJudgmentAsPreference(prev, j))
+    },
+    [judgments],
+  )
+
+  const value = useMemo
+<BusinessCaseContextValue>(
     () => ({
       cases,
       getCase,
@@ -2106,6 +2218,11 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       setCaseTeam,
       updateCasePlan,
       enableMoreDepartments,
+      getJudgments,
+      getPreferences,
+      recordJudgment,
+      savePreferenceById,
+      precipitateJudgment,
     }),
     [
       cases,
@@ -2138,6 +2255,11 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       setCaseTeam,
       updateCasePlan,
       enableMoreDepartments,
+      getJudgments,
+      getPreferences,
+      recordJudgment,
+      savePreferenceById,
+      precipitateJudgment,
     ],
   )
 

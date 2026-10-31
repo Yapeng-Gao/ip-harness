@@ -9,6 +9,7 @@ import {
 } from '../business/entryRole'
 import { useEntryRole } from '../business/useEntryRole'
 import { HALL_DEPT_DOORS, hallDeptHref } from '../business/hallDepts'
+import { BranchDoors } from '../components/business/BranchDoors'
 
 /**
  * 大厅 · /agent
@@ -250,6 +251,27 @@ export function HomePage() {
             ))}
           </ol>
         </section>
+
+        <BranchDoors caseId={latestId} isAgency={isAgency} />
+
+        {isAgency && latestId ? (
+          <div
+            className="mb-5 rounded-xl border border-violet-200 bg-violet-50/70 px-4 py-3"
+            data-testid="home-agency-escort"
+          >
+            <p className="text-[13px] font-semibold text-violet-950">代理陪同⑤</p>
+            <p className="mt-0.5 text-[12px] text-violet-900/90">
+              可绕 B2 进申请部壳诊断/陪同；不装交底已过线。企业无工单仍走门槛挡板。
+            </p>
+            <Link
+              to={`/agent/cases/${latestId}/depts/draft?escort=1&branch=b2`}
+              className="btn-press focus-ring mt-2 inline-flex rounded-full bg-violet-900 px-3 py-1.5 text-[11px] font-semibold text-white"
+              data-testid="home-agency-escort-cta"
+            >
+              陪同进⑤
+            </Link>
+          </div>
+        ) : null}
 
         <nav
           className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-slate-500"

@@ -19,7 +19,10 @@ type Props = {
   /** 部门 slug · 审计深链 */
   deptSlug?: string
   busy?: boolean
-  onConfirm: (confirmId: string) => void | Promise<void>
+  onConfirm: (
+    confirmId: string,
+    opts?: { reason?: string; riskAccepted?: boolean },
+  ) => void | Promise<void>
   onReturn: (confirmId: string, note: string) => void | Promise<void>
 }
 
@@ -40,10 +43,14 @@ export function DeptAskReportBubble({
   const decision = confirmDecisionMeta(item.kind)
   const actor = resolveConfirmActorKind(entryRole)
   const [returnNote, setReturnNote] = useState('')
+  const [confirmReason, setConfirmReason] = useState('接受结论')
+  const [riskAccepted, setRiskAccepted] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
 
   useEffect(() => {
     setReturnNote('')
+    setConfirmReason('接受结论')
+    setRiskAccepted(false)
     setMsg(null)
   }, [item.id])
 
@@ -61,8 +68,11 @@ export function DeptAskReportBubble({
     if (!passOk || busy || done) return
     void (async () => {
       setMsg(null)
-      await onConfirm(item.id)
-      setMsg(`已通过 · ${decision.decisionShort}`)
+      await onConfirm(item.id, {
+        reason: confirmReason.trim() || '接受结论',
+        riskAccepted,
+      })
+      setMsg(`已通过 · ${decision.decisionShort} · 已写入判断档案`)
     })()
   }
 
@@ -145,6 +155,29 @@ export function DeptAskReportBubble({
 
       {!done ? (
         <div className="mt-2.5 space-y-2" data-testid="dept-ask-report-acts">
+          <label className="block space-y-1">
+            <span className="text-[10px] font-medium text-slate-500">
+              确认理由（写入判断档案）
+            </span>
+            <textarea
+              rows={2}
+              value={confirmReason}
+              onChange={(e) => setConfirmReason(e.target.value)}
+              placeholder="为何接受 / 修改点…"
+              className="focus-ring w-full resize-none rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] text-slate-800"
+              data-testid="dept-ask-confirm-reason"
+            />
+          </label>
+          <label className="flex items-start gap-2 text-[11px] text-slate-600">
+            <input
+              type="checkbox"
+              checked={riskAccepted}
+              onChange={(e) => setRiskAccepted(e.target.checked)}
+              className="mt-0.5"
+              data-testid="dept-ask-risk-accept"
+            />
+            <span>我了解风险仍继续（认风险 · 写入档案）</span>
+          </label>
           <button
             type="button"
             onClick={handleConfirm}

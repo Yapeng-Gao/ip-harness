@@ -44,9 +44,18 @@ export function AssetsPage() {
 
   return (
     <div
-      className="flex min-h-0 flex-1 overflow-hidden"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden"
       data-testid="assets-page"
     >
+      <div
+        className="mx-4 mt-3 shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] text-slate-700"
+        data-testid="assets-b8"
+        data-branch="b8"
+      >
+        <strong>B8 · 情报官入口（薄）</strong>
+        ：竞对年报/专报走此资产/情报面，不在⑧复盘或③挖掘假装专报。演示壳 · 非真情报通道。
+      </div>
+      <div className="flex min-h-0 flex-1 overflow-hidden">
       <AssetTree
         selectedId={selectedId}
         onSelect={setSelectedId}
@@ -84,5 +93,6 @@ export function AssetsPage() {
         )}
       </div>
     </div>
+      </div>
   )
 }

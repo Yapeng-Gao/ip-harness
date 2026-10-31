@@ -50,3 +50,27 @@ describe('entryGate', () => {
     assert.equal(r.ok, true)
   })
 })
+
+describe('entryGate B2 / agency escort', () => {
+  it('enterprise without disclosure → blocked (B2)', () => {
+    const r = evaluateEntryGate({
+      deptId: 'dept-draft',
+      doneSeatIds: [],
+      disclosureConfirmed: false,
+    })
+    assert.equal(r.ok, false)
+    assert.match(r.title, /进入门槛未过/)
+  })
+
+  it('agency escort bypasses B2 shell without claiming 交底过线', () => {
+    const r = evaluateEntryGate({
+      deptId: 'dept-draft',
+      doneSeatIds: [],
+      disclosureConfirmed: false,
+      agencyEscort: true,
+    })
+    assert.equal(r.ok, true)
+    assert.match(r.title, /陪同/)
+    assert.match(r.reason, /不装交底已过线/)
+  })
+})

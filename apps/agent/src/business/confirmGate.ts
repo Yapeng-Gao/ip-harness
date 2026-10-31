@@ -59,7 +59,7 @@ export type ConfirmDecisionMeta = {
 }
 
 /**
- * 样机口径（decision-rights + pages）：交底不拍 D1；立项拍 D1/D2；撰写 D3；答复 D5。
+ * 样机口径（decision-rights + pages）：交底不拍 D1；立项拍 D1/D2；申请部 D3；答复 D5。岗名跟八部（申请专家）。
  * 对外白话，非法条号。
  */
 export const CONFIRM_DECISION_META: Record<
@@ -82,7 +82,7 @@ export const CONFIRM_DECISION_META: Record<
   go_nogo: {
     decisionShort: '立项决议（D1/D2）',
     decisionMeaning:
-      'D1 申不申 + D2 类型；通过后才算立项，可进入撰写。无人确认不得装「已立项」。',
+      'D1 申不申 + D2 类型；通过后才算立项，可进入申请部开写。无人确认不得装「已立项」。',
     confirmerLabel: '企业 IP 总监 / 委员会',
     suggesterLabel: '立项专家（建议稿）',
   },
@@ -90,11 +90,11 @@ export const CONFIRM_DECISION_META: Record<
     decisionShort: '保护范围确认（D3）',
     decisionMeaning: 'D3 保护范围多大；确认权项/说明书边界后再往下。',
     confirmerLabel: '企业 IPR',
-    suggesterLabel: '撰写专家（建议稿）',
+    suggesterLabel: '申请专家（建议稿）',
   },
   figures_ready: {
     decisionShort: '附图定稿确认',
-    decisionMeaning: '确认图文一致、图号齐全，可与撰写一并定稿。',
+    decisionMeaning: '确认图文一致、图号齐全，可与申请文件一并定稿。',
     confirmerLabel: '企业 IPR / 代理人',
     suggesterLabel: '附图专家（建议稿）',
   },

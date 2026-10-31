@@ -76,13 +76,16 @@ import {
 } from '../../business/interDeptTicket'
 import {
   demoCaseFileChecks,
-  demoCaseFileJudgments,
   demoCaseFileMaterials,
   demoCaseFileTickets,
   demoLineBadges,
   isDisclosureDept,
   isDraftDept,
 } from '../../business/caseFileDemo'
+import { ThinDeptWorkPanel } from '../../components/business/ThinDeptWorkPanel'
+import { lineDiff, diffStats } from '../../business/lineDiff'
+import { buildBranchJudgment } from '../../business/judgmentArchive'
+import { useEntryRole } from '../../business/useEntryRole'
 
 function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
   const known = DEPT_HANDOFF[deptId]
@@ -112,6 +115,7 @@ export function BusinessCaseDeptPage() {
   const { caseId = '', deptSlug: slug = '' } = useParams()
   const [params] = useSearchParams()
   const navigate = useNavigate()
+  const { entryRole } = useEntryRole()
   const {
     getCase,
     getProgress,
@@ -122,6 +126,11 @@ export function BusinessCaseDeptPage() {
     clearReturnHint,
     confirmItem,
     returnItem,
+    getJudgments,
+    getPreferences,
+    recordJudgment,
+    savePreferenceById,
+    precipitateJudgment,
   } = useBusinessCases()
   const { getThread, patchThread } = useProjectFolder()
   const { deptLabel } = useOrgConfig()
@@ -241,10 +250,13 @@ export function BusinessCaseDeptPage() {
     ? getConfirm(askConfirmId) ?? pendingForDept.find((p) => p.id === askConfirmId)
     : undefined
 
-  const onAskConfirm = async (confirmId: string) => {
+  const onAskConfirm = async (
+    confirmId: string,
+    opts?: { reason?: string; riskAccepted?: boolean },
+  ) => {
     setAskBusy(true)
     try {
-      const synced = await confirmItem(confirmId)
+      const synced = await confirmItem(confirmId, opts)
       if (!synced.businessOk) return
       const item = getConfirm(confirmId)
       if (!item) return
@@ -468,6 +480,8 @@ export function BusinessCaseDeptPage() {
     doneSeatIds: prog.doneSeatIds ?? [],
     filed: Boolean(prog.filed),
     disclosureConfirmed: disclosureDone,
+    agencyEscort:
+      entryRole === 'agency' && params.get('escort') === '1',
     bypass: params.get('gate') === 'bypass',
   })
   const currentStep =
@@ -619,10 +633,20 @@ export function BusinessCaseDeptPage() {
           data-gate-ok="0"
           role="alert"
         >
+          <div
+            data-testid={
+              dept && isDraftDept(dept.id) ? 'b2-block' : 'entry-gate-block'
+            }
+          >
           <p className="text-[13px] font-semibold text-amber-950">{entryGate.title}</p>
           <p className="mt-0.5 text-[12px] text-amber-900/90">{entryGate.reason}</p>
           <p className="mt-1 text-[11px] text-amber-800/80">{entryGate.fixHint}</p>
           <p className="mt-1 text-[10px] text-amber-700/70">{entryGate.honesty}</p>
+          {dept && isDraftDept(dept.id) ? (
+            <p className="mt-2 text-[11px] font-medium text-amber-950" data-testid="b2-gaps">
+              B2 缺口：交底未全绿 / 无④→⑤工单 · 请回④补料或走工单，禁止未全绿硬写。
+            </p>
+          ) : null}
           <div className="mt-2 flex flex-wrap gap-2">
             {entryGate.fixHrefHint === 'disclosure' ? (
               <Link
@@ -658,6 +682,7 @@ export function BusinessCaseDeptPage() {
             >
               演示旁路（不装已过线）
             </Link>
+          </div>
           </div>
         </div>
       ) : (
@@ -795,13 +820,24 @@ export function BusinessCaseDeptPage() {
                     边界：{thinMeta.ban}
                   </p>
                 ) : null}
-                <pre
-                  className="mt-3 max-h-[min(50vh,28rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
-                  data-testid="dept-thin-work-body"
-                >
-                  {thinMeta?.workBody ??
-                    '薄部可进；主交付示意未挂时不堆假进度。硬请示仍在右栏。'}
-                </pre>
+                <ThinDeptWorkPanel
+                  deptId={dept.id}
+                  caseId={caseId}
+                  onRecordNote={(note) => {
+                    if (params.get('branch') === 'b7' && note.includes('只读不拍')) {
+                      recordJudgment(
+                        buildBranchJudgment({
+                          caseId,
+                          gate: '⑧只读不拍',
+                          conclusion: '本轮只读不拍',
+                          option: '只读不拍',
+                          reason: 'B7 · 不回写⑦维持/放弃台账',
+                          compare: '未拍却改台账 = 禁止',
+                        }),
+                      )
+                    }
+                  }}
+                />
                 <p className="mt-3 text-[11px] text-slate-500">
                   示意作业 · 非真零件挂接；官报/真检索不在范围。
                 </p>
@@ -834,46 +870,70 @@ export function BusinessCaseDeptPage() {
                   {centerBody}
                 </pre>
                 {selectedMaterialId.startsWith('version-') ? (
-                  <div
-                    className="mt-3 rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2.5"
-                    data-testid="dept-version-diff"
-                  >
-                    <p className="text-[11px] font-semibold text-slate-800">
-                      版本对照 · 示意闭环
-                    </p>
-                    <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
-                      对照当前产出稿与另存版本。认可后可写回主栏；驳回则保留当前稿。非真 diff 引擎。
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        className="btn-press focus-ring rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
-                        data-testid="dept-version-approve"
-                        onClick={() => {
-                          const idx = Number(selectedMaterialId.replace('version-', ''))
-                          const v = versions[idx]
-                          if (!v?.markdown?.trim() || !activeSeat) return
-                          patchThread(caseId, activeSeat, {
-                            artifactMarkdown: v.markdown,
-                          })
-                          setSelectedMaterialId('deliverable')
-                        }}
-                      >
-                        认可此版写回
-                      </button>
-                      <button
-                        type="button"
-                        className="btn-press focus-ring rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-medium text-slate-700"
-                        data-testid="dept-version-keep"
-                        onClick={() => setSelectedMaterialId('deliverable')}
-                      >
-                        保持当前稿
-                      </button>
-                    </div>
-                  </div>
+                  <VersionDiffPanel
+                    current={
+                      thread?.artifactMarkdown?.trim() ||
+                      deliverableSummary ||
+                      handoff.deliverable
+                    }
+                    selectedMaterialId={selectedMaterialId}
+                    versions={versions}
+                    onApprove={(markdown) => {
+                      if (!activeSeat) return
+                      patchThread(caseId, activeSeat, {
+                        artifactMarkdown: markdown,
+                      })
+                      setSelectedMaterialId('deliverable')
+                    }}
+                    onKeep={() => setSelectedMaterialId('deliverable')}
+                  />
                 ) : null}
               </div>
             )}
+            
+            {params.get('branch') === 'b5' && dept && isDraftDept(dept.id) ? (
+              <div
+                className="rounded-xl border border-rose-200 bg-rose-50/80 px-4 py-3 text-[12px] leading-relaxed text-slate-800"
+                data-testid="branch-b5-panel"
+                role="region"
+                aria-label="B5 不申结案"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-rose-800/80">
+                  B5 · 不申结案
+                </p>
+                <p className="mt-0.5 font-medium">
+                  ⑤ B 拍「不申」：结案/转秘密 · <strong>不</strong>出申请号 · 可不进 C
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="btn-press focus-ring rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
+                    data-testid="branch-b5-no-apply"
+                    onClick={() => {
+                      recordJudgment(
+                        buildBranchJudgment({
+                          caseId,
+                          gate: '⑤申不申',
+                          conclusion: '不申',
+                          option: '不申结案',
+                          reason: 'B5 · 不出申请号',
+                          compare: '不申却出申请号 = 禁止假装',
+                        }),
+                      )
+                    }}
+                  >
+                    确认不申结案
+                  </button>
+                  <Link
+                    to={`/agent/cases/${caseId}/depts/draft?step=b`}
+                    className="btn-press focus-ring rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-medium text-slate-700"
+                  >
+                    改拍「申请」
+                  </Link>
+                </div>
+              </div>
+            ) : null}
+
             {showDraftInherit ? (
               <div
                 className="rounded-xl border border-violet-200 bg-violet-50/80 px-4 py-3 text-[12px] leading-relaxed text-slate-800"
@@ -1237,7 +1297,36 @@ export function BusinessCaseDeptPage() {
                           <li key={x.label}>{x.label}</li>
                         ))}
                     </ul>
-                    {/* 兼容闸测：保留 checklist 槽，不占视觉墙 */}
+                    <details
+                      className="mt-2 rounded-md border border-violet-100 bg-white/70 px-2 py-1.5"
+                      data-testid="ask-more"
+                      data-ask-kind-g1-t4="1"
+                    >
+                      <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+                        展开依据链（G1 齐套 · 缺项即缺口）
+                      </summary>
+                      <ul className="mt-1.5 space-y-1.5 text-[10px] text-slate-600" data-testid="ask-t4-pieces">
+                        <li data-testid="ask-t4-conclusion" data-present="1">
+                          <span className="font-semibold">结论</span> · 齐套未齐，禁止交卷入「待你确认」。
+                        </li>
+                        <li data-testid="ask-t4-source" data-present="1">
+                          <span className="font-semibold">来源</span> · 本站检查表缺项（演示）。
+                        </li>
+                        <li
+                          data-testid="ask-t4-reasoning"
+                          data-present={missingLabels.length ? '1' : '0'}
+                        >
+                          <span className="font-semibold">推演</span> · 缺「
+                          {missingLabels.join('、') || '—'}」则不可装已交卷。
+                        </li>
+                        <li data-testid="ask-t4-contrast" data-present="1">
+                          <span className="font-semibold">对比</span> · 齐套已齐才可进硬请示；缺项≠已确认。
+                        </li>
+                      </ul>
+                      <p className="mt-1 text-[9px] text-slate-400" data-testid="ask-t4-honesty">
+                        T4↔G1：软/齐套请示同样挂四件套；不提供一键全绿。
+                      </p>
+                    </details>
                     <div className="sr-only" data-testid="dept-checklist" aria-hidden>
                       齐套缺项
                     </div>
@@ -1471,10 +1560,97 @@ export function BusinessCaseDeptPage() {
         })}
         checks={demoCaseFileChecks({ disclosureDone })}
         tickets={demoCaseFileTickets(caseId, { disclosureDone })}
-        judgments={demoCaseFileJudgments({ disclosureDone })}
+        judgments={getJudgments(caseId)}
+        preferences={getPreferences()}
+        onSavePreference={savePreferenceById}
+        onPrecipitateJudgment={precipitateJudgment}
         lineBadges={demoLineBadges({ disclosureDone })}
-        initialTab={params.get('fileTab') === '工单' ? '工单' : '材料'}
+        initialTab={
+          params.get('fileTab') === '工单'
+            ? '工单'
+            : params.get('fileTab') === '判断档案'
+              ? '判断档案'
+              : '材料'
+        }
       />
+    </div>
+  )
+}
+
+function VersionDiffPanel({
+  current,
+  selectedMaterialId,
+  versions,
+  onApprove,
+  onKeep,
+}: {
+  current: string
+  selectedMaterialId: string
+  versions: { savedAt: string; markdown: string }[]
+  onApprove: (markdown: string) => void
+  onKeep: () => void
+}) {
+  const idx = Number(selectedMaterialId.replace('version-', ''))
+  const v = versions[idx]
+  const versionText = v?.markdown?.trim() || ''
+  const lines = lineDiff(current, versionText)
+  const stats = diffStats(lines)
+  return (
+    <div
+      className="mt-3 rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2.5"
+      data-testid="dept-version-diff"
+    >
+      <p className="text-[11px] font-semibold text-slate-800">
+        版本对照 · 行级 diff
+      </p>
+      <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
+        +{stats.added} / −{stats.removed} · 认可后写回主栏；非专业 diff 引擎，但是真行对照。
+      </p>
+      <pre
+        className="mt-2 max-h-48 overflow-auto rounded-md border border-slate-200 bg-white p-2 font-mono text-[10px] leading-relaxed"
+        data-testid="dept-version-diff-body"
+      >
+        {lines.slice(0, 80).map((l, i) => (
+          <div
+            key={i}
+            className={
+              l.type === 'add'
+                ? 'bg-emerald-50 text-emerald-900'
+                : l.type === 'del'
+                  ? 'bg-rose-50 text-rose-900'
+                  : 'text-slate-600'
+            }
+          >
+            {l.type === 'add' ? '+' : l.type === 'del' ? '−' : ' '}
+            {l.text || ' '}
+          </div>
+        ))}
+        {lines.length > 80 ? (
+          <div className="text-slate-400">…共 {lines.length} 行</div>
+        ) : null}
+      </pre>
+      <div className="mt-2 flex flex-wrap gap-2">
+        <button
+          type="button"
+          className="btn-press focus-ring rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
+          data-testid="dept-version-approve"
+          disabled={!versionText}
+          onClick={() => {
+            if (!versionText) return
+            onApprove(versionText)
+          }}
+        >
+          认可此版写回
+        </button>
+        <button
+          type="button"
+          className="btn-press focus-ring rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-medium text-slate-700"
+          data-testid="dept-version-keep"
+          onClick={onKeep}
+        >
+          保持当前稿
+        </button>
+      </div>
     </div>
   )
 }

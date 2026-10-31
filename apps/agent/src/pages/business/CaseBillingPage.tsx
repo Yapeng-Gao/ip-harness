@@ -17,6 +17,12 @@ export function CaseBillingPage() {
         className="flex flex-1 items-center justify-center p-8"
         data-testid="case-billing-page"
       >
+      <div
+        className="mx-auto mb-3 max-w-3xl rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-[11px] text-slate-600"
+        data-testid="logistics-billing-thin"
+      >
+        账单/费用（后勤薄） · 一期后勤可薄；主路径仍是八部工作台与硬请示，勿当主交付。
+      </div>
         <div className="text-center">
           <p className="text-sm text-slate-600">找不到这个案子</p>
           <Link

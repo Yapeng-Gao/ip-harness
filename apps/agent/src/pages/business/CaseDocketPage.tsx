@@ -49,7 +49,7 @@ export function CaseDocketPage() {
           看见本案法定/程序期限与绝限（结构壳 · 引擎后续接入）
         </p>
         <p className="mt-2 text-[12px] text-slate-500">
-          材料 / 检查表 / 工单 / 判断痕迹请用工作台顶栏「案卷」抽屉，不与期限台混名。
+          材料 / 检查表 / 工单 / 判断档案请用工作台顶栏「案卷」抽屉，不与期限台混名。
         </p>
         <p className="mt-2 flex flex-wrap gap-3 text-[12px]">
           <Link

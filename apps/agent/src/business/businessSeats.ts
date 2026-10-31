@@ -31,7 +31,7 @@ export const BUSINESS_SEAT_LABEL: Record<string, string> = {
 }
 
 /** 默认 7 业务专家席（不含案子助手） */
-/** 上手七部：交底 → 查新 → 立项 → 撰写 → 附图 → 递交 → 审查答复。撰写后可再开一轮查新再进附图。 */
+/** 历史辅链七席（非真源八部）：交底 → 查新 → 立项 → 申请撰写 → 附图 → 递交 → 审查答复。申请后可再开一轮查新再进附图。 */
 export const BUSINESS_DEFAULT_SEAT_IDS: ProjectExpertId[] = [
   'expert-disclosure',
   'expert-research',

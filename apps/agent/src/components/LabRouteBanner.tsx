@@ -30,7 +30,7 @@ export function LabRouteBanner({ kind = 'lab', className = '' }: Props) {
           ) : (
             <>
               <strong>实验室 / 遗骸入口</strong>
-              · 非 Novada 主路径；请勿当公司办事主屏
+              · 非 Novada 主路径；内文若仍写 Agent/会话壳，一律当实验室遗骸，请回大厅办事
             </>
           )}
         </span>
