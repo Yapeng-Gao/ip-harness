@@ -73,6 +73,15 @@ import {
   sideAuxMaterialId,
 } from '../../business/sideAuxBodyLink'
 import { KIT_STEP_SYNC_HONEST } from '../../business/kitStepSync'
+import {
+  AUX_VERSION_BIND_HONEST,
+  bindSideAuxBodyToRevision,
+  buildAuxRevisionStamp,
+  materialLabelWithRevision,
+  parseVersionMaterialId,
+} from '../../business/auxVersionBind'
+import { appendArtifactVersion } from '../../business/artifactVersions'
+import { getProjectExpert } from '../../projects/experts'
 import { SIDE_AUX_DEPTS } from '../../business/professionalAuxParts'
 import { auxBundleFor } from '../../business/professionalAuxParts'
 import {
@@ -212,6 +221,11 @@ export function BusinessCaseDeptPage() {
   const [partInsertedId, setPartInsertedId] = useState<string | null>(null)
   /** 已按 ?side=&sidePart= 写入中栏的辅链挂件 */
   const [sideInsertedId, setSideInsertedId] = useState<string | null>(null)
+  /** 浏览另存版本时仍钉住辅链挂件上下文 */
+  const [pinnedSide, setPinnedSide] = useState<{
+    sideId: string
+    partId: string
+  } | null>(null)
   /** 编制默认收；工具/巡检点开再看 */
   const [rosterOpen, setRosterOpen] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)
@@ -303,7 +317,10 @@ export function BusinessCaseDeptPage() {
     const part = findSideAuxPart(sideParam, sidePartParam)
     if (!part) return
     const matId = sideAuxMaterialId(sideParam, sidePartParam)
-    setSelectedMaterialId(matId)
+    // 用户正在看另存修订/差分时，不要被 ?side= 抢回挂件节点
+    setSelectedMaterialId((cur) =>
+      cur.startsWith('version-') || cur === 'seed-diff' ? cur : matId,
+    )
     if (!activeSeat) return
     const key = `${sideParam}:${sidePartParam}`
     if (sideInsertedId === key) return
@@ -492,14 +509,21 @@ export function BusinessCaseDeptPage() {
         id: 'side-aux',
         label: '辅链挂件',
         kind: 'section' as const,
-        hint: '查新·附图·递交 · 非真库/非真递交',
+        hint: '查新·附图·递交 · 联成果修订示意',
         children: SIDE_AUX_DEPTS.flatMap((d) =>
-          d.parts.map((part) => ({
-            id: sideAuxMaterialId(d.id, part.id),
-            label: `${d.label.replace('（辅链）', '')} · ${part.label}`,
-            kind: 'section' as const,
-            hint: part.hint,
-          })),
+          d.parts.map((part) => {
+            const base = `${d.label.replace('（辅链）', '')} · ${part.label}`
+            const stamp = buildAuxRevisionStamp({
+              stepIndex,
+              versionCount: versions.length,
+            })
+            return {
+              id: sideAuxMaterialId(d.id, part.id),
+              label: materialLabelWithRevision({ baseLabel: base, stamp }),
+              kind: 'section' as const,
+              hint: `${part.hint} · ${AUX_VERSION_BIND_HONEST}`,
+            }
+          }),
         ),
       },
       {
@@ -519,7 +543,7 @@ export function BusinessCaseDeptPage() {
         children: versionChildren,
       },
     ]
-  }, [handoff.deliverable, versions, dept])
+  }, [handoff.deliverable, versions, dept, stepIndex])
 
   const onSubmit = () => {
     if (thisDeptConfirmPending && thisDeptConfirmId && kindForDept) {
@@ -691,20 +715,59 @@ export function BusinessCaseDeptPage() {
       ? findManuscriptPart(dept.id, parsePartMaterialId(selectedMaterialId)!)
       : undefined
   const focusedSideParsed = parseSideAuxMaterialId(selectedMaterialId)
-  const focusedSidePart = focusedSideParsed
-    ? findSideAuxPart(focusedSideParsed.sideId, focusedSideParsed.partId)
+  useEffect(() => {
+    if (focusedSideParsed) {
+      setPinnedSide(focusedSideParsed)
+      return
+    }
+    if (
+      selectedMaterialId === 'deliverable' ||
+      selectedMaterialId === 'manuscript-parts' ||
+      selectedMaterialId === 'attachments' ||
+      !!parsePartMaterialId(selectedMaterialId)
+    ) {
+      setPinnedSide(null)
+    }
+  }, [focusedSideParsed, selectedMaterialId])
+
+  const urlSide =
+    sideParam && sidePartParam
+      ? { sideId: sideParam, partId: sidePartParam }
+      : null
+  const activeSide = focusedSideParsed ?? pinnedSide ?? urlSide
+  const focusedSidePart = activeSide
+    ? findSideAuxPart(activeSide.sideId, activeSide.partId)
     : undefined
-  const focusedSideLabel = focusedSideParsed
-    ? findSideAuxDept(focusedSideParsed.sideId)?.label
+  const focusedSideLabel = activeSide
+    ? findSideAuxDept(activeSide.sideId)?.label
     : undefined
+  const focusedSideParsedActive = activeSide
+
+  const seatDef = activeSeat ? getProjectExpert(activeSeat) : null
+  const stepLabelNow = seatDef?.steps[stepIndex]?.label
+  const viewingVersionIdx = parseVersionMaterialId(selectedMaterialId)
+  const viewingVersion =
+    viewingVersionIdx !== null ? versions[viewingVersionIdx] : undefined
+  const auxRevStamp = buildAuxRevisionStamp({
+    stepIndex,
+    stepLabel: stepLabelNow,
+    versionCount: versions.length,
+    viewingVersionIndex: viewingVersionIdx,
+    seedDiff: selectedMaterialId === 'seed-diff',
+    versionSavedAt: viewingVersion?.savedAt,
+  })
 
   const centerTitle =
     selectedMaterialId === 'attachments'
       ? '附件'
       : selectedMaterialId === 'seed-diff'
-        ? '差分示意'
+        ? focusedSidePart
+          ? `辅链差分 · ${focusedSidePart.label}`
+          : '差分示意'
         : selectedMaterialId.startsWith('version-')
-          ? '版本正文'
+          ? focusedSidePart
+            ? `辅链 · ${focusedSidePart.label} · 对照修订版 ${(viewingVersionIdx ?? 0) + 1}`
+            : '版本正文'
           : selectedMaterialId === 'versions'
             ? '版本'
             : selectedMaterialId === 'manuscript-parts'
@@ -721,7 +784,7 @@ export function BusinessCaseDeptPage() {
     if (selectedMaterialId === 'attachments') {
       return '本站附件为样机占位。正式上传与格式检查后置，不在此装完成。'
     }
-    if (selectedMaterialId === 'seed-diff') {
+    if (selectedMaterialId === 'seed-diff' && !focusedSidePart) {
       return '下方为 seed 左右差分示意（非真官报）。点「左右对照 / 统一差分」切换视图。'
     }
     if (selectedMaterialId === 'versions') {
@@ -729,7 +792,7 @@ export function BusinessCaseDeptPage() {
         ? '尚无另存版本。可先点「差分示意（样机）」看左右对照；或在右栏专家岗「成果」里另存。'
         : '在左侧点某一版本查看正文与差分；或点「差分示意（样机）」。'
     }
-    if (selectedMaterialId.startsWith('version-')) {
+    if (selectedMaterialId.startsWith('version-') && !focusedSidePart) {
       const idx = Number(selectedMaterialId.replace('version-', ''))
       const v = versions[idx]
       return v?.markdown?.trim() || '该版本无正文。'
@@ -738,17 +801,43 @@ export function BusinessCaseDeptPage() {
       return '左侧点某一本稿零件，中栏打开该章种子正文；可写入本席成果改稿。'
     }
     if (selectedMaterialId === 'side-aux') {
-      return '左侧点查新·附图·递交挂件，中栏打开种子说明；样机示意，非真检索/真递交。'
+      return '左侧点查新·附图·递交挂件，中栏打开种子说明；修订号随席步进/另存版本更新（样机）。'
     }
-    if (focusedSideParsed && focusedSidePart) {
-      const cur = thread?.artifactMarkdown?.trim() || ''
-      if (cur && cur.includes(`挂件「${focusedSidePart.label}」`)) {
-        return cur
-      }
-      return seedBodyForSideAux({
-        sideId: focusedSideParsed.sideId,
+    if (focusedSideParsedActive && focusedSidePart) {
+      const baseSeed = seedBodyForSideAux({
+        sideId: focusedSideParsedActive.sideId,
         part: focusedSidePart,
         sideLabel: focusedSideLabel,
+      })
+      if (viewingVersionIdx !== null && viewingVersion) {
+        const fromVer = viewingVersion.markdown?.trim() || baseSeed
+        const withMarker = fromVer.includes(`挂件「${focusedSidePart.label}」`)
+          ? fromVer
+          : `${fromVer}
+
+— 挂件「${focusedSidePart.label}」`
+        return bindSideAuxBodyToRevision({
+          body: withMarker,
+          stamp: auxRevStamp,
+          partLabel: focusedSidePart.label,
+        })
+      }
+      if (selectedMaterialId === 'seed-diff') {
+        return bindSideAuxBodyToRevision({
+          body: baseSeed,
+          stamp: auxRevStamp,
+          partLabel: focusedSidePart.label,
+        })
+      }
+      const cur = thread?.artifactMarkdown?.trim() || ''
+      const raw =
+        cur && cur.includes(`挂件「${focusedSidePart.label}」`)
+          ? cur
+          : baseSeed
+      return bindSideAuxBodyToRevision({
+        body: raw,
+        stamp: auxRevStamp,
+        partLabel: focusedSidePart.label,
       })
     }
     if (dept && parsePartMaterialId(selectedMaterialId)) {
@@ -787,6 +876,9 @@ export function BusinessCaseDeptPage() {
       data-side={sideParam ?? ''}
       data-side-part={sidePartParam ?? ''}
       data-side-inserted={sideInsertedId ? '1' : '0'}
+      data-aux-rev={focusedSidePart ? auxRevStamp.revCode : ''}
+      data-aux-rev-step={String(stepIndex)}
+      data-aux-rev-versions={String(versions.length)}
     >
       {/* 顶栏：案 / 部门 / 铃铛 / 期限；不放交卷主 CTA（§2） */}
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
@@ -1155,8 +1247,9 @@ export function BusinessCaseDeptPage() {
                   data-part-id={
                     parsePartMaterialId(selectedMaterialId) ?? undefined
                   }
-                  data-side-id={focusedSideParsed?.sideId}
-                  data-side-part-id={focusedSideParsed?.partId}
+                  data-side-id={focusedSideParsedActive?.sideId}
+                  data-side-part-id={focusedSideParsedActive?.partId}
+                  data-aux-rev={focusedSidePart ? auxRevStamp.revCode : undefined}
                 >
                   {centerBody}
                 </pre>
@@ -1189,40 +1282,89 @@ export function BusinessCaseDeptPage() {
                     </span>
                   </div>
                 ) : null}
-                {focusedSidePart && focusedSideParsed ? (
+                {focusedSidePart && focusedSideParsedActive ? (
                   <div
                     className="mt-2 flex flex-wrap items-center gap-2"
                     data-testid="dept-side-aux-body-actions"
                   >
+                    <span
+                      className="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-950 ring-1 ring-violet-200/80"
+                      data-testid="dept-side-aux-rev-badge"
+                      title={AUX_VERSION_BIND_HONEST}
+                      data-rev={auxRevStamp.revCode}
+                    >
+                      {auxRevStamp.badge}
+                    </span>
                     <button
                       type="button"
                       className="btn-press focus-ring rounded-full bg-violet-900 px-2.5 py-1 text-[11px] font-semibold text-white"
                       data-testid="dept-side-aux-insert-body"
                       onClick={() => {
-                        if (!activeSeat) return
-                        const body = seedBodyForSideAux({
-                          sideId: focusedSideParsed.sideId,
-                          part: focusedSidePart,
-                          sideLabel: focusedSideLabel,
+                        if (!activeSeat || !focusedSideParsedActive) return
+                        const body = bindSideAuxBodyToRevision({
+                          body: seedBodyForSideAux({
+                            sideId: focusedSideParsedActive.sideId,
+                            part: focusedSidePart,
+                            sideLabel: focusedSideLabel,
+                          }),
+                          stamp: auxRevStamp,
+                          partLabel: focusedSidePart.label,
                         })
                         patchThread(caseId, activeSeat, {
                           artifactMarkdown: body,
                         })
                         setSideInsertedId(
-                          `${focusedSideParsed.sideId}:${focusedSideParsed.partId}`,
+                          `${focusedSideParsedActive.sideId}:${focusedSideParsedActive.partId}`,
                         )
+                        setPinnedSide(focusedSideParsedActive)
                         setSelectedMaterialId(
                           sideAuxMaterialId(
-                            focusedSideParsed.sideId,
-                            focusedSideParsed.partId,
+                            focusedSideParsedActive.sideId,
+                            focusedSideParsedActive.partId,
                           ),
                         )
                       }}
                     >
                       写入挂件（种子）
                     </button>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring rounded-full border border-violet-300 bg-white px-2.5 py-1 text-[11px] font-medium text-violet-950"
+                      data-testid="dept-side-aux-save-version"
+                      title="另存为成果修订版 · 样机示意 · 非官报"
+                      onClick={() => {
+                        if (!activeSeat || !focusedSideParsedActive) return
+                        const body = bindSideAuxBodyToRevision({
+                          body: seedBodyForSideAux({
+                            sideId: focusedSideParsedActive.sideId,
+                            part: focusedSidePart,
+                            sideLabel: focusedSideLabel,
+                          }),
+                          stamp: auxRevStamp,
+                          partLabel: focusedSidePart.label,
+                        })
+                        const cur = getThread(caseId, activeSeat)
+                        const { versions: next, hint } = appendArtifactVersion({
+                          versions: cur?.artifactVersions ?? [],
+                          markdown: body,
+                        })
+                        patchThread(caseId, activeSeat, {
+                          artifactMarkdown: body,
+                          artifactVersions: next,
+                        })
+                        setSideInsertedId(
+                          `${focusedSideParsedActive.sideId}:${focusedSideParsedActive.partId}`,
+                        )
+                        setPinnedSide(focusedSideParsedActive)
+                        // 选中刚另存的修订版，中栏挂件徽章切到「对照修订版」
+                        setSelectedMaterialId(`version-${next.length - 1}`)
+                        void hint
+                      }}
+                    >
+                      另存为修订版
+                    </button>
                     <span className="text-[10px] text-slate-500">
-                      {SIDE_AUX_BODY_HONEST}
+                      {AUX_VERSION_BIND_HONEST}
                     </span>
                   </div>
                 ) : null}

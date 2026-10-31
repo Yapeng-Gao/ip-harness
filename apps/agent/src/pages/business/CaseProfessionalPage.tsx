@@ -506,7 +506,7 @@ export function CaseProfessionalPage() {
             className="mt-2 text-[11px] leading-relaxed text-violet-900/90"
             data-testid="case-professional-aux-honest"
           >
-            {PROF_AUX_HONEST}。卡上已露「本稿零件 / 辅链挂件」；点查新·附图·递交挂件进中栏改稿；
+            {PROF_AUX_HONEST}。卡上已露「本稿零件 / 辅链挂件」；点查新·附图·递交挂件进中栏改稿（联成果修订示意）；
             <strong className="font-semibold">非主八部</strong>
             挂件清单。主路径仍是编制 + 在办/缺口 +「让该部接稿」。
           </p>
