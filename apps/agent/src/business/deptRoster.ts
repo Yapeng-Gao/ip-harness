@@ -317,6 +317,7 @@ const STAGE_RECOMMEND_BLURB: Record<BusinessStageId, string> = {
 /**
  * 按阶段推荐讨论班底：当前阶段席 + 相邻上下游各一（去重）
  */
+/** @deprecated 无 UI · 组队已卸；测库保留 */
 export function recommendTeamForStage(
   stageId: BusinessStageId,
 ): ProjectExpertId[] {
@@ -346,7 +347,7 @@ export type TeamRecommendPlan = {
   missingIds: ProjectExpertId[]
 }
 
-/** 组队规划：推荐名单 + 理由 + 相对当前缺人 */
+/** 库函数 · 无产品 UI（组队已卸）；推荐名单示意，勿接组队面 */
 export function buildTeamRecommendPlan(
   stageId: BusinessStageId,
   currentIds: ProjectExpertId[] = [],

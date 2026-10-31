@@ -72,11 +72,11 @@ export function ProjectListPage() {
           <Link to="/agent/cases" className="underline">
             案盘
           </Link>
-          。实验室沙盒见{' '}
-          <Link to="/agent/sandbox" className="underline">
-            /agent/sandbox
+          。实验室旁路见{' '}
+          <Link to="/agent/lab" className="underline" data-testid="projects-to-lab">
+            原型展廊
           </Link>
-          。
+          （沙盒 / 多 bot 仅展廊入口，非主办理）。
         </p>
 
         <details

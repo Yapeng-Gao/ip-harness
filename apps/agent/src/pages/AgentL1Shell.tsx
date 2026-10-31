@@ -45,7 +45,7 @@ export function AgentL1Shell() {
           className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500"
           data-testid="agent-l1-badge"
         >
-          L1 · 单助手
+          沙盒单助手（旁路）
         </span>
         <div className="ml-auto flex items-center gap-1.5">
           <Link
@@ -53,7 +53,7 @@ export function AgentL1Shell() {
             className="btn-press focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2.5 py-1 text-[12px] font-semibold text-slate-800 shadow-sm hover:bg-slate-50"
             aria-label="进入多 bot 壳"
             data-testid="agent-l1-to-team"
-            title="L2 · Grok 多 bot 旁路（非拉人讨论）"
+            title="多 bot 旁路（非拉人讨论·非主办理）"
           >
             <Users className="h-3.5 w-3.5" aria-hidden />
             多 bot
@@ -61,12 +61,12 @@ export function AgentL1Shell() {
           <Link
             to="/agent/projects"
             className="btn-press focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2.5 py-1 text-[12px] font-semibold text-slate-800 shadow-sm hover:bg-slate-50"
-            aria-label="进入专利项目"
+            aria-label="进入遗留项目夹"
             data-testid="agent-l1-to-projects"
-            title="L3 · 专利项目固定专家"
+            title="遗留项目夹旁路（非一期进门）"
           >
             <FolderKanban className="h-3.5 w-3.5" aria-hidden />
-            专利项目
+            遗留项目夹
           </Link>
           <Link
             to="/agent/lab"

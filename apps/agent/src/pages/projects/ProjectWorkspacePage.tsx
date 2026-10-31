@@ -100,13 +100,13 @@ export function ProjectWorkspacePage() {
             </span>
             {def.ownerLabel && (
               <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-px">
-                Owner · {def.ownerLabel}
+                对接 · {def.ownerLabel}
               </span>
             )}
             <span>{project.caseId ? '已绑案件' : '未绑案件'}</span>
             
-            <Link to="/agent" className="text-slate-400 underline">
-              Catalog
+            <Link to="/agent/seats" className="text-slate-400 underline" data-testid="workspace-to-seats">
+              席位样机目录
             </Link>
           </div>
           {bizCase ? (

@@ -190,7 +190,7 @@ export type CaseProgress = {
   researchPass?: ResearchPass
   doneSeatIds: ProjectExpertId[]
   moreSeatIds: ProjectExpertId[]
-  /** 本案编制席勾选（主责 expert id）；默认空；组队 UI 已卸 */
+  /** 遗留字段 · 恒空；组队 UI 已卸 · 勿接产品面；仅持久化兼容 */
   teamMemberIds: ProjectExpertId[]
   /** 建案向导「本案计划」骨架（可空） */
   casePlan?: string
@@ -538,8 +538,6 @@ type BusinessCaseContextValue = {
     ok: boolean,
     note?: string,
   ) => { ok: boolean; reason?: string }
-  /** 本案编制席勾选（主责）；空；组队 UI 已卸 */
-  setCaseTeam: (caseId: string, memberIds: ProjectExpertId[]) => void
   /** 案子助手改写 / 补全本案计划 */
   updateCasePlan: (caseId: string, casePlan: string) => void
   /** 助手委托分发写入 progress（casePlan + delegate）；刷新可恢复 */
@@ -2265,23 +2263,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     [appendLogs, appendMessage, requestUpstreamFeedback],
   )
 
-  const setCaseTeam = useCallback(
-    (caseId: string, memberIds: ProjectExpertId[]) => {
-      const unique = [...new Set(memberIds)]
-      setProgressById((prev) => {
-        const cur = prev[caseId] ?? emptyProgress(caseId)
-        return {
-          ...prev,
-          [caseId]: {
-            ...cur,
-            teamMemberIds: unique,
-            updatedAt: nowIso(),
-          },
-        }
-      })
-    },
-    [],
-  )
+  /* setCaseTeam 已卸挂：组队 UI 不回潮；teamMemberIds 恒空仅兼容旧 localStorage */
 
   const updateCasePlan = useCallback((caseId: string, casePlan: string) => {
     const text = casePlan.trim()
@@ -2809,7 +2791,6 @@ const enableMoreDepartments = useCallback((caseId: string) => {
       recordWordExportHint,
       dispatchDrillSeat,
       acceptDrillDualFile,
-      setCaseTeam,
       updateCasePlan,
       recordDelegateDispatch,
       advancePlanChainStep,
@@ -2855,7 +2836,6 @@ const enableMoreDepartments = useCallback((caseId: string) => {
       recordWordExportHint,
       dispatchDrillSeat,
       acceptDrillDualFile,
-      setCaseTeam,
       updateCasePlan,
       recordDelegateDispatch,
       advancePlanChainStep,

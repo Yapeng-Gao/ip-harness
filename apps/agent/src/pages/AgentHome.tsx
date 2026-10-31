@@ -91,17 +91,17 @@ export function AgentHome() {
               className="font-medium text-slate-800 underline-offset-2 hover:underline"
               data-testid="compose-back-to-l1"
             >
-              L1 单助手
+              大厅
             </Link>
-            ；需要多 bot 再进{' '}
+            ；多 bot 旁路仅经{' '}
             <Link
-              to="/agent/team"
+              to="/agent/lab"
               className="font-medium text-slate-800 underline-offset-2 hover:underline"
-              data-testid="compose-back-to-team"
+              data-testid="compose-back-to-lab"
             >
-              多 bot 壳
+              原型展廊
             </Link>
-            。
+            （非组队、非主办理）。
           </p>
         </div>
 

@@ -2692,3 +2692,39 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-10-31 CST | Catalog→`/agent/seats` + 卸组队建班 + PackLoops 人话；smoke `PASS_RESCAN_69`；shots `.tmp/rescan-69-shots/`；§69；t613u |
 
+## 70. 深扫：旁路深链收口 / PackHitl·Owner Office / 藏 setCaseTeam（2026-10-31 Asia/Shanghai）
+
+> **问题：** §69 后置 —— `/agent/team`·sandbox 深链、PackHitl Phase/Owner 工程味、teamMemberIds 无 UI、死路由、回潮、主链成本。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。
+
+### 70.1 本批落地机制
+
+| # | 缺口 | 行为改动 |
+|---|---|---|
+| A | projects 裸链 `/agent/sandbox`；compose→team；L1「L1/L2/L3」工程徽标 | 项目夹改指 **原型展廊**；compose 回 **大厅** / 展廊；L1 徽标 **沙盒单助手（旁路）**；Workspace Catalog→席位样机目录 |
+| B | PackHitl 上屏 `approve_strategy` 等 gate；Owner·Phase 英文 | 总览改 **确认点 ×8**；gate→确认方案/立不立项/…；Owner→**对接**；hitl8 note 人话 |
+| C | `setCaseTeam` 仍挂公共 API（组队回潮面） | **卸挂** setCaseTeam；`teamMemberIds` 恒空仅兼容；deptRoster 推荐函标明无 UI |
+
+### 70.2 复扫表
+
+| 面 | 结论 |
+|---|---|
+| 大厅/公司/案盘/部台 | 无专家台/组队/三档；齐套仍折 |
+| seats 目录 | 旁路；无组成专班；确认点 Office |
+| projects / compose / L1 | 深链收口经展廊；无裸 sandbox 路径 |
+| teamMemberIds | 无 UI 写入口 |
+
+### 70.3 六维（机制报告，不宣称落地）
+
+理念：旁路深链不抢主办理。设计：确认闸人话。使用成本：少英文 gate/Owner。
+
+### 70.4 后置
+
+真 IM/鉴权/递交/报价/日历；Lab 展廊卡片可再压数量；`/agent/harness` 纸面可后置；PackHitlWalkBar 演示日志里 seatId 可再藏。
+
+### 70.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 深链收口 + PackHitl/Owner Office + 藏 setCaseTeam；smoke `PASS_RESCAN_70`；shots `.tmp/rescan-70-shots/`；§70；t614u |
+

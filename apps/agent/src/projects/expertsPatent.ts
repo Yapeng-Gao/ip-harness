@@ -386,7 +386,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "立项决策",
     "role": "expert",
     "specialty": "Go/范围 · intake_quote",
-    "description": "Go/范围（报价附属）。吃 01–06。产出 07_intake_quote + worklog。须 go_nogo HITL。",
+    "description": "立不立项与范围（报价附属）。吃 01–06。产出立项报价包 + 工作纪要。须确认立不立项。",
     "tools": [
       "ingest_upstream",
       "extract_evidence",

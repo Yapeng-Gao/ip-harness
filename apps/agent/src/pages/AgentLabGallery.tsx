@@ -57,7 +57,7 @@ const CARDS: LabCard[] = [
   {
     id: 'warmup',
     version: '幕 0 · 能力预演',
-    blurb: 'Solo 单助手 + Team 多 bot 互传；非专利默认，可跳过。',
+    blurb: '沙盒单助手与多 bot 互传旁路；非一期主办理，可跳过。',
     href: '/agent/sandbox',
     cta: '打开沙盒',
     icon: PenLine,
@@ -95,8 +95,8 @@ const CARDS: LabCard[] = [
   },
   {
     id: 'team',
-    version: '历史 · L2 多 bot 壳',
-    blurb: 'Grok 形多 bot 旁路；非拉人讨论、非编制。',
+    version: '历史 · 多 bot 壳旁路',
+    blurb: '多 bot 旁路壳；非拉人讨论、非编制、非一期进门。',
     href: '/agent/team',
     cta: '打开多 bot 壳',
     icon: Bot,
