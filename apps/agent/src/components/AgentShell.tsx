@@ -135,14 +135,16 @@ export function AgentShell() {
   const inLabPath =
     inSandbox ||
     inL2Shell ||
-    loc.pathname.startsWith('/agent/sessions') ||
     loc.pathname.startsWith('/agent/compose') ||
     loc.pathname.startsWith('/agent/agents') ||
     loc.pathname.startsWith('/agent/harness') ||
     loc.pathname.startsWith('/agent/lab') ||
     loc.pathname.startsWith('/agent/gallery') ||
     loc.pathname.startsWith('/agent/seats')
-  const showLabBanner = inLabPath || inPatentProject
+  /** sessions 自有 SessionDemoHonestBanner · 不与 LabRouteBanner 叠条 */
+  const showLabBanner =
+    (inLabPath || inPatentProject) &&
+    !loc.pathname.startsWith('/agent/sessions')
   /** 业务面默认隐藏租户/Persona；?debug=1 显示 */
   const showTenantChrome = debug || inGrokShell || inCatalog
 
@@ -235,41 +237,74 @@ export function AgentShell() {
         </div>
 
         {showShellTabs ? (
-          <nav
-            className="ml-1 flex items-center gap-0.5 rounded-lg border border-slate-200/90 bg-slate-50/80 p-0.5"
-            data-testid="shell-tabs"
-            aria-label="助手、项目、专业"
+          <details
+            className="ml-1 max-w-[min(100%,22rem)]"
+            data-testid="shell-tabs-fold"
+            data-lifecycle-legacy="1"
           >
-            {(
-              [
-                { id: 'assistant' as const, label: '助手', to: '/agent' },
-                { id: 'project' as const, label: '项目', to: projectHref },
-                {
-                  id: 'professional' as const,
-                  label: '专业',
-                  to: professionalHref,
-                },
-              ] as const
-            ).map((tab) => {
-              const selected = shellTab === tab.id
-              return (
-                <Link
-                  key={tab.id}
-                  to={tab.to}
-                  data-testid={`shell-tab-${tab.id}`}
-                  data-selected={selected ? '1' : '0'}
-                  aria-current={selected ? 'page' : undefined}
-                  className={`btn-press focus-ring rounded-md px-2.5 py-1 text-[12px] font-medium ${
-                    selected
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  {tab.label}
-                </Link>
-              )
-            })}
-          </nav>
+            <summary
+              className="cursor-pointer select-none rounded-md border border-dashed border-slate-300/90 bg-slate-50/60 px-2 py-1 text-[11px] font-medium text-slate-500 hover:text-slate-700"
+              data-testid="shell-tabs-fold-summary"
+            >
+              视图 · 旧三档（收折）
+            </summary>
+            <nav
+              className="mt-1 flex flex-wrap items-center gap-0.5 rounded-lg border border-slate-200/90 bg-slate-50/80 p-0.5"
+              data-testid="shell-tabs"
+              data-shell-tabs-role="legacy-lifecycle"
+              aria-label="旧三档视图（lifecycle，非一期进门）"
+            >
+              {(
+                [
+                  {
+                    id: 'assistant' as const,
+                    label: '大厅',
+                    hint: 'lifecycle「助手」',
+                    to: '/agent',
+                  },
+                  {
+                    id: 'project' as const,
+                    label: '本案公司',
+                    hint: 'lifecycle「项目」· 公司案',
+                    to: projectHref,
+                  },
+                  {
+                    id: 'professional' as const,
+                    label: '编制',
+                    hint: 'lifecycle「专业」',
+                    to: professionalHref,
+                  },
+                ] as const
+              ).map((tab) => {
+                const selected = shellTab === tab.id
+                return (
+                  <Link
+                    key={tab.id}
+                    to={tab.to}
+                    title={tab.hint}
+                    data-testid={`shell-tab-${tab.id}`}
+                    data-selected={selected ? '1' : '0'}
+                    data-lifecycle-tab={tab.id}
+                    aria-current={selected ? 'page' : undefined}
+                    className={`btn-press focus-ring rounded-md px-2.5 py-1 text-[12px] font-medium ${
+                      selected
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {tab.label}
+                  </Link>
+                )
+              })}
+            </nav>
+            <p
+              className="mt-1 px-0.5 text-[10px] leading-snug text-slate-400"
+              data-testid="shell-tabs-legacy-note"
+            >
+              一期进门＝大厅接待+八部 → 公司 → 部台；本三档出自 lifecycle
+              vision §3.1d，非一期节点正文。
+            </p>
+          </details>
         ) : null}
 
         {isCaseLevelShellPath(loc.pathname) && activeBizCaseId ? (

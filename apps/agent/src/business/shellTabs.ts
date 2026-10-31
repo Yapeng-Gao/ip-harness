@@ -1,6 +1,9 @@
 /**
- * 顶栏三档着陆 · 对齐 product-pages / vision §3.1d
- * 助手=/agent；项目=三态；专业=须带案（同三态先落到有案再进编制面）
+ * 顶栏旧三档着陆（lifecycle vision §3.1d / product-pages）
+ * **非一期真源**：一期进门＝大厅接待+八部 → 公司 → 部台
+ * （一期节点 + 一期-产品逻辑 + 一期-产品理念）。Leslie 不认 lifecycle 七部三 tab。
+ * 壳上已收折为次级「视图」；保留着陆函数供深链。
+ * 助手→大厅 /agent；项目→公司案三态；专业→编制（须带案）
  */
 
 export type ShellTabId = 'assistant' | 'project' | 'professional'

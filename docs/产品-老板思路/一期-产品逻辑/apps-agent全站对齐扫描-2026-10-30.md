@@ -2420,10 +2420,73 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 | 项 | 说明 |
 |---|---|
 | 真多端同步 / 真 IM / 真鉴权 / 真递交 / 真报价 / 真日历 | **仍后置** |
-| 部台齐套信息密度 | 可后续再折；本批未动结构 |
+| 部台齐套信息密度 | → **§64 已 missing-first 收折** |
 | teamMemberIds 库无 UI | 可后置清理 |
+| 顶栏三档真源 | → **§64 诚实核：lifecycle §3.1d，非一期；已收折** |
 
 ### 63.5 修订
 | 时 | 记 |
 |---|---|
 | 2026-10-31 CST | 三缺口落地；smoke PASS_RESCAN_63；shots `.tmp/rescan-63-shots/`；写入 §63 |
+
+## 64. 深扫落地：齐套墙 / Banner 叠条 / Catalog 旁路 / 三档真源收折（2026-10-31 Asia/Shanghai）
+
+> **问题：** 继续深扫重复面 + 页面逻辑/布局 UIUX/原型/展示内容 vs 业务逻辑·产品理念·产品设计·产品逻辑（**意思与行为**，非文字对齐）。t607u 追核：顶栏「助手/项目/专业」是否来自一期真源。  
+> **真源：** **一期节点 + 一期-产品逻辑 + 一期-产品理念**。Leslie **不认** lifecycle 七部三 tab。lifecycle `product-vision.md` §3.1d 仅旧稿。组队勿回潮；真集成后置；不宣称四维/六维落地；禁 main-path-sample。
+
+### 64.0 三档出处核（诚实）
+
+| 说法 | 出处 | 结论 |
+|---|---|---|
+| 进门＝大厅接待 + 八部可见 → 公司 → 部台 | 一期-产品理念；一期-产品逻辑 `00`/`01-接待与引导` | **一期真源 · 主链** |
+| 顶栏「助手 / 项目 / 专业」三档真行为 | 旧 `docs/lifecycle/product-vision.md` **§3.1d**（及 product-pages） | **非一期节点正文**；与「大厅八部进门」形成第二套进门/总览行为 |
+| lifecycle/nodes 七部模型稿 | 一期节点 README 明示不可当产品真理 | **不认** |
+
+**行为改：** 壳上三档 **默认收折**为「视图 · 旧三档」；展开后标签改一期语感（大厅 / 本案公司 / 编制）并注 lifecycle 出处。大厅文案不再教人「盯整案切顶栏项目」。
+
+### 64.1 本批落地机制（≥3）
+
+| # | 缺口 | 行为改动 |
+|---|---|---|
+| A | 部台齐套 G1 像低保真 checklist dump | 主列表 **missing-first**；已勾收进 `dept-kit-done-fold`；`data-kit-compact` |
+| B | sessions 叠 LabRouteBanner + SessionDemoHonestBanner | sessions **卸** LabRouteBanner（自有诚实条） |
+| C | Catalog 抢主链 / 工程分层墙 | 旁路 kicker「助手目录」；Core/Assist 话术收进 details；SoftEmpty 明示勿当进门总览；侧栏「Agent」→「助手目录」 |
+| D | 顶栏三档 = 第二套进门（lifecycle） | **收折降权** + 诚实注脚；home 改指公司案/八部，不推旧三档 |
+
+### 64.2 复扫表（意思与行为）
+
+| 面 | 结论 |
+|---|---|
+| 页面重复 / 第二套进门 | 旧三档不再默认并列顶栏；Catalog/sessions/projects 仍旁路 |
+| 大厅 vs 公司 vs 案表 vs 专业(编制) | 大厅=进门委托+八部；公司=单案总览+缺口；案表=多案；编制=弱链/收折视图。对齐一期进门句 |
+| `/agent/projects`、助手壳、Catalog | 仍 LabRouteBanner；Catalog 标题/侧栏旁路化 |
+| 组队/七部/分诊/CLI | 无回潮；无七部三 tab 售卖 |
+| SoftEmpty / 诚实 Banner | sessions 单条；大厅不叠 auth/billing；Catalog 空态旁路口径 |
+| 部台信息墙 | 齐套缺项优先，已勾折起 |
+
+### 64.3 六维（机制报告，**不宣称落地**）
+
+| 维度 | 本批机制 |
+|---|---|
+| 业务逻辑 | 齐套仍 G1 闸；硬请示仍右栏 |
+| 产品理念 | 一期进门句优先于 lifecycle 三档 |
+| 产品逻辑 | 旁路不抢大厅→公司→部 |
+| 产品设计 | 齐套 densify；三档收折；Catalog 降权 |
+| 产品形态 | Office 大厅/公司/部台；旧三档次级视图 |
+| 使用成本 | 少叠条；少 checklist dump；少第二进门 |
+
+### 64.4 仍开着 / 后置
+
+| 项 | 说明 |
+|---|---|
+| 真多端同步 / 真 IM / 真鉴权 / 真递交 / 真报价 / 真日历 | **仍后置** |
+| 彻底删除三档路由/着陆函数 | 可后置；现已收折+注脚 |
+| teamMemberIds 库无 UI | 可后置清理 |
+| `/agent/team` 路径名 | 仅 URL；可见文案已多 bot |
+
+### 64.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-10-31 CST | 齐套 compact + sessions 卸叠条 + Catalog 旁路 + **三档 lifecycle 出处核并收折**；smoke `PASS_RESCAN_64`；shots `.tmp/rescan-64-shots/`；写入 §64；t605u+t607u |
+

@@ -1916,6 +1916,7 @@ export function BusinessCaseDeptPage() {
                     className="max-w-[95%] rounded-2xl rounded-tl-md bg-violet-50 px-3 py-2 text-[12px] leading-relaxed text-slate-900"
                     data-testid="dept-ask-bubble-g1"
                     data-ask-kind="g1"
+                    data-kit-compact="1"
                   >
                     <p className="text-[9px] font-semibold uppercase tracking-wide text-violet-700/80">
                       {businessSeatLabel(dept.leadSeatId)} · 汇报
@@ -1925,25 +1926,26 @@ export function BusinessCaseDeptPage() {
                       className="mt-1 space-y-1 text-[11px] text-slate-700"
                       data-testid="dept-checklist-items"
                       data-kit-interactive="1"
+                      data-kit-density="missing-first"
                     >
-                      {checklistItems.map((x) => (
-                        <li key={x.label} className="flex items-start gap-2">
-                          <label className="flex cursor-pointer items-start gap-1.5">
-                            <input
-                              type="checkbox"
-                              className="mt-0.5"
-                              checked={x.done}
-                              data-testid={`dept-kit-check-${x.label}`}
-                              onChange={() => {
-                                if (slug) toggleKitCheck(caseId, slug, x.label)
-                              }}
-                            />
-                            <span className={x.done ? 'text-slate-400 line-through' : ''}>
-                              {x.label}
-                            </span>
-                          </label>
-                        </li>
-                      ))}
+                      {checklistItems
+                        .filter((x) => !x.done)
+                        .map((x) => (
+                          <li key={x.label} className="flex items-start gap-2">
+                            <label className="flex cursor-pointer items-start gap-1.5">
+                              <input
+                                type="checkbox"
+                                className="mt-0.5"
+                                checked={false}
+                                data-testid={`dept-kit-check-${x.label}`}
+                                onChange={() => {
+                                  if (slug) toggleKitCheck(caseId, slug, x.label)
+                                }}
+                              />
+                              <span>{x.label}</span>
+                            </label>
+                          </li>
+                        ))}
                     </ul>
                     <p
                       className="mt-1 text-[10px] text-slate-500"
@@ -1952,6 +1954,37 @@ export function BusinessCaseDeptPage() {
                     >
                       缺 {missingLabels.length} 项 · 勾上或用下方样机工具
                     </p>
+                    {checklistItems.some((x) => x.done) ? (
+                      <details
+                        className="mt-1 rounded-md border border-violet-100/70 bg-white/50 px-2 py-1"
+                        data-testid="dept-kit-done-fold"
+                      >
+                        <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+                          已勾 {checklistItems.filter((x) => x.done).length} 项
+                        </summary>
+                        <ul className="mt-1 space-y-1 text-[11px] text-slate-500">
+                          {checklistItems
+                            .filter((x) => x.done)
+                            .map((x) => (
+                              <li key={x.label} className="flex items-start gap-2">
+                                <label className="flex cursor-pointer items-start gap-1.5">
+                                  <input
+                                    type="checkbox"
+                                    className="mt-0.5"
+                                    checked
+                                    data-testid={`dept-kit-check-${x.label}`}
+                                    onChange={() => {
+                                      if (slug)
+                                        toggleKitCheck(caseId, slug, x.label)
+                                    }}
+                                  />
+                                  <span className="line-through">{x.label}</span>
+                                </label>
+                              </li>
+                            ))}
+                        </ul>
+                      </details>
+                    ) : null}
                     <div
                       className="mt-2 flex flex-wrap items-center gap-1.5"
                       data-testid="dept-kit-tool-row"

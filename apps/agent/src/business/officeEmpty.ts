@@ -127,8 +127,8 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
   },
   'catalog-empty': {
     title: '目录还是空的',
-    body: '当前没有可列的助手条目。',
-    next: '可回大厅继续委托办主链',
+    body: '助手目录是旁路；当前没有可列条目。',
+    next: '回大厅委托，或进公司案八部办理 — 勿把本页当进门总览',
   },
   'catalog-filter': {
     title: '没有匹配的助手',

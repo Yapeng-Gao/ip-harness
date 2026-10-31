@@ -303,9 +303,14 @@ export function AgentSessionSidebar() {
           {/* compose / catalog：会话·Agent 收进「更多」，勿与主入口同权 */}
           {!collapseInbox ? (
             <>
-              <NavLink to="/agent/agents" className={navCls}>
+              <NavLink
+                to="/agent/agents"
+                className={navCls}
+                data-testid="sidebar-catalog-bypass"
+                title="旁路 · 助手目录"
+              >
                 <Users className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
-                Agent
+                助手目录
               </NavLink>
               <NavLink to="/agent/sessions" end className={navCls}>
                 <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
@@ -347,7 +352,7 @@ export function AgentSessionSidebar() {
                       className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
                       data-testid="sidebar-catalog-secondary"
                     >
-                      <Users className="h-3.5 w-3.5 text-slate-400" /> Catalog · Agent
+                      <Users className="h-3.5 w-3.5 text-slate-400" /> 助手目录 · 旁路
                     </Link>
                     <div className="border-t border-slate-100" />
                   </>
@@ -497,7 +502,7 @@ export function AgentSessionSidebar() {
                     setFilterMenuOpen(false)
                   }}
                 >
-                  按 Agent…
+                  按助手…
                 </button>
                 <div className="border-t border-slate-100" />
                 <button
@@ -605,7 +610,7 @@ export function AgentSessionSidebar() {
                   className="btn-press focus-ring flex w-full items-center justify-between text-[11px] text-slate-600"
                   aria-expanded={agentFilterOpen}
                 >
-                  <span>Agent</span>
+                  <span>助手</span>
                   <ChevronDown className={`h-3 w-3 ${agentFilterOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {agentFilterOpen && (
@@ -614,7 +619,7 @@ export function AgentSessionSidebar() {
                     value={agentFilter}
                     onChange={(e) => setAgentFilter(e.target.value)}
                     className="focus-ring mt-1 w-full truncate rounded border border-slate-200 bg-white px-1.5 py-1 text-xs text-slate-700"
-                    aria-label="按 Agent 筛选"
+                    aria-label="按助手筛选"
                   >
                     <option value="all">全部（{sorted.length}）</option>
                     <option value="auto">自动匹配（{agentCounts.get('auto') ?? 0}）</option>

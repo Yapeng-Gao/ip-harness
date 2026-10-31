@@ -15,9 +15,10 @@ import { BranchDoors } from '../components/business/BranchDoors'
 import { reopenAllTeachTips } from '../business/teachingFade'
 
 /**
- * 助手档着陆 · /agent
- * 真源：vision §3.1d —— 委托 + 进行中/待接力为主；进公司/开案仅弱链；八部大门次级可折（不抢项目盯案叙事）。
- * BossTodo = 轻量轨；禁医院分诊；禁待办拆成多张卡片墙；禁把顶栏助手叫「首页」。
+ * 大厅着陆 · /agent
+ * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 接待入口 + 八部可见；进公司/部台办主链。
+ * lifecycle vision §3.1d「助手/项目/专业」三档已降权收折，勿当进门主叙事。
+ * BossTodo = 轻量轨；禁医院分诊；禁待办拆成多张卡片墙。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -83,7 +84,7 @@ export function HomePage() {
       <div className="mx-auto w-full max-w-4xl">
         <header className="mb-4" data-testid="home-hall-tagline">
           <p className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
-            Novada Team · 助手
+            Novada Team · 大厅
           </p>
           <h1 className="mt-1 text-pretty text-[22px] font-bold tracking-tight text-slate-900 sm:text-[24px]">
             把事交代出去
@@ -146,7 +147,7 @@ export function HomePage() {
           />
           <HomeRelayStrip refreshKey={relayRefresh} />
           <p className="mt-1.5 text-[10px] text-slate-500" data-testid="home-delegate-hint">
-            提目标 → 计划可调 → 分发 → 待接力（样机示意）。盯整案切顶栏「项目」（公司案地图）；选部开工切「专业」。
+            提目标 → 计划可调 → 分发 → 待接力（样机示意）。盯整案进公司案；选部从八部门牌或公司缺口进部台。
           </p>
         </section>
 
@@ -262,7 +263,7 @@ export function HomePage() {
               八个部门
             </h2>
             <span className="text-[11px] font-normal text-slate-500">
-              次级 · 盯整案请用顶栏「项目」（公司地图）
+              次级 · 盯整案请进公司案地图（非顶栏旧三档）
             </span>
           </button>
           <ol
@@ -294,7 +295,7 @@ export function HomePage() {
           </ol>
           {!eightOpen ? (
             <p className="pl-5 text-[11px] text-slate-500" data-testid="home-eight-depts-hint">
-              已折起 · 点上方展开；日常盯案走顶栏「项目」→ 公司案地图（非旁路 /projects）。
+              已折起 · 点上方展开；日常盯案走公司案地图（非旁路 /projects；非 lifecycle 顶栏三档）。
             </p>
           ) : null}
         </section>
@@ -311,7 +312,7 @@ export function HomePage() {
               支路深链 · {branchQ.toUpperCase()}
             </p>
             <p className="mt-0.5 text-[12px] text-amber-900/90">
-              助手只开门；机制验收请进对应部门工作台。
+              大厅只开门；机制验收请进对应部门工作台。
             </p>
           </div>
         ) : null}
@@ -364,7 +365,7 @@ export function HomePage() {
         </nav>
 
         <footer className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
-          <span>Novada Team 助手 · 拍板在部门工作台右栏</span>
+          <span>Novada Team 大厅 · 拍板在部门工作台右栏</span>
           <button
             type="button"
             className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-600"
