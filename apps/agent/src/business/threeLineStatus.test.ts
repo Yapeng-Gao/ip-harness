@@ -11,13 +11,13 @@ describe('threeLineStatus', () => {
       completedStages: [],
     })
     assert.equal(rows.length, 3)
-    assert.equal(rows[0]!.label, '④全绿')
-    assert.equal(rows[1]!.label, '⑤过线')
-    assert.equal(rows[2]!.label, '⑥本轮 D 过线')
+    assert.equal(rows[0]!.label, '交底全绿')
+    assert.equal(rows[1]!.label, '申请过线')
+    assert.equal(rows[2]!.label, '本轮答复 D 过线')
     assert.equal(rows.every((r) => !r.reached), true)
-    assert.match(rows[0]!.not, /⑤过线/)
-    assert.match(rows[1]!.not, /④全绿/)
-    assert.match(rows[2]!.not, /⑤过线/)
+    assert.match(rows[0]!.not, /申请过线/)
+    assert.match(rows[1]!.not, /交底全绿/)
+    assert.match(rows[2]!.not, /申请过线/)
   })
 
   it('d4 green does not imply d5 pass', () => {
@@ -45,13 +45,13 @@ describe('threeLineStatus', () => {
     assert.match(rows[2]!.detail, /D 未过线/)
   })
 
-  it('inProgressTicketLine prefers ④→⑤ when green but not pass', () => {
+  it('inProgressTicketLine prefers handoff when green but not pass', () => {
     const line = inProgressTicketLine({
       doneSeatIds: ['expert-disclosure'],
       filed: false,
       oaRound: 0,
       completedStages: [],
     })
-    assert.match(line ?? '', /④→⑤/)
+    assert.match(line ?? '', /交底→申请/)
   })
 })

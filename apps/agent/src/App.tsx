@@ -86,7 +86,7 @@ export default function App() {
                 {/* 2026-10-21：catalog 并入部门页 */}
                 <Route path="catalog" element={<Navigate to="/agent/departments" replace />} />
                 <Route path="experts" element={<Navigate to="/agent/departments" replace />} />
-                {/* 席位样机旁路目录 · 非一期进门；卸组队「组成专班」 */}
+                {/* 席位样机旁路目录 · 非一期进门；卸组队入口（勿回潮） */}
                 <Route path="seats" element={<PatentCatalogPage />} />
                 <Route path="seats/:seatId" element={<PatentSeatPage />} />
                 <Route path="sandbox" element={<AgentL1Shell />} />

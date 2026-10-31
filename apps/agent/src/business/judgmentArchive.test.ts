@@ -15,13 +15,13 @@ describe('judgmentArchive T10', () => {
       caseId: 'c1',
       confirmId: 'cf1',
       kind: 'disclosure_ready',
-      summary: '交底事实属实，可交⑤',
-      resultPreview: '【成果】交底质检示意全绿，可打包开⑤。\n【对比】对照六段缺测法已备注。',
+      summary: '交底事实属实，可交申请部',
+      resultPreview: '【成果】交底质检示意全绿，可打包开申请部工单。\n【对比】对照六段缺测法已备注。',
       processPreview: '【办理过程】事实确认→质检复检→全绿。',
       decision: 'confirmed',
       reason: '接受结论',
     })
-    assert.equal(j.gate, '④可交⑤')
+    assert.equal(j.gate, '可交申请部')
     assert.match(j.option, /确认/)
     assert.ok(j.conclusion.length > 4)
     assert.equal(j.reason, '接受结论')
@@ -44,7 +44,7 @@ describe('judgmentArchive T10', () => {
   it('B5 branch judgment does not invent 申请号 narrative', () => {
     const j = buildBranchJudgment({
       caseId: 'c1',
-      gate: '⑤申不申',
+      gate: '申不申',
       conclusion: '不申',
       option: '不申结案',
       reason: '预算与公开节奏 · B5 不出申请号',
@@ -57,7 +57,7 @@ describe('judgmentArchive T10', () => {
   it('preference precipitate marks saved', () => {
     const j = buildBranchJudgment({
       caseId: 'c1',
-      gate: '⑤申不申',
+      gate: '申不申',
       conclusion: '申请发明',
       option: '确认 · 申请',
     })
@@ -72,7 +72,7 @@ describe('judgmentArchive T10', () => {
   })
 
   it('gate labels follow 八部 meaning', () => {
-    assert.equal(gateLabelForKind('file_authorize'), '⑤确认递交')
-    assert.equal(gateLabelForKind('claims_ready'), '⑤保护范围')
+    assert.equal(gateLabelForKind('file_authorize'), '确认递交')
+    assert.equal(gateLabelForKind('claims_ready'), '保护范围')
   })
 })

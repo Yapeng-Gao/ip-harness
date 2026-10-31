@@ -954,7 +954,7 @@ export function BusinessCaseDeptPage() {
                 data-testid="dept-open-handoff-ticket"
               >
                 <Package className="h-3.5 w-3.5" aria-hidden />
-                ④→⑤ 工单
+                交底→申请 工单
               </button>
             ) : null}
             <Link
@@ -1005,7 +1005,7 @@ export function BusinessCaseDeptPage() {
           <p className="mt-1 text-[10px] text-amber-700/70">{entryGate.honesty}</p>
           {dept && isDraftDept(dept.id) ? (
             <p className="mt-2 text-[11px] font-medium text-amber-950" data-testid="b2-gaps">
-              B2 缺口：交底未全绿 / 无④→⑤工单 · 请回④补料或走工单，禁止未全绿硬写。
+              自带交底缺口：交底未全绿 / 无交底→申请工单 · 请回交底部补料或走工单，禁止未全绿硬写。
             </p>
           ) : null}
           <div className="mt-2 flex flex-wrap gap-2">
@@ -1205,7 +1205,7 @@ export function BusinessCaseDeptPage() {
                       recordJudgment(
                         buildBranchJudgment({
                           caseId,
-                          gate: '⑤申不申',
+                          gate: '申不申',
                           conclusion: '不申（主栏示意）',
                           option: '不申结案',
                           reason: '厚步 B 点选 · 正式拍板在右栏',
@@ -1515,7 +1515,7 @@ export function BusinessCaseDeptPage() {
                   B5 · 不申结案
                 </p>
                 <p className="mt-0.5 font-medium">
-                  ⑤ B 拍「不申」：结案/转秘密 · <strong>不</strong>出申请号 · 可不进 C
+                  B 步拍「不申」：结案/转秘密 · <strong>不</strong>出申请号 · 可不进 C
                 </p>
                 <div
                   className="mt-2 rounded-lg border border-rose-200 bg-white px-3 py-2 text-[11px]"
@@ -1534,7 +1534,7 @@ export function BusinessCaseDeptPage() {
                       recordJudgment(
                         buildBranchJudgment({
                           caseId,
-                          gate: '⑤申不申',
+                          gate: '申不申',
                           conclusion: '不申',
                           option: '不申结案',
                           reason: 'B5 · 不出申请号',
@@ -1562,7 +1562,7 @@ export function BusinessCaseDeptPage() {
                 role="status"
               >
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-700/80">
-                  接④工单
+                  接交底工单
                 </p>
                 <p className="mt-0.5 font-medium">{draftInheritedHandoffLine()}</p>
                 <p className="mt-1 text-[11px] text-slate-600">

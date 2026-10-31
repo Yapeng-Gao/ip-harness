@@ -51,7 +51,7 @@ const PACK16 = new Set<ProjectExpertId>([
 
 /**
  * 席位样机目录旁路 · /agent/seats
- * 非一期进门；禁组队「组成专班」；浏览单席 / 进本案 / 回流示意
+ * 非一期进门；禁组队入口回潮；浏览单席 / 进本案 / 回流示意
  */
 export function PatentCatalogPage() {
   const navigate = useNavigate()
@@ -201,7 +201,7 @@ export function PatentCatalogPage() {
             打开案子工作台
           </button>
           <p className="w-full text-[10px] text-emerald-800/80">
-            点席「进本案」→ 同案席位；待确认不丢。组队「组成专班」已卸 · 请从公司案八部办理。
+            点席「进本案」→ 同案席位；待确认不丢。组队入口已卸 · 请从公司案八部办理。
           </p>
         </div>
       </header>

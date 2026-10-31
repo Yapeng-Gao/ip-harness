@@ -13,7 +13,7 @@ export type JudgmentRecord = {
   id: string
   caseId: string
   at: string
-  /** 闸口短名 · 如「④可交⑤」「⑤申不申」 */
+  /** 闸口短名 · 如「可交申请部」「申不申」 */
   gate: string
   conclusion: string
   /** 用户拍的选项 · 确认 / 驳回 / 不申结案 / 认风险… */
@@ -48,13 +48,13 @@ export function nowJudgmentStamp(d = new Date()): string {
 export function gateLabelForKind(kind: BusinessConfirmKind): string {
   const m = confirmDecisionMeta(kind)
   const map: Partial<Record<BusinessConfirmKind, string>> = {
-    disclosure_ready: '④可交⑤',
+    disclosure_ready: '可交申请部',
     research_ready: '查新结论',
     go_nogo: '立项申不申',
-    claims_ready: '⑤保护范围',
+    claims_ready: '保护范围',
     figures_ready: '附图定稿',
-    file_authorize: '⑤确认递交',
-    oa_strategy: '⑥答复策略',
+    file_authorize: '确认递交',
+    oa_strategy: '答复策略',
     layout_adjust: '布局调整',
   }
   return map[kind] ?? m.decisionShort

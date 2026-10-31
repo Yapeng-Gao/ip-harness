@@ -28,7 +28,7 @@ export function demoCaseFileMaterials(opts?: {
       label: '申请文件包',
       status: opts?.draftStarted ? '有' : '缺口',
     },
-    { label: '通知书', status: '缺口', note: '未到⑥' },
+    { label: '通知书', status: '缺口', note: '未到答复部' },
   ]
 }
 
@@ -37,33 +37,33 @@ export function demoCaseFileChecks(opts?: {
 }): CaseFileCheckRow[] {
   return [
     {
-      dept: '④ 交底部',
+      dept: '交底部',
       kind: '进入',
       summary: '技术事实材料到位',
       ok: true,
     },
     {
-      dept: '④ 交底部',
+      dept: '交底部',
       kind: '结束',
       summary: opts?.disclosureDone
-        ? '交底质检全绿 · 可交⑤'
-        : '未全绿 · 不可开「现在做⑤」',
+        ? '交底质检全绿 · 可交申请部'
+        : '未全绿 · 不可开「现在做 · 申请部」',
       ok: !!opts?.disclosureDone,
     },
     {
-      dept: '⑤ 申请部',
+      dept: '申请部',
       kind: '进入',
       summary: '须合格交底（工单或自带）',
       ok: !!opts?.disclosureDone,
     },
     {
-      dept: '⑤ 申请部',
+      dept: '申请部',
       kind: '结束',
       summary: '申请文件可递交（过线）· 尚未',
       ok: false,
     },
     {
-      dept: '⑥ 答复部',
+      dept: '答复部',
       kind: '本轮',
       summary: '本轮答复可递交（D 过线）· 未到',
       ok: false,
@@ -89,11 +89,11 @@ export function demoCaseFileJudgments(opts?: {
     rows.push(
       {
         at: '④',
-        text: '事实确认 → 质检再检 → 全绿 → 可交⑤',
+        text: '事实确认 → 质检再检 → 全绿 → 可交申请部',
       },
       {
         at: '工单',
-        text: '交底部负责人打包「现在做⑤」· 申请尚未过线',
+        text: '交底部负责人打包「现在做 · 申请部」· 申请尚未过线',
       },
     )
   }

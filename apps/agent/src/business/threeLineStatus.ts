@@ -38,26 +38,26 @@ export function threeLineStatus(
   return [
     {
       key: 'd4_green',
-      label: '④全绿',
-      not: '≠ ⑤过线 · ≠ 已递交',
+      label: '交底全绿',
+      not: '≠ 申请过线 · ≠ 已递交',
       reached: d4,
       detail: d4 ? '交底质检全绿（席位已确认）' : '交底质检 · 未全绿',
     },
     {
       key: 'd5_pass',
-      label: '⑤过线',
-      not: '≠ ④全绿 · ≠ 确认递交',
+      label: '申请过线',
+      not: '≠ 交底全绿 · ≠ 确认递交',
       reached: d5Pass,
       detail: d5Pass
         ? '申请文件可递交（过线）'
         : d4
           ? '申请尚未过线'
-          : '未到 · 须先④全绿或工单',
+          : '未到 · 须先交底全绿或工单',
     },
     {
       key: 'd6_d_pass',
-      label: '⑥本轮 D 过线',
-      not: '≠ ⑤过线 · ≠ 授权结果',
+      label: '本轮答复 D 过线',
+      not: '≠ 申请过线 · ≠ 授权结果',
       reached: d6Pass,
       detail: d6Pass
         ? '本轮答复可递交（D 过线）'
@@ -76,14 +76,14 @@ export function inProgressTicketLine(
   const d4 = lines.find((l) => l.key === 'd4_green')!
   const d5 = lines.find((l) => l.key === 'd5_pass')!
   const d6 = lines.find((l) => l.key === 'd6_d_pass')!
-  if (d4.reached && !d5.reached) return '④→⑤ 工单可开 / 申请尚未过线'
+  if (d4.reached && !d5.reached) return '交底→申请工单可开 / 申请尚未过线'
   if (d5.reached && !d6.reached && !prog.filed && (prog.oaRound ?? 0) === 0) {
-    return '⑤过线后待确认递交（演示）'
+    return '申请过线后待确认递交（演示）'
   }
   if ((prog.filed || (prog.oaRound ?? 0) > 0) && !d6.reached) {
-    return '⑥ 本轮答复进行中 · D 未过线'
+    return '本轮答复进行中 · D 未过线'
   }
   if (d4.reached && d5.reached && d6.reached) return null
-  if (!d4.reached) return '主链作业进行中 · ④尚未全绿'
+  if (!d4.reached) return '主链作业进行中 · 交底尚未全绿'
   return '主链进行中'
 }

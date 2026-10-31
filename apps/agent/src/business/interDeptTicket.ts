@@ -42,12 +42,12 @@ export function disclosureToDraftTicket(caseId: string): InterDeptTicket {
     id: `ticket-${caseId}-d04-d05`,
     fromDeptId: 'dept-disclosure',
     toDeptId: 'dept-draft',
-    fromLabel: '④ 交底部',
-    toLabel: '⑤ 申请部',
+    fromLabel: '交底部',
+    toLabel: '申请部',
     packer: '交底部 · 部门负责人',
     receiver: '申请部 · 部门负责人',
     intent: '现在做',
-    intentLabel: '现在做⑤ · 申请部',
+    intentLabel: '现在做 · 申请部',
     lines: ['交底质检全绿', '申请尚未过线'],
     checklist: [
       { label: '交底正文', done: true },
@@ -62,5 +62,5 @@ export function disclosureToDraftTicket(caseId: string): InterDeptTicket {
 
 /** ⑤ 侧接单提示一句 */
 export function draftInheritedHandoffLine(): string {
-  return '已接④工单 · 交底全绿已继承。建议 B 后你再拍申不申。'
+  return '已接交底工单 · 交底全绿已继承。建议 B 后你再拍申不申。'
 }

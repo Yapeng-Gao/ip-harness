@@ -239,7 +239,9 @@ export function CaseProfessionalPage() {
           className="mt-4 grid gap-3 sm:grid-cols-2"
           data-testid="case-professional-cards"
         >
-          {cards.map(({ door, dept, line, seats, extras, href, skillNames, parts, auxHooks }) => (
+          {cards
+            .filter((x) => x.line.kind === 'gap' || x.line.kind === 'work')
+            .map(({ door, dept, line, seats, extras, href, skillNames, parts, auxHooks }) => (
             <li
               key={dept.id}
               className={`flex flex-col rounded-xl border bg-white p-3.5 shadow-sm ${
@@ -491,6 +493,55 @@ export function CaseProfessionalPage() {
             </li>
           ))}
         </ul>
+
+        
+        {summary.idle > 0 ? (
+          <details
+            className="mt-3 rounded-xl border border-slate-200 bg-slate-50/60 px-3 py-2"
+            data-testid="case-professional-idle-fold"
+          >
+            <summary
+              className="cursor-pointer select-none text-[12px] font-medium text-slate-600"
+              data-testid="case-professional-idle-summary"
+            >
+              其余部门 · {summary.idle}（默认收折 · 缺口/在办已上列）
+            </summary>
+            <ul className="mt-3 grid gap-3 sm:grid-cols-2" data-testid="case-professional-idle-cards">
+              {cards
+                .filter((x) => x.line.kind === 'idle')
+                .map(({ door, dept, line, seats, extras, href, skillNames, parts, auxHooks }) => (
+                  <li
+                    key={dept.id}
+                    className="flex flex-col rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm"
+                    data-testid={`case-professional-card-${door.slug}`}
+                    data-dept-status={line.kind}
+                  >
+                    <div className="flex items-baseline gap-1.5">
+                      <h2 className="text-[14px] font-semibold text-slate-900">
+                        {deptLabel(dept)}
+                      </h2>
+                    </div>
+                    <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
+                      {dept.blurb || door.desc}
+                    </p>
+                    <p
+                      className="mt-2 text-[12px] font-medium text-slate-500"
+                      data-testid="case-professional-status"
+                    >
+                      {line.text}
+                    </p>
+                    <Link
+                      to={href}
+                      className="btn-press focus-ring mt-3 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-800 hover:bg-slate-50"
+                      data-testid={`case-professional-enter-${door.slug}`}
+                    >
+                      进部台
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </details>
+        ) : null}
 
         <details
           className="mt-5 rounded-xl border border-dashed border-violet-200 bg-violet-50/40 px-3 py-2.5"

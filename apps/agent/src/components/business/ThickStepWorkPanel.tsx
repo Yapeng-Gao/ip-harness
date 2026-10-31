@@ -96,7 +96,7 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-[10px] text-slate-400">本步只写成稿 · 事实/质检/可交⑤分步打开。</p>
+          <p className="mt-2 text-[10px] text-slate-400">本步只写成稿 · 事实/质检/可交申请部分步打开。</p>
         </div>
       ) : null}
 
@@ -162,21 +162,21 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
 
       {kind === 'd4' && step.id === 'hand' ? (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3" data-testid="thick-d4-hand">
-          <p className="text-[11px] font-semibold text-emerald-900">节点交付 · 可交⑤</p>
+          <p className="text-[11px] font-semibold text-emerald-900">节点交付 · 可交申请部</p>
           <ul className="mt-2 space-y-1 text-[12px] text-slate-800">
             <li>✓ 交底成稿在案</li>
             <li>✓ 事实已核对（演示）</li>
-            <li>○ 质检示意全绿后，右栏拍「可交⑤」</li>
+            <li>○ 质检示意全绿后，右栏拍「可交申请部」</li>
           </ul>
           <button
             type="button"
             className="btn-press focus-ring mt-3 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
             data-testid="thick-d4-hand-ready"
-            onClick={() => mark('hand-ready', '材料齐 · 请看右栏拍可交⑤')}
+            onClick={() => mark('hand-ready', '材料齐 · 请看右栏拍可交申请部')}
           >
             材料齐 · 去右栏拍
           </button>
-          <p className="mt-2 text-[10px] text-slate-500">全绿 ≠ 已交⑤ · 未拍不得开④→⑤工单。</p>
+          <p className="mt-2 text-[10px] text-slate-500">全绿 ≠ 已交申请部 · 未拍不得开交底→申请工单。</p>
         </div>
       ) : null}
 
