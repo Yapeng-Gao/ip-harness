@@ -21,7 +21,7 @@ const DEMO_MEMBERS: Array<{
   {
     name: '代理协助（演示）',
     role: '代理人 · 陪同作业',
-    gates: '可陪同进⑤壳 · 不可代企业终拍',
+    gates: '可陪同进申请部壳 · 不可代企业终拍',
     tag: '代理人',
   },
   {

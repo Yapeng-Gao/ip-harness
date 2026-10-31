@@ -9,7 +9,7 @@ type Props = {
 }
 
 /**
- * ④⑤⑥ 按步主栏可点零件 · 对齐一期节点交付物密度（演示）
+ * 交底/申请/答复 按步主栏可点零件 · 对齐一期节点交付物密度（演示）
  * 正文仍可读；拍板仍在右栏硬请示。
  */
 export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) {
@@ -235,7 +235,7 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
             </div>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
-            {['理解正确', '差一处', '退回④'].map((l) => (
+            {['理解正确', '差一处', '退回交底部'].map((l) => (
               <button
                 key={l}
                 type="button"

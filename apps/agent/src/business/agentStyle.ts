@@ -25,7 +25,7 @@ const BY_DEPT: Partial<Record<OrgDeptId, AgentStyleTag>> = {
   'dept-mining': {
     id: 'style-mining',
     label: '点包克制',
-    line: '创新点可交④为准；不承诺可授权。',
+    line: '创新点可交交底部为准；不承诺可授权。',
   },
   'dept-disclosure': {
     id: 'style-disclosure',
@@ -40,7 +40,7 @@ const BY_DEPT: Partial<Record<OrgDeptId, AgentStyleTag>> = {
   'dept-filing': {
     id: 'style-filing',
     label: '齐套递交',
-    line: '回执入⑦；不装官报已通。',
+    line: '回执入维护部；不装官报已通。',
   },
   'dept-oa': {
     id: 'style-oa',

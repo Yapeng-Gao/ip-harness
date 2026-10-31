@@ -11,7 +11,7 @@ type Props = {
 
 /**
  * 三线分名词条 · 交互大纲原则 3 / 00 §6.1
- * 机制：分开展示 ④全绿 / ⑤过线 / ⑥本轮 D 过线，禁止混成一条「已过」。
+ * 机制：分开展示 交底全绿 / 申请过线 / 答复本轮过线，禁止混成一条「已过」。
  */
 export function ThreeLineStatusStrip({
   prog,
@@ -28,10 +28,10 @@ export function ThreeLineStatusStrip({
         ) : null}
         {!dense ? (
           <span className="text-[10px] text-slate-500">
-            ④全绿 ≠ ⑤过线 ≠ ⑥本轮 D 过线 · 勿混
+            交底全绿 ≠ 申请过线 ≠ 答复本轮过线 · 勿混
           </span>
         ) : !foldByDefault ? (
-          <span className="text-[9px] text-slate-400" title="④全绿 ≠ ⑤过线 ≠ ⑥本轮 D 过线 · 勿混">
+          <span className="text-[9px] text-slate-400" title="交底全绿 ≠ 申请过线 ≠ 答复本轮过线 · 勿混">
             分开展示 · 勿混
           </span>
         ) : null}

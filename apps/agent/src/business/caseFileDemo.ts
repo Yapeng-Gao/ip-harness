@@ -83,12 +83,12 @@ export function demoCaseFileJudgments(opts?: {
   disclosureDone?: boolean
 }): CaseFileJudgment[] {
   const rows: CaseFileJudgment[] = [
-    { at: '前台', text: '确认去④（材料像交底向）' },
+    { at: '前台', text: '确认去交底部（材料像交底向）' },
   ]
   if (opts?.disclosureDone) {
     rows.push(
       {
-        at: '④',
+        at: '交底部',
         text: '事实确认 → 质检再检 → 全绿 → 可交申请部',
       },
       {
