@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowRight, Building2, MessageCircle, Plus } from 'lucide-react'
+import { ArrowRight, Building2, MessageCircle } from 'lucide-react'
 import { HomeBossTodoBoard } from '../components/home/HomeBossTodoBoard'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
@@ -161,16 +161,7 @@ export function HomePage() {
                     <Building2 className="h-3 w-3" aria-hidden />
                     公司案首页
                   </Link>
-                ) : (
-                  <Link
-                    to="/agent/cases/new"
-                    className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
-                    data-testid="home-action-new-case"
-                  >
-                    <Plus className="h-3 w-3" aria-hidden />
-                    开案子
-                  </Link>
-                )}
+                ) : null}
               </div>
             </div>
           </div>
