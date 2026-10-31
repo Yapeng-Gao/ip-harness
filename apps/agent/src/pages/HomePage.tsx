@@ -17,7 +17,7 @@ import { HALL_DEPT_DOORS, hallDeptHref } from '../business/hallDepts'
  */
 export function HomePage() {
   const { entryRole } = useEntryRole()
-  const { cases, getProgress, getProcessLogs } = useBusinessCases()
+  const { cases, getProgress, getProcessLogs, getPendingConfirms } = useBusinessCases()
 
   const getLogAt = useMemo(
     () => (id: string) => {
@@ -90,6 +90,9 @@ export function HomePage() {
         <div className="mb-5" data-testid="home-pending-entry">
           <HomeTodoStrip />
         </div>
+
+        {/* ⑥ 期限催办 · 大厅可见 */}
+        <OaDeadlineNudge latestId={latestId} cases={cases} getPendingConfirms={getPendingConfirms} getProgress={getProgress} />
 
         {/* 接待 · 弱引导 */}
         <section
@@ -311,5 +314,66 @@ export function HomePage() {
         </footer>
       </div>
     </div>
+  )
+}
+
+function OaDeadlineNudge(props: {
+  latestId: string | undefined
+  cases: ReturnType<typeof useBusinessCases>['cases']
+  getPendingConfirms: ReturnType<typeof useBusinessCases>['getPendingConfirms']
+  getProgress: ReturnType<typeof useBusinessCases>['getProgress']
+}) {
+  const oaPending = props.cases.flatMap((c) =>
+    props
+      .getPendingConfirms(c.id)
+      .filter((p) => p.kind === 'oa_strategy' && p.status === 'pending')
+      .map((p) => ({ caseId: c.id, title: c.title, item: p })),
+  )
+  const filedNeedingWatch = props.cases.filter((c) => {
+    const prog = props.getProgress(c.id)
+    return Boolean(prog.filed) && (prog.stageId === 'oa' || (prog.oaRound ?? 0) > 0)
+  })
+  if (oaPending.length === 0 && filedNeedingWatch.length === 0) return null
+  const top = oaPending[0]
+  const href = top
+    ? `/agent/cases/${top.caseId}/depts/oa?ask=oa_strategy&confirmId=${encodeURIComponent(top.item.id)}`
+    : filedNeedingWatch[0]
+      ? `/agent/cases/${filedNeedingWatch[0]!.id}/depts/oa`
+      : props.latestId
+        ? `/agent/cases/${props.latestId}/depts/oa`
+        : '/agent/cases'
+  return (
+    <section
+      className="mb-5 rounded-xl border border-rose-200 bg-rose-50/90 px-4 py-3 shadow-sm"
+      data-testid="home-oa-nudge"
+      aria-labelledby="home-oa-nudge-title"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h2
+            id="home-oa-nudge-title"
+            className="text-[13px] font-semibold text-rose-950"
+          >
+            ⑥ 答复期限催办
+          </h2>
+          <p className="mt-0.5 text-[12px] leading-relaxed text-rose-900/90">
+            {top
+              ? `「${top.title}」有待拍答复策略 · 逾期风险演示（非真官方期限接口）`
+              : `已递交案 ${filedNeedingWatch.length} 件处于答复阶段 · 请进答复部盯期限`}
+          </p>
+          <p className="mt-1 text-[10px] text-rose-800/70">
+            催办示意 · 非官报通道 / 非短信邮件已通
+          </p>
+        </div>
+        <Link
+          to={href}
+          className="btn-press focus-ring inline-flex shrink-0 items-center gap-1 rounded-md bg-rose-900 px-2.5 py-1.5 text-[11px] font-semibold text-white"
+          data-testid="home-oa-nudge-cta"
+        >
+          去答复部
+          <ArrowRight className="h-3 w-3" aria-hidden />
+        </Link>
+      </div>
+    </section>
   )
 }

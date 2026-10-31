@@ -10,6 +10,7 @@ import {
 import { useEntryRole } from '../../business/useEntryRole'
 import { ExpertAvatar } from '../departments/ExpertAvatar'
 import { pendingAuditPath } from '../../business/pendingDeptQuery'
+import { buildAskEvidence } from '../../business/askEvidence'
 
 type Props = {
   item: BusinessConfirmItem
@@ -131,35 +132,15 @@ export function DeptAskReportBubble({
       </div>
 
       {!done ? (
-        <details className="mt-2 rounded-md border border-violet-100 bg-white/70 px-2 py-1.5" data-testid="ask-more">
-          <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
-            展开依据与理由
-          </summary>
-          <div className="mt-1.5 space-y-1.5 text-[11px] text-slate-600" data-testid="ask-more-body">
-            <p>
-              <span className="font-medium text-slate-700">决策含义：</span>
-              {decision.decisionMeaning}
-            </p>
-            <p>
-              <span className="font-medium text-slate-700">确认人：</span>
-              {decision.confirmerLabel}
-              <span className="text-slate-400"> · 建议者 {decision.suggesterLabel}</span>
-            </p>
-            {item.resultPreview?.trim() ? (
-              <pre
-                className="max-h-28 overflow-auto whitespace-pre-wrap rounded bg-slate-50 p-2 text-[10px] leading-relaxed text-slate-700"
-                data-testid="ask-result-preview"
-              >
-                {item.resultPreview.trim().slice(0, 600)}
-              </pre>
-            ) : null}
-            {item.processPreview?.trim() ? (
-              <p className="text-[10px] text-slate-500" data-testid="ask-process-preview">
-                过程：{item.processPreview.trim().slice(0, 160)}
-              </p>
-            ) : null}
-          </div>
-        </details>
+        <AskEvidencePanel
+          kind={item.kind}
+          summary={item.summary}
+          resultPreview={item.resultPreview}
+          processPreview={item.processPreview}
+          decisionMeaning={decision.decisionMeaning}
+          confirmerLabel={decision.confirmerLabel}
+          suggesterLabel={decision.suggesterLabel}
+        />
       ) : null}
 
       {!done ? (
@@ -217,6 +198,82 @@ export function DeptAskReportBubble({
         </p>
       ) : null}
     </div>
+  )
+}
+
+function AskEvidencePanel(props: {
+  kind: BusinessConfirmItem['kind']
+  summary: string
+  resultPreview?: string
+  processPreview?: string
+  decisionMeaning: string
+  confirmerLabel: string
+  suggesterLabel: string
+}) {
+  const bundle = buildAskEvidence({
+    kind: props.kind,
+    summary: props.summary,
+    resultPreview: props.resultPreview,
+    processPreview: props.processPreview,
+  })
+  return (
+    <details
+      className="mt-2 rounded-md border border-violet-100 bg-white/70 px-2 py-1.5"
+      data-testid="ask-more"
+      data-t4-sign-ready={bundle.signReady ? '1' : '0'}
+    >
+      <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+        展开依据链（结论·来源·推演·对比）
+        {!bundle.signReady ? (
+          <span className="ml-1 text-amber-700" data-testid="ask-t4-gap-tag">
+            · 缺 {bundle.gapLabels.join('/')}
+          </span>
+        ) : (
+          <span className="ml-1 text-emerald-700" data-testid="ask-t4-ready-tag">
+            · 四件齐（演示）
+          </span>
+        )}
+      </summary>
+      <div className="mt-1.5 space-y-1.5 text-[11px] text-slate-600" data-testid="ask-more-body">
+        <p className="text-[10px] text-slate-500">
+          决策含义：{props.decisionMeaning}
+        </p>
+        <p className="text-[10px] text-slate-500">
+          确认人：{props.confirmerLabel}
+          <span className="text-slate-400"> · 建议者 {props.suggesterLabel}</span>
+        </p>
+        <ul className="space-y-1.5" data-testid="ask-t4-pieces">
+          {bundle.pieces.map((piece) => (
+            <li
+              key={piece.id}
+              className={
+                piece.present
+                  ? 'rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5'
+                  : 'rounded-md border border-amber-200 bg-amber-50/80 px-2 py-1.5'
+              }
+              data-testid={`ask-t4-${piece.id}`}
+              data-present={piece.present ? '1' : '0'}
+            >
+              <p className="text-[10px] font-semibold text-slate-700">{piece.label}</p>
+              <p className="mt-0.5 whitespace-pre-wrap text-[10px] leading-relaxed text-slate-600">
+                {piece.body}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <p className="text-[9px] leading-relaxed text-slate-400" data-testid="ask-t4-honesty">
+          理念 T4：无来源/推演/对比不得装「可签字」。本气泡不提供一键全绿；缺段须补材料或驳回改稿。
+        </p>
+        {props.resultPreview?.trim() ? (
+          <pre
+            className="max-h-20 overflow-auto whitespace-pre-wrap rounded bg-white p-2 text-[10px] leading-relaxed text-slate-500"
+            data-testid="ask-result-preview"
+          >
+            {props.resultPreview.trim().slice(0, 400)}
+          </pre>
+        ) : null}
+      </div>
+    </details>
   )
 }
 

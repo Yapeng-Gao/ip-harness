@@ -6,7 +6,7 @@ import type { BusinessHomeStartState } from './BusinessCasesPage'
 /**
  * /agent/cases/new · 开案子（§4.1）
  * 首屏：外挂 IP 部一句 + 案名（必填）+ 技术一句话（短）
- * 主 CTA：创建并进入公司首页；禁止长表单 / 七部地图 / 直进交底
+ * 主 CTA：创建并进入公司首页；禁止长表单 / 八部地图 / 直进交底
  */
 export function BusinessCaseNewPage() {
   const { createCaseFromWizard } = useBusinessCases()

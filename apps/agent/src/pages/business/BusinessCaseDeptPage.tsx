@@ -66,6 +66,7 @@ import {
   stepsForKind,
   THIN_LINE_BY_DEPT,
 } from '../../business/workbenchSteps'
+import { evaluateEntryGate } from '../../business/entryGate'
 import { DeptHandoffTicket } from '../../components/business/DeptHandoffTicket'
 import { CaseFileDrawer } from '../../components/business/CaseFileDrawer'
 import { DeptAskReportBubble } from '../../components/business/DeptAskReportBubble'
@@ -122,7 +123,7 @@ export function BusinessCaseDeptPage() {
     confirmItem,
     returnItem,
   } = useBusinessCases()
-  const { getThread } = useProjectFolder()
+  const { getThread, patchThread } = useProjectFolder()
   const { deptLabel } = useOrgConfig()
 
   useEffect(() => {
@@ -462,6 +463,13 @@ export function BusinessCaseDeptPage() {
   const stepKind = stepfulKindForDept(dept.id)
   const thinShell = isThinShellDept(dept.id)
   const thinMeta = THIN_LINE_BY_DEPT[dept.id]
+  const entryGate = evaluateEntryGate({
+    deptId: dept.id,
+    doneSeatIds: prog.doneSeatIds ?? [],
+    filed: Boolean(prog.filed),
+    disclosureConfirmed: disclosureDone,
+    bypass: params.get('gate') === 'bypass',
+  })
   const currentStep =
     stepKind != null
       ? resolveCurrentStep(stepKind, {
@@ -604,6 +612,60 @@ export function BusinessCaseDeptPage() {
         </header>
       </div>
 
+      {!entryGate.ok ? (
+        <div
+          className="shrink-0 border-b border-amber-200 bg-amber-50 px-4 py-3 lg:px-6"
+          data-testid="dept-entry-gate"
+          data-gate-ok="0"
+          role="alert"
+        >
+          <p className="text-[13px] font-semibold text-amber-950">{entryGate.title}</p>
+          <p className="mt-0.5 text-[12px] text-amber-900/90">{entryGate.reason}</p>
+          <p className="mt-1 text-[11px] text-amber-800/80">{entryGate.fixHint}</p>
+          <p className="mt-1 text-[10px] text-amber-700/70">{entryGate.honesty}</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {entryGate.fixHrefHint === 'disclosure' ? (
+              <Link
+                to={`/agent/cases/${caseId}/depts/disclosure`}
+                className="btn-press focus-ring rounded-md bg-amber-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+                data-testid="dept-entry-gate-fix"
+              >
+                去交底部补门槛
+              </Link>
+            ) : null}
+            {entryGate.fixHrefHint === 'draft' ? (
+              <Link
+                to={`/agent/cases/${caseId}/depts/draft`}
+                className="btn-press focus-ring rounded-md bg-amber-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+                data-testid="dept-entry-gate-fix"
+              >
+                去申请部补门槛
+              </Link>
+            ) : null}
+            {entryGate.fixHrefHint === 'company' ? (
+              <Link
+                to={`/agent/cases/${caseId}`}
+                className="btn-press focus-ring rounded-md bg-amber-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+                data-testid="dept-entry-gate-fix"
+              >
+                回公司首页
+              </Link>
+            ) : null}
+            <Link
+              to={`/agent/cases/${caseId}/depts/${deptSlug(dept.id)}?gate=bypass`}
+              className="btn-press focus-ring rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-900"
+              data-testid="dept-entry-gate-bypass"
+            >
+              演示旁路（不装已过线）
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="sr-only" data-testid="dept-entry-gate" data-gate-ok="1">
+          {entryGate.title}
+        </div>
+      )}
+
       {/* Cursor 三栏 */}
       <div
         className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row"
@@ -716,14 +778,14 @@ export function BusinessCaseDeptPage() {
               </div>
             ) : thinShell && selectedMaterialId === 'deliverable' ? (
               <div
-                className="rounded-xl border border-dashed border-slate-300 bg-white p-6 shadow-sm"
-                data-testid="dept-thin-empty"
+                className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                data-testid="dept-thin-work"
               >
                 <h2
                   id="dept-output-title"
                   className="text-[14px] font-semibold text-slate-900"
                 >
-                  {deptLabel(dept)} · 同壳空态
+                  {thinMeta?.workTitle ?? `${deptLabel(dept)} · 同壳作业`}
                 </h2>
                 <p className="mt-2 text-[12px] text-slate-600" data-testid="dept-qualify-line-body">
                   合格线：{thinMeta?.line ?? qualifyLine}
@@ -733,8 +795,15 @@ export function BusinessCaseDeptPage() {
                     边界：{thinMeta.ban}
                   </p>
                 ) : null}
-                <p className="mt-4 text-[12px] text-slate-500">
-                  薄部一期可进得去；主交付物未满时不堆假进度墙。硬请示仍在右栏对话。
+                <pre
+                  className="mt-3 max-h-[min(50vh,28rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
+                  data-testid="dept-thin-work-body"
+                >
+                  {thinMeta?.workBody ??
+                    '薄部可进；主交付示意未挂时不堆假进度。硬请示仍在右栏。'}
+                </pre>
+                <p className="mt-3 text-[11px] text-slate-500">
+                  示意作业 · 非真零件挂接；官报/真检索不在范围。
                 </p>
                 {askParam ? (
                   <p
@@ -764,6 +833,45 @@ export function BusinessCaseDeptPage() {
                 >
                   {centerBody}
                 </pre>
+                {selectedMaterialId.startsWith('version-') ? (
+                  <div
+                    className="mt-3 rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2.5"
+                    data-testid="dept-version-diff"
+                  >
+                    <p className="text-[11px] font-semibold text-slate-800">
+                      版本对照 · 示意闭环
+                    </p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
+                      对照当前产出稿与另存版本。认可后可写回主栏；驳回则保留当前稿。非真 diff 引擎。
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
+                        data-testid="dept-version-approve"
+                        onClick={() => {
+                          const idx = Number(selectedMaterialId.replace('version-', ''))
+                          const v = versions[idx]
+                          if (!v?.markdown?.trim() || !activeSeat) return
+                          patchThread(caseId, activeSeat, {
+                            artifactMarkdown: v.markdown,
+                          })
+                          setSelectedMaterialId('deliverable')
+                        }}
+                      >
+                        认可此版写回
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-medium text-slate-700"
+                        data-testid="dept-version-keep"
+                        onClick={() => setSelectedMaterialId('deliverable')}
+                      >
+                        保持当前稿
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             )}
             {showDraftInherit ? (

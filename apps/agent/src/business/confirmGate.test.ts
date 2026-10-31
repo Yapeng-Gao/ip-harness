@@ -112,7 +112,7 @@ describe('confirmGate §3.1a', () => {
     assert.equal(
       isDeptAdvanceLocked({
         currentDeptId: 'dept-disclosure',
-        targetDeptId: 'dept-research',
+        targetDeptId: 'dept-draft',
         awaitingConfirm: true,
       }),
       true,
@@ -128,7 +128,7 @@ describe('confirmGate §3.1a', () => {
     assert.equal(
       isDeptAdvanceLocked({
         currentDeptId: 'dept-disclosure',
-        targetDeptId: 'dept-research',
+        targetDeptId: 'dept-draft',
         awaitingConfirm: false,
       }),
       false,

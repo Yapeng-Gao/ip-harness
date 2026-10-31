@@ -48,7 +48,7 @@ import { AuthSessionProvider } from './business/AuthSessionContext'
  * /agent/login        登录壳（角色二选一 + 样机会话；§4.0）
  * /agent              薄产品入口（§4.0a；登录后落点；主 CTA 按角色分流）
  * /agent/cases        多案流水（案表 → 公司首页）
- * /agent/departments  组织编制（全库配置旁路；作业以案→公司首页七部为主）
+ * /agent/departments  组织编制（全库配置旁路；作业以案→公司首页八部为主）
  * /agent/assets       资产（全局库 + 文件树）
  */
 export default function App() {

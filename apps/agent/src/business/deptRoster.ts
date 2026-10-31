@@ -1,6 +1,7 @@
 /**
  * 部门 · 专家花名册（业务壳）· agent-dept-expert-team
- * 默认 7 部门；撰写部含真副席说明书；前研/布局挂更多。
+ * 默认 7 作业席部门（辅链含查新/附图/递交）；申请部含真副席说明书；前研/布局挂更多。
+ * 对外主链八部名以 orgDepts.MAIN_CHAIN / hallDepts 为准。
  */
 import type { ProjectExpertId } from '../projects/types'
 import type { BusinessStageId } from './businessSeats'
@@ -40,7 +41,7 @@ export type DeptDef = {
 
 export const DEFAULT_DEPT_COUNT = 7
 
-/** 撰写部真副席 · 壳扩展（非 Pack 16） */
+/** 申请部真副席 · 壳扩展（非 Pack 16） */
 export const DRAFT_SPEC_SEAT_ID: ProjectExpertId = 'expert-draft-spec'
 
 const PEER = (
@@ -100,7 +101,7 @@ export const BUSINESS_DEFAULT_DEPT_IDS: DeptDef[] = [
   },
   {
     id: 'dept-draft',
-    label: '撰写部',
+    label: '申请部',
     leadSeatId: 'expert-draft',
     peers: [
       PEER('expert-draft', 'features', '特征表'),
@@ -135,7 +136,7 @@ export const BUSINESS_DEFAULT_DEPT_IDS: DeptDef[] = [
   },
   {
     id: 'dept-oa',
-    label: '审查答复部',
+    label: '答复部',
     leadSeatId: 'expert-oa',
     peers: [
       PEER('expert-oa', 'classify', '理由分类'),
@@ -182,7 +183,7 @@ export const PREP_DEPTS: DeptDef[] = [
   },
   {
     id: 'dept-inspire',
-    label: '创新方向部',
+    label: '创新激发部',
     leadSeatId: 'expert-inspire',
     optional: true,
     peers: [
@@ -192,7 +193,7 @@ export const PREP_DEPTS: DeptDef[] = [
   },
   {
     id: 'dept-mining',
-    label: '挖掘部',
+    label: '专利挖掘部',
     leadSeatId: 'expert-mining',
     optional: true,
     peers: [

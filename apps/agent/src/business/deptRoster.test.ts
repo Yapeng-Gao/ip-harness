@@ -41,7 +41,7 @@ describe('deptRoster', () => {
 
   it('labels departments with 部 suffix', () => {
     assert.equal(deptLabel('dept-research'), '查新部')
-    assert.equal(deptLabel('dept-draft'), '撰写部')
+    assert.equal(deptLabel('dept-draft'), '申请部')
     assert.equal(deptByLeadSeat('expert-oa')?.id, 'dept-oa')
   })
 

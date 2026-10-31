@@ -39,7 +39,7 @@ const CARDS: LabCard[] = [
     id: 'departments',
     version: '幕 2 · 组织编制',
     badge: '配置',
-    blurb: '全库编制旁路（七部作业请进案子公司首页）。常设部门与专家 skill。',
+    blurb: '全库编制旁路（八部作业请进案子公司首页）。常设部门与专家 skill。',
     href: '/agent/departments',
     cta: '打开组织编制',
     icon: LayoutGrid,

@@ -35,24 +35,26 @@ export const HOME_DEMO_CASE = {
 } as const
 
 const SHORT_LABEL: Record<string, string> = {
-  'dept-disclosure': '交底',
-  'dept-research': '查新',
   'dept-intake': '立项',
-  'dept-draft': '撰写',
-  'dept-figure': '附图',
-  'dept-filing': '递交',
+  'dept-inspire': '激发',
+  'dept-mining': '挖掘',
+  'dept-disclosure': '交底',
+  'dept-draft': '申请',
   'dept-oa': '答复',
+  'dept-annuity': '维护',
+  'dept-monetize': '复盘',
 }
 
-/** §3.3 七部职责一句（徽章副文 · 不是交卷物名） */
+/** 一期八部职责一句（徽章副文 · 不是交卷物名） */
 const DUTY: Record<string, string> = {
+  'dept-intake': '建项 · 方向确认',
+  'dept-inspire': '问题 · 路径 · 选题',
+  'dept-mining': '创新点 · 拆案',
   'dept-disclosure': '交底 · 事实核对',
-  'dept-research': '检索 · 结论稿',
-  'dept-intake': '申不申 · 报价',
-  'dept-draft': '权项 · 说明书',
-  'dept-figure': '图面 · 标注',
-  'dept-filing': '包齐 · 递交',
-  'dept-oa': '审查意见',
+  'dept-draft': '理解 · 申不申 · 递交',
+  'dept-oa': '争点 · 策略 · 答复',
+  'dept-annuity': '期限 · 年费 · 台账',
+  'dept-monetize': '复盘报告 · 维持放弃',
 }
 
 export type HomeChainStation = {
@@ -72,7 +74,7 @@ export type HomeChainStation = {
 }
 
 /**
- * 七部徽章墙站：部名 + 职责一句 + ≤3 专家（编制 peers）
+ * 八部徽章墙站：部名 + 职责一句 + ≤3 专家（编制 peers）
  */
 export const HOME_CHAIN_STATIONS: ReadonlyArray<HomeChainStation> =
   MAIN_CHAIN_DEPT_IDS.map((id) => {
@@ -118,8 +120,8 @@ export const HOME_SCENARIOS = [
   },
   {
     id: 'enterprise-chain',
-    title: '企业走七部',
-    body: '一案一公司。七部卡片总览，点部开抽屉，去当前部门干活。',
+    title: '企业走八部',
+    body: '一案一公司。八部卡片总览，点部开抽屉，去当前部门干活。',
   },
   {
     id: 'confirm-gate',

@@ -1,6 +1,6 @@
 /**
  * 部门台 / 公司首页 · 对外叙事文案（product-pages §2 / §4.3–4.10）
- * 对齐 docs/prototype/main-path 七部交卷物与齐套缺项关键词；只做展示层，不改 slug / roster。
+ * 对齐一期八部交卷物与齐套缺项关键词；只做展示层，不改 slug / roster。
  */
 import type { OrgDeptId } from './orgDepts'
 
@@ -177,7 +177,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
 }
 
-/** 七部对外部门名微调（pages：递交与程序部） */
+/** 辅链/对外部门名微调（pages：递交与程序部；主链以 orgDepts 八部为准） */
 export const DEPT_DISPLAY_LABEL: Partial<Record<OrgDeptId, string>> = {
   'dept-filing': '递交与程序部',
 }

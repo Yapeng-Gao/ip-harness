@@ -499,7 +499,7 @@ function seedConfirms(): BusinessConfirmItem[] {
       title: CONFIRM_KIND_LABEL.go_nogo,
       summary: '查新结论：现有技术可规避；建议立项撰写实用新型。',
       resultPreview:
-        '【成果】立项建议：做 · 范围：边缘调度模组控制方法 · 风险：中低 · 预算档：标准。',
+        '【成果】立项建议：做 · 范围：边缘调度模组控制方法 · 风险：中低 · 预算档：标准。\n【对比】对照最接近公开未覆盖校准采样组合（演示）。\n【来源】检索笔记 RN-1042（示意）· 非官报全文。',
       processPreview:
         '【办理过程】比对公开文献；新颖性可成立；创造性需限缩从属。',
       preparedBy: CONFIRM_META.go_nogo.preparedBy,
@@ -513,8 +513,8 @@ function seedConfirms(): BusinessConfirmItem[] {
       title: CONFIRM_KIND_LABEL.claims_ready,
       summary: '权利要求书草案已就绪，请确认主权利要求范围。',
       resultPreview:
-        '【成果】权利要求 1–8：独立权项 1 覆盖传感采样与校准；从属 2–8 细化。',
-      processPreview: '【办理过程】交底要点已吸入；与附图对齐。',
+        '【成果】权利要求 1–8：独立权项 1 覆盖传感采样与校准；从属 2–8 细化。\n【对比】对照交底主张：未超交底公开范围（演示）。\n【来源】交底全绿包 + 查新结论稿（示意）。',
+      processPreview: '【办理过程】交底要点已吸入；与附图对齐；术语三处归一。',
       preparedBy: CONFIRM_META.claims_ready.preparedBy,
       createdAt: stamp(),
       status: 'pending',
@@ -526,7 +526,7 @@ function seedConfirms(): BusinessConfirmItem[] {
       title: CONFIRM_KIND_LABEL.oa_strategy,
       summary: '第 1 通 · 理由：创造性 · 已汇入补充检索 · 请确认答复策略。',
       resultPreview:
-        '【成果】三策略并列：限缩权项 / 纯陈述争辩 / 补充实验数据（样机）。',
+        '【成果】三策略并列：限缩权项 / 纯陈述争辩 / 补充实验数据（样机）。\n【对比】对照审查意见争点：D1 水道已公开 vs 本案双密封+错位。\n【来源】审查意见书（示意）· 补充检索笔记（示意）。',
       processPreview:
         '【办理过程】理由分类：创造性 · 子任务汇入：补充检索 · 待确认答复策略。',
       preparedBy: CONFIRM_META.oa_strategy.preparedBy,

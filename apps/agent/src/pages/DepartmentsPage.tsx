@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { Building2, ListChecks } from 'lucide-react'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import { useOrgConfig } from '../departments/OrgConfigContext'
+import { HALL_DEPT_DOORS } from '../business/hallDepts'
+import { pickLatestCaseId } from '../business/entryRole'
 import type { OrgDept } from '../departments/orgDepts'
 import type { ProjectExpertId } from '../projects/types'
 import { DeptChain, DeptGroups } from '../components/departments/DeptChain'
@@ -18,7 +20,16 @@ type View = 'org' | 'network' | 'board'
  */
 export function DepartmentsPage() {
   const { enabledDepts } = useOrgConfig()
-  const { getPendingConfirms } = useBusinessCases()
+  const { getPendingConfirms, cases, getProgress, getProcessLogs } = useBusinessCases()
+  const latestId = pickLatestCaseId(
+    cases,
+    (id) => getProgress(id).updatedAt,
+    (id) => {
+      const logs = getProcessLogs(id)
+      if (!logs.length) return undefined
+      return logs.reduce((max, l) => (l.at > max ? l.at : max), logs[0]!.at)
+    },
+  )
   const [view, setView] = useState<View>('org')
   const [config, setConfig] = useState<{ seatId: ProjectExpertId; dept: OrgDept } | null>(
     null,
@@ -53,7 +64,7 @@ export function DepartmentsPage() {
               className="font-medium text-sky-700 hover:underline"
               data-testid="departments-to-cases"
             >
-              案子 → 公司首页七部
+              案子 → 公司首页八部
             </Link>{' '}
             为主 · {enabledDepts.length} 个常设部门
           </span>
@@ -110,6 +121,43 @@ export function DepartmentsPage() {
           </div>
         </div>
       </header>
+
+      <section
+        className="shrink-0 border-b border-slate-200/70 bg-white px-5 py-3 sm:px-6"
+        data-testid="departments-start-dept"
+        aria-labelledby="departments-start-title"
+      >
+        <div className="mx-auto max-w-6xl">
+          <h2
+            id="departments-start-title"
+            className="text-[13px] font-semibold text-slate-900"
+          >
+            让该部开工
+          </h2>
+          <p className="mt-0.5 text-[11px] text-slate-500">
+            编制在此配置；开工作业仍进公司案 → 八部工作台（非本页假装交卷）。
+          </p>
+          <ul className="mt-2 flex flex-wrap gap-1.5" data-testid="departments-eight-doors">
+            {HALL_DEPT_DOORS.map((d) => (
+              <li key={d.deptId}>
+                <Link
+                  to={
+                    latestId
+                      ? `/agent/cases/${latestId}/depts/${d.slug}`
+                      : '/agent/cases/new'
+                  }
+                  className="btn-press focus-ring inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-white"
+                  data-testid={`departments-door-${d.slug}`}
+                >
+                  <span className="text-slate-400">{d.num}</span>
+                  {d.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
 
       <div className="mx-auto w-full max-w-6xl px-5 py-4 sm:px-6">
         <OnboardingStrip onConfigure={onConfigure} />

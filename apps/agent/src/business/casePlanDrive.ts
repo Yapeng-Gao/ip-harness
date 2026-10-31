@@ -39,7 +39,7 @@ const DEPT_HINTS: Array<{
   { re: /查新/, seatId: 'expert-research', stageId: 'intake' },
   { re: /立项/, seatId: 'expert-intake', stageId: 'intake' },
   { re: /交底/, seatId: 'expert-disclosure', stageId: 'drafting' },
-  { re: /撰写|权要|说明书/, seatId: 'expert-draft', stageId: 'drafting' },
+  { re: /申请|撰写|权要|说明书/, seatId: 'expert-draft', stageId: 'drafting' },
   { re: /附图/, seatId: 'expert-figure', stageId: 'drafting' },
   { re: /递交/, seatId: 'expert-filing', stageId: 'filing' },
   { re: /审查答复|OA|答复/, seatId: 'expert-oa', stageId: 'oa' },
@@ -66,6 +66,14 @@ function fallbackStart(input: {
     }
   }
   const route: BusinessStageId = input.routeId ?? 'intake'
+  // 八部真源：intake 路由落①立项席，不以查新辅席抢默认
+  if (route === 'intake') {
+    return {
+      stageId: 'intake',
+      seatId: 'expert-intake',
+      nextStepLabel: '去立项部开干',
+    }
+  }
   const stage = BUSINESS_STAGES.find((s) => s.id === route)
   const seatId = stage?.seatIds[0] ?? 'expert-research'
   const seat = businessSeatLabel(seatId)

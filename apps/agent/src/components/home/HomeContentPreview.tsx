@@ -19,7 +19,7 @@ export type HomeContentPreviewProps = {
 
 /**
  * §4.0p / 批 A 登录前宣传站货架（展示页 · 非干活处）
- * 块序：七部墙 `#shelf` → 场景 → 交卷橱窗
+ * 块序：八部墙 `#shelf` → 场景 → 交卷橱窗
  * Hero / CTA 在 WelcomePage；本组件从墙起并带 id="shelf"。
  * 文案权威：`welcome/welcomeShelfNarrative`（经 homeContentPreview 再导出）。
  * **未**挂入 HomePage / 登录后 `/agent`（禁货架）。
@@ -46,14 +46,14 @@ export function HomeContentPreview({ showHero = true }: HomeContentPreviewProps)
         </header>
       ) : null}
 
-      {/* 1 · 七部徽章墙：部名 + 职责一句 + ≤3 专家 */}
+      {/* 1 · 八部徽章墙：部名 + 职责一句 + ≤3 专家 */}
       <div
         className="rounded-[var(--radius-lg)] border border-slate-200 bg-white p-3 shadow-[var(--shadow-rest)] sm:p-4"
         data-testid="home-chain-wall"
-        aria-label="主链七部与专家岗示意（只展示，不可作业）"
+        aria-label="主链八部与专家岗示意（只展示，不可作业）"
       >
         <p className="mb-2.5 text-[11px] font-medium text-slate-400">
-          七部货架 · 每部职责一句 + 专家岗示意（只展示，不可作业）
+          八部货架 · 每部职责一句 + 专家岗示意（只展示，不可作业）
         </p>
         <ol
           className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7"

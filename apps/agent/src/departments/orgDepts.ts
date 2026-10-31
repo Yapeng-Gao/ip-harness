@@ -41,15 +41,16 @@ export type OrgDept = {
   blurb: string
 }
 
-/** 上手七部（交底 → 查新 → 立项 → 撰写 → 附图 → 递交 → 审查答复）；布局进「更多」 */
+/** 一期八部真源（①立项→②激发→③挖掘→④交底→⑤申请→⑥答复→⑦维护→⑧复盘）；查新/附图/递交等进「更多」辅链 */
 export const MAIN_CHAIN_DEPT_IDS: OrgDeptId[] = [
-  'dept-disclosure',
-  'dept-research',
   'dept-intake',
+  'dept-inspire',
+  'dept-mining',
+  'dept-disclosure',
   'dept-draft',
-  'dept-figure',
-  'dept-filing',
   'dept-oa',
+  'dept-annuity',
+  'dept-monetize',
 ]
 
 
@@ -96,26 +97,30 @@ const PRE_LABEL: Record<string, string> = {
   'dept-mining': '专利挖掘部',
 }
 
-/** 七部对外名微调（product-pages：递交与程序部） */
+/** 对外名：对齐一期八部真源（大厅 / 产品逻辑）；辅链保留旧职名微调 */
 const MAIN_LABEL: Record<string, string> = {
+  'dept-draft': '申请部',
+  'dept-oa': '答复部',
   'dept-filing': '递交与程序部',
+  'dept-research': '查新部',
+  'dept-figure': '附图部',
 }
 
 const BLURB: Record<string, string> = {
   'dept-landscape': '定赛道、玩家分层、找空白点',
   'dept-competitor': '竞对雷达与到期预警',
-  'dept-inspire': '方向池与可专利过滤',
-  'dept-mining': '挖掘七问、可专利点',
+  'dept-inspire': '问题→路径→方案选题',
+  'dept-mining': '创新点 + 拆案排案',
   'dept-layout': '引用链、公开时点、覆盖检查',
-  'dept-intake': '区别特征、三轴评分、范围报价',
+  'dept-intake': '创建项目 · 方向一句话 · 状态确认',
   'dept-disclosure': '六段采集、缺项追问、实施例',
   'dept-research': '检索式、覆盖度复核、三性意见',
-  'dept-draft': '特征表、权要、说明书、四类质检',
+  'dept-draft': '理解→申不申→权项说明书→递交过线',
   'dept-figure': '图号清单、草图、图注校对',
   'dept-filing': '申请包齐套、递交确认、回执登记',
-  'dept-oa': '理由分类、创造性子席、答复起草',
-  'dept-annuity': '逐年缴费提醒与缴费建议',
-  'dept-monetize': '转化路径与许可要点',
+  'dept-oa': '争点→策略→答复起草与本轮递交',
+  'dept-annuity': '确权后期限 · 年费 · 明白账',
+  'dept-monetize': '年末/阶段复盘报告 · 维持或放弃',
   'dept-enforcement': '无效与维权策略',
 }
 
@@ -123,7 +128,7 @@ const BLURB: Record<string, string> = {
 const POST_DEPTS: OrgDept[] = [
   {
     id: 'dept-annuity',
-    label: '年费部',
+    label: '维护部',
     group: 'post',
     leadSeatId: 'expert-annuity',
     // Pack 16 的「价值评估」与「年费」合成一个交卷单位（agent-case-ia-v2 §1）
@@ -140,10 +145,23 @@ const POST_DEPTS: OrgDept[] = [
   },
   {
     id: 'dept-monetize',
-    label: '成果转化部',
+    label: '复盘部',
     group: 'post',
     leadSeatId: 'expert-monetize',
-    peers: [],
+    peers: [
+      {
+        id: 'peer:expert-monetize:report',
+        label: '复盘报告',
+        kind: 'placeholder',
+        leadSeatId: 'expert-monetize',
+      },
+      {
+        id: 'peer:expert-monetize:hold',
+        label: '维持放弃',
+        kind: 'placeholder',
+        leadSeatId: 'expert-monetize',
+      },
+    ],
     blurb: BLURB['dept-monetize'],
   },
   {

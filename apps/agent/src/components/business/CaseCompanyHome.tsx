@@ -43,7 +43,7 @@ type Props = {
 
 /**
  * 公司首页 · product-pages §4.3 / vision §6.3a
- * 定位句 + 七部等宽卡片网格（当前高亮；卡底≤3专家照片头像）+ 点部右侧抽屉（≤3专家+头像、交卷态一句、去该部干活）
+ * 定位句 + 八部等宽卡片网格（当前高亮；卡底≤3专家照片头像）+ 点部右侧抽屉（≤3专家+头像、交卷态一句、去该部干活）
  * + 页级主 CTA「去当前部门」；浅色壳；右侧禁假指标/执行集群/工具引擎
  */
 export function CaseCompanyHome({ caseId, title, summary }: Props) {
@@ -189,21 +189,21 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
         </p>
       </section>
 
-      <section aria-labelledby="seven-dept-map-title">
+      <section aria-labelledby="eight-dept-map-title">
         <div className="mb-2 flex items-baseline gap-2">
           <h3
-            id="seven-dept-map-title"
+            id="eight-dept-map-title"
             className="text-[13px] font-semibold text-slate-900"
           >
             主链部门
           </h3>
           <span className="text-[11px] text-slate-500">
-            交底 → 查新 → 立项 → 撰写 → 附图 → 递交 → 答复
+            ①立项 → ②激发 → ③挖掘 → ④交底 → ⑤申请 → ⑥答复 → ⑦维护 → ⑧复盘
           </span>
         </div>
         <ol
-          className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-7"
-          data-testid="seven-dept-map"
+          className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4"
+          data-testid="eight-dept-map"
         >
           {MAIN_CHAIN_DEPTS.map((dept, i) => {
             const st = deptStatus({

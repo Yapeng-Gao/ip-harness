@@ -51,7 +51,7 @@ describe('resolveCasePlanStart', () => {
 
   it('parses 起点部门 Chinese label when no seat marker', () => {
     const r = resolveCasePlanStart({
-      casePlan: '办理起点：撰写部主责开干\n下一步：写权要草稿',
+      casePlan: '办理起点：申请部主责开干\n下一步：写权要草稿',
       skipPrepare: true,
     })
     assert.equal(r.seatId, 'expert-draft')

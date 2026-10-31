@@ -22,19 +22,20 @@ import { MAIN_CHAIN_DEPT_IDS } from '../departments/orgDepts'
 
 /** §3.3 职责一句定稿（徽章副文） */
 const EXPECTED_DUTY: Record<string, string> = {
+  'dept-intake': '建项 · 方向确认',
+  'dept-inspire': '问题 · 路径 · 选题',
+  'dept-mining': '创新点 · 拆案',
   'dept-disclosure': '交底 · 事实核对',
-  'dept-research': '检索 · 结论稿',
-  'dept-intake': '申不申 · 报价',
-  'dept-draft': '权项 · 说明书',
-  'dept-figure': '图面 · 标注',
-  'dept-filing': '包齐 · 递交',
-  'dept-oa': '审查意见',
+  'dept-draft': '理解 · 申不申 · 递交',
+  'dept-oa': '争点 · 策略 · 答复',
+  'dept-annuity': '期限 · 年费 · 台账',
+  'dept-monetize': '复盘报告 · 维持放弃',
 }
 
 describe('homeContentPreview (§4.0p / 批 A shelf narrative)', () => {
-  it('seven stations align with MAIN_CHAIN_DEPT_IDS', () => {
+  it('eight stations align with MAIN_CHAIN_DEPT_IDS', () => {
     assert.equal(assertHomeChainAligned(), true)
-    assert.equal(HOME_CHAIN_STATIONS.length, 7)
+    assert.equal(HOME_CHAIN_STATIONS.length, 8)
     assert.deepEqual(
       HOME_CHAIN_STATIONS.map((s) => s.deptId),
       [...MAIN_CHAIN_DEPT_IDS],

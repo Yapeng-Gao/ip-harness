@@ -288,3 +288,45 @@
 | 日期 | 说明 |
 |---|---|
 | 2026-10-31 09:45 CST | 三 skill 全站实渲；服务 PID 43763；33 路由；§8 诚实降级双真源为 P0 |
+| 2026-10-31 约 10:00 CST | §9：P0/P1 全量优化落地（八部真源·T4·门槛·催办·厚作业·diff） |
+
+## 9. P0/P1 全量优化落地 · 2026-10-31（Asia/Shanghai）
+
+> **开闸**：Leslie「优化下，所有问题都优化」· 在 Mac `ip-harness` / `feature/agent-company-shell` 改 `apps/agent`（禁改 main-path-sample）。
+
+### 9.1 对照 §8 Top 缺口
+
+| 缺口 | 落地 |
+|---|---|
+| **P0① 双真源命名** | `MAIN_CHAIN_DEPT_IDS` → 一期八部（intake→inspire→mining→disclosure→draft→oa→annuity→monetize）；公司首页 `eight-dept-map`；侧栏「本案八部」；欢迎/货架/departments/App 文案去「七部」；对外名：申请部/答复部/维护部/复盘部（覆盖旧撰写/年费/成果转化） |
+| **P0② T4 依据链** | 新增 `askEvidence.ts` 四件套（结论·来源·推演·对比）；`DeptAskReportBubble` 展开依据链；缺段明示、禁一键全绿；种子确认补来源/对比 |
+| **P0③ 官报/真检索/真鉴权** | **未装假**；进入门槛/催办/薄部作业均标「演示·非官报」 |
+| P1 欢迎七部文案 | 货架/场景改「八部」；`HOME_CHAIN_STATIONS` 八站 |
+| P1 departments 七部 | 「公司首页八部」+「让该部开工」八部门牌 |
+| P1 ⑦⑧ 命名 | org 维护部/复盘部 与大厅对齐 |
+| P1 ①②③⑦⑧ 厚作业 | `THIN_LINE_BY_DEPT.workBody` 主栏示意作业（非空壳） |
+| P1 进入门槛硬挡 | `entryGate.ts` + 工作台顶栏硬挡条（⑤⑥⑦）；`?gate=bypass` 仅演示旁路 |
+| P1 ⑥催办 | 大厅 `home-oa-nudge` |
+| P1 diff 闭环 | 版本材料「认可此版写回 / 保持当前稿」示意闭环 |
+| P1 专业页 | departments「让该部开工」八部入口 |
+
+### 9.2 四维复判（本批后）
+
+| 维度 | 状态 | 注 |
+|---|---|---|
+| 产品理念 | **叙事 landed / T4 partial→可演示** | 八部单一真源贯穿；T4 四件套上屏，仍为演示密度 |
+| 产品设计 | **partial↑** | 厚作业示意+编制开工入口；像素级仍薄于样机 |
+| 产品逻辑 | **主链 landed↑ / 支路 partial** | 门槛硬挡+催办+diff 示意；B 支路未全 |
+| 业务逻辑 | **partial↑** | 门牌/合格线/示意作业齐；官报/真检索仍不在范围 |
+
+### 9.3 验证
+
+- `npm run typecheck -w @ip/agent` PASS
+- node tests：pending / confirmGate / mainChainWalk / homeContentPreview / deptRoster / entryGate / askEvidence / casePlanDrive → **54/54**
+- 验收：`npm run dev:agent` → http://localhost:5175 （硬刷）
+
+### 9.4 修订
+
+| 日期 | 说明 |
+|---|---|
+| 2026-10-31 约 10:00 CST | §8 P0/P1 全量优化落地记入 §9 |

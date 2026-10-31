@@ -42,7 +42,7 @@ import { useOrgConfig } from '../../departments/OrgConfigContext'
 /**
  * 业务壳左栏 · 双角色两套结构（同视觉 token，布局/导航不同）
  * - agency（案盘）：案列表 + 待确认/期限占位为主；本案部门次要
- * - enterprise（公司陪跑）：本案七部为主；全部案子降为次入口
+ * - enterprise（公司陪跑）：本案八部为主；全部案子降为次入口
  * 公司首页 / 部门齐套内容不在此深改（挂 data-entry-role 供 QA）
  */
 export function BusinessCaseSidebar() {
@@ -432,7 +432,7 @@ export function BusinessCaseSidebar() {
           data-testid="business-side-depts-toggle"
         >
           <span>
-            {drillMode ? '演练全队' : isEnterprise ? '本案七部' : '本案部门'}
+            {drillMode ? '演练全队' : isEnterprise ? '本案八部' : '本案部门'}
           </span>
           <ChevronDown
             className={`h-3.5 w-3.5 transition ${deptsOpen ? 'rotate-0' : '-rotate-90'}`}
@@ -598,7 +598,7 @@ export function BusinessCaseSidebar() {
       </div>
     ) : null
 
-  /** 企业案内：全部案子降为次入口链接，不抢七部主栏 */
+  /** 企业案内：全部案子降为次入口链接，不抢八部主栏 */
   const enterpriseAllCasesLink =
     isEnterprise && activeCaseId ? (
       <div className="mt-3 border-t border-slate-200/80 pt-2" data-testid="business-side-all-cases-secondary">

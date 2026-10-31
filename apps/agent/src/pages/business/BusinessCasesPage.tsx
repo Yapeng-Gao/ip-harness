@@ -28,7 +28,7 @@ function shortCaseNo(id: string): string {
 /**
  * /agent/cases · 多案流水（案盘）· product-pages §4.2
  * 首屏：案列表（案名/编号、当前部门、待确认、期限、客户）+ 筛选 + 开新案
- * 点行 → 公司首页；不放七部作业 / 企业单案陪跑壳
+ * 点行 → 公司首页；不放八部作业 / 企业单案陪跑壳
  */
 export function BusinessCasesPage() {
   const { cases, getProgress, stageLabel, getPendingConfirms } = useBusinessCases()
