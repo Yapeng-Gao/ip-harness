@@ -13,7 +13,7 @@ export const BUSINESS_SEAT_LABEL: Record<string, string> = {
   'expert-research': '查新',
   'expert-intake': '立项',
   'expert-disclosure': '交底',
-  'expert-draft': '撰写',
+  'expert-draft': '申请',
   'expert-draft-spec': '说明书',
   'expert-figure': '附图',
   'expert-filing': '递交',
@@ -191,7 +191,7 @@ export const CONFIRM_META: Record<
   claims_ready: {
     stageId: 'drafting',
     seatId: 'expert-draft',
-    preparedBy: '撰写',
+    preparedBy: '申请',
   },
   figures_ready: {
     stageId: 'drafting',

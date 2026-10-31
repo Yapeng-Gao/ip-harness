@@ -257,6 +257,12 @@ export function BusinessCaseDeptPage() {
   const pendingAskItem = askConfirmId
     ? getConfirm(askConfirmId) ?? pendingForDept.find((p) => p.id === askConfirmId)
     : undefined
+  /** 仅本部门待拍才驱动「去确认」——禁案级 OA 等串进他部脚栏 */
+  const thisDeptConfirmPending = awaitingThis || pendingForDept.length > 0
+  const thisDeptConfirmId =
+    askConfirmId && pendingForDept.some((p) => p.id === askConfirmId)
+      ? askConfirmId
+      : pendingForDept[0]?.id
 
   const onAskConfirm = async (
     confirmId: string,
@@ -349,14 +355,14 @@ export function BusinessCaseDeptPage() {
   }, [handoff.deliverable, versions])
 
   const onSubmit = () => {
-    if (cta.action === 'confirm' && cta.confirmId && kindForDept) {
+    if (thisDeptConfirmPending && thisDeptConfirmId && kindForDept) {
       navigate(
-        workbenchAskPath(caseId, kindForDept, { confirmId: cta.confirmId }),
+        workbenchAskPath(caseId, kindForDept, { confirmId: thisDeptConfirmId }),
       )
       return
     }
-    if (cta.action === 'confirm' && cta.confirmId) {
-      navigate(pendingAuditPath(cta.confirmId, slug || undefined))
+    if (thisDeptConfirmPending && thisDeptConfirmId) {
+      navigate(pendingAuditPath(thisDeptConfirmId, slug || undefined))
       return
     }
     if (!canSubmit) return
@@ -399,8 +405,8 @@ export function BusinessCaseDeptPage() {
   }
 
   const primaryLabel =
-    cta.action === 'confirm' || awaitingThis
-      ? `去确认 · ${cta.label || '待你确认'}`
+    thisDeptConfirmPending
+      ? `去确认 · ${pendingAskItem?.title || pendingForDept[0]?.title || '待你确认'}`
       : !canSubmit
         ? '交卷（未齐套）'
         : '交卷'
@@ -1497,9 +1503,9 @@ export function BusinessCaseDeptPage() {
                 <button
                   type="button"
                   onClick={onSubmit}
-                  disabled={!canSubmit && cta.action !== 'confirm'}
+                  disabled={!canSubmit && !thisDeptConfirmPending}
                   title={
-                    cta.action === 'confirm'
+                    thisDeptConfirmPending
                       ? AWAITING_ADVANCE_LOCK_HINT
                       : !canSubmit
                         ? missingLabels.length

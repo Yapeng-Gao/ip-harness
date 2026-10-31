@@ -8,4 +8,8 @@ describe('agentStyle T8', () => {
     assert.match(styleTagForDept('dept-draft').line, /过线/)
     assert.ok(styleTagForDept('dept-disclosure').label)
   })
+
+  it('normalizes bare 撰写 → 申请', () => {
+    assert.equal(normalizePeerJobTitle('撰写'), '申请')
+  })
 })

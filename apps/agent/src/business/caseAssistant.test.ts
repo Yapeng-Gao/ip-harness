@@ -55,11 +55,11 @@ describe('patchCasePlan', () => {
       stageId: 'drafting',
       activeSeat: 'expert-draft',
       stageTitle: '撰写申请',
-      seatLabel: '撰写',
+      seatLabel: '申请',
     })
     assert.match(next, /边缘调度/)
     assert.match(next, /巡检补全/)
-    assert.match(next, /当前节点：撰写/)
+    assert.match(next, /当前节点：申请/)
     assert.doesNotMatch(next, /部门/)
     assert.ok(next.length > base.length)
   })
