@@ -8,13 +8,15 @@ import { disclosureToDraftTicket } from '../../business/interDeptTicket'
 
 type Props = {
   latestId?: string
+  /** 嵌在老板待办单区时隐藏内层标题，避免与外层「进行中」重复 */
+  embedded?: boolean
 }
 
 /**
  * 大厅「进行中工单」· 00-用户与系统 §165 / 交互大纲 §2
  * 机制：老板在大厅就能看见进行中工单，不只进部门才知道。
  */
-export function HomeInProgressStrip({ latestId }: Props) {
+export function HomeInProgressStrip({ latestId, embedded = false }: Props) {
   const { cases, getProgress } = useBusinessCases()
 
   const rows = useMemo(() => {
@@ -64,29 +66,42 @@ export function HomeInProgressStrip({ latestId }: Props) {
     <section
       className="rounded-lg bg-sky-50/50 px-1.5 py-1"
       data-testid="home-in-progress"
-      aria-labelledby="home-in-progress-title"
+      aria-labelledby={embedded ? undefined : 'home-in-progress-title'}
+      aria-label={embedded ? '进行中工单' : undefined}
     >
-      <div className="mb-1.5 flex items-center gap-1.5">
-        <Workflow className="h-3.5 w-3.5 text-sky-800" strokeWidth={1.75} aria-hidden />
-        <h2
-          id="home-in-progress-title"
-          className="text-[12px] font-semibold text-sky-950"
-        >
-          进行中工单
-        </h2>
-        <span className="tabular rounded-full bg-sky-700 px-1.5 py-px text-[10px] font-semibold text-white">
-          {rows.length}
-        </span>
-        {latestId ? (
+      {!embedded ? (
+        <div className="mb-1.5 flex items-center gap-1.5">
+          <Workflow className="h-3.5 w-3.5 text-sky-800" strokeWidth={1.75} aria-hidden />
+          <h2
+            id="home-in-progress-title"
+            className="text-[12px] font-semibold text-sky-950"
+          >
+            进行中工单
+          </h2>
+          <span className="tabular rounded-full bg-sky-700 px-1.5 py-px text-[10px] font-semibold text-white">
+            {rows.length}
+          </span>
+          {latestId ? (
+            <Link
+              to={`/agent/cases/${latestId}`}
+              className="focus-ring ml-auto text-[11px] font-medium text-sky-900 underline-offset-2 hover:underline"
+              data-testid="home-in-progress-company"
+            >
+              公司首页
+            </Link>
+          ) : null}
+        </div>
+      ) : latestId ? (
+        <div className="mb-1 flex justify-end px-1">
           <Link
             to={`/agent/cases/${latestId}`}
-            className="focus-ring ml-auto text-[11px] font-medium text-sky-900 underline-offset-2 hover:underline"
+            className="focus-ring text-[11px] font-medium text-sky-900 underline-offset-2 hover:underline"
             data-testid="home-in-progress-company"
           >
             公司首页
           </Link>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
       <ul className="space-y-1">
         {rows.map((r) => (
           <li key={r.id}>
@@ -107,7 +122,7 @@ export function HomeInProgressStrip({ latestId }: Props) {
         ))}
       </ul>
       <p className="mt-1 px-1.5 text-[10px] text-sky-800/70">
-        大厅可见进行中 · 拍板仍在部门工作台右栏 · 非真工单引擎
+        大厅可见进行中 · 拍板仍在部门工作台右栏 · 样机示意
       </p>
     </section>
   )

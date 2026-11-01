@@ -11,7 +11,7 @@ import { useAuthSession } from '../../business/AuthSessionContext'
 const OPTIONS: EntryRole[] = ['enterprise', 'agency']
 
 /**
- * 顶栏减负：角色切换 + 退出 + 弱链收进头像菜单（不常驻 chip 墙）。
+ * 顶栏减负：角色切换 + 退出 + 次要入口收进头像菜单（不常驻 chip 墙）。
  */
 export function ShellAccountMenu() {
   const { entryRole, setEntryRole } = useEntryRole()
@@ -107,7 +107,7 @@ export function ShellAccountMenu() {
             data-testid="shell-account-welcome"
             onClick={() => setOpen(false)}
           >
-            宣传站（弱链）
+            宣传站（未登录页）
           </Link>
           <button
             type="button"

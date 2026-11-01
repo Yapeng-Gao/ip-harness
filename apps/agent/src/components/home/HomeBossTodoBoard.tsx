@@ -79,9 +79,9 @@ export function HomeBossTodoBoard({ latestId }: Props) {
       <div className="space-y-0 divide-y divide-slate-100" data-testid="home-boss-todo-body">
         <div className="px-2 py-2" data-testid="home-boss-a">
           <p className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wide text-amber-800/80">
-            A · 待你拍
+            待你拍
           </p>
-          <HomeTodoStrip />
+          <HomeTodoStrip embedded />
         </div>
 
         {showB ? (
@@ -89,7 +89,7 @@ export function HomeBossTodoBoard({ latestId }: Props) {
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-rose-800/80">
-                  B · 期限催办
+                  期限催办
                 </p>
                 <p className="mt-0.5 text-[12px] leading-relaxed text-rose-950/90">
                   {topOa
@@ -114,9 +114,9 @@ export function HomeBossTodoBoard({ latestId }: Props) {
 
         <div className="px-2 py-2" data-testid="home-boss-c">
           <p className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wide text-sky-800/80">
-            C · 进行中
+            进行中
           </p>
-          <HomeInProgressStrip latestId={latestId} />
+          <HomeInProgressStrip latestId={latestId} embedded />
         </div>
       </div>
     </section>

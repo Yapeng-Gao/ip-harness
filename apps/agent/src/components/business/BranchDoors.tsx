@@ -94,9 +94,10 @@ const BRANCHES: {
 
 /**
  * 支路入口门 · 故事板验收「路上有没有这扇门」
- * 精致度：默认紧凑一句话；须看见/禁 收入展开，降使用成本。
+ * 使用成本：整区默认收起，不与八部抢视线；展开后须看见/禁仍可再折。
  */
 export function BranchDoors({ caseId, isAgency = false }: Props) {
+  const [listOpen, setListOpen] = useState(false)
   const [detailOpen, setDetailOpen] = useState(false)
 
   return (
@@ -105,9 +106,21 @@ export function BranchDoors({ caseId, isAgency = false }: Props) {
       aria-labelledby="home-branch-title"
       data-testid="home-branch-doors"
       data-branch-compact={detailOpen ? '0' : '1'}
+      data-branch-folded={listOpen ? '0' : '1'}
       data-hall-dense="1"
     >
-      <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+      <button
+        type="button"
+        className="focus-ring mb-1.5 flex w-full flex-wrap items-center gap-1.5 rounded-md px-0.5 py-1 text-left"
+        onClick={() => setListOpen((v) => !v)}
+        aria-expanded={listOpen}
+        data-testid="home-branch-fold-toggle"
+      >
+        {listOpen ? (
+          <ChevronDown className="h-3.5 w-3.5 text-slate-500" aria-hidden />
+        ) : (
+          <ChevronRight className="h-3.5 w-3.5 text-slate-500" aria-hidden />
+        )}
         <h2
           id="home-branch-title"
           className="text-[12px] font-semibold tracking-tight text-slate-900"
@@ -115,61 +128,78 @@ export function BranchDoors({ caseId, isAgency = false }: Props) {
           支路门
         </h2>
         <span className="text-[11px] text-slate-500">
-          虚线支路入口
+          验收用 · 默认收起
           {isAgency ? ' · 代理可陪同进申请部' : ''}
         </span>
-        <button
-          type="button"
-          className="btn-press focus-ring ml-auto inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800"
-          data-testid="home-branch-detail-toggle"
-          aria-expanded={detailOpen}
-          onClick={() => setDetailOpen((v) => !v)}
+        <span className="ml-auto text-[10px] font-medium text-slate-500">
+          {listOpen ? '收起' : '展开'}
+        </span>
+      </button>
+      {!listOpen ? (
+        <p
+          className="pl-5 text-[11px] text-slate-500"
+          data-testid="home-branch-folded-hint"
         >
-          {detailOpen ? (
-            <ChevronDown className="h-3 w-3" aria-hidden />
-          ) : (
-            <ChevronRight className="h-3 w-3" aria-hidden />
-          )}
-          {detailOpen ? '收起验收句' : '展开须看见/禁'}
-        </button>
-      </div>
-      <ul
-        className={`grid gap-1 ${
-          detailOpen
-            ? 'grid-cols-1 sm:grid-cols-2'
-            : 'grid-cols-2 sm:grid-cols-4'
-        }`}
-        data-hall-dense="1"
-        data-testid="home-branch-list"
-      >
-        {BRANCHES.map((b) => (
-          <li key={b.id}>
-            <Link
-              to={b.href(caseId, isAgency)}
-              className="btn-press focus-ring flex h-full flex-col rounded-md border border-dashed border-slate-200/90 bg-white px-2 py-1.5 hover:border-slate-300 hover:bg-slate-50/80"
-              data-testid={`home-branch-${b.id}`}
-              data-branch={b.id}
-              title={`须看见：${b.mustSee} · 禁：${b.forbid}`}
+          主路径走上方八部或公司案；支路门只供故事板验收，需要时再展开。
+        </p>
+      ) : (
+        <>
+          <div className="mb-1.5 flex flex-wrap items-center gap-1.5 pl-5">
+            <span className="text-[11px] text-slate-500">虚线支路入口</span>
+            <button
+              type="button"
+              className="btn-press focus-ring ml-auto inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+              data-testid="home-branch-detail-toggle"
+              aria-expanded={detailOpen}
+              onClick={() => setDetailOpen((v) => !v)}
             >
-              <span className="text-[11px] font-semibold text-slate-900">
-                {b.title}
-              </span>
-              <span className="mt-0.5 text-[10px] leading-snug text-slate-500">
-                {b.blurb}
-              </span>
               {detailOpen ? (
-                <span
-                  className="mt-1.5 space-y-0.5 border-t border-slate-100 pt-1.5 text-[10px] leading-snug"
-                  data-testid={`home-branch-detail-${b.id}`}
+                <ChevronDown className="h-3 w-3" aria-hidden />
+              ) : (
+                <ChevronRight className="h-3 w-3" aria-hidden />
+              )}
+              {detailOpen ? '收起验收句' : '展开须看见/禁'}
+            </button>
+          </div>
+          <ul
+            className={`grid gap-1 ${
+              detailOpen
+                ? 'grid-cols-1 sm:grid-cols-2'
+                : 'grid-cols-2 sm:grid-cols-4'
+            }`}
+            data-hall-dense="1"
+            data-testid="home-branch-list"
+          >
+            {BRANCHES.map((b) => (
+              <li key={b.id}>
+                <Link
+                  to={b.href(caseId, isAgency)}
+                  className="btn-press focus-ring flex h-full flex-col rounded-md border border-dashed border-slate-200/90 bg-white px-2 py-1.5 hover:border-slate-300 hover:bg-slate-50/80"
+                  data-testid={`home-branch-${b.id}`}
+                  data-branch={b.id}
+                  title={`须看见：${b.mustSee} · 禁：${b.forbid}`}
                 >
-                  <span className="block text-slate-600">须看见：{b.mustSee}</span>
-                  <span className="block text-rose-700/75">禁：{b.forbid}</span>
-                </span>
-              ) : null}
-            </Link>
-          </li>
-        ))}
-      </ul>
+                  <span className="text-[11px] font-semibold text-slate-900">
+                    {b.title}
+                  </span>
+                  <span className="mt-0.5 text-[10px] leading-snug text-slate-500">
+                    {b.blurb}
+                  </span>
+                  {detailOpen ? (
+                    <span
+                      className="mt-1.5 space-y-0.5 border-t border-slate-100 pt-1.5 text-[10px] leading-snug"
+                      data-testid={`home-branch-detail-${b.id}`}
+                    >
+                      <span className="block text-slate-600">须看见：{b.mustSee}</span>
+                      <span className="block text-rose-700/75">禁：{b.forbid}</span>
+                    </span>
+                  ) : null}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </section>
   )
 }

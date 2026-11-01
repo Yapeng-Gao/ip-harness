@@ -382,7 +382,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           aria-label="本案委托计划"
         >
           <p className="text-[11px] font-semibold text-emerald-950">
-            本案排期（已写入进度 · 刷新可恢复）
+            本案排期（可接着办）
           </p>
           <p
             className="mt-1 whitespace-pre-wrap text-[11px] leading-relaxed text-emerald-900/90"
@@ -518,35 +518,43 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
               ) : null}
               {prog.delegate.chain?.some((s) => s.status === 'active') &&
               planHandoffGate &&
-              !planHandoffGate.allow &&
-              planHandoffGate.code === 'kit_incomplete' ? (
-                <button
-                  type="button"
-                  className="btn-press focus-ring rounded-full border border-dashed border-violet-700/40 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-violet-950/80 hover:bg-white"
-                  data-testid="company-plan-seed-kit"
-                  title="样机勾齐本稿齐套 · 非一键交卷 · 非官报"
-                  onClick={() => {
-                    if (activePlanStep) seedKitComplete(caseId, activePlanStep.deptSlug)
-                  }}
+              !planHandoffGate.allow ? (
+                <details
+                  className="w-full"
+                  data-testid="company-plan-demo-fold"
                 >
-                  样机·勾齐齐套
-                </button>
-              ) : null}
-              {prog.delegate.chain?.some((s) => s.status === 'active') &&
-              planHandoffGate &&
-              !planHandoffGate.allow &&
-              planHandoffGate.code !== 'kit_incomplete' ? (
-                <button
-                  type="button"
-                  className="btn-press focus-ring rounded-full border border-dashed border-emerald-700/40 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-emerald-950/80 hover:bg-white"
-                  data-testid="company-plan-seed-handoff"
-                  title={HANDOFF_PLAN_GATE_HONEST}
-                  onClick={() => {
-                    seedPlanHandoffPass(caseId)
-                  }}
-                >
-                  样机·补记本稿已通过
-                </button>
+                  <summary className="cursor-pointer select-none text-[10px] font-medium text-emerald-900/55 hover:text-emerald-900/80">
+                    样机补记（验收用 · 默认收起）
+                  </summary>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                    {planHandoffGate.code === 'kit_incomplete' ? (
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded-full border border-dashed border-violet-700/40 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-violet-950/80 hover:bg-white"
+                        data-testid="company-plan-seed-kit"
+                        title="样机勾齐本稿齐套 · 非一键交卷 · 非官报"
+                        onClick={() => {
+                          if (activePlanStep)
+                            seedKitComplete(caseId, activePlanStep.deptSlug)
+                        }}
+                      >
+                        样机·勾齐齐套
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded-full border border-dashed border-emerald-700/40 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-emerald-950/80 hover:bg-white"
+                        data-testid="company-plan-seed-handoff"
+                        title={HANDOFF_PLAN_GATE_HONEST}
+                        onClick={() => {
+                          seedPlanHandoffPass(caseId)
+                        }}
+                      >
+                        样机·补记本稿已通过
+                      </button>
+                    )}
+                  </div>
+                </details>
               ) : null}
               {!planHandoffGate?.allow &&
               planHandoffGate?.code === 'kit_incomplete' &&
@@ -607,7 +615,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           </details>
         </div>
         <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
-          本案总览：缺口主 CTA 在上；八部地图当前部默认露出。拍板在工作台右栏。
+          盯本案卡点，从八部地图进部干活；拍板在工作台右栏。
         </p>
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
           <h2 className="text-[16px] font-semibold text-slate-900">{title}</h2>
@@ -622,13 +630,6 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
               {deptLabel(currentDept)}
             </span>
           </p>
-          <Link
-            to={currentHref}
-            className="focus-ring text-[11px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
-            data-testid="company-go-current-dept-secondary"
-          >
-            次入口 · 去当前部门
-          </Link>
         </div>
         <nav
           className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 border-t border-slate-100 pt-2.5 text-[11px] text-slate-500"

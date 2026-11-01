@@ -14,12 +14,17 @@ import {
   workbenchAskPath,
 } from '../../business/pendingDeptQuery'
 
+type Props = {
+  /** 嵌在老板待办单区时隐藏内层标题，避免与外层「待你拍」重复 */
+  embedded?: boolean
+}
+
 /**
  * G · 真待确认 · product-pages §4.0a
  * 骨架：【{案名}】{部门名}已交卷 · 待你确认：{关口一句话}
  * 与顶栏铃铛同源：getPendingConfirms()
  */
-export function HomeTodoStrip() {
+export function HomeTodoStrip({ embedded = false }: Props) {
   const { getPendingConfirms, cases } = useBusinessCases()
   const pending = useMemo(() => getPendingConfirms(), [getPendingConfirms])
 
@@ -58,20 +63,32 @@ export function HomeTodoStrip() {
       className="rounded-lg bg-amber-50/50 px-1.5 py-1"
       data-testid="home-todo-strip"
     >
-      <div className="mb-1.5 flex items-center gap-1.5">
-        <Bell className="h-3.5 w-3.5 text-amber-700" strokeWidth={1.75} aria-hidden />
-        <span className="text-[12px] font-semibold text-amber-950">待我确认</span>
-        <span className="tabular rounded-full bg-amber-600 px-1.5 py-px text-[10px] font-semibold text-white">
-          {pending.length}
-        </span>
-        <Link
-          to="/agent/pending?audit=1"
-          className="focus-ring ml-auto rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-amber-800 hover:underline"
-          data-testid="home-todo-all"
-        >
-          审计
-        </Link>
-      </div>
+      {!embedded ? (
+        <div className="mb-1.5 flex items-center gap-1.5">
+          <Bell className="h-3.5 w-3.5 text-amber-700" strokeWidth={1.75} aria-hidden />
+          <span className="text-[12px] font-semibold text-amber-950">待我确认</span>
+          <span className="tabular rounded-full bg-amber-600 px-1.5 py-px text-[10px] font-semibold text-white">
+            {pending.length}
+          </span>
+          <Link
+            to="/agent/pending?audit=1"
+            className="focus-ring ml-auto rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-amber-800 hover:underline"
+            data-testid="home-todo-all"
+          >
+            审计
+          </Link>
+        </div>
+      ) : (
+        <div className="mb-1 flex justify-end px-1">
+          <Link
+            to="/agent/pending?audit=1"
+            className="focus-ring rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-amber-800 hover:underline"
+            data-testid="home-todo-all"
+          >
+            审计列表
+          </Link>
+        </div>
+      )}
       <ul className="space-y-0.5">
         {first.map((item) => {
           const c = cases.find((x) => x.id === item.caseId)

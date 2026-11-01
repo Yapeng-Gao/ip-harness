@@ -18,7 +18,7 @@ import { reopenAllTeachTips } from '../business/teachingFade'
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 接待入口 + 八部可见；进公司/部台办主链。
  * 旧 lifecycle 顶栏三档已卸挂；勿当进门主叙事。
- * BossTodo = 轻量轨；禁医院分诊；禁待办拆成多张卡片墙。
+ * BossTodo = 轻量轨；八部默认可见；支路门默认收；禁医院分诊；禁待办拆成多张卡片墙。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -36,7 +36,7 @@ export function HomePage() {
   const attachQ = params.get('attach')
   const { entryRole } = useEntryRole()
   const { cases, getProgress, getProcessLogs } = useBusinessCases()
-  const [eightOpen, setEightOpen] = useState(false)
+  const [eightOpen, setEightOpen] = useState(true)
   const [relayRefresh, setRelayRefresh] = useState(0)
 
   const getLogAt = useMemo(
@@ -111,7 +111,7 @@ export function HomePage() {
             {latestCase ? (
               <>
                 {' · '}
-                弱链案卷{' '}
+                当前案卷{' '}
                 <Link
                   to={`/agent/cases/${latestCase.id}`}
                   className="font-semibold text-slate-900 underline-offset-2 hover:underline"
@@ -184,29 +184,34 @@ export function HomePage() {
                 需要帮忙从这儿开始
               </h2>
               <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">
-                接待帮你弄清去向、收材料；已清楚的用上方委托，或弱链进公司案盯盘。不叫分诊。
+                不清楚去哪就从这儿弄清去向、收材料；已清楚的用上方委托或下方部门门。不叫分诊。
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Link
-                  to={
-                    latestId
-                      ? `/agent/cases/${latestId}/depts/disclosure`
-                      : '/agent/cases/new'
-                  }
+                  to={latestId ? `/agent/cases/${latestId}` : '/agent/cases/new'}
                   className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
-                  data-testid="home-reception-start"
+                  data-testid={latestId ? 'home-go-company' : 'home-reception-start'}
                 >
-                  {latestId ? '去交底部开写' : '先开案子再接待'}
-                  <ArrowRight className="h-3 w-3" aria-hidden />
+                  {latestId ? (
+                    <>
+                      <Building2 className="h-3 w-3" aria-hidden />
+                      先看公司案盯盘
+                    </>
+                  ) : (
+                    <>
+                      先开案子再接待
+                      <ArrowRight className="h-3 w-3" aria-hidden />
+                    </>
+                  )}
                 </Link>
                 {latestId ? (
                   <Link
-                    to={`/agent/cases/${latestId}`}
-                    className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
-                    data-testid="home-go-company"
+                    to={`/agent/cases/${latestId}/depts/disclosure`}
+                    className="btn-press focus-ring inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
+                    data-testid="home-reception-start"
                   >
-                    <Building2 className="h-3 w-3" aria-hidden />
-                    公司案首页
+                    或直接去交底部
+                    <ArrowRight className="h-3 w-3" aria-hidden />
                   </Link>
                 ) : null}
               </div>
@@ -229,7 +234,7 @@ export function HomePage() {
               今天想办
             </h2>
             <span className="text-[11px] text-slate-400">
-              薄入口 · 仍进对应部（非第二套导航）
+              直达对应部 · 非第二套导航
             </span>
           </div>
           <ul className="flex flex-wrap gap-1.5">
@@ -273,7 +278,7 @@ export function HomePage() {
               八个部门
             </h2>
             <span className="text-[11px] font-normal text-slate-500">
-              次级 · 盯整案请进公司案地图
+              可直达 · 盯整案请进公司案地图
             </span>
           </button>
           <ol
@@ -305,7 +310,7 @@ export function HomePage() {
           </ol>
           {!eightOpen ? (
             <p className="pl-5 text-[11px] text-slate-500" data-testid="home-eight-depts-hint">
-              已折起 · 点上方展开；日常盯案走公司案地图（非旁路 /projects）。
+              已折起 · 点上方展开；日常盯整案请进公司案地图。
             </p>
           ) : null}
         </section>
