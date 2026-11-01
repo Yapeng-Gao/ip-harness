@@ -120,7 +120,7 @@ export function PendingConfirmInboxPage() {
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="pending-to-cases"
           >
-            多案
+            项目
           </Link>
           {filterCaseId ? (
             <>

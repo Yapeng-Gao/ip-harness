@@ -1,16 +1,15 @@
 import { Link, useLocation, useMatch } from 'react-router-dom'
-import { useMemo } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
-import { pickLatestCaseId } from '../../business/entryRole'
 
 /**
- * §97 顶栏路径段控 · 大厅 · 本案/多案 · 待确认
- * 一期真源办事路径（非 lifecycle 助手/项目/专业；非项目管理/部门管理 Tab）
+ * §98 顶栏路径段控 · 大厅 · 项目 · 待确认
+ * Tab2 文案锁定「项目」（勿用 多案/本案 作段名；t662u）
+ * 有路由案 → 链到该案且 aria「项目（案名）」；无选中 → /agent/cases（勿用最近一案冒充当前）
+ * 待确认 Tab = 全局拍板主入口；铃铛不抢可见文案
  */
 export function ShellPathNav() {
   const loc = useLocation()
-  const { cases, getProgress, getPendingConfirms, getProcessLogs, getCase } =
-    useBusinessCases()
+  const { getPendingConfirms, getCase } = useBusinessCases()
 
   const caseMatch = useMatch({ path: '/agent/cases/:caseId', end: false })
   const routeCaseId =
@@ -18,28 +17,8 @@ export function ShellPathNav() {
       ? caseMatch.params.caseId
       : undefined
 
-  const getLogAt = useMemo(
-    () => (id: string) => {
-      const logs = getProcessLogs(id)
-      if (logs.length === 0) return undefined
-      return logs.reduce((max, l) => (l.at > max ? l.at : max), logs[0]!.at)
-    },
-    [getProcessLogs],
-  )
-
-  const latestId = useMemo(
-    () =>
-      pickLatestCaseId(
-        cases,
-        (id) => getProgress(id).updatedAt,
-        getLogAt,
-      ),
-    [cases, getProgress, getLogAt],
-  )
-
-  const currentCaseId = routeCaseId ?? latestId
-  const currentCase = currentCaseId ? getCase(currentCaseId) : undefined
-  const hasCase = Boolean(currentCaseId && currentCase)
+  const selectedCase = routeCaseId ? getCase(routeCaseId) : undefined
+  const hasSelectedCase = Boolean(routeCaseId && selectedCase)
   const pendingN = getPendingConfirms().length
 
   const inHall =
@@ -49,14 +28,14 @@ export function ShellPathNav() {
     loc.pathname === '/agent/cases' || loc.pathname === '/agent/cases/'
   const inCaseShell = Boolean(routeCaseId)
 
-  const caseTabLabel = hasCase ? '本案' : '多案'
-  const caseTabTo = hasCase
-    ? `/agent/cases/${currentCaseId}`
+  const caseTabLabel = '项目'
+  const caseTabTo = hasSelectedCase
+    ? `/agent/cases/${routeCaseId}`
     : '/agent/cases'
-  const caseAria = hasCase
-    ? `本案（${currentCase?.title ?? '当前案'}）`
-    : '多案'
-  const caseCurrent = hasCase
+  const caseAria = hasSelectedCase
+    ? `项目（${selectedCase?.title ?? '当前案'}）`
+    : '项目'
+  const caseCurrent = hasSelectedCase
     ? inCaseShell
     : inCasesList || loc.pathname.startsWith('/agent/cases/')
 
@@ -99,7 +78,7 @@ export function ShellPathNav() {
       className="shell-path-nav mx-1 flex min-w-0 items-center rounded-lg border border-slate-200/90 bg-slate-50/80 p-0.5"
       aria-label="路径"
       data-testid="shell-path-nav"
-      data-path-nav="v97"
+      data-path-nav="v98"
     >
       {tabs.map((tab) => {
         const selected = tab.current
@@ -111,7 +90,9 @@ export function ShellPathNav() {
             aria-current={selected ? 'page' : undefined}
             data-testid={`shell-path-${tab.id}`}
             data-selected={selected ? '1' : '0'}
-            data-case-mode={tab.id === 'case' ? (hasCase ? 'case' : 'multi') : undefined}
+            data-case-mode={
+              tab.id === 'case' ? (hasSelectedCase ? 'case' : 'list') : undefined
+            }
             className={`btn-press focus-ring hit-40 relative inline-flex min-h-10 min-w-[4.5rem] flex-1 items-center justify-center gap-1 rounded-md px-2.5 text-[12px] transition-colors motion-safe:duration-150 sm:flex-none sm:px-3 ${
               selected
                 ? 'border border-slate-900/90 bg-white font-semibold text-slate-900 shadow-sm'

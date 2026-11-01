@@ -199,7 +199,7 @@ export function HomePage() {
                   className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
                   data-testid={isAgency ? 'home-action-primary' : 'home-action-cases'}
                 >
-                  {isAgency ? '案盘 / 多案流水' : '案盘'}
+                  {isAgency ? '案盘 / 项目' : '案盘'}
                 </Link>
                 <span aria-hidden className="text-slate-300">
                   ·

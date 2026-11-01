@@ -910,7 +910,7 @@ export function BusinessCaseDeptPage() {
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
         <div className="mb-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
           <Link to="/agent/cases" className="focus-ring rounded-sm hover:underline">
-            多案流水
+            项目列表
           </Link>
           <span>/</span>
           <Link to={companyHref} className="focus-ring rounded-sm hover:underline">

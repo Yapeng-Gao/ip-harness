@@ -22,7 +22,7 @@ type Props = {
 /**
  * G · 真待确认 · product-pages §4.0a
  * 骨架：【{案名}】{部门名}已交卷 · 待你确认：{关口一句话}
- * 与顶栏铃铛同源：getPendingConfirms()
+ * 与顶栏路径 Tab / 铃铛同源：getPendingConfirms()；§98 嵌在老板轨时不另起「审计」链
  */
 export function HomeTodoStrip({ embedded = false }: Props) {
   const { getPendingConfirms, cases } = useBusinessCases()
@@ -46,12 +46,15 @@ export function HomeTodoStrip({ embedded = false }: Props) {
           testId="home-todo-empty-copy"
           className="min-w-0 flex-1 border-0 bg-transparent px-0 py-0"
         />
-        <Link
-          to="/agent/pending"
-          className="focus-ring ml-auto shrink-0 rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:underline"
-        >
-          审计列表
-        </Link>
+        {!embedded ? (
+          <Link
+            to="/agent/pending"
+            className="focus-ring ml-auto shrink-0 rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:underline"
+            data-testid="home-todo-all"
+          >
+            全部
+          </Link>
+        ) : null}
       </div>
     )
   }
@@ -75,20 +78,10 @@ export function HomeTodoStrip({ embedded = false }: Props) {
             className="focus-ring ml-auto rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-amber-800 hover:underline"
             data-testid="home-todo-all"
           >
-            审计
+            全部
           </Link>
         </div>
-      ) : (
-        <div className="mb-1 flex justify-end px-1">
-          <Link
-            to="/agent/pending"
-            className="focus-ring rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-amber-800 hover:underline"
-            data-testid="home-todo-all"
-          >
-            审计列表
-          </Link>
-        </div>
-      )}
+      ) : null}
       <ul className="space-y-0.5">
         {first.map((item) => {
           const c = cases.find((x) => x.id === item.caseId)

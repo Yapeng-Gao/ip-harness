@@ -178,7 +178,7 @@ export function BusinessCasePage() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
               <Link to="/agent/cases" className="hover:underline">
-                多案流水
+                项目列表
               </Link>
               <span>/</span>
               <span className="text-slate-600">{c.title}</span>

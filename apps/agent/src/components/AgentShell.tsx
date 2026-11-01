@@ -202,7 +202,7 @@ export function AgentShell() {
           </div>
         </div>
 
-        {/* §97 路径段控 · 大厅·本案/多案·待确认；旧三档不回潮 */}
+        {/* §98 路径段控 · 大厅·项目·待确认；无选中案不冒充当前；旧三档不回潮 */}
         {!inGrokShell && (inHome || inBusiness || inDepartments || inAssets) ? (
           <ShellPathNav />
         ) : null}
