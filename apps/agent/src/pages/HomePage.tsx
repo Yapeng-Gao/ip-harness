@@ -17,8 +17,8 @@ import { reopenAllTeachTips } from '../business/teachingFade'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * 首屏：产品一句 + 案薄条 + 接待引导面（材料/目标；一句话辅）+ 老板待办摘要 + 八部名牌；
- * 支路/辅助/演示旁白默认折，忌瀑布经营首页。非拟人闲聊墙。
+ * 首屏：产品一句 + 案薄条 + 前台形象主动引导（材料/目标；一句话辅）+ 老板待办摘要 + 八部名牌；
+ * 支路/辅助/演示旁白默认折，忌瀑布经营首页。前台说话领路，非闲聊墙。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -62,7 +62,7 @@ export function HomePage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v91"
+      data-hall-screen="one-pass-v92"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
@@ -115,7 +115,7 @@ export function HomePage() {
           </p>
         </header>
 
-        {/* 2 · 接待引导面（材料 / 目标；一句话辅） */}
+        {/* 2 · 前台主动引导（形象+话术；材料/目标；一句话辅） */}
         <div data-hall-block="reception" data-testid="home-delegate-zone">
           <HomeReceptionGuide
             initialAttachId={attachQ}

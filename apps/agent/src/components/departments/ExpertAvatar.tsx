@@ -33,13 +33,15 @@ export function ExpertAvatar({
   seed,
 }: {
   name: string
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'lg'
   /** light = 浅色壳；onDark = 深底选中卡（加浅色描边） */
   tone?: 'light' | 'onDark'
   /** 可选稳定 id；缺省用 name */
   seed?: string
 }) {
-  const dim = size === 'sm' ? 'h-5 w-5' : 'h-7 w-7'
+  const dim =
+    size === 'sm' ? 'h-5 w-5' : size === 'lg' ? 'h-10 w-10' : 'h-7 w-7'
+  const px = size === 'sm' ? 20 : size === 'lg' ? 40 : 28
   const ring =
     tone === 'onDark'
       ? 'outline outline-1 -outline-offset-1 outline-white/10'
@@ -53,8 +55,8 @@ export function ExpertAvatar({
       alt=""
       aria-hidden
       title={label}
-      width={size === 'sm' ? 20 : 28}
-      height={size === 'sm' ? 20 : 28}
+      width={px}
+      height={px}
       className={`inline-block shrink-0 rounded-full object-cover ${dim} ${ring}`}
       data-testid="expert-avatar"
       loading="lazy"
