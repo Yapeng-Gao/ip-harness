@@ -3,9 +3,9 @@ import { Bell } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 
 /**
- * §99 顶栏铃铛 · 与路径 Tab「待确认」同源计数，但不抢全局文案。
- * 左栏路径轨在场时：始终图标-only（无「本案待确认/待我确认」可见字）；
- * 大厅仍静默（§96）；角标可留作捷径，主入口文案只留路径 Tab。
+ * §100 顶栏铃铛 · 左栏「待确认」为唯一全局计数入口。
+ * 有路径轨：图标-only，无可见「待确认」字；
+ * 大厅 /agent：彻底无数字角标（§100）；他页可留角标捷径。
  */
 export function PendingConfirmBell() {
   const { getPendingConfirms } = useBusinessCases()
@@ -45,22 +45,27 @@ export function PendingConfirmBell() {
       data-case-scoped={activeCaseId ? '1' : '0'}
       data-hall-quiet={onHall ? '1' : '0'}
       data-bell-mode={
-        pathNavPresent || onHall ? 'icon-only-v99' : 'legacy-label'
+        onHall
+          ? 'icon-only-hall-v100'
+          : pathNavPresent
+            ? 'icon-only-v99'
+            : 'legacy-label'
       }
+      data-bell-badge={onHall ? '0' : n > 0 ? '1' : '0'}
       title={aria}
       aria-label={aria}
     >
       <Bell className="h-3.5 w-3.5" aria-hidden />
       {/* §99：左栏路径 已有「待确认」可见字；铃铛永不叠第二处可见标签 */}
       <span className="sr-only">待确认</span>
-      {n > 0 && (
+      {n > 0 && !onHall ? (
         <span
           className="tabular absolute -right-1 -top-1 inline-flex min-w-[1.125rem] items-center justify-center rounded-full bg-amber-600 px-1 py-px text-[10px] font-semibold text-white"
           data-testid="pending-confirm-bell-badge"
         >
           {n > 9 ? '9+' : n}
         </span>
-      )}
+      ) : null}
     </Link>
   )
 }

@@ -17,7 +17,7 @@ type Props = {
 /**
  * 大厅轻量轨「老板待办」单区 · 一期-产品逻辑 / 交互大纲 §2.2
  * 待你拍 / 催办 / 进行中 —— 同一块；首屏摘要，忌整墙默认展开。
- * §97：轨标题「待你确认」；尾链「全部」→/agent/pending；omitPending 不回双轨；大厅唯一待办主轨。
+ * §100：轨标题「待你确认」；摘要「有 N 项要你拍板」；芯片与标题同词根；尾链「全部」。
  */
 export function HomeBossTodoBoard({
   latestId,
@@ -49,16 +49,18 @@ export function HomeBossTodoBoard({
         : '/agent/cases'
   const showB = oaPending.length > 0 || filedWatch.length > 0
   const summaryLine =
-    a || showB
-      ? '点开看清单'
-      : '暂无待拍'
+    a > 0
+      ? `有 ${a} 项要你拍板`
+      : showB
+        ? '有催办要盯'
+        : '暂时没有要你拍板的'
 
   return (
     <section
       className="overflow-hidden rounded-md border border-slate-200/90 bg-white"
       data-testid="home-boss-todo"
       data-compact={bodyOpen ? '0' : '1'}
-      data-hall-todo-single="v97"
+      data-hall-todo-single="v100"
       aria-labelledby="home-boss-todo-title"
     >
       <header className="flex flex-wrap items-center gap-1.5 bg-slate-50/70 px-2 py-1">
@@ -95,7 +97,7 @@ export function HomeBossTodoBoard({
             className={`rounded-full px-1.5 py-px ${a ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'}`}
             data-testid="home-boss-chip-a"
           >
-            待拍 {a}
+            待确认 {a}
           </span>
           <span
             className={`rounded-full px-1.5 py-px ${showB ? 'bg-rose-700 text-white' : 'bg-slate-200 text-slate-600'}`}
@@ -118,8 +120,8 @@ export function HomeBossTodoBoard({
           data-testid="home-boss-todo-body"
         >
           <div className="px-2 py-1.5" data-testid="home-boss-a">
-            <p className="mb-0.5 px-1 text-[10px] font-bold uppercase tracking-wide text-amber-800/80">
-              待你拍
+            <p className="mb-0.5 px-1 text-[10px] font-semibold tracking-wide text-amber-800/80">
+              待确认
             </p>
             <HomeTodoStrip embedded />
           </div>
@@ -128,12 +130,12 @@ export function HomeBossTodoBoard({
             <div className="px-2.5 py-2" data-testid="home-oa-nudge">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-rose-800/80">
+                  <p className="text-[10px] font-semibold tracking-wide text-rose-800/80">
                     期限催办
                   </p>
                   <p className="mt-0.5 text-[12px] leading-relaxed text-rose-950/90">
                     {topOa
-                      ? `「${topOa.title}」有待拍答复策略 · 逾期风险演示`
+                      ? `「${topOa.title}」有待确认的答复策略 · 逾期风险演示`
                       : `已递交案 ${filedWatch.length} 件在答复阶段 · 请进答复部盯期限`}
                   </p>
                 </div>
@@ -150,7 +152,7 @@ export function HomeBossTodoBoard({
           ) : null}
 
           <div className="px-2 py-1.5" data-testid="home-boss-c">
-            <p className="mb-0.5 px-1 text-[10px] font-bold uppercase tracking-wide text-sky-800/80">
+            <p className="mb-0.5 px-1 text-[10px] font-semibold tracking-wide text-sky-800/80">
               进行中
             </p>
             <HomeInProgressStrip latestId={latestId} embedded />

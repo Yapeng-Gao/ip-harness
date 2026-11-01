@@ -14,8 +14,8 @@ type Props = {
 }
 
 /**
- * 大厅八部门牌 · §95
- * 名牌 + 一句话 + 薄专家预览（≤3）；点门牌进部台；禁全员编制墙。
+ * 大厅八部门牌 · §100
+ * 名牌 + 一句话 + 薄专家预览（≤3）；点门牌＝开工进部台；禁编制/管理入口。
  */
 export function HallEightDoors({ caseId }: Props) {
   const [openDuty, setOpenDuty] = useState<string | null>(null)
@@ -43,7 +43,7 @@ export function HallEightDoors({ caseId }: Props) {
       <ol
         className="grid grid-cols-2 gap-1.5 sm:grid-cols-4"
         data-testid="home-eight-depts"
-        data-dept-density="preview-v95"
+        data-dept-density="preview-v100"
         data-dept-grid="2x4"
       >
         {HALL_DEPT_DOORS.map((d) => (
@@ -150,9 +150,7 @@ function HallDoorCard({
             <ChevronRight className="h-3 w-3 shrink-0" aria-hidden />
           )}
           <span className="truncate">
-            {dutyOpen
-              ? '收起职责'
-              : `负责人 · ${lead?.name ?? '专家'}职责`}
+            {dutyOpen ? '收起' : `进${door.label}办事`}
           </span>
         </button>
         {dutyOpen ? (
@@ -162,7 +160,7 @@ function HallDoorCard({
           >
             {lead?.duty || door.desc}
             <span className="mt-0.5 block text-[9px] text-slate-400">
-              示意编制 · 点门牌进部台看全名册
+              点上方门牌进部台办事
             </span>
           </p>
         ) : null}

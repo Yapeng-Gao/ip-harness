@@ -15,7 +15,7 @@ import { reopenAllTeachTips } from '../business/teachingFade'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * §97：门口三件套保留；顶栏路径段控；薄轨标题「待你确认」；支路仍 ?hallTools=1。
+ * §100：门口三件套保留；左栏路径；薄轨「待你确认」；无假本案条；支路仍 ?hallTools=1。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -46,45 +46,38 @@ export function HomePage() {
   )
 
   const isAgency = entryRole === 'agency'
+  /** Soft routing only (doors/reception) — hall must not imply current case */
   const latestId = pickLatestCaseId(
     cases,
     (id) => getProgress(id).updatedAt,
     getLogAt,
   )
-  const latestCase = latestId
-    ? cases.find((c) => c.id === latestId)
-    : undefined
 
   return (
     <div
       className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v97"
+      data-hall-screen="one-pass-v100"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
-      data-hall-dedupe="boss-todo-v97"
+      data-hall-dedupe="boss-todo-v100"
       data-assistant-density="delegate-chain-v1"
       data-hall-tools={hallTools ? '1' : '0'}
     >
-      <div className="mx-auto w-full max-w-4xl">
-        {/* 1 · 顶：门口身份 + 当前案薄条 */}
+      <div className="mr-auto w-full max-w-5xl">
+        {/* 1 · thin identity — reception speaks first; no fake current case */}
         <header
-          className="mb-2.5 flex flex-wrap items-end justify-between gap-x-3 gap-y-1"
+          className="mb-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
           data-testid="home-hall-tagline"
+          data-hall-tagline="thin-v100"
         >
           <div className="min-w-0">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
-              Novada Team · 大厅
-            </p>
-            <h1 className="mt-0.5 text-pretty text-[20px] font-bold tracking-tight text-slate-900 sm:text-[22px]">
-              专家向你汇报
-            </h1>
             <p
-              className="mt-0.5 text-[11px] text-slate-500"
+              className="text-pretty text-[12px] font-medium text-slate-500"
               data-testid="home-hall-tagline-sub"
             >
-              弄清去向 · 办事
+              专家向你汇报 · 弄清去向
             </p>
           </div>
           <p
@@ -95,27 +88,14 @@ export function HomePage() {
             <span className="font-semibold text-slate-900">
               {ENTRY_ROLE_LABEL[entryRole]}
             </span>
-            {latestCase ? (
-              <>
-                <span className="text-slate-400"> · </span>
-                <Link
-                  to={`/agent/cases/${latestCase.id}`}
-                  className="font-semibold text-slate-900 underline-offset-2 hover:underline"
-                  data-testid="home-case-strip"
-                >
-                  {latestCase.title}
-                </Link>
-                <Link
-                  to={`/agent/cases/${latestCase.id}/depts/disclosure?docket=1`}
-                  className="ml-1 text-[11px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
-                  data-testid="home-case-file-link"
-                >
-                  案卷
-                </Link>
-              </>
-            ) : (
-              <span className="text-slate-500"> · 尚无案卷</span>
-            )}
+            <span className="text-slate-400"> · </span>
+            <Link
+              to="/agent/cases"
+              className="font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+              data-testid="home-to-projects"
+            >
+              去项目
+            </Link>
           </p>
         </header>
 
