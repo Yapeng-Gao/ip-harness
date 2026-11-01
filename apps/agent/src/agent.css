@@ -595,3 +595,23 @@ body,
   outline: 2px solid #b45309;
   outline-offset: 2px;
 }
+
+
+/* §99 shell left rail */
+.shell-path-rail {
+  background: #eef0f3;
+}
+.shell-path-rail a[data-selected='1'] {
+  position: relative;
+}
+/* nested case dept rail: lighter than shell path rail */
+.shell-path-nav[data-shell-rail='1'] + .business-case-sidebar {
+  background: #f7f7f8;
+  border-right-color: rgb(226 232 240 / 0.7);
+  opacity: 0.98;
+  font-size: 12px;
+  box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.6);
+}
+.shell-path-nav[data-shell-rail='1'] + .business-case-sidebar {
+  max-width: 14.5rem;
+}

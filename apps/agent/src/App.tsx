@@ -48,7 +48,8 @@ import { AuthSessionProvider } from './business/AuthSessionContext'
  * /agent/login        登录壳（角色二选一 + 样机会话；§4.0）
  * /agent              薄产品入口（§4.0a；登录后落点；主 CTA 按角色分流）
  * /agent/cases        多案流水（案表 → 公司首页）
- * /agent/departments  组织编制（全库配置旁路；作业以案→公司首页八部为主）
+ * /agent/departments  编制（全库旁路；壳层左栏弱入口；作业以案→公司首页八部为主）
+ * /agent/roster       → /agent/departments
  * /agent/assets       资产（全局库 + 文件树）
  */
 export default function App() {
@@ -82,6 +83,7 @@ export default function App() {
                 <Route path="pending" element={<PendingConfirmInboxPage />} />
                 <Route path="pending/:confirmId" element={<PendingConfirmDetailPage />} />
                 <Route path="departments" element={<DepartmentsPage />} />
+                <Route path="roster" element={<Navigate to="/agent/departments" replace />} />
                 <Route path="assets" element={<AssetsPage />} />
                 {/* 2026-10-21：catalog 并入部门页 */}
                 <Route path="catalog" element={<Navigate to="/agent/departments" replace />} />

@@ -205,15 +205,11 @@ export function HomePage() {
                   ·
                 </span>
                 <Link
-                  to={
-                    latestId
-                      ? `/agent/cases/${latestId}/professional`
-                      : '/agent/cases/new'
-                  }
+                  to="/agent/departments"
                   className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
                   data-testid="home-action-departments"
                 >
-                  编制名册
+                  编制
                 </Link>
                 <span aria-hidden className="text-slate-300">
                   ·

@@ -3,8 +3,8 @@ import { Bell } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 
 /**
- * §98 顶栏铃铛 · 与路径 Tab「待确认」同源计数，但不抢全局文案。
- * 路径段控在场时：始终图标-only（无「本案待确认/待我确认」可见字）；
+ * §99 顶栏铃铛 · 与路径 Tab「待确认」同源计数，但不抢全局文案。
+ * 左栏路径轨在场时：始终图标-only（无「本案待确认/待我确认」可见字）；
  * 大厅仍静默（§96）；角标可留作捷径，主入口文案只留路径 Tab。
  */
 export function PendingConfirmBell() {
@@ -17,7 +17,7 @@ export function PendingConfirmBell() {
       ? caseMatch.params.caseId
       : undefined
   const onHall = Boolean(hallMatch) && !activeCaseId
-  /** ShellPathNav 覆盖大厅/业务/部门/资产；有路径段控时铃铛不写可见「待确认」 */
+  /** ShellPathNav 覆盖大厅/业务/部门/资产；有路径轨时铃铛不写可见「待确认」 */
   const pathNavPresent = Boolean(pathNavRoutes)
   const pending = getPendingConfirms(activeCaseId)
   const n = pending.length
@@ -45,13 +45,13 @@ export function PendingConfirmBell() {
       data-case-scoped={activeCaseId ? '1' : '0'}
       data-hall-quiet={onHall ? '1' : '0'}
       data-bell-mode={
-        pathNavPresent || onHall ? 'icon-only-v98' : 'legacy-label'
+        pathNavPresent || onHall ? 'icon-only-v99' : 'legacy-label'
       }
       title={aria}
       aria-label={aria}
     >
       <Bell className="h-3.5 w-3.5" aria-hidden />
-      {/* §98：路径 Tab 已有「待确认」可见字；铃铛永不叠第二处可见标签 */}
+      {/* §99：左栏路径 已有「待确认」可见字；铃铛永不叠第二处可见标签 */}
       <span className="sr-only">待确认</span>
       {n > 0 && (
         <span

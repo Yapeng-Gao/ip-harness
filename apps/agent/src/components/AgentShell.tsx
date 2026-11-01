@@ -202,11 +202,7 @@ export function AgentShell() {
           </div>
         </div>
 
-        {/* §98 路径段控 · 大厅·项目·待确认；无选中案不冒充当前；旧三档不回潮 */}
-        {!inGrokShell && (inHome || inBusiness || inDepartments || inAssets) ? (
-          <ShellPathNav />
-        ) : null}
-
+        {/* §99 路径迁左栏；顶栏不再放段控，避免顶+左双轨 */}
         {isCaseLevelShellPath(loc.pathname) && activeBizCaseId ? (
           <CaseShellSwitcher activeCaseId={activeBizCaseId} />
         ) : null}
@@ -274,6 +270,9 @@ export function AgentShell() {
       ) : null}
 
       <div className="flex min-h-0 flex-1">
+        {!inGrokShell && (inHome || inBusiness || inDepartments || inAssets) ? (
+          <ShellPathNav />
+        ) : null}
         {inBusiness && <BusinessCaseSidebar />}
         {!(inProjects || inGrokShell || inBusiness || inCatalog || inDepartments || inAssets || inHome) && (
           <AgentSessionSidebar />

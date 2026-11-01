@@ -124,13 +124,13 @@ export function ShellAccountMenu() {
             案盘
           </Link>
           <Link
-            to="/agent/cases"
+            to="/agent/departments"
             role="menuitem"
             className="btn-press focus-ring block px-3 py-2 text-xs text-slate-700 hover:bg-slate-100"
             data-testid="shell-account-roster"
             onClick={() => setOpen(false)}
           >
-            编制名册（经案盘进）
+            编制
           </Link>
           <button
             type="button"
