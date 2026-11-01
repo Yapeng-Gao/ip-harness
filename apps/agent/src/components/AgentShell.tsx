@@ -13,7 +13,6 @@ import { PersonaSwitcher } from '@shared/components/PersonaSwitcher'
 import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { AgentSessionSidebar } from './AgentSessionSidebar'
 import { PersonaRouteGate } from '@shared/components/PersonaRouteGate'
-import { PendingConfirmBell } from './business/PendingConfirmBell'
 import { ShellPathNav } from './business/ShellPathNav'
 import { ShellAccountMenu } from './business/ShellAccountMenu'
 import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
@@ -228,9 +227,7 @@ export function AgentShell() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
-          {(inHome || inBusiness || inCatalog || inPatentProject) && (
-            <PendingConfirmBell />
-          )}
+          {/* §101: left rail pending is sole global entry; no top bell */}
           {(inHome || inBusiness || inDepartments || inAssets) && !inGrokShell && (
             <ShellAccountMenu />
           )}

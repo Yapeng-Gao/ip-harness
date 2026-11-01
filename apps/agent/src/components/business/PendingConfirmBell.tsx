@@ -3,9 +3,8 @@ import { Bell } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 
 /**
- * §100 顶栏铃铛 · 左栏「待确认」为唯一全局计数入口。
- * 有路径轨：图标-only，无可见「待确认」字；
- * 大厅 /agent：彻底无数字角标（§100）；他页可留角标捷径。
+ * §101 已从 AgentShell 顶栏卸掉。左栏 ShellPathNav「待确认」= 唯一全局入口。
+ * 组件保留供实验/回滚；新壳层勿再挂载，避免第三入口与左栏叠数。
  */
 export function PendingConfirmBell() {
   const { getPendingConfirms } = useBusinessCases()

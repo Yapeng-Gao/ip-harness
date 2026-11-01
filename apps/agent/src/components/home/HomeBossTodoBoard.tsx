@@ -17,7 +17,8 @@ type Props = {
 /**
  * 大厅轻量轨「老板待办」单区 · 一期-产品逻辑 / 交互大纲 §2.2
  * 待你拍 / 催办 / 进行中 —— 同一块；首屏摘要，忌整墙默认展开。
- * §100：轨标题「待你确认」；摘要「有 N 项要你拍板」；芯片与标题同词根；尾链「全部」。
+ * §101：轨是门口摘要，不是第二 Tab。标题「要你拍板」（轻于左栏「待确认」）；
+ * 摘要「有 N 项要你拍板」；芯片「拍板 N」；尾链「全部」→ /agent/pending。
  */
 export function HomeBossTodoBoard({
   latestId,
@@ -60,10 +61,10 @@ export function HomeBossTodoBoard({
       className="overflow-hidden rounded-md border border-slate-200/90 bg-white"
       data-testid="home-boss-todo"
       data-compact={bodyOpen ? '0' : '1'}
-      data-hall-todo-single="v100"
+      data-hall-todo-single="v101"
       aria-labelledby="home-boss-todo-title"
     >
-      <header className="flex flex-wrap items-center gap-1.5 bg-slate-50/70 px-2 py-1">
+      <header className="flex flex-wrap items-center gap-1.5 bg-slate-50/40 px-2 py-1">
         <button
           type="button"
           className="focus-ring flex min-w-0 flex-1 items-center gap-1.5 rounded-md text-left"
@@ -79,9 +80,9 @@ export function HomeBossTodoBoard({
           <h2
             id="home-boss-todo-title"
             data-testid="home-boss-todo-title"
-            className="text-[12px] font-semibold text-slate-900"
+            className="text-[12px] font-medium text-slate-600"
           >
-            待你确认
+            要你拍板
           </h2>
           <span className="truncate text-[10px] text-slate-500">{summaryLine}</span>
         </button>
@@ -97,7 +98,7 @@ export function HomeBossTodoBoard({
             className={`rounded-full px-1.5 py-px ${a ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'}`}
             data-testid="home-boss-chip-a"
           >
-            待确认 {a}
+            拍板 {a}
           </span>
           <span
             className={`rounded-full px-1.5 py-px ${showB ? 'bg-rose-700 text-white' : 'bg-slate-200 text-slate-600'}`}
@@ -120,8 +121,8 @@ export function HomeBossTodoBoard({
           data-testid="home-boss-todo-body"
         >
           <div className="px-2 py-1.5" data-testid="home-boss-a">
-            <p className="mb-0.5 px-1 text-[10px] font-semibold tracking-wide text-amber-800/80">
-              待确认
+            <p className="mb-0.5 px-1 text-[10px] font-medium tracking-wide text-amber-800/70">
+              拍板项
             </p>
             <HomeTodoStrip embedded />
           </div>
