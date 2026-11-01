@@ -13,11 +13,11 @@ import type { OrgDeptId } from './orgDepts'
 export type AgentLevel = 1 | 2 | 3 | 4 | 5
 
 export const LEVEL_LABEL: Record<AgentLevel, string> = {
-  1: 'L1·见习',
-  2: 'L2·熟练',
-  3: 'L3·资深',
-  4: 'L4·首席',
-  5: 'L5·宗师',
+  1: '见习',
+  2: '熟练',
+  3: '资深',
+  4: '首席',
+  5: '宗师',
 }
 
 /** 主理 Agent 的样机基准经验（用户训练量叠在上面，见 OrgConfigContext.xp） */

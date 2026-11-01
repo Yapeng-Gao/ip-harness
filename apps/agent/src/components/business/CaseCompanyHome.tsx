@@ -680,7 +680,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="company-link-professional"
           >
-            看专业能力 / 编制
+            编制名册
           </Link>
         </nav>
       </section>

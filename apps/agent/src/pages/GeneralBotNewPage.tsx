@@ -38,11 +38,11 @@ export function GeneralBotNewPage() {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
         <div className="mx-auto w-full max-w-md px-4 py-8">
           <p className="text-[11px] font-medium uppercase tracking-wider text-emerald-700">
-            通用 · 自由 bot
+            通用 · 自由助手
           </p>
-          <h1 className="mt-1 text-lg font-semibold text-slate-900">新建 bot</h1>
+          <h1 className="mt-1 text-lg font-semibold text-slate-900">新建助手</h1>
           <p className="mt-1 text-sm text-slate-500">
-            样机内存 · 不进项目花名册 · 自定义默认只读（无 DomainCommand）
+            样机内存 · 不进项目花名册 · 自定义默认只读（不自动写库）
           </p>
 
           <form
@@ -63,7 +63,7 @@ export function GeneralBotNewPage() {
             </label>
 
             <label className="block">
-              <span className="text-xs font-medium text-slate-700">类型 kind</span>
+              <span className="text-xs font-medium text-slate-700">助手类型</span>
               <select
                 value={kind}
                 onChange={(e) => onKindChange(e.target.value as FreeBotKind)}

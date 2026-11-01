@@ -123,8 +123,8 @@ function buildDemo(): {
       id: uid('tl'),
       projectId: shell.id,
       kind: 'project_created',
-      title: '通用自由 bot 壳已就绪',
-      detail: '自由 bot 工作区 · 样机 · 无真 LLM',
+      title: '通用自由助手壳已就绪',
+      detail: '自由助手工作区 · 样机示意 · 无真模型',
       at: stamp(),
     },
     {

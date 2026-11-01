@@ -550,9 +550,9 @@ export function BusinessCaseSidebar() {
           to={`/agent/cases/${activeCaseId}/professional`}
           className="mt-2 flex items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-700 hover:bg-slate-50"
           data-testid="business-side-professional"
-          title="案级专业能力 / 编制"
+          title="案级编制名册"
         >
-          专业 / 编制
+          编制名册
         </Link>
 
         {pending.length > 0 && (

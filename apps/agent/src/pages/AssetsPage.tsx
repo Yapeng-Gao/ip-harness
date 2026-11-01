@@ -73,51 +73,63 @@ export function AssetsPage() {
       data-testid="assets-page"
       data-b8={isB8 ? '1' : '0'}
     >
-      <div
-        className="mx-4 mt-3 shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] text-slate-700"
-        data-testid="assets-b8"
-        data-branch="b8"
-      >
-        <p>
-          <strong>情报官入口（示意）</strong>
-          ：竞对年报/专报走此资产/情报面，不在转化复盘或挖掘点包假装专报。
-        </p>
-        <ul
-          className="mt-1.5 list-disc space-y-0.5 pl-4 text-[11px] text-slate-600"
-          data-testid="assets-b8-must"
+      {isB8 ? (
+        <div
+          className="mx-4 mt-3 shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] text-slate-700"
+          data-testid="assets-b8"
+          data-branch="b8"
         >
-          <li>
-            须看见：左侧「情报材料」分类（现 {intelCount} 份示意）
-          </li>
-          <li>禁：用转化复盘或挖掘点包冒充竞对专报</li>
-          <li>诚实：非真情报检索通道 · 上传不解析</li>
-        </ul>
-        <div className="mt-2 flex flex-wrap items-center gap-2" data-testid="assets-b8-case-link">
-          {latestCaseId ? (
-            <Link
-              to={`/agent/cases/${latestCaseId}`}
-              className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-800"
-            >
-              与本案挂接（演示）· 回公司
-            </Link>
-          ) : (
-            <Link
-              to="/agent/cases/new"
-              className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-800"
-            >
-              先开案子再挂接
-            </Link>
-          )}
-          <button
-            type="button"
-            onClick={() => setCategory('intel')}
-            className="btn-press focus-ring rounded-md px-2 py-1 text-[11px] text-slate-600 underline"
-            data-testid="assets-b8-focus-intel"
+          <p>
+            <strong>情报官入口（示意）</strong>
+            ：竞对年报/专报走此资产/情报面，不在转化复盘或挖掘点包假装专报。
+          </p>
+          <ul
+            className="mt-1.5 list-disc space-y-0.5 pl-4 text-[11px] text-slate-600"
+            data-testid="assets-b8-must"
           >
-            只看情报材料
-          </button>
+            <li>
+              须看见：左侧「情报材料」分类（现 {intelCount} 份示意）
+            </li>
+            <li>禁：用转化复盘或挖掘点包冒充竞对专报</li>
+            <li>诚实：非真情报检索通道 · 上传不解析</li>
+          </ul>
+          <div className="mt-2 flex flex-wrap items-center gap-2" data-testid="assets-b8-case-link">
+            {latestCaseId ? (
+              <Link
+                to={`/agent/cases/${latestCaseId}`}
+                className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-800"
+              >
+                与本案挂接（演示）· 回公司
+              </Link>
+            ) : (
+              <Link
+                to="/agent/cases/new"
+                className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-800"
+              >
+                先开案子再挂接
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={() => setCategory('intel')}
+              className="btn-press focus-ring rounded-md px-2 py-1 text-[11px] text-slate-600 underline"
+              data-testid="assets-b8-focus-intel"
+            >
+              只看情报材料
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div
+          className="mx-4 mt-3 shrink-0 rounded-lg border border-slate-200/80 bg-white px-3 py-2 text-[12px] text-slate-600"
+          data-testid="assets-library-intro"
+        >
+          <p>
+            <strong className="text-slate-800">资料库</strong>
+            ：本案与全局稿件、附件、情报材料集中存放。日常办事仍走大厅 → 公司案 → 部台；此处不另开第二套办理首页。
+          </p>
+        </div>
+      )}
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <AssetTree
           selectedId={selectedId}

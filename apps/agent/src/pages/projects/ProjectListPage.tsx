@@ -76,7 +76,7 @@ export function ProjectListPage() {
           <Link to="/agent/lab" className="underline" data-testid="projects-to-lab">
             原型展廊
           </Link>
-          （沙盒 / 多 bot 仅展廊入口，非主办理）。
+          （沙盒 / 多助手仅展廊入口，非主办理）。
         </p>
 
         <details

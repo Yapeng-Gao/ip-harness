@@ -71,7 +71,7 @@ export function HomeProjectRail() {
           data-testid="home-mount-history"
         >
           <History className="h-3.5 w-3.5 text-slate-500" strokeWidth={1.75} aria-hidden />
-          挂载历史项目（旁路已并入案盘）
+          历史项目夹（旁路）
           <span className="ml-auto tabular text-[11px] text-slate-500">
             {unmounted.length}
           </span>

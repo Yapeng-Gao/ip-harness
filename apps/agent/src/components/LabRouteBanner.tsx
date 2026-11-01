@@ -30,7 +30,7 @@ export function LabRouteBanner({ kind = 'lab', className = '' }: Props) {
           ) : (
             <>
               <strong>实验室 / 旁路壳</strong>
-              · 非一期主路径（大厅→公司→部台）；会话/沙箱/多 bot 仅实验，硬请示与工单请回部台
+              · 非一期主路径（大厅→公司→部台）；会话/沙箱/多助手仅实验，硬请示与工单请回部台
             </>
           )}
         </span>

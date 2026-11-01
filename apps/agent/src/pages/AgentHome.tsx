@@ -93,7 +93,7 @@ export function AgentHome() {
             >
               大厅
             </Link>
-            ；多 bot 旁路仅经{' '}
+            ；多助手旁路仅经{' '}
             <Link
               to="/agent/lab"
               className="font-medium text-slate-800 underline-offset-2 hover:underline"
@@ -106,7 +106,7 @@ export function AgentHome() {
         </div>
 
         <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold text-slate-800">选自由 bot 开聊</div>
+          <div className="text-xs font-semibold text-slate-800">选自由助手开聊</div>
           <ul className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
             {botLinks.map((b) => (
               <li key={b.id}>

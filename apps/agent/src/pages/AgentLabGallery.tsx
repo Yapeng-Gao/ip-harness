@@ -34,12 +34,12 @@ const BYPASS_CARDS: LabCard[] = [
   },
   {
     id: 'warmup',
-    version: '旁路 · 沙盒 / 多 bot',
-    blurb: '沙盒单助手与多 bot 互传；非一期主办理，可跳过。',
+    version: '旁路 · 沙盒 / 多助手',
+    blurb: '沙盒单助手与多助手互传；非一期主办理，可跳过。',
     href: '/agent/sandbox',
     cta: '打开沙盒',
     icon: PenLine,
-    secondary: { label: '多 bot 壳', href: '/agent/team' },
+    secondary: { label: '多助手壳', href: '/agent/team' },
   },
   {
     id: 'drill',
