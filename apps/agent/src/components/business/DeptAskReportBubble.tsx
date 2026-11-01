@@ -75,7 +75,11 @@ export function DeptAskReportBubble({
         reason: confirmReason.trim() || '接受结论',
         riskAccepted,
       })
-      setMsg(`已通过 · ${decision.decisionShort} · 已写入判断档案`)
+      setMsg(
+        `已通过 · ${decision.decisionShort}${
+          decision.decisionArchiveCode ? `（档案 ${decision.decisionArchiveCode}）` : ''
+        } · 已写入判断档案`,
+      )
     })()
   }
 
@@ -166,16 +170,27 @@ export function DeptAskReportBubble({
             className="btn-press focus-ring inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-3 py-1.5 text-[11px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
             data-testid="dept-right-confirm-link"
             data-ask-confirm="1"
-            title={!passOk ? '材料未齐或当前身份不可自批' : decision.decisionShort}
+            data-ask-primary="1"
+            title={
+              !passOk
+                ? '材料未齐或当前身份不可自批'
+                : decision.decisionMeaning
+            }
           >
             {busy ? '提交中…' : `确认 · ${decision.decisionShort}`}
           </button>
+          {decision.decisionArchiveCode ? (
+            <span className="sr-only" data-testid="dept-ask-archive-code">
+              档案码 {decision.decisionArchiveCode}
+            </span>
+          ) : null}
           <details
             className="rounded-md border border-amber-100 bg-white/80 px-2 py-1.5"
             data-testid="dept-ask-reason-fold"
+            data-fold-default="closed"
           >
             <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
-              展开 · 确认理由 / 认风险
+              可选 · 确认理由 / 认风险
             </summary>
             <div className="mt-1.5 space-y-2">
               <label className="block space-y-1">
@@ -203,9 +218,13 @@ export function DeptAskReportBubble({
               </label>
             </div>
           </details>
-          <details className="rounded-md border border-slate-200 bg-white px-2 py-1.5">
+          <details
+            className="rounded-md border border-slate-200 bg-white px-2 py-1.5"
+            data-testid="dept-ask-return-fold"
+            data-fold-default="closed"
+          >
             <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
-              驳回并退回改稿
+              可选 · 驳回并退回改稿
             </summary>
             <div className="mt-1.5 space-y-1">
               <label className="sr-only" htmlFor={`ask-return-${item.id}`}>

@@ -19,14 +19,16 @@ const ENTRY_BY_DEPT: Partial<Record<OrgDeptId, string[]>> = {
 }
 
 /**
- * 薄部作业主栏 · 分步（进入检查→主作业→合格线）+ 可点零件
- * 对齐交互大纲 4.4.7 / 各部 §0 薄合格线；非真检索/官报。
+ * 薄部作业主栏 · §138 G02：中栏默认展建项卡/选题卡等产物（workBody）；
+ * 进入检查表折进「本步助手」，勿把中栏做成流程墙。
  */
 export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
   const meta = THIN_LINE_BY_DEPT[deptId]
-  const [step, setStep] = useState<StepId>('entry')
+  /** §138：默认主作业（产物），检查不抢首屏 */
+  const [step, setStep] = useState<StepId>('work')
   const [picked, setPicked] = useState<string | null>(null)
   const [detail, setDetail] = useState<string | null>(null)
+  const [assistOpen, setAssistOpen] = useState(false)
   const entryItems = ENTRY_BY_DEPT[deptId] || ['材料可挂', '目标一句话', '不装已过线']
   const [checked, setChecked] = useState<Record<number, boolean>>({})
   const [materials, setMaterials] = useState<Record<string, boolean>>({})
@@ -51,7 +53,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
         className="mt-3 max-h-[min(70vh,36rem)] overflow-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
         data-testid="dept-thin-work-body"
       >
-        薄部可进；主交付示意未挂时不堆假进度。硬请示仍在右栏。
+        薄部可进；主交付未挂时不堆假进度。硬请示仍在右栏。
       </pre>
     )
   }
@@ -59,15 +61,62 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
   const mark = (id: string, label: string) => {
     setPicked(id)
     setDetail(label)
-    onRecordNote?.(`${meta.workTitle} · 选了「${label}」（示意留痕，非硬请示）`)
+    onRecordNote?.(`${meta.workTitle} · 选了「${label}」（留痕，非硬请示）`)
   }
 
   const toggleCheck = (i: number) => {
     setChecked((prev) => ({ ...prev, [i]: !prev[i] }))
   }
 
+  const checklistBlock = (
+    <div
+      className="rounded-xl border border-sky-200 bg-sky-50/50 p-3"
+      data-testid="thin-entry-checklist"
+    >
+      <p className="text-[11px] font-semibold text-sky-900">进入检查表（开干前）</p>
+      <ul className="mt-2 space-y-1.5">
+        {entryItems.map((label, i) => (
+          <li key={label}>
+            <label className="flex cursor-pointer items-start gap-2 text-[12px] text-slate-800">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={Boolean(checked[i])}
+                onChange={() => toggleCheck(i)}
+                data-testid={`thin-entry-check-${i}`}
+              />
+              <span>{label}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        disabled={!entryOk}
+        className="btn-press focus-ring mt-3 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white disabled:opacity-40"
+        data-testid="thin-entry-go-work"
+        onClick={() => {
+          setStep('work')
+          setAssistOpen(false)
+          onRecordNote?.(`${meta.workTitle} · 进入检查已过`)
+        }}
+      >
+        {entryOk ? '检查通过 · 回产物' : '勾齐后再开干'}
+      </button>
+      <p className="mt-2 text-[10px] text-slate-400">
+        大厅可点进 ≠ 已过进入检查 · 演示勾选，非真鉴权。
+      </p>
+    </div>
+  )
+
   return (
-    <div className="mt-3 space-y-3" data-testid="dept-thin-work-panel" data-dept={deptId} data-step={step}>
+    <div
+      className="mt-3 space-y-3"
+      data-testid="dept-thin-work-panel"
+      data-dept={deptId}
+      data-step={step}
+      data-thin-primary="manuscript"
+    >
       <div className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2" data-testid="thin-qualify-block">
         <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
           合格线
@@ -81,11 +130,27 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
         </details>
       </div>
 
-      {/* 分步 pill · 按步减负 */}
+      <h3 className="text-[13px] font-semibold text-slate-900" data-testid="dept-thin-work-title">
+        {meta.workTitle}
+      </h3>
+
+      {/* §138 G02：产物稿纸默认可见 */}
+      <article
+        className="rounded-lg border border-slate-200/70 bg-[#fbfaf7] px-4 py-4 shadow-sm"
+        data-testid="dept-thin-manuscript-paper"
+        data-doc-feel="1"
+      >
+        <pre
+          className="max-h-[min(52vh,28rem)] overflow-auto whitespace-pre-wrap text-[13px] leading-[1.7] text-slate-800"
+          data-testid="dept-thin-work-body"
+        >
+          {meta.workBody}
+        </pre>
+      </article>
+
       <div className="flex flex-wrap items-center gap-1.5" data-testid="thin-work-steps">
         {(
           [
-            ['entry', '进入检查'],
             ['work', '主作业'],
             ['done', '结束线'],
           ] as const
@@ -104,49 +169,27 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
             {label}
           </button>
         ))}
+        <button
+          type="button"
+          onClick={() => {
+            setAssistOpen((v) => !v)
+            setStep('entry')
+          }}
+          className={`btn-press focus-ring rounded-full border px-2.5 py-0.5 text-[10px] font-medium ${
+            assistOpen || step === 'entry'
+              ? 'border-violet-400 bg-violet-50 text-violet-950'
+              : 'border-slate-200 bg-white text-slate-600'
+          }`}
+          data-testid="thin-step-entry"
+          title="开干前检查 · 折进本步助手"
+        >
+          本步助手 · 进入检查
+        </button>
       </div>
 
-      <h3 className="text-[13px] font-semibold text-slate-900" data-testid="dept-thin-work-title">
-        {meta.workTitle}
-      </h3>
-
-      {step === 'entry' ? (
-        <div
-          className="rounded-xl border border-sky-200 bg-sky-50/50 p-3"
-          data-testid="thin-entry-checklist"
-        >
-          <p className="text-[11px] font-semibold text-sky-900">进入检查表（开干前）</p>
-          <ul className="mt-2 space-y-1.5">
-            {entryItems.map((label, i) => (
-              <li key={label}>
-                <label className="flex cursor-pointer items-start gap-2 text-[12px] text-slate-800">
-                  <input
-                    type="checkbox"
-                    className="mt-0.5"
-                    checked={Boolean(checked[i])}
-                    onChange={() => toggleCheck(i)}
-                    data-testid={`thin-entry-check-${i}`}
-                  />
-                  <span>{label}</span>
-                </label>
-              </li>
-            ))}
-          </ul>
-          <button
-            type="button"
-            disabled={!entryOk}
-            className="btn-press focus-ring mt-3 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white disabled:opacity-40"
-            data-testid="thin-entry-go-work"
-            onClick={() => {
-              setStep('work')
-              onRecordNote?.(`${meta.workTitle} · 进入检查已过（示意）`)
-            }}
-          >
-            {entryOk ? '检查通过 · 开主作业' : '勾齐后再开干'}
-          </button>
-          <p className="mt-2 text-[10px] text-slate-400">
-            大厅可点进 ≠ 已过进入检查 · 演示勾选，非真鉴权。
-          </p>
+      {(assistOpen || step === 'entry') && step !== 'done' ? (
+        <div data-testid="thin-assist-fold" data-assist="entry">
+          {checklistBlock}
         </div>
       ) : null}
 
@@ -157,7 +200,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
             data-testid="thin-materials-attach"
           >
             <summary className="cursor-pointer select-none text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              材料挂接（收起 · 演示）
+              材料挂接（收起）
             </summary>
             <ul className="mt-1.5 space-y-1">
               {materialList.map((label) => (
@@ -219,13 +262,13 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                     {detail === '确认建项'
                       ? '将写入项目卡状态=已立项；正式硬请示仍在右栏。'
                       : detail === '改方向'
-                        ? '打开方向编辑（示意）· 改完须再确认。'
+                        ? '打开方向编辑 · 改完须再确认。'
                         : '搁置：本案停在草案，不挡其他案。'}
                   </p>
                 </div>
               ) : null}
               <p className="mt-2 text-[10px] text-slate-400">
-                示意零件 · 正式立项硬请示仍在右栏；≠完整论证报告。
+                正式立项硬请示仍在右栏；≠完整论证报告。
               </p>
             </div>
           ) : null}
@@ -423,7 +466,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                   className="rounded-lg border border-violet-100 bg-violet-50/60 px-3 py-2 text-[11px]"
                   data-testid="thin-work-detail"
                 >
-                  展开「{detail}」明细（示意）· 正式专报走情报官支路。
+                  展开「{detail}」明细 · 正式专报走情报官支路。
                 </div>
               ) : null}
               <div className="flex flex-wrap gap-2 pt-1">
@@ -454,28 +497,8 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
           {!['dept-intake', 'dept-inspire', 'dept-mining', 'dept-annuity', 'dept-monetize'].includes(
             deptId,
           ) ? (
-            <details
-              className="rounded-md border border-slate-100 bg-slate-50/80"
-              data-testid="thin-work-body-fold"
-            >
-              <summary
-                className="cursor-pointer select-none px-3 py-1.5 text-[10px] font-medium text-slate-500"
-                data-testid="thin-work-body-summary"
-              >
-                示意全文（收起 · 上方零件优先）
-              </summary>
-              <pre
-                className="max-h-[min(40vh,20rem)] overflow-auto border-t border-slate-100 px-3 py-2 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"
-                data-testid="dept-thin-work-body"
-              >
-                {meta.workBody}
-              </pre>
-            </details>
-          ) : (
-            <pre className="sr-only" data-testid="dept-thin-work-body">
-              {meta.workBody}
-            </pre>
-          )}
+            <p className="text-[11px] text-slate-500">主作业以产物稿纸为准；硬请示在右栏。</p>
+          ) : null}
         </>
       ) : null}
 
@@ -484,7 +507,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
           className="rounded-xl border border-emerald-200 bg-emerald-50/70 px-3 py-3"
           data-testid="thin-done-panel"
         >
-          <p className="text-[11px] font-semibold text-emerald-900">结束合格线（示意）</p>
+          <p className="text-[11px] font-semibold text-emerald-900">结束合格线</p>
           <p className="mt-1 text-[12px] text-slate-800">{meta.line}</p>
           <p className="mt-1 text-[11px] text-slate-600">
             {picked ? `本轮点选：${picked}` : '尚未点选主作业零件；可回主作业补选。'}
@@ -508,7 +531,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
 
       {picked && step === 'work' ? (
         <p className="text-[11px] text-emerald-800" data-testid="thin-work-picked">
-          已点选：{picked} · 示意留痕；硬请示仍以右栏为准。
+          已点选：{picked} · 留痕；硬请示仍以右栏为准。
         </p>
       ) : null}
     </div>

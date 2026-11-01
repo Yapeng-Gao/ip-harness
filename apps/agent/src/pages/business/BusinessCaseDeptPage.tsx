@@ -85,9 +85,18 @@ import { appendArtifactVersion } from '../../business/artifactVersions'
 import {
   buildSelectionAskDraft,
   isMidManuscriptDirty,
+  isMidManuscriptSealed,
   midEditSavePayload,
+  midProcessTopstrip,
+  midSaveHintAfterSeal,
+  midSelectionChipMode,
+  MID_AWAITING_READONLY_HINT,
+  MID_DIRTY_NEED_REASK_HINT,
   MID_EDIT_DIRTY_HINT,
-  MID_SAVE_HINT,
+  MID_LOOKBACK_READONLY_HINT,
+  MID_SEALED_READONLY_HINT,
+  MID_SELECTION_WARN_HINT,
+  MID_UNLOCK_EDIT_LABEL,
 } from '../../business/midManuscriptEdit'
 import { getProjectExpert } from '../../projects/experts'
 import { SIDE_AUX_DEPTS } from '../../business/professionalAuxParts'
@@ -258,6 +267,8 @@ export function BusinessCaseDeptPage() {
   const [midDirty, setMidDirty] = useState(false)
   const [midSaveHint, setMidSaveHint] = useState<string | null>(null)
   const [midSelection, setMidSelection] = useState('')
+  /** §138：收口后可解锁改稿（脏改须再请示）；回看不可解锁 */
+  const [midUnlockEdit, setMidUnlockEdit] = useState(false)
   const [composerPrefill, setComposerPrefill] = useState<string | null>(null)
   const [composerPrefillNonce, setComposerPrefillNonce] = useState(0)
   const midTextareaRef = useRef<HTMLTextAreaElement>(null)
@@ -717,6 +728,7 @@ export function BusinessCaseDeptPage() {
     Boolean(nextStationDept) &&
     Boolean(nextStationHref) &&
     !awaitingThis &&
+    !(params.get('lookback') === '1' || params.get('view') === 'readonly') &&
     !handoffLaterDismissed &&
     (st === '已完成' || handoffPhase === '已确认可往下')
 
@@ -771,6 +783,36 @@ export function BusinessCaseDeptPage() {
     currentStep && stepList.length > 0
       ? Math.max(1, stepList.findIndex((s) => s.id === currentStep.id) + 1)
       : 0
+
+  /** §138：回看 / 收口 / 待拍 → 中栏只读语义 */
+  const lookbackMode =
+    params.get('lookback') === '1' || params.get('view') === 'readonly'
+  const stationClosed =
+    showHandoffOffer ||
+    handoffLaterDismissed ||
+    st === '已完成' ||
+    handoffPhase === '已确认可往下'
+  const midSealed = isMidManuscriptSealed({
+    stationClosed,
+    awaitingConfirm: awaitingThis,
+    lookback: lookbackMode,
+  })
+  const midReadOnly = midSealed && (lookbackMode || !midUnlockEdit)
+  const selectionChipMode = midSelectionChipMode({
+    sealed: stationClosed,
+    unlocked: midUnlockEdit,
+    awaitingConfirm: awaitingThis,
+    lookback: lookbackMode,
+  })
+  const processStrip =
+    currentStep && stepList.length > 0
+      ? midProcessTopstrip({
+          sealed: stationClosed || lookbackMode,
+          stepOrdinal,
+          stepCount: stepList.length,
+          stepLabel: currentStep.label,
+        })
+      : null
 
   /** §133：部台中栏终稿（Office 主稿 + 右栏同源 AI 产物） */
   const composedMidBody = composeMidDeliverableBody({
@@ -996,8 +1038,9 @@ export function BusinessCaseDeptPage() {
     setMidDirty(false)
     setMidSaveHint(null)
     setMidSelection('')
+    setMidUnlockEdit(false)
     setMidDraft(manuscriptEditSource)
-  }, [caseId, slug, currentStep?.id, selectedMaterialId])
+  }, [caseId, slug, currentStep?.id, selectedMaterialId, lookbackMode])
 
   useEffect(() => {
     if (midDirty) return
@@ -1005,16 +1048,27 @@ export function BusinessCaseDeptPage() {
   }, [manuscriptEditSource, midDirty])
 
   const saveMidManuscript = useCallback(() => {
-    if (!activeSeat) return
+    if (!activeSeat || midReadOnly) return
     patchThread(caseId, activeSeat, midEditSavePayload(midDraft))
     setMidDirty(false)
-    setMidSaveHint(MID_SAVE_HINT)
+    setMidSaveHint(
+      midSaveHintAfterSeal(stationClosed || showHandoffOffer || awaitingThis),
+    )
     setMidAiFlash(true)
     window.setTimeout(() => setMidAiFlash(false), 1200)
-  }, [activeSeat, caseId, midDraft, patchThread])
+  }, [
+    activeSeat,
+    caseId,
+    midDraft,
+    midReadOnly,
+    patchThread,
+    stationClosed,
+    showHandoffOffer,
+    awaitingThis,
+  ])
 
   const saveMidManuscriptAsVersion = useCallback(() => {
-    if (!activeSeat) return
+    if (!activeSeat || midReadOnly) return
     const body = midDraft
     if (!body.trim()) {
       setMidSaveHint('无可另存的内容')
@@ -1030,18 +1084,31 @@ export function BusinessCaseDeptPage() {
       artifactVersions: next,
     })
     setMidDirty(false)
-    setMidSaveHint(hint)
+    const sealed = stationClosed || showHandoffOffer || awaitingThis
+    setMidSaveHint(sealed ? `${hint} · ${MID_DIRTY_NEED_REASK_HINT}` : hint)
     setSelectedMaterialId('deliverable')
     setMidAiFlash(true)
     window.setTimeout(() => setMidAiFlash(false), 1200)
-  }, [activeSeat, caseId, midDraft, getThread, patchThread])
+  }, [
+    activeSeat,
+    caseId,
+    midDraft,
+    midReadOnly,
+    getThread,
+    patchThread,
+    stationClosed,
+    showHandoffOffer,
+    awaitingThis,
+  ])
 
   const pushSelectionToComposer = useCallback(
     (mode: 'ask' | 'revise') => {
+      if (selectionChipMode === 'hide') return
       const draft = buildSelectionAskDraft({
         selection: midSelection,
         mode,
         manuscriptTitle,
+        needReask: selectionChipMode === 'warn' || stationClosed,
       })
       if (!draft) return
       setComposerPrefill(draft)
@@ -1051,10 +1118,14 @@ export function BusinessCaseDeptPage() {
       setMobileRightOpen(true)
       setMidSelection('')
     },
-    [midSelection, manuscriptTitle],
+    [midSelection, manuscriptTitle, selectionChipMode, stationClosed],
   )
 
   const onMidTextSelect = () => {
+    if (selectionChipMode === 'hide' || midReadOnly) {
+      setMidSelection('')
+      return
+    }
     const el = midTextareaRef.current
     if (!el) return
     const start = el.selectionStart ?? 0
@@ -1094,6 +1165,9 @@ export function BusinessCaseDeptPage() {
       data-wb-zones="v134"
       data-handoff-offer={showHandoffOffer ? '1' : '0'}
       data-handoff-later={handoffLaterDismissed ? '1' : '0'}
+      data-lookback={lookbackMode ? '1' : '0'}
+      data-mid-sealed={midSealed ? '1' : '0'}
+      data-mid-readonly={midReadOnly ? '1' : '0'}
       data-mobile-right-open={mobileRightOpen ? '1' : '0'}
       data-step-kind={stepKind ?? 'thin'}
       data-step-id={currentStep?.id ?? ''}
@@ -1141,27 +1215,18 @@ export function BusinessCaseDeptPage() {
                       : ''}
               {currentStep ? ` · 本步 ${currentStep.label}` : thinShell ? ' · 薄部同壳' : ''}
             </p>
-            {currentStep && stepList.length > 0 ? (
+            {currentStep && stepList.length > 0 && processStrip ? (
               <div className="mt-1" data-testid="dept-process-teach">
                 <p
                   className="text-[11px] tabular-nums text-slate-500"
                   data-testid="dept-process-topstrip"
-                  data-process-density="thin-top"
+                  data-process-density={processStrip.density === 'lookback' ? 'lookback' : 'thin-top'}
+                  data-process-sealed={processStrip.density === 'lookback' ? '1' : '0'}
                 >
-                  {showHandoffOffer ||
-                  handoffLaterDismissed ||
-                  st === '已完成' ||
-                  handoffPhase === '已确认可往下'
-                    ? `主稿阶段 · ${stepOrdinal}/${stepList.length} · 站收口已确认`
-                    : `主稿阶段 · ${stepOrdinal}/${stepList.length} · ${currentStep.label}`}
+                  {lookbackMode ? '回看已办 · 只读案卷' : processStrip.line}
                 </p>
                 <p className="mt-0.5 text-[10px] text-slate-400" data-testid="dept-main-doc-hint">
-                  {showHandoffOffer ||
-                  handoffLaterDismissed ||
-                  st === '已完成' ||
-                  handoffPhase === '已确认可往下'
-                    ? '一部多步已可交下一站 · 步条仅回看'
-                    : '一部多步 · 产出仍是这份主稿'}
+                  {lookbackMode ? '只读回看 · 不改写收口' : processStrip.hint}
                 </p>
               </div>
             ) : thinShell ? (
@@ -1170,7 +1235,7 @@ export function BusinessCaseDeptPage() {
                 data-testid="dept-process-topstrip"
                 data-process-density="thin-top"
               >
-                薄部同壳作业
+                {lookbackMode ? '回看已办 · 薄部只读' : '薄部产物作业'}
               </p>
             ) : null}
           </div>
@@ -1355,38 +1420,70 @@ export function BusinessCaseDeptPage() {
                 <div
                   className="mt-3 flex flex-wrap items-center gap-1.5"
                   data-testid="dept-mid-edit-toolbar"
-                  data-mid-editable="1"
+                  data-mid-editable={midReadOnly ? '0' : '1'}
+                  data-mid-sealed={midSealed ? '1' : '0'}
                 >
-                  <button
-                    type="button"
-                    className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 disabled:opacity-40"
-                    data-testid="dept-mid-save"
-                    disabled={!midDirty || !activeSeat}
-                    onClick={saveMidManuscript}
-                    title="保存到本席成果（覆盖当前稿）"
-                  >
-                    保存
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-press focus-ring rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[11px] font-medium text-violet-950 disabled:opacity-40"
-                    data-testid="dept-mid-save-version"
-                    disabled={!midDraft.trim() || !activeSeat}
-                    onClick={saveMidManuscriptAsVersion}
-                    title="另存为修订版 · 写入 artifactVersions"
-                  >
-                    另存一版
-                    {(thread?.artifactVersions?.length ?? 0) > 0
-                      ? ` · ${thread?.artifactVersions?.length}`
-                      : ''}
-                  </button>
+                  {midReadOnly ? (
+                    <>
+                      <span
+                        className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600"
+                        data-testid="dept-mid-readonly-badge"
+                      >
+                        {lookbackMode
+                          ? MID_LOOKBACK_READONLY_HINT
+                          : awaitingThis
+                            ? MID_AWAITING_READONLY_HINT
+                            : MID_SEALED_READONLY_HINT}
+                      </span>
+                      {!lookbackMode && !awaitingThis ? (
+                        <button
+                          type="button"
+                          className="btn-press focus-ring rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-950"
+                          data-testid="dept-mid-unlock-edit"
+                          onClick={() => setMidUnlockEdit(true)}
+                          title={MID_UNLOCK_EDIT_LABEL}
+                        >
+                          {MID_UNLOCK_EDIT_LABEL}
+                        </button>
+                      ) : null}
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 disabled:opacity-40"
+                        data-testid="dept-mid-save"
+                        disabled={!midDirty || !activeSeat}
+                        onClick={saveMidManuscript}
+                        title="保存到本席成果（覆盖当前稿）"
+                      >
+                        保存
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-press focus-ring rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[11px] font-medium text-violet-950 disabled:opacity-40"
+                        data-testid="dept-mid-save-version"
+                        disabled={!midDraft.trim() || !activeSeat}
+                        onClick={saveMidManuscriptAsVersion}
+                        title="另存为修订版 · 写入 artifactVersions"
+                      >
+                        另存一版
+                        {(thread?.artifactVersions?.length ?? 0) > 0
+                          ? ` · ${thread?.artifactVersions?.length}`
+                          : ''}
+                      </button>
+                    </>
+                  )}
                   {midDirty ? (
                     <span
                       className="text-[10px] font-medium text-amber-700"
                       data-testid="dept-mid-dirty"
                       data-dirty="1"
+                      data-need-reask={stationClosed || awaitingThis ? '1' : '0'}
                     >
-                      {MID_EDIT_DIRTY_HINT}
+                      {stationClosed || awaitingThis
+                        ? `${MID_EDIT_DIRTY_HINT} · ${MID_DIRTY_NEED_REASK_HINT}`
+                        : MID_EDIT_DIRTY_HINT}
                     </span>
                   ) : (
                     <span className="sr-only" data-testid="dept-mid-dirty" data-dirty="0" />
@@ -1400,17 +1497,26 @@ export function BusinessCaseDeptPage() {
                     </span>
                   ) : null}
                 </div>
-                {midSelection.trim() ? (
+                {midSelection.trim() && selectionChipMode !== 'hide' ? (
                   <div
                     className="mt-2 inline-flex items-center gap-1 rounded-full border border-violet-200 bg-white/95 px-1.5 py-1 shadow-sm"
                     data-testid="dept-mid-selection-chip"
                     data-has-selection="1"
+                    data-chip-mode={selectionChipMode}
                     role="toolbar"
                     aria-label="选区操作"
                   >
                     <span className="max-w-[10rem] truncate px-1 text-[10px] text-slate-500">
                       已选 {midSelection.trim().length} 字
                     </span>
+                    {selectionChipMode === 'warn' ? (
+                      <span
+                        className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold text-amber-900"
+                        data-testid="dept-mid-selection-reask"
+                      >
+                        {MID_SELECTION_WARN_HINT}
+                      </span>
+                    ) : null}
                     <button
                       type="button"
                       className="btn-press focus-ring rounded-full bg-slate-900 px-2.5 py-0.5 text-[11px] font-medium text-white"
@@ -1437,7 +1543,13 @@ export function BusinessCaseDeptPage() {
                     </button>
                   </div>
                 ) : (
-                  <div className="hidden" data-testid="dept-mid-selection-chip" data-has-selection="0" hidden />
+                  <div
+                    className="hidden"
+                    data-testid="dept-mid-selection-chip"
+                    data-has-selection="0"
+                    data-chip-mode={selectionChipMode}
+                    hidden
+                  />
                 )}
                 <article
                   className={`mt-3 rounded-lg border bg-[#fbfaf7] px-5 py-6 shadow-sm ${
@@ -1445,11 +1557,14 @@ export function BusinessCaseDeptPage() {
                       ? 'border-violet-400 ring-2 ring-violet-300/60'
                       : midDirty
                         ? 'border-amber-300/80'
-                        : 'border-slate-200/70'
+                        : midReadOnly
+                          ? 'border-slate-200/50'
+                          : 'border-slate-200/70'
                   }`}
                   data-testid="dept-manuscript-paper"
                   data-doc-feel="1"
-                  data-mid-editable="1"
+                  data-mid-editable={midReadOnly ? '0' : '1'}
+                  data-mid-readonly={midReadOnly ? '1' : '0'}
                   data-mid-dirty={midDirty ? '1' : '0'}
                   data-mid-ai-flash={midAiFlash ? '1' : '0'}
                   data-mid-ai-sync={
@@ -1461,7 +1576,9 @@ export function BusinessCaseDeptPage() {
                   <textarea
                     ref={midTextareaRef}
                     value={midDraft}
+                    readOnly={midReadOnly}
                     onChange={(e) => {
+                      if (midReadOnly) return
                       setMidDraft(e.target.value)
                       setMidDirty(isMidManuscriptDirty(e.target.value, manuscriptEditSource))
                       setMidSaveHint(null)
@@ -1470,12 +1587,15 @@ export function BusinessCaseDeptPage() {
                     onKeyUp={onMidTextSelect}
                     onMouseUp={onMidTextSelect}
                     rows={18}
-                    className="max-h-[min(78vh,48rem)] min-h-[16rem] w-full resize-y overflow-auto border-0 bg-transparent p-0 text-[13.5px] leading-[1.75] text-slate-800 outline-none focus:ring-0 font-sans"
+                    className={`max-h-[min(78vh,48rem)] min-h-[16rem] w-full resize-y overflow-auto border-0 bg-transparent p-0 text-[13.5px] leading-[1.75] text-slate-800 outline-none focus:ring-0 font-sans ${
+                      midReadOnly ? 'cursor-default caret-transparent' : ''
+                    }`}
                     data-testid="dept-output-body"
                     data-empty={midDraft.trim() ? '0' : '1'}
                     data-mid-ai-body="1"
-                    data-mid-editable="1"
-                    aria-label="本稿正文 · 可编辑"
+                    data-mid-editable={midReadOnly ? '0' : '1'}
+                    data-mid-readonly={midReadOnly ? '1' : '0'}
+                    aria-label={midReadOnly ? '本稿正文 · 只读' : '本稿正文 · 可编辑'}
                     spellCheck={false}
                   />
                 </article>
@@ -1746,8 +1866,8 @@ export function BusinessCaseDeptPage() {
                     }
                   }}
                 />
-                <p className="mt-3 text-[11px] text-slate-500">
-                  示意作业 · 非真挂接。
+                <p className="sr-only" data-testid="dept-thin-demo-honest">
+                  演示稿纸 · 正式硬请示仍在右栏。
                 </p>
                 {askParam ? (
                   <p
@@ -2271,7 +2391,7 @@ export function BusinessCaseDeptPage() {
                           data-testid={`dept-side-adopt-${peer.id}`}
                           title={adopted ? ADOPT_CTA_DONE_LABEL : ADOPT_CTA_LABEL}
                         >
-                          {adopted ? '已选' : '选用'}
+                          {adopted ? '已采纳' : '采纳建议'}
                         </button>
                       </li>
                     )

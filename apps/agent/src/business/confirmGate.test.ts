@@ -66,11 +66,25 @@ describe('confirmGate §3.1a', () => {
     assert.equal(confirmStatusLabel('returned'), '已驳回')
   })
 
-  it('立项确认带 D1/D2 决策含义与确认人≠专家', () => {
+  it('立项确认上屏人话；D 码只进档案字段', () => {
     const m = confirmDecisionMeta('go_nogo')
-    assert.match(m.decisionShort, /D1/)
+    assert.equal(m.decisionShort, '立项决议')
+    assert.doesNotMatch(m.decisionShort, /D\d/)
+    assert.equal(m.decisionArchiveCode, 'D1/D2')
+    assert.match(m.decisionMeaning, /D1\/D2/)
     assert.match(m.confirmerLabel, /企业|总监|委员会/)
     assert.match(m.suggesterLabel, /专家/)
+  })
+
+  it('保护范围/答复策略钮面无 D 码', () => {
+    const c = confirmDecisionMeta('claims_ready')
+    assert.equal(c.decisionShort, '保护范围确认')
+    assert.doesNotMatch(c.decisionShort, /D\d/)
+    assert.equal(c.decisionArchiveCode, 'D3')
+    const o = confirmDecisionMeta('oa_strategy')
+    assert.equal(o.decisionShort, '答复策略确认')
+    assert.doesNotMatch(o.decisionShort, /D\d/)
+    assert.equal(o.decisionArchiveCode, 'D5')
   })
 
   it('专家不可自批；人可批', () => {

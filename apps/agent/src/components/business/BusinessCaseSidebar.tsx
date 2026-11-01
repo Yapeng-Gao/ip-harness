@@ -519,10 +519,12 @@ export function BusinessCaseSidebar() {
                   {lookbackDepts.map((dept) => (
                     <li key={dept.id}>
                       <Link
-                        to={deptHref(dept)}
+                        to={`${deptHref(dept)}?lookback=1`}
                         className="focus-ring mb-0.5 flex w-full items-center gap-1 rounded-md px-1.5 py-1 text-left text-[11px] leading-snug text-slate-600 hover:bg-white"
                         data-testid={`business-dept-lookback-${deptSlug(dept.id)}`}
                         data-lookback="1"
+                        data-lookback-readonly="1"
+                        title="回看已办 · 只读案卷"
                       >
                         <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
                         <span className="truncate">{deptLabel(dept)}</span>

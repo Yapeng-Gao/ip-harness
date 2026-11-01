@@ -94,5 +94,5 @@ export function latestReturnNote(
 export const ADOPT_NE_CONFIRM_NOTE =
   '建议稿可采纳 ≠ 确认；确认权在人（发明人 / 代理人 / 企业负责人等）'
 
-export const ADOPT_CTA_LABEL = '选用建议稿'
-export const ADOPT_CTA_DONE_LABEL = '已选用建议（≠拍板）'
+export const ADOPT_CTA_LABEL = '采纳建议'
+export const ADOPT_CTA_DONE_LABEL = '已采纳建议（≠拍板）'

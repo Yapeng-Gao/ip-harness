@@ -6787,3 +6787,51 @@ node apps/agent/.tmp/rescan-136-smoke.mjs
 |---|---|
 | 2026-11-01 CST | §137 SCAN ONLY 工作台意思对齐；t726u；**Needs changes** · baseline `d83de3a` |
 
+---
+
+## 138. IMPLEMENT · G01–G08 意思对齐落地 · PASS_RESCAN_138 · 2026-11-01 Asia/Shanghai
+
+> **基线：** `d83de3a` / docs `adea080`（§137 SCAN ONLY）  
+> **范围：** `apps/agent` 部台中栏只读/解锁再请示、薄部产物稿纸、硬请示人话、步条回看、回看只读、选区降级、采纳建议、请示气泡默认折。  
+> **真源：** `docs/产品-老板思路` 一期节点 / 一期-产品逻辑 / 一期-产品理念；**不**宣称四维/六维；不改 main-path-sample。  
+> **截图：** `apps/agent/.tmp/rescan-138-shots/` · `uploads-staging/rescan-138-shots/` · `/workspace/uploads/rescan-138-shots/`  
+> **脚本：** `apps/agent/.tmp/rescan-138-smoke.mjs` · e2e `fails=0`
+
+### 138.1 总判
+
+**PASS_RESCAN_138**
+
+### 138.2 G01–G08 对照
+
+| ID | 落地 |
+|---|---|
+| **G01** | 收口/待拍/回看：中栏默认只读；可「改技术含义（须再请示）」解锁；脏改/保存提示强制再请示 |
+| **G02** | 薄部默认展 `workBody` 稿纸；进入检查折进「本步助手」；去掉「示意作业」横幅 |
+| **G03** | `decisionShort` 人话（立项决议/保护范围确认/答复策略确认）；D 码进 `decisionArchiveCode` / 档案 |
+| **G04** | 收口顶条「本站已确认 · 回看案卷」，不再「1/4 · 站收口已确认」 |
+| **G05** | 左栏「回看已办」→ `?lookback=1`；部台只读、不抬收口工单 |
+| **G06** | 待拍/收口未解锁：选区 chip 收起；解锁后标「改后须再请示」 |
+| **G07** | 「选用」→「采纳建议」/「已采纳」（`ADOPT_CTA_LABEL`） |
+| **G08** | 主钮一句结论+确认；理由/风险/驳回默认折（`data-fold-default=closed`） |
+
+### 138.3 验证
+
+```bash
+node --import tsx --test apps/agent/src/business/midManuscriptEdit.test.ts apps/agent/src/business/confirmGate.test.ts
+node apps/agent/.tmp/rescan-138-smoke.mjs
+```
+
+- unit：midManuscriptEdit + confirmGate pass  
+- CDP smoke：`FAILS=0`  
+- 重复入口扫：无 ≥3 同文案按钮簇
+
+### 138.4 不做
+
+- 不 push（除非另嘱）  
+- 不做 Word 批注气泡 / 修订对比  
+- 不恢复四维/六维；不改换部 IA 为八部常驻切部
+
+| 时间 | 记 |
+|---|---|
+| 2026-11-01 CST | §138 IMPLEMENT G01–G08；t727u；PASS_RESCAN_138 |
+

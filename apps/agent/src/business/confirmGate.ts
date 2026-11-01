@@ -48,9 +48,11 @@ export function isAwaitingConfirm(
 }
 
 export type ConfirmDecisionMeta = {
-  /** 决策短名（按钮 / 标题） */
+  /** 决策短名（按钮 / 标题 · 人话，不上屏 D 码） */
   decisionShort: string
-  /** 决策含义一句（对齐 D1–D7 时明示） */
+  /** 档案/测试用内部码（D1–D7）；不上钮面 */
+  decisionArchiveCode?: string
+  /** 决策含义一句（可含档案码说明） */
   decisionMeaning: string
   /** 确认人（跟人；≠ 专家/起草人） */
   confirmerLabel: string
@@ -69,7 +71,7 @@ export const CONFIRM_DECISION_META: Record<
   disclosure_ready: {
     decisionShort: '交底齐套确认',
     decisionMeaning:
-      '确认技术事实与交底包可检索、可撰写（不在此拍「申不申」；D1/D2 在立项）。',
+      '确认技术事实与交底包可检索、可撰写（不在此拍「申不申」；立项再拍是否申请）。',
     confirmerLabel: '发明人 / 技术负责人',
     suggesterLabel: '交底专家（建议稿）',
   },
@@ -80,15 +82,17 @@ export const CONFIRM_DECISION_META: Record<
     suggesterLabel: '查新专家（建议稿）',
   },
   go_nogo: {
-    decisionShort: '立项决议（D1/D2）',
+    decisionShort: '立项决议',
+    decisionArchiveCode: 'D1/D2',
     decisionMeaning:
-      'D1 申不申 + D2 类型；通过后才算立项，可进入申请部开写。无人确认不得装「已立项」。',
+      '是否申请、申请类型；通过后才算立项，可进入申请部开写。无人确认不得装「已立项」。档案码 D1/D2。',
     confirmerLabel: '企业 IP 总监 / 委员会',
     suggesterLabel: '立项专家（建议稿）',
   },
   claims_ready: {
-    decisionShort: '保护范围确认（D3）',
-    decisionMeaning: 'D3 保护范围多大；确认权项/说明书边界后再往下。',
+    decisionShort: '保护范围确认',
+    decisionArchiveCode: 'D3',
+    decisionMeaning: '保护范围多大；确认权项/说明书边界后再往下。档案码 D3。',
     confirmerLabel: '企业 IPR',
     suggesterLabel: '申请专家（建议稿）',
   },
@@ -106,8 +110,9 @@ export const CONFIRM_DECISION_META: Record<
     suggesterLabel: '递交专家（建议稿）',
   },
   oa_strategy: {
-    decisionShort: '答复策略确认（D5）',
-    decisionMeaning: 'D5 怎么答复 OA；策略有理由后再改稿/陈述。',
+    decisionShort: '答复策略确认',
+    decisionArchiveCode: 'D5',
+    decisionMeaning: '怎么答复审查意见；策略有理由后再改稿/陈述。档案码 D5。',
     confirmerLabel: '企业 IPR',
     suggesterLabel: '审查答复专家（建议稿）',
   },
