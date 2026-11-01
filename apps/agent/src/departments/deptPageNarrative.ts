@@ -175,6 +175,39 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
       'peer:expert-oa:reply': '建议稿占位：修改对照稿（样机，非法律意见）',
     },
   },
+  /** §134：大厅薄部交卷物补齐（样机叙事，非真卷宗引擎） */
+  'dept-inspire': {
+    purpose: '问题→路径→方案选题（可跳过留痕）',
+    deliverable: '选题卡：问题卡点 + 路径 + 收藏/跳过留痕',
+    checklist: ['问题卡点', '路径清单', '选题收藏或跳过留痕'],
+    demoGap: '选题收藏或跳过留痕',
+    peerLabels: {},
+    peerHints: {},
+  },
+  'dept-mining': {
+    purpose: '研发资料 → 创新点 + 拆案排案',
+    deliverable: '点包：创新点清单 + 拆案建议（可交交底部）',
+    checklist: ['创新点清单', '可专利性示意', '拆案建议'],
+    demoGap: '拆案建议',
+    peerLabels: {},
+    peerHints: {},
+  },
+  'dept-annuity': {
+    purpose: '确权后期限 · 年费 · 明白账',
+    deliverable: '维护台账：期限日历 + 年费条目 + 缴费确认',
+    checklist: ['申请/授权号', '期限日历', '年费明白账', '缴费确认'],
+    demoGap: '缴费确认',
+    peerLabels: {},
+    peerHints: {},
+  },
+  'dept-monetize': {
+    purpose: '年末/阶段复盘报告（维持或放弃须拍或只读留痕）',
+    deliverable: '复盘报告五块：研发/专利/系统/上下游/市场',
+    checklist: ['复盘时段', '五块摘要', '维持或放弃或只读不拍'],
+    demoGap: '维持或放弃或只读不拍',
+    peerLabels: {},
+    peerHints: {},
+  },
 }
 
 /** 辅链/对外部门名微调（pages：递交与程序部；主链以 orgDepts 八部为准） */

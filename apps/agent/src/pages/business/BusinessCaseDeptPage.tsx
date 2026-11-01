@@ -253,6 +253,10 @@ export function BusinessCaseDeptPage() {
   const [forceStepId, setForceStepId] = useState<string | null>(
     params.get('step') || null,
   )
+  /** §134：URL ?step= 与演示换步同步（e2e / 深链） */
+  useEffect(() => {
+    setForceStepId(params.get('step') || null)
+  }, [params])
   /** 案卷抽屉 · 交互大纲 §4.5 */
   const [caseFileOpen, setCaseFileOpen] = useState(
     params.get('docket') === '1' || params.get('file') === '1',
@@ -756,7 +760,7 @@ export function BusinessCaseDeptPage() {
   /** §133：部台中栏终稿（Office 主稿 + 右栏同源 AI 产物） */
   const composedMidBody = composeMidDeliverableBody({
     artifactMarkdown: thread?.artifactMarkdown,
-    officeMainBody: currentStep?.mainBody,
+    officeMainBody: currentStep?.mainBody ?? (thinShell ? thinMeta?.workBody : null),
     dual,
     expertSteps: leadExpertDef?.steps,
     seatStepIndex: stepIndex,
@@ -992,7 +996,7 @@ export function BusinessCaseDeptPage() {
       data-left-open={leftOpen ? '1' : '0'}
       data-step-tools-open={stepToolsOpen ? '1' : '0'}
       data-approach="A"
-      data-wb-zones="v132"
+      data-wb-zones="v134"
       data-handoff-offer={showHandoffOffer ? '1' : '0'}
       data-handoff-later={handoffLaterDismissed ? '1' : '0'}
       data-mobile-right-open={mobileRightOpen ? '1' : '0'}

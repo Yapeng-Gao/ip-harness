@@ -6589,3 +6589,49 @@ Leslie 两问本身就是扫描信号：若「本步工具」「一部一产出�
 |---|---|
 | 2026-11-01 CST | §133 IMPLEMENT 右栏 AI→中栏；t719u；PASS_RESCAN_133 |
 
+## 134. IMPLEMENT · 各阶段产物样机 + 节点流程 e2e · PASS_RESCAN_134 · 2026-11-01 Asia/Shanghai
+
+> **范围：** Leslie t720「把个阶段的产物都弄一份，确保各个节点流程都能走通，可以用 CDP / e2e」— 一期八部 + 交底/申请按步主稿补齐**样机产物**（非空壳）；沿用现有 Playwright/CDP smoke（`.tmp/rescan-*-smoke.mjs`），不新开测试栈。对照一期真源意思（每站有可读主稿 / 薄部同壳作业）；Office 语感；**不宣称四维/六维**；**不碰 main-path-sample**；保持 §119–§133（document-first、无缺项墙、无换部门主航）。  
+> **真源：** [`一期节点/`](../一期节点/) · [`工作台按步高保真`](工作台按步高保真-2026-10-30.md) · §125–§133。  
+> **基线：** `49e0c67`（§133）→ 本批 IMPLEMENT。  
+> **Smoke / 截图：** `.tmp/rescan-134-shots/` · `uploads-staging/rescan-134-shots/` · `/workspace/uploads/rescan-134-shots/`；脚本 `apps/agent/.tmp/rescan-134-smoke.mjs` → **PASS_RESCAN_134**。  
+> **zones：** `data-wb-zones=v134`。
+
+### 134.1 改了什么（意思）
+
+| 点 | 落地 |
+|---|---|
+| 八部产物样机 | `workbenchSteps`：D4/D5/D6 各步 + 薄部 `THIN_LINE` 正文加长，统一 `【样机产物·…】` 标记 |
+| 样机目录 | 新 `stageProductFixtures.ts`：大厅八部门牌 → 产物标题/正文/合格线/按步；`findStageFixtureGaps` 防空壳 |
+| 交卷物叙事 | `DEPT_HANDOFF` 补 ②激发 / ③挖掘 / ⑦维护 / ⑧复盘 deliverable |
+| 薄部进中栏 | 薄部 `officeMainBody` 回落 `thinMeta.workBody`，与厚部 compose 同源 |
+| URL 换步 | `?step=` 与 `forceStepId` 同步，便于 e2e 深链走步 |
+
+### 134.2 Smoke 覆盖
+
+| 路径 | 结果 |
+|---|---|
+| ①–⑧ 大厅门牌进部台 | marker+shell PASS（8/8） |
+| 交底 `?step=` 成稿/事实/质检/可交 | 4/4 PASS |
+| 申请 `?gate=bypass&step=` A/B/过线/递交 | 4/4 PASS |
+| 交底/申请 mid advance | 中栏非空壳 PASS |
+| 单测 `stageProductFixtures.test.ts` | 5 pass |
+
+### 134.3 重跑
+
+```bash
+# 需 apps/agent dev @ 5175
+node --import tsx --test apps/agent/src/business/stageProductFixtures.test.ts
+node apps/agent/.tmp/rescan-134-smoke.mjs
+```
+
+### 134.4 不做（本批）
+
+- 不接真案卷引擎 / 不写官报通道。  
+- 不恢复八部换部门主航；换站仍大厅 / 收口工单。  
+- 不改 Pack depth 真源样机键名以外的业务闸口。
+
+| 时间 | 记 |
+|---|---|
+| 2026-11-01 CST | §134 IMPLEMENT 阶段产物样机 + e2e；t720u；PASS_RESCAN_134 |
+
