@@ -54,7 +54,7 @@ import {
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import type { ProjectExpertId } from '../../projects/types'
-import { ArrowRight, Building2, FolderOpen, PanelLeft, MessageSquare, Package, X } from 'lucide-react'
+import { ArrowRight, Building2, FolderOpen, PanelLeft, PanelRightClose, PanelRightOpen, MessageSquare, X } from 'lucide-react'
 import { formatArtifactSavedAt } from '../../business/artifactVersions'
 import {
   AUX_BODY_LINK_HONEST,
@@ -130,7 +130,6 @@ import {
 } from '../../business/trueDiffDemo'
 import { buildBranchJudgment } from '../../business/judgmentArchive'
 import { useEntryRole } from '../../business/useEntryRole'
-import { prefsHintForDept } from '../../business/preferenceStore'
 import { styleTagForDept, normalizePeerJobTitle } from '../../business/agentStyle'
 
 function handoffForDept(deptId: OrgDeptId, leadSeatId: ProjectExpertId) {
@@ -237,8 +236,10 @@ export function BusinessCaseDeptPage() {
   const [rosterOpen, setRosterOpen] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)
   /** 窄屏：左目录可收起；右栏改底抽屉（G1 交卷可达） */
-  const [leftOpen, setLeftOpen] = useState(false) // §109：材料目录默认 toc/抽屉
+  const [leftOpen, setLeftOpen] = useState(false) // §109/§111：材料目录默认 toc/抽屉
   const [mobileRightOpen, setMobileRightOpen] = useState(false)
+  /** §111：右栏领导对话可折（桌面） */
+  const [rightRailOpen, setRightRailOpen] = useState(true)
   /** 演示：强制当前步（不改闸口真值） */
   const [forceStepId, setForceStepId] = useState<string | null>(
     params.get('step') || null,
@@ -720,6 +721,19 @@ export function BusinessCaseDeptPage() {
           ? '本轮答复可递交（D 过线）'
           : handoff.deliverable.slice(0, 36) || '本站合格线')
 
+  /** §111：中栏/顶栏标题 = 稿名，非部门看板 */
+  const manuscriptTitle =
+    dual?.title?.trim() ||
+    (stepKind === 'd4'
+      ? `${c.title} · 交底书`
+      : stepKind === 'd5'
+        ? `${c.title} · 申请稿`
+        : stepKind === 'd6'
+          ? `${c.title} · 答复稿`
+          : thinShell
+            ? thinMeta?.workTitle || `${deptLabel(dept)} · 作业稿`
+            : `${c.title} · 本稿`)
+
   const focusedPart =
     dept && parsePartMaterialId(selectedMaterialId)
       ? findManuscriptPart(dept.id, parsePartMaterialId(selectedMaterialId)!)
@@ -894,6 +908,7 @@ export function BusinessCaseDeptPage() {
       data-seat-open={seatOpen ? '1' : '0'}
       data-layout="cursor-three-pane"
       data-left-open={leftOpen ? '1' : '0'}
+      data-approach="A"
       data-mobile-right-open={mobileRightOpen ? '1' : '0'}
       data-step-kind={stepKind ?? 'thin'}
       data-step-id={currentStep?.id ?? ''}
@@ -907,28 +922,28 @@ export function BusinessCaseDeptPage() {
       data-aux-rev-step={String(stepIndex)}
       data-aux-rev-versions={String(versions.length)}
     >
-      {/* 顶栏：案 / 部门 / 铃铛 / 期限；不放交卷主 CTA（§2） */}
-      <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
-        <div className="mb-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
-          <Link to="/agent/cases" className="focus-ring rounded-sm hover:underline">
-            项目列表
-          </Link>
-          <span>/</span>
+      {/* §111：顶栏 = 稿名作业台；质检线/工单不进阅读心智 */}
+      <div
+        className="shrink-0 border-b border-slate-200 bg-white px-4 py-2.5 lg:px-6"
+        data-testid="dept-manuscript-chrome"
+        data-approach="A"
+      >
+        <div className="mb-0.5 flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
           <Link to={companyHref} className="focus-ring rounded-sm hover:underline">
             {c.title}
           </Link>
           <span>/</span>
-          <span className="text-slate-600">{deptLabel(dept)}</span>
+          <span className="text-slate-500">{deptLabel(dept)}</span>
         </div>
         <header className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-[18px] font-semibold text-slate-900">
-              {deptLabel(dept)}
-            </h1>
-            <p
-              className="mt-0.5 max-w-xl text-xs text-slate-600"
-              data-testid="dept-qualify-line"
+          <div className="min-w-0">
+            <h1
+              className="truncate text-[17px] font-semibold text-slate-900"
+              data-testid="dept-manuscript-title"
             >
+              {manuscriptTitle}
+            </h1>
+            <p className="sr-only" data-testid="dept-qualify-line">
               质检线：{qualifyLine}
               {awaitingThis
                 ? ' · 已交卷，待你拍板'
@@ -945,6 +960,17 @@ export function BusinessCaseDeptPage() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
+              onClick={() => setLeftOpen((v) => !v)}
+              className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
+              data-testid="dept-materials-toc-toggle"
+              aria-pressed={leftOpen}
+              aria-controls="dept-left-tree"
+            >
+              <PanelLeft className="h-3.5 w-3.5" aria-hidden />
+              {leftOpen ? '收起目录' : '目录'}
+            </button>
+            <button
+              type="button"
               onClick={() => setCaseFileOpen(true)}
               className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
               data-testid="dept-open-case-file"
@@ -952,21 +978,27 @@ export function BusinessCaseDeptPage() {
               <FolderOpen className="h-3.5 w-3.5" aria-hidden />
               案卷
             </button>
-            {isDisclosureDept(dept.id) && disclosureDone ? (
-              <button
-                type="button"
-                onClick={() => {
-                  const el = document.querySelector('[data-testid="dept-handoff-ticket"]')
-                  el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-                }}
-                className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium text-emerald-900"
-                data-testid="dept-open-handoff-ticket"
-              >
-                <Package className="h-3.5 w-3.5" aria-hidden />
-                交底→申请 工单
-              </button>
-            ) : null}
-            {/* §105 G01/G05：回大厅/公司首页/要你拍 卸掉；壳层左栏已有大厅·项目·待确认 */}
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches) {
+                  setRightRailOpen((v) => !v)
+                } else {
+                  setMobileRightOpen(true)
+                }
+              }}
+              className="btn-press focus-ring inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
+              data-testid="dept-right-rail-toggle"
+              aria-pressed={rightRailOpen}
+              aria-label={rightRailOpen ? '收起对话' : '展开对话'}
+            >
+              {rightRailOpen ? (
+                <PanelRightClose className="h-3.5 w-3.5" aria-hidden />
+              ) : (
+                <PanelRightOpen className="h-3.5 w-3.5" aria-hidden />
+              )}
+              对话
+            </button>
           </div>
         </header>
       </div>
@@ -1085,174 +1117,47 @@ export function BusinessCaseDeptPage() {
             data-testid="dept-deliverable"
             aria-labelledby="dept-output-title"
           >
-            {/* §109：材料 toc + 三线/工单顶薄条；不进主阅读区 */}
-            <div
-              className="flex flex-wrap items-center gap-1.5"
-              data-testid="dept-process-topstrip"
-              data-process-density="thin"
-            >
-              <button
-                type="button"
-                onClick={() => setLeftOpen((v) => !v)}
-                className="btn-press focus-ring inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[10px] font-medium text-slate-700"
-                data-testid="dept-materials-toc-toggle"
-                aria-pressed={leftOpen}
-                aria-controls="dept-left-tree"
-              >
-                <PanelLeft className="h-3 w-3" aria-hidden />
-                {leftOpen ? '收起材料' : '材料 · 本站交卷物'}
-              </button>
-              {currentStep ? (
-                <span
-                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600"
-                  data-testid="dept-step-chip"
-                >
-                  本步 {currentStep.label}
-                </span>
-              ) : null}
-              {showHandoffTicket ? (
-                <details
-                  className="rounded-full border border-emerald-200/80 bg-emerald-50/60"
-                  data-testid="dept-handoff-ticket-fold"
-                >
-                  <summary className="cursor-pointer select-none px-2.5 py-0.5 text-[10px] font-medium text-emerald-900">
-                    部间工单（展开）
-                  </summary>
-                </details>
-              ) : null}
+            {/* §111：阅读区无 QC/本步/工单条；材料 toc 在顶栏；元信息离屏可测 */}
+            <div className="sr-only" data-testid="dept-process-topstrip" data-process-density="off-reading" />
+            <div className="sr-only" data-testid="dept-meta-fold" data-meta-default="off-reading">
+              <TeachingFadeTip deptId={dept.id} />
+              {!MAIN_CHAIN_DEPT_IDS.includes(dept.id) ? (
+                <AuxChainBanner deptLabel={deptLabel(dept)} />
+              ) : (
+                <ThreeLineStatusStrip prog={getProgress(caseId)} dense foldByDefault />
+              )}
+              <BranchFlowPanel
+                branch={params.get('branch')}
+                caseId={caseId}
+                deptSlug={slug || deptSlug(dept.id)}
+                onRecordJudgment={(j) => recordJudgment(j)}
+              />
             </div>
-
-            <details
-              className="rounded-lg border border-slate-200/80 bg-white/70 px-2.5 py-1"
-              data-testid="dept-meta-fold"
-              data-meta-default="folded"
-            >
-              <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
-                三线 / 带教 / 支路（默折）
-              </summary>
-              <div className="mt-2 space-y-2">
-                <TeachingFadeTip deptId={dept.id} />
-                {!MAIN_CHAIN_DEPT_IDS.includes(dept.id) ? (
-                  <AuxChainBanner deptLabel={deptLabel(dept)} />
-                ) : (
-                  <ThreeLineStatusStrip prog={getProgress(caseId)} dense foldByDefault />
-                )}
-                {prefsHintForDept(deptLabel(dept)).length > 0 ? (
-                  <details
-                    className="rounded-lg border border-emerald-200/80 bg-emerald-50/50 px-2.5 py-1.5"
-                    data-testid="pref-dept-hints"
-                  >
-                    <summary className="cursor-pointer select-none text-[10px] font-semibold text-emerald-800/80">
-                      跨案偏好 · {prefsHintForDept(deptLabel(dept)).length} 条（可展开）
-                    </summary>
-                    <ul className="mt-1.5 space-y-1">
-                      {prefsHintForDept(deptLabel(dept)).slice(0, 3).map((p) => (
-                        <li key={p.id} className="text-[11px] text-slate-800" data-testid="pref-dept-hint">
-                          {p.text}
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                ) : null}
-                <BranchFlowPanel
-                  branch={params.get('branch')}
-                  caseId={caseId}
-                  deptSlug={slug || deptSlug(dept.id)}
-                  onRecordJudgment={(j) => recordJudgment(j)}
-                />
-              </div>
-            </details>
 
             {stepKind && currentStep && selectedMaterialId === 'deliverable' ? (
               <div
-                className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
-                data-wb-density="v2"
+                className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5"
+                data-wb-density="v3-manuscript"
                 data-mid-primary="manuscript"
+                data-approach="A"
               >
-                <div
-                  className="flex flex-wrap items-center gap-1.5"
-                  data-testid="dept-step-demo"
-                  data-step-dense="1"
+                <h2
+                  id="dept-output-title"
+                  className="text-[15px] font-semibold tracking-tight text-slate-900"
                 >
-                  <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
-                    本步
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setForceStepId(currentStep.id)}
-                    className="btn-press focus-ring rounded-full border border-slate-900 bg-slate-900 px-2.5 py-0.5 text-[10px] font-medium text-white"
-                    data-testid={`dept-step-${currentStep.id}`}
-                    data-step-current="1"
-                  >
-                    {currentStep.label}
-                  </button>
-                  <details className="relative" data-testid="dept-step-more">
-                    <summary className="btn-press focus-ring cursor-pointer list-none rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-500 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
-                      换步 · {stepList.length}
-                    </summary>
-                    <div className="absolute left-0 z-10 mt-1 flex min-w-[10rem] flex-col gap-1 rounded-lg border border-slate-200 bg-white p-1.5 shadow-md">
-                      {stepList
-                        .filter((s) => s.id !== currentStep.id)
-                        .map((s) => (
-                          <button
-                            key={s.id}
-                            type="button"
-                            onClick={() => setForceStepId(s.id)}
-                            className="btn-press focus-ring rounded-md px-2 py-1 text-left text-[10px] text-slate-700 hover:bg-slate-50"
-                            data-testid={`dept-step-${s.id}`}
-                            data-step-menu="1"
-                          >
-                            {s.label}
-                          </button>
-                        ))}
-                      <button
-                        type="button"
-                        onClick={() => setForceStepId(null)}
-                        className="btn-press focus-ring rounded-md border border-dashed border-slate-200 px-2 py-1 text-left text-[10px] text-slate-500"
-                        data-testid="dept-step-auto"
-                      >
-                        跟闸
-                      </button>
-                    </div>
-                  </details>
-                  <span className="ml-auto text-[10px] text-slate-400">
-                    主栏=本稿 · 拍板在右栏
-                  </span>
-                </div>
-                <div className="mt-3 flex items-baseline justify-between gap-2">
-                  <h2
-                    id="dept-output-title"
-                    className="text-[14px] font-semibold text-slate-900"
-                  >
-                    {stepKind === 'd4'
-                      ? '交底书'
-                      : stepKind === 'd5'
-                        ? '申请稿'
-                        : stepKind === 'd6'
-                          ? '答复稿'
-                          : currentStep.label}
-                    <span className="ml-2 text-[11px] font-normal text-slate-500">
-                      {currentStep.hint}
-                    </span>
-                  </h2>
-                </div>
-                <p
-                  className="mt-1 text-[11px] leading-relaxed text-slate-500"
-                  data-testid="dept-step-caption"
-                >
+                  {manuscriptTitle}
+                </h2>
+                <p className="sr-only" data-testid="dept-step-caption">
                   {currentStep.mainFocus}
                 </p>
-                {/* §109 G02/G03：纸面首屏 = 本稿正文（非流程卡墙） */}
+                {/* §111：全页纸感正文；本步/控件不进首屏阅读 */}
                 <article
-                  className="mt-3 rounded-xl border border-slate-200/90 bg-[#fbfaf7] p-4 shadow-sm"
+                  className="mt-4 rounded-lg border border-slate-200/70 bg-[#fbfaf7] px-5 py-6 shadow-sm"
                   data-testid="dept-manuscript-paper"
                   data-doc-feel="1"
                 >
-                  <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
-                    本稿正文
-                  </p>
                   <pre
-                    className="mt-2 max-h-[min(70vh,40rem)] overflow-auto text-[13px] leading-relaxed text-slate-800 whitespace-pre-wrap font-sans"
+                    className="max-h-[min(78vh,48rem)] overflow-auto text-[13.5px] leading-[1.75] text-slate-800 whitespace-pre-wrap font-sans"
                     data-testid="dept-output-body"
                     data-empty={centerBody.trim() ? '0' : '1'}
                   >
@@ -1261,27 +1166,75 @@ export function BusinessCaseDeptPage() {
                       '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'}
                   </pre>
                 </article>
-                <ThickStepWorkPanel
-                  kind={stepKind}
-                  step={currentStep}
-                  caseId={caseId}
-                  embedMode="widgets-only"
-                  onRecordNote={(note) => {
-                    // 示意留痕；正式判断仍走右栏硬请示 / 支路面板
-                    if (note.includes('不申')) {
-                      recordJudgment(
-                        buildBranchJudgment({
-                          caseId,
-                          gate: '申不申',
-                          conclusion: '不申（主栏示意）',
-                          option: '不申结案',
-                          reason: '厚步 B 点选 · 正式拍板在右栏',
-                          compare: '不申却出申请号 = 禁止',
-                        }),
-                      )
-                    }
-                  }}
-                />
+                <details
+                  className="mt-3 rounded-lg border border-dashed border-slate-200 bg-slate-50/50 px-2.5 py-1.5"
+                  data-testid="dept-step-demo"
+                  data-step-dense="folded"
+                >
+                  <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+                    本步工具（默折）· {currentStep.label}
+                  </summary>
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setForceStepId(currentStep.id)}
+                      className="btn-press focus-ring rounded-full border border-slate-900 bg-slate-900 px-2.5 py-0.5 text-[10px] font-medium text-white"
+                      data-testid={`dept-step-${currentStep.id}`}
+                      data-step-current="1"
+                    >
+                      {currentStep.label}
+                    </button>
+                    <details className="relative" data-testid="dept-step-more">
+                      <summary className="btn-press focus-ring cursor-pointer list-none rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-500 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+                        换步 · {stepList.length}
+                      </summary>
+                      <div className="absolute left-0 z-10 mt-1 flex min-w-[10rem] flex-col gap-1 rounded-lg border border-slate-200 bg-white p-1.5 shadow-md">
+                        {stepList
+                          .filter((s) => s.id !== currentStep.id)
+                          .map((s) => (
+                            <button
+                              key={s.id}
+                              type="button"
+                              onClick={() => setForceStepId(s.id)}
+                              className="btn-press focus-ring rounded-md px-2 py-1 text-left text-[10px] text-slate-700 hover:bg-slate-50"
+                              data-testid={`dept-step-${s.id}`}
+                              data-step-menu="1"
+                            >
+                              {s.label}
+                            </button>
+                          ))}
+                        <button
+                          type="button"
+                          onClick={() => setForceStepId(null)}
+                          className="btn-press focus-ring rounded-md border border-dashed border-slate-200 px-2 py-1 text-left text-[10px] text-slate-500"
+                          data-testid="dept-step-auto"
+                        >
+                          跟闸
+                        </button>
+                      </div>
+                    </details>
+                  </div>
+                  <ThickStepWorkPanel
+                    kind={stepKind}
+                    step={currentStep}
+                    caseId={caseId}
+                    embedMode="widgets-only"
+                    onRecordNote={(note) => {
+                      if (note.includes('不申')) {
+                        recordJudgment(
+                          buildBranchJudgment({
+                            caseId,
+                            gate: '申不申',
+                            conclusion: '不申（主栏示意）',
+                            option: '不申结案',
+                            reason: '厚步 B 点选 · 正式拍板在右栏',
+                            compare: '不申却出申请号 = 禁止',
+                          }),
+                        )
+                      }
+                    }}
+                  />
+                </details>
                 {askParam ? (
                   <p
                     className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-950"
@@ -1640,28 +1593,20 @@ export function BusinessCaseDeptPage() {
             ) : null}
 
             {showHandoffTicket ? (
-              <details
-                className="rounded-lg border border-emerald-200/70 bg-emerald-50/40 px-2.5 py-1.5"
+              <div
+                className={params.get('ticket') === '1' ? '' : 'sr-only'}
                 data-testid="dept-handoff-ticket-details"
-                open={params.get('ticket') === '1'}
+                data-ticket-in-reading={params.get('ticket') === '1' ? '1' : '0'}
               >
-                <summary
-                  className="cursor-pointer select-none text-[10px] font-semibold text-emerald-900"
-                  data-testid="dept-handoff-ticket-summary"
-                >
-                  部间工单 · 交底→申请（默折，不占主阅读）
-                </summary>
-                <div className="mt-2">
-                  <DeptHandoffTicket
-                    caseId={caseId}
-                    ticket={interTicket}
-                    side={isDraftDept(dept.id) ? 'to' : 'from'}
-                  />
-                </div>
-              </details>
+                <DeptHandoffTicket
+                  caseId={caseId}
+                  ticket={interTicket}
+                  side={isDraftDept(dept.id) ? 'to' : 'from'}
+                />
+              </div>
             ) : null}
 
-            <p className="text-center text-[10px] text-slate-300" data-testid="dept-demo-footer">
+            <p className="sr-only" data-testid="dept-demo-footer">
               示意稿件面 · 非真递交
             </p>
           </section>
@@ -1682,11 +1627,16 @@ export function BusinessCaseDeptPage() {
         <aside
           className={`${
             mobileRightOpen ? 'fixed inset-x-0 bottom-0 z-40 flex max-h-[min(90vh,40rem)] shadow-xl' : 'hidden'
-          } min-h-0 w-full shrink-0 flex-col border-t border-slate-200 bg-white lg:static lg:z-auto lg:flex lg:max-h-none lg:w-[21.25rem] lg:border-l lg:border-t-0 lg:shadow-none xl:w-[21.25rem]`}
+          } min-h-0 w-full shrink-0 flex-col border-t border-slate-200 bg-white ${
+            rightRailOpen
+              ? 'lg:static lg:z-auto lg:flex lg:max-h-none lg:w-[21.25rem] lg:border-l lg:border-t-0 lg:shadow-none xl:w-[21.25rem]'
+              : 'lg:hidden'
+          }`}
           data-testid="dept-right-rail"
           data-slot="dialogue-confirm"
           data-mobile-drawer={mobileRightOpen ? '1' : '0'}
           data-rail-model="leader-chat"
+          data-rail-collapsed={rightRailOpen ? '0' : '1'}
         >
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 px-3 py-2 lg:hidden">
@@ -2002,13 +1952,15 @@ export function BusinessCaseDeptPage() {
                     <p className="text-[9px] font-semibold text-violet-700/80">
                       {businessSeatLabel(dept.leadSeatId)} · 汇报
                     </p>
-                    <p className="mt-0.5 font-medium">还不能交卷，缺 {missingLabels.length} 项。</p>
+                    <p className="mt-0.5 font-medium">
+                      还差 {missingLabels.length} 项才能交卷。
+                    </p>
                     <p
                       className="mt-0.5 text-[10px] text-slate-500"
                       data-testid="dept-checklist-missing"
                       data-missing-count={missingLabels.length}
                     >
-                      缺 {missingLabels.length} 项 · 展开可勾选
+                      点开补齐 · 硬请示在对话里
                     </p>
                     <details className="mt-1.5" data-testid="dept-kit-missing-fold">
                       <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
@@ -2266,28 +2218,38 @@ export function BusinessCaseDeptPage() {
                 >
                   请在上方汇报气泡确认或驳回
                 </p>
-              ) : (
+              ) : canSubmit || thisDeptConfirmPending ? (
                 <button
                   type="button"
                   onClick={onSubmit}
-                  disabled={!canSubmit && !thisDeptConfirmPending}
                   title={
-                    thisDeptConfirmPending
-                      ? AWAITING_ADVANCE_LOCK_HINT
-                      : !canSubmit
-                        ? missingLabels.length
-                          ? `缺项：${missingLabels.join('、')}`
-                          : '齐套要点未齐，暂不可交卷'
-                        : undefined
+                    thisDeptConfirmPending ? AWAITING_ADVANCE_LOCK_HINT : undefined
                   }
-                  className="btn-press focus-ring inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn-press focus-ring inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
                   data-testid="dept-primary-cta"
                   data-can-submit={canSubmit ? '1' : '0'}
                   data-awaiting-confirm="0"
+                  data-cta-wall="0"
                 >
-                  {primaryLabel}
+                  {thisDeptConfirmPending ? primaryLabel : '交卷'}
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </button>
+              ) : (
+                <p
+                  className="text-center text-[10px] leading-relaxed text-slate-500"
+                  data-testid="dept-primary-cta-demoted"
+                  data-cta-wall="0"
+                >
+                  齐套未齐时请看上方汇报气泡 · 不设灰交卷墙
+                  <span
+                    className="sr-only"
+                    data-testid="dept-primary-cta"
+                    data-can-submit="0"
+                    data-awaiting-confirm="0"
+                  >
+                    {primaryLabel}
+                  </span>
+                </p>
               )}
               {/* 兼容闸：待确认时仍挂可达 testid（气泡链） */}
               {awaitingThis ? (

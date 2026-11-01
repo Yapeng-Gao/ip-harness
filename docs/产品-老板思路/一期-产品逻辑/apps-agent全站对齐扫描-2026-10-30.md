@@ -4970,3 +4970,70 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 | 2026-11-01 CST | §109 IMPLEMENT G01–G03；smoke PASS_RESCAN_109；t687u；基线 7144d90 |
 
 ---
+
+## 110. DESIGN · Approach A 稿件工作台（Cursor-like）· 2026-11-01 Asia/Shanghai
+
+> **范围：** Leslie 部台「看不懂 / 操作成本高」后的布局取舍。**本批 DESIGN ONLY**（实现见 §111）。  
+> **真源 ONLY：** `一期节点` + `一期-产品逻辑` + `一期-产品理念`。**不宣称四维/六维。无组队。**  
+> **基线：** `df5d328`（§109）。  
+> **授权语境：** 父代理给出 Approach A；Leslie「那就按这个做吧」→ §111。
+
+### 110.0 目标一句话
+
+办公族打开部台 = **打开一篇稿**：左图标轨 + 可折八部；中全页交底书；材料是文内目录；右领导对话可折；硬节点在气泡里——**不要**质检线/本步芯片/工单条/缺项墙/灰交卷墙。
+
+### 110.1 Approach A（采纳）
+
+| 区 | 做法 |
+|---|---|
+| 壳层左 | 部台上 **icon rail**（大厅·项目·待确认｜编制） |
+| 本案八部 | **可折**：默认只显示当前部名；展开才列八部 |
+| 中栏 | **全页稿纸**；标题=稿名；阅读区无 QC/本步/工单 |
+| 材料 | 文内/侧 toc，**默认收折** |
+| 右栏 | 领导对话 **可折**；硬请示=气泡；无缺项墙+灰交卷墙 |
+
+### 110.2 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-11-01 CST | §110 DESIGN Approach A；随后 §111 落地 |
+
+---
+
+## 111. IMPLEMENT · Approach A 稿件工作台 · PASS_RESCAN_111（2026-11-01 Asia/Shanghai）
+
+> **范围：** §110 Approach A 整包落地（壳图标轨、八部默折当前部、中栏全页交底书、材料 toc、右栏可折去交卷墙）。  
+> **真源 ONLY：** `一期节点` + `一期-产品逻辑` + `一期-产品理念`。**不宣称四维/六维。无组队。** main-path-sample 冻结未碰。  
+> **基线：** `df5d328`（§109）→ 本批。  
+> **授权：** t691u / pt691u「那就按这个做吧」。
+
+### 111.0 真源意思（一句话）
+
+部台＝文书作业台 + 领导拍板台 → 中栏最大是**交底书稿名+正文**；导航与闸口靠边可折；对话里拍板。
+
+### 111.1 落地对照
+
+| 项 | 改什么 | 落点 |
+|---|---|---|
+| 壳 | 部台上 `ShellPathNav` `data-rail-mode=icons` 窄图标轨 | `ShellPathNav` |
+| 八部 | 部台默认 `data-eight-mode=current-only`；点开列八部 | `BusinessCaseSidebar` |
+| 中栏 | 顶栏稿名 `dept-manuscript-title`；质检线 sr-only；纸面全页；本步工具默折 | `BusinessCaseDeptPage` |
+| 材料 | 顶栏「目录」开关；树默认收折（承 §109） | 同上 |
+| 右栏 | `rightRailOpen` 可折；未齐套不渲染灰交卷墙；齐套句收成汇报气泡 | 同上 |
+| 工单 | 默认离阅读区（非 `?ticket=1`） | 同上 |
+
+### 111.2 验证
+
+| 项 | 结果 |
+|---|---|
+| smoke | `.tmp/rescan-111-smoke.mjs` → **PASS_RESCAN_111** |
+| shots | `.tmp/rescan-111-shots/` + `/workspace/uploads/rescan-111-shots/` |
+| tsc | apps/agent `tsc --noEmit` 通过 |
+
+### 111.3 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-11-01 CST | §111 IMPLEMENT Approach A；smoke PASS_RESCAN_111；t691u；基线 df5d328 |
+
+---

@@ -71,15 +71,16 @@ export function BusinessCaseSidebar() {
   }, [loc.pathname])
 
   // 角色 × 是否案内：默认展开哪一块
+  // §111：部台上八部默折——只露当前部名，点开再列八部
   useEffect(() => {
     if (isEnterprise) {
       setAllOpen(!activeCaseId)
-      setDeptsOpen(Boolean(activeCaseId))
+      setDeptsOpen(Boolean(activeCaseId) && !activeDeptSlug)
     } else {
       setAllOpen(true)
-      setDeptsOpen(Boolean(activeCaseId))
+      setDeptsOpen(Boolean(activeCaseId) && !activeDeptSlug)
     }
-  }, [activeCaseId, isEnterprise])
+  }, [activeCaseId, activeDeptSlug, isEnterprise])
 
   const activeCase = activeCaseId ? getCase(activeCaseId) : undefined
   const prog = activeCaseId ? getProgress(activeCaseId) : undefined
@@ -405,34 +406,67 @@ export function BusinessCaseSidebar() {
     </>
   )
 
+  const currentDept =
+    activeDeptSlug && activeCase
+      ? MAIN_CHAIN_DEPTS.find((d) => deptSlug(d.id) === activeDeptSlug) ||
+        moreDepts.find((d) => deptSlug(d.id) === activeDeptSlug)
+      : undefined
+
   const deptNavSection =
     activeCase && prog ? (
       <div
         className={isEnterprise ? '' : 'mt-3 border-t border-slate-200/80 pt-2'}
         data-testid="business-side-case-depts"
         data-nav-priority={isEnterprise ? 'primary' : 'secondary'}
+        data-eight-collapsed={deptsOpen ? '0' : '1'}
       >
-        <div className="mb-1 px-2 text-[10px] text-slate-400">
-          当前阶段 · {stageMeta?.title ?? stageLabel(prog.stageId)}
-          {prog.filed && prog.stageId === 'oa' && (prog.oaRound ?? 0) > 0
-            ? ` · 第 ${prog.oaRound} 通`
-            : ''}
-        </div>
-        <button
-          type="button"
-          onClick={() => setDeptsOpen((v) => !v)}
-          className="focus-ring mb-1 flex w-full items-center justify-between rounded-md px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 hover:bg-white/70 hover:text-slate-700"
-          aria-expanded={deptsOpen}
-          data-testid="business-side-depts-toggle"
-        >
-          <span>
-            {drillMode ? '席位演练' : isEnterprise ? '本案八部' : '本案部门'}
-          </span>
-          <ChevronDown
-            className={`h-3.5 w-3.5 transition ${deptsOpen ? 'rotate-0' : '-rotate-90'}`}
-            aria-hidden
-          />
-        </button>
+        {!deptsOpen && currentDept ? (
+          <button
+            type="button"
+            onClick={() => setDeptsOpen(true)}
+            className="focus-ring mb-1 flex w-full flex-col items-stretch gap-0.5 rounded-md border border-slate-200/80 bg-white px-2 py-1.5 text-left hover:bg-slate-50"
+            aria-expanded={false}
+            data-testid="business-side-depts-toggle"
+            data-collapsed-current="1"
+            title="展开本案八部"
+          >
+            <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+              {drillMode ? '席位演练' : isEnterprise ? '本案八部' : '本案部门'}
+            </span>
+            <span className="flex items-center justify-between gap-1">
+              <span className="truncate text-[12px] font-semibold text-slate-900">
+                {deptLabel(currentDept)}
+              </span>
+              <ChevronDown className="h-3.5 w-3.5 shrink-0 -rotate-90 text-slate-400" aria-hidden />
+            </span>
+          </button>
+        ) : (
+          <>
+            {!activeDeptSlug ? (
+              <div className="mb-1 px-2 text-[10px] text-slate-400">
+                当前阶段 · {stageMeta?.title ?? stageLabel(prog.stageId)}
+                {prog.filed && prog.stageId === 'oa' && (prog.oaRound ?? 0) > 0
+                  ? ` · 第 ${prog.oaRound} 通`
+                  : ''}
+              </div>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setDeptsOpen((v) => !v)}
+              className="focus-ring mb-1 flex w-full items-center justify-between rounded-md px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 hover:bg-white/70 hover:text-slate-700"
+              aria-expanded={deptsOpen}
+              data-testid="business-side-depts-toggle"
+            >
+              <span>
+                {drillMode ? '席位演练' : isEnterprise ? '本案八部' : '本案部门'}
+              </span>
+              <ChevronDown
+                className={`h-3.5 w-3.5 transition ${deptsOpen ? 'rotate-0' : '-rotate-90'}`}
+                aria-hidden
+              />
+            </button>
+          </>
+        )}
         {deptsOpen &&
           (drillMode ? (
             <div className="space-y-2" data-testid="business-drill-seats">
@@ -501,7 +535,7 @@ export function BusinessCaseSidebar() {
             </div>
           ))}
 
-        {!drillMode && (
+        {!drillMode && deptsOpen && (
           <div className="mt-2 space-y-1.5">
             {prog?.casePlan?.trim() ? (
               <div
@@ -556,11 +590,16 @@ export function BusinessCaseSidebar() {
 
   return (
     <aside
-      className="business-case-sidebar flex w-[min(9.75rem,28vw)] min-w-[7.25rem] max-w-[10.5rem] shrink-0 flex-col border-r border-slate-200/90 bg-[#f5f5f7]"
+      className={`business-case-sidebar flex shrink-0 flex-col border-r border-slate-200/90 bg-[#f5f5f7] ${
+        activeDeptSlug && !deptsOpen
+          ? 'w-[min(8.5rem,26vw)] min-w-[6.75rem] max-w-[9.25rem]'
+          : 'w-[min(9.75rem,28vw)] min-w-[7.25rem] max-w-[10.5rem]'
+      }`}
       data-testid="business-case-sidebar"
       data-entry-role={entryRole}
       data-biz-case-ia="two-col"
       data-rail="thin-eight"
+      data-eight-mode={activeDeptSlug && !deptsOpen ? 'current-only' : 'list'}
     >
       <div className="shrink-0 px-2.5 pt-3 pb-1.5">
         {activeCaseId ? (
