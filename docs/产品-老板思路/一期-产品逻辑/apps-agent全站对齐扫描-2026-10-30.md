@@ -6635,3 +6635,48 @@ node apps/agent/.tmp/rescan-134-smoke.mjs
 |---|---|
 | 2026-11-01 CST | §134 IMPLEMENT 阶段产物样机 + e2e；t720u；PASS_RESCAN_134 |
 
+## 135. IMPLEMENT · 真实 Office 产物正文（去样机横幅）· PASS_RESCAN_135 · 2026-11-01 Asia/Shanghai
+
+> **基线：** `5f111dd`（§134）→ 本批。Leslie t721：「你可以弄点真实的产物啊」——中栏勿以【样机产物】作交付物横幅。  
+> **Smoke / 截图：** `.tmp/rescan-135-shots/` · `uploads-staging/rescan-135-shots/` · `/workspace/uploads/rescan-135-shots/`；脚本 `apps/agent/.tmp/rescan-135-smoke.mjs` → **PASS_RESCAN_135**（fails=0）。  
+> **zones：** 未改 `data-wb-zones`；§133 mid AI sync 行为保持。
+
+### 135.1 改了什么（意思）
+
+| 点 | 落地 |
+|---|---|
+| 厚部按步正文 | `workbenchSteps` D4/D5/D6：交底书/事实确认/质检/交接；开案理解/申不申/过线/递交；争点/策略/意见陈述 —— 连贯案「边缘散热 · 螺旋水道+端盖鳍片+双密封」 |
+| 薄部八部主稿 | 建项卡 / 选题卡 / 点包 / 年费台账 / 五块复盘等；`workTitle` 去掉「示意」 |
+| 样机横幅下架 | 稿面不再出现 `【样机产物·…】`；e2e 改断言正文内容标记（技术领域/独权/年费等） |
+| 产物目录 | `stageProductFixtures`：`STAGE_CONTENT_MARKERS` + `findStageFixtureGaps` 禁样机横幅 |
+| 单测 | `stageProductFixtures.test.ts` §135：6 pass |
+
+### 135.2 Smoke 覆盖
+
+| 路径 | 结果 |
+|---|---|
+| ①–⑧ 大厅门牌进部台 | content+shell+no-banner PASS（8/8） |
+| 交底 `?step=` 成稿/事实/质检/可交 | 4/4 PASS |
+| 申请 `?gate=bypass&step=` A/B/过线/递交 | 4/4 PASS |
+| 交底/申请 mid advance | 中栏真实正文 PASS |
+| 单测 fixtures + midAiProducts | fail=0 |
+
+### 135.3 重跑
+
+```bash
+# 需 apps/agent dev @ 5175
+node --import tsx --test apps/agent/src/business/stageProductFixtures.test.ts
+node apps/agent/.tmp/rescan-135-smoke.mjs
+```
+
+### 135.4 不做（本批）
+
+- 不接真案卷引擎 / 不写官报通道。  
+- 不改换部 IA、壳导航、main-path-sample。  
+- 不恢复四维/六维叙事。
+
+| 时间 | 记 |
+|---|---|
+| 2026-11-01 CST | §135 IMPLEMENT 真实产物正文；t721u；PASS_RESCAN_135 |
+
+---
