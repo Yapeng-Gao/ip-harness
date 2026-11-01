@@ -83,7 +83,7 @@ type Props = {
 
 /**
  * 席工作面（席=独立 bot · 7 席同构 · 案页三刀 + nits）：
- * 会话主 · 成果/过程次 tab（办理过程勿常驻会话下）· 交卷 HITL
+ * 会话主 · 成果/过程次 tab（办理过程勿常驻会话下）· 交卷待确认
  * 本案 pending → 藏会话干活/交卷 chip，顶栏「去确认」独占
  * 推进 → advanceSeatWork；顶栏唯一主 CTA 经 workNonce 触发
  */

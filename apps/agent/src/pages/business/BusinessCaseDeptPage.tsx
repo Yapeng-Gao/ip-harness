@@ -928,8 +928,16 @@ export function BusinessCaseDeptPage() {
               className="mt-0.5 max-w-xl text-xs text-slate-600"
               data-testid="dept-qualify-line"
             >
-              合格线：{qualifyLine}
-              {st ? ` · ${st}` : ''}
+              质检线：{qualifyLine}
+              {awaitingThis
+                ? ' · 已交卷，待你拍板'
+                : !allChecklistDone
+                  ? ' · 交卷前还须齐套'
+                  : st === '已完成'
+                    ? ' · 本站已确认可往下'
+                    : st
+                      ? ` · ${st}`
+                      : ''}
               {currentStep ? ` · 本步 ${currentStep.label}` : thinShell ? ' · 薄部同壳' : ''}
             </p>
           </div>
@@ -957,32 +965,7 @@ export function BusinessCaseDeptPage() {
                 交底→申请 工单
               </button>
             ) : null}
-            <Link
-              to="/agent"
-              className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
-              data-testid="dept-back-hall"
-            >
-              回大厅
-            </Link>
-            <Link
-              to={companyHref}
-              className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
-            >
-              公司首页
-            </Link>
-            <Link
-              to={
-                pending[0] && kindForDept
-                  ? workbenchAskPath(caseId, pending[0].kind, {
-                      confirmId: pending[0].id,
-                    })
-                  : `/agent/pending?audit=1&caseId=${encodeURIComponent(caseId)}`
-              }
-              className="btn-press focus-ring rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] font-medium text-amber-950"
-              data-testid="dept-pending-link"
-            >
-              要你拍{pending.length > 0 ? ` · ${pending.length}` : ''}
-            </Link>
+            {/* §105 G01/G05：回大厅/公司首页/要你拍 卸掉；壳层左栏已有大厅·项目·待确认 */}
           </div>
         </header>
       </div>
@@ -1220,7 +1203,7 @@ export function BusinessCaseDeptPage() {
                     className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-950"
                     data-testid="dept-ask-banner"
                   >
-                    有要你拍的硬请示 —— 请看右侧对话（跟本部门负责人）。
+                    请看右栏对话。
                   </p>
                 ) : null}
               </div>
@@ -1265,7 +1248,7 @@ export function BusinessCaseDeptPage() {
                     className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-950"
                     data-testid="dept-ask-banner"
                   >
-                    有要你拍的硬请示 —— 请看右侧对话。
+                    请看右栏对话。
                   </p>
                 ) : null}
               </div>
@@ -1653,12 +1636,8 @@ export function BusinessCaseDeptPage() {
                       本部门负责人
                       {st ? ` · ${handoffPhaseLabel(handoffPhase)}` : ''}
                     </span>
-                    <span
-                      className="rounded-full bg-violet-600/10 px-1.5 py-0.5 text-[9px] font-medium text-violet-800"
-                      data-testid="agent-style-tag"
-                      title={styleTagForDept(dept.id).line}
-                    >
-                      风格 · {styleTagForDept(dept.id).label}
+                    <span className="sr-only" data-testid="agent-style-tag">
+                      手法 · {styleTagForDept(dept.id).label}
                     </span>
                   </span>
                 </span>
@@ -1752,7 +1731,7 @@ export function BusinessCaseDeptPage() {
                           data-testid={`dept-side-adopt-${peer.id}`}
                           title={adopted ? ADOPT_CTA_DONE_LABEL : ADOPT_CTA_LABEL}
                         >
-                          {adopted ? '已采' : '采纳'}
+                          {adopted ? '已选' : '选用'}
                         </button>
                       </li>
                     )
@@ -1764,6 +1743,13 @@ export function BusinessCaseDeptPage() {
                   data-testid="dept-side-adopt-ne-confirm"
                 >
                   {ADOPT_NE_CONFIRM_NOTE}
+                </p>
+                <p
+                  className="mt-1 text-[10px] text-slate-500"
+                  data-testid="agent-style-tag-roster"
+                  title={styleTagForDept(dept.id).line}
+                >
+                  手法 · {styleTagForDept(dept.id).label}
                 </p>
               </section>
             ) : (
@@ -1913,11 +1899,23 @@ export function BusinessCaseDeptPage() {
                     data-testid="dept-ask-bubble-g1"
                     data-ask-kind="g1"
                     data-kit-compact="1"
+                    data-kit-folded="1"
                   >
-                    <p className="text-[9px] font-semibold uppercase tracking-wide text-violet-700/80">
+                    <p className="text-[9px] font-semibold text-violet-700/80">
                       {businessSeatLabel(dept.leadSeatId)} · 汇报
                     </p>
-                    <p className="mt-0.5 font-medium">齐套未齐，还不能交卷。</p>
+                    <p className="mt-0.5 font-medium">本稿要点未齐，还不能交卷。</p>
+                    <p
+                      className="mt-0.5 text-[10px] text-slate-500"
+                      data-testid="dept-checklist-missing"
+                      data-missing-count={missingLabels.length}
+                    >
+                      缺 {missingLabels.length} 项 · 展开可勾选
+                    </p>
+                    <details className="mt-1.5" data-testid="dept-kit-missing-fold">
+                      <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+                        展开缺项清单
+                      </summary>
                     <ul
                       className="mt-1 space-y-1 text-[11px] text-slate-700"
                       data-testid="dept-checklist-items"
@@ -1943,13 +1941,7 @@ export function BusinessCaseDeptPage() {
                           </li>
                         ))}
                     </ul>
-                    <p
-                      className="mt-1 text-[10px] text-slate-500"
-                      data-testid="dept-checklist-missing"
-                      data-missing-count={missingLabels.length}
-                    >
-                      缺 {missingLabels.length} 项 · 勾上或用下方样机工具
-                    </p>
+                    </details>
                     {checklistItems.some((x) => x.done) ? (
                       <details
                         className="mt-1 rounded-md border border-violet-100/70 bg-white/50 px-2 py-1"
@@ -2079,7 +2071,7 @@ export function BusinessCaseDeptPage() {
                         </li>
                       </ul>
                       <p className="mt-1 text-[9px] text-slate-400" data-testid="ask-t4-honesty">
-                        T4↔G1：软/齐套请示同样挂四件套；不提供一键全绿。
+                        齐套请示同样要结论·来源·推演·对比；不提供一键过质检线。
                       </p>
                     </details>
                     <div className="sr-only" data-testid="dept-checklist" aria-hidden>
@@ -2174,7 +2166,7 @@ export function BusinessCaseDeptPage() {
                   className="text-center text-[10px] leading-relaxed text-slate-500"
                   data-testid="dept-primary-cta-demoted"
                 >
-                  拍板请用上方「要你拍」汇报气泡 · 确认/驳回就地完成
+                  请在上方汇报气泡确认或驳回
                 </p>
               ) : (
                 <button

@@ -65,23 +65,24 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
       data-step={step.id}
       data-case={caseId}
     >
-      <details
-        className="rounded-lg border border-slate-100 bg-slate-50/60"
+      <article
+        className="rounded-xl border border-slate-200 bg-[#fbfaf7] p-3 shadow-sm"
         data-testid="thick-step-body-fold"
+        data-doc-feel="1"
       >
-        <summary
-          className="cursor-pointer select-none px-3 py-1.5 text-[10px] font-medium text-slate-500"
+        <p
+          className="text-[10px] font-medium uppercase tracking-wide text-slate-400"
           data-testid="thick-step-body-summary"
         >
-          本步全文（默折 · 下方交互板优先）
-        </summary>
+          本步交付物
+        </p>
         <pre
-          className="max-h-[min(32vh,14rem)] overflow-auto border-t border-slate-100 px-3 py-2 text-[12px] leading-relaxed text-slate-700 whitespace-pre-wrap"
+          className="mt-1.5 max-h-[min(48vh,22rem)] overflow-auto text-[12px] leading-relaxed text-slate-800 whitespace-pre-wrap font-sans"
           data-testid="dept-output-body"
         >
           {step.mainBody}
         </pre>
-      </details>
+      </article>
 
       {kind === 'd4' && step.id === 'draft' ? (
         <div className="rounded-xl border border-slate-200 bg-white p-3" data-testid="thick-d4-draft">
@@ -137,7 +138,7 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
               </button>
             ))}
           </div>
-          <p className="mt-2 text-[10px] text-amber-900/70">主栏点选=示意留痕；正式确认仍看右栏「要你拍」。</p>
+          <p className="mt-2 text-[10px] text-amber-900/70">主栏点选=示意留痕；正式拍板在右栏对话。</p>
         </div>
       ) : null}
 
@@ -196,28 +197,29 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
             </details>
           ) : null}
           <p className="mt-2 text-[10px] text-slate-400">
-            全绿 ≠ 已交下一站；未拍硬请示不得开工单 / 不得装已递交。
+            质检全绿 ≠ 已交下一站；未在右栏拍板不得开工单，也不得装已递交。
           </p>
         </div>
       ) : null}
 
       {kind === 'd4' && step.id === 'hand' ? (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3" data-testid="thick-d4-hand">
-          <p className="text-[11px] font-semibold text-emerald-900">节点交付 · 可交申请部</p>
-          <ul className="mt-2 space-y-1 text-[12px] text-slate-800">
-            <li>✓ 交底成稿在案</li>
-            <li>✓ 事实已核对（演示）</li>
-            <li>○ 质检示意全绿后，右栏拍「可交申请部」</li>
-          </ul>
+        <div
+          className="rounded-lg border border-emerald-200/80 bg-emerald-50/50 px-3 py-2"
+          data-testid="thick-d4-hand"
+          data-end-gate="thin"
+        >
+          <p className="text-[11px] font-semibold text-emerald-900">结束本站 · 可交申请部（薄卡）</p>
+          <p className="mt-1 text-[11px] leading-snug text-slate-700">
+            质检线过了 ≠ 已交申请部。拍「可交申请部」请看右栏对话。
+          </p>
           <button
             type="button"
-            className="btn-press focus-ring mt-3 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
+            className="btn-press focus-ring mt-2 rounded-full border border-emerald-300 bg-white px-2.5 py-0.5 text-[10px] font-medium text-emerald-900"
             data-testid="thick-d4-hand-ready"
-            onClick={() => mark('hand-ready', '材料齐 · 请看右栏拍可交申请部')}
+            onClick={() => mark('hand-ready', '本站材料已齐 · 请在右栏拍板')}
           >
-            材料齐 · 去右栏拍
+            记下：材料已齐
           </button>
-          <p className="mt-2 text-[10px] text-slate-500">全绿 ≠ 已交申请部 · 未拍不得开交底→申请工单。</p>
         </div>
       ) : null}
 

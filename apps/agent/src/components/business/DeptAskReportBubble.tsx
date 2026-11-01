@@ -155,29 +155,6 @@ export function DeptAskReportBubble({
 
       {!done ? (
         <div className="mt-2.5 space-y-2" data-testid="dept-ask-report-acts">
-          <label className="block space-y-1">
-            <span className="text-[10px] font-medium text-slate-500">
-              确认理由（写入判断档案）
-            </span>
-            <textarea
-              rows={2}
-              value={confirmReason}
-              onChange={(e) => setConfirmReason(e.target.value)}
-              placeholder="为何接受 / 修改点…"
-              className="focus-ring w-full resize-none rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] text-slate-800"
-              data-testid="dept-ask-confirm-reason"
-            />
-          </label>
-          <label className="flex items-start gap-2 text-[11px] text-slate-600">
-            <input
-              type="checkbox"
-              checked={riskAccepted}
-              onChange={(e) => setRiskAccepted(e.target.checked)}
-              className="mt-0.5"
-              data-testid="dept-ask-risk-accept"
-            />
-            <span>我了解风险仍继续（认风险 · 写入档案）</span>
-          </label>
           <button
             type="button"
             onClick={handleConfirm}
@@ -189,29 +166,67 @@ export function DeptAskReportBubble({
           >
             {busy ? '提交中…' : `确认 · ${decision.decisionShort}`}
           </button>
-          <div className="space-y-1">
-            <label className="sr-only" htmlFor={`ask-return-${item.id}`}>
-              驳回意见
-            </label>
-            <textarea
-              id={`ask-return-${item.id}`}
-              rows={2}
-              value={returnNote}
-              onChange={(e) => setReturnNote(e.target.value)}
-              placeholder="驳回须填意见…"
-              className="focus-ring w-full resize-none rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] text-slate-800 placeholder:text-slate-400"
-              data-testid="dept-ask-return-note"
-            />
-            <button
-              type="button"
-              onClick={handleReturn}
-              disabled={!rejectOk || busy}
-              className="btn-press focus-ring inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-              data-testid="dept-ask-return-btn"
-            >
+          <details
+            className="rounded-md border border-amber-100 bg-white/80 px-2 py-1.5"
+            data-testid="dept-ask-reason-fold"
+          >
+            <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+              展开 · 确认理由 / 认风险
+            </summary>
+            <div className="mt-1.5 space-y-2">
+              <label className="block space-y-1">
+                <span className="text-[10px] font-medium text-slate-500">
+                  确认理由（写入判断档案）
+                </span>
+                <textarea
+                  rows={2}
+                  value={confirmReason}
+                  onChange={(e) => setConfirmReason(e.target.value)}
+                  placeholder="为何接受 / 修改点…"
+                  className="focus-ring w-full resize-none rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] text-slate-800"
+                  data-testid="dept-ask-confirm-reason"
+                />
+              </label>
+              <label className="flex items-start gap-2 text-[11px] text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={riskAccepted}
+                  onChange={(e) => setRiskAccepted(e.target.checked)}
+                  className="mt-0.5"
+                  data-testid="dept-ask-risk-accept"
+                />
+                <span>我了解风险仍继续（认风险 · 写入档案）</span>
+              </label>
+            </div>
+          </details>
+          <details className="rounded-md border border-slate-200 bg-white px-2 py-1.5">
+            <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
               驳回并退回改稿
-            </button>
-          </div>
+            </summary>
+            <div className="mt-1.5 space-y-1">
+              <label className="sr-only" htmlFor={`ask-return-${item.id}`}>
+                驳回意见
+              </label>
+              <textarea
+                id={`ask-return-${item.id}`}
+                rows={2}
+                value={returnNote}
+                onChange={(e) => setReturnNote(e.target.value)}
+                placeholder="驳回须填意见…"
+                className="focus-ring w-full resize-none rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] text-slate-800 placeholder:text-slate-400"
+                data-testid="dept-ask-return-note"
+              />
+              <button
+                type="button"
+                onClick={handleReturn}
+                disabled={!rejectOk || busy}
+                className="btn-press focus-ring inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                data-testid="dept-ask-return-btn"
+              >
+                确认驳回
+              </button>
+            </div>
+          </details>
           <p className="text-center text-[9px] text-slate-400">
             拍板在对话里完成 ·{' '}
             <Link
@@ -295,7 +310,7 @@ function AskEvidencePanel(props: {
           ))}
         </ul>
         <p className="text-[9px] leading-relaxed text-slate-400" data-testid="ask-t4-honesty">
-          理念 T4：无来源/推演/对比不得装「可签字」。本气泡不提供一键全绿；缺段须补材料或驳回改稿。
+          缺来源/推演/对比不得装「可签字」。本气泡不提供一键过质检线；缺段须补材料或驳回改稿。
         </p>
         {props.resultPreview?.trim() ? (
           <pre

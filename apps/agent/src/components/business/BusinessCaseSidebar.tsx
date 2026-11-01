@@ -516,20 +516,7 @@ export function BusinessCaseSidebar() {
                 </p>
               </div>
             ) : null}
-            <a
-              href={`#case-assistant`}
-              className="flex items-center justify-center gap-1 rounded-md border border-teal-200 bg-teal-50 px-2 py-1.5 text-[10px] font-medium text-teal-900 hover:bg-teal-100"
-              data-testid="business-case-assistant-jump"
-              title="跳到右栏案子助手巡检"
-              onClick={(e) => {
-                e.preventDefault()
-                document
-                  .querySelector('[data-testid="case-assistant-panel"]')
-                  ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-              }}
-            >
-              案子助手 · 巡检
-            </a>
+
           </div>
         )}
 
@@ -546,24 +533,7 @@ export function BusinessCaseSidebar() {
           </button>
         )}
 
-        <Link
-          to={`/agent/cases/${activeCaseId}/professional`}
-          className="mt-2 flex items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-700 hover:bg-slate-50"
-          data-testid="business-side-professional"
-          title="案级编制名册"
-        >
-          编制名册
-        </Link>
-
-        {pending.length > 0 && (
-          <Link
-            to={`/agent/pending?audit=1&caseId=${encodeURIComponent(activeCaseId!)}`}
-            className="mt-2 flex items-center justify-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-1.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100"
-            data-testid="business-case-pending-link"
-          >
-            本案待确认 · {pending.length}
-          </Link>
-        )}
+        {/* §105：编制→壳层左栏；待确认→左栏「待确认」；案内侧栏不再常亮叠入口 */}
       </div>
     ) : null
 
@@ -592,16 +562,34 @@ export function BusinessCaseSidebar() {
       data-biz-case-ia="two-col"
     >
       <div className="shrink-0 px-2.5 pt-3 pb-1.5">
-        <button
-          type="button"
-          onClick={() => navigate('/agent/cases/new')}
-          className="btn-press focus-ring hit-40 flex w-full items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-slate-900 px-2.5 text-[13px] font-semibold text-white shadow-sm hover:bg-slate-800"
-          data-testid="business-side-new-case"
-          aria-label="开一个新案子"
-        >
-          <Plus className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden />
-          开一个新案子
-        </button>
+        {activeDeptSlug ? (
+          <p
+            className="px-0.5 text-[10px] leading-snug text-slate-400"
+            data-testid="business-side-new-case-folded"
+          >
+            开新案请回左栏「项目」。
+            <button
+              type="button"
+              onClick={() => navigate('/agent/cases/new')}
+              className="btn-press focus-ring ml-1 text-slate-500 underline-offset-2 hover:underline"
+              data-testid="business-side-new-case"
+              aria-label="开一个新案子"
+            >
+              去开案
+            </button>
+          </p>
+        ) : (
+          <button
+            type="button"
+            onClick={() => navigate('/agent/cases/new')}
+            className="btn-press focus-ring hit-40 flex w-full items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-slate-900 px-2.5 text-[13px] font-semibold text-white shadow-sm hover:bg-slate-800"
+            data-testid="business-side-new-case"
+            aria-label="开一个新案子"
+          >
+            <Plus className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden />
+            开一个新案子
+          </button>
+        )}
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-2 py-1">

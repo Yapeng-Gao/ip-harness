@@ -27,8 +27,8 @@ export function TeachingFadeTip({ deptId }: Props) {
       data-dept={deptId}
       role="note"
     >
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-800/80">
-        首次说明 · 可淡出
+      <p className="text-[10px] font-semibold text-sky-800/80">
+        带教 · 可关掉
       </p>
       <p className="mt-0.5 text-[12px] font-semibold text-slate-900">{copy.title}</p>
       <p className="mt-0.5 text-[11px] leading-snug text-slate-700">{copy.body}</p>
