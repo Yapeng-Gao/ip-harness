@@ -3,21 +3,26 @@ import { Link } from 'react-router-dom'
 import { ChevronDown, ChevronRight, ArrowRight } from 'lucide-react'
 import { HomeTodoStrip } from './HomeTodoStrip'
 import { HomeInProgressStrip } from './HomeInProgressStrip'
+import { HomeRelayStrip } from './HomeRelayStrip'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 
 type Props = {
   latestId?: string
   /** 大厅首屏：默认只露摘要一行，点开再看清单 */
   compactDefault?: boolean
+  /** 接力条刷新（交代分发后） */
+  relayRefreshKey?: number
 }
 
 /**
  * 大厅轻量轨「老板待办」单区 · 一期-产品逻辑 / 交互大纲 §2.2
  * 待你拍 / 催办 / 进行中 —— 同一块；首屏摘要，忌整墙默认展开。
+ * §93：待接力并入展开后（omitPending），首屏不再双摘要抢「待你拍」。
  */
 export function HomeBossTodoBoard({
   latestId,
   compactDefault = false,
+  relayRefreshKey = 0,
 }: Props) {
   const { cases, getPendingConfirms, getProgress } = useBusinessCases()
   const [bodyOpen, setBodyOpen] = useState(!compactDefault)
@@ -53,6 +58,7 @@ export function HomeBossTodoBoard({
       className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
       data-testid="home-boss-todo"
       data-compact={bodyOpen ? '0' : '1'}
+      data-hall-todo-single="v93"
       aria-labelledby="home-boss-todo-title"
     >
       <header className="flex flex-wrap items-center gap-2 bg-slate-50/80 px-2.5 py-1.5">
@@ -140,6 +146,14 @@ export function HomeBossTodoBoard({
               进行中
             </p>
             <HomeInProgressStrip latestId={latestId} embedded />
+          </div>
+
+          <div className="px-2 py-1.5" data-testid="home-boss-relay">
+            <HomeRelayStrip
+              refreshKey={relayRefreshKey}
+              compact
+              omitPending
+            />
           </div>
         </div>
       ) : null}

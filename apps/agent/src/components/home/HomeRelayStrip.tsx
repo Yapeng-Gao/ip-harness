@@ -18,9 +18,11 @@ type Props = {
   refreshKey?: number
   /** 大厅首屏：矮条、最多 2 条 */
   compact?: boolean
+  /** 并入老板待办时去掉「待你拍」，避免与待办 A 轨重复 */
+  omitPending?: boolean
 }
 
-export function HomeRelayStrip({ refreshKey = 0, compact = false }: Props) {
+export function HomeRelayStrip({ refreshKey = 0, compact = false, omitPending = false }: Props) {
   const { cases, getPendingConfirms, getProgress } = useBusinessCases()
   const [tick, setTick] = useState(0)
 
@@ -85,16 +87,18 @@ export function HomeRelayStrip({ refreshKey = 0, compact = false }: Props) {
         href: `/agent/cases/${last.caseId}/depts/${last.deptSlug}?delegate=1`,
       })
     }
-    const pending = getPendingConfirms().slice(0, 3)
-    for (const p of pending) {
-      const c = cases.find((x) => x.id === p.caseId)
-      rows.push({
-        id: `pending-${p.id}`,
-        title: c?.title ?? '案子',
-        kind: 'pending',
-        badge: '待你拍',
-        href: workbenchAskPath(p.caseId, p.kind, { confirmId: p.id }),
-      })
+    if (!omitPending) {
+      const pending = getPendingConfirms().slice(0, 3)
+      for (const p of pending) {
+        const c = cases.find((x) => x.id === p.caseId)
+        rows.push({
+          id: `pending-${p.id}`,
+          title: c?.title ?? '案子',
+          kind: 'pending',
+          badge: '待你拍',
+          href: workbenchAskPath(p.caseId, p.kind, { confirmId: p.id }),
+        })
+      }
     }
     for (const c of cases) {
       const prog = getProgress(c.id)
@@ -121,17 +125,20 @@ export function HomeRelayStrip({ refreshKey = 0, compact = false }: Props) {
         return true
       })
       .slice(0, compact ? 2 : 5)
-  }, [cases, getPendingConfirms, getProgress, tick, compact])
+  }, [cases, getPendingConfirms, getProgress, tick, compact, omitPending])
+
+  const shellClass = omitPending
+    ? 'px-0 py-0'
+    : compact
+      ? 'mt-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1.5'
+      : 'mt-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm'
 
   return (
     <section
-      className={
-        compact
-          ? 'mt-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1.5'
-          : 'mt-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm'
-      }
+      className={shellClass}
       data-testid="home-relay-strip"
       data-compact={compact ? '1' : '0'}
+      data-omit-pending={omitPending ? '1' : '0'}
       aria-labelledby="home-relay-title"
     >
       <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
@@ -144,10 +151,10 @@ export function HomeRelayStrip({ refreshKey = 0, compact = false }: Props) {
           id="home-relay-title"
           className="text-[12px] font-semibold text-slate-900"
         >
-          待接力
+          {omitPending ? '排期接力' : '待接力'}
         </h3>
         <span className="text-[10px] text-slate-400">
-          排期可恢复 · 样机示意
+          {omitPending ? '展开后可见 · 样机示意' : '排期可恢复 · 样机示意'}
         </span>
         <span
           className="ml-auto tabular rounded-full bg-slate-100 px-1.5 py-px text-[10px] font-semibold text-slate-600"

@@ -7,11 +7,13 @@ import {
 } from '../../business/entryRole'
 import { useEntryRole } from '../../business/useEntryRole'
 import { useAuthSession } from '../../business/AuthSessionContext'
+import { reopenAllTeachTips } from '../../business/teachingFade'
 
 const OPTIONS: EntryRole[] = ['enterprise', 'agency']
 
 /**
  * 顶栏减负：角色切换 + 退出 + 次要入口收进头像菜单（不常驻 chip 墙）。
+ * §93：支路验收 / 案盘 / 编制 / 重开说明沉入此菜单，不占大厅首屏折叠条。
  */
 export function ShellAccountMenu() {
   const { entryRole, setEntryRole } = useEntryRole()
@@ -71,7 +73,7 @@ export function ShellAccountMenu() {
       </button>
       {open ? (
         <div
-          className="menu-enter absolute right-0 z-40 mt-1 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white elevated"
+          className="menu-enter absolute right-0 z-40 mt-1 w-56 overflow-hidden rounded-lg border border-slate-200 bg-white elevated"
           role="menu"
           aria-label="账户菜单"
           data-testid="shell-account-panel"
@@ -100,6 +102,50 @@ export function ShellAccountMenu() {
             </button>
           ))}
           <div className="my-1 border-t border-slate-100" />
+          <p className="px-3 pt-1 text-[10px] font-medium uppercase tracking-wide text-slate-400">
+            大厅更多
+          </p>
+          <Link
+            to="/agent?hallTools=1"
+            role="menuitem"
+            className="btn-press focus-ring block px-3 py-2 text-xs text-slate-700 hover:bg-slate-100"
+            data-testid="shell-account-hall-tools"
+            onClick={() => setOpen(false)}
+          >
+            支路验收与次要入口
+          </Link>
+          <Link
+            to="/agent/cases"
+            role="menuitem"
+            className="btn-press focus-ring block px-3 py-2 text-xs text-slate-700 hover:bg-slate-100"
+            data-testid="shell-account-cases"
+            onClick={() => setOpen(false)}
+          >
+            案盘
+          </Link>
+          <Link
+            to="/agent/cases"
+            role="menuitem"
+            className="btn-press focus-ring block px-3 py-2 text-xs text-slate-700 hover:bg-slate-100"
+            data-testid="shell-account-roster"
+            onClick={() => setOpen(false)}
+          >
+            编制名册（经案盘进）
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            className="btn-press focus-ring flex w-full px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100"
+            data-testid="shell-account-reopen-teach"
+            onClick={() => {
+              setOpen(false)
+              reopenAllTeachTips()
+              window.alert('已重开各部门首次说明（进部可见）')
+            }}
+          >
+            重开部门说明
+          </button>
+          <div className="my-1 border-t border-slate-100" />
           <Link
             to="/agent/welcome"
             role="menuitem"
@@ -115,7 +161,6 @@ export function ShellAccountMenu() {
             onClick={() => {
               setOpen(false)
               logout()
-              // RequireAuth 未登录会 Navigate→welcome；延后一帧再落到登录壳，避免抢路由
               window.setTimeout(() => {
                 navigate('/agent/login', { replace: true })
               }, 0)

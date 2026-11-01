@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ChevronDown, ChevronRight } from 'lucide-react'
 import { HomeBossTodoBoard } from '../components/home/HomeBossTodoBoard'
 import { HomeReceptionGuide } from '../components/home/HomeReceptionGuide'
-import { HomeRelayStrip } from '../components/home/HomeRelayStrip'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
   ENTRY_ROLE_LABEL,
@@ -17,8 +15,8 @@ import { reopenAllTeachTips } from '../business/teachingFade'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * 首屏：产品一句 + 案薄条 + 前台形象主动引导（材料/目标；一句话辅）+ 老板待办摘要 + 八部名牌；
- * 支路/辅助/演示旁白默认折，忌瀑布经营首页。前台说话领路，非闲聊墙。
+ * §93：一条老板待办主轨；前台主动引导；八部直达；产品一句＝专家向你汇报；
+ * 支路/次要沉到 ?hallTools=1（顶栏账户菜单入口），忌首屏折叠条墙。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -34,9 +32,9 @@ export function HomePage() {
   }
   const branchQ = params.get('branch')
   const attachQ = params.get('attach')
+  const hallTools = params.get('hallTools') === '1'
   const { entryRole } = useEntryRole()
   const { cases, getProgress, getProcessLogs } = useBusinessCases()
-  const [moreOpen, setMoreOpen] = useState(false)
   const [relayRefresh, setRelayRefresh] = useState(0)
 
   const getLogAt = useMemo(
@@ -62,15 +60,16 @@ export function HomePage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v92"
+      data-hall-screen="one-pass-v93"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
-      data-hall-dedupe="boss-todo-v1"
+      data-hall-dedupe="boss-todo-v93"
       data-assistant-density="delegate-chain-v1"
+      data-hall-tools={hallTools ? '1' : '0'}
     >
       <div className="mx-auto w-full max-w-4xl">
-        {/* 1 · 顶：产品一句 + 当前案薄条 */}
+        {/* 1 · 顶：门口身份 + 当前案薄条 */}
         <header
           className="mb-2.5 flex flex-wrap items-end justify-between gap-x-3 gap-y-1"
           data-testid="home-hall-tagline"
@@ -80,8 +79,14 @@ export function HomePage() {
               Novada Team · 大厅
             </p>
             <h1 className="mt-0.5 text-pretty text-[20px] font-bold tracking-tight text-slate-900 sm:text-[22px]">
-              把事交代出去
+              专家向你汇报
             </h1>
+            <p
+              className="mt-0.5 text-[11px] text-slate-500"
+              data-testid="home-hall-tagline-sub"
+            >
+              弄清去向 · 办事；也可把事交代给前台
+            </p>
           </div>
           <p
             className="max-w-full text-right text-[12px] text-slate-600"
@@ -115,19 +120,22 @@ export function HomePage() {
           </p>
         </header>
 
-        {/* 2 · 前台主动引导（形象+话术；材料/目标；一句话辅） */}
+        {/* 2 · 前台主动引导 */}
         <div data-hall-block="reception" data-testid="home-delegate-zone">
           <HomeReceptionGuide
             initialAttachId={attachQ}
             latestCaseId={latestId}
             onDispatched={() => setRelayRefresh((n) => n + 1)}
           />
-          <HomeRelayStrip refreshKey={relayRefresh} compact />
         </div>
 
-        {/* 3 · 老板待办 · 紧凑摘要 */}
+        {/* 3 · 老板待办 · 唯一待办主轨（接力并入展开后） */}
         <div data-rail="light" data-testid="home-boss-rail" className="mb-2.5">
-          <HomeBossTodoBoard latestId={latestId} compactDefault />
+          <HomeBossTodoBoard
+            latestId={latestId}
+            compactDefault
+            relayRefreshKey={relayRefresh}
+          />
         </div>
 
         {/* 4 · 八部门名牌 · dense · 常显 */}
@@ -174,7 +182,6 @@ export function HomePage() {
               </li>
             ))}
           </ol>
-          {/* 兼容旧 smoke：保留可点的折叠控件但默认开、列表始终挂 DOM */}
           <button
             type="button"
             className="sr-only"
@@ -186,38 +193,27 @@ export function HomePage() {
           </button>
         </section>
 
-        {/* 支路门 · 整区默认折 · 不抢首屏 */}
-        <BranchDoors caseId={latestId} isAgency={isAgency} />
-
-        {/* 5 · 次级：代理 / 案盘 / 教 · 默认折 */}
-        <div
-          className="mb-1 mt-1"
-          data-testid="home-secondary-fold"
-          data-folded={moreOpen ? '0' : '1'}
-        >
-          <button
-            type="button"
-            className="focus-ring mb-1 flex w-full items-center gap-1.5 rounded-md px-0.5 py-1 text-left"
-            onClick={() => setMoreOpen((o) => !o)}
-            aria-expanded={moreOpen}
-            data-testid="home-secondary-toggle"
+        {/* 支路 / 次要 · 仅 ?hallTools=1 出现（顶栏账户菜单入口），不占首屏 */}
+        {hallTools ? (
+          <div
+            className="mt-3 space-y-3 border-t border-slate-100 pt-3"
+            data-testid="home-hall-tools"
           >
-            {moreOpen ? (
-              <ChevronDown className="h-3.5 w-3.5 text-slate-500" aria-hidden />
-            ) : (
-              <ChevronRight className="h-3.5 w-3.5 text-slate-500" aria-hidden />
-            )}
-            <span className="text-[11px] font-semibold text-slate-700">
-              次要入口
-            </span>
-            <span className="text-[10px] text-slate-400">案盘 · 编制 · 演示旁白</span>
-          </button>
-
-          {moreOpen ? (
-            <div className="space-y-2.5 pl-1" data-testid="home-secondary-body">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[12px] font-semibold text-slate-800">大厅工具</p>
+              <Link
+                to="/agent"
+                className="text-[11px] font-medium text-slate-500 underline-offset-2 hover:underline"
+                data-testid="home-hall-tools-close"
+              >
+                收起回门口
+              </Link>
+            </div>
+            <BranchDoors caseId={latestId} isAgency={isAgency} />
+            <div data-testid="home-secondary-fold" data-folded="0">
               {branchQ ? (
                 <div
-                  className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2"
+                  className="mb-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2"
                   data-testid="home-branch-deep"
                   data-branch={branchQ}
                 >
@@ -229,17 +225,13 @@ export function HomePage() {
                   </p>
                 </div>
               ) : null}
-
               {isAgency && latestId ? (
                 <div
-                  className="rounded-lg border border-violet-200 bg-violet-50/70 px-3 py-2"
+                  className="mb-2 rounded-lg border border-violet-200 bg-violet-50/70 px-3 py-2"
                   data-testid="home-agency-escort"
                 >
                   <p className="text-[12px] font-semibold text-violet-950">
                     代理陪同进申请部
-                  </p>
-                  <p className="mt-0.5 text-[11px] text-violet-900/90">
-                    可陪同进申请部壳做诊断（示意）；不装交底已过线。
                   </p>
                   <Link
                     to={`/agent/cases/${latestId}/depts/draft?escort=1&branch=b2`}
@@ -250,7 +242,6 @@ export function HomePage() {
                   </Link>
                 </div>
               ) : null}
-
               <nav
                 className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500"
                 aria-label="次要入口"
@@ -293,18 +284,11 @@ export function HomePage() {
                 </button>
               </nav>
             </div>
-          ) : (
-            <p
-              className="pl-5 text-[10px] text-slate-400"
-              data-testid="home-secondary-folded-hint"
-            >
-              案盘、编制名册与演示旁白在此；首屏只留前台引导 · 待办 · 八部。
-            </p>
-          )}
-        </div>
+          </div>
+        ) : null}
 
         <footer className="mt-3 border-t border-slate-100 pt-2 text-[10px] text-slate-400">
-          Novada Team 大厅 · 拍板在部门工作台右栏
+          Novada Team 大厅 · 拍板在部门工作台右栏 · 支路在账户菜单
         </footer>
       </div>
     </div>

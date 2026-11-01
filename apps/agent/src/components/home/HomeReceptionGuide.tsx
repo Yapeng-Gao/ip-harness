@@ -25,10 +25,12 @@ type Props = {
   initialAttachId?: string | null
 }
 
-const GOAL_CHIPS: Array<{ id: string; label: string; slug: string; hint: string }> = [
+const PRIMARY_GOAL_CHIPS: Array<{ id: string; label: string; slug: string; hint: string }> = [
   { id: 'disclosure', label: '写交底', slug: 'disclosure', hint: '技术事实 → 交底书' },
   { id: 'draft', label: '递申请', slug: 'draft', hint: '合格交底 → 申请文件' },
   { id: 'oa', label: '答审查意见', slug: 'oa', hint: '通知书 → 答复' },
+]
+const MORE_GOAL_CHIPS: Array<{ id: string; label: string; slug: string; hint: string }> = [
   { id: 'mining', label: '挖创新点', slug: 'mining', hint: '研发资料 → 拆案' },
   { id: 'intake', label: '先立项', slug: 'intake', hint: '要不要立这个方向' },
 ]
@@ -42,7 +44,7 @@ export const RECEPTION_DESK = {
 } as const
 
 const IDLE_SPEECH =
-  '你好，我是前台小林。不清楚去哪一部的话，丢材料给我看，我帮你建议去向；已经清楚就点目标，或直接点下方八部门牌。也可以一句话跟我说。'
+  '你好，我是前台小林。丢材料给我，我帮你建议先去哪一部；主链三件事也可直接点；熟了就点下方八部门牌。一句话交代也行。'
 
 /**
  * 大厅接待 · 前台形象主动引导（01-接待与引导）
@@ -61,6 +63,7 @@ export function HomeReceptionGuide({
   const [suggest, setSuggest] = useState<ReceptionSuggest | null>(null)
   const [fileNames, setFileNames] = useState<string[]>([])
   const [lineOpen, setLineOpen] = useState(false)
+  const [goalsMore, setGoalsMore] = useState(false)
   const [pickedSlug, setPickedSlug] = useState<string | null>(null)
 
   useEffect(() => {
@@ -141,17 +144,17 @@ export function HomeReceptionGuide({
       aria-labelledby="home-reception-title"
       data-testid="home-reception-guide"
       data-reception-phase={phase}
-      data-reception-mode="persona-speak-v92"
+      data-reception-mode="persona-speak-v93"
     >
       <div className="mb-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <h2
           id="home-reception-title"
           className="text-[12px] font-semibold text-slate-900"
         >
-          前台 · 弄清去向
+          前台
         </h2>
         <span className="text-[10px] text-slate-500">
-          导引岗 · 非唯一闸门 · 八部可直达
+          弄清去向 · 八部可直达
         </span>
         {latestCaseId ? (
           <Link
@@ -249,10 +252,11 @@ export function HomeReceptionGuide({
               <div
                 className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2"
                 data-testid="home-reception-goals"
+                data-goals-primary="3"
               >
-                <p className="text-[11px] font-semibold text-slate-700">今天想办</p>
+                <p className="text-[11px] font-semibold text-slate-700">主链想办</p>
                 <ul className="mt-1.5 flex flex-wrap gap-1.5">
-                  {GOAL_CHIPS.map((g) => (
+                  {PRIMARY_GOAL_CHIPS.map((g) => (
                     <li key={g.id}>
                       <button
                         type="button"
@@ -265,7 +269,38 @@ export function HomeReceptionGuide({
                       </button>
                     </li>
                   ))}
+                  <li>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring inline-flex rounded-full border border-dashed border-slate-300 bg-white px-2.5 py-0.5 text-[11px] font-medium text-slate-600 hover:border-slate-400"
+                      data-testid="home-goal-more-toggle"
+                      aria-expanded={goalsMore}
+                      onClick={() => setGoalsMore((v) => !v)}
+                    >
+                      {goalsMore ? '收起' : '更多'}
+                    </button>
+                  </li>
                 </ul>
+                {goalsMore ? (
+                  <ul
+                    className="mt-1.5 flex flex-wrap gap-1.5 border-t border-slate-100 pt-1.5"
+                    data-testid="home-reception-goals-more"
+                  >
+                    {MORE_GOAL_CHIPS.map((g) => (
+                      <li key={g.id}>
+                        <button
+                          type="button"
+                          title={g.hint}
+                          className="btn-press focus-ring inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[11px] font-medium text-slate-800 hover:border-slate-300"
+                          data-testid={`home-goal-${g.id}`}
+                          onClick={() => onGoalChip(g.slug)}
+                        >
+                          {g.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
             </div>
 
