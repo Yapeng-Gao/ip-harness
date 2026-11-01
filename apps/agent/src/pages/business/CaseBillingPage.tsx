@@ -47,22 +47,13 @@ export function CaseBillingPage() {
           aria-label="账单次要入口"
           data-testid="case-billing-secondary"
         >
-          <Link
-            to="/agent"
-            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="case-billing-back-hall"
-          >
-            回大厅
-          </Link>
-          <span aria-hidden className="text-slate-300">
-            ·
-          </span>
+          {/* §107 G06：回大厅靠左栏 */}
           <Link
             to={home}
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="case-billing-back-home"
           >
-            公司案首页
+            本案
           </Link>
           <span aria-hidden className="text-slate-300">
             ·
@@ -90,7 +81,7 @@ export function CaseBillingPage() {
           data-testid="case-billing-thin-hint"
           role="status"
         >
-          后勤横切 · 不抢「公司 → 工作台」主链 · 官费与服务费分口袋
+          费用后置示意 · 官费与服务费分列 · 先回本案八部办事
         </p>
 
         <h1
@@ -217,7 +208,7 @@ export function CaseBillingPage() {
             className="btn-press focus-ring inline-flex rounded-md bg-slate-900 px-3 py-1.5 text-[12px] font-semibold text-white"
             data-testid="case-billing-to-company"
           >
-            回公司办主链
+            回本案八部
           </Link>
         </div>
 

@@ -562,11 +562,12 @@ export function BusinessCaseSidebar() {
       data-biz-case-ia="two-col"
     >
       <div className="shrink-0 px-2.5 pt-3 pb-1.5">
-        {activeDeptSlug ? (
+        {activeCaseId ? (
           <p
             className="px-0.5 text-[10px] leading-snug text-slate-400"
             data-testid="business-side-new-case-folded"
           >
+            {/* §107 G05：案内一律弱链；开新案回左栏「项目」 */}
             开新案请回左栏「项目」。
             <button
               type="button"

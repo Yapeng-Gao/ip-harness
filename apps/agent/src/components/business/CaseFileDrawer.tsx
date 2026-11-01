@@ -472,17 +472,22 @@ export function CaseFileDrawer({
             className="shrink-0 border-t border-slate-100 px-4 py-2"
             data-testid="case-file-line-badges"
           >
-            <div className="flex flex-wrap gap-1.5">
-              {lineBadges.map((b) => (
-                <span
-                  key={b}
-                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600"
-                >
-                  {b}
-                </span>
-              ))}
-            </div>
-            <p className="mt-1 text-[10px] text-slate-400">三词勿混用</p>
+            {/* §107 G09：材料 Tab 主叙事=有/缺口；三词合格线收进详情，勿元教学句 */}
+            <details className="text-[10px] text-slate-500" data-testid="case-file-line-details">
+              <summary className="cursor-pointer select-none font-medium text-slate-500">
+                合格线状态（点开）
+              </summary>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {lineBadges.map((b) => (
+                  <span
+                    key={b}
+                    className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600"
+                  >
+                    {b}
+                  </span>
+                ))}
+              </div>
+            </details>
           </footer>
         ) : null}
       </div>

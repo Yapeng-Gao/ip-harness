@@ -70,22 +70,13 @@ export function CaseMembersPage() {
           aria-label="成员次要入口"
           data-testid="case-members-secondary"
         >
-          <Link
-            to="/agent"
-            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="case-members-back-hall"
-          >
-            回大厅
-          </Link>
-          <span aria-hidden className="text-slate-300">
-            ·
-          </span>
+          {/* §107 G06：回大厅靠左栏 */}
           <Link
             to={home}
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="case-members-back-home"
           >
-            公司案首页
+            本案
           </Link>
           <span aria-hidden className="text-slate-300">
             ·
@@ -112,7 +103,7 @@ export function CaseMembersPage() {
           data-testid="logistics-members-thin"
           role="status"
         >
-          后勤横切 · 不抢「公司 → 工作台」主链 · 人侧权限 ≠ 专家建议岗 · 正式权限接入后置
+          成员权限后置示意 · 正式接入前以本案八部办事为主
         </p>
 
         <h1
@@ -190,7 +181,7 @@ export function CaseMembersPage() {
             className="btn-press focus-ring inline-flex rounded-md bg-slate-900 px-3 py-1.5 text-[12px] font-semibold text-white"
             data-testid="case-members-to-company"
           >
-            回公司办主链
+            回本案八部
           </Link>
         </div>
 
@@ -198,9 +189,9 @@ export function CaseMembersPage() {
           className="mt-6 rounded-xl border border-dashed border-slate-200 bg-white px-4 py-5 text-center"
           data-testid="case-members-empty"
         >
-          <p className="text-sm text-slate-500">邀请入口（结构壳）</p>
+          <p className="text-sm text-slate-500">邀请入口（后置）</p>
           <p className="mt-1 text-[11px] text-slate-400">
-            正式邀请/权限树后置；此处仅为结构壳 · 非专家花名册墙
+            正式邀请后置；先回本案八部办事。角色示意，非正式权限树。
           </p>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Bell, ChevronDown, ChevronRight } from 'lucide-react'
+import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
@@ -376,28 +376,16 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             卡点 → 去当前部门
             <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
-          {pending.length > 0 ? (
-            <Link
-              to={workbenchAskPath(caseId, pending[0]!.kind, {
-                confirmId: pending[0]!.id,
-              })}
-              className="btn-press focus-ring inline-flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-500/20 px-2.5 py-1 text-[11px] font-semibold text-amber-50"
-              data-testid="company-pending-link"
-            >
-              <Bell className="h-3 w-3" aria-hidden />
-              待你拍 · {pending.length}
-            </Link>
-          ) : (
-            <span
-              className="text-[11px] text-white/50"
-              data-testid="company-pending-link"
-              data-pending="0"
-              data-empty-tone="office"
-              title="各部交卷后的硬请示会出现在这里"
-            >
-              暂无待你拍
-            </span>
-          )}
+          {/* §107 G01：拍板只走左栏「待确认」+ 部台右栏；公司壳不再挂「待你拍」品牌 */}
+          <span
+            className="text-[11px] text-white/45"
+            data-testid="company-pending-hint"
+            data-pending={pending.length}
+          >
+            {pending.length > 0
+              ? '拍板请用左栏「待确认」或进部台右栏'
+              : '拍板入口在左栏「待确认」'}
+          </span>
         </div>
         <p className="mt-2 text-[10px] text-white/45">{gapBlock.statusLine}</p>
       </section>
@@ -700,16 +688,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           >
             成员
           </Link>
-          <span aria-hidden className="text-slate-300">
-            ·
-          </span>
-          <Link
-            to={`/agent/cases/${caseId}/professional`}
-            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="company-link-professional"
-          >
-            编制名册
-          </Link>
+          {/* §107 G07：编制主入口=壳层左栏「编制」；公司壳不再叠编制名册 */}
         </nav>
       </section>
 
@@ -811,28 +790,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             return renderDeptCard(dept, i)
           })}
         </ol>
-        {!mapExpanded ? (
-          <ul
-            className="mt-2 flex flex-wrap gap-1.5"
-            data-testid="eight-dept-map-chips"
-            aria-label="其余部门（次级）"
-          >
-            {MAIN_CHAIN_DEPTS.filter((d) => d.id !== currentDept.id).map(
-              (dept) => (
-                <li key={dept.id}>
-                  <button
-                    type="button"
-                    onClick={() => openDrawer(dept.id)}
-                    className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] text-slate-600 hover:border-slate-300 hover:text-slate-900"
-                    data-testid={`dept-map-chip-${dept.id}`}
-                  >
-                    {deptLabel(dept)}
-                  </button>
-                </li>
-              ),
-            )}
-          </ul>
-        ) : null}
+        {/* §107 G12：卸底 pill；其余部门用「展开其余部门」 */}
       </section>
 
       <section>

@@ -84,7 +84,7 @@ type Props = {
 /**
  * 席工作面（席=独立 bot · 7 席同构 · 案页三刀 + nits）：
  * 会话主 · 成果/过程次 tab（办理过程勿常驻会话下）· 交卷待确认
- * 本案 pending → 藏会话干活/交卷 chip，顶栏「去确认」独占
+ * 本案 pending → 藏会话干活/交卷 chip，左栏「待确认」独占
  * 推进 → advanceSeatWork；顶栏唯一主 CTA 经 workNonce 触发
  */
 export function BusinessSeatWorkbench({
@@ -128,7 +128,7 @@ export function BusinessSeatWorkbench({
   }, [prog.delegate, seatDept, caseId, getCaseConfirms, getKitChecklist, prog.kitDoneByDept])
   const dual = deliverableForExpert(seatId)
   const seatLabel = businessSeatLabel(seatId)
-  /** 本案任一 pending：会话 chip 藏/降灰，顶栏「去确认」独占主视线 */
+  /** 本案任一 pending：会话 chip 藏/降灰，左栏「待确认」独占主视线 */
   const pendingList = useMemo(
     () => getPendingConfirms(caseId),
     [caseId, getPendingConfirms],
@@ -145,7 +145,7 @@ export function BusinessSeatWorkbench({
       .slice(0, 2)
       .join('、')
     const more = pendingList.length > 2 ? ` 等 ${pendingList.length} 项` : ''
-    return `${seatLabel}已就绪。本案有待确认「${titles}${more}」· 确认后本席才能继续推进。请先点顶栏「去确认」。`
+    return `${seatLabel}已就绪。本案有待确认「${titles}${more}」· 确认后本席才能继续推进。请先点左栏「待确认」。`
   }, [caseHasPending, pendingList, seatLabel])
   const [panel, setPanel] = useState<'chat' | 'artifact' | 'worklog'>('chat')
   const setSafePanel = (next: 'chat' | 'artifact' | 'worklog') => {
@@ -977,7 +977,7 @@ export function BusinessSeatWorkbench({
                   待确认中 ·{' '}
                   {pendingList[0]?.title ||
                     CONFIRM_KIND_LABEL[pendingList[0]?.kind!] ||
-                    '请用顶栏「去确认」'}{' '}
+                    '请用左栏「待确认」'}{' '}
                   · 看助手审校后拍板 · 确认后继续
                 </p>
                 {(feedbackEdges.length > 0 || loopActions.length > 0) && (

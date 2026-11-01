@@ -27,7 +27,6 @@ import {
   type ThickStatus,
 } from '../../business/professionalThicken'
 import {
-  PROF_AUX_HONEST,
   SIDE_AUX_DEPTS,
   auxBundleFor,
   methodLabelFromSkill,
@@ -158,32 +157,13 @@ export function CaseProfessionalPage() {
           aria-label="编制名册次要入口"
           data-testid="case-professional-secondary"
         >
-          <Link
-            to="/agent"
-            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="case-professional-back-hall"
-          >
-            回大厅
-          </Link>
-          <span aria-hidden className="text-slate-300">
-            ·
-          </span>
+          {/* §107 G06/G07/G14：回大厅靠左栏；全库编制旁路移出主办理 */}
           <Link
             to={home}
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="case-professional-back-home"
           >
-            公司案首页
-          </Link>
-          <span aria-hidden className="text-slate-300">
-            ·
-          </span>
-          <Link
-            to="/agent/departments"
-            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="case-professional-to-global"
-          >
-            全库编制旁路
+            本案
           </Link>
         </nav>
 
@@ -192,7 +172,7 @@ export function CaseProfessionalPage() {
           data-testid="case-professional-hint"
           role="status"
         >
-          一期编制名册 · 进部台办理 · 辅链默认收折 · 本页不改交卷 · 样机示意
+          编制名册 · 点部门进部台 · 辅链默认收折 · 本页不改交卷
         </p>
 
         <h1
@@ -231,7 +211,7 @@ export function CaseProfessionalPage() {
             其余 {summary.idle}
           </span>
           <span className="ml-auto text-[10px] text-slate-400">
-            缺口优先排上 · 墨色主 CTA 仍在公司
+            缺口优先 · 进部台办理
           </span>
         </div>
 
@@ -520,7 +500,7 @@ export function CaseProfessionalPage() {
             <ul className="mt-3 grid gap-3 sm:grid-cols-2" data-testid="case-professional-idle-cards">
               {cards
                 .filter((x) => x.line.kind === 'idle')
-                .map(({ door, dept, line, seats, extras, href, skillNames, parts, auxHooks }) => (
+                .map(({ door, dept, line, href }) => (
                   <li
                     key={dept.id}
                     className="flex flex-col rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm"
@@ -569,9 +549,8 @@ export function CaseProfessionalPage() {
             className="mt-2 text-[11px] leading-relaxed text-violet-900/90"
             data-testid="case-professional-aux-honest"
           >
-            {PROF_AUX_HONEST}。卡上可点本稿章节与辅助材料；进部台中栏改稿（样机示意）。
-            <strong className="font-semibold">辅助材料≠八部大门</strong>
-            。主路径仍是编制名册看缺口 → 进部台办理。
+            {/* §107 G10：展开只留动作链，不铺百科墙 */}
+            辅链材料可点开进部台中栏；不占八部大门。
           </p>
           <ul
             className="mt-3 grid gap-2 sm:grid-cols-3"
@@ -613,17 +592,7 @@ export function CaseProfessionalPage() {
               </li>
             ))}
           </ul>
-          <div
-            className="mt-3 rounded-lg border border-dashed border-slate-200 bg-white px-2.5 py-2"
-            data-testid="case-professional-methods-note"
-          >
-            <p className="text-[11px] font-semibold text-slate-800">
-              办事方法（卡上芯片同源 · 示意）
-            </p>
-            <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-              方法≈怎么改稿/齐套的套路，不是配置墙。完整编制配置在全库旁路；本案只点到部台为止。
-            </p>
-          </div>
+          {/* §107 G10/G14：办事方法百科墙卸掉 */}
         </details>
 
         <div className="mt-5 flex flex-wrap gap-2">

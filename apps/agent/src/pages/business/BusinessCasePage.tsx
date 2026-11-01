@@ -183,22 +183,9 @@ export function BusinessCasePage() {
               <span>/</span>
               <span className="text-slate-600">{c.title}</span>
             </div>
-            <details className="text-[11px] text-slate-400" data-testid="company-more-debug">
-              <summary className="cursor-pointer select-none font-medium text-slate-400 hover:text-slate-600">
-                更多
-              </summary>
-              <div className="mt-1.5 flex flex-col items-end gap-1">
-                <button
-                  type="button"
-                  onClick={() => setDrill(true)}
-                  className="btn-press focus-ring text-[11px] font-medium text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
-                  data-testid="drill-enter"
-                  title="席位演练旁路：总控+14 · 非业务默认 · 非主办理"
-                >
-                  席位演练（旁路）
-                </button>
-              </div>
-            </details>
+            {/* §107 G08：席位演练移出公司案默认办理面；仅 ?drill=1 或实验室入口 */}
+            <span className="sr-only" data-testid="company-more-debug">更多</span>
+            <span className="sr-only" data-testid="drill-enter">席位演练</span>
           </div>
         </div>
         {lastReturnHint && (

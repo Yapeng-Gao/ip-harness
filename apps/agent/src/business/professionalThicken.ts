@@ -32,12 +32,12 @@ export function thickenStatus(
       return {
         kind: 'work',
         text: '当前在办',
-        detail: `${lead} 主责 · 本稿交后待你拍（示意）`,
+        detail: `${lead} 主责 · 本稿交后待确认（示意 · 左栏待确认）`,
       }
     case '待确认':
       return {
         kind: 'gap',
-        text: '缺口：待你拍板',
+        text: '缺口：缺编制席 · 拍板在左栏「待确认」',
         detail: confirm ? `${confirm} · 右栏闸` : '工作台右栏拍板',
       }
     case '退回':

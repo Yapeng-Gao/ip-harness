@@ -508,6 +508,7 @@ export function BusinessCaseDeptPage() {
               label: '本稿零件',
               kind: 'section' as const,
               hint: '点开写入章节种子',
+              defaultCollapsed: true,
               children: partChildren,
             },
           ]
@@ -1062,8 +1063,7 @@ export function BusinessCaseDeptPage() {
               收起
             </button>
           </div>
-          <DeptMaterialsTree
-            nodes={materialNodes}
+          <DeptMaterialsTree nodes={materialNodes}
             selectedId={selectedMaterialId}
             onSelect={setSelectedMaterialId}
           />
@@ -1904,7 +1904,7 @@ export function BusinessCaseDeptPage() {
                     <p className="text-[9px] font-semibold text-violet-700/80">
                       {businessSeatLabel(dept.leadSeatId)} · 汇报
                     </p>
-                    <p className="mt-0.5 font-medium">本稿要点未齐，还不能交卷。</p>
+                    <p className="mt-0.5 font-medium">还不能交卷，缺 {missingLabels.length} 项。</p>
                     <p
                       className="mt-0.5 text-[10px] text-slate-500"
                       data-testid="dept-checklist-missing"
@@ -2054,7 +2054,7 @@ export function BusinessCaseDeptPage() {
                       </summary>
                       <ul className="mt-1.5 space-y-1.5 text-[10px] text-slate-600" data-testid="ask-t4-pieces">
                         <li data-testid="ask-t4-conclusion" data-present="1">
-                          <span className="font-semibold">结论</span> · 齐套未齐，禁止交卷入「待你确认」。
+                          <span className="font-semibold">结论</span> · 齐套未齐，请先补齐再交卷（拍板在左栏「待确认」）。
                         </li>
                         <li data-testid="ask-t4-source" data-present="1">
                           <span className="font-semibold">来源</span> · 本站检查表缺项（演示）。
@@ -2113,7 +2113,7 @@ export function BusinessCaseDeptPage() {
                             ? '本站已确认可往下，无需再交卷'
                             : missingLabels.length
                               ? `齐套未齐，不能进待确认。缺项：${missingLabels.join('、')}`
-                              : '齐套未齐，不能交卷入待你确认'
+                              : '齐套未齐，不能交卷；拍板请用左栏「待确认」'
                       }
                       onAdvanced={(confirmId) => {
                         if (confirmId)
