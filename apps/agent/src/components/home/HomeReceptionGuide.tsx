@@ -44,12 +44,12 @@ export const RECEPTION_DESK = {
 } as const
 
 const IDLE_SPEECH =
-  '你好，我是前台小林。丢材料给我，我帮你建议先去哪一部；主链三件事也可直接点；熟了就点下方八部门牌。一句话交代也行。'
+  '你好，我是前台小林。有材料先丢给我；或点主链目标；熟客直接下方八部。'
 
 /**
  * 大厅接待 · 前台形象主动引导（01-接待与引导）
- * 进门 idle 前台先开口；结构化动作（丢材料/点目标/确认去向）由话术领着走；
- * 一句话辅入口保留；八部直达在 HomePage。非闲聊墙、非唯一闸门、禁医院隐喻。
+ * §94：话术短办事语；丢材料主、目标次、一句话辅；非闲聊墙、非唯一闸门、禁医院隐喻。
+ * 八部直达在 HomePage。
  */
 export function HomeReceptionGuide({
   latestCaseId,
@@ -126,16 +126,16 @@ export function HomeReceptionGuide({
     phase === 'idle'
       ? IDLE_SPEECH
       : phase === 'analyzing'
-        ? `材料我先过一眼${fileNames.length ? `（${fileNames.slice(0, 2).join('、')}）` : ''}……样机示意，只识物与去向建议，不做部内专业结论。`
+        ? `材料我先过一眼${fileNames.length ? `（${fileNames.slice(0, 2).join('、')}）` : ''}……先看去向，不代部内下结论。`
         : suggest
-          ? `材料里我看到${suggest.materials
+          ? `看到${suggest.materials
               .slice(0, 2)
               .map((m) => m.tag)
-              .join('、')}；${suggest.intents[0] ?? '还不清楚这次要办成哪一件'}。建议先去${suggest.primary.label}${
+              .join('、')}；${suggest.intents[0] ?? '还不明要办哪一件'}。建议先去${suggest.primary.label}${
               suggest.alts.length
                 ? `（备选 ${suggest.alts.map((a) => a.label).join('、')}）`
                 : ''
-            }。请你确认去向——定案在你。`
+            }。定案在你——确认去向即可。`
           : IDLE_SPEECH
 
   return (
@@ -144,7 +144,7 @@ export function HomeReceptionGuide({
       aria-labelledby="home-reception-title"
       data-testid="home-reception-guide"
       data-reception-phase={phase}
-      data-reception-mode="persona-speak-v93"
+      data-reception-mode="persona-speak-v94"
     >
       <div className="mb-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <h2
@@ -154,7 +154,7 @@ export function HomeReceptionGuide({
           前台
         </h2>
         <span className="text-[10px] text-slate-500">
-          弄清去向 · 八部可直达
+          弄清去向
         </span>
         {latestCaseId ? (
           <Link
@@ -177,7 +177,7 @@ export function HomeReceptionGuide({
       </div>
 
       <div
-        className="rounded-[var(--radius-xl)] border border-slate-200 bg-white p-3 shadow-[var(--shadow-rest)]"
+        className="rounded-[var(--radius-xl)] border border-slate-200 bg-white p-2.5 shadow-[var(--shadow-rest)]"
         data-testid="home-reception-card"
       >
         {/* 前台名片 · 始终在 */}
@@ -210,13 +210,13 @@ export function HomeReceptionGuide({
 
         {/* 主动话术气泡 */}
         <div
-          className="relative mb-2.5 rounded-lg rounded-tl-sm border border-slate-100 bg-slate-50/90 px-3 py-2.5"
+          className="relative mb-2 rounded-lg rounded-tl-sm border border-slate-100 bg-slate-50/90 px-2.5 py-2"
           data-testid="home-reception-speech"
           data-speech-phase={phase}
           role="status"
         >
           <p
-            className="text-[13px] leading-snug text-slate-800"
+            className="text-[12.5px] leading-snug text-slate-800"
             data-testid="home-reception-prompt"
           >
             {speech}
@@ -230,32 +230,34 @@ export function HomeReceptionGuide({
         </div>
 
         {phase === 'idle' ? (
-          <div data-testid="home-reception-idle">
+          <div data-testid="home-reception-idle" data-action-hierarchy="upload-primary">
             <div
-              className="grid grid-cols-1 gap-2 sm:grid-cols-2"
+              className="space-y-2"
               data-testid="home-reception-actions"
             >
               <button
                 type="button"
-                className="btn-press focus-ring flex items-start gap-2 rounded-lg border border-slate-900 bg-slate-900 px-3 py-2.5 text-left text-white hover:bg-slate-800"
+                className="btn-press focus-ring flex w-full items-center gap-2.5 rounded-lg border border-slate-900 bg-slate-900 px-3 py-2.5 text-left text-white hover:bg-slate-800"
                 data-testid="home-reception-upload"
+                data-action-rank="primary"
                 onClick={() => fileRef.current?.click()}
               >
-                <Upload className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-                <span>
-                  <span className="block text-[13px] font-semibold">丢材料进来</span>
+                <Upload className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[13px] font-semibold leading-tight">丢材料进来</span>
                   <span className="mt-0.5 block text-[11px] font-normal text-slate-300">
-                    我帮你看 → 建议部门
+                    主入口 · 我帮你建议先去哪
                   </span>
                 </span>
               </button>
               <div
-                className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2"
+                className="rounded-md border border-slate-200/90 bg-slate-50/60 px-2.5 py-1.5"
                 data-testid="home-reception-goals"
                 data-goals-primary="3"
+                data-action-rank="secondary"
               >
-                <p className="text-[11px] font-semibold text-slate-700">主链想办</p>
-                <ul className="mt-1.5 flex flex-wrap gap-1.5">
+                <p className="text-[10px] font-medium text-slate-500">或点主链目标</p>
+                <ul className="mt-1 flex flex-wrap gap-1.5">
                   {PRIMARY_GOAL_CHIPS.map((g) => (
                     <li key={g.id}>
                       <button
@@ -330,10 +332,10 @@ export function HomeReceptionGuide({
                 ) : (
                   <ChevronRight className="h-3.5 w-3.5 text-slate-500" aria-hidden />
                 )}
-                <span className="text-[11px] font-medium text-slate-600">
-                  或一句话交代
+                <span className="text-[11px] font-medium text-slate-500">
+                  一句话交代
                 </span>
-                <span className="text-[10px] text-slate-400">辅入口 · 必要保留</span>
+                <span className="text-[10px] text-slate-400">辅</span>
               </button>
               {lineOpen ? (
                 <div className="mt-1" data-testid="home-reception-composer-wrap">
@@ -345,7 +347,7 @@ export function HomeReceptionGuide({
                 </div>
               ) : (
                 <p className="pl-5 text-[10px] text-slate-400">
-                  不必先打字；也可点开跟前台说一句。
+                  不必先打字。
                 </p>
               )}
             </div>
@@ -380,23 +382,22 @@ export function HomeReceptionGuide({
                   <span className="font-medium text-slate-800">{m.name}</span>
                   <span className="text-slate-400">·</span>
                   <span>{m.tag}</span>
-                  <span className="text-slate-400">· 置信{m.confidence}</span>
                 </li>
               ))}
             </ul>
 
-            <div className="mb-2 rounded-md border border-slate-100 bg-white px-2.5 py-2">
-              <p className="text-[11px] font-semibold text-slate-700">意图假设</p>
+            <div className="mb-2 rounded-md border border-slate-100 bg-white px-2.5 py-1.5">
+              <p className="text-[10px] font-semibold text-slate-600">意图</p>
               <ul
-                className="mt-1 list-inside list-disc text-[12px] text-slate-800"
+                className="mt-0.5 list-inside list-disc text-[12px] text-slate-800"
                 data-testid="home-reception-intents"
               >
-                {suggest.intents.map((t) => (
+                {suggest.intents.slice(0, 2).map((t) => (
                   <li key={t}>{t}</li>
                 ))}
               </ul>
               <p
-                className="mt-1.5 text-[11px] leading-snug text-slate-600"
+                className="mt-1 text-[11px] leading-snug text-slate-500"
                 data-testid="home-reception-reason"
               >
                 {suggest.reason}

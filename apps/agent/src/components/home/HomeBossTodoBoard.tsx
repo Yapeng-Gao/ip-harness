@@ -17,7 +17,7 @@ type Props = {
 /**
  * 大厅轻量轨「老板待办」单区 · 一期-产品逻辑 / 交互大纲 §2.2
  * 待你拍 / 催办 / 进行中 —— 同一块；首屏摘要，忌整墙默认展开。
- * §93：待接力并入展开后（omitPending），首屏不再双摘要抢「待你拍」。
+ * §94：薄轨芯片一眼扫；展开才列表；omitPending 不回双轨。
  */
 export function HomeBossTodoBoard({
   latestId,
@@ -50,18 +50,18 @@ export function HomeBossTodoBoard({
   const showB = oaPending.length > 0 || filedWatch.length > 0
   const summaryLine =
     a || showB
-      ? `待拍 ${a} · 催办 ${showB ? Math.max(b, 1) : 0} · 进行中可点开`
-      : '暂无待拍 · 进行中可点开看'
+      ? '点开看清单'
+      : '暂无待拍'
 
   return (
     <section
-      className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
+      className="overflow-hidden rounded-md border border-slate-200/90 bg-white"
       data-testid="home-boss-todo"
       data-compact={bodyOpen ? '0' : '1'}
-      data-hall-todo-single="v93"
+      data-hall-todo-single="v94"
       aria-labelledby="home-boss-todo-title"
     >
-      <header className="flex flex-wrap items-center gap-2 bg-slate-50/80 px-2.5 py-1.5">
+      <header className="flex flex-wrap items-center gap-1.5 bg-slate-50/70 px-2 py-1">
         <button
           type="button"
           className="focus-ring flex min-w-0 flex-1 items-center gap-1.5 rounded-md text-left"
