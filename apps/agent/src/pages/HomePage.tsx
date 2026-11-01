@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Building2, ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import { HomeBossTodoBoard } from '../components/home/HomeBossTodoBoard'
-import { HomeComposer } from '../components/home/HomeComposer'
+import { HomeReceptionGuide } from '../components/home/HomeReceptionGuide'
 import { HomeRelayStrip } from '../components/home/HomeRelayStrip'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
@@ -17,8 +17,8 @@ import { reopenAllTeachTips } from '../business/teachingFade'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * 首屏：产品一句 + 案薄条 + 接待/交代 + 老板待办（摘要）+ 八部名牌；
- * 支路/辅助/演示旁白默认折，忌瀑布经营首页。
+ * 首屏：产品一句 + 案薄条 + 接待引导面（材料/目标；一句话辅）+ 老板待办摘要 + 八部名牌；
+ * 支路/辅助/演示旁白默认折，忌瀑布经营首页。非拟人闲聊墙。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -58,35 +58,11 @@ export function HomePage() {
     ? cases.find((c) => c.id === latestId)
     : undefined
 
-  const goalPills = [
-    {
-      id: 'disclosure',
-      label: '写交底',
-      href: latestId
-        ? `/agent/cases/${latestId}/depts/disclosure`
-        : '/agent/cases/new',
-    },
-    {
-      id: 'draft',
-      label: '递申请',
-      href: latestId
-        ? `/agent/cases/${latestId}/depts/draft`
-        : '/agent/cases/new',
-    },
-    {
-      id: 'oa',
-      label: '答审查意见',
-      href: latestId
-        ? `/agent/cases/${latestId}/depts/oa`
-        : '/agent/cases/new',
-    },
-  ]
-
   return (
     <div
       className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v90"
+      data-hall-screen="one-pass-v91"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
@@ -139,85 +115,20 @@ export function HomePage() {
           </p>
         </header>
 
-        {/* 2 · 交代 / Composer（接待入口） */}
-        <section
-          className="mb-2.5"
-          aria-labelledby="home-delegate-title"
-          data-testid="home-delegate-zone"
-          data-hall-block="composer"
-        >
-          <div className="mb-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <h2
-              id="home-delegate-title"
-              className="text-[12px] font-semibold text-slate-900"
-            >
-              说目标 · 交代出去
-            </h2>
-            <span className="text-[10px] text-slate-500">
-              接待入口 · 计划可调再分发
-            </span>
-            {latestId ? (
-              <Link
-                to={`/agent/cases/${latestId}`}
-                className="btn-press focus-ring ml-auto inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700"
-                data-testid="home-go-company"
-              >
-                <Building2 className="h-3 w-3" aria-hidden />
-                公司案盯盘
-              </Link>
-            ) : (
-              <Link
-                to="/agent/cases/new"
-                className="btn-press focus-ring ml-auto inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700"
-                data-testid="home-reception-start"
-              >
-                先开案子
-              </Link>
-            )}
-          </div>
-          <HomeComposer
+        {/* 2 · 接待引导面（材料 / 目标；一句话辅） */}
+        <div data-hall-block="reception" data-testid="home-delegate-zone">
+          <HomeReceptionGuide
             initialAttachId={attachQ}
             latestCaseId={latestId}
             onDispatched={() => setRelayRefresh((n) => n + 1)}
           />
           <HomeRelayStrip refreshKey={relayRefresh} compact />
-        </section>
+        </div>
 
         {/* 3 · 老板待办 · 紧凑摘要 */}
         <div data-rail="light" data-testid="home-boss-rail" className="mb-2.5">
           <HomeBossTodoBoard latestId={latestId} compactDefault />
         </div>
-
-        {/* 目标入口 · 薄 pills（与八部同屏） */}
-        <section
-          className="mb-2"
-          aria-labelledby="home-goal-entries-title"
-          data-testid="home-goal-entries"
-          data-goal-density="pills"
-        >
-          <div className="mb-1 flex items-baseline gap-2">
-            <h2
-              id="home-goal-entries-title"
-              className="text-[11px] font-semibold text-slate-700"
-            >
-              今天想办
-            </h2>
-            <span className="text-[10px] text-slate-400">直达对应部</span>
-          </div>
-          <ul className="flex flex-wrap gap-1.5">
-            {goalPills.map((g) => (
-              <li key={g.id}>
-                <Link
-                  to={g.href}
-                  className="btn-press focus-ring inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-medium text-slate-800 hover:border-slate-300 hover:bg-white"
-                  data-testid={`home-goal-${g.id}`}
-                >
-                  {g.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
 
         {/* 4 · 八部门名牌 · dense · 常显 */}
         <section
@@ -387,7 +298,7 @@ export function HomePage() {
               className="pl-5 text-[10px] text-slate-400"
               data-testid="home-secondary-folded-hint"
             >
-              案盘、编制名册与演示旁白在此；首屏只留交代 · 待办 · 八部。
+              案盘、编制名册与演示旁白在此；首屏只留前台引导 · 待办 · 八部。
             </p>
           )}
         </div>
