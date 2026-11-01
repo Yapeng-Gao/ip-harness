@@ -6,6 +6,7 @@ import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { currentSeatForProgress } from '../../business/businessSeats'
 import {
   MAIN_CHAIN_DEPTS,
+  deptSlug,
   orgDeptByLeadSeat,
 } from '../../departments/orgDepts'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
@@ -31,7 +32,7 @@ function shortCaseNo(id: string): string {
 type FilterChip = 'all' | 'pending' | 'deadline' | 'disclosure'
 
 /**
- * /agent/cases · 项目列表（案盘）· 一期：单栏清单，点行→本案概况；左栏「项目」一律进此
+ * /agent/cases · 项目列表（案盘）· 一期：单栏清单；§118：点行→当前部台（非概况）
  * §116：不挂侧栏案树；开新案/搜索各一处；不镜像壳层大厅/待确认链接。
  * 禁：把待确认与近期限筛成同一条件；禁用待确认点冒充期限红点。
  */
@@ -61,6 +62,7 @@ export function BusinessCasesPage() {
           title: c.title,
           caseNo: shortCaseNo(c.id),
           deptId: dept.id,
+          deptSlug: deptSlug(dept.id),
           deptName: deptLabel(dept),
           stage: stageLabel(prog.stageId),
           pendingCount,
@@ -93,7 +95,7 @@ export function BusinessCasesPage() {
       data-testid="business-cases-page"
       data-entry-role={entryRole}
       data-home="cases"
-      data-cases-dedupe="list-v116"
+      data-cases-dedupe="list-v118"
     >
       <div className="mx-auto w-full max-w-3xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -105,7 +107,7 @@ export function BusinessCasesPage() {
               项目
             </h1>
             <p className="mt-1 text-sm text-slate-500" data-testid="business-cases-subtitle">
-              点行进本案概况
+              点行进当前部门工作台
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -229,9 +231,10 @@ export function BusinessCasesPage() {
               {filtered.map((row) => (
                 <li key={row.id}>
                   <Link
-                    to={`/agent/cases/${row.id}`}
+                    to={`/agent/cases/${row.id}/depts/${row.deptSlug}`}
                     className="focus-ring grid grid-cols-1 items-center gap-1 px-4 py-3 transition-colors hover:bg-slate-50 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_4.5rem_4.5rem] lg:gap-2"
                     data-testid={`business-case-row-${row.id}`}
+                    data-enter="current-dept"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-[14px] font-semibold text-slate-900">

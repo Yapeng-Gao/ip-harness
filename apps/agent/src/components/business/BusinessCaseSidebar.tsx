@@ -73,12 +73,13 @@ export function BusinessCaseSidebar() {
   // 角色 × 是否案内：默认展开哪一块
   // §111：部台上八部默折——只露当前部名，点开再列八部
   useEffect(() => {
+    // §118 G06：案内八部默认 current-only（概况与部台一致）；点开再列
     if (isEnterprise) {
       setAllOpen(!activeCaseId)
-      setDeptsOpen(Boolean(activeCaseId) && !activeDeptSlug)
+      setDeptsOpen(false)
     } else {
       setAllOpen(true)
-      setDeptsOpen(Boolean(activeCaseId) && !activeDeptSlug)
+      setDeptsOpen(false)
     }
   }, [activeCaseId, activeDeptSlug, isEnterprise])
 
@@ -406,11 +407,18 @@ export function BusinessCaseSidebar() {
     </>
   )
 
-  const currentDept =
-    activeDeptSlug && activeCase
-      ? MAIN_CHAIN_DEPTS.find((d) => deptSlug(d.id) === activeDeptSlug) ||
+  /** §118：无 URL 部 slug（本案概况）时，用进度席位推当前部，供 current-only 芯片 */
+  const currentDept = (() => {
+    if (!activeCase) return undefined
+    if (activeDeptSlug) {
+      return (
+        MAIN_CHAIN_DEPTS.find((d) => deptSlug(d.id) === activeDeptSlug) ||
         moreDepts.find((d) => deptSlug(d.id) === activeDeptSlug)
-      : undefined
+      )
+    }
+    if (!defaultSeat) return MAIN_CHAIN_DEPTS[0]
+    return orgDeptByLeadSeat(defaultSeat) ?? MAIN_CHAIN_DEPTS[0]
+  })()
 
   const deptNavSection =
     activeCase && prog ? (
@@ -571,22 +579,8 @@ export function BusinessCaseSidebar() {
       </div>
     ) : null
 
-  /** 企业案内：全部案子降为次入口链接，不抢八部主栏 */
-  const enterpriseAllCasesLink =
-    isEnterprise && activeCaseId ? (
-      <div className="mt-3 border-t border-slate-200/80 pt-2" data-testid="business-side-all-cases-secondary">
-        <Link
-          to="/agent/cases"
-          className="focus-ring flex w-full items-center justify-between rounded-md px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 hover:bg-white/70 hover:text-slate-700"
-          data-testid="business-side-all-cases-link"
-        >
-          <span>全部案子</span>
-          <span className="text-[10px] font-normal normal-case tracking-normal text-slate-400">
-            次入口
-          </span>
-        </Link>
-      </div>
-    ) : null
+  /** §118 G04：回列表走壳层「项目」；案内不再叠「全部案子」次链 */
+  const enterpriseAllCasesLink = null
 
   return (
     <aside
@@ -599,7 +593,7 @@ export function BusinessCaseSidebar() {
       data-entry-role={entryRole}
       data-biz-case-ia="two-col"
       data-rail="thin-eight"
-      data-eight-mode={activeDeptSlug && !deptsOpen ? 'current-only' : 'list'}
+      data-eight-mode={!deptsOpen ? 'current-only' : 'list'}
     >
       <div className="shrink-0 px-2.5 pt-3 pb-1.5">
         {activeCaseId ? (

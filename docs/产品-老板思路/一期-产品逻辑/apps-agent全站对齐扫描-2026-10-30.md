@@ -5483,3 +5483,45 @@ Leslie 明确：**点「项目」→ 进项目/案列表**（不是薄公司页�
 | 2026-11-01 CST | §117 SCAN 列表后概况用途/重复；荐直达部台；t698u；基线 f3dbf8d |
 
 ---
+
+## 118. IMPLEMENT · 列表直达部台 + 概况去薄八部 PASS_RESCAN_118 · 2026-11-01 Asia/Shanghai
+
+> **范围：** 落地 §117 方案 B + 概况去重 G02–G06。  
+> **真源 ONLY：** 一期。Office。无组队。不宣称四维/六维。  
+> **基线：** `0e75bd0`（§117） atop `f3dbf8d`（§116）。  
+> **授权：** t699u / pt699u「优化了吧」。
+
+### 118.1 改动
+
+| ID | 改法 |
+|---|---|
+| **G01** | `BusinessCasesPage` 行 → `/agent/cases/:id/depts/{currentSlug}`；`data-enter=current-dept`；副文「点行进当前部门工作台」 |
+| **G02** | `CaseCompanyHome` 卸 `company-thin-eight`；密度 `thin-wayfind-v118` |
+| **G03** | 概况保留唯一主 CTA「去当前部」；侧栏概况态 current-only，同 dest ≤2 |
+| **G04** | 卸页底「全部案子」+ 侧栏 `enterpriseAllCasesLink`；回列表走壳「项目」 |
+| **G05** | 概况眉题仍「本案概况」；列表标题「项目」；口称项目首页＝此路牌（次入口） |
+| **G06** | 侧栏八部默认 `deptsOpen=false`；无 URL slug 时用进度席位推 `currentDept`；`data-eight-mode=current-only` |
+
+文件：`BusinessCasesPage.tsx` · `CaseCompanyHome.tsx` · `BusinessCaseSidebar.tsx` · 本扫描节。
+
+### 118.2 Smoke
+
+`node .tmp/rescan-118-smoke.mjs` → **PASS_RESCAN_118**  
+镜头：`/workspace/uploads/rescan-118-shots/`
+
+### 118.3 机制报告
+
+| 机制 | 一句话 |
+|---|---|
+| 业务逻辑 | 选案＝继续办 → 部台；概况＝次入口路牌 |
+| 产品理念 | 少一跳；同目的地不多卖选部 UI |
+| 产品设计 | 列表单栏 + 行直达；概况只卡点+去当前部 |
+| 产品逻辑 | 对齐大厅/待办→直达工作台 |
+
+### 118.4 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-11-01 CST | §118 IMPLEMENT 列表→部台；概况去薄八部；PASS_RESCAN_118；t699u |
+
+---

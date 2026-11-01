@@ -24,7 +24,6 @@ import {
   deptStatus,
 } from '../../departments/deptProgress'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
-import { DeptStatusDot } from '../departments/DeptStatusDot'
 
 type Props = {
   caseId: string
@@ -33,10 +32,9 @@ type Props = {
 }
 
 /**
- * 本案概况 · §114 薄路牌（一期真源）
- * 案名 + 一句卡点 +「去当前部」+ 薄八部切换；
- * 计划丛 / 辅链墙 / 健康账单 / 厚 tabs / 经营仪表 已剥离出首屏。
- * 进部只走：大厅八部 · 部台左八部 · 本页薄八部（无抽屉墙）。
+ * 本案概况 · §114/§118 次入口路牌（一期真源）
+ * 案名 + 一句卡点 +「去当前部」；列表主路径已直达部台。
+ * §118：卸薄八部（进部=大厅/部台侧栏）；卸「全部案子」（回列表走壳「项目」）。
  */
 export function CaseCompanyHome({ caseId, title, summary }: Props) {
   const {
@@ -133,7 +131,7 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
       className="mx-auto flex w-full max-w-3xl flex-col gap-4"
       data-testid="case-company-home"
       data-case-id={caseId}
-      data-company-density="thin-wayfind-v114"
+      data-company-density="thin-wayfind-v118"
       data-page-title="本案概况"
       data-no-materials={noOpeningMaterials ? '1' : '0'}
     >
@@ -228,53 +226,6 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
         <p className="mt-2 text-[10px] text-white/45">{gapBlock.statusLine}</p>
       </section>
 
-      {/* 薄八部切换 · 直达部台 · 无抽屉 */}
-      <section aria-labelledby="company-thin-eight-title">
-        <div className="mb-2 flex flex-wrap items-baseline gap-2">
-          <h2
-            id="company-thin-eight-title"
-            className="text-[13px] font-semibold text-slate-900"
-          >
-            切换部门
-          </h2>
-          <span className="text-[11px] text-slate-500">
-            薄入口 · 主进门仍在大厅八部
-          </span>
-        </div>
-        <ul
-          className="flex flex-wrap gap-1.5"
-          data-testid="company-thin-eight"
-          data-eight-style="thin-switch"
-        >
-          {MAIN_CHAIN_DEPTS.map((dept) => {
-            const st = deptStatus({
-              dept,
-              progress: prog,
-              pending,
-              confirmKind: confirmKindOf(dept),
-            })
-            const active = dept.id === currentDept.id
-            return (
-              <li key={dept.id}>
-                <Link
-                  to={`/agent/cases/${caseId}/depts/${deptSlug(dept.id)}`}
-                  className={`btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] transition ${
-                    active
-                      ? 'border-slate-900 bg-slate-900 font-semibold text-white'
-                      : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-                  }`}
-                  data-testid={`company-thin-dept-${dept.id}`}
-                  data-active={active ? '1' : '0'}
-                  aria-current={active ? 'page' : undefined}
-                >
-                  <DeptStatusDot status={st} withLabel={false} />
-                  {deptLabel(dept)}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </section>
 
       {/* 次要后勤 · 不抢首屏主链 */}
       <nav
@@ -309,16 +260,6 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           data-testid="company-link-members"
         >
           成员
-        </Link>
-        <span aria-hidden className="text-slate-300">
-          ·
-        </span>
-        <Link
-          to="/agent/cases"
-          className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-          data-testid="company-link-all-cases"
-        >
-          全部案子
         </Link>
       </nav>
     </div>
