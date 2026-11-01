@@ -915,7 +915,7 @@ export function BusinessCaseDeptPage() {
       data-left-open={leftOpen ? '1' : '0'}
       data-step-tools-open={stepToolsOpen ? '1' : '0'}
       data-approach="A"
-      data-wb-zones="v130"
+      data-wb-zones="v132"
       data-handoff-offer={showHandoffOffer ? '1' : '0'}
       data-handoff-later={handoffLaterDismissed ? '1' : '0'}
       data-mobile-right-open={mobileRightOpen ? '1' : '0'}
@@ -972,10 +972,20 @@ export function BusinessCaseDeptPage() {
                   data-testid="dept-process-topstrip"
                   data-process-density="thin-top"
                 >
-                  主稿阶段 · {stepOrdinal}/{stepList.length} · {currentStep.label}
+                  {showHandoffOffer ||
+                  handoffLaterDismissed ||
+                  st === '已完成' ||
+                  handoffPhase === '已确认可往下'
+                    ? `主稿阶段 · ${stepOrdinal}/${stepList.length} · 站收口已确认`
+                    : `主稿阶段 · ${stepOrdinal}/${stepList.length} · ${currentStep.label}`}
                 </p>
                 <p className="mt-0.5 text-[10px] text-slate-400" data-testid="dept-main-doc-hint">
-                  一部多步 · 产出仍是这份主稿
+                  {showHandoffOffer ||
+                  handoffLaterDismissed ||
+                  st === '已完成' ||
+                  handoffPhase === '已确认可往下'
+                    ? '一部多步已可交下一站 · 步条仅回看'
+                    : '一部多步 · 产出仍是这份主稿'}
                 </p>
               </div>
             ) : thinShell ? (
@@ -1052,37 +1062,19 @@ export function BusinessCaseDeptPage() {
           <p className="mt-1 text-[10px] text-amber-700/70">{entryGate.honesty}</p>
           {dept && isDraftDept(dept.id) ? (
             <p className="mt-2 text-[11px] font-medium text-amber-950" data-testid="b2-gaps">
-              自带交底缺口：交底未全绿 / 无交底→申请工单 · 请回交底部补料或走工单，禁止未全绿硬写。
+              自带交底缺口：交底未全绿 / 无交底→申请工单 · 请回大厅再进上家补料或走工单，禁止未全绿硬写。
             </p>
           ) : null}
           <div className="mt-2 flex flex-wrap gap-2">
-            {entryGate.fixHrefHint === 'disclosure' ? (
-              <Link
-                to={`/agent/cases/${caseId}/depts/disclosure`}
-                className="btn-press focus-ring rounded-md bg-amber-900 px-2.5 py-1 text-[11px] font-semibold text-white"
-                data-testid="dept-entry-gate-fix"
-              >
-                去交底部补门槛
-              </Link>
-            ) : null}
-            {entryGate.fixHrefHint === 'draft' ? (
-              <Link
-                to={`/agent/cases/${caseId}/depts/draft`}
-                className="btn-press focus-ring rounded-md bg-amber-900 px-2.5 py-1 text-[11px] font-semibold text-white"
-                data-testid="dept-entry-gate-fix"
-              >
-                去申请部补门槛
-              </Link>
-            ) : null}
-            {entryGate.fixHrefHint === 'company' ? (
-              <Link
-                to={`/agent/cases/${caseId}`}
-                className="btn-press focus-ring rounded-md bg-amber-900 px-2.5 py-1 text-[11px] font-semibold text-white"
-                data-testid="dept-entry-gate-fix"
-              >
-                回本案概况
-              </Link>
-            ) : null}
+            {/* §132 G03：门槛补救＝回大厅选站 / 上家补；不复活部内切部心智 */}
+            <Link
+              to="/agent"
+              className="btn-press focus-ring rounded-md bg-amber-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+              data-testid="dept-entry-gate-fix"
+              data-gate-fix="hall"
+            >
+              回大厅选站
+            </Link>
             <Link
               to={`/agent/cases/${caseId}/depts/${deptSlug(dept.id)}?gate=bypass`}
               className="btn-press focus-ring rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-900"
@@ -1090,6 +1082,9 @@ export function BusinessCaseDeptPage() {
             >
               演示旁路（不装已过线）
             </Link>
+            <span className="sr-only" data-testid="dept-entry-gate-peer-removed" data-removed="v132">
+              已去掉「去XX部补门槛」切部链
+            </span>
           </div>
           </div>
         </div>
@@ -2178,8 +2173,11 @@ export function BusinessCaseDeptPage() {
                   </div>
                 ) : null}
 
-                {/* §130 G01/G03：收口/以后做时齐套≠汇报，静默；有硬请示时亦静默 */}
-                {!allChecklistDone && (showHandoffOffer || handoffLaterDismissed) ? (
+                {/* §132：收口/以后做/门槛未过 → 齐套静默；硬请示 → 淡记；非收口不再扶「本步还差」检查站 */}
+                {!allChecklistDone &&
+                (showHandoffOffer ||
+                  handoffLaterDismissed ||
+                  !entryGate.ok) ? (
                   <div
                     className="sr-only"
                     data-testid="dept-ask-bubble-g1"
@@ -2188,13 +2186,19 @@ export function BusinessCaseDeptPage() {
                     data-kit-folded="1"
                     data-kit-wall="0"
                     data-kit-priority="silent"
-                    data-kit-suppressed-handoff="1"
+                    data-kit-suppressed-handoff={
+                      showHandoffOffer || handoffLaterDismissed ? '1' : undefined
+                    }
+                    data-kit-suppressed-gate={!entryGate.ok ? '1' : undefined}
                   >
-                    <span data-testid="dept-checklist-missing" data-missing-count={missingLabels.length}>
-                      齐套另记 · 收口态静默
+                    <span
+                      data-testid="dept-checklist-missing"
+                      data-missing-count={missingLabels.length}
+                    >
+                      齐套另记 · 收口/门槛态静默
                     </span>
                     <div data-testid="dept-checklist" aria-hidden>
-                      齐套缺项 · 收口态不占第一眼
+                      齐套缺项 · 不占第一眼
                     </div>
                   </div>
                 ) : !allChecklistDone && awaitingThis ? (
@@ -2207,8 +2211,11 @@ export function BusinessCaseDeptPage() {
                     data-kit-wall="0"
                     data-kit-priority="silent"
                   >
-                    <span data-testid="dept-checklist-missing" data-missing-count={missingLabels.length}>
-                      齐套另记 · 还差 {missingLabels.length} 项
+                    <span
+                      data-testid="dept-checklist-missing"
+                      data-missing-count={missingLabels.length}
+                    >
+                      齐套另记
                     </span>
                     <button
                       type="button"
@@ -2220,8 +2227,8 @@ export function BusinessCaseDeptPage() {
                     </button>
                   </p>
                 ) : !allChecklistDone ? (
-                  <div
-                    className="max-w-[95%] rounded-2xl rounded-tl-md border border-slate-200/80 bg-white px-3 py-2 text-[12px] leading-relaxed text-slate-800"
+                  <p
+                    className="px-0.5 text-[10px] leading-snug text-slate-400"
                     data-testid="dept-ask-bubble-g1"
                     data-ask-kind="g1"
                     data-kit-compact="1"
@@ -2229,26 +2236,19 @@ export function BusinessCaseDeptPage() {
                     data-kit-wall="0"
                     data-kit-priority="secondary"
                   >
-                    <p className="text-[9px] font-semibold text-slate-500">
-                      {businessSeatLabel(dept.leadSeatId)} · 进度一句
-                    </p>
-                    <p className="mt-0.5 font-medium">
-                      本步还差 {missingLabels.length} 项，先把上方主稿补齐
-                    </p>
-                    <p
-                      className="mt-0.5 text-[10px] text-slate-500"
+                    <span
                       data-testid="dept-checklist-missing"
                       data-missing-count={missingLabels.length}
                     >
-                      拍板仍在对话 · 勾选可开本步助手
-                    </p>
+                      本稿要点还可再补
+                    </span>
                     <button
                       type="button"
-                      className="btn-press focus-ring mt-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[10px] font-medium text-slate-700 hover:bg-white"
+                      className="btn-press focus-ring ml-1 text-slate-500 underline-offset-2 hover:underline"
                       data-testid="dept-kit-open-tools"
                       onClick={() => setStepToolsOpen(true)}
                     >
-                      打开本步助手
+                      本步助手
                     </button>
                     <details className="sr-only" data-testid="dept-kit-missing-fold" hidden>
                       <summary>展开缺项清单</summary>
@@ -2258,10 +2258,10 @@ export function BusinessCaseDeptPage() {
                         ))}
                       </ul>
                     </details>
-                    <div className="sr-only" data-testid="dept-checklist" aria-hidden>
+                    <span className="sr-only" data-testid="dept-checklist" aria-hidden>
                       齐套缺项
-                    </div>
-                  </div>
+                    </span>
+                  </p>
                 ) : (
                   <div className="sr-only" data-testid="dept-checklist">
                     齐套已齐
@@ -2290,15 +2290,24 @@ export function BusinessCaseDeptPage() {
                       deliverBlocked={
                         !allChecklistDone || awaitingThis || st === '已完成'
                       }
-                      quietChrome={showHandoffOffer || handoffLaterDismissed}
+                      quietChrome={
+                        showHandoffOffer ||
+                        handoffLaterDismissed ||
+                        awaitingThis ||
+                        st === '已完成' ||
+                        handoffPhase === '已确认可往下' ||
+                        !entryGate.ok
+                      }
                       deliverBlockedReason={
                         awaitingThis
                           ? '已交卷，待你确认；请在上方汇报拍板，不能再交卷'
                           : st === '已完成' || handoffPhase === '已确认可往下'
                             ? '本站已确认可往下，无需再交卷'
-                            : missingLabels.length
-                              ? `本稿要点未齐 · 缺：${missingLabels.join('、')}（可开本步助手）`
-                              : '本稿要点未齐，不能交卷；拍板请在上方汇报'
+                            : !entryGate.ok
+                              ? '进入门槛未过 · 请回大厅选站'
+                              : missingLabels.length
+                                ? `本稿要点未齐 · 缺：${missingLabels.join('、')}（可开本步助手）`
+                                : '本稿要点未齐，不能交卷'
                       }
                       onAdvanced={(confirmId) => {
                         if (confirmId)
@@ -2369,6 +2378,24 @@ export function BusinessCaseDeptPage() {
                   {thisDeptConfirmPending ? primaryLabel : '交卷'}
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </button>
+              ) : !entryGate.ok ? (
+                <p
+                  className="text-center text-[10px] leading-relaxed text-slate-500"
+                  data-testid="dept-primary-cta-demoted"
+                  data-cta-wall="0"
+                  data-footer-quiet="1"
+                  data-gate-footer="1"
+                >
+                  进入门槛未过 · 回大厅选站
+                  <span
+                    className="sr-only"
+                    data-testid="dept-primary-cta"
+                    data-can-submit="0"
+                    data-awaiting-confirm="0"
+                  >
+                    {primaryLabel}
+                  </span>
+                </p>
               ) : showHandoffOffer ||
                 handoffLaterDismissed ||
                 st === '已完成' ||

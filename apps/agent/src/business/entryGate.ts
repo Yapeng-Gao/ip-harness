@@ -71,10 +71,10 @@ export function evaluateEntryGate(input: EntryGateInput): EntryGateResult {
         return {
           ok: false,
           title: '申请部 · 进入门槛未过',
-          reason: '开写/递交前须交底全绿（或交底→申请工单已确认可交）。自带交底支路：不过→退交底部/补料。',
+          reason: '开写/递交前须交底全绿（或交底→申请工单已确认可交）。自带交底支路：不过→回上家补料。',
           honesty: HONEST,
-          fixHint: '先去交底部完成事实确认与全绿，或打开交底→申请工单。',
-          fixHrefHint: 'disclosure',
+          fixHint: '回大厅选站；上家交底未齐时从大厅再进交底部补，不在本站切部。',
+          fixHrefHint: 'hall',
         }
       }
       break
@@ -85,8 +85,8 @@ export function evaluateEntryGate(input: EntryGateInput): EntryGateResult {
           title: '答复部 · 进入门槛未过',
           reason: '开干答复前通常须已有申请号/已递交态（演示：已递交或撰写席完成）。',
           honesty: HONEST,
-          fixHint: '先完成申请部递交确认，或从公司首页确认本案已递交。',
-          fixHrefHint: 'draft',
+          fixHint: '回大厅选站；上家申请未齐时从大厅再进申请部补，不在本站切部。',
+          fixHrefHint: 'hall',
         }
       }
       break
@@ -97,8 +97,8 @@ export function evaluateEntryGate(input: EntryGateInput): EntryGateResult {
           title: '维护部 · 进入门槛未过',
           reason: '维护托管针对确权/已递交后资产；本案尚未到可托管态（演示）。',
           honesty: HONEST,
-          fixHint: '确权或至少完成递交后再进维护部。',
-          fixHrefHint: 'company',
+          fixHint: '回大厅选站；确权或递交后再从大厅进维护部。',
+          fixHrefHint: 'hall',
         }
       }
       break

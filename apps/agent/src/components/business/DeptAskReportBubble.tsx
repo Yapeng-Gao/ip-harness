@@ -278,7 +278,7 @@ function AskEvidencePanel(props: {
           </span>
         ) : (
           <span className="ml-1 text-emerald-700" data-testid="ask-t4-ready-tag">
-            · 四件齐（演示）
+            · 依据已齐
           </span>
         )}
       </summary>

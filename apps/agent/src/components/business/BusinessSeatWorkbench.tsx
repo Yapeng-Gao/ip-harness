@@ -80,7 +80,8 @@ type Props = {
    */
   compactRail?: boolean
   /**
-   * §130 G09：收口/以后做态收掉次要块（席内回退等），让汇报占第一眼。
+   * §130/§132：收口/以后做/本席硬请示态收掉次要块（席内回退·待确认回声·环边），
+   * 让汇报占第一眼；勿把案级异部 pending 扶成上方拍板。
    */
   quietChrome?: boolean
 }
@@ -141,21 +142,43 @@ export function BusinessSeatWorkbench({
   const caseHasPending = pendingList.length > 0
   const seatReturnNote = lastReturnNoteForSeat(caseId, seatId)
   const seatConfirmKind = confirmKindForSeat(seatId)
+  const pendingForSeatEarly = useMemo(() => {
+    const kind = confirmKindForSeat(seatId)
+    if (!kind) return [] as typeof pendingList
+    return pendingList.filter((c) => c.kind === kind)
+  }, [pendingList, seatId])
   const canReviseAfterReturn =
     !!seatReturnNote && !!seatConfirmKind && !caseHasPending
   const pendingHint = useMemo(() => {
+    // §132 G01/G04：收口/硬请示安静态 — 不点名异部、不空指「上方」
+    if (quietChrome) {
+      return `${seatLabel}跟班中。`
+    }
     if (!caseHasPending) return ''
-    const titles = pendingList
-      .map((p) => p.title || CONFIRM_KIND_LABEL[p.kind] || '待确认项')
-      .slice(0, 2)
-      .join('、')
-    const more = pendingList.length > 2 ? ` 等 ${pendingList.length} 项` : ''
-    // §130 G02：部台右栏已有硬请示时，就地确认，勿甩左栏寻路
-    const where = compactRail
-      ? '请在上方汇报确认或驳回'
-      : '请先点左栏「待确认」'
-    return `${seatLabel}已就绪。本案有待确认「${titles}${more}」· 确认后本席才能继续推进。${where}。`
-  }, [caseHasPending, pendingList, seatLabel, compactRail])
+    // 本席硬请示：才可说「上方汇报」（父页气泡在）
+    if (pendingForSeatEarly.length > 0) {
+      const titles = pendingForSeatEarly
+        .map((p) => p.title || CONFIRM_KIND_LABEL[p.kind] || '待确认项')
+        .slice(0, 2)
+        .join('、')
+      const more =
+        pendingForSeatEarly.length > 2
+          ? ` 等 ${pendingForSeatEarly.length} 项`
+          : ''
+      const where = compactRail
+        ? '请在上方汇报确认或驳回'
+        : '请先点左栏「待确认」'
+      return `${seatLabel}跟班中。本席待确认「${titles}${more}」· ${where}。`
+    }
+    // §132 G02：仅异部 pending — 勿空指上方、勿「已就绪」抢戏
+    return `${seatLabel}跟班中。另有其他请示 · 可在左栏「待确认」查看。`
+  }, [
+    quietChrome,
+    caseHasPending,
+    pendingForSeatEarly,
+    seatLabel,
+    compactRail,
+  ])
   const [panel, setPanel] = useState<'chat' | 'artifact' | 'worklog'>('chat')
   const setSafePanel = (next: 'chat' | 'artifact' | 'worklog') => {
     if (hideArtifactPanel && next === 'artifact') {
@@ -197,11 +220,7 @@ export function BusinessSeatWorkbench({
     if (hideArtifactPanel && panel === 'artifact') setPanel('chat')
   }, [hideArtifactPanel, panel])
 
-  const pendingForSeat = useMemo(() => {
-    const kind = confirmKindForSeat(seatId)
-    if (!kind) return []
-    return getPendingConfirms(caseId).filter((c) => c.kind === kind)
-  }, [caseId, seatId, getPendingConfirms])
+  const pendingForSeat = pendingForSeatEarly
 
   const oaLocked = seatId === 'expert-oa' && !prog.filed
   const submitted = !!thread?.artifactSubmitted
@@ -504,9 +523,10 @@ export function BusinessSeatWorkbench({
         content.includes('已回到第') ||
         content.startsWith('📩')
       if (keepReal) return content
+      if (quietChrome) return pendingHint || `${seatLabel}跟班中。`
       return caseHasPending
         ? pendingHint
-        : `${seatLabel}已就绪。跟我聊，或点右上「让它干活」；交卷后会写入待我确认。`
+        : `${seatLabel}跟班中。跟我聊，或点右上「让它干活」；交卷后会写入待我确认。`
     }
     return content
   }
@@ -520,6 +540,7 @@ export function BusinessSeatWorkbench({
       data-biz-case-ia="1"
       data-hide-artifact={hideArtifactPanel ? '1' : '0'}
       data-compact-rail={compactRail ? '1' : '0'}
+      data-quiet-chrome={quietChrome ? '1' : '0'}
     >
       {!compactRail ? (
       <header className="mb-3 flex flex-wrap items-start justify-between gap-2">
@@ -822,9 +843,11 @@ export function BusinessSeatWorkbench({
           >
             {messages.length === 0 ? (
               <p className="text-[12px] text-slate-500">
-                {caseHasPending
-                  ? pendingHint
-                  : `${seatLabel}已就绪。跟我聊，或点右上「让它干活」。`}
+                {quietChrome
+                  ? pendingHint || `${seatLabel}跟班中。`
+                  : caseHasPending
+                    ? pendingHint
+                    : `${seatLabel}跟班中。跟我聊，或点右上「让它干活」。`}
               </p>
             ) : (
               messages.map((m) => {
@@ -940,7 +963,7 @@ export function BusinessSeatWorkbench({
                       {hitlReviseChipLabel(seatConfirmKind)}
                     </button>
                   )}
-                  {(feedbackEdges.length > 0 || loopActions.length > 0) && (
+                  {!quietChrome && (feedbackEdges.length > 0 || loopActions.length > 0) && (
                     <button
                       type="button"
                       className="rounded-full border border-dashed border-slate-300 bg-transparent px-2 py-0.5 text-[10px] text-slate-500 hover:bg-slate-50"
@@ -951,7 +974,7 @@ export function BusinessSeatWorkbench({
                     </button>
                   )}
                 </div>
-                {advancedChipsOpen && (
+                {!quietChrome && advancedChipsOpen && (
                   <div
                     className="flex flex-wrap gap-1"
                     data-testid="business-seat-chips-advanced"
@@ -993,17 +1016,27 @@ export function BusinessSeatWorkbench({
                   </div>
                 )}
               </div>
+            ) : quietChrome ? (
+              <div
+                className="sr-only"
+                data-testid="business-seat-chips-deferred"
+                data-quiet-chrome="1"
+              >
+                收口/硬请示态 · 待确认回声静默
+              </div>
             ) : (
               <div className="mb-1.5 space-y-1">
                 <p
                   className="text-[10px] text-amber-800/80"
                   data-testid="business-seat-chips-deferred"
                 >
-                  待确认中 ·{' '}
-                  {pendingList[0]?.title ||
-                    CONFIRM_KIND_LABEL[pendingList[0]?.kind!] ||
-                    '请用左栏「待确认」'}{' '}
-                  · 看助手审校后拍板 · 确认后继续
+                  {pendingForSeat.length > 0
+                    ? `本席待确认 · ${
+                        pendingForSeat[0]?.title ||
+                        CONFIRM_KIND_LABEL[pendingForSeat[0]?.kind!] ||
+                        '请在上方汇报'
+                      }`
+                    : '另有待确认 · 左栏「待确认」可看'}
                 </p>
                 {(feedbackEdges.length > 0 || loopActions.length > 0) && (
                   <button

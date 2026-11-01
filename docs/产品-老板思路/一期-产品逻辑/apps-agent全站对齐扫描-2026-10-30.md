@@ -6508,3 +6508,46 @@ Leslie 两问本身就是扫描信号：若「本步工具」「一部一产出�
 | --- | --- |
 | 2026-11-01 CST | §131 SCAN ONLY 部台 post-§130；t717u；基线 39d145d；**未改 UI** |
 
+
+## 132. IMPLEMENT · 部台 §131 G01–G09 · PASS_RESCAN_132 · 2026-11-01 Asia/Shanghai
+
+> **范围：** Leslie t718「优化」— 落地 §131 G01–G09；对照一期真源意思（不是文字对齐）；Office 语感；**不宣称四维/六维**。  
+> **真源：** [`一期节点/`](../一期节点/) · [`一期-产品逻辑/`](./) · §125–§131 逻辑块（当前节点 · 收口三步 · 齐套≠汇报 · 换站回大厅）。  
+> **基线：** `f16560f`（§131 SCAN）· `39d145d`（§130）→ 本批 IMPLEMENT。  
+> **Smoke / 截图：** `.tmp/rescan-132-shots/` · `uploads-staging/rescan-132-shots/` · `/workspace/uploads/rescan-132-shots/`；脚本 `.tmp/rescan-132-smoke.mjs` → **PASS_RESCAN_132**。  
+> **zones：** `data-wb-zones=v132`。
+
+### 132.1 每 G 落地
+
+| ID | 改动 | 证据 |
+| --- | --- | --- |
+| **G01** | 收口/以后做 → `quietChrome`：右栏静默异部「待确认中 / 已就绪 / 确认权利要求 / 请在上方汇报」；本站收口绿卡或「已记以后做」占第一眼 | smoke 01/02 right-rail |
+| **G02** | 非收口路径卸「本步还差 N + 打开本步助手」检查站卡 → 淡句「本稿要点还可再补 · 本步助手」；异部 pending 不空指「上方」 | smoke 04 |
+| **G03** | 门槛补救 CTA 改为「回大厅选站」（`data-gate-fix=hall`）；去掉「去交底部/申请部补门槛」切部链；`entryGate.fixHrefHint→hall` | smoke 05 |
+| **G04** | 硬请示态并入 `quietChrome`：藏「待确认中」chip + seat「已就绪」回声 | smoke 03 |
+| **G05** | 「四件齐（演示）」→「依据已齐」 | smoke 03 body |
+| **G06** | 硬请示/收口 `quietChrome` 收「回到上一步」 | smoke 01–03 |
+| **G07** | 同上收「高级 · 环边」 | smoke 01–03 |
+| **G08** | 站收口态顶条改「主稿阶段 · 站收口已确认」+「步条仅回看」 | smoke 01 |
+| **G09** | 门槛未过时齐套静默（`data-kit-suppressed-gate`）+ footer「回大厅选站」；一门槛一主出口 | smoke 05 |
+
+### 132.2 触达文件
+
+- `apps/agent/src/pages/business/BusinessCaseDeptPage.tsx`
+- `apps/agent/src/components/business/BusinessSeatWorkbench.tsx`
+- `apps/agent/src/components/business/DeptAskReportBubble.tsx`
+- `apps/agent/src/business/entryGate.ts`
+
+### 132.3 不做（本批）
+
+- 不恢复八部换部门主航；不把八部塞进目录。  
+- 不静默自动进下一部；收口仍「现在做 / 以后做」。  
+- 不拆进入门槛业务语义；只改补救心智与 CTA。  
+- 左栏「待确认」仍可列案级异部项（正位）；右栏对话不再抢戏。
+
+### 132.4 修订
+
+| 时间 | 说明 |
+| --- | --- |
+| 2026-11-01 CST | §132 IMPLEMENT G01–G09；t718u；PASS_RESCAN_132 |
+
