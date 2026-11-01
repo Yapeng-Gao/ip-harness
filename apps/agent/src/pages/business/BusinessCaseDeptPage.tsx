@@ -82,6 +82,13 @@ import {
   parseVersionMaterialId,
 } from '../../business/auxVersionBind'
 import { appendArtifactVersion } from '../../business/artifactVersions'
+import {
+  buildSelectionAskDraft,
+  isMidManuscriptDirty,
+  midEditSavePayload,
+  MID_EDIT_DIRTY_HINT,
+  MID_SAVE_HINT,
+} from '../../business/midManuscriptEdit'
 import { getProjectExpert } from '../../projects/experts'
 import { SIDE_AUX_DEPTS } from '../../business/professionalAuxParts'
 import { auxBundleFor } from '../../business/professionalAuxParts'
@@ -246,6 +253,14 @@ export function BusinessCaseDeptPage() {
   const [stepToolsOpen, setStepToolsOpen] = useState(false)
   /** §133：右栏 AI 产物 → 中栏聚焦闪一下 */
   const [midAiFlash, setMidAiFlash] = useState(false)
+  /** §136：中栏主稿可编辑 / 另存 / 划选问 AI */
+  const [midDraft, setMidDraft] = useState('')
+  const [midDirty, setMidDirty] = useState(false)
+  const [midSaveHint, setMidSaveHint] = useState<string | null>(null)
+  const [midSelection, setMidSelection] = useState('')
+  const [composerPrefill, setComposerPrefill] = useState<string | null>(null)
+  const [composerPrefillNonce, setComposerPrefillNonce] = useState(0)
+  const midTextareaRef = useRef<HTMLTextAreaElement>(null)
   const [mobileRightOpen, setMobileRightOpen] = useState(false)
   /** §111：右栏领导对话可折（桌面） */
   const [rightRailOpen, setRightRailOpen] = useState(true)
@@ -968,6 +983,86 @@ export function BusinessCaseDeptPage() {
     return composedMidBody || artifactBody || handoff.deliverable || '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'
   })()
 
+  /** §136：中栏可编辑源 + 保存/另存 + 划选进右栏 */
+  const manuscriptEditSource = useMemo(() => {
+    const raw =
+      (composedMidBody || centerBody).trim() ||
+      currentStep?.mainBody?.trim() ||
+      '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'
+    return raw
+  }, [composedMidBody, centerBody, currentStep?.mainBody])
+
+  useEffect(() => {
+    setMidDirty(false)
+    setMidSaveHint(null)
+    setMidSelection('')
+    setMidDraft(manuscriptEditSource)
+  }, [caseId, slug, currentStep?.id, selectedMaterialId])
+
+  useEffect(() => {
+    if (midDirty) return
+    setMidDraft(manuscriptEditSource)
+  }, [manuscriptEditSource, midDirty])
+
+  const saveMidManuscript = useCallback(() => {
+    if (!activeSeat) return
+    patchThread(caseId, activeSeat, midEditSavePayload(midDraft))
+    setMidDirty(false)
+    setMidSaveHint(MID_SAVE_HINT)
+    setMidAiFlash(true)
+    window.setTimeout(() => setMidAiFlash(false), 1200)
+  }, [activeSeat, caseId, midDraft, patchThread])
+
+  const saveMidManuscriptAsVersion = useCallback(() => {
+    if (!activeSeat) return
+    const body = midDraft
+    if (!body.trim()) {
+      setMidSaveHint('无可另存的内容')
+      return
+    }
+    const cur = getThread(caseId, activeSeat)
+    const { versions: next, hint } = appendArtifactVersion({
+      versions: cur?.artifactVersions ?? [],
+      markdown: body,
+    })
+    patchThread(caseId, activeSeat, {
+      artifactMarkdown: body,
+      artifactVersions: next,
+    })
+    setMidDirty(false)
+    setMidSaveHint(hint)
+    setSelectedMaterialId('deliverable')
+    setMidAiFlash(true)
+    window.setTimeout(() => setMidAiFlash(false), 1200)
+  }, [activeSeat, caseId, midDraft, getThread, patchThread])
+
+  const pushSelectionToComposer = useCallback(
+    (mode: 'ask' | 'revise') => {
+      const draft = buildSelectionAskDraft({
+        selection: midSelection,
+        mode,
+        manuscriptTitle,
+      })
+      if (!draft) return
+      setComposerPrefill(draft)
+      setComposerPrefillNonce((n) => n + 1)
+      setRightRailOpen(true)
+      setSeatOpen(true)
+      setMobileRightOpen(true)
+      setMidSelection('')
+    },
+    [midSelection, manuscriptTitle],
+  )
+
+  const onMidTextSelect = () => {
+    const el = midTextareaRef.current
+    if (!el) return
+    const start = el.selectionStart ?? 0
+    const end = el.selectionEnd ?? 0
+    if (end > start) setMidSelection(el.value.slice(start, end))
+    else setMidSelection('')
+  }
+
   // 齐套 ↔ 正文 / 差分 / 材料树自动勾（样机；空稿收束；hold 须内容 warrant）
   useEffect(() => {
     if (!dept || !slug) return
@@ -1257,14 +1352,105 @@ export function BusinessCaseDeptPage() {
                   {currentStep.mainFocus}
                 </p>
                 {/* §111：全页纸感正文；本步/控件不进首屏阅读 */}
+                <div
+                  className="mt-3 flex flex-wrap items-center gap-1.5"
+                  data-testid="dept-mid-edit-toolbar"
+                  data-mid-editable="1"
+                >
+                  <button
+                    type="button"
+                    className="btn-press focus-ring rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 disabled:opacity-40"
+                    data-testid="dept-mid-save"
+                    disabled={!midDirty || !activeSeat}
+                    onClick={saveMidManuscript}
+                    title="保存到本席成果（覆盖当前稿）"
+                  >
+                    保存
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-press focus-ring rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[11px] font-medium text-violet-950 disabled:opacity-40"
+                    data-testid="dept-mid-save-version"
+                    disabled={!midDraft.trim() || !activeSeat}
+                    onClick={saveMidManuscriptAsVersion}
+                    title="另存为修订版 · 写入 artifactVersions"
+                  >
+                    另存一版
+                    {(thread?.artifactVersions?.length ?? 0) > 0
+                      ? ` · ${thread?.artifactVersions?.length}`
+                      : ''}
+                  </button>
+                  {midDirty ? (
+                    <span
+                      className="text-[10px] font-medium text-amber-700"
+                      data-testid="dept-mid-dirty"
+                      data-dirty="1"
+                    >
+                      {MID_EDIT_DIRTY_HINT}
+                    </span>
+                  ) : (
+                    <span className="sr-only" data-testid="dept-mid-dirty" data-dirty="0" />
+                  )}
+                  {midSaveHint ? (
+                    <span
+                      className="text-[10px] text-emerald-700"
+                      data-testid="dept-mid-save-hint"
+                    >
+                      {midSaveHint}
+                    </span>
+                  ) : null}
+                </div>
+                {midSelection.trim() ? (
+                  <div
+                    className="mt-2 inline-flex items-center gap-1 rounded-full border border-violet-200 bg-white/95 px-1.5 py-1 shadow-sm"
+                    data-testid="dept-mid-selection-chip"
+                    data-has-selection="1"
+                    role="toolbar"
+                    aria-label="选区操作"
+                  >
+                    <span className="max-w-[10rem] truncate px-1 text-[10px] text-slate-500">
+                      已选 {midSelection.trim().length} 字
+                    </span>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring rounded-full bg-slate-900 px-2.5 py-0.5 text-[11px] font-medium text-white"
+                      data-testid="dept-mid-ask-ai"
+                      onClick={() => pushSelectionToComposer('ask')}
+                    >
+                      问 AI
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring rounded-full border border-violet-300 bg-violet-50 px-2.5 py-0.5 text-[11px] font-medium text-violet-950"
+                      data-testid="dept-mid-revise-selection"
+                      onClick={() => pushSelectionToComposer('revise')}
+                    >
+                      改这段
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring rounded-full px-2 py-0.5 text-[10px] text-slate-500"
+                      data-testid="dept-mid-selection-clear"
+                      onClick={() => setMidSelection('')}
+                    >
+                      清除
+                    </button>
+                  </div>
+                ) : (
+                  <div className="hidden" data-testid="dept-mid-selection-chip" data-has-selection="0" hidden />
+                )}
                 <article
-                  className={`mt-4 rounded-lg border bg-[#fbfaf7] px-5 py-6 shadow-sm ${
+                  className={`mt-3 rounded-lg border bg-[#fbfaf7] px-5 py-6 shadow-sm ${
                     midAiFlash
                       ? 'border-violet-400 ring-2 ring-violet-300/60'
-                      : 'border-slate-200/70'
+                      : midDirty
+                        ? 'border-amber-300/80'
+                        : 'border-slate-200/70'
                   }`}
                   data-testid="dept-manuscript-paper"
                   data-doc-feel="1"
+                  data-mid-editable="1"
+                  data-mid-dirty={midDirty ? '1' : '0'}
                   data-mid-ai-flash={midAiFlash ? '1' : '0'}
                   data-mid-ai-sync={
                     (composedMidBody || centerBody).includes(MID_AI_SYNC_HONEST)
@@ -1272,16 +1458,26 @@ export function BusinessCaseDeptPage() {
                       : '0'
                   }
                 >
-                  <pre
-                    className="max-h-[min(78vh,48rem)] overflow-auto text-[13.5px] leading-[1.75] text-slate-800 whitespace-pre-wrap font-sans"
+                  <textarea
+                    ref={midTextareaRef}
+                    value={midDraft}
+                    onChange={(e) => {
+                      setMidDraft(e.target.value)
+                      setMidDirty(isMidManuscriptDirty(e.target.value, manuscriptEditSource))
+                      setMidSaveHint(null)
+                    }}
+                    onSelect={onMidTextSelect}
+                    onKeyUp={onMidTextSelect}
+                    onMouseUp={onMidTextSelect}
+                    rows={18}
+                    className="max-h-[min(78vh,48rem)] min-h-[16rem] w-full resize-y overflow-auto border-0 bg-transparent p-0 text-[13.5px] leading-[1.75] text-slate-800 outline-none focus:ring-0 font-sans"
                     data-testid="dept-output-body"
-                    data-empty={(composedMidBody || centerBody).trim() ? '0' : '1'}
+                    data-empty={midDraft.trim() ? '0' : '1'}
                     data-mid-ai-body="1"
-                  >
-                    {(composedMidBody || centerBody).trim() ||
-                      currentStep.mainBody ||
-                      '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'}
-                  </pre>
+                    data-mid-editable="1"
+                    aria-label="本稿正文 · 可编辑"
+                    spellCheck={false}
+                  />
                 </article>
                 {/* §124 G01：本步助手芯片；侧抽屉不拆稿 */}
                 <div
@@ -2382,6 +2578,8 @@ export function BusinessCaseDeptPage() {
                       hideArtifactPanel
                       compactRail
                       onOpenAiProductInMid={openAiProductInMid}
+                      composerPrefill={composerPrefill}
+                      composerPrefillNonce={composerPrefillNonce}
                       deliverBlocked={
                         !allChecklistDone || awaitingThis || st === '已完成'
                       }

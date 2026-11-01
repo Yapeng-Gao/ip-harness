@@ -88,6 +88,11 @@ type Props = {
    * §133：右栏 AI 产物 → 写入并聚焦中栏稿纸（部门台 hideArtifactPanel 时用）。
    */
   onOpenAiProductInMid?: (product: { title: string; body: string }) => void
+  /**
+   * §136：中栏划选「问 AI / 改这段」预填驾驭框（nonce 变则写入）。
+   */
+  composerPrefill?: string | null
+  composerPrefillNonce?: number
 }
 
 /**
@@ -108,6 +113,8 @@ export function BusinessSeatWorkbench({
   compactRail = false,
   quietChrome = false,
   onOpenAiProductInMid,
+  composerPrefill = null,
+  composerPrefillNonce = 0,
 }: Props) {
   const {
     advanceSeatWork,
@@ -220,6 +227,13 @@ export function BusinessSeatWorkbench({
     setMoreOpen(false)
     setAdvancedChipsOpen(false)
   }, [seatId, caseId])
+
+  /** §136：中栏选区带进驾驭框 */
+  useEffect(() => {
+    if (!composerPrefillNonce || !composerPrefill?.trim()) return
+    setPanel('chat')
+    setDraft(composerPrefill)
+  }, [composerPrefillNonce, composerPrefill])
 
   useEffect(() => {
     if (hideArtifactPanel && panel === 'artifact') setPanel('chat')
@@ -1156,6 +1170,9 @@ export function BusinessSeatWorkbench({
                   }
                   className="focus-ring min-h-[2.25rem] flex-1 resize-none rounded-lg border border-slate-200 px-2.5 py-1.5 text-[12px] text-slate-800 placeholder:text-slate-400"
                   data-testid="business-seat-composer"
+                  data-mid-selection-prefill={
+                    composerPrefillNonce > 0 && draft.includes('>') ? '1' : '0'
+                  }
                   disabled={oaLocked || busy}
                 />
                 <button

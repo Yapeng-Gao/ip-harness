@@ -6680,3 +6680,49 @@ node apps/agent/.tmp/rescan-135-smoke.mjs
 | 2026-11-01 CST | §135 IMPLEMENT 真实产物正文；t721u；PASS_RESCAN_135 |
 
 ---
+
+## 136. IMPLEMENT · 中栏可编辑保存 + 划选问 AI · PASS_RESCAN_136 · 2026-11-01 Asia/Shanghai
+
+> **基线：** `a4a9bf4`（§135）→ 本批。Leslie t725：「可以」——批准一档（编辑+另存；划选问 AI/改这段）。  
+> **Smoke / 截图：** `.tmp/rescan-136-shots/` · `uploads-staging/rescan-136-shots/` · `/workspace/uploads/rescan-136-shots/`；脚本 `apps/agent/.tmp/rescan-136-smoke.mjs` → **PASS_RESCAN_136**（fails=0）。  
+> **zones：** 未改 `data-wb-zones`；§128 当前站 / §133 mid AI sync 保持。
+
+### 136.1 改了什么（意思）
+
+| 点 | 落地 |
+|---|---|
+| 中栏可编辑 | 部台主稿 `dept-output-body` 由只读 `<pre>` 改为 textarea；脏态 amber 边 +「未保存的改动」 |
+| 保存 / 另存一版 | 「保存」→ `patchThread.artifactMarkdown`；「另存一版」→ 既有 `appendArtifactVersion`（与辅链/右栏成果同源） |
+| 划选 → 右栏 | 选区 chip「问 AI」「改这段」；`buildSelectionAskDraft` 带 `>` 引用进 `BusinessSeatWorkbench` composer（`composerPrefill`+nonce） |
+| 不做 | Word 批注气泡 / 多人线程 / 新 CMS；不新开全局入口 |
+
+### 136.2 Smoke 覆盖
+
+| 路径 | 结果 |
+|---|---|
+| 交底 `?step=draft` 中栏可编辑 | PASS |
+| 改稿 → dirty → 保存 → hint | PASS |
+| 另存一版 | PASS |
+| 划选 → chip → 问 AI 进右栏引用 | PASS |
+| 改这段 预填 | PASS |
+| 单测 `midManuscriptEdit.test.ts` | 5 pass |
+
+### 136.3 重跑
+
+```bash
+# 需 apps/agent dev @ 5175
+node --import tsx --test apps/agent/src/business/midManuscriptEdit.test.ts
+node apps/agent/.tmp/rescan-136-smoke.mjs
+```
+
+### 136.4 不做（本批）
+
+- 不做 Word 式批注气泡 / 修订对比 UI 升级。  
+- 不改换部 IA、壳导航、main-path-sample。  
+- 不恢复四维/六维叙事。
+
+| 时间 | 记 |
+|---|---|
+| 2026-11-01 CST | §136 IMPLEMENT 中栏可编辑+划选问 AI；t725u；PASS_RESCAN_136 |
+
+---
