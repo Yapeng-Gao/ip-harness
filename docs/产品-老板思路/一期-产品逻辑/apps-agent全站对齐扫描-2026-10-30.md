@@ -5809,3 +5809,44 @@ P1：G04（换部×八部）、G05（八部默认/互斥）。
 | 2026-11-01 CST | §121 SCAN 申请部 post-§120；三 skill；意思对齐；t703u；基线 401a2f1；**未改 UI** |
 
 ---
+
+## 122. IMPLEMENT · 部台 G01–G05 抽屉/去墙/单进度 PASS_RESCAN_122 · 2026-11-01 Asia/Shanghai
+
+> **范围：** 落地 §121 G01–G05（申请部回归为主；交底/答复 spot）。  
+> **真源 ONLY：** [`一期节点/`](../一期节点/) · [`一期-产品逻辑/`](./) · [`一期-产品理念.md`](../一期-产品理念.md) + **§119 四区定稿**。Office 文本作业；**意思对齐**；不宣称四维/六维；无组队。  
+> **授权：** Leslie t704u「这些问题都优化了」。  
+> **基线：** `537eba8`（§121 SCAN） atop `401a2f1`（§120）。  
+> **改码面：** `apps/agent` only；未动 `main-path-sample`。CloudAgent 配额耗尽 → Mac checkout 本机改。
+
+### 落地对照
+
+| ID | 改动 | 文件 |
+| --- | --- | --- |
+| **G01** | 「本步工具」由中栏 inline `<details>` 改为薄芯片 + **overlay 抽屉**（`dept-step-tools-overlay`）；展开不降稿纸高度；ThickStep/工单/齐套勾选进抽屉 | `BusinessCaseDeptPage.tsx` |
+| **G02** | 右栏齐套：去掉缺项清单/已勾/样机工具/依据链多层墙；改为单行汇报气泡 +「打开本步工具」；`data-kit-wall=0`；勾选迁入抽屉 `dept-kit-in-tools` | 同上 |
+| **G03** | 席位 compactRail 摘要由「本步 · i/n · 短名」改为「**席位回退**」（进度只在顶栏 `dept-process-topstrip`） | `BusinessSeatWorkbench.tsx` |
+| **G04** | 右底「换部」卸除（`data-removed=v122`）；左八部为唯一换部轨 | `BusinessCaseDeptPage.tsx` |
+| **G05** | `deptsOpen` 初值 `useState(false)`，禁 true→false 全列闪帧；默认 current-only | `BusinessCaseSidebar.tsx` |
+
+`data-wb-zones` → `v122`。
+
+### Smoke
+
+`node .tmp/rescan-122-smoke.mjs` → **PASS_RESCAN_122**  
+抽样：交底 / 申请 / 答复；申请部打开本步工具后稿纸高度不变；右栏无齐套墙；八部 current-only；无可见换部；席位折摘要非「本步」双进度。  
+截图：`.tmp/rescan-122-shots/` · staging `uploads-staging/rescan-122-shots/`。
+
+### 对齐
+
+| 域 | 结论 |
+| --- | --- |
+| 产品理念 | 产物最大；工具打开不拆读；右栏对话/汇报非检查站 |
+| 产品逻辑 | §119 四区 + §121 意思闭环 |
+| 业务逻辑 | 齐套仍可勾（在本步工具内）；拍板仍在对话；无四维/六维/组队 |
+
+### 变更记录
+
+| 时间 | 说明 |
+| --- | --- |
+| 2026-11-01 CST | §122 IMPLEMENT G01–G05；PASS_RESCAN_122；t704u |
+

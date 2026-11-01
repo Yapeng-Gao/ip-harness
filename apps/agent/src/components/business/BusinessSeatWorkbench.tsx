@@ -628,10 +628,16 @@ export function BusinessSeatWorkbench({
         <details
           className="mb-1.5 shrink-0 px-0"
           data-testid="business-seat-steps-fold"
+          data-progress-role="seat-rewind-only"
+          data-dual-progress="0"
         >
           <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-400">
-            本步 · {stepIndex + 1}/{def.steps.length}
-            {def.steps[stepIndex]?.label ? ` · ${def.steps[stepIndex].label}` : ''}
+            席位回退
+            <span className="sr-only">
+              席内 {stepIndex + 1}/{def.steps.length}
+              {def.steps[stepIndex]?.label ? ` · ${def.steps[stepIndex].label}` : ''}
+              （流程进度只在顶栏）
+            </span>
           </summary>
           <ol
             className="mt-1.5 flex flex-wrap gap-1.5"

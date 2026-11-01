@@ -51,7 +51,7 @@ export function BusinessCaseSidebar() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const [allOpen, setAllOpen] = useState(true)
-  const [deptsOpen, setDeptsOpen] = useState(true)
+  const [deptsOpen, setDeptsOpen] = useState(false) // §122 G05：进部默认 current-only，禁 true→false 闪全列
   const [moreOpen, setMoreOpen] = useState(false)
   const [q, setQ] = useState('')
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set())
