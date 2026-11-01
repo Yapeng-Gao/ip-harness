@@ -16,9 +16,11 @@ import { workbenchAskPath } from '../../business/pendingDeptQuery'
 
 type Props = {
   refreshKey?: number
+  /** 大厅首屏：矮条、最多 2 条 */
+  compact?: boolean
 }
 
-export function HomeRelayStrip({ refreshKey = 0 }: Props) {
+export function HomeRelayStrip({ refreshKey = 0, compact = false }: Props) {
   const { cases, getPendingConfirms, getProgress } = useBusinessCases()
   const [tick, setTick] = useState(0)
 
@@ -118,13 +120,18 @@ export function HomeRelayStrip({ refreshKey = 0 }: Props) {
         seen.add(r.id)
         return true
       })
-      .slice(0, 5)
-  }, [cases, getPendingConfirms, getProgress, tick])
+      .slice(0, compact ? 2 : 5)
+  }, [cases, getPendingConfirms, getProgress, tick, compact])
 
   return (
     <section
-      className="mt-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm"
+      className={
+        compact
+          ? 'mt-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1.5'
+          : 'mt-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm'
+      }
       data-testid="home-relay-strip"
+      data-compact={compact ? '1' : '0'}
       aria-labelledby="home-relay-title"
     >
       <div className="mb-1.5 flex flex-wrap items-center gap-1.5">

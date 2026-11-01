@@ -137,10 +137,10 @@ export function BranchDoors({ caseId, isAgency = false }: Props) {
       </button>
       {!listOpen ? (
         <p
-          className="pl-5 text-[11px] text-slate-500"
+          className="pl-5 text-[10px] text-slate-400"
           data-testid="home-branch-folded-hint"
         >
-          主路径走上方八部或公司案；支路门只供故事板验收，需要时再展开。
+          验收用 · 需要时再展开
         </p>
       ) : (
         <>

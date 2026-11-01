@@ -1,20 +1,26 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ChevronDown, ChevronRight, ArrowRight } from 'lucide-react'
 import { HomeTodoStrip } from './HomeTodoStrip'
 import { HomeInProgressStrip } from './HomeInProgressStrip'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
-import { ArrowRight } from 'lucide-react'
 
 type Props = {
   latestId?: string
+  /** 大厅首屏：默认只露摘要一行，点开再看清单 */
+  compactDefault?: boolean
 }
 
 /**
- * 大厅轻量轨「老板待办」单区 · 一期-产品逻辑 / 交互大纲 §2.2（非 lifecycle 三档）
- * A 待你拍 / B 期限催办 / C 进行中 —— 同一块，不拆成三张抢视线的卡片墙。
- * 机制：待接力/进行中可见；主叙事是上方委托墙，本区不抢委托。非运营 KPI 看板。
+ * 大厅轻量轨「老板待办」单区 · 一期-产品逻辑 / 交互大纲 §2.2
+ * 待你拍 / 催办 / 进行中 —— 同一块；首屏摘要，忌整墙默认展开。
  */
-export function HomeBossTodoBoard({ latestId }: Props) {
+export function HomeBossTodoBoard({
+  latestId,
+  compactDefault = false,
+}: Props) {
   const { cases, getPendingConfirms, getProgress } = useBusinessCases()
+  const [bodyOpen, setBodyOpen] = useState(!compactDefault)
   const pending = getPendingConfirms()
   const oaPending = cases.flatMap((c) =>
     getPendingConfirms(c.id)
@@ -27,7 +33,6 @@ export function HomeBossTodoBoard({ latestId }: Props) {
   })
   const a = pending.length
   const b = oaPending.length + (oaPending.length === 0 ? filedWatch.length : 0)
-  // C count left to InProgressStrip empty/data; summary chip uses presence
 
   const topOa = oaPending[0]
   const oaHref = topOa
@@ -37,38 +42,55 @@ export function HomeBossTodoBoard({ latestId }: Props) {
       : latestId
         ? `/agent/cases/${latestId}/depts/oa`
         : '/agent/cases'
-
   const showB = oaPending.length > 0 || filedWatch.length > 0
+  const summaryLine =
+    a || showB
+      ? `待拍 ${a} · 催办 ${showB ? Math.max(b, 1) : 0} · 进行中可点开`
+      : '暂无待拍 · 进行中可点开看'
 
   return (
     <section
-      className="mb-5 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
       data-testid="home-boss-todo"
+      data-compact={bodyOpen ? '0' : '1'}
       aria-labelledby="home-boss-todo-title"
     >
-      <header className="flex flex-wrap items-center gap-2 border-b border-slate-100 bg-slate-50/80 px-3 py-2">
-        <h2
-          id="home-boss-todo-title"
-          className="text-[13px] font-semibold text-slate-900"
+      <header className="flex flex-wrap items-center gap-2 bg-slate-50/80 px-2.5 py-1.5">
+        <button
+          type="button"
+          className="focus-ring flex min-w-0 flex-1 items-center gap-1.5 rounded-md text-left"
+          onClick={() => setBodyOpen((o) => !o)}
+          aria-expanded={bodyOpen}
+          data-testid="home-boss-todo-toggle"
         >
-          老板待办
-        </h2>
-        <span className="text-[11px] text-slate-500">要你拍 · 催办 · 进行中</span>
-        <div className="ml-auto flex flex-wrap gap-1.5 text-[10px] font-semibold">
+          {bodyOpen ? (
+            <ChevronDown className="h-3.5 w-3.5 shrink-0 text-slate-500" aria-hidden />
+          ) : (
+            <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-500" aria-hidden />
+          )}
+          <h2
+            id="home-boss-todo-title"
+            className="text-[12px] font-semibold text-slate-900"
+          >
+            老板待办
+          </h2>
+          <span className="truncate text-[10px] text-slate-500">{summaryLine}</span>
+        </button>
+        <div className="flex flex-wrap gap-1 text-[10px] font-semibold">
           <span
-            className={`rounded-full px-2 py-0.5 ${a ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'}`}
+            className={`rounded-full px-1.5 py-px ${a ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'}`}
             data-testid="home-boss-chip-a"
           >
             待拍 {a}
           </span>
           <span
-            className={`rounded-full px-2 py-0.5 ${showB ? 'bg-rose-700 text-white' : 'bg-slate-200 text-slate-600'}`}
+            className={`rounded-full px-1.5 py-px ${showB ? 'bg-rose-700 text-white' : 'bg-slate-200 text-slate-600'}`}
             data-testid="home-boss-chip-b"
           >
             催办 {showB ? Math.max(b, 1) : 0}
           </span>
           <span
-            className="rounded-full bg-sky-700/90 px-2 py-0.5 text-white"
+            className="rounded-full bg-sky-700/90 px-1.5 py-px text-white"
             data-testid="home-boss-chip-c"
           >
             进行中
@@ -76,49 +98,51 @@ export function HomeBossTodoBoard({ latestId }: Props) {
         </div>
       </header>
 
-      <div className="space-y-0 divide-y divide-slate-100" data-testid="home-boss-todo-body">
-        <div className="px-2 py-2" data-testid="home-boss-a">
-          <p className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wide text-amber-800/80">
-            待你拍
-          </p>
-          <HomeTodoStrip embedded />
-        </div>
-
-        {showB ? (
-          <div className="px-3 py-2.5" data-testid="home-oa-nudge">
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-rose-800/80">
-                  期限催办
-                </p>
-                <p className="mt-0.5 text-[12px] leading-relaxed text-rose-950/90">
-                  {topOa
-                    ? `「${topOa.title}」有待拍答复策略 · 逾期风险演示`
-                    : `已递交案 ${filedWatch.length} 件在答复阶段 · 请进答复部盯期限`}
-                </p>
-                <p className="mt-0.5 text-[10px] text-rose-800/60">
-                  示意 · 非官报通道
-                </p>
-              </div>
-              <Link
-                to={oaHref}
-                className="btn-press focus-ring inline-flex shrink-0 items-center gap-1 rounded-md bg-rose-900 px-2.5 py-1.5 text-[11px] font-semibold text-white"
-                data-testid="home-oa-nudge-cta"
-              >
-                去答复部
-                <ArrowRight className="h-3 w-3" aria-hidden />
-              </Link>
-            </div>
+      {bodyOpen ? (
+        <div
+          className="space-y-0 divide-y divide-slate-100 border-t border-slate-100"
+          data-testid="home-boss-todo-body"
+        >
+          <div className="px-2 py-1.5" data-testid="home-boss-a">
+            <p className="mb-0.5 px-1 text-[10px] font-bold uppercase tracking-wide text-amber-800/80">
+              待你拍
+            </p>
+            <HomeTodoStrip embedded />
           </div>
-        ) : null}
 
-        <div className="px-2 py-2" data-testid="home-boss-c">
-          <p className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wide text-sky-800/80">
-            进行中
-          </p>
-          <HomeInProgressStrip latestId={latestId} embedded />
+          {showB ? (
+            <div className="px-2.5 py-2" data-testid="home-oa-nudge">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-rose-800/80">
+                    期限催办
+                  </p>
+                  <p className="mt-0.5 text-[12px] leading-relaxed text-rose-950/90">
+                    {topOa
+                      ? `「${topOa.title}」有待拍答复策略 · 逾期风险演示`
+                      : `已递交案 ${filedWatch.length} 件在答复阶段 · 请进答复部盯期限`}
+                  </p>
+                </div>
+                <Link
+                  to={oaHref}
+                  className="btn-press focus-ring inline-flex shrink-0 items-center gap-1 rounded-md bg-rose-900 px-2.5 py-1.5 text-[11px] font-semibold text-white"
+                  data-testid="home-oa-nudge-cta"
+                >
+                  去答复部
+                  <ArrowRight className="h-3 w-3" aria-hidden />
+                </Link>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="px-2 py-1.5" data-testid="home-boss-c">
+            <p className="mb-0.5 px-1 text-[10px] font-bold uppercase tracking-wide text-sky-800/80">
+              进行中
+            </p>
+            <HomeInProgressStrip latestId={latestId} embedded />
+          </div>
         </div>
-      </div>
+      ) : null}
     </section>
   )
 }

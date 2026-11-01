@@ -305,10 +305,10 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
 
   return (
     <div
-      className="mx-auto flex w-full max-w-5xl flex-col gap-5"
+      className="mx-auto flex w-full max-w-5xl flex-col gap-3"
       data-testid="case-company-home"
       data-case-id={caseId}
-      data-company-density="gap-recent-v1"
+      data-company-density="gap-first-v90"
     >
       {/* P0 · 墨色缺口卡 · 卡点/下一步/谁在干 */}
       <section
@@ -686,25 +686,27 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
         </nav>
       </section>
 
-      {/* P1 · 最近案条 */}
-      <section
-        className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2.5"
+      {/* P1 · 最近案条 · 默认折 · 不抢卡点首屏 */}
+      <details
+        className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2"
         data-testid="company-recent-cases"
         aria-label="本案与最近案"
       >
-        <div className="mb-1.5 flex flex-wrap items-baseline gap-2">
+        <summary className="flex cursor-pointer list-none flex-wrap items-baseline gap-2 select-none">
           <h3 className="text-[12px] font-semibold text-slate-800">
             本案 · 最近案
           </h3>
+          <span className="text-[10px] text-slate-400">默认收 · 点开切换</span>
           <Link
             to="/agent/cases"
-            className="focus-ring text-[11px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
+            className="focus-ring ml-auto text-[11px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
             data-testid="company-recent-all"
+            onClick={(e) => e.stopPropagation()}
           >
             全部案子 / 案盘
           </Link>
-        </div>
-        <ul className="flex flex-col gap-1" data-testid="company-recent-list">
+        </summary>
+        <ul className="mt-1.5 flex flex-col gap-1" data-testid="company-recent-list">
           <li className="flex items-center gap-2 text-[12px]">
             <span className="rounded bg-slate-900 px-1.5 py-0.5 text-[10px] font-semibold text-white">
               本案
@@ -731,9 +733,16 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
             <li className="text-[11px] text-slate-500" data-testid="company-other-cases-empty" data-empty-tone="office">暂无其他案子 · 本案之外的案卷切换会出现在这里</li>
           ) : null}
         </ul>
-      </section>
+      </details>
 
-      <ThreeLineStatusStrip prog={prog} dense />
+      <details className="rounded-lg border border-slate-100 px-2 py-1" data-testid="company-status-fold">
+        <summary className="cursor-pointer select-none text-[11px] font-medium text-slate-500">
+          三线状态 · 默认收
+        </summary>
+        <div className="mt-1.5">
+          <ThreeLineStatusStrip prog={prog} dense />
+        </div>
+      </details>
 
       <section aria-labelledby="eight-dept-map-title">
         <div className="mb-2 flex flex-wrap items-center gap-2">
