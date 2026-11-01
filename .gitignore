@@ -46,3 +46,13 @@ apps/search-api/data/objects/
 
 # 本轮样机截图脚本（本地验证用）
 shots/verify-new-pages.mjs
+
+# Local smoke / staging (archived outside repo when needed)
+.tmp/
+.tmp-agent/
+uploads-staging/
+apps/**/.tmp/
+**/rescan-*-shots/
+**/rescan-*-smoke.mjs
+**/rescan-*-smoke.json
+tools/_tmp_shots/
