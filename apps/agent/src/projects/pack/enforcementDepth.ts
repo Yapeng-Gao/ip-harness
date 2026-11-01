@@ -49,7 +49,7 @@ export const ENFORCEMENT_DEPTH_STEPS: ExpertStepDef[] = [
       '| 抗无效 | 0.62 | 依赖查新三联 |',
       '| **综合** | **0.64** | 中等偏弱 |',
       '',
-      '**Validator 示意**：比对表与稳定性字段齐 · **Pass**',
+      '**样机校验示意**：比对表与稳定性字段齐 · **通过**',
     ].join('\n'),
   },
   {

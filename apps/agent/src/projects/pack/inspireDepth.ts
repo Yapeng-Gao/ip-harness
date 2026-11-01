@@ -44,7 +44,7 @@ export const INSPIRE_DEPTH_STEPS: ExpertStepDef[] = [
       '| 3 | 降级窗口协议 | **留** | 可从权 |',
       '| 4 | 纯报价模型 | 弃 | 商业方法风险 |',
       '',
-      '**Validator 示意**：抽象问题/纯商业 · **未触发 blocker**',
+      '**样机校验示意**：抽象问题/纯商业 · **未触发超范围拦下**',
     ].join('\n'),
   },
   {

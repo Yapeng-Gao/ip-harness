@@ -101,7 +101,7 @@ export function AgentHome() {
             >
               原型展廊
             </Link>
-            （非组队、非主办理）。
+            （旁路起草、非主办理）。
           </p>
         </div>
 

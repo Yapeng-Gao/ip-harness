@@ -135,7 +135,7 @@ export function ProjectFolderSidebar() {
       </div>
 
       <div className="border-t border-slate-100 px-2.5 py-2 text-[10px] leading-relaxed text-slate-400">
-        项目次级入口 · 总控编排
+        项目次级入口 · 总控调度
       </div>
     </aside>
   )

@@ -44,7 +44,7 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
       '| 外围观察件 | 外围 | 可议 |',
       '| 低分件 | 放弃候选 | 倾向放弃 |',
       '',
-      '**Validator 示意**：建议档均挂价值分级 · **Pass**',
+      '**样机校验示意**：建议档均挂价值分级 · **通过**',
     ].join('\n'),
   },
   {

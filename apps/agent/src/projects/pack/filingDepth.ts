@@ -42,7 +42,7 @@ export const FILING_DEPTH_STEPS: ExpertStepDef[] = [
       '|---|-----|----|------|',
       '| 1 | 摘要字数 | warn | 略超建议区间（示意） |',
       '| 2 | 图号连续 | warn | 图4 可选未挂 |',
-      '| — | 超范围/缺件 | blocker | **未触发** |',
+      '| — | 超范围/缺件 | 超范围拦下 | **未触发** |',
     ].join('\n'),
   },
   {
@@ -66,7 +66,7 @@ export const FILING_DEPTH_STEPS: ExpertStepDef[] = [
     structuredBody: [
       '## 递交授权摘要',
       '',
-      '齐套 5/5 · 形式 warn×2 · blocker=0。',
+      '齐套 5/5 · 形式提醒×2 · 超范围拦下未触发。',
       '',
       '**确认后**：样机 `file` 回执 → 总控方可派审查答复。',
       '',
@@ -87,7 +87,7 @@ export const FILING_SAMPLE_ARTIFACT = `# 递交齐套与授权（样机）
 
 ## 摘要
 
-CN 先递齐套 5/5，形式 warn×2，待授权确认后出样机回执。
+CN 先递齐套 5/5，形式提醒×2，待授权确认后出样机回执。
 
 ## 正文
 

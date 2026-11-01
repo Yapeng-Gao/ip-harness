@@ -68,7 +68,7 @@ export const MONETIZE_DEPTH_STEPS: ExpertStepDef[] = [
       '| 审计/改进 | ✓ |',
       '| 争议解决占位 | ✓ |',
       '',
-      '**Validator 示意**：必备条款齐 · **Pass**',
+      '**样机校验示意**：必备条款齐 · **通过**',
     ].join('\n'),
   },
   {
@@ -117,7 +117,7 @@ export const MONETIZE_SAMPLE_ARTIFACT = `# 转化条款草案（样机）
 export const MONETIZE_SAMPLE_WORKLOG_STEPS = `| 1 | 交易范围 | 组合 | CN独占 | — |
 | 2 | 估值区间 | 公式 | 80–120万 | — |
 | 3 | 条款草案 | term sheet | 骨架 | — |
-| 4 | 条款校验 | validator | 齐 | — |
+| 4 | 条款校验 | 校验 | 齐 | — |
 | 5 | 签约闸 | 转化确认 | 待确认 | 确认 |`
 
 export const MONETIZE_SAMPLE_WORKLOG_CHOICES = `| 口头意向 | 必备条款齐 | 齐 | 禁真签约 |

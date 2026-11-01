@@ -115,7 +115,7 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
   },
   'case-room-empty': {
     title: '讨论组已卸',
-    body: '组队/讨论组产品面已去掉；请回公司案首页从部门席继续。',
+    body: '讨论组产品面已去掉；请回公司案首页从部门席继续。',
   },
   'case-process-empty': {
     title: '暂无过程行',

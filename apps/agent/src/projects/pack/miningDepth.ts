@@ -45,7 +45,7 @@ export const MINING_DEPTH_STEPS: ExpertStepDef[] = [
       '| 热插拔触发重算 | 独权组合 | 模组 B 仅互连 |',
       '| 降级窗口 | 从 | 运维 C 弱相关 |',
       '',
-      '**Validator 示意**：每提案≥1 可核验技术特征 · **Pass**',
+      '**样机校验示意**：每提案≥1 可核验技术特征 · **通过**',
     ].join('\n'),
   },
   {

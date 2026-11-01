@@ -41,15 +41,15 @@ export const OA_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'amend',
     label: '修改对照',
-    script: '【OA】修改对照表已出；超范围检查示意 Pass。',
+    script: '【OA】修改对照表已出；超范围检查示意通过。',
     tool: { name: 'draft_amendments', preview: '修改 2 · 超范围过' },
     structuredBody: [
       '| 权项 | 原文要点 | 修改要点 | 超范围 |',
       '|------|----------|----------|--------|',
-      '| 权1 | 联合调度 | +同权约束明示 | Pass |',
-      '| 权3 | 联合代价 | +说明书定义引用 | Pass |',
+      '| 权1 | 联合调度 | +同权约束明示 | 通过 |',
+      '| 权3 | 联合代价 | +说明书定义引用 | 通过 |',
       '',
-      '**Validator**：beyond_original_scope · **Pass**（样机）',
+      '**样机校验**：超范围检查 · **通过**（样机）',
     ].join('\n'),
   },
   {
@@ -74,7 +74,7 @@ export const OA_DEPTH_STEPS: ExpertStepDef[] = [
     structuredBody: [
       '## OA 答复摘要',
       '',
-      '一通两项 · 策略争辩+修改 · 超范围 Pass。',
+      '一通两项 · 策略争辩+修改 · 超范围通过。',
       '',
       '**须已 file**：本席仅在递交回执后由总控派发（业务锁另见）。',
       '',
@@ -95,7 +95,7 @@ export const OA_SAMPLE_ARTIFACT = `# OA 答复策略与陈述（样机）
 
 ## 摘要
 
-假一通创造性+清楚性；策略争辩与修改；超范围 Pass；待确认。
+假一通创造性+清楚性；策略争辩与修改；超范围通过；待确认。
 
 ## 正文
 
@@ -105,9 +105,9 @@ export const OA_SAMPLE_ARTIFACT = `# OA 答复策略与陈述（样机）
 export const OA_SAMPLE_WORKLOG_STEPS = `| 1 | 读意见 | 一通 | 表 | — |
 | 2 | 分类 | 路由 | 两类 | — |
 | 3 | 策略 | 三案 | 提纲 | — |
-| 4 | 修改 | 对照 | Pass | — |
+| 4 | 修改 | 对照 | 通过 | — |
 | 5 | 草稿 | 陈述 | 骨架 | — |
 | 6 | 确认 | 确认 | 待确认 | 确认 |`
 
 export const OA_SAMPLE_WORKLOG_CHOICES = `| 整篇重写 | 分理由改 | 分理由 | 可确认 |
-| 超范围自修复 | blocker 升级 | blocker | 纪律 |`
+| 超范围自修复 | 升级拦下 | 超范围拦下 | 纪律 |`

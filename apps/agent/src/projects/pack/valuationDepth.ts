@@ -49,7 +49,7 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
       '| 防御 | 76 | 同族尚可 |',
       '| **综合** | **78** | 偏核心 |',
       '',
-      '**Validator 示意**：评分卡 schema 齐 · **Pass**',
+      '**样机校验示意**：评分卡字段齐 · **通过**',
     ].join('\n'),
   },
   {

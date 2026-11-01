@@ -15,7 +15,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
     id: 'general-orchestrator',
     name: '总控',
     role: 'orchestrator',
-    specialty: '编排 · 分派 · 汇总',
+    specialty: '调度 · 分派 · 汇总',
     description:
       '通用项目总控：拆派研究 / 写作 / 审查，汇总回执。无专利存稿权。',
     tools: ['dispatch_task', 'summarize_timeline', 'open_expert_dm'],

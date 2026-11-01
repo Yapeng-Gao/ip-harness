@@ -78,7 +78,7 @@ export function CaseBindControls({
           id,
           title: t,
           stage: 'pre_research',
-          summary: 'Agent 样机·创建并绑定（未进中台库 / 非真案核）',
+          summary: '助手样机·创建并绑定（未进正式案库 / 非真案核）',
           fromInsight: true,
         })
       } catch {

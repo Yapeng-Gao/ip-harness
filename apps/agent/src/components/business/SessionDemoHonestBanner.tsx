@@ -52,7 +52,7 @@ export function SessionDemoHonestBanner({
           className="mt-1 text-[11px] leading-relaxed text-amber-950/80"
           data-testid="session-demo-honest-footer"
         >
-          旁路函件史，非部台右栏硬请示。账号多端同步仍后置；组队/讨论组产品面已卸。
+          旁路函件史，非部台右栏硬请示。账号多端同步仍后置；讨论组产品面已卸。
         </p>
       </details>
     </aside>

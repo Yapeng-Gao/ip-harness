@@ -138,7 +138,7 @@ export function envelopeToWorklogLines(env: HandoffEnvelope): string {
     `| to | ${toName} (\`${env.to}\`) |`,
     `| acceptance | ${env.acceptance} |`,
     env.audit
-      ? `| audit | ${env.audit.timestamp} · ${env.audit.sandbox_id} · validator=${env.audit.validator_results} |`
+      ? `| audit | ${env.audit.timestamp} · ${env.audit.sandbox_id} · 校验=${env.audit.validator_results} |`
       : '',
   ]
     .filter(Boolean)

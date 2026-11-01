@@ -1,4 +1,4 @@
-/** FTO 席深度 · 自由实施+claim chart · ≠三性查新 · ≠维权 */
+/** FTO 席深度 · 自由实施+claim 对照图 · ≠三性查新 · ≠维权 */
 import type { ExpertStepDef } from '../types'
 
 export const FTO_DEPTH_STEPS: ExpertStepDef[] = [
@@ -49,7 +49,7 @@ export const FTO_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**Chart B · EP4123456A1**：接口要素部分命中特征3；无调度联动。',
       '',
-      '**Validator 示意**：高相关均有 chart · **Pass**',
+      '**样机校验示意**：高相关均有 对照图 · **通过**',
     ].join('\n'),
   },
   {

@@ -44,7 +44,7 @@ export const LAYOUT_DEPTH_STEPS: ExpertStepDef[] = [
       '| 热插拔联动 | **独** | 接口细 | — |',
       '| 降级窗口 | 从 | — | **独** |',
       '',
-      '**Validator 示意**：独权特征均落矩阵 · **Pass**',
+      '**样机校验示意**：独权特征均落矩阵 · **通过**',
     ].join('\n'),
   },
   {

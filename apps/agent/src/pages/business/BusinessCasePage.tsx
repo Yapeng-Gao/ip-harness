@@ -193,9 +193,9 @@ export function BusinessCasePage() {
                   onClick={() => setDrill(true)}
                   className="btn-press focus-ring text-[11px] font-medium text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
                   data-testid="drill-enter"
-                  title="席位演练旁路：总控+14 · 非业务默认 · 非组队"
+                  title="席位演练旁路：总控+14 · 非业务默认 · 非主办理"
                 >
-                  席位演练（旁路·调试）
+                  席位演练（旁路）
                 </button>
               </div>
             </details>
@@ -285,7 +285,7 @@ export function BusinessCasePage() {
               className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
               data-testid="business-case-mid-link"
             >
-              在中台查看
+              在案库查看
             </a>
             {drillMode ? (
               <button
@@ -302,7 +302,7 @@ export function BusinessCasePage() {
                 onClick={() => setDrill(true)}
                 className="btn-press focus-ring rounded-md border border-dashed border-indigo-300 bg-indigo-50/50 px-2.5 py-1.5 text-[11px] font-medium text-indigo-900"
                 data-testid="drill-enter"
-                title="席位演练旁路：总控+14 · 非业务默认 · 非组队"
+                title="席位演练旁路：总控+14 · 非业务默认 · 非主办理"
               >
                 席位演练
               </button>

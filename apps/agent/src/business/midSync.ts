@@ -285,7 +285,7 @@ export async function runConfirmCommands(
     } catch (err) {
       return {
         ok: false,
-        message: err instanceof Error ? err.message : '中台写入失败',
+        message: err instanceof Error ? err.message : '案卷存稿失败',
         applied,
       }
     }
@@ -314,7 +314,7 @@ export async function runReturnCommands(
       if (cmd.type !== 'requestChanges') continue
       return {
         ok: false,
-        message: err instanceof Error ? err.message : '中台写入失败',
+        message: err instanceof Error ? err.message : '案卷存稿失败',
         applied,
       }
     }

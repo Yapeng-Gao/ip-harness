@@ -3536,3 +3536,58 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-11-01 CST | 组队脚本+编制抽屉/写库中台blocker人话+口径收折；smoke `PASS_RESCAN_87`；shots `.tmp/rescan-87-shots/`；§87；t631u |
 
+## 88. 深度包 Validator/Pass/中台 · 案库/编排/IAM/组队上屏（2026-11-01 Asia/Shanghai）
+
+> **问题：** 续扫重复面、页面逻辑、布局/UIUX、原型与展示内容逻辑；对照一期真源意思对齐。深度预览/交接信封仍上屏 `Validator`/`Pass`/`blocker`/`写入中台`/`validator=`；公司案「在中台查看」、绑案/样机案「未进中台库」、成员页「IAM」、总控「编排」、席位目录「组队建班」、Lab/新建助手「写库」回潮工程味。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。不认 lifecycle。组队不回潮。
+
+### 88.0 缺口清单
+
+| ID | 面 | 缺口简述 | 维度 | 严重度 | 建议改法 | 本批 |
+|---|---|---|---|---|---|---|
+| G01 | 深度包 *Depth | Validator/Pass/blocker/写入中台 | 展示/原型逻辑 | P0 | 样机校验/通过/超范围拦下/正式存稿 | ✅ |
+| G02 | 交接信封 | audit 行 validator= | 展示 | P1 | 校验= | ✅ |
+| G03 | 公司案 / 绑案 / mockCase | 在中台查看 · 未进中台库 | 产品逻辑/展示 | P0 | 案库 / 正式案库 | ✅ |
+| G04 | midSync toast | 中台写入失败 | 展示 | P1 | 案卷存稿失败 | ✅ |
+| G05 | 总控/项目次级/midMap/通用助手 | 编排措辞 | 展示 | P0 | 调度 | ✅ |
+| G06 | 成员页 | 无真 IAM / 已开通 IAM | 展示/工程味 | P0 | 正式权限后置 / 结构壳 | ✅ |
+| G07 | 席位目录 / Lab / Home / Banner | 组队建班 / 组队面 | 产品逻辑 | P0 | 去组队上屏；请从公司案办理 | ✅ |
+| G08 | 新建助手 / draftDepth | 不自动写库 / 未确认不写库 | 展示 | P1 | 存稿 | ✅ |
+| G09 | 真集成 | 鉴权/IM/递交/报价/日历 | 集成 | — | 后置 | 后置 |
+| G10 | Go/No-Go · 中台已更新 跨包 | packages flowSteps / app-state | 跨包 | — | 后置 | 后置 |
+| G11 | 编制/部台信息墙大拆 | 行数仍高 | 布局 | P2 | 承 §75；大拆后置 | 未改 |
+
+### 88.1 本批落地
+
+| # | 对应 | 行为 |
+|---|---|---|
+| A | G01–G02 | 全部 *Depth + patentHandoff 人话；claim_validator→claim_check（映射保留） |
+| B | G03–G04 | BusinessCasePage / CaseBindControls / mockCase / midSync |
+| C | G05 | expertsGeneral/Patent · patentMidMap · generalBots · FolderContext/Sidebar · GeneralBotChatPane |
+| D | G06–G08 | CaseMembers · PatentCatalog · Lab · AgentHome · Banner · GeneralBotNew · draftDepth |
+
+### 88.2 复扫表（改后）
+
+| 面 | 结论 |
+|---|---|
+| 席位深度预览 | 无 Validator/Pass/blocker/写入中台抢屏；样机校验/通过/存稿 |
+| /agent/cases/:id | 「在案库查看」；演练 title 无「非组队」 |
+| /agent/cases/.../members | 无 IAM 上屏 |
+| /agent/seats · /agent/lab | 无「组队建班」；调度人话 |
+| sandbox / bots/new | 存稿措辞；无 DomainCommand/类型 kind |
+| 回潮 | 无组队/lifecycle 三档进门；资产情报官仍仅 ?branch=b8 |
+
+### 88.3 六维（机制报告，不宣称落地）
+
+设计：深度包与案旁路上屏跟人话与一期意思。使用成本：少调试串。逻辑：大厅→公司→部台 / branch query / 硬请示在聊天不变。
+
+### 88.4 后置
+
+真集成；Go/No-Go 与「中台已更新」跨包英/旧名；编制/部台信息墙大拆；main-path-sample 不碰。
+
+### 88.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-11-01 CST | 深度包+案库/编排/IAM/组队上屏人话；smoke `PASS_RESCAN_88`；shots `.tmp/rescan-88-shots/`；§88；t632u |
+

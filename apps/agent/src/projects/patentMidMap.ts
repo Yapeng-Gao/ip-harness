@@ -22,7 +22,7 @@ export const PATENT_MID_MAP: PatentMidMapRow[] = [
   {
     expertId: 'orchestrator',
     midStage: 'cross_stage',
-    midStageLabel: '跨阶段编排',
+    midStageLabel: '跨阶段调度',
     handoffKeys: null,
     readTools: ['dispatch_task', 'summarize_timeline', 'accept_dual_file'],
     writeCommands: null,

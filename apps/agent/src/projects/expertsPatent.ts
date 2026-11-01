@@ -80,7 +80,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "name": "专利全链路总控",
     "role": "orchestrator",
     "specialty": "分派 · 双文件验收 · 闸门",
-    "description": "编排专班：拆派、验收成果+办理摘记、闸门与迭代。禁止直接改交接点；OA 仅在递交后由本席派发。",
+    "description": "调度专班：拆派、验收成果+办理摘记、闸门与迭代。禁止直接改交接点；OA 仅在递交后由本席派发。",
     "tools": [
       "dispatch_task",
       "summarize_timeline",
@@ -473,7 +473,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       "plan_claim_tree",
       "draft_claims",
       "draft_specification_outline",
-      "claim_validator",
+      "claim_check",
       "submit_draft_for_hitl"
     ],
     "shortcuts": DRAFT_DEPTH_SHORTCUTS,

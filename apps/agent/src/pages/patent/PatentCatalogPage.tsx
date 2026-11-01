@@ -123,7 +123,7 @@ export function PatentCatalogPage() {
               className="mt-1 text-[11px] font-medium text-violet-700"
               data-testid="pack16-count"
             >
-              演示席 {pack16Count}/16 · 主路径请回大厅 / 公司案 · 不在此组队建班
+              演示席 {pack16Count}/16 · 主路径请回大厅 / 公司案 · 请从公司案办理
             </p>
           </div>
           <div className="flex flex-wrap gap-2 text-[11px]">
@@ -201,7 +201,7 @@ export function PatentCatalogPage() {
             打开案子工作台
           </button>
           <p className="w-full text-[10px] text-emerald-800/80">
-            点席「进本案」→ 同案席位；待确认不丢。组队入口已卸 · 请从公司案八部办理。
+            点席「进本案」→ 同案席位；待确认不丢。请从公司案八部办理。
           </p>
         </div>
       </header>

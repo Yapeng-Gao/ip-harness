@@ -43,7 +43,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'terms',
     label: '图注术语校验',
-    script: '【附图】图注术语与权项差集检查：差集为空则 Pass。',
+    script: '【附图】图注术语与权项差集检查：差集为空则通过。',
     tool: { name: 'ocr_term_check', preview: '用语差 0 · 过' },
     structuredBody: [
       '| 图注术语 | 是否在权项/说明书 |',
@@ -52,7 +52,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
       '| 联合代价 | ✓ |',
       '| 插拔事件 | ✓ |',
       '',
-      '**Validator 示意**：图注 ⊆ 权项术语 · **Pass**（差集空）',
+      '**样机校验示意**：图注 ⊆ 权项术语 · **通过**（差集空）',
     ].join('\n'),
   },
   {
@@ -65,7 +65,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     structuredBody: [
       '## 附图交付摘要',
       '',
-      '图1–3 必选已占位 · 图4 可选 · 术语校验 Pass。',
+      '图1–3 必选已占位 · 图4 可选 · 术语校验通过。',
       '',
       '**交给递交**：齐套挂图；确认后事件挂章。',
     ].join('\n'),
@@ -84,7 +84,7 @@ export const FIGURE_SAMPLE_ARTIFACT = `# 附图任务与冻图号（样机）
 
 ## 摘要
 
-按权要生成图1–4 清单，术语校验 Pass，待冻图号确认。
+按权要生成图1–4 清单，术语校验通过，待冻图号确认。
 
 ## 正文
 
@@ -94,7 +94,7 @@ export const FIGURE_SAMPLE_ARTIFACT = `# 附图任务与冻图号（样机）
 export const FIGURE_SAMPLE_WORKLOG_STEPS = `| 1 | 上下文 | 撰写 | 类型 | — |
 | 2 | 清单 | 图号 | 表 | — |
 | 3 | 草图 | mock | 占位 | — |
-| 4 | 术语校验 | 差集 | Pass | — |
+| 4 | 术语校验 | 差集 | 通过 | — |
 | 5 | 冻图号 | 确认 | 待确认 | 确认 |`
 
 export const FIGURE_SAMPLE_WORKLOG_CHOICES = `| 先画后号 | 先号后冻 | 先号 | 可递交 |

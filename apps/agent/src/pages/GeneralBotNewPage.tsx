@@ -42,7 +42,7 @@ export function GeneralBotNewPage() {
           </p>
           <h1 className="mt-1 text-lg font-semibold text-slate-900">新建助手</h1>
           <p className="mt-1 text-sm text-slate-500">
-            样机内存 · 不进项目花名册 · 自定义默认只读（不自动写库）
+            样机内存 · 不进项目花名册 · 自定义默认只读（不自动存稿）
           </p>
 
           <form

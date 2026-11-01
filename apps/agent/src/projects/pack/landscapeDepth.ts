@@ -43,7 +43,7 @@ export const LANDSCAPE_DEPTH_STEPS: ExpertStepDef[] = [
       '| T-0 | 能耗调度 | 多约束同权仍稀 |',
       '| T+ | 热插拔联动 | 空白带 · 布局优先 |',
       '',
-      '**Validator 示意**：轨迹标签覆盖赛道边界 3/3 · **Pass**',
+      '**样机校验示意**：轨迹标签覆盖赛道边界 3/3 · **通过**',
     ].join('\n'),
   },
   {

@@ -29,6 +29,7 @@ const TOOL_LABELS: Record<string, string> = {
   plan_claim_tree: '权项层级规划',
   draft_claims: '起草权利要求',
   draft_specification_outline: '说明书提纲',
+  claim_check: '权要校验',
   claim_validator: '权要校验',
   submit_draft_for_hitl: '提请批准撰写',
   gather_figure_context: '附图上下文',

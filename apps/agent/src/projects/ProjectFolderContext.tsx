@@ -70,7 +70,7 @@ function emptyThread(
         role: 'system',
         content: isGeneralShellId(projectId)
           ? `通用壳 · Grok 多专家\n${intro}`
-          : `项目协作 · 总控编排\n${intro}`,
+          : `项目协作 · 总控调度\n${intro}`,
         at: stamp(),
         meta: { backend: 'mock', stepId: def.steps[0]?.id },
       },

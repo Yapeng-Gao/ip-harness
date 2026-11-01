@@ -47,7 +47,7 @@ export const COMPETITOR_DEPTH_STEPS: ExpertStepDef[] = [
       '| 运维 C | 中 | 降级窗口弱相关 |',
       '| 工业 D | 低 | 场景远 |',
       '',
-      '**Validator 示意**：高威胁均挂公开号 · **Pass**',
+      '**样机校验示意**：高威胁均挂公开号 · **通过**',
     ].join('\n'),
   },
   {

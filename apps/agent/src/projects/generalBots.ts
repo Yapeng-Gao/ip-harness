@@ -121,7 +121,7 @@ export const BOT_TEMPLATE_OPTIONS: BotTemplateOption[] = [
   },
   {
     kind: 'template:orchestrator',
-    label: '从模板 · 总控编排',
+    label: '从模板 · 总控调度',
     defaultBrief: '总控：拆派与汇总；样机可自发消息给其他 bot。',
     accent: 'indigo',
     catalogAgentId: null,

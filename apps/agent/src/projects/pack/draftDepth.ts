@@ -86,7 +86,7 @@ export const DRAFT_DEPTH_STEPS: ExpertStepDef[] = [
     script:
       '【撰写】引用链/支持性/单一性/清楚性已跑示意校验；超范围拦下未触发。',
     tool: {
-      name: 'claim_validator',
+      name: 'claim_check',
       preview: '支持性告警×1 · 清楚/单一/超范围通过',
     },
     structuredBody: [
@@ -116,7 +116,7 @@ export const DRAFT_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**从权**：5 条梯度（特征具体化 / 指标 / 接口 / 降级）',
       '',
-      '**校验**：超范围 Pass；支持性 1 条 Warn（降级实施例）建议交底或补写后清。',
+      '**校验**：超范围通过；支持性 1 条 Warn（降级实施例）建议交底或补写后清。',
       '',
       '**交给下家**：制图按图号清单；FTO 以独权特征表为准。',
       '',
@@ -134,11 +134,11 @@ export const DRAFT_DEPTH_SHORTCUTS = [
 
 export const DRAFT_SAMPLE_ARTIFACT = `# 权利要求与说明书要点（样机）
 
-> 样机成果 · 非真案卷 · 未确认不写库
+> 样机成果 · 非真案卷 · 未确认不存稿
 
 ## 摘要
 
-按「先层级后成文」产出独权最小集与五条从权梯度；说明书提纲与术语定义已备。四类校验示意：超范围 Pass，支持性 1 条 Warn。
+按「先层级后成文」产出独权最小集与五条从权梯度；说明书提纲与术语定义已备。四类校验示意：超范围通过，支持性 1 条 Warn。
 
 ## 正文
 
@@ -149,7 +149,7 @@ export const DRAFT_SAMPLE_WORKLOG_STEPS = `| 1 | 特征表 | 交底/立项 | 表
 | 2 | 权项层级 | 规划 | 独+从 | — |
 | 3 | 权要草案 | 成文 | 骨架 | — |
 | 4 | 说明书要点 | 提纲 | 五节 | — |
-| 5 | 四类校验 | validator | Warn×1 | — |
+| 5 | 四类校验 | 校验 | Warn×1 | — |
 | 6 | 策略批准 | 确认 | 待确认 | 确认 |`
 
 export const DRAFT_SAMPLE_WORKLOG_CHOICES = `| 先堆全文 | 先层级 | 先层级 | 可校验 |

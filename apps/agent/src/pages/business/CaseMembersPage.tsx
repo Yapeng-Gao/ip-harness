@@ -4,7 +4,7 @@ import { useBusinessCases } from '../../business/BusinessCaseContext'
 /**
  * 成员与权限 · product-pages §4.13
  * 机制：后勤横切——谁能进公司、谁能确认交卷（白话角色 + 可确认闸）。
- * 禁：专家建议岗配成法定递交权；UI 英桩 decision-rights；抢公司→工作台主链；真 IAM。
+ * 禁：专家建议岗配成法定递交权；UI 英桩 decision-rights；抢公司→工作台主链；真权限系统。
  */
 const DEMO_MEMBERS: Array<{
   name: string
@@ -112,7 +112,7 @@ export function CaseMembersPage() {
           data-testid="logistics-members-thin"
           role="status"
         >
-          后勤横切 · 不抢「公司 → 工作台」主链 · 人侧权限 ≠ 专家建议岗 · 无真 IAM
+          后勤横切 · 不抢「公司 → 工作台」主链 · 人侧权限 ≠ 专家建议岗 · 正式权限接入后置
         </p>
 
         <h1
@@ -200,7 +200,7 @@ export function CaseMembersPage() {
         >
           <p className="text-sm text-slate-500">邀请入口（结构壳）</p>
           <p className="mt-1 text-[11px] text-slate-400">
-            正式邀请/权限树后置；此处不装已开通 IAM · 非专家花名册墙
+            正式邀请/权限树后置；此处仅为结构壳 · 非专家花名册墙
           </p>
         </div>
       </div>
