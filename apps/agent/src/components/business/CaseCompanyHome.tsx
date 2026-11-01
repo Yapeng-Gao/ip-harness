@@ -196,6 +196,14 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
     return [...PRE_DEPTS, ...POST_DEPTS_LIST].filter((d) => !mainIds.has(d.id))
   }, [])
 
+  /** §97：本案尚无开场材料时给下一步（去大厅交材料） */
+  const noOpeningMaterials =
+    !String(prog.casePlan ?? '').trim() &&
+    !prog.delegate &&
+    (prog.doneSeatIds?.length ?? 0) === 0 &&
+    pending.length === 0 &&
+    !String(summary ?? '').trim()
+
   const drawerDept = useMemo(
     () =>
       drawerDeptId
@@ -308,8 +316,27 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
       className="mx-auto flex w-full max-w-5xl flex-col gap-3"
       data-testid="case-company-home"
       data-case-id={caseId}
-      data-company-density="gap-first-v90"
+      data-company-density="gap-first-v97"
+      data-no-materials={noOpeningMaterials ? '1' : '0'}
     >
+      {noOpeningMaterials ? (
+        <section
+          className="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-5 text-center shadow-sm"
+          data-testid="company-no-materials"
+          data-empty-tone="office"
+        >
+          <p className="text-[15px] font-semibold text-slate-900">
+            本案还没有开场材料
+          </p>
+          <Link
+            to="/agent"
+            className="btn-press focus-ring mt-3 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-2 text-[13px] font-semibold text-white hover:bg-slate-800"
+            data-testid="company-no-materials-cta"
+          >
+            去大厅交材料
+          </Link>
+        </section>
+      ) : null}
       {/* P0 · 墨色缺口卡 · 卡点/下一步/谁在干 */}
       <section
         className="rounded-xl border border-slate-900 bg-slate-900 p-4 text-white shadow-sm"

@@ -47,7 +47,7 @@ export function HomeTodoStrip({ embedded = false }: Props) {
           className="min-w-0 flex-1 border-0 bg-transparent px-0 py-0"
         />
         <Link
-          to="/agent/pending?audit=1"
+          to="/agent/pending"
           className="focus-ring ml-auto shrink-0 rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:underline"
         >
           审计列表
@@ -59,19 +59,19 @@ export function HomeTodoStrip({ embedded = false }: Props) {
   const first = pending.slice(0, 3)
   return (
     <section
-      aria-label="待我确认"
+      aria-label="待你确认"
       className="rounded-lg bg-amber-50/50 px-1.5 py-1"
       data-testid="home-todo-strip"
     >
       {!embedded ? (
         <div className="mb-1.5 flex items-center gap-1.5">
           <Bell className="h-3.5 w-3.5 text-amber-700" strokeWidth={1.75} aria-hidden />
-          <span className="text-[12px] font-semibold text-amber-950">待我确认</span>
+          <span className="text-[12px] font-semibold text-amber-950">待你确认</span>
           <span className="tabular rounded-full bg-amber-600 px-1.5 py-px text-[10px] font-semibold text-white">
             {pending.length}
           </span>
           <Link
-            to="/agent/pending?audit=1"
+            to="/agent/pending"
             className="focus-ring ml-auto rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-amber-800 hover:underline"
             data-testid="home-todo-all"
           >
@@ -81,7 +81,7 @@ export function HomeTodoStrip({ embedded = false }: Props) {
       ) : (
         <div className="mb-1 flex justify-end px-1">
           <Link
-            to="/agent/pending?audit=1"
+            to="/agent/pending"
             className="focus-ring rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[11px] font-medium text-amber-800 hover:underline"
             data-testid="home-todo-all"
           >

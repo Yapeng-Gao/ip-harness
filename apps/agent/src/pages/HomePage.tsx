@@ -15,8 +15,7 @@ import { reopenAllTeachTips } from '../business/teachingFade'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * §95：门口三件套 IA 不变；八部恢复一句话 + 薄专家预览（≤3）；
- * 产品一句＝专家向你汇报；支路仍 ?hallTools=1。
+ * §97：门口三件套保留；顶栏路径段控；薄轨标题「待你确认」；支路仍 ?hallTools=1。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -60,11 +59,11 @@ export function HomePage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v96"
+      data-hall-screen="one-pass-v97"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
-      data-hall-dedupe="boss-todo-v96"
+      data-hall-dedupe="boss-todo-v97"
       data-assistant-density="delegate-chain-v1"
       data-hall-tools={hallTools ? '1' : '0'}
     >

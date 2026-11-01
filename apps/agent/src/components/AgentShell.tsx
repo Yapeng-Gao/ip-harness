@@ -14,12 +14,13 @@ import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { AgentSessionSidebar } from './AgentSessionSidebar'
 import { PersonaRouteGate } from '@shared/components/PersonaRouteGate'
 import { PendingConfirmBell } from './business/PendingConfirmBell'
+import { ShellPathNav } from './business/ShellPathNav'
 import { ShellAccountMenu } from './business/ShellAccountMenu'
 import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
 import { useAgentDebug } from '../business/useAgentDebug'
 import { useEntryRole } from '../business/useEntryRole'
 import { useBusinessCases } from '../business/BusinessCaseContext'
-/* 旧 lifecycle 三档顶栏与 shellTabs 着陆已卸；一期进门＝大厅→公司→部台 */
+/* 旧 lifecycle 三档顶栏已卸；一期进门＝大厅→公司→部台 */
 import { LabRouteBanner } from './LabRouteBanner'
 import { CaseShellSwitcher } from './business/CaseShellSwitcher'
 import { isCaseLevelShellPath } from '../business/caseShellSwitcher'
@@ -201,7 +202,10 @@ export function AgentShell() {
           </div>
         </div>
 
-        {/* 旧 lifecycle 三档顶栏已卸挂 · 一期进门＝大厅→公司→部台；深链仍可直达 */}
+        {/* §97 路径段控 · 大厅·本案/多案·待确认；旧三档不回潮 */}
+        {!inGrokShell && (inHome || inBusiness || inDepartments || inAssets) ? (
+          <ShellPathNav />
+        ) : null}
 
         {isCaseLevelShellPath(loc.pathname) && activeBizCaseId ? (
           <CaseShellSwitcher activeCaseId={activeBizCaseId} />

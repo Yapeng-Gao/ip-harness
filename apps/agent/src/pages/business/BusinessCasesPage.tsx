@@ -94,7 +94,7 @@ export function BusinessCasesPage() {
       data-testid="business-cases-page"
       data-entry-role={entryRole}
       data-home="cases"
-      data-cases-dedupe="list-v1"
+      data-cases-dedupe="list-v97"
     >
       <div className="mx-auto w-full max-w-3xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -113,12 +113,10 @@ export function BusinessCasesPage() {
               }`}
               data-testid="business-cases-title"
             >
-              {entryRole === 'agency' ? '案盘 · 多案流水' : '全部案子'}
+              最近的案
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              {entryRole === 'enterprise'
-                ? '一期：大厅委托 · 公司盯单案 · 本案盘回看多案 · 点行进公司案'
-                : '卡点 · 待你拍 · 谁在干 · 点行进公司首页（拍板仍在部门工作台）'}
+              点行进本案公司首页 · 拍板仍在部门工作台
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -149,13 +147,12 @@ export function BusinessCasesPage() {
             ·
           </span>
           <Link
-            to="/agent/pending?audit=1"
+            to="/agent/pending"
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="business-cases-pending"
           >
-            审计列表
+            待你确认
           </Link>
-          <span className="text-slate-400">（拍板不在此页）</span>
         </nav>
 
         <div
@@ -217,12 +214,11 @@ export function BusinessCasesPage() {
             className="mt-8 bg-white py-12"
             action={
               <Link
-                to="/agent/cases/new"
+                to="/agent"
                 className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
                 data-testid="business-cases-empty-cta"
               >
-                <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden />
-                开新案子
+                去大厅
               </Link>
             }
           />
@@ -282,11 +278,9 @@ export function BusinessCasesPage() {
                         {row.caseNo}
                       </span>
                       <span className="mt-0.5 block truncate text-[11px] text-slate-400 lg:hidden">
-                        {row.deptName}
                         {row.pendingCount > 0
-                          ? ` · 待你拍 ${row.pendingCount}`
-                          : ''}
-                        {row.inDeadlinePhase ? ' · 期限阶段' : ''}
+                          ? `${row.deptName} · 待你确认`
+                          : `${row.deptName} · 进行中`}
                       </span>
                     </span>
                     <span className="hidden min-w-0 lg:block">
@@ -294,7 +288,9 @@ export function BusinessCasesPage() {
                         {row.deptName}
                       </span>
                       <span className="mt-0.5 block truncate text-[11px] text-slate-400">
-                        {row.stage}
+                        {row.pendingCount > 0
+                          ? `${row.deptName} · 待你确认`
+                          : `${row.deptName} · 进行中`}
                       </span>
                     </span>
                     <span

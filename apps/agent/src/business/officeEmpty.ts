@@ -61,9 +61,9 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
     body: '从上面委托开一个，案卷会出现在这里。',
   },
   'cases-list': {
-    title: '案盘还是空的',
-    body: '开一个案子，立一条可交卷的业务线。',
-    next: '开新案子',
+    title: '还没有案。去大厅让前台领路。',
+    body: '从前台交材料开场后，案会出现在这里。',
+    next: '去大厅',
   },
   'cases-filter': {
     title: '没有匹配的案子',
@@ -122,8 +122,9 @@ export const OFFICE_EMPTY: Record<OfficeEmptyKind, OfficeEmptyCopy> = {
     body: '各部交卷、回流与确认后，过程会记在这里。',
   },
   'pending-empty': {
-    title: '暂无需要你确认的事项',
-    body: '部门交卷后的硬请示会停在这里，请你拍板。',
+    title: '暂时没有要你拍板的。',
+    body: '部门交卷后的硬请示会停在这里。',
+    next: '去大厅',
   },
   'catalog-empty': {
     title: '目录还是空的',

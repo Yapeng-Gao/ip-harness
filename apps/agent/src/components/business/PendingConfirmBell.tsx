@@ -16,8 +16,8 @@ export function PendingConfirmBell() {
   const pending = getPendingConfirms(activeCaseId)
   const n = pending.length
   const to = activeCaseId
-    ? `/agent/pending?audit=1&caseId=${encodeURIComponent(activeCaseId)}`
-    : '/agent/pending?audit=1'
+    ? `/agent/pending?caseId=${encodeURIComponent(activeCaseId)}`
+    : '/agent/pending'
   const label = onHall
     ? n > 0
       ? `待确认 ${n} 项`

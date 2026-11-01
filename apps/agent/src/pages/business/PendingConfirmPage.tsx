@@ -3,7 +3,6 @@ import {
   orgDeptByLeadSeat,
 } from '../../departments/orgDepts'
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { SoftEmpty } from '../../components/soft/SoftEmpty'
 import { useEffect, useMemo, useState } from 'react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import {
@@ -32,12 +31,12 @@ import { resolveConfirmResultMarkdown } from '../../business/confirmResultMarkdo
 import { HitlAssistCard } from '../../components/business/HitlAssistCard'
 import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
+import {
+  PENDING_PATH_GROUPS,
+  pendingPathGroupOf,
+  type PendingPathGroupId,
+} from '../../business/pendingPathGroups'
 
-/**
- * 确认审计列表 + 详情（§4.11a）
- * 无 ?audit=1 → 软跳大厅/工作台（废独立确认页主路径）
- * ?audit=1 → 只读审计；禁通过/驳回主 CTA；去工作台拍板
- */
 export function PendingConfirmInboxPage() {
   const { getPendingConfirms, cases, getCase } = useBusinessCases()
   const { deptLabel } = useOrgConfig()
@@ -58,12 +57,9 @@ export function PendingConfirmInboxPage() {
   })()
 
   const auditMode = params.get('audit') === '1'
-  // 独立收件箱降权：无 audit → 回大厅铃铛主路径（右栏拍板）
-  if (!auditMode && !deptQuery && !filterCaseId) {
-    return <Navigate to="/agent?pending=1" replace />
-  }
-  // 有 ?dept= 且恰一条 → 软跳工作台（审计模式才进详情）
-  if (deptQuery && kindFilter && inbox.length === 1) {
+
+  // 有 ?dept= 且恰一条且非全清单主路径 → 软跳工作台（审计才进详情）
+  if (deptQuery && kindFilter && inbox.length === 1 && (auditMode || filterCaseId)) {
     const only = inbox[0]!
     return (
       <Navigate
@@ -77,25 +73,36 @@ export function PendingConfirmInboxPage() {
     )
   }
 
+  const grouped = useMemo(() => {
+    const map: Record<PendingPathGroupId, typeof inbox> = {
+      disclosure: [],
+      draft: [],
+      oa: [],
+      more: [],
+    }
+    for (const item of inbox) {
+      map[pendingPathGroupOf(item.kind)].push(item)
+    }
+    return map
+  }, [inbox])
+
+  const visibleGroups = PENDING_PATH_GROUPS.filter(
+    (g) => g.id === 'more' ? grouped.more.length > 0 || inbox.length === 0 : true,
+  )
+
   return (
     <div
       className="flex-1 overflow-y-auto px-4 py-6 lg:px-8"
       data-testid="pending-confirm-inbox"
-      data-pending-audit="list-v1"
+      data-pending-full="v97"
+      data-pending-audit={auditMode ? 'list-v1' : undefined}
       data-case-filter={filterCaseId ?? ''}
       data-dept-filter={deptQuery ?? ''}
     >
       <div className="mx-auto max-w-2xl">
-        <p
-          className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600"
-          data-testid="pending-soft-hint"
-        >
-          拍板主路径在部门工作台右栏（大厅铃铛进）。本页是确认审计列表，不在此通过/驳回
-          {auditMode ? '' : '——点条目会软跳回工作台'}。
-        </p>
         <nav
           className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-slate-500"
-          aria-label="审计次要入口"
+          aria-label="待确认次要入口"
           data-testid="pending-secondary"
         >
           <Link
@@ -113,7 +120,7 @@ export function PendingConfirmInboxPage() {
             className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
             data-testid="pending-to-cases"
           >
-            案盘
+            多案
           </Link>
           {filterCaseId ? (
             <>
@@ -133,80 +140,135 @@ export function PendingConfirmInboxPage() {
           className="text-[20px] font-semibold text-slate-900"
           data-testid="pending-inbox-heading"
         >
-          {filterCaseId
-            ? '本案确认审计'
-            : deptFilterLabel
-              ? `${deptFilterLabel} · 确认审计`
-              : '确认审计'}
+          待你确认
         </h1>
         <p className="mt-1 text-sm text-slate-500">
           {deptFilterLabel
-            ? `按部筛选 · ${deptFilterLabel} · 只读列表，拍板回工作台`
+            ? `按部 · ${deptFilterLabel}`
             : filterCaseId
-              ? '仅本案记录 · 与进度同源 · 不在此拍板'
-              : '谁何时待拍/已过/已驳 · 只读；通过/驳回只在工作台右栏'}
+              ? '仅本案 · 与大厅薄轨同源'
+              : '交底 · 申请 · 答复 · 与大厅薄轨同源'}
         </p>
         {filterCaseId || deptQuery ? (
           <p className="mt-1 text-[11px] text-slate-400">
             <Link
-              to="/agent/pending?audit=1"
+              to="/agent/pending"
               className="font-medium text-slate-600 underline-offset-2 hover:underline"
               data-testid="pending-show-all"
             >
-              查看全部审计
+              查看全部
             </Link>
           </p>
         ) : null}
 
         {inbox.length === 0 ? (
-          <SoftEmpty
-            kind="pending-empty"
-            testId="pending-empty"
-            className="mt-8 bg-white py-10"
-          />
+          <div
+            className="mt-8 rounded-xl border border-slate-200 bg-white px-5 py-10 text-center"
+            data-testid="pending-empty"
+            data-empty-tone="office"
+          >
+            <p
+              className="text-[15px] font-medium text-slate-800"
+              data-testid="pending-empty-title"
+            >
+              暂时没有要你拍板的。
+            </p>
+            <Link
+              to="/agent"
+              className="btn-press focus-ring mt-4 inline-flex rounded-md border border-slate-200 bg-white px-3 py-2 text-[13px] font-semibold text-slate-800 hover:bg-slate-50"
+              data-testid="pending-empty-hall"
+            >
+              去大厅
+            </Link>
+          </div>
         ) : (
-          <ul className="mt-5 space-y-2">
-            {inbox.map((item) => {
-              const c = cases.find((x) => x.id === item.caseId)
-              return (
-                <li key={item.id}>
-                  <Link
-                    to={
-                      auditMode
-                        ? pendingAuditPath(
-                            item.id,
-                            deptSlugForConfirmKind(item.kind) ?? deptQuery,
-                          )
-                        : workbenchAskPath(item.caseId, item.kind, {
-                            confirmId: item.id,
-                          })
-                    }
-                    className="focus-ring block rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-amber-300"
-                    data-testid={`pending-row-${item.id}`}
-                    data-dept={deptSlugForConfirmKind(item.kind) ?? ''}
+          <div className="mt-5 space-y-5" data-testid="pending-groups">
+            {visibleGroups.map((g) => {
+              const rows = grouped[g.id]
+              if (g.id !== 'more' && rows.length === 0) {
+                return (
+                  <section
+                    key={g.id}
+                    aria-label={g.label}
+                    data-testid={`pending-group-${g.id}`}
+                    data-empty="1"
                   >
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-950"
-                        data-testid={`pending-status-${item.id}`}
-                      >
-                        待你确认
-                      </span>
-                      <div className="text-sm font-semibold text-slate-900">
-                        {c?.title ?? '案子'} · {item.title}
-                      </div>
-                    </div>
-                    <div className="mt-0.5 text-[11px] text-slate-500">
-                      {item.summary}
-                    </div>
-                    <div className="mt-1 text-[11px] text-slate-400">
-                      {item.preparedBy}准备好的 · {item.createdAt} · 非已办完
-                    </div>
-                  </Link>
-                </li>
+                    <h2 className="mb-2 text-[12px] font-semibold text-slate-500">
+                      {g.label}
+                    </h2>
+                    <p className="px-1 text-[12px] text-slate-400">暂无</p>
+                  </section>
+                )
+              }
+              if (rows.length === 0) return null
+              return (
+                <section
+                  key={g.id}
+                  aria-label={g.label}
+                  data-testid={`pending-group-${g.id}`}
+                >
+                  <h2 className="mb-2 text-[12px] font-semibold text-slate-800">
+                    {g.label}
+                    <span className="ml-1.5 tabular-nums text-[11px] font-medium text-slate-400">
+                      {rows.length}
+                    </span>
+                  </h2>
+                  <ul className="space-y-2">
+                    {rows.map((item) => {
+                      const c = cases.find((x) => x.id === item.caseId)
+                      const dept = orgDeptByLeadSeat(CONFIRM_META[item.kind].seatId)
+                      const deptName = dept ? deptLabel(dept) : ''
+                      return (
+                        <li key={item.id}>
+                          <div
+                            className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
+                            data-testid={`pending-row-${item.id}`}
+                            data-dept={deptSlugForConfirmKind(item.kind) ?? ''}
+                          >
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span
+                                className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-950"
+                                data-testid={`pending-status-${item.id}`}
+                              >
+                                待你确认
+                              </span>
+                              <div className="text-sm font-semibold text-slate-900">
+                                {item.title}
+                              </div>
+                            </div>
+                            <p className="mt-0.5 text-[12px] leading-relaxed text-slate-600">
+                              {item.summary}
+                            </p>
+                            <p className="mt-1 text-[11px] text-slate-400">
+                              {[deptName, c?.title].filter(Boolean).join(' · ')}
+                            </p>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              <Link
+                                to={workbenchAskPath(item.caseId, item.kind, {
+                                  confirmId: item.id,
+                                })}
+                                className="btn-press focus-ring inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-2 text-[12px] font-semibold text-white hover:bg-slate-800"
+                                data-testid={`pending-cta-confirm-${item.id}`}
+                              >
+                                查看并确认
+                              </Link>
+                              <Link
+                                to="/agent"
+                                className="btn-press focus-ring inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-[12px] font-medium text-slate-700 hover:bg-slate-50"
+                                data-testid={`pending-cta-later-${item.id}`}
+                              >
+                                稍后
+                              </Link>
+                            </div>
+                          </div>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </section>
               )
             })}
-          </ul>
+          </div>
         )}
       </div>
     </div>

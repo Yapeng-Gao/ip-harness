@@ -17,7 +17,7 @@ type Props = {
 /**
  * 大厅轻量轨「老板待办」单区 · 一期-产品逻辑 / 交互大纲 §2.2
  * 待你拍 / 催办 / 进行中 —— 同一块；首屏摘要，忌整墙默认展开。
- * §94/§96：薄轨芯片一眼扫；展开才列表；omitPending 不回双轨；大厅唯一待办主轨。
+ * §97：轨标题「待你确认」；尾链「全部」→/agent/pending；omitPending 不回双轨；大厅唯一待办主轨。
  */
 export function HomeBossTodoBoard({
   latestId,
@@ -58,7 +58,7 @@ export function HomeBossTodoBoard({
       className="overflow-hidden rounded-md border border-slate-200/90 bg-white"
       data-testid="home-boss-todo"
       data-compact={bodyOpen ? '0' : '1'}
-      data-hall-todo-single="v96"
+      data-hall-todo-single="v97"
       aria-labelledby="home-boss-todo-title"
     >
       <header className="flex flex-wrap items-center gap-1.5 bg-slate-50/70 px-2 py-1">
@@ -76,12 +76,20 @@ export function HomeBossTodoBoard({
           )}
           <h2
             id="home-boss-todo-title"
+            data-testid="home-boss-todo-title"
             className="text-[12px] font-semibold text-slate-900"
           >
-            老板待办
+            待你确认
           </h2>
           <span className="truncate text-[10px] text-slate-500">{summaryLine}</span>
         </button>
+        <Link
+          to="/agent/pending"
+          className="focus-ring shrink-0 rounded-sm px-1.5 py-0.5 text-[10px] font-semibold text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+          data-testid="home-boss-todo-all"
+        >
+          全部
+        </Link>
         <div className="flex flex-wrap gap-1 text-[10px] font-semibold">
           <span
             className={`rounded-full px-1.5 py-px ${a ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'}`}
