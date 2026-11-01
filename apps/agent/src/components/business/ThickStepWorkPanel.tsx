@@ -304,20 +304,27 @@ export function ThickStepWorkPanel({
       ) : null}
 
       {kind === 'd5' && step.id === 'c-submit' ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-3" data-testid="thick-d5-submit">
-          <p className="text-[11px] font-semibold text-slate-800">申请包齐套（演示）</p>
-          <ul className="mt-2 space-y-1 text-[12px] text-slate-700">
-            <li>☐ 请求书</li>
-            <li>☐ 说明书 / 权要 / 摘要</li>
-            <li>☐ 附图图号核对</li>
+        <div
+          className="rounded-lg border border-dashed border-slate-200 bg-slate-50/80 px-3 py-2"
+          data-testid="thick-d5-submit"
+          data-end-gate="thin"
+        >
+          <p className="text-[11px] font-semibold text-slate-800">申请包齐套（示意 · 在本步工具内）</p>
+          <ul className="mt-1.5 space-y-0.5 text-[11px] text-slate-600">
+            <li>· 请求书</li>
+            <li>· 说明书 / 权要 / 摘要</li>
+            <li>· 附图图号核对</li>
           </ul>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {['确认递交', '暂缓'].map((l) => (
+          <p className="mt-2 text-[10px] text-slate-500">
+            确认递交 / 暂缓请在右栏对话拍板 · 中栏不设交卷墙。
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {['记下：包已齐', '暂缓示意'].map((l) => (
               <button
                 key={l}
                 type="button"
-                className={`btn-press focus-ring rounded-full px-3 py-1 text-[11px] font-medium ${
-                  picked === l ? 'bg-slate-900 text-white' : 'border border-slate-300 bg-white text-slate-700'
+                className={`btn-press focus-ring rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[10px] font-medium text-slate-700 ${
+                  picked === l ? 'ring-1 ring-slate-400' : ''
                 }`}
                 data-testid={`thick-d5-submit-${l}`}
                 onClick={() => mark(l, l)}
@@ -326,7 +333,6 @@ export function ThickStepWorkPanel({
               </button>
             ))}
           </div>
-          <p className="mt-2 text-[10px] text-amber-800">过线 ≠ 已递交局端 · 无假官报通道。</p>
         </div>
       ) : null}
 

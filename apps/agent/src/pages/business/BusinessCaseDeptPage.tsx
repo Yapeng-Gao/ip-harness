@@ -721,18 +721,22 @@ export function BusinessCaseDeptPage() {
           ? '本轮答复可递交（D 过线）'
           : handoff.deliverable.slice(0, 36) || '本站合格线')
 
-  /** §111：中栏/顶栏标题 = 稿名，非部门看板 */
+  /** §111/§120：顶栏/中栏标题 = 稿名，禁止席位名（如「撰写代理师」） */
   const manuscriptTitle =
-    dual?.title?.trim() ||
-    (stepKind === 'd4'
+    stepKind === 'd4'
       ? `${c.title} · 交底书`
       : stepKind === 'd5'
-        ? `${c.title} · 申请稿`
+        ? `${c.title} · 权利要求与说明书`
         : stepKind === 'd6'
           ? `${c.title} · 答复稿`
           : thinShell
-            ? thinMeta?.workTitle || `${deptLabel(dept)} · 作业稿`
-            : `${c.title} · 本稿`)
+            ? thinMeta?.workTitle || `${c.title} · 作业稿`
+            : `${c.title} · 本稿`
+
+  const stepOrdinal =
+    currentStep && stepList.length > 0
+      ? Math.max(1, stepList.findIndex((s) => s.id === currentStep.id) + 1)
+      : 0
 
   const focusedPart =
     dept && parsePartMaterialId(selectedMaterialId)
@@ -909,6 +913,7 @@ export function BusinessCaseDeptPage() {
       data-layout="cursor-three-pane"
       data-left-open={leftOpen ? '1' : '0'}
       data-approach="A"
+      data-wb-zones="v120"
       data-mobile-right-open={mobileRightOpen ? '1' : '0'}
       data-step-kind={stepKind ?? 'thin'}
       data-step-id={currentStep?.id ?? ''}
@@ -956,6 +961,23 @@ export function BusinessCaseDeptPage() {
                       : ''}
               {currentStep ? ` · 本步 ${currentStep.label}` : thinShell ? ' · 薄部同壳' : ''}
             </p>
+            {currentStep && stepList.length > 0 ? (
+              <p
+                className="mt-1 text-[11px] tabular-nums text-slate-500"
+                data-testid="dept-process-topstrip"
+                data-process-density="thin-top"
+              >
+                本步 · {stepOrdinal}/{stepList.length} · {currentStep.label}
+              </p>
+            ) : thinShell ? (
+              <p
+                className="mt-1 text-[11px] text-slate-500"
+                data-testid="dept-process-topstrip"
+                data-process-density="thin-top"
+              >
+                薄部同壳作业
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -1117,8 +1139,7 @@ export function BusinessCaseDeptPage() {
             data-testid="dept-deliverable"
             aria-labelledby="dept-output-title"
           >
-            {/* §111：阅读区无 QC/本步/工单条；材料 toc 在顶栏；元信息离屏可测 */}
-            <div className="sr-only" data-testid="dept-process-topstrip" data-process-density="off-reading" />
+            {/* §120：流程细条在顶栏 dept-process-topstrip；阅读区不重复 */}
             <div className="sr-only" data-testid="dept-meta-fold" data-meta-default="off-reading">
               <TeachingFadeTip deptId={dept.id} />
               {!MAIN_CHAIN_DEPT_IDS.includes(dept.id) ? (
@@ -1234,6 +1255,19 @@ export function BusinessCaseDeptPage() {
                       }
                     }}
                   />
+                  {showDraftInherit ? (
+                    <div
+                      className="mt-2 rounded-lg border border-violet-200/80 bg-violet-50/70 px-3 py-2 text-[11px] leading-relaxed text-slate-800"
+                      data-testid="dept-draft-inherit-handoff"
+                      data-fold-slot="step-tools"
+                      role="status"
+                    >
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-700/80">
+                        接交底工单（在本步工具内）
+                      </p>
+                      <p className="mt-0.5 font-medium">{draftInheritedHandoffLine()}</p>
+                    </div>
+                  ) : null}
                 </details>
                 {askParam ? (
                   <p
@@ -1571,25 +1605,22 @@ export function BusinessCaseDeptPage() {
               </div>
             ) : null}
 
-            {showDraftInherit ? (
-              <div
-                className="rounded-xl border border-violet-200 bg-violet-50/80 px-4 py-3 text-[12px] leading-relaxed text-slate-800"
-                data-testid="dept-draft-inherit-handoff"
-                role="status"
+
+            {showDraftInherit && !(stepKind && currentStep && selectedMaterialId === 'deliverable') ? (
+              <details
+                className="rounded-lg border border-dashed border-violet-200 bg-violet-50/50 px-2.5 py-1.5"
+                data-testid="dept-draft-inherit-fold"
               >
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-700/80">
-                  接交底工单
-                </p>
-                <p className="mt-0.5 font-medium">{draftInheritedHandoffLine()}</p>
-                <p className="mt-1 text-[11px] text-slate-600">
-                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-800">
-                    交底质检全绿
-                  </span>{' '}
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
-                    申请尚未过线
-                  </span>
-                </p>
-              </div>
+                <summary className="cursor-pointer select-none text-[10px] font-medium text-violet-800/80">
+                  接交底工单（默折）
+                </summary>
+                <div
+                  className="mt-2 text-[11px] text-slate-800"
+                  data-testid="dept-draft-inherit-handoff"
+                >
+                  <p className="font-medium">{draftInheritedHandoffLine()}</p>
+                </div>
+              </details>
             ) : null}
 
             {showHandoffTicket ? (
@@ -1953,14 +1984,14 @@ export function BusinessCaseDeptPage() {
                       {businessSeatLabel(dept.leadSeatId)} · 汇报
                     </p>
                     <p className="mt-0.5 font-medium">
-                      还差 {missingLabels.length} 项才能交卷。
+                      齐套还差 {missingLabels.length} 项
                     </p>
                     <p
                       className="mt-0.5 text-[10px] text-slate-500"
                       data-testid="dept-checklist-missing"
                       data-missing-count={missingLabels.length}
                     >
-                      点开补齐 · 硬请示在对话里
+                      需要时展开清单 · 拍板仍在对话
                     </p>
                     <details className="mt-1.5" data-testid="dept-kit-missing-fold">
                       <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
