@@ -31,10 +31,9 @@ function shortCaseNo(id: string): string {
 type FilterChip = 'all' | 'pending' | 'deadline' | 'disclosure'
 
 /**
- * /agent/cases · 项目列表（案盘）· 一期：清单，点行→本案概况（非大厅、非部台）；左栏「项目」一律进此
- * 机制：清单看卡点/下一步/谁在干；点行→薄本案概况 → 部台。
- * 禁：把待确认与近期限筛成同一条件；禁用待确认点冒充期限红点；
- * 禁：待确认钮与开新案同权抢主（拍板主路径=工作台右栏；审计另走）。
+ * /agent/cases · 项目列表（案盘）· 一期：单栏清单，点行→本案概况；左栏「项目」一律进此
+ * §116：不挂侧栏案树；开新案/搜索各一处；不镜像壳层大厅/待确认链接。
+ * 禁：把待确认与近期限筛成同一条件；禁用待确认点冒充期限红点。
  */
 export function BusinessCasesPage() {
   const { cases, getProgress, stageLabel, getPendingConfirms } = useBusinessCases()
@@ -94,29 +93,19 @@ export function BusinessCasesPage() {
       data-testid="business-cases-page"
       data-entry-role={entryRole}
       data-home="cases"
-      data-cases-dedupe="list-v97"
+      data-cases-dedupe="list-v116"
     >
       <div className="mx-auto w-full max-w-3xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            {entryRole === 'enterprise' ? (
-              <p
-                className="text-[11px] font-medium uppercase tracking-wide text-slate-400"
-                data-testid="business-cases-eyebrow"
-              >
-                全部案子（次入口）
-              </p>
-            ) : null}
             <h1
-              className={`text-[20px] font-semibold tracking-tight text-slate-900 ${
-                entryRole === 'enterprise' ? 'mt-0.5' : ''
-              }`}
+              className="text-[20px] font-semibold tracking-tight text-slate-900"
               data-testid="business-cases-title"
             >
-              最近的案
+              项目
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              点行进本案概况 · 拍板仍在部门工作台
+            <p className="mt-1 text-sm text-slate-500" data-testid="business-cases-subtitle">
+              点行进本案概况
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -131,29 +120,6 @@ export function BusinessCasesPage() {
           </div>
         </div>
 
-        <nav
-          className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-slate-500"
-          aria-label="案盘次要入口"
-          data-testid="business-cases-secondary"
-        >
-          <Link
-            to="/agent"
-            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="business-cases-back-hall"
-          >
-            回大厅
-          </Link>
-          <span aria-hidden className="text-slate-300">
-            ·
-          </span>
-          <Link
-            to="/agent/pending"
-            className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-            data-testid="business-cases-pending"
-          >
-            待你确认
-          </Link>
-        </nav>
 
         <div
           className="mt-4 flex flex-wrap gap-2"
@@ -164,7 +130,7 @@ export function BusinessCasesPage() {
           {(
             [
               ['all', '全部'],
-              ['pending', '有待你拍'],
+              ['pending', '待确认'],
               ['deadline', '答复/期限阶段'],
               ['disclosure', '在交底部'],
             ] as const
@@ -254,7 +220,7 @@ export function BusinessCasesPage() {
             <div className="hidden grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_4.5rem_4.5rem] gap-2 border-b border-slate-100 bg-slate-50/80 px-4 py-2 text-[11px] font-medium text-slate-500 lg:grid">
               <span>案名 / 编号</span>
               <span>当前部门 · 谁在干</span>
-              <span className="text-right">待你拍</span>
+              <span className="text-right">待确认</span>
               <span className="text-center" title="答复/期限阶段示意 · 非官报">
                 期限态
               </span>
@@ -278,19 +244,19 @@ export function BusinessCasesPage() {
                         {row.caseNo}
                       </span>
                       <span className="mt-0.5 block truncate text-[11px] text-slate-400 lg:hidden">
-                        {row.pendingCount > 0
-                          ? `${row.deptName} · 待你确认`
-                          : `${row.deptName} · 进行中`}
+                        {row.deptName}
+                        {row.pendingCount > 0 ? ' · 待确认' : ''}
                       </span>
                     </span>
                     <span className="hidden min-w-0 lg:block">
                       <span className="block truncate text-[13px] text-slate-700">
                         {row.deptName}
                       </span>
-                      <span className="mt-0.5 block truncate text-[11px] text-slate-400">
-                        {row.pendingCount > 0
-                          ? `${row.deptName} · 待你确认`
-                          : `${row.deptName} · 进行中`}
+                      <span
+                        className="mt-0.5 block truncate text-[11px] text-slate-400"
+                        data-testid={`business-case-status-${row.id}`}
+                      >
+                        {row.pendingCount > 0 ? '待确认' : '进行中'}
                       </span>
                     </span>
                     <span

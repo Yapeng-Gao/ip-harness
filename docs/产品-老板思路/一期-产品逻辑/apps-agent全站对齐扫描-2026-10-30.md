@@ -5336,3 +5336,45 @@ Leslie 明确：**点「项目」→ 进项目/案列表**（不是薄公司页�
 | 2026-11-01 CST | §115 SCAN 项目 Tab/案盘重复入口；t696u；基线 9bf8eeb |
 
 ---
+
+## 116. IMPLEMENT · 案盘单栏去重 G01–G07 PASS_RESCAN_116 · 2026-11-01 Asia/Shanghai
+
+> **范围：** 落地 §115 G01–G07。根因：`inBusiness` 在 `/agent/cases` 仍挂满 `BusinessCaseSidebar`。  
+> **真源 ONLY：** 一期 · Office。无组队。不宣称四维/六维。  
+> **基线：** `62d781f`（§115） atop `9bf8eeb`（§114）。  
+> **授权：** t697u / pt697u「优化」。
+
+### 116.1 改动
+
+| 缺口 | 改法 |
+|---|---|
+| **G01** | `AgentShell`：仅 `inActiveCaseShell`（`/agent/cases/:id…` 且非 `new`）挂 `BusinessCaseSidebar`；列表/开新案/待确认 **单栏** |
+| **G02** | 列表页只留主区 `business-new-case`（侧栏开新随 G01 消失） |
+| **G03** | 卸 `business-cases-secondary`（回大厅 / 待你确认）；壳路径轨为唯一全局入口 |
+| **G04** | 只留主区筛选框 |
+| **G05** | 页标题统一「**项目**」；去掉 eyebrow「全部案子（次入口）」与「最近的案」 |
+| **G06/G07** | 行状态副行不再重复部门名；芯片/列/状态统一「待确认」 |
+
+文件：`AgentShell.tsx` · `BusinessCasesPage.tsx` · 本扫描节。
+
+### 116.2 Smoke
+
+`node .tmp/rescan-116-smoke.mjs` → **PASS_RESCAN_116**  
+镜头：`/workspace/uploads/rescan-116-shots/`（01 单栏列表 · 02 案内侧栏仍在 · 03 项目 Tab→列表）
+
+### 116.3 机制报告
+
+| 机制 | 一句话 |
+|---|---|
+| 业务逻辑 | 选案一次：列表一棵表；案内再开侧栏八部/本案树 |
+| 产品理念 | 同目的地只留一个主入口 |
+| 产品设计 | 项目 Tab＝项目列表；与壳「项目」同名同心智 |
+| 产品逻辑 | §114 钉列表后，侧栏挂载条件同步收紧 |
+
+### 116.4 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-11-01 CST | §116 IMPLEMENT G01–G07；PASS_RESCAN_116；t697u |
+
+---

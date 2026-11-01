@@ -104,6 +104,11 @@ export function AgentShell() {
   const inBusiness =
     loc.pathname.startsWith('/agent/cases') ||
     loc.pathname.startsWith('/agent/pending')
+  /** §116：案盘列表/开新案/待确认不挂 BusinessCaseSidebar（单栏，避双列表） */
+  const inActiveCaseShell = (() => {
+    const m = loc.pathname.match(/^\/agent\/cases\/([^/]+)/)
+    return Boolean(m?.[1] && m[1] !== 'new')
+  })()
   const inProfessional = /\/agent\/cases\/[^/]+\/professional/.test(
     loc.pathname,
   )
@@ -270,7 +275,7 @@ export function AgentShell() {
         {!inGrokShell && (inHome || inBusiness || inDepartments || inAssets) ? (
           <ShellPathNav />
         ) : null}
-        {inBusiness && <BusinessCaseSidebar />}
+        {inActiveCaseShell && <BusinessCaseSidebar />}
         {!(inProjects || inGrokShell || inBusiness || inCatalog || inDepartments || inAssets || inHome) && (
           <AgentSessionSidebar />
         )}
