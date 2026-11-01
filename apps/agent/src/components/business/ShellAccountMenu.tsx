@@ -13,7 +13,7 @@ const OPTIONS: EntryRole[] = ['enterprise', 'agency']
 
 /**
  * 顶栏减负：角色切换 + 退出 + 次要入口收进头像菜单（不常驻 chip 墙）。
- * §93：支路验收 / 案盘 / 编制 / 重开说明沉入此菜单，不占大厅首屏折叠条。
+ * §102：支路验收 / 重开说明沉入此菜单；案盘→左栏「项目」、编制→左栏弱项，菜单不再叠链。
  */
 export function ShellAccountMenu() {
   const { entryRole, setEntryRole } = useEntryRole()
@@ -113,24 +113,6 @@ export function ShellAccountMenu() {
             onClick={() => setOpen(false)}
           >
             支路验收与次要入口
-          </Link>
-          <Link
-            to="/agent/cases"
-            role="menuitem"
-            className="btn-press focus-ring block px-3 py-2 text-xs text-slate-700 hover:bg-slate-100"
-            data-testid="shell-account-cases"
-            onClick={() => setOpen(false)}
-          >
-            案盘
-          </Link>
-          <Link
-            to="/agent/departments"
-            role="menuitem"
-            className="btn-press focus-ring block px-3 py-2 text-xs text-slate-700 hover:bg-slate-100"
-            data-testid="shell-account-roster"
-            onClick={() => setOpen(false)}
-          >
-            编制
           </Link>
           <button
             type="button"

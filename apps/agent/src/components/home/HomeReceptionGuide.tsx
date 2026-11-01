@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  Building2,
   ChevronDown,
   ChevronRight,
   FileUp,
@@ -44,7 +43,7 @@ export const RECEPTION_DESK = {
 } as const
 
 const IDLE_SPEECH =
-  '你好，我是前台小林。有材料先丢给我；或点主链目标；熟客直接下方八部。'
+  '你好，我是前台小林。有材料先丢给我；或点主链目标；熟客直接下方八部。看已有案子走左侧「项目」。'
 
 /**
  * 大厅接待 · 前台形象主动引导（01-接待与引导）
@@ -144,7 +143,7 @@ export function HomeReceptionGuide({
       aria-labelledby="home-reception-title"
       data-testid="home-reception-guide"
       data-reception-phase={phase}
-      data-reception-mode="persona-speak-v94"
+      data-reception-mode="persona-speak-v102"
     >
       <div className="mb-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <h2
@@ -156,16 +155,7 @@ export function HomeReceptionGuide({
         <span className="text-[10px] text-slate-500">
           弄清去向
         </span>
-        {latestCaseId ? (
-          <Link
-            to={`/agent/cases/${latestCaseId}`}
-            className="btn-press focus-ring ml-auto inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700"
-            data-testid="home-go-company"
-          >
-            <Building2 className="h-3 w-3" aria-hidden />
-            公司案盯盘
-          </Link>
-        ) : (
+        {!latestCaseId ? (
           <Link
             to="/agent/cases/new"
             className="btn-press focus-ring ml-auto inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700"
@@ -173,7 +163,7 @@ export function HomeReceptionGuide({
           >
             先开案子
           </Link>
-        )}
+        ) : null}
       </div>
 
       <div

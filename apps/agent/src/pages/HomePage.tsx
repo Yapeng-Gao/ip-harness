@@ -15,7 +15,7 @@ import { reopenAllTeachTips } from '../business/teachingFade'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * §100：门口三件套保留；左栏路径；薄轨「待你确认」；无假本案条；支路仍 ?hallTools=1。
+ * §102：门口三件套；左栏「项目」唯一进案盘；大厅无「去项目/公司案盯盘」；支路仍 ?hallTools=1。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -57,11 +57,11 @@ export function HomePage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v100"
+      data-hall-screen="one-pass-v102"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
-      data-hall-dedupe="boss-todo-v100"
+      data-hall-dedupe="boss-todo-v102"
       data-assistant-density="delegate-chain-v1"
       data-hall-tools={hallTools ? '1' : '0'}
     >
@@ -70,7 +70,7 @@ export function HomePage() {
         <header
           className="mb-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
           data-testid="home-hall-tagline"
-          data-hall-tagline="thin-v100"
+          data-hall-tagline="thin-v102"
         >
           <div className="min-w-0">
             <p
@@ -88,14 +88,6 @@ export function HomePage() {
             <span className="font-semibold text-slate-900">
               {ENTRY_ROLE_LABEL[entryRole]}
             </span>
-            <span className="text-slate-400"> · </span>
-            <Link
-              to="/agent/cases"
-              className="font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-              data-testid="home-to-projects"
-            >
-              去项目
-            </Link>
           </p>
         </header>
 
@@ -174,26 +166,6 @@ export function HomePage() {
                 aria-label="次要入口"
                 data-testid="home-secondary-actions"
               >
-                <Link
-                  to="/agent/cases"
-                  className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-                  data-testid={isAgency ? 'home-action-primary' : 'home-action-cases'}
-                >
-                  {isAgency ? '案盘 / 项目' : '案盘'}
-                </Link>
-                <span aria-hidden className="text-slate-300">
-                  ·
-                </span>
-                <Link
-                  to="/agent/departments"
-                  className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
-                  data-testid="home-action-departments"
-                >
-                  编制
-                </Link>
-                <span aria-hidden className="text-slate-300">
-                  ·
-                </span>
                 <button
                   type="button"
                   className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-600"
