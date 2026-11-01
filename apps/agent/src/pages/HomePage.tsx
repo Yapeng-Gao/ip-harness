@@ -60,11 +60,11 @@ export function HomePage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v95"
+      data-hall-screen="one-pass-v96"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
-      data-hall-dedupe="boss-todo-v94"
+      data-hall-dedupe="boss-todo-v96"
       data-assistant-density="delegate-chain-v1"
       data-hall-tools={hallTools ? '1' : '0'}
     >

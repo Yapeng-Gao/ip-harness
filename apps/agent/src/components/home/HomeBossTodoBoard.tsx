@@ -17,7 +17,7 @@ type Props = {
 /**
  * 大厅轻量轨「老板待办」单区 · 一期-产品逻辑 / 交互大纲 §2.2
  * 待你拍 / 催办 / 进行中 —— 同一块；首屏摘要，忌整墙默认展开。
- * §94：薄轨芯片一眼扫；展开才列表；omitPending 不回双轨。
+ * §94/§96：薄轨芯片一眼扫；展开才列表；omitPending 不回双轨；大厅唯一待办主轨。
  */
 export function HomeBossTodoBoard({
   latestId,
@@ -58,7 +58,7 @@ export function HomeBossTodoBoard({
       className="overflow-hidden rounded-md border border-slate-200/90 bg-white"
       data-testid="home-boss-todo"
       data-compact={bodyOpen ? '0' : '1'}
-      data-hall-todo-single="v94"
+      data-hall-todo-single="v96"
       aria-labelledby="home-boss-todo-title"
     >
       <header className="flex flex-wrap items-center gap-1.5 bg-slate-50/70 px-2 py-1">
