@@ -436,10 +436,11 @@ export function BusinessCaseSidebar() {
             aria-expanded={false}
             data-testid="business-side-depts-toggle"
             data-collapsed-current="1"
-            title="展开本案八部"
+            title="换部门 · 展开本案八部"
+            data-nav-role="switch-dept"
           >
             <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-              {drillMode ? '席位演练' : isEnterprise ? '本案八部' : '本案部门'}
+              {drillMode ? '席位演练' : '换部门'}
             </span>
             <span className="flex items-center justify-between gap-1">
               <span className="truncate text-[12px] font-semibold text-slate-900">
@@ -447,6 +448,7 @@ export function BusinessCaseSidebar() {
               </span>
               <ChevronDown className="h-3.5 w-3.5 shrink-0 -rotate-90 text-slate-400" aria-hidden />
             </span>
+            <span className="text-[9px] text-slate-400">点开可换其他部</span>
           </button>
         ) : (
           <>
@@ -466,7 +468,7 @@ export function BusinessCaseSidebar() {
               data-testid="business-side-depts-toggle"
             >
               <span>
-                {drillMode ? '席位演练' : isEnterprise ? '本案八部' : '本案部门'}
+                {drillMode ? '席位演练' : '换部门 · 本案八部'}
               </span>
               <ChevronDown
                 className={`h-3.5 w-3.5 transition ${deptsOpen ? 'rotate-0' : '-rotate-90'}`}
@@ -601,16 +603,16 @@ export function BusinessCaseSidebar() {
             className="px-0.5 text-[10px] leading-snug text-slate-400"
             data-testid="business-side-new-case-folded"
           >
-            {/* §107 G05：案内一律弱链；开新案回左栏「项目」 */}
-            开新案请回左栏「项目」。
+            {/* §124 G08：部台弱训导；开新案回壳层「项目」 */}
+            <span className="sr-only">开新案请回左栏项目</span>
             <button
               type="button"
               onClick={() => navigate('/agent/cases/new')}
-              className="btn-press focus-ring ml-1 text-slate-500 underline-offset-2 hover:underline"
+              className="btn-press focus-ring text-slate-500 underline-offset-2 hover:underline"
               data-testid="business-side-new-case"
               aria-label="开一个新案子"
             >
-              去开案
+              开新案
             </button>
           </p>
         ) : (

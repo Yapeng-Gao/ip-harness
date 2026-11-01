@@ -235,7 +235,7 @@ export function BusinessCaseDeptPage() {
   const [toolsOpen, setToolsOpen] = useState(false)
   /** 窄屏：左目录可收起；右栏改底抽屉（G1 交卷可达） */
   const [leftOpen, setLeftOpen] = useState(false) // §109/§111：材料目录默认 toc/抽屉
-  /** §122 G01：本步工具默认关；打开用抽屉/overlay，不 inline 拆读 */
+  /** §122/§124：本步助手默认关；侧抽屉不拆读、不挡主稿意思 */
   const [stepToolsOpen, setStepToolsOpen] = useState(false)
   const [mobileRightOpen, setMobileRightOpen] = useState(false)
   /** §111：右栏领导对话可折（桌面） */
@@ -900,7 +900,7 @@ export function BusinessCaseDeptPage() {
       data-left-open={leftOpen ? '1' : '0'}
       data-step-tools-open={stepToolsOpen ? '1' : '0'}
       data-approach="A"
-      data-wb-zones="v122"
+      data-wb-zones="v124"
       data-mobile-right-open={mobileRightOpen ? '1' : '0'}
       data-step-kind={stepKind ?? 'thin'}
       data-step-id={currentStep?.id ?? ''}
@@ -949,13 +949,18 @@ export function BusinessCaseDeptPage() {
               {currentStep ? ` · 本步 ${currentStep.label}` : thinShell ? ' · 薄部同壳' : ''}
             </p>
             {currentStep && stepList.length > 0 ? (
-              <p
-                className="mt-1 text-[11px] tabular-nums text-slate-500"
-                data-testid="dept-process-topstrip"
-                data-process-density="thin-top"
-              >
-                本步 · {stepOrdinal}/{stepList.length} · {currentStep.label}
-              </p>
+              <div className="mt-1" data-testid="dept-process-teach">
+                <p
+                  className="text-[11px] tabular-nums text-slate-500"
+                  data-testid="dept-process-topstrip"
+                  data-process-density="thin-top"
+                >
+                  主稿阶段 · {stepOrdinal}/{stepList.length} · {currentStep.label}
+                </p>
+                <p className="mt-0.5 text-[10px] text-slate-400" data-testid="dept-main-doc-hint">
+                  一部多步 · 产出仍是这份主稿
+                </p>
+              </div>
             ) : thinShell ? (
               <p
                 className="mt-1 text-[11px] text-slate-500"
@@ -1174,7 +1179,7 @@ export function BusinessCaseDeptPage() {
                       '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'}
                   </pre>
                 </article>
-                {/* §122 G01：薄芯片；打开=overlay 抽屉，不 inline 拆稿 */}
+                {/* §124 G01：本步助手芯片；侧抽屉不拆稿 */}
                 <div
                   className="mt-3"
                   data-testid="dept-step-demo"
@@ -1185,37 +1190,48 @@ export function BusinessCaseDeptPage() {
                   <button
                     type="button"
                     onClick={() => setStepToolsOpen(true)}
-                    className="btn-press focus-ring rounded-lg border border-dashed border-slate-200 bg-slate-50/50 px-2.5 py-1.5 text-[10px] font-medium text-slate-500 hover:bg-slate-100"
+                    className="btn-press focus-ring hit-40 inline-flex min-h-[2.5rem] items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-[12px] font-medium text-slate-700 shadow-sm hover:bg-slate-50"
                     data-testid="dept-step-demo-open"
                     aria-expanded={stepToolsOpen}
+                    title="办好本步用的助手 · 主稿仍是上方这份"
                   >
-                    本步工具（默折）· {currentStep.label}
+                    本步助手 · {currentStep.label}
+                    <span className="ml-1.5 text-[10px] font-normal text-slate-400">
+                      不改主稿位置
+                    </span>
                   </button>
                 </div>
                 {stepToolsOpen ? (
                   <div
-                    className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6"
+                    className="fixed inset-0 z-50 flex items-end justify-end sm:items-stretch"
                     data-testid="dept-step-tools-overlay"
                     role="dialog"
                     aria-modal="true"
-                    aria-label="本步工具"
+                    aria-label="本步助手"
+                    data-drawer-side="end"
                   >
                     <button
                       type="button"
-                      className="absolute inset-0 bg-slate-900/25"
-                      aria-label="关闭本步工具"
+                      className="absolute inset-0 bg-slate-900/15"
+                      aria-label="关闭本步助手"
                       data-testid="dept-step-tools-backdrop"
                       onClick={() => setStepToolsOpen(false)}
                     />
                     <div
-                      className="relative z-10 flex max-h-[min(85vh,40rem)] w-full max-w-xl flex-col overflow-hidden rounded-t-2xl border border-slate-200 bg-white shadow-xl sm:rounded-2xl"
+                      className="relative z-10 flex h-[min(88vh,100%)] w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-slate-200 bg-white shadow-xl sm:h-full sm:max-h-none sm:rounded-none sm:rounded-l-2xl sm:border-l"
                       data-testid="dept-step-tools-drawer"
                       data-step-dense="drawer"
+                      data-keep-paper="1"
                     >
                       <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-4 py-2.5">
-                        <p className="text-[12px] font-semibold text-slate-800">
-                          本步工具 · {currentStep.label}
-                        </p>
+                        <div className="min-w-0">
+                          <p className="text-[12px] font-semibold text-slate-800">
+                            本步助手 · {currentStep.label}
+                          </p>
+                          <p className="text-[10px] font-normal text-slate-400">
+                            服务本步 · 产出仍是上方主稿
+                          </p>
+                        </div>
                         <button
                           type="button"
                           className="btn-press focus-ring rounded-md border border-slate-200 px-2 py-1 text-[10px] text-slate-600"
@@ -1261,7 +1277,7 @@ export function BusinessCaseDeptPage() {
                                 className="btn-press focus-ring rounded-md border border-dashed border-slate-200 px-2 py-1 text-left text-[10px] text-slate-500"
                                 data-testid="dept-step-auto"
                               >
-                                跟闸
+                                跟随当前齐套
                               </button>
                             </div>
                           </details>
@@ -1294,19 +1310,22 @@ export function BusinessCaseDeptPage() {
                             role="status"
                           >
                             <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-700/80">
-                              接交底工单（在本步工具内）
+                              接交底工单
                             </p>
                             <p className="mt-0.5 font-medium">{draftInheritedHandoffLine()}</p>
                           </div>
                         ) : null}
-                        {/* §122 G02：齐套勾选迁入本步工具抽屉，右栏不再做缺项墙 */}
+                        {/* §122/§124：齐套勾选在本步助手；右栏不设缺项墙 */}
                         {!allChecklistDone ? (
                           <div
                             className="mt-3 rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2"
                             data-testid="dept-kit-in-tools"
                           >
                             <p className="text-[11px] font-semibold text-slate-800">
-                              齐套还差 {missingLabels.length} 项（在本步工具内勾）
+                              本步还差 {missingLabels.length} 项
+                            </p>
+                            <p className="mt-0.5 text-[10px] text-slate-500">
+                              在助手里勾选 · 主稿仍在背后纸面
                             </p>
                             <ul
                               className="mt-1.5 space-y-1 text-[11px] text-slate-700"
@@ -1340,12 +1359,12 @@ export function BusinessCaseDeptPage() {
                                 type="button"
                                 className="btn-press focus-ring rounded-full border border-dashed border-violet-600/40 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-violet-950/80 hover:bg-white"
                                 data-testid="dept-seed-kit"
-                                title="样机勾齐本稿齐套 · 非一键交卷 · 非官报"
+                                title="演示：勾齐本稿齐套 · 非一键交卷 · 非官报"
                                 onClick={() => {
                                   if (slug) seedKitComplete(caseId, slug)
                                 }}
                               >
-                                样机·勾齐
+                                演示勾齐
                               </button>
                               <button
                                 type="button"
@@ -1371,7 +1390,7 @@ export function BusinessCaseDeptPage() {
                                   if (activeSeat) syncKitFromSeatStep(caseId, activeSeat)
                                 }}
                               >
-                                按本席步进勾
+                                按进度勾选
                               </button>
                             </div>
                           </div>
@@ -1727,7 +1746,7 @@ export function BusinessCaseDeptPage() {
                 data-testid="dept-draft-inherit-fold"
               >
                 <summary className="cursor-pointer select-none text-[10px] font-medium text-violet-800/80">
-                  接交底工单（默折）
+                  接交底工单
                 </summary>
                 <div
                   className="mt-2 text-[11px] text-slate-800"
@@ -2087,35 +2106,59 @@ export function BusinessCaseDeptPage() {
                   </div>
                 ) : null}
 
-                {!allChecklistDone ? (
-                  <div
-                    className="max-w-[95%] rounded-2xl rounded-tl-md bg-violet-50/80 px-3 py-2 text-[12px] leading-relaxed text-slate-900"
+                {/* §124 G02：有硬请示时齐套静默；无硬请示时一句人话，不把「打开工具」扶正角 */}
+                {!allChecklistDone && awaitingThis ? (
+                  <p
+                    className="px-0.5 text-[10px] leading-snug text-slate-400"
                     data-testid="dept-ask-bubble-g1"
                     data-ask-kind="g1"
                     data-kit-compact="1"
                     data-kit-folded="1"
                     data-kit-wall="0"
+                    data-kit-priority="silent"
                   >
-                    <p className="text-[9px] font-semibold text-violet-700/80">
-                      {businessSeatLabel(dept.leadSeatId)} · 汇报
+                    <span data-testid="dept-checklist-missing" data-missing-count={missingLabels.length}>
+                      齐套另记 · 还差 {missingLabels.length} 项
+                    </span>
+                    <button
+                      type="button"
+                      className="btn-press focus-ring ml-1 text-slate-500 underline-offset-2 hover:underline"
+                      data-testid="dept-kit-open-tools"
+                      onClick={() => setStepToolsOpen(true)}
+                    >
+                      本步助手
+                    </button>
+                  </p>
+                ) : !allChecklistDone ? (
+                  <div
+                    className="max-w-[95%] rounded-2xl rounded-tl-md border border-slate-200/80 bg-white px-3 py-2 text-[12px] leading-relaxed text-slate-800"
+                    data-testid="dept-ask-bubble-g1"
+                    data-ask-kind="g1"
+                    data-kit-compact="1"
+                    data-kit-folded="1"
+                    data-kit-wall="0"
+                    data-kit-priority="secondary"
+                  >
+                    <p className="text-[9px] font-semibold text-slate-500">
+                      {businessSeatLabel(dept.leadSeatId)} · 进度一句
                     </p>
                     <p className="mt-0.5 font-medium">
-                      齐套还差 {missingLabels.length} 项
+                      本步还差 {missingLabels.length} 项，先把上方主稿补齐
                     </p>
                     <p
                       className="mt-0.5 text-[10px] text-slate-500"
                       data-testid="dept-checklist-missing"
                       data-missing-count={missingLabels.length}
                     >
-                      打开本步工具可勾 · 拍板仍在对话
+                      拍板仍在对话 · 勾选可开本步助手
                     </p>
                     <button
                       type="button"
-                      className="btn-press focus-ring mt-1.5 rounded-full border border-violet-200 bg-white/80 px-2.5 py-0.5 text-[10px] font-medium text-violet-900 hover:bg-white"
+                      className="btn-press focus-ring mt-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[10px] font-medium text-slate-700 hover:bg-white"
                       data-testid="dept-kit-open-tools"
                       onClick={() => setStepToolsOpen(true)}
                     >
-                      打开本步工具
+                      打开本步助手
                     </button>
                     {/* 兼容旧烟：缺项 fold 仍存在但不做墙 — 收成 sr-only 锚点 */}
                     <details className="sr-only" data-testid="dept-kit-missing-fold" hidden>
@@ -2242,7 +2285,7 @@ export function BusinessCaseDeptPage() {
                   data-testid="dept-primary-cta-demoted"
                   data-cta-wall="0"
                 >
-                  齐套未齐时请看上方汇报气泡 · 不设灰交卷墙
+                  齐套未齐 · 先看对话里的进度一句
                   <span
                     className="sr-only"
                     data-testid="dept-primary-cta"
@@ -2272,7 +2315,7 @@ export function BusinessCaseDeptPage() {
                   data-testid="dept-tools-toggle"
                   aria-expanded={toolsOpen}
                 >
-                  {toolsOpen ? '收起工具' : '工具'}
+                  {toolsOpen ? '收起巡检' : '巡检'}
                 </button>
                 <Link
                   to={companyHref}

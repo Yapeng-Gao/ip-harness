@@ -75,7 +75,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
         <p className="mt-0.5 text-[12px] text-slate-800">{meta.line}</p>
         <details className="mt-1" data-testid="thin-ban-fold">
           <summary className="cursor-pointer select-none text-[10px] text-slate-500">
-            边界（默折）
+            边界（收起）
           </summary>
           <p className="mt-1 text-[11px] text-slate-500">{meta.ban}</p>
         </details>
@@ -157,7 +157,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
             data-testid="thin-materials-attach"
           >
             <summary className="cursor-pointer select-none text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              材料挂接（默折 · 演示）
+              材料挂接（收起 · 演示）
             </summary>
             <ul className="mt-1.5 space-y-1">
               {materialList.map((label) => (
@@ -462,7 +462,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                 className="cursor-pointer select-none px-3 py-1.5 text-[10px] font-medium text-slate-500"
                 data-testid="thin-work-body-summary"
               >
-                示意全文（默折 · 上方零件优先）
+                示意全文（收起 · 上方零件优先）
               </summary>
               <pre
                 className="max-h-[min(40vh,20rem)] overflow-auto border-t border-slate-100 px-3 py-2 text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap"

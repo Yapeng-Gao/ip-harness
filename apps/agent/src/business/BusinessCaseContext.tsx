@@ -2564,7 +2564,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           caseId,
           at,
           kind: 'monitor_event',
-          message: `样机勾齐本稿齐套 · ${deptSlug}（${labels.length}项 · 非真官报）`,
+          message: `演示勾齐本稿齐套 · ${deptSlug}（${labels.length}项 · 非真官报）`,
         },
       ])
       return { ok: true, labels }

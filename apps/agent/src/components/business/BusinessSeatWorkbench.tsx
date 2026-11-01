@@ -632,7 +632,7 @@ export function BusinessSeatWorkbench({
           data-dual-progress="0"
         >
           <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-400">
-            席位回退
+            回到上一步
             <span className="sr-only">
               席内 {stepIndex + 1}/{def.steps.length}
               {def.steps[stepIndex]?.label ? ` · ${def.steps[stepIndex].label}` : ''}

@@ -107,7 +107,7 @@ export function ThickStepWorkPanel({
 
       {kind === 'd4' && step.id === 'draft' ? (
         <div className="rounded-xl border border-slate-200 bg-white p-3" data-testid="thick-d4-draft">
-          <p className="text-[11px] font-semibold text-slate-800">成稿块（可点留痕）</p>
+          <p className="text-[11px] font-semibold text-slate-800">助手填空 · 点选写入上方主稿</p>
           <ul className="mt-2 space-y-1.5">
             {[
               ['field', '技术领域', '电机散热 / 水道与鳍片'],
@@ -129,7 +129,7 @@ export function ThickStepWorkPanel({
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-[10px] text-slate-400">本步只写成稿 · 事实/质检/可交申请部分步打开。</p>
+          <p className="mt-2 text-[10px] text-slate-400">这是助手填空，不是第二份交底书 · 主稿仍在中栏纸面。</p>
         </div>
       ) : null}
 
@@ -192,7 +192,7 @@ export function ThickStepWorkPanel({
           {qcItems.some((item) => statusOf(item.id, item.def) === 'green') ? (
             <details className="mt-2" data-testid="thick-qc-green-fold">
               <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
-                已绿 {qcItems.filter((item) => statusOf(item.id, item.def) === 'green').length}（默折）
+                已绿 {qcItems.filter((item) => statusOf(item.id, item.def) === 'green').length}（收起）
               </summary>
               <ul className="mt-1.5 space-y-1.5">
                 {qcItems
@@ -309,7 +309,7 @@ export function ThickStepWorkPanel({
           data-testid="thick-d5-submit"
           data-end-gate="thin"
         >
-          <p className="text-[11px] font-semibold text-slate-800">申请包齐套（示意 · 在本步工具内）</p>
+          <p className="text-[11px] font-semibold text-slate-800">申请包齐套（示意 · 本步助手）</p>
           <ul className="mt-1.5 space-y-0.5 text-[11px] text-slate-600">
             <li>· 请求书</li>
             <li>· 说明书 / 权要 / 摘要</li>
