@@ -15,7 +15,7 @@ type Props = {
   caseId?: string
 }
 
-/** 席位 → 办理节点映射 + 写库示意列表（样机）。 */
+/** 席位 → 办理节点映射 + 存稿示意列表（样机）。 */
 export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
   const { getDomainCommandWrites } = useProjectFolder()
   const row = midMapForExpert(expertId)
@@ -67,7 +67,7 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
             className="text-[10px] text-slate-500"
             data-testid="patent-mid-case-label"
           >
-            中台节点示意 · 案 {caseLabel}（终端不跳 mid）
+            办理节点示意 · 案 {caseLabel}（终端不跳 mid）
           </p>
         </div>
       ) : null}
@@ -98,7 +98,7 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
         </ul>
 
         <div className="mb-1 mt-3 px-1 text-[10px] font-semibold text-slate-500">
-          确认后 → 写库示意
+          确认后 → 存稿示意
         </div>
         {writes.length === 0 ? (
           <p
@@ -126,10 +126,10 @@ export function PatentMidMapPanel({ projectId, expertId, caseId }: Props) {
                 </details>
                 {w.payload && typeof w.payload === 'object' && 'caseId' in (w.payload as object) ? (
                   <div className="mt-0.5 text-slate-500">
-                    中台节点示意 · 案 {(w.payload as { caseId?: string }).caseId}
+                    办理节点示意 · 案 {(w.payload as { caseId?: string }).caseId}
                   </div>
                 ) : w.midCaseHref ? (
-                  <div className="mt-0.5 text-slate-500">中台节点示意（无跳转）</div>
+                  <div className="mt-0.5 text-slate-500">办理节点示意（无跳转）</div>
                 ) : null}
               </li>
             ))}

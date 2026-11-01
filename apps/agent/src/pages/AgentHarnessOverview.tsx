@@ -26,10 +26,10 @@ const STATUS_LABEL: Record<string, string> = {
 /** Architecture demoted — collapsed details only */
 const HARNESS_CORE = [
   { id: 'session', label: '会话', desc: '对话 + 案件/目标绑定' },
-  { id: 'orchestrator', label: '编排', desc: '编排思考 / 工具 / 确认' },
-  { id: 'tools', label: '工具', desc: '可插拔办理工具（见目录详情）' },
+  { id: 'orchestrator', label: '调度', desc: '思考步骤 / 工具 / 请你确认' },
+  { id: 'tools', label: '工具', desc: '可选用的办理工具（见目录详情）' },
   { id: 'hitl', label: '请你确认', desc: '按 Agent 差异化确认步骤' },
-  { id: 'command', label: '业务写入', desc: '确认后写入案件 · 与领域命令同源' },
+  { id: 'command', label: '写入案件', desc: '确认后写入案件 · 与办事命令同源' },
 ]
 
 export function AgentHarnessOverview() {
@@ -69,7 +69,7 @@ export function AgentHarnessOverview() {
     if (a && chosenCase && chosenCase.stage !== a.stage) {
       if (
         !window.confirm(
-          `案阶段与 Agent 不匹配（案·${getStageMeta(chosenCase.stage).shortName} / Agent·${getStageMeta(a.stage).shortName}），仍要继续？`,
+          `案阶段与助手不匹配（案·${getStageMeta(chosenCase.stage).shortName} / 助手·${getStageMeta(a.stage).shortName}），仍要继续？`,
         )
       ) {
         return
@@ -106,7 +106,7 @@ export function AgentHarnessOverview() {
       >
         <p className="font-semibold">纸面旁路 · 非一期主办理</p>
         <p className="mt-0.5 text-amber-900/80">
-          本页只说明编排/工具/确认示意，不进大厅→公司→部台交卷。请回{' '}
+          本页只说明调度/工具/确认示意，不进大厅→公司→部台交卷。请回{' '}
           <Link to="/agent" className="font-medium underline underline-offset-2" data-testid="harness-back-hall">
             大厅
           </Link>

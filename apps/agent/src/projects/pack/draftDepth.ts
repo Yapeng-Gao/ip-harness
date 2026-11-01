@@ -84,7 +84,7 @@ export const DRAFT_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'validate',
     label: '四类校验',
     script:
-      '【撰写】引用链/支持性/单一性/清楚性已跑示意校验；超范围 blocker 未触发。',
+      '【撰写】引用链/支持性/单一性/清楚性已跑示意校验；超范围拦下未触发。',
     tool: {
       name: 'claim_validator',
       preview: '支持性告警×1 · 清楚/单一/超范围通过',
@@ -92,11 +92,11 @@ export const DRAFT_DEPTH_STEPS: ExpertStepDef[] = [
     structuredBody: [
       '| 检查 | 结果 | 说明 |',
       '|------|------|------|',
-      '| 引用链完整性 | Pass | 从权引用链无断 |',
+      '| 引用链完整性 | 通过 | 从权引用链无断 |',
       '| 支持性 | Warn×1 | 从权 6「降级」实施例笔墨偏少 · 建议补一段 |',
-      '| 单一性 | Pass | 单总发明构思 |',
-      '| 清楚性 | Pass | 术语已定义 |',
-      '| **超范围 blocker** | **Pass** | 未超出交底记载（样机） |',
+      '| 单一性 | 通过 | 单总发明构思 |',
+      '| 清楚性 | 通过 | 术语已定义 |',
+      '| **超范围拦下** | **通过** | 未超出交底记载（样机） |',
       '',
       '处理策略：Warn 逐条改，不整篇重写。',
     ].join('\n'),
@@ -105,7 +105,7 @@ export const DRAFT_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'confirm',
     label: '策略批准 · 待交',
     script:
-      '【撰写】权要+说明书要点待你批准。确认后可派制图/FTO；未确认不写库。',
+      '【撰写】权要+说明书要点待你批准。确认后可派制图/FTO；未确认不存稿。',
     tool: { name: 'submit_draft_for_hitl', preview: '撰写稿已交卷 · 待你批准策略' },
     triggersHitl: true,
     hitlGate: 'approve_strategy',

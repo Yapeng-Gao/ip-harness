@@ -70,7 +70,7 @@ export function SeatValidatorPanel({
       appendMessage(projectId, expertId, {
         role: 'system',
         content:
-          '【需人工接手】超范围 blocker · 自修复 0/0 · 已直接升级（禁静默重跑）',
+          '【需人工接手】超范围拦下 · 自修复 0/0 · 已直接升级（禁静默重跑）',
         meta: { backend: 'mock' },
       })
     }
@@ -245,7 +245,7 @@ export function SeatValidatorPanel({
             data-testid="validator-oa-blocker"
           >
             <AlertTriangle className="h-3 w-3" aria-hidden />
-            超范围 blocker→需人工接手（0次）
+            超范围拦下→需人工接手（0次）
           </button>
         )}
         <button

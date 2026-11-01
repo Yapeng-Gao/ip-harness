@@ -17,7 +17,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
     role: 'orchestrator',
     specialty: '编排 · 分派 · 汇总',
     description:
-      '通用项目总控：拆派研究 / 写作 / 审查，汇总回执。无专利写库权。',
+      '通用项目总控：拆派研究 / 写作 / 审查，汇总回执。无专利存稿权。',
     tools: ['dispatch_task', 'summarize_timeline', 'open_expert_dm'],
     shortcuts: [
       {
@@ -68,11 +68,11 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
     domainCommandCandidates: [
       {
         command: null,
-        label: '无写库权',
+        label: '无存稿权',
         note: '通用总控仅拆派/汇总',
       },
     ],
-    guardrails: ['禁止一键写库', '分派≠替专家执行', '无专利领域包流程'],
+    guardrails: ['禁止一键存稿', '分派≠替专家执行', '无专利专班流程'],
     catalogAgentId: null,
     accent: 'slate',
   },
@@ -122,7 +122,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
       {
         command: null,
         label: '只读样机',
-        note: '通用研究不绑专利席位目录 / 写库命令',
+        note: '通用研究不绑专利席位目录 / 存稿命令',
       },
     ],
     guardrails: [
@@ -181,7 +181,7 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
     domainCommandCandidates: [
       {
         command: null,
-        label: '无写库',
+        label: '无存稿',
         note: '通用写作不绑 agent-claims / 权利要求闸',
       },
     ],
@@ -240,12 +240,12 @@ export const GENERAL_EXPERTS: Record<GeneralExpertId, ProjectExpertDef> = {
       {
         command: null,
         label: '本地弱确认',
-        note: 'catalogAgentId=null；Confirm 仅 UI ack，不走专利写库',
+        note: 'catalogAgentId=null；Confirm 仅界面确认，不走专利存稿',
       },
     ],
     guardrails: [
       '无自由实施专项流程',
-      '弱确认不写库',
+      '弱确认不存稿',
       '与 FTO 席剧本隔离',
     ],
     catalogAgentId: null,

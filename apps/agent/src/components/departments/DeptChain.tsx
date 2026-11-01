@@ -262,7 +262,7 @@ export function DeptCard({
                     onClick={() => onConfigure(row.seatId!, dept)}
                     className="focus-ring shrink-0 rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
                     aria-label={`配置 ${row.label}`}
-                    title="配置 role / skill"
+                    title="配置岗位与手法"
                   >
                     <Settings2 className="h-3 w-3" strokeWidth={1.75} aria-hidden />
                   </button>
@@ -540,6 +540,7 @@ function DeptMiniCard({
         onClick={() => onConfigure(dept.leadSeatId, dept)}
         className="focus-ring shrink-0 rounded p-1 text-slate-500 hover:bg-white hover:text-slate-800"
         aria-label={`配置 ${label}`}
+        title="配置岗位与手法"
       >
         <Settings2 className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
       </button>

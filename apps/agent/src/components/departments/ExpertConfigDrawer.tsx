@@ -19,7 +19,7 @@ type Props = {
 }
 
 /**
- * 专家配置抽屉 · role / skill / 培养
+ * 专家配置抽屉 · 岗位 / 手法 / 培养
  * 只写 OrgConfigContext，不改 expertsPatent.ts；不产生 pending。
  */
 function SkillCapabilityPicker({
@@ -135,7 +135,7 @@ export function ExpertConfigDrawer({ seatId, dept, onClose }: Props) {
               htmlFor="expert-role"
               className="block text-[11px] font-semibold uppercase tracking-wide text-slate-600"
             >
-              Role · 岗位说明
+              岗位说明
             </label>
             <p className="mt-0.5 text-[11px] text-slate-500">
               留空则沿用既有说明：{def?.description?.slice(0, 40) ?? '—'}
@@ -155,7 +155,7 @@ export function ExpertConfigDrawer({ seatId, dept, onClose }: Props) {
           <section>
             <div className="flex items-baseline justify-between">
               <h3 className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">
-                Skills · 能力
+                办事方法
               </h3>
               <span className="tabular text-[11px] text-slate-500">
                 {enabledCount}/{cfg.skills.length} 启用
@@ -207,15 +207,20 @@ export function ExpertConfigDrawer({ seatId, dept, onClose }: Props) {
                       <Trash2 className="h-3 w-3" strokeWidth={1.75} aria-hidden />
                     </button>
                   </div>
-                  <textarea
-                    value={s.prompt}
-                    onChange={(e) => patchSkill(seatId, s.id, { prompt: e.target.value })}
-                    rows={2}
-                    placeholder="提示词 · 这段文字决定该 skill 的执行口径"
-                    aria-label={`${s.name} 提示词`}
-                    className="focus-ring mt-1 w-full resize-y rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2 py-1.5 text-[11px] leading-relaxed text-slate-700 placeholder:text-slate-400"
-                    data-testid={`expert-skill-prompt-${s.id}`}
-                  />
+                  <details className="mt-1" data-testid={`expert-skill-prompt-fold-${s.id}`}>
+                    <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500 hover:text-slate-700">
+                      口径说明{s.prompt?.trim() ? ' · 已填' : ' · 可填'}
+                    </summary>
+                    <textarea
+                      value={s.prompt}
+                      onChange={(e) => patchSkill(seatId, s.id, { prompt: e.target.value })}
+                      rows={2}
+                      placeholder="口径说明 · 这段文字决定该手法怎么办"
+                      aria-label={`${s.name} 口径说明`}
+                      className="focus-ring mt-1 w-full resize-y rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2 py-1.5 text-[11px] leading-relaxed text-slate-700 placeholder:text-slate-400"
+                      data-testid={`expert-skill-prompt-${s.id}`}
+                    />
+                  </details>
                 </li>
               ))}
             </ul>
@@ -230,8 +235,8 @@ export function ExpertConfigDrawer({ seatId, dept, onClose }: Props) {
                     setNewSkill('')
                   }
                 }}
-                placeholder="新增 skill，如「同族对比」"
-                aria-label="新增 skill"
+                placeholder="新增手法，如「同族对比」"
+                aria-label="新增手法"
                 className="focus-ring min-h-9 min-w-0 flex-1 rounded-[var(--radius-sm)] border border-slate-200 px-2 text-[12px] placeholder:text-slate-500"
                 data-testid="expert-skill-input"
               />
@@ -279,7 +284,7 @@ export function ExpertConfigDrawer({ seatId, dept, onClose }: Props) {
             </div>
             <p className="tabular mt-1 text-[10px] text-slate-500">
               {xp.level === 5
-                ? '已达最高档 L5'
+                ? '已达最高档 · 宗师'
                 : `当前档内 ${xp.current}/${xp.need}，再 ${xp.need - xp.current} 升级 ${
                     LEVEL_LABEL[(xp.level + 1) as 2 | 3 | 4 | 5]
                   }`}

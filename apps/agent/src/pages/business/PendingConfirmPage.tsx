@@ -321,7 +321,7 @@ export function PendingConfirmDetailPage() {
       setDoneMsg(
         synced.midOk
           ? `已通过 · ${decision.decisionShort} · 可推进下一部门`
-          : `已通过 · 中台交接未写入（${synced.midMessage}）`,
+          : `已通过 · 案卷交接未写入（${synced.midMessage}）`,
       )
       const nextSeat = nextSeatAfterConfirm(item.kind, pass)
       const nextDept = orgDeptByLeadSeat(nextSeat)
@@ -348,7 +348,7 @@ export function PendingConfirmDetailPage() {
       const synced = await returnItem(item.id, note)
       setDoneMsg(
         synced.businessOk && !synced.midOk
-          ? `${base} · 中台交接未写入（${synced.midMessage}）`
+          ? `${base} · 案卷交接未写入（${synced.midMessage}）`
           : base,
       )
       const ownerDept = orgDeptByLeadSeat(ownerSeatId)

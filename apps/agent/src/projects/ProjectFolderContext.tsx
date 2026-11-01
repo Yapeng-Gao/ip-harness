@@ -761,7 +761,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
           id: uid('tl'),
           projectId: input.projectId,
           kind: 'domain_command',
-          title: `写库示意 · ${domainCommandOfficeLabel(input.command)}`,
+          title: `存稿示意 · ${domainCommandOfficeLabel(input.command)}`,
           detail: input.note,
           at: entry.at,
           expertId: input.expertId,
@@ -807,20 +807,20 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       appendMessage(projectId, orchId, {
         role: 'assistant',
         content:
-          '【演示】自发拆派撰稿席：请出假权利要求草稿 → 提请确认 → 存稿写库示意。',
+          '【演示】自发拆派撰稿席：请出假权利要求草稿 → 提请确认 → 存稿示意。',
         meta: { backend: 'mock' },
       })
       dispatchToExpert({
         projectId,
         toExpertId: 'expert-draft',
-        summary: '演示：请生成权利要求草稿并提请确认写库示意',
+        summary: '演示：请生成权利要求草稿并提请确认存稿示意',
       })
       jumpToStep(projectId, 'expert-draft', 'claims')
       jumpToStep(projectId, 'expert-draft', 'confirm')
       appendMessage(projectId, orchId, {
         role: 'system',
         content:
-          '【演示】撰稿席已出假权利要求草稿并进入确认。请到撰稿席点确认 → 观察写库示意与中台映射。',
+          '【演示】撰稿席已出假权利要求草稿并进入确认。请到撰稿席点确认 → 观察存稿示意与办理节点映射。',
         meta: { backend: 'mock' },
       })
     },
@@ -970,7 +970,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
         appendMessage(projectId, orchId, {
           role: 'assistant',
           content:
-            '【演示全链路 · 完成】已收齐 8 席回执。可到交底/撰稿/OA 席走确认→写库示意；递交席仅闸示意、禁真递交。',
+            '【演示全链路 · 完成】已收齐 8 席回执。可到交底/撰稿/OA 席走确认→存稿示意；递交席仅闸示意、禁真递交。',
           meta: { backend: 'mock' },
         })
         setTimeline((prev) => [

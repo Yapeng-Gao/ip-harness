@@ -41,7 +41,7 @@ export function PatentSeatPage() {
     if (!getThread(SHELL_DM_PROJECT, seatId)) {
       appendMessage(SHELL_DM_PROJECT, seatId, {
         role: 'system',
-        content: `【单聊就绪】${def.name} · 步骤条/剧本/双文件/validator 可跑（样机内存${def.phase ? ' · 后置业务' : ''}）`,
+        content: `【单聊就绪】${def.name} · 步骤条/剧本/双文件/样机校验可跑（样机内存${def.phase ? ' · 后置业务' : ''}）`,
         meta: { backend: 'mock' },
       })
     }

@@ -1294,7 +1294,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         setFlowNodeProgress(target.caseId, row.flowKey, row.stepIndex)
       }
       if (!run.ok) {
-        const fail = `中台交接未写入 · ${run.message}`
+        const fail = `案卷交接未写入 · ${run.message}`
         setLastReturnHint(filedHint ? `${filedHint} · ${fail}` : fail)
       }
       return {
@@ -1435,7 +1435,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         setFlowNodeProgress(target.caseId, row.flowKey, row.stepIndex)
       }
       if (!run.ok) {
-        setLastReturnHint(`${baseHint} · 中台交接未写入（${run.message}）`)
+        setLastReturnHint(`${baseHint} · 案卷交接未写入（${run.message}）`)
       }
       return {
         businessOk: true,

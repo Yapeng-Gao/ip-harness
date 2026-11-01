@@ -24,7 +24,7 @@ export const OA_DEPTH_STEPS: ExpertStepDef[] = [
       '|--------|------|------------|',
       '| 创造性 | 争辩+限缩 | 中 |',
       '| 清楚性 | 修改定义 | 高 |',
-      '| 超范围 blocker | — | **未触发** |',
+      '| 超范围拦下 | — | **未触发** |',
     ].join('\n'),
   },
   {
@@ -67,7 +67,7 @@ export const OA_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'confirm',
     label: '答复确认 · 待交',
-    script: '【OA】策略与草稿待你确认。未确认不写库；无真递交。',
+    script: '【OA】策略与草稿待你确认。未确认不存稿；无真递交。',
     tool: { name: 'submit_oa_for_hitl', preview: '待策略确认' },
     triggersHitl: true,
     hitlGate: 'approve_strategy',

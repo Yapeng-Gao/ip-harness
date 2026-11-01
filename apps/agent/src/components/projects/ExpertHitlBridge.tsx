@@ -41,7 +41,7 @@ type Props = {
 }
 
 /**
- * 绑真实 AgentSession：确认 → sessionHitlAction → 写库示意链路保持。
+ * 绑真实 AgentSession：确认 → sessionHitlAction → 存稿示意链路保持。
  * Orchestrator / read-only FTO still surface honesty; no bypass of dispatchCommand.
  */
 export function ExpertHitlBridge({
@@ -296,15 +296,15 @@ export function ExpertHitlBridge({
                   caseId: writeCaseId,
                   ...(seatKey ? { handoffKey: seatKey } : {}),
                   note: seatKey
-                    ? `确认后写库 · ${domainCommandOfficeLabel(cmd)} · ${seatKey}`
-                    : `确认后写库 · ${domainCommandOfficeLabel(cmd)}（本席无交接点，不绑权要）`,
+                    ? `确认后存稿 · ${domainCommandOfficeLabel(cmd)} · ${seatKey}`
+                    : `确认后存稿 · ${domainCommandOfficeLabel(cmd)}（本席无交接点，不绑权要）`,
                   actor: 'agent',
                 }
               : {
                     type: cmd,
                     caseId: writeCaseId,
                     ...(seatKey && cmd === 'submitResearch' ? { handoffKey: seatKey } : {}),
-                    note: `确认后写库示意 · ${domainCommandOfficeLabel(cmd)}`,
+                    note: `确认后存稿示意 · ${domainCommandOfficeLabel(cmd)}`,
                     actor: 'agent',
                   }
         recordDomainCommandWrite({
@@ -312,17 +312,17 @@ export function ExpertHitlBridge({
           expertId: expert.id,
           command: cmd,
           payload,
-          note: `${writeCand.label} · ${reason} · 中台节点示意案 ${writeCaseLabel}`,
+          note: `${writeCand.label} · ${reason} · 办理节点示意案 ${writeCaseLabel}`,
         })
         void dispatchCommand(payload as never).catch(() => {
           /* local log already recorded */
         })
         appendMessage(projectId, expert.id, {
           role: 'system',
-          content: `写库示意 · ${domainCommandOfficeLabel(cmd)} → 办理节点 ${writeCaseLabel} · ${reason}`,
+          content: `存稿示意 · ${domainCommandOfficeLabel(cmd)} → 办理节点 ${writeCaseLabel} · ${reason}`,
           meta: { backend: 'mock' },
         })
-        setToast(`${domainCommandOfficeLabel(cmd)} · 已记入写库示意`)
+        setToast(`${domainCommandOfficeLabel(cmd)} · 已记入存稿示意`)
       }
 
       if (r.ok) {
@@ -351,7 +351,7 @@ export function ExpertHitlBridge({
       } else if (writeCand?.command) {
         // Formal gate may block (e.g. disclosure not ready); still surface L3 write shape.
         recordL3Write(
-          `正式闸未过（${r.message}）；仍记写库示意（样机）`,
+          `正式闸未过（${r.message}）；仍记存稿示意（样机）`,
         )
       }
     },
@@ -384,7 +384,7 @@ export function ExpertHitlBridge({
       <div className="flex items-center justify-between gap-2 border-t border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
         <span>
           {expert.role === 'orchestrator'
-            ? '总控席无写库确认闸（只能拆派/汇总）。'
+            ? '总控席无存稿确认闸（只能拆派/汇总）。'
             : '弱确认 · 未绑专利目录 · 本席不写案件库（通用协作）。'}
         </span>
         {expert.role !== 'orchestrator' ? (
@@ -395,10 +395,10 @@ export function ExpertHitlBridge({
               setThreadHitl(projectId, expert.id, false)
               appendMessage(projectId, expert.id, {
                 role: 'system',
-                content: '已本地弱确认（未写库）。',
+                content: '已本地弱确认（未存稿）。',
                 meta: { backend: 'mock' },
               })
-              setToast('弱确认完成（未写库）')
+              setToast('弱确认完成（未存稿）')
             }}
           >
             确认已阅
@@ -511,7 +511,7 @@ export function ExpertHitlBridge({
               className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600"
               title={c.note}
             >
-              写库候选：{c.command ? domainCommandOfficeLabel(c.command) : '只读（不写）'} · {c.label}
+              存稿候选：{c.command ? domainCommandOfficeLabel(c.command) : '只读（不写）'} · {c.label}
             </span>
           ))}
         </div>

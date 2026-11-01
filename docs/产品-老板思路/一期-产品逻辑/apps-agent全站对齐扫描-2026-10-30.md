@@ -3480,3 +3480,59 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 |---|---|
 | 2026-11-01 CST | 资产支路收口+编制档位/名册+旁路人话；smoke `PASS_RESCAN_86`；shots `.tmp/rescan-86-shots/`；§86；t630u |
 
+## 87. 编制抽屉 skill/提示词/L5 · 组队脚本回潮 · 写库/中台/blocker 人话（2026-11-01 Asia/Shanghai）
+
+> **问题：** 续扫重复面、页面逻辑、布局/UIUX、原型与展示内容逻辑；对照一期真源意思对齐。总控剧本仍「请组队或分派」回潮组队语义；编制抽屉上屏 `Role/Skills/提示词/skill/L5` 与理念「专家/部门/请示、不默认 Prompt」冲突，口径区信息墙；旁路时间线/确认桥/会话条仍「写库示意」「中台节点」；过程条「超范围blocker」；席位单聊「validator」；Harness 纸面「编排思考/领域命令」。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念。不认 lifecycle。组队不回潮。
+
+### 87.0 缺口清单
+
+| ID | 面 | 缺口简述 | 维度 | 严重度 | 建议改法 | 本批 |
+|---|---|---|---|---|---|---|
+| G01 | 席位样机总控剧本 | 「请组队或分派」 | 产品逻辑/展示 | P0 | 改「请分派各席」 | ✅ |
+| G02 | 编制抽屉 / 向导 / 全库页 | Role·Skills·提示词·skill·L5·IAM | 展示/UIUX/理念 | P0 | 岗位/手法/口径/宗师；手法隐喻 | ✅ |
+| G03 | 抽屉口径墙 | 每手法常开大 textarea | 布局 | P1 | 口径说明默认收折 | ✅ |
+| G04 | 时间线/确认桥/中台映射 | 「写库示意」「中台节点」 | 展示/工程味 | P0 | 存稿示意 / 办理节点 | ✅ |
+| G05 | 会话时间线 / 沙盒诚实条 | 写库标签 | 展示 | P1 | 存稿 | ✅ |
+| G06 | 过程条 / 校验 / 深度包 | blocker / Pass / validator | 展示 | P1 | 超范围拦下 / 通过 / 样机校验 | ✅ |
+| G07 | Harness 纸面 | 编排思考 / 领域命令 / Agent 错配 | 展示 | P1 | 调度/办事命令/助手 | ✅ |
+| G08 | 护栏与模板 brief | 无写库权 / 禁止一键写库 | 展示 | P1 | 存稿措辞 | ✅ |
+| G09 | 真集成 | 鉴权/IM/递交/报价/日历 | 集成 | — | 后置 | 后置 |
+| G10 | Go/No-Go 跨包 | packages flowSteps 英名 | 跨包 | — | 后置 | 后置 |
+| G11 | 编制/部台信息墙大拆 | 行数仍高 | 布局 | P2 | 承 §75；本批仅口径收折 | 部分 |
+
+### 87.1 本批落地
+
+| # | 对应 | 行为 |
+|---|---|---|
+| A | G01 | expertsPatent 总控 brief 去组队 |
+| B | G02–G03 | ExpertConfigDrawer / OnboardingStrip / DeptChain / DepartmentsPage |
+| C | G04–G05 | Timeline / HitlBridge / MidMap / FolderContext / SessionTimeline / Grok·L1 旁路 |
+| D | G06 | CaseProcessPanel / SeatValidator / draft·oa·research·valuation Depth / PatentSeatPage |
+| E | G07–G08 | AgentHarnessOverview / generalBots / expertsGeneral / PendingConfirm mid |
+
+### 87.2 复扫表（改后）
+
+| 面 | 结论 |
+|---|---|
+| /agent/seats 总控剧本 | 无「请组队」 |
+| /agent/departments 抽屉 | 无 Role/Skills/提示词/skill/L5；口径默认收折 |
+| 席位样机时间线/确认 | 存稿示意；无写库示意/中台节点抢屏 |
+| sandbox / bots | 存稿须确认；无 DomainCommand/HITL/多 bot |
+| 过程条 | 超范围拦下 |
+| 回潮 | 无组队/lifecycle 三档进门 |
+
+### 87.3 六维（机制报告，不宣称落地）
+
+设计：编制/旁路工程味跟人话与收折。使用成本：少调试串、抽屉矮一截。逻辑：大厅→公司→部台 / branch query / 硬请示在聊天不变。
+
+### 87.4 后置
+
+真集成；Go/No-Go 跨包；编制/部台信息墙大拆；main-path-sample 不碰。
+
+### 87.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-11-01 CST | 组队脚本+编制抽屉/写库中台blocker人话+口径收折；smoke `PASS_RESCAN_87`；shots `.tmp/rescan-87-shots/`；§87；t631u |
+

@@ -141,7 +141,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "id": "brief",
         "label": "收目标",
-        "script": "【总控】已记下项目目标。请组队或分派；验收须双文件（成果+办理摘记）齐。"
+        "script": "【总控】已记下项目目标。请分派各席；验收须双文件（成果+办理摘记）齐。"
       },
       {
         "id": "dispatch",
@@ -156,14 +156,14 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
       {
         "id": "summarize",
         "label": "汇总",
-        "script": "【总控】已汇总各席回执。写库仍须对应专家确认。"
+        "script": "【总控】已汇总各席回执。存稿仍须对应专家确认。"
       }
     ],
     "hitlGates": [],
     "domainCommandCandidates": [
       {
         "command": null,
-        "label": "无写库权",
+        "label": "无存稿权",
         "note": "仅拆派/验收"
       }
     ],
@@ -454,7 +454,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     ],
     "guardrails": [
       "交底≠权要撰写",
-      "未确认不写库"
+      "未确认不存稿"
     ],
     "catalogAgentId": "agent-disclosure",
     "accent": "indigo",
@@ -500,7 +500,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     ],
     "guardrails": [
       "撰写≠交底",
-      "未确认不写库"
+      "未确认不存稿"
     ],
     "catalogAgentId": "agent-claims",
     "accent": "violet",
@@ -683,7 +683,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "guardrails": [
       "仅已 file",
       "无真 OA",
-      "未确认不写库"
+      "未确认不存稿"
     ],
     "catalogAgentId": "agent-oa",
     "accent": "cyan",
@@ -705,7 +705,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "domainCommandCandidates": [
       {"command": null, "label": "样机示意 · 不写真缴费", "note": "年费台账心智 · 内存确认"}
     ],
-    "guardrails": ["后置业务可跑", "禁真缴费", "未确认不写库"],
+    "guardrails": ["后置业务可跑", "禁真缴费", "未确认不存稿"],
     "catalogAgentId": "agent-annuity",
     "accent": "yellow",
     "catalogGroup": "phase",
@@ -749,7 +749,7 @@ export const PATENT_EXPERTS: Record<string, ProjectExpertDef> = {
     "domainCommandCandidates": [
       {"command": null, "label": "样机示意 · 不写真签约", "note": "转化条款心智 · 内存确认"}
     ],
-    "guardrails": ["后置业务可跑", "禁真签约", "未确认不写库"],
+    "guardrails": ["后置业务可跑", "禁真签约", "未确认不存稿"],
     "catalogAgentId": "agent-monetize",
     "accent": "emerald",
     "catalogGroup": "phase",

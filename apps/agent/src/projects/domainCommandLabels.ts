@@ -1,10 +1,10 @@
 /**
- * apps/agent 写库示意 · Office 人话标签单源（§79）。
+ * apps/agent 存稿示意 · Office 人话标签单源（§79/§87）。
  * 与 packages COMMAND_LABELS（审计英名）分立；本表只服务壳 UI。
  */
 import type { CommandName } from '@ip/domain'
 
-/** DomainCommand 写库示意 · 中文名 */
+/** 办事命令 · 存稿示意中文名（内部仍 DomainCommand） */
 export const DOMAIN_COMMAND_OFFICE_LABEL: Record<CommandName, string> = {
   submitResearch: '提交查新',
   approveHandoff: '批准交接',

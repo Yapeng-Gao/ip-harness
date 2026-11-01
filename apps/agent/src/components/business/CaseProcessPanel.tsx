@@ -151,7 +151,7 @@ export function CaseProcessPanel({
               ['oa_clarity', 'OA·清楚性+修术语'],
               ['oa_strategy_reject', 'OA·策略驳回'],
               ['oa_round2', '第2通到达'],
-              ['oa_blocker', '超范围blocker'],
+              ['oa_blocker', '超范围拦下'],
               ['layout_flywheel', '布局漏洞→待拍板'],
               ['layout_flywheel_biz', '启用布局·待确认'],
             ] as const

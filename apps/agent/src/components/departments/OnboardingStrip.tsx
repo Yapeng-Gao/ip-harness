@@ -20,7 +20,7 @@ type Props = {
   onConfigure: (seatId: ProjectExpertId, dept: OrgDept) => void
 }
 
-const STEPS = ['常设部门', '主责专家', '专家 skill'] as const
+const STEPS = ['常设部门', '主责专家', '专家手法'] as const
 
 /**
  * 部门页内嵌 · 首次配置向导
@@ -71,7 +71,7 @@ export function OnboardingStrip({ onConfigure }: Props) {
             先配一遍组织
           </h2>
           <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">
-            选常设部门 → 定主责专家 → 配 skill。之后每次开案都按这套编制走。
+            选常设部门 → 定主责专家 → 配手法。之后每次开案都按这套编制走。
           </p>
         </div>
       </div>
@@ -171,7 +171,7 @@ export function OnboardingStrip({ onConfigure }: Props) {
         {step === 2 && (
           <div className="space-y-1.5">
             <p className="text-[11px] text-slate-600">
-              逐个专家配置 role 与 skill；也可以稍后在部门卡里点齿轮。
+              逐个专家配置岗位与手法；也可以稍后在部门卡里点齿轮。
             </p>
             <ul className="grid gap-1 sm:grid-cols-2">
               {MAIN_CHAIN_DEPTS.map((d) => {

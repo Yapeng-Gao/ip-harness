@@ -15,7 +15,7 @@ import { OnboardingStrip } from '../components/departments/OnboardingStrip'
 type View = 'org' | 'network' | 'board'
 
 /**
- * 专业/编制 · /agent/departments
+ * 编制名册（全库旁路）· /agent/departments
  * 全库编制旁路。一期作业主路径：大厅 → 公司案 → 部台；案级真源在编制名册。
  */
 export function DepartmentsPage() {
@@ -178,7 +178,7 @@ export function DepartmentsPage() {
             <DeptChain onConfigure={onConfigure} />
             <DeptGroups onConfigure={onConfigure} />
             <p className="mt-4 text-[11px] leading-relaxed text-slate-500">
-              样机 · 部门 / 专家 / skill 为产品心智，不接真组织 IAM；配置只在本机保存 · 部门闸只由主责交卷，副席不进待确认
+              样机 · 部门 / 专家 / 手法为办事隐喻，不接真组织账号；配置只在本机保存 · 部门闸只由主责交卷，副席不进待确认
             </p>
           </div>
         ) : view === 'network' ? (

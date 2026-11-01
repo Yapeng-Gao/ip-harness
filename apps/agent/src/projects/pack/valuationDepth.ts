@@ -73,7 +73,7 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'card',
     label: '评估卡确认 · 待交',
     script:
-      '【价值】评估卡 + 办理摘记待确认后交年费席。无独立写库闸号；交卷示意。',
+      '【价值】评估卡 + 办理摘记待确认后交年费席。无独立存稿闸号；交卷示意。',
     tool: {
       name: 'draft_valuation_card',
       preview: '评估卡稿 · 软确认',
@@ -86,7 +86,7 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**交给年费**：分级表驱动缴/放建议；评估卡不假装已入库。',
       '',
-      '确认后样机交卷；服务年费闸而非本席独立写库。',
+      '确认后样机交卷；服务年费闸而非本席独立存稿。',
     ].join('\n'),
   },
 ]
