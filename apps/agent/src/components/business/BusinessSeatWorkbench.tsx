@@ -84,6 +84,10 @@ type Props = {
    * 让汇报占第一眼；勿把案级异部 pending 扶成上方拍板。
    */
   quietChrome?: boolean
+  /**
+   * §133：右栏 AI 产物 → 写入并聚焦中栏稿纸（部门台 hideArtifactPanel 时用）。
+   */
+  onOpenAiProductInMid?: (product: { title: string; body: string }) => void
 }
 
 /**
@@ -103,6 +107,7 @@ export function BusinessSeatWorkbench({
   hideArtifactPanel = false,
   compactRail = false,
   quietChrome = false,
+  onOpenAiProductInMid,
 }: Props) {
   const {
     advanceSeatWork,
@@ -357,11 +362,29 @@ export function BusinessSeatWorkbench({
       const r = advanceSeatWork(caseId, seatId)
       setFlashBody(true)
       if (r.processLogId) setFlashLogId(r.processLogId)
+      // §133 mid sync after advance：hideArtifactPanel 时右栏无「成果」tab，把本席产物写入中栏稿纸
+      if (hideArtifactPanel && onOpenAiProductInMid && dual) {
+        const idx = getThread(caseId, seatId)?.stepIndex ?? 0
+        const progressive = buildProgressiveArtifact(dual, def.steps, idx)
+        const marker = '## 本席推进记录'
+        const excerpt =
+          progressive.indexOf(marker) >= 0
+            ? progressive.slice(progressive.indexOf(marker)).trim()
+            : progressive.trim()
+        if (excerpt.length > 24) {
+          onOpenAiProductInMid({
+            title: r.stepLabel ? `本步 · ${r.stepLabel}` : '本席推进记录',
+            body: excerpt.slice(0, 4000),
+          })
+        }
+      }
       if (r.delivered && r.confirm) {
         setSafePanel('artifact')
         appendMessage(caseId, seatId, {
           role: 'assistant',
-          content: `【${seatLabel}】已交卷「${r.stepLabel}」。请你确认后主链才前进。`,
+          content: hideArtifactPanel
+            ? `【${seatLabel}】已交卷「${r.stepLabel}」。产出正文在中栏稿纸；请你确认后主链才前进。`
+            : `【${seatLabel}】已交卷「${r.stepLabel}」。请你确认后主链才前进。`,
           meta: { backend: 'mock', stepId: 'deliver' },
         })
       } else {
@@ -896,6 +919,25 @@ export function BusinessSeatWorkbench({
                       {displayContent(m.role, m.content, m.meta?.stepId)}
                     </div>
                   )}
+                  {hideArtifactPanel &&
+                  onOpenAiProductInMid &&
+                  (m.role === 'assistant' || m.role === 'tool') &&
+                  (m.content?.trim().length ?? 0) > 24 ? (
+                    <button
+                      type="button"
+                      className="btn-press focus-ring mt-1.5 rounded-full border border-violet-200 bg-white px-2 py-0.5 text-[10px] font-medium text-violet-800 hover:bg-violet-50"
+                      data-testid="business-seat-open-in-mid"
+                      title="产物放到中栏稿纸阅读"
+                      onClick={() =>
+                        onOpenAiProductInMid({
+                          title: toolUi?.title || (m.meta?.stepId ? `本步 · ${m.meta.stepId}` : '本席产出'),
+                          body: displayContent(m.role, m.content, m.meta?.stepId),
+                        })
+                      }
+                    >
+                      在中栏打开
+                    </button>
+                  ) : null}
                 </div>
                 )
               })

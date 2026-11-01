@@ -24,6 +24,8 @@ type Props = {
     opts?: { reason?: string; riskAccepted?: boolean },
   ) => void | Promise<void>
   onReturn: (confirmId: string, note: string) => void | Promise<void>
+  /** §133：汇报里的成果预览 → 中栏打开 */
+  onOpenInMid?: (product: { title: string; body: string }) => void
 }
 
 /**
@@ -38,6 +40,7 @@ export function DeptAskReportBubble({
   busy = false,
   onConfirm,
   onReturn,
+  onOpenInMid,
 }: Props) {
   const { entryRole } = useEntryRole()
   const decision = confirmDecisionMeta(item.kind)
@@ -150,6 +153,7 @@ export function DeptAskReportBubble({
           decisionMeaning={decision.decisionMeaning}
           confirmerLabel={decision.confirmerLabel}
           suggesterLabel={decision.suggesterLabel}
+          onOpenInMid={onOpenInMid}
         />
       ) : null}
 
@@ -257,6 +261,7 @@ function AskEvidencePanel(props: {
   decisionMeaning: string
   confirmerLabel: string
   suggesterLabel: string
+  onOpenInMid?: (product: { title: string; body: string }) => void
 }) {
   const bundle = buildAskEvidence({
     kind: props.kind,
@@ -313,12 +318,29 @@ function AskEvidencePanel(props: {
           缺来源/推演/对比不得装「可签字」。本气泡不提供一键过质检线；缺段须补材料或驳回改稿。
         </p>
         {props.resultPreview?.trim() ? (
-          <pre
-            className="max-h-20 overflow-auto whitespace-pre-wrap rounded bg-white p-2 text-[10px] leading-relaxed text-slate-500"
-            data-testid="ask-result-preview"
-          >
-            {props.resultPreview.trim().slice(0, 400)}
-          </pre>
+          <div className="space-y-1">
+            <pre
+              className="max-h-20 overflow-auto whitespace-pre-wrap rounded bg-white p-2 text-[10px] leading-relaxed text-slate-500"
+              data-testid="ask-result-preview"
+            >
+              {props.resultPreview.trim().slice(0, 400)}
+            </pre>
+            {props.onOpenInMid ? (
+              <button
+                type="button"
+                className="btn-press focus-ring rounded-full border border-violet-200 bg-white px-2 py-0.5 text-[10px] font-medium text-violet-800 hover:bg-violet-50"
+                data-testid="ask-open-in-mid"
+                onClick={() =>
+                  props.onOpenInMid?.({
+                    title: '汇报成果预览',
+                    body: props.resultPreview!.trim(),
+                  })
+                }
+              >
+                在中栏打开
+              </button>
+            ) : null}
+          </div>
         ) : null}
       </div>
     </details>

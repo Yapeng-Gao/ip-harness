@@ -6551,3 +6551,41 @@ Leslie 两问本身就是扫描信号：若「本步工具」「一部一产出�
 | --- | --- |
 | 2026-11-01 CST | §132 IMPLEMENT G01–G09；t718u；PASS_RESCAN_132 |
 
+## 133. IMPLEMENT · 右栏 AI 产物进中栏稿纸 · PASS_RESCAN_133 · 2026-11-01 Asia/Shanghai
+
+> **范围：** Leslie t719「确保右侧的ai产物都能在工作台展示出来」— 右栏会话/汇报/本步助手里出现的 AI 产出，须在部台**中栏稿纸**可见（不困在气泡）。对照一期真源意思（中栏=产物稿纸 primary；右栏=对话/汇报）；Office 语感；**不宣称四维/六维**；保持 §119–§132（document-first、无缺项墙、无换部门、收口静默齐套）。  
+> **真源：** [`工作台主次分区`](工作台主次分区-2026-10-30.md) · [`工作台右栏AI逻辑说明`](工作台右栏AI逻辑说明-2026-10-30.md) · [`一期节点/`](../一期节点/) · §125–§132。  
+> **基线：** `c5253d4`（§132）→ 本批 IMPLEMENT。  
+> **Smoke / 截图：** `.tmp/rescan-133-shots/` · `/workspace/uploads/rescan-133-shots/`；脚本 `.tmp/rescan-133-smoke.mjs` → **PASS_RESCAN_133**（交底+申请 mid 见「本席 AI 产物（与右栏同步）」）。
+
+### 133.1 改了什么（意思）
+
+| 点 | 落地 |
+|---|---|
+| 中栏合成 | `composeMidDeliverableBody`：Office 主稿 + 步进渐进成果 + **右栏会话 AI 产物**同源拼进中栏 |
+| 推进写入 | hideArtifactPanel 时 `advance` 后把「本席推进记录」写入中栏（右栏无成果 tab） |
+| 气泡打开 | 会话气泡 / 汇报依据「在中栏打开」；本步助手填空 `applyAssistantFillToMid` |
+| 汇报自动同步 | 硬请示 `resultPreview` 进入部台时自动写入中栏（不困在汇报气泡） |
+
+### 133.2 现已进中栏的产物类型
+
+- 交底部：步进脚本【交底】…、本席推进记录、工具气泡产物  
+- 申请部：特征表 / 权项层级规划等【撰写】步进产物、推进记录  
+- 汇报成果预览（resultPreview）· 助手填空字段 · 用户点「在中栏打开」的片段  
+
+### 133.3 Smoke
+
+| 案 / 部 | 结果 |
+|---|---|
+| case-biz-edge-scheduler / disclosure | sync=1 · mid 含「本席 AI 产物（与右栏同步）」+【交底】推进记录 |
+| case-biz-edge-scheduler / draft | sync=1 · mid 含特征表【撰写】推进记录 |
+| 单测 `midAiProducts.test.ts` | 9 pass |
+
+### 133.4 截图
+
+`/workspace/uploads/rescan-133-shots/disclosure.png` · `draft.png`（及 edge-scheduler 命名副本）
+
+| 时间 | 记 |
+|---|---|
+| 2026-11-01 CST | §133 IMPLEMENT 右栏 AI→中栏；t719u；PASS_RESCAN_133 |
+

@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   businessSeatLabel,
   currentSeatForProgress,
@@ -115,6 +115,13 @@ import {
 } from '../../business/caseFileDemo'
 import { ThinDeptWorkPanel } from '../../components/business/ThinDeptWorkPanel'
 import { ThickStepWorkPanel } from '../../components/business/ThickStepWorkPanel'
+import {
+  applyAssistantFillToMid,
+  composeMidDeliverableBody,
+  focusMidAiProductBody,
+  MID_AI_SYNC_HONEST,
+} from '../../business/midAiProducts'
+import { buildProgressiveArtifact } from '../../business/seatStepBodies'
 import { SoftEmpty } from '../../components/soft/SoftEmpty'
 import { BranchFlowPanel } from '../../components/business/BranchFlowPanel'
 import { AuxChainBanner } from '../../components/business/AuxChainBanner'
@@ -237,6 +244,8 @@ export function BusinessCaseDeptPage() {
   const [leftOpen, setLeftOpen] = useState(false) // §109/§111：材料目录默认 toc/抽屉
   /** §122/§124：本步助手默认关；侧抽屉不拆读、不挡主稿意思 */
   const [stepToolsOpen, setStepToolsOpen] = useState(false)
+  /** §133：右栏 AI 产物 → 中栏聚焦闪一下 */
+  const [midAiFlash, setMidAiFlash] = useState(false)
   const [mobileRightOpen, setMobileRightOpen] = useState(false)
   /** §111：右栏领导对话可折（桌面） */
   const [rightRailOpen, setRightRailOpen] = useState(true)
@@ -462,8 +471,13 @@ export function BusinessCaseDeptPage() {
     ? dual.sampleArtifact.split('\n').slice(0, 6).join('\n')
     : null
 
+  const leadExpertDef = dept ? getProjectExpert(dept.leadSeatId) : null
+  /** §133 早期：无 Office 步时用渐进成果；正式中栏正文见 centerBody 合成 */
   const artifactBody =
     thread?.artifactMarkdown?.trim() ||
+    (dual && leadExpertDef
+      ? buildProgressiveArtifact(dual, leadExpertDef.steps, stepIndex)
+      : null) ||
     deliverableSummary ||
     handoff.deliverable
 
@@ -739,6 +753,69 @@ export function BusinessCaseDeptPage() {
       ? Math.max(1, stepList.findIndex((s) => s.id === currentStep.id) + 1)
       : 0
 
+  /** §133：部台中栏终稿（Office 主稿 + 右栏同源 AI 产物） */
+  const composedMidBody = composeMidDeliverableBody({
+    artifactMarkdown: thread?.artifactMarkdown,
+    officeMainBody: currentStep?.mainBody,
+    dual,
+    expertSteps: leadExpertDef?.steps,
+    seatStepIndex: stepIndex,
+    handoffDeliverable: handoff.deliverable,
+    messages: thread?.messages,
+  })
+
+  const openAiProductInMid = useCallback(
+    (product: { title: string; body: string }) => {
+      if (!activeSeat) return
+      setSelectedMaterialId('deliverable')
+      setStepToolsOpen(false)
+      const next = focusMidAiProductBody({
+        existing: thread?.artifactMarkdown,
+        officeMainBody: currentStep?.mainBody,
+        title: product.title,
+        body: product.body,
+      })
+      patchThread(caseId, activeSeat, { artifactMarkdown: next })
+      setMidAiFlash(true)
+      window.setTimeout(() => setMidAiFlash(false), 1600)
+    },
+    [activeSeat, caseId, currentStep?.mainBody, patchThread, thread?.artifactMarkdown],
+  )
+
+  const applyFillToMid = (field: {
+    fieldKey: string
+    fieldLabel: string
+    fieldValue: string
+  }) => {
+    if (!activeSeat) return
+    setSelectedMaterialId('deliverable')
+    const next = applyAssistantFillToMid({
+      existing: thread?.artifactMarkdown,
+      officeMainBody: currentStep?.mainBody,
+      fieldKey: field.fieldKey,
+      fieldLabel: field.fieldLabel,
+      fieldValue: field.fieldValue,
+    })
+    patchThread(caseId, activeSeat, { artifactMarkdown: next })
+    setMidAiFlash(true)
+    window.setTimeout(() => setMidAiFlash(false), 1600)
+  }
+
+  /** §133 auto-surface ask resultPreview：右栏汇报里的 AI 成果同步进中栏稿纸 */
+  const askMidSyncedRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!activeSeat || !pendingAskItem) return
+    const preview = pendingAskItem.resultPreview?.trim()
+    if (!preview || preview === '【成果】—' || preview.length < 12) return
+    if (askMidSyncedRef.current === pendingAskItem.id) return
+    askMidSyncedRef.current = pendingAskItem.id
+    openAiProductInMid({
+      title: pendingAskItem.title || '汇报成果',
+      body: preview,
+    })
+  }, [activeSeat, pendingAskItem, openAiProductInMid])
+
+
   const focusedPart =
     dept && parsePartMaterialId(selectedMaterialId)
       ? findManuscriptPart(dept.id, parsePartMaterialId(selectedMaterialId)!)
@@ -884,7 +961,7 @@ export function BusinessCaseDeptPage() {
         return resolved.body
       }
     }
-    return artifactBody || handoff.deliverable || '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'
+    return composedMidBody || artifactBody || handoff.deliverable || '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'
   })()
 
   // 齐套 ↔ 正文 / 差分 / 材料树自动勾（样机；空稿收束；hold 须内容 warrant）
@@ -1177,16 +1254,27 @@ export function BusinessCaseDeptPage() {
                 </p>
                 {/* §111：全页纸感正文；本步/控件不进首屏阅读 */}
                 <article
-                  className="mt-4 rounded-lg border border-slate-200/70 bg-[#fbfaf7] px-5 py-6 shadow-sm"
+                  className={`mt-4 rounded-lg border bg-[#fbfaf7] px-5 py-6 shadow-sm ${
+                    midAiFlash
+                      ? 'border-violet-400 ring-2 ring-violet-300/60'
+                      : 'border-slate-200/70'
+                  }`}
                   data-testid="dept-manuscript-paper"
                   data-doc-feel="1"
+                  data-mid-ai-flash={midAiFlash ? '1' : '0'}
+                  data-mid-ai-sync={
+                    (composedMidBody || centerBody).includes(MID_AI_SYNC_HONEST)
+                      ? '1'
+                      : '0'
+                  }
                 >
                   <pre
                     className="max-h-[min(78vh,48rem)] overflow-auto text-[13.5px] leading-[1.75] text-slate-800 whitespace-pre-wrap font-sans"
                     data-testid="dept-output-body"
-                    data-empty={centerBody.trim() ? '0' : '1'}
+                    data-empty={(composedMidBody || centerBody).trim() ? '0' : '1'}
+                    data-mid-ai-body="1"
                   >
-                    {centerBody.trim() ||
+                    {(composedMidBody || centerBody).trim() ||
                       currentStep.mainBody ||
                       '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'}
                   </pre>
@@ -1299,6 +1387,7 @@ export function BusinessCaseDeptPage() {
                           step={currentStep}
                           caseId={caseId}
                           embedMode="widgets-only"
+                          onApplyFill={applyFillToMid}
                           onRecordNote={(note) => {
                             if (note.includes('不申')) {
                               recordJudgment(
@@ -2102,6 +2191,7 @@ export function BusinessCaseDeptPage() {
                     busy={askBusy}
                     onConfirm={onAskConfirm}
                     onReturn={onAskReturn}
+                    onOpenInMid={openAiProductInMid}
                   />
                 ) : awaitingThis ? (
                   <div
@@ -2287,6 +2377,7 @@ export function BusinessCaseDeptPage() {
                       workNonce={workNonce}
                       hideArtifactPanel
                       compactRail
+                      onOpenAiProductInMid={openAiProductInMid}
                       deliverBlocked={
                         !allChecklistDone || awaitingThis || st === '已完成'
                       }

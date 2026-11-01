@@ -6,6 +6,12 @@ type Props = {
   step: WorkbenchStepDef
   caseId: string
   onRecordNote?: (note: string) => void
+  /** §133：助手填空写入中栏主稿 */
+  onApplyFill?: (field: {
+    fieldKey: string
+    fieldLabel: string
+    fieldValue: string
+  }) => void
   /** §109：中栏已渲染交底书/本稿纸面时只出本步控件，不重复正文墙 */
   embedMode?: 'full' | 'widgets-only'
 }
@@ -19,6 +25,7 @@ export function ThickStepWorkPanel({
   step,
   caseId,
   onRecordNote,
+  onApplyFill,
   embedMode = 'full',
 }: Props) {
   const [picked, setPicked] = useState<string | null>(null)
@@ -121,7 +128,14 @@ export function ThickStepWorkPanel({
                     picked === id ? 'border-violet-400 bg-violet-50' : 'border-slate-200 bg-slate-50/80'
                   }`}
                   data-testid={`thick-d4-block-${id}`}
-                  onClick={() => mark(id, k)}
+                  onClick={() => {
+                    mark(id, k)
+                    onApplyFill?.({
+                      fieldKey: id,
+                      fieldLabel: k,
+                      fieldValue: v,
+                    })
+                  }}
                 >
                   <span className="text-[10px] font-medium text-slate-500">{k}</span>
                   <p className="text-[12px] text-slate-900">{v}</p>
