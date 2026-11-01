@@ -39,20 +39,19 @@ import { useOrgConfig } from '../../departments/OrgConfigContext'
 /**
  * 业务壳左栏 · 双角色两套结构（同视觉 token，布局/导航不同）
  * - agency（案盘）：案列表 + 待确认/期限占位为主；本案部门次要
- * - enterprise（公司陪跑）：本案八部为主；全部案子降为次入口
+ * - enterprise（公司陪跑）：案内身份「正在 · 部」+ 已办回看；换站回大厅（§128）
  * 公司首页 / 部门齐套内容不在此深改（挂 data-entry-role 供 QA）
  */
 export function BusinessCaseSidebar() {
   const { entryRole } = useEntryRole()
-  const { cases, getCase, getProgress, getPendingConfirms, stageLabel, primaryCta, enableMoreDepartments } =
+  const { cases, getCase, getProgress, getPendingConfirms, stageLabel, primaryCta } =
     useBusinessCases()
   const { deptLabel } = useOrgConfig()
   const loc = useLocation()
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const [allOpen, setAllOpen] = useState(true)
-  const [deptsOpen, setDeptsOpen] = useState(false) // §122 G05：进部默认 current-only，禁 true→false 闪全列
-  const [moreOpen, setMoreOpen] = useState(false)
+  const [deptsOpen, setDeptsOpen] = useState(false) // §128：部台不再展开八部 peer；仅 drill 用
   const [q, setQ] = useState('')
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set())
 
@@ -70,18 +69,16 @@ export function BusinessCaseSidebar() {
     return m?.[1]
   }, [loc.pathname])
 
-  // 角色 × 是否案内：默认展开哪一块
-  // §111：部台上八部默折——只露当前部名，点开再列八部
+  // 角色 × 是否案内：案列表展开；§128 八部 peer 永不作部台主航
   useEffect(() => {
-    // §118 G06：案内八部默认 current-only（概况与部台一致）；点开再列
     if (isEnterprise) {
       setAllOpen(!activeCaseId)
-      setDeptsOpen(false)
+      setDeptsOpen(drillMode) // 仅演练可列席位
     } else {
       setAllOpen(true)
-      setDeptsOpen(false)
+      setDeptsOpen(drillMode)
     }
-  }, [activeCaseId, activeDeptSlug, isEnterprise])
+  }, [activeCaseId, activeDeptSlug, isEnterprise, drillMode])
 
   const activeCase = activeCaseId ? getCase(activeCaseId) : undefined
   const prog = activeCaseId ? getProgress(activeCaseId) : undefined
@@ -125,8 +122,6 @@ export function BusinessCaseSidebar() {
     const mainIds = new Set(MAIN_CHAIN_DEPTS.map((d) => d.id))
     return [...PRE_DEPTS, ...POST_DEPTS_LIST].filter((d) => !mainIds.has(d.id))
   }, [])
-
-  const moreEnabled = (prog?.moreSeatIds?.length ?? 0) > 0
 
   const seatHref = (sid: ProjectExpertId) => {
     if (drillMode) {
@@ -257,45 +252,6 @@ export function BusinessCaseSidebar() {
     )
   }
 
-  const renderDeptLink = (dept: OrgDept) => {
-    if (!prog || !activeCaseId) return null
-    const selected = activeDeptSlug === deptSlug(dept.id)
-    const status = deptStatus({
-      dept,
-      progress: prog,
-      pending,
-      confirmKind: confirmKindOf(dept),
-    })
-    const dot =
-      status === '已完成'
-        ? 'bg-emerald-400'
-        : status === '待确认' || status === '退回'
-          ? 'bg-amber-400'
-          : status === '进行中'
-            ? 'bg-sky-400'
-            : selected
-              ? 'bg-white/70'
-              : 'bg-slate-300'
-    return (
-      <li key={dept.id}>
-        <Link
-          to={deptHref(dept)}
-          className={`focus-ring mb-0.5 flex w-full items-center gap-1 rounded-md px-1.5 py-1 text-left text-[11px] leading-snug ${
-            selected
-              ? 'bg-slate-900 font-semibold text-white'
-              : 'text-slate-700 hover:bg-white'
-          }`}
-          data-testid={`business-dept-tab-${deptSlug(dept.id)}`}
-          data-selected={selected ? '1' : '0'}
-          aria-current={selected ? 'page' : undefined}
-        >
-          <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
-          <span className="truncate">{deptLabel(dept)}</span>
-        </Link>
-      </li>
-    )
-  }
-
   const stageMeta = prog
     ? BUSINESS_STAGES.find((s) => s.id === prog.stageId)
     : undefined
@@ -420,46 +376,62 @@ export function BusinessCaseSidebar() {
     return orgDeptByLeadSeat(defaultSeat) ?? MAIN_CHAIN_DEPTS[0]
   })()
 
+  /** §128：已办前序（可空）· 只读回看，不作切部主航 */
+  const lookbackDepts = useMemo(() => {
+    if (!prog || !activeCaseId) return [] as OrgDept[]
+    const curIdx = activeDeptSlug
+      ? MAIN_CHAIN_DEPTS.findIndex((d) => deptSlug(d.id) === activeDeptSlug)
+      : currentDept
+        ? MAIN_CHAIN_DEPTS.findIndex((d) => d.id === currentDept.id)
+        : -1
+    return MAIN_CHAIN_DEPTS.filter((dept, i) => {
+      if (curIdx >= 0 && i >= curIdx) return false
+      if (activeDeptSlug && deptSlug(dept.id) === activeDeptSlug) return false
+      const status = deptStatus({
+        dept,
+        progress: prog,
+        pending,
+        confirmKind: confirmKindOf(dept),
+      })
+      return status === '已完成'
+    })
+  }, [prog, activeCaseId, activeDeptSlug, currentDept, pending])
+
+  /** §128：知情跳部 → 「未经过」；①②③ 任意开工不标假未经过 */
+  const skippedPriorLabels = useMemo(() => {
+    if (!prog || !activeDeptSlug) return [] as string[]
+    const curIdx = MAIN_CHAIN_DEPTS.findIndex((d) => deptSlug(d.id) === activeDeptSlug)
+    const disclosureIdx = MAIN_CHAIN_DEPTS.findIndex((d) => d.id === 'dept-disclosure')
+    if (curIdx <= 0) return []
+    // 只检查交底起的主链前序（厚站）；前面立项/激发/挖掘空着＝任意开工
+    const fromIdx = Math.max(disclosureIdx, 0)
+    if (curIdx <= fromIdx) return []
+    return MAIN_CHAIN_DEPTS.filter((dept, i) => {
+      if (i < fromIdx || i >= curIdx) return false
+      const status = deptStatus({
+        dept,
+        progress: prog,
+        pending,
+        confirmKind: confirmKindOf(dept),
+      })
+      return status !== '已完成' && status !== '锁定'
+    }).map((d) => deptLabel(d))
+  }, [prog, activeDeptSlug, pending, deptLabel])
+
+  const hallHref = '/agent'
+
   const deptNavSection =
     activeCase && prog ? (
       <div
         className={isEnterprise ? '' : 'mt-3 border-t border-slate-200/80 pt-2'}
         data-testid="business-side-case-depts"
         data-nav-priority={isEnterprise ? 'primary' : 'secondary'}
-        data-eight-collapsed={deptsOpen ? '0' : '1'}
+        data-eight-collapsed="1"
+        data-nav-role="current-station"
+        data-eight-mode="current-only"
       >
-        {!deptsOpen && currentDept ? (
-          <button
-            type="button"
-            onClick={() => setDeptsOpen(true)}
-            className="focus-ring mb-1 flex w-full flex-col items-stretch gap-0.5 rounded-md border border-slate-200/80 bg-white px-2 py-1.5 text-left hover:bg-slate-50"
-            aria-expanded={false}
-            data-testid="business-side-depts-toggle"
-            data-collapsed-current="1"
-            title="换部门 · 展开本案八部"
-            data-nav-role="switch-dept"
-          >
-            <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-              {drillMode ? '席位演练' : '换部门'}
-            </span>
-            <span className="flex items-center justify-between gap-1">
-              <span className="truncate text-[12px] font-semibold text-slate-900">
-                {deptLabel(currentDept)}
-              </span>
-              <ChevronDown className="h-3.5 w-3.5 shrink-0 -rotate-90 text-slate-400" aria-hidden />
-            </span>
-            <span className="text-[9px] text-slate-400">点开可换其他部</span>
-          </button>
-        ) : (
+        {drillMode ? (
           <>
-            {!activeDeptSlug ? (
-              <div className="mb-1 px-2 text-[10px] text-slate-400">
-                当前阶段 · {stageMeta?.title ?? stageLabel(prog.stageId)}
-                {prog.filed && prog.stageId === 'oa' && (prog.oaRound ?? 0) > 0
-                  ? ` · 第 ${prog.oaRound} 通`
-                  : ''}
-              </div>
-            ) : null}
             <button
               type="button"
               onClick={() => setDeptsOpen((v) => !v)}
@@ -467,101 +439,121 @@ export function BusinessCaseSidebar() {
               aria-expanded={deptsOpen}
               data-testid="business-side-depts-toggle"
             >
-              <span>
-                {drillMode ? '席位演练' : '换部门 · 本案八部'}
-              </span>
+              <span>席位演练</span>
               <ChevronDown
                 className={`h-3.5 w-3.5 transition ${deptsOpen ? 'rotate-0' : '-rotate-90'}`}
                 aria-hidden
               />
             </button>
-          </>
-        )}
-        {deptsOpen &&
-          (drillMode ? (
-            <div className="space-y-2" data-testid="business-drill-seats">
-              <ul className="space-y-0.5">
-                {renderSeatLink(DRILL_ORCH_ID, '总控')}
-              </ul>
-              {DRILL_CLUSTERS.map((section) => (
-                <div key={section.id} data-testid={`drill-node-section-${section.id}`}>
-                  <div className="mb-0.5 px-2 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-                    {section.title}
+            {deptsOpen ? (
+              <div className="space-y-2" data-testid="business-drill-seats">
+                <ul className="space-y-0.5">
+                  {renderSeatLink(DRILL_ORCH_ID, '总控')}
+                </ul>
+                {DRILL_CLUSTERS.map((section) => (
+                  <div key={section.id} data-testid={`drill-node-section-${section.id}`}>
+                    <div className="mb-0.5 px-2 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                      {section.title}
+                    </div>
+                    <div className="space-y-0.5">
+                      {section.seatIds.map((sid) =>
+                        expertsInNode(sid).length >= 2 ? (
+                          renderNode(sid)
+                        ) : (
+                          <ul key={sid} className="space-y-0.5">
+                            {renderSeatLink(sid, drillSeatLabel(sid))}
+                          </ul>
+                        ),
+                      )}
+                    </div>
                   </div>
-                  <div className="space-y-0.5">
-                    {section.seatIds.map((sid) =>
-                      expertsInNode(sid).length >= 2 ? (
-                        renderNode(sid)
-                      ) : (
-                        <ul key={sid} className="space-y-0.5">
-                          {renderSeatLink(sid, drillSeatLabel(sid))}
-                        </ul>
-                      ),
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-0.5" data-testid="business-dept-list">
-              <ul className="space-y-0.5">
-                {MAIN_CHAIN_DEPTS.map((dept) => renderDeptLink(dept))}
-              </ul>
-              <div
-                className="mt-1 border-t border-slate-200/60 pt-1"
-                data-testid="business-more-depts"
-              >
-                <button
-                  type="button"
-                  onClick={() => setMoreOpen((v) => !v)}
-                  className="focus-ring mb-0.5 flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-[9px] font-semibold uppercase tracking-wide text-slate-400 hover:bg-white/70"
-                  aria-expanded={moreOpen}
-                  data-testid="business-more-depts-toggle"
-                >
-                  <span>更多部门</span>
-                  <ChevronDown
-                    className={`h-3 w-3 transition ${moreOpen ? 'rotate-0' : '-rotate-90'}`}
-                    aria-hidden
-                  />
-                </button>
-                {moreOpen &&
-                  (moreEnabled ? (
-                    <ul className="space-y-0.5">
-                      {moreDepts.map((dept) => renderDeptLink(dept))}
-                    </ul>
-                  ) : (
-                    <button
-                      type="button"
-                      className="w-full rounded-md px-2 py-1.5 text-left text-[10px] text-slate-500 hover:bg-white"
-                      data-testid="business-enable-more-depts"
-                      onClick={() =>
-                        activeCaseId && enableMoreDepartments(activeCaseId)
-                      }
-                    >
-                      启用前研 / 布局…
-                    </button>
-                  ))}
-              </div>
-            </div>
-          ))}
-
-        {!drillMode && deptsOpen && (
-          <div className="mt-2 space-y-1.5">
-            {prog?.casePlan?.trim() ? (
-              <div
-                className="rounded-md border border-slate-200 bg-white px-2 py-1.5"
-                data-testid="business-sidebar-case-plan"
-              >
-                <div className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-                  本案计划
-                </div>
-                <p className="mt-0.5 line-clamp-3 whitespace-pre-wrap text-[10px] leading-snug text-slate-600">
-                  {prog.casePlan}
-                </p>
+                ))}
               </div>
             ) : null}
+          </>
+        ) : (
+          <>
+            {currentDept ? (
+              <div
+                className="mb-1 flex w-full flex-col items-stretch gap-0.5 rounded-md border border-slate-200/80 bg-white px-2 py-1.5 text-left"
+                data-testid="business-side-depts-toggle"
+                data-collapsed-current="1"
+                data-nav-role="current-station"
+                title="当前这一站 · 换站请回大厅"
+              >
+                <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                  正在
+                </span>
+                <span className="truncate text-[12px] font-semibold text-slate-900">
+                  {deptLabel(currentDept)}
+                </span>
+                <span className="text-[9px] text-slate-400">本站办事 · 非切部</span>
+              </div>
+            ) : (
+              <div className="mb-1 px-2 text-[10px] text-slate-400">
+                当前阶段 · {stageMeta?.title ?? stageLabel(prog.stageId)}
+              </div>
+            )}
 
-          </div>
+            {skippedPriorLabels.length > 0 ? (
+              <p
+                className="mb-1.5 rounded-md bg-amber-50 px-2 py-1 text-[9px] leading-snug text-amber-900/90"
+                data-testid="business-side-skipped-prior"
+                data-skipped-count={skippedPriorLabels.length}
+              >
+                本案未经过{skippedPriorLabels.slice(0, 2).join('、')}
+                {skippedPriorLabels.length > 2 ? '…' : ''}
+                <Link
+                  to={hallHref}
+                  className="ml-1 font-medium underline-offset-2 hover:underline"
+                  data-testid="business-side-skipped-hall"
+                >
+                  回大厅
+                </Link>
+              </p>
+            ) : null}
+
+            {lookbackDepts.length > 0 ? (
+              <div className="mb-1.5" data-testid="business-side-lookback">
+                <div className="mb-0.5 px-2 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                  回看已办
+                </div>
+                <ul className="space-y-0.5">
+                  {lookbackDepts.map((dept) => (
+                    <li key={dept.id}>
+                      <Link
+                        to={deptHref(dept)}
+                        className="focus-ring mb-0.5 flex w-full items-center gap-1 rounded-md px-1.5 py-1 text-left text-[11px] leading-snug text-slate-600 hover:bg-white"
+                        data-testid={`business-dept-lookback-${deptSlug(dept.id)}`}
+                        data-lookback="1"
+                      >
+                        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                        <span className="truncate">{deptLabel(dept)}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p
+                className="mb-1 px-2 text-[9px] text-slate-400"
+                data-testid="business-side-lookback-empty"
+              >
+                暂无已办可回看
+              </p>
+            )}
+
+            <Link
+              to={hallHref}
+              className="focus-ring mb-1 flex w-full items-center justify-center rounded-md border border-slate-200/80 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50"
+              data-testid="business-side-hall-reselect"
+            >
+              回大厅选站
+            </Link>
+
+            {/* 兼容：旧 smoke 曾点 business-dept-list；§128 不再列八部 peer */}
+            <div className="hidden" data-testid="business-dept-list" data-removed="v128" hidden />
+          </>
         )}
 
         {drillMode && activeCaseId && (
@@ -576,8 +568,6 @@ export function BusinessCaseSidebar() {
             退出演练 · 回简模式
           </button>
         )}
-
-        {/* §105：编制→壳层左栏；待确认→左栏「待确认」；案内侧栏不再常亮叠入口 */}
       </div>
     ) : null
 
@@ -595,7 +585,8 @@ export function BusinessCaseSidebar() {
       data-entry-role={entryRole}
       data-biz-case-ia="two-col"
       data-rail="thin-eight"
-      data-eight-mode={!deptsOpen ? 'current-only' : 'list'}
+      data-eight-mode="current-only"
+      data-nav-role="current-station"
     >
       <div className="shrink-0 px-2.5 pt-3 pb-1.5">
         {activeCaseId ? (

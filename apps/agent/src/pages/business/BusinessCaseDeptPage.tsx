@@ -3,8 +3,6 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   businessSeatLabel,
   currentSeatForProgress,
-  nextSeatAfterConfirm,
-  normalizeResearchPass,
   seatsForCase,
 } from '../../business/businessSeats'
 import { navigablePeerSeatIds, type DeptPeer } from '../../business/deptRoster'
@@ -24,6 +22,7 @@ import {
   orgDeptById,
   orgDeptByLeadSeat,
   deptSlug,
+  MAIN_CHAIN_DEPTS,
   MAIN_CHAIN_DEPT_IDS,
   type OrgDeptId,
 } from '../../departments/orgDepts'
@@ -99,6 +98,7 @@ import {
 } from '../../business/workbenchSteps'
 import { evaluateEntryGate } from '../../business/entryGate'
 import { DeptHandoffTicket } from '../../components/business/DeptHandoffTicket'
+import { DeptHandoffOfferBubble } from '../../components/business/DeptHandoffOfferBubble'
 import { CaseFileDrawer } from '../../components/business/CaseFileDrawer'
 import { DeptAskReportBubble } from '../../components/business/DeptAskReportBubble'
 import {
@@ -249,6 +249,11 @@ export function BusinessCaseDeptPage() {
     params.get('docket') === '1' || params.get('file') === '1',
   )
   const [askBusy, setAskBusy] = useState(false)
+  /** §128：收口「以后做」后收起本站领进汇报 */
+  const [handoffLaterDismissed, setHandoffLaterDismissed] = useState(false)
+  useEffect(() => {
+    setHandoffLaterDismissed(false)
+  }, [caseId, slug])
   const [focusConfirmId, setFocusConfirmId] = useState<string | null>(
     params.get('confirm') || params.get('askId') || null,
   )
@@ -423,17 +428,9 @@ export function BusinessCaseDeptPage() {
     try {
       const synced = await confirmItem(confirmId, opts)
       if (!synced.businessOk) return
-      const item = getConfirm(confirmId)
-      if (!item) return
-      const pass = normalizeResearchPass(getProgress(caseId).researchPass)
-      const nextSeat = nextSeatAfterConfirm(item.kind, pass)
-      const nextDept = orgDeptByLeadSeat(nextSeat)
-      if (nextDept) {
-        navigate(
-          `/agent/cases/${caseId}/depts/${deptSlug(nextDept.id)}?seat=${nextSeat}`,
-          { state: { confirmed: item.kind } },
-        )
-      }
+      // §128 / §127：确认「可交下一站」后留在本站，抬收口「要不要现在开下一部」；禁止静默跳部
+      setHandoffLaterDismissed(false)
+      void getConfirm(confirmId)
     } finally {
       setAskBusy(false)
     }
@@ -672,7 +669,25 @@ export function BusinessCaseDeptPage() {
     Boolean(dept && isDraftDept(dept.id) && disclosureDone)
   const interTicket = disclosureToDraftTicket(caseId)
 
-  /* §122 G04：右栏换部卸除；MAIN_CHAIN 换部轨只走左八部 */
+  /** §128：主链下一部（收口「现在做」目标）；无下一部则不抬领进汇报 */
+  const nextStationDept = (() => {
+    if (!dept) return null
+    const idx = MAIN_CHAIN_DEPTS.findIndex((d) => d.id === dept.id)
+    if (idx < 0 || idx >= MAIN_CHAIN_DEPTS.length - 1) return null
+    return MAIN_CHAIN_DEPTS[idx + 1]
+  })()
+  const nextStationHref = nextStationDept
+    ? `/agent/cases/${caseId}/depts/${deptSlug(nextStationDept.id)}?ticket=1`
+    : null
+  const showHandoffOffer =
+    Boolean(dept) &&
+    Boolean(nextStationDept) &&
+    Boolean(nextStationHref) &&
+    !awaitingThis &&
+    !handoffLaterDismissed &&
+    (st === '已完成' || handoffPhase === '已确认可往下')
+
+  /* §128：换站靠收口工单 / 回大厅；左栏不再作八部 peer 切部 */
 
   const stepKind = stepfulKindForDept(dept.id)
   const thinShell = isThinShellDept(dept.id)
@@ -900,7 +915,8 @@ export function BusinessCaseDeptPage() {
       data-left-open={leftOpen ? '1' : '0'}
       data-step-tools-open={stepToolsOpen ? '1' : '0'}
       data-approach="A"
-      data-wb-zones="v124"
+      data-wb-zones="v128"
+      data-handoff-offer={showHandoffOffer ? '1' : '0'}
       data-mobile-right-open={mobileRightOpen ? '1' : '0'}
       data-step-kind={stepKind ?? 'thin'}
       data-step-id={currentStep?.id ?? ''}
@@ -1759,15 +1775,40 @@ export function BusinessCaseDeptPage() {
 
             {showHandoffTicket ? (
               <div
-                className={params.get('ticket') === '1' ? '' : 'sr-only'}
+                className={
+                  params.get('ticket') === '1' || showHandoffOffer
+                    ? ''
+                    : 'sr-only'
+                }
                 data-testid="dept-handoff-ticket-details"
-                data-ticket-in-reading={params.get('ticket') === '1' ? '1' : '0'}
+                data-ticket-in-reading={
+                  params.get('ticket') === '1' || showHandoffOffer ? '1' : '0'
+                }
               >
-                <DeptHandoffTicket
-                  caseId={caseId}
-                  ticket={interTicket}
-                  side={isDraftDept(dept.id) ? 'to' : 'from'}
-                />
+                {params.get('ticket') === '1' || showHandoffOffer ? (
+                  <details
+                    className="rounded-lg border border-emerald-200/80 bg-emerald-50/30 px-2.5 py-2"
+                    data-testid="dept-handoff-ticket-fold"
+                    open={params.get('ticket') === '1'}
+                  >
+                    <summary className="cursor-pointer select-none text-[11px] font-medium text-emerald-900">
+                      部间工单 · 现在做 / 以后做在右栏汇报
+                    </summary>
+                    <div className="mt-2">
+                      <DeptHandoffTicket
+                        caseId={caseId}
+                        ticket={interTicket}
+                        side={isDraftDept(dept.id) ? 'to' : 'from'}
+                      />
+                    </div>
+                  </details>
+                ) : (
+                  <DeptHandoffTicket
+                    caseId={caseId}
+                    ticket={interTicket}
+                    side={isDraftDept(dept.id) ? 'to' : 'from'}
+                  />
+                )}
               </div>
             ) : null}
 
@@ -2086,6 +2127,29 @@ export function BusinessCaseDeptPage() {
                   </div>
                 ) : null}
 
+                {showHandoffOffer && dept && nextStationDept && nextStationHref ? (
+                  <DeptHandoffOfferBubble
+                    fromLabel={deptLabel(dept)}
+                    toLabel={deptLabel(nextStationDept)}
+                    nowHref={nextStationHref}
+                    leadName={businessSeatLabel(dept.leadSeatId)}
+                    qualifyLine={qualifyLine}
+                    onLater={() => setHandoffLaterDismissed(true)}
+                  />
+                ) : handoffLaterDismissed &&
+                  dept &&
+                  (st === '已完成' || handoffPhase === '已确认可往下') &&
+                  nextStationDept ? (
+                  <p
+                    className="px-0.5 text-[10px] leading-snug text-slate-400"
+                    data-testid="dept-handoff-later-note"
+                  >
+                    已记以后做 · 要开
+                    {deptLabel(nextStationDept)}
+                    可回大厅选站
+                  </p>
+                ) : null}
+
                 {returnHintText && !awaitingThis ? (
                   <div
                     className="max-w-[95%] rounded-2xl rounded-tl-md bg-amber-50 px-3 py-2 text-[12px] leading-relaxed text-amber-950"
@@ -2325,9 +2389,9 @@ export function BusinessCaseDeptPage() {
                   <Building2 className="h-3 w-3" aria-hidden />
                   公司
                 </Link>
-                {/* §122 G04/G05：换部入口卸右栏；左八部（current-only）为唯一换部轨 */}
-                <span className="sr-only" data-testid="dept-side-switch-depts" data-removed="v122">
-                  换部已收至左栏八部
+                {/* §128：换站回大厅或收口现在做；不作左/右切部主航 */}
+                <span className="sr-only" data-testid="dept-side-switch-depts" data-removed="v128">
+                  换站请回大厅或用收口「现在做」
                 </span>
                 <button
                   type="button"
