@@ -5723,3 +5723,89 @@ Leslie 明确：**点「项目」→ 进项目/案列表**（不是薄公司页�
 | 2026-11-01 CST | §120 IMPLEMENT 部台四区；PASS_RESCAN_120；t702u |
 
 ---
+
+## 121. SCAN · 申请部 post-§120 四区回归（三 skill · 意思对齐）· 2026-11-01 Asia/Shanghai
+
+> **范围：** 申请部工作台截图（Leslie / post-§120）— 布局 + 页面逻辑；**SCAN ONLY，未改 UI。**  
+> **真源 ONLY：** [`一期节点/`](../一期节点/) · [`一期-产品逻辑/`](./) · [`一期-产品理念.md`](../一期-产品理念.md) + **§119 四区定稿**。Office 文本作业；使用成本；**不宣称四维/六维**；无组队。  
+> **基线：** `401a2f1`（§120 PASS_RESCAN_120）。  
+> **授权：** t703u / pt703u「继续评估…仨个 skill…意思对齐不是文字对齐」。  
+> **证据：** 用户截图 = 申请部 · 权利要求与说明书 · 本步工具展开 · 右栏齐套卡 · 双进度 · 左八部列表 + 右换部。  
+> **Skills：** `make-interfaces-feel-better`（hierarchy / clutter / nested cards / surfaces）· `web-design-guidelines`（已 fetch Vercel `command.md`）· `apple-design`（simplicity≠minimalism · purpose · wayfinding · craft）。
+
+### 121.0 意思对齐（行为，不抠字面）
+
+| 真源意思 | 办公族应感到什么 | 截图实际行为 |
+|---|---|---|
+| 部台＝**文书作业台 + 领导拍板台**（主次分区；理念「领导=当前用户」） | 打开就**读/改稿**；拿不准才在右边对话里拍 | 稿面被中栏工具块上推变矮；视线先落在工具/齐套 |
+| ⑤ 硬产出＝**权要+说明书等申请文件包**；齐套/质检/递交是**闸**不是主读物（节点05 / 逻辑05） | 中栏最大＝本稿；闸在折叠或对话 | 中栏展开「本步工具」内嵌 A/B/C + 申请包齐套 + 接交底工单，**拆读** |
+| §119 四区：产物最大 · 目录默折 · **一条**细进度 · 本步工具/齐套/工单**默折不拆读** · AI 右栏无缺项墙 | 四区各司其职，互不抢 | 工具拆中栏；右栏齐套多卡叠层；顶/右两套「本步」 |
+| 八部＝**薄切部** current-only（§111/118/119）；换部弱快捷可有但勿双轨抢 | 知道自己在哪一部；换部一次就够 | 左「本案八部」全列表 + 右底「换部」同职责 |
+| 使用成本：少解释、少第二叙事 | 一屏一个主任务 | 双进度（4/4 vs 1/6）强迫用户脑补两套步进 |
+
+**对齐判据：** 不要求文案字面等于文档标题；要求**行为**符合「稿最大、闸与工具不抢读、拍板在对话、导航单轨」。
+
+### 121.1 截图对照（机制）
+
+| # | 截图所见 | 代码/机制（401a2f1） | vs §119 / 真源 |
+|---|---|---|---|
+| 1 | 中栏「本步工具」**展开**：换步 A/B/C/跟阐 + 申请包齐套列表 + 紫色接交底工单；稿纸被上推变矮 | `BusinessCaseDeptPage` `<details data-testid="dept-step-demo">` **无 open 属性＝默认关**，但**一经展开即 inline 撑开阅读柱**；内嵌 `ThickStepWorkPanel` `embedMode="widgets-only"`（含 `申请包齐套`）+ `dept-draft-inherit-handoff` | **违反 §119「fold-not-split-read」意思**：默折只解决首屏；展开仍**在稿下拆读**，不是抽屉/浮层。办公族「打开工具」≈丢掉稿面 |
+| 2 | 右栏紫罗兰卡「**齐套还差 3 项**」+ 展开缺项 + 已勾 N 项 + 样机齐套工具 + **展开依据链** | `dept-ask-bubble-g1`：§120 只去掉「才能交卷」墙句，**仍保留多级 `<details>` 嵌套的齐套驾驶舱** | **缺项墙复发（意思）**：§119 G03 / 右栏 AI「一句+展开」；现状是状态墙抢对话主戏，不是汇报气泡 |
+| 3 | 顶「本步 · **4/4** · C · 递交」vs 右「本步 · **1/6** · 特征表」 | 顶：`dept-process-topstrip` ← 部 `stepList`；右：`BusinessSeatWorkbench` compactRail `本步 · {stepIndex+1}/{def.steps.length}` ← **席位专家步** | **双进度**＝§119 G05 未收口；wayfinding 失败（两套「第几步」） |
+| 4 | 左「本案八部」**全列表**高亮申请部 | `BusinessCaseSidebar`：`useState(true)` 后 `useEffect` 置 `deptsOpen=false`（默认 current-only）；截图为 **list** 态 | 用户点开合法（§119）；但与右「换部」**并行全显**时变成双导航墙。另：首屏 `true→false` 有列表闪帧风险 |
+| 5 | 右底「换部」 | `dept-side-switch-depts` | §119 允许**弱**快捷；左已 list 时＝重复职责，使用成本↑ |
+
+§120 smoke（`PASS_RESCAN_120`）只断言：details **初始** closed、无「才能交卷」、标题=稿名、目录默折——**未覆盖**「展开后不拆读」「齐套卡视觉权重」「席位步进度第二条」「换部×八部双轨」。故 smoke 绿仍可出现本截图回归。
+
+### 121.2 三 skill 镜头（SCAN，非逐文件 lint）
+
+**make-interfaces-feel-better（full · surfaces/hierarchy）**
+
+| Sev | Location（屏/组件） | Before | After（方向，本批不实现） | Why |
+|---|---|---|---|---|
+| HIGH | 中栏 `dept-step-demo` 展开态 | 工具+齐套+工单 inline 撑破稿纸 | 展开→**抽屉/浮层**或右栏工具槽；阅读柱高度稳定 | 嵌套表面抢主表面；拆读 |
+| HIGH | 右 `dept-ask-bubble-g1` | 多 details 紫罗兰「墙」 | 一句结论气泡；缺项/依据进单层展开 | nested cards / clutter |
+| MEDIUM | 顶条 vs seat「本步」 | 两套 i/n | 只留顶一条；席位步并入或降为 sr/工具内 | hierarchy / tabular 进度冲突 |
+| MEDIUM | 左八部 list + 右换部 | 双切部 | list 开则隐换部，或恒 current-only+弱换部 | 重复控件 |
+
+**web-design-guidelines（Vercel command.md）** — 行为向，不写 file:line 实现补丁：
+
+- Navigation & State：两套「本步」进度未反映单一 URL/单一真源 → 状态叙事分裂。  
+- Content & Copy：齐套块仍像质检仪表，非「汇报一句」；与主栏文书抢「本步在干什么」。  
+- Touch/Hierarchy：展开后中栏主阅读命中面积被挤（桌面办公仍损使用成本）。  
+- Anti-pattern 向：同一职责双入口（八部 / 换部）在 list 态下并存。
+
+**apple-design**
+
+- **Purpose：** 中栏目的＝读改申请文件；工具常开/齐套墙违背「决定不建造什么」。  
+- **Simplicity ≠ minimalism：** 控件收进 details 但一开仍堆满 ≠ 简单；该藏进一层、打开不毁主路径。  
+- **Wayfinding：** 「我在哪一步」被 4/4 与 1/6 同时回答 → 不安全/不可预测。  
+- **Craft：** 嵌套紫卡 + 稿面被挤 = 粗心感；与「打开像打开一篇稿」（§110/119）冲突。
+
+### 121.3 Gaps（G-ids）
+
+| ID | 机制 vs 真源/§119 | 优先级 | Skill 镜头 |
+|---|---|---|---|
+| **G01** | 本步工具虽 `details` 默折，**展开仍 inline 拆读**（ThickStep 齐套+工单进中栏）→ 违反 §119「默折不拆读 / 打开在抽屉」与「产物最大」 | **P0** | feel-better surfaces；apple purpose/simplicity |
+| **G02** | 右栏「齐套还差 N 项」+ 多层 fold + 依据链 = **缺项墙意思复发**（§120 仅去「才能交卷」字面）→ 违反 §119 G03 / 右栏 AI「气泡一句」/ 主次「硬请示在对话」 | **P0** | feel-better nested cards；apple craft；web content hierarchy |
+| **G03** | 双进度：顶 `stepList` 4/4 vs 右 seat `1/6 · 特征表` → 违反 §119「一条细顶条」与 wayfinding | **P0** | apple wayfinding；web nav/state；feel-better hierarchy |
+| **G04** | 右「换部」与左八部 **list 态职责重复** → 使用成本；§119 弱快捷仅在 current-only 时成立 | **P1** | apple familiarity；web anti dual-entry |
+| **G05** | 八部：默认逻辑 current-only，但 `useState(true)` 闪帧 + 截图 list 与换部叠加强导航感；需钉「进部默认芯片 / 展开互斥换部」 | **P1** | apple simplicity；§111/118 纪律 |
+
+**非 Gap（本批明确）：** 标题「…权利要求与说明书」、`data-wb-zones=v120`、目录默折顶栏、无四维/六维/组队话术 — §120 仍成立，不重复开单。
+
+### 121.4 Verdict
+
+**Needs changes**
+
+P0：G01（展开拆读）、G02（缺项墙意思）、G03（双进度）。  
+P1：G04（换部×八部）、G05（八部默认/互斥）。  
+**不实现本批。** 下批 IMPLEMENT 建议验收名 `PASS_RESCAN_121`：申请部抽样 — 本步工具展开不降低稿纸主高度（抽屉/overlay）；右栏齐套＝单行气泡无多层墙；全页仅一条「本步 · i/n · 短名」；左 current-only 时才露弱换部（或 list 开则藏换部）。
+
+### 121.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-11-01 CST | §121 SCAN 申请部 post-§120；三 skill；意思对齐；t703u；基线 401a2f1；**未改 UI** |
+
+---
