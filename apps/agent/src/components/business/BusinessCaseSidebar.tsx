@@ -497,19 +497,16 @@ export function BusinessCaseSidebar() {
 
             {skippedPriorLabels.length > 0 ? (
               <p
-                className="mb-1.5 rounded-md bg-amber-50 px-2 py-1 text-[9px] leading-snug text-amber-900/90"
+                className="mb-1.5 rounded-md bg-amber-50/90 px-2 py-1.5 text-[10px] leading-snug text-amber-950"
                 data-testid="business-side-skipped-prior"
                 data-skipped-count={skippedPriorLabels.length}
               >
-                本案未经过{skippedPriorLabels.slice(0, 2).join('、')}
+                本案从本站开干 · 未经过
+                {skippedPriorLabels.slice(0, 2).join('、')}
                 {skippedPriorLabels.length > 2 ? '…' : ''}
-                <Link
-                  to={hallHref}
-                  className="ml-1 font-medium underline-offset-2 hover:underline"
-                  data-testid="business-side-skipped-hall"
-                >
-                  回大厅
-                </Link>
+                <span className="sr-only" data-testid="business-side-skipped-hall" data-removed="v130">
+                  换站用下方回大厅选站
+                </span>
               </p>
             ) : null}
 
@@ -536,10 +533,10 @@ export function BusinessCaseSidebar() {
               </div>
             ) : (
               <p
-                className="mb-1 px-2 text-[9px] text-slate-400"
+                className="mb-1.5 px-2 text-[10px] leading-snug text-slate-500"
                 data-testid="business-side-lookback-empty"
               >
-                暂无已办可回看
+                从本站开干 · 暂无已办可回看
               </p>
             )}
 

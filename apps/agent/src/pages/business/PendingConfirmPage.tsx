@@ -405,7 +405,7 @@ export function PendingConfirmDetailPage() {
       return
     }
     const ownerSeatId = CONFIRM_META[item.kind].seatId
-    const base = `已驳回 · ${note} · 已退回当前部门改稿（不换部）`
+    const base = `已驳回 · ${note} · 已退回当前部门改稿（仍在本站）`
     void (async () => {
       const synced = await returnItem(item.id, note)
       setDoneMsg(
@@ -681,7 +681,7 @@ export function PendingConfirmDetailPage() {
               </button>
             </div>
             <p className="text-[10px] text-slate-400">
-              通过 → 移交下一部门；驳回 → 回流本台带意见。无人确认不能换部推进。
+              通过 → 移交下一站；驳回 → 回流本台带意见。无人确认不能往下站推进。
             </p>
           </div>
         ) : item.status !== 'pending' ? (

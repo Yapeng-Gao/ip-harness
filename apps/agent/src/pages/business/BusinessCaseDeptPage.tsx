@@ -915,8 +915,9 @@ export function BusinessCaseDeptPage() {
       data-left-open={leftOpen ? '1' : '0'}
       data-step-tools-open={stepToolsOpen ? '1' : '0'}
       data-approach="A"
-      data-wb-zones="v128"
+      data-wb-zones="v130"
       data-handoff-offer={showHandoffOffer ? '1' : '0'}
+      data-handoff-later={handoffLaterDismissed ? '1' : '0'}
       data-mobile-right-open={mobileRightOpen ? '1' : '0'}
       data-step-kind={stepKind ?? 'thin'}
       data-step-id={currentStep?.id ?? ''}
@@ -1776,23 +1777,24 @@ export function BusinessCaseDeptPage() {
             {showHandoffTicket ? (
               <div
                 className={
-                  params.get('ticket') === '1' || showHandoffOffer
+                  params.get('ticket') === '1'
                     ? ''
                     : 'sr-only'
                 }
                 data-testid="dept-handoff-ticket-details"
                 data-ticket-in-reading={
-                  params.get('ticket') === '1' || showHandoffOffer ? '1' : '0'
+                  params.get('ticket') === '1' ? '1' : '0'
                 }
+                data-handoff-double-teach={showHandoffOffer ? '0' : undefined}
               >
-                {params.get('ticket') === '1' || showHandoffOffer ? (
+                {params.get('ticket') === '1' ? (
                   <details
                     className="rounded-lg border border-emerald-200/80 bg-emerald-50/30 px-2.5 py-2"
                     data-testid="dept-handoff-ticket-fold"
-                    open={params.get('ticket') === '1'}
+                    open
                   >
                     <summary className="cursor-pointer select-none text-[11px] font-medium text-emerald-900">
-                      部间工单 · 现在做 / 以后做在右栏汇报
+                      部间工单记录
                     </summary>
                     <div className="mt-2">
                       <DeptHandoffTicket
@@ -2140,14 +2142,20 @@ export function BusinessCaseDeptPage() {
                   dept &&
                   (st === '已完成' || handoffPhase === '已确认可往下') &&
                   nextStationDept ? (
-                  <p
-                    className="px-0.5 text-[10px] leading-snug text-slate-400"
+                  <div
+                    className="max-w-[95%] rounded-2xl rounded-tl-md border border-slate-200/70 bg-slate-50 px-3 py-2 text-[12px] leading-relaxed text-slate-700"
+                    role="status"
                     data-testid="dept-handoff-later-note"
+                    data-station-quiet="1"
                   >
-                    已记以后做 · 要开
-                    {deptLabel(nextStationDept)}
-                    可回大厅选站
-                  </p>
+                    <p className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
+                      {businessSeatLabel(dept.leadSeatId)} · 本站办完
+                    </p>
+                    <p className="mt-0.5 font-medium">已记以后做</p>
+                    <p className="mt-0.5 text-[11px] text-slate-500">
+                      要开{deptLabel(nextStationDept)}时，回大厅选站即可
+                    </p>
+                  </div>
                 ) : null}
 
                 {returnHintText && !awaitingThis ? (
@@ -2170,8 +2178,26 @@ export function BusinessCaseDeptPage() {
                   </div>
                 ) : null}
 
-                {/* §124 G02：有硬请示时齐套静默；无硬请示时一句人话，不把「打开工具」扶正角 */}
-                {!allChecklistDone && awaitingThis ? (
+                {/* §130 G01/G03：收口/以后做时齐套≠汇报，静默；有硬请示时亦静默 */}
+                {!allChecklistDone && (showHandoffOffer || handoffLaterDismissed) ? (
+                  <div
+                    className="sr-only"
+                    data-testid="dept-ask-bubble-g1"
+                    data-ask-kind="g1"
+                    data-kit-compact="1"
+                    data-kit-folded="1"
+                    data-kit-wall="0"
+                    data-kit-priority="silent"
+                    data-kit-suppressed-handoff="1"
+                  >
+                    <span data-testid="dept-checklist-missing" data-missing-count={missingLabels.length}>
+                      齐套另记 · 收口态静默
+                    </span>
+                    <div data-testid="dept-checklist" aria-hidden>
+                      齐套缺项 · 收口态不占第一眼
+                    </div>
+                  </div>
+                ) : !allChecklistDone && awaitingThis ? (
                   <p
                     className="px-0.5 text-[10px] leading-snug text-slate-400"
                     data-testid="dept-ask-bubble-g1"
@@ -2224,7 +2250,6 @@ export function BusinessCaseDeptPage() {
                     >
                       打开本步助手
                     </button>
-                    {/* 兼容旧烟：缺项 fold 仍存在但不做墙 — 收成 sr-only 锚点 */}
                     <details className="sr-only" data-testid="dept-kit-missing-fold" hidden>
                       <summary>展开缺项清单</summary>
                       <ul data-testid="dept-checklist-items-rail-legacy">
@@ -2265,14 +2290,15 @@ export function BusinessCaseDeptPage() {
                       deliverBlocked={
                         !allChecklistDone || awaitingThis || st === '已完成'
                       }
+                      quietChrome={showHandoffOffer || handoffLaterDismissed}
                       deliverBlockedReason={
                         awaitingThis
-                          ? '已交卷，待你确认；不能再交卷，也不能换部推进'
-                          : st === '已完成'
+                          ? '已交卷，待你确认；请在上方汇报拍板，不能再交卷'
+                          : st === '已完成' || handoffPhase === '已确认可往下'
                             ? '本站已确认可往下，无需再交卷'
                             : missingLabels.length
-                              ? `齐套未齐，不能进待确认。缺项：${missingLabels.join('、')}`
-                              : '齐套未齐，不能交卷；拍板请用左栏「待确认」'
+                              ? `本稿要点未齐 · 缺：${missingLabels.join('、')}（可开本步助手）`
+                              : '本稿要点未齐，不能交卷；拍板请在上方汇报'
                       }
                       onAdvanced={(confirmId) => {
                         if (confirmId)
@@ -2313,7 +2339,7 @@ export function BusinessCaseDeptPage() {
               ) : null}
             </div>
 
-            {/* 底：主 CTA 一行 + 工具/换部辅 */}
+            {/* 底：主 CTA 一行 + 巡检辅 */}
             <footer
               className="shrink-0 space-y-1.5 border-t border-slate-200 px-3 py-2"
               data-slot="submit-confirm"
@@ -2343,13 +2369,37 @@ export function BusinessCaseDeptPage() {
                   {thisDeptConfirmPending ? primaryLabel : '交卷'}
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </button>
+              ) : showHandoffOffer ||
+                handoffLaterDismissed ||
+                st === '已完成' ||
+                handoffPhase === '已确认可往下' ? (
+                <p
+                  className="text-center text-[10px] leading-relaxed text-slate-500"
+                  data-testid="dept-primary-cta-demoted"
+                  data-cta-wall="0"
+                  data-footer-quiet="1"
+                >
+                  {showHandoffOffer
+                    ? '请看上方收口汇报'
+                    : handoffLaterDismissed
+                      ? '本站已办完 · 换站回大厅'
+                      : '本站已确认可往下'}
+                  <span
+                    className="sr-only"
+                    data-testid="dept-primary-cta"
+                    data-can-submit="0"
+                    data-awaiting-confirm="0"
+                  >
+                    {primaryLabel}
+                  </span>
+                </p>
               ) : (
                 <p
                   className="text-center text-[10px] leading-relaxed text-slate-500"
                   data-testid="dept-primary-cta-demoted"
                   data-cta-wall="0"
                 >
-                  齐套未齐 · 先看对话里的进度一句
+                  本稿要点未齐 · 先补主稿或开本步助手
                   <span
                     className="sr-only"
                     data-testid="dept-primary-cta"

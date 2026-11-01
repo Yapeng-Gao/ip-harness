@@ -54,7 +54,7 @@ export type DeptSidePanelProps = {
   }
   /** 右栏 / 抽屉：回公司首页 */
   companyHref?: string
-  /** 右栏：换部快捷链（≤7 主链即可） */
+  /** 右栏：相关站捷径（≤7；主换站回大厅） */
   switchDepts?: DeptSideSwitchDept[]
   onExpertClick?: (id: string) => void
   onAdopt?: (id: string) => void
@@ -70,7 +70,7 @@ export type DeptSidePanelProps = {
 /**
  * 公司首页抽屉 ⇄ 部门台右栏叙事 · 同构面板（product-pages §2 / §4.3 / vision §6.3a）
  *
- * 只展示：≤3 专家+头像、交卷态一句、去该部/回公司/换部。
+ * 只展示：≤3 专家+头像、交卷态一句、去该部/回公司/相关站。
  * MVP 禁：假指标、执行集群、工具引擎卡；浅色壳，不抄暗色。
  */
 export function DeptSidePanel({
@@ -280,7 +280,7 @@ export function DeptSidePanel({
         {switchDepts && switchDepts.length > 0 ? (
           <div data-testid="dept-side-switch-depts">
             <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              换部
+              相关站
             </p>
             <ul className="flex flex-wrap gap-1">
               {switchDepts.map((d) => (

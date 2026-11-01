@@ -6381,3 +6381,46 @@ Leslie 两问本身就是扫描信号：若「本步工具」「一部一产出�
 | 时间 | 说明 |
 | --- | --- |
 | 2026-11-01 CST | §129 SCAN ONLY 部台 post-§128；t715u；基线 ecb886b；**未改 UI** |
+
+## 130. IMPLEMENT · 部台 §129 G01–G09 · PASS_RESCAN_130 · 2026-11-01 Asia/Shanghai
+
+> **范围：** Leslie t716「优化」— 落地 §129 Needs changes（P0 G01–G03 + P1 G04–G09）。**apps/agent only。**  
+> **真源 ONLY：** 一期节点 / 一期-产品逻辑 / 一期-产品理念 + §125–§129 逻辑块。Office 语感；**不宣称四维/六维**；无组队。  
+> **基线：** `076341a`（§129 SCAN） atop `ecb886b`（§128）。  
+> **Smoke / 截图：** `.tmp/rescan-130-shots/` · `uploads-staging/rescan-130-shots/` · `/workspace/uploads/rescan-130-shots/`；脚本 `.tmp/rescan-130-smoke.mjs` → **PASS_RESCAN_130**。
+
+### 130.1 落地对照
+
+| ID | 改法 | 证据 |
+| --- | --- | --- |
+| **G01** | 收口绿卡态：齐套/进度一句 **sr-only 静默**（`data-kit-suppressed-handoff=1`），不占第一眼 | 右栏只见收口汇报；无「进度一句」「打开本步助手」 |
+| **G02** | compactRail pendingHint →「请在上方汇报确认或驳回」；交卷锁文案去「左栏待确认」 | body 无「请先点左栏「待确认」」 |
+| **G03** | 「以后做」→ 安静「本站办完」卡；齐套仍静默 | `dept-handoff-later-note` · `data-station-quiet` |
+| **G04** | 跳部 tip 卸可见「回大厅」链；只留底「回大厅选站」 | `business-side-skipped-hall` sr-only · `data-removed=v130` |
+| **G05** | 收口/以后做/已确认：底栏改「请看上方收口汇报 / 本站已办完」；去掉「齐套未齐·进度一句」 | `data-footer-quiet=1` |
+| **G06** | 「也不能换部推进」→ 上方汇报拍板；Pending「不能往下站」；DeptSidePanel「换部」→「相关站」 | 无换部门主叙事 |
+| **G07** | 空回看「从本站开干 · 暂无已办」；未经过「本案从本站开干 · 未经过…」 | Office 任意开工语感 |
+| **G08** | 收口可见时中栏工单条不进阅读（仅 `ticket=1` 展示）；去「现在做/以后做在右栏」双教 | `data-ticket-in-reading=0` |
+| **G09** | `quietChrome`：收口/以后做收起「回到上一步」 | `data-quiet-chrome=1` |
+
+### 130.2 代码面
+
+- `BusinessCaseDeptPage.tsx` · `data-wb-zones=v130`
+- `BusinessSeatWorkbench.tsx` · `quietChrome` + pendingHint
+- `BusinessCaseSidebar.tsx` · 回看/未经过/回大厅单出口
+- `DeptHandoffOfferBubble.tsx` · 脚注收紧
+- `PendingConfirmPage.tsx` · 往下站语感
+- `DeptSidePanel.tsx` · 相关站
+
+### 130.3 不做
+
+- 不恢复八部换部门主航；不把八部塞进目录。  
+- 不把齐套扶正成汇报；不静默自动进下一部。  
+- 不宣称四维/六维。
+
+### 130.4 修订
+
+| 时间 | 说明 |
+| --- | --- |
+| 2026-11-01 CST | §130 IMPLEMENT G01–G09；t716u；PASS_RESCAN_130 |
+

@@ -79,6 +79,10 @@ type Props = {
    * 与 hideArtifactPanel 同用于部门台。
    */
   compactRail?: boolean
+  /**
+   * §130 G09：收口/以后做态收掉次要块（席内回退等），让汇报占第一眼。
+   */
+  quietChrome?: boolean
 }
 
 /**
@@ -97,6 +101,7 @@ export function BusinessSeatWorkbench({
   deliverBlockedReason,
   hideArtifactPanel = false,
   compactRail = false,
+  quietChrome = false,
 }: Props) {
   const {
     advanceSeatWork,
@@ -145,8 +150,12 @@ export function BusinessSeatWorkbench({
       .slice(0, 2)
       .join('、')
     const more = pendingList.length > 2 ? ` 等 ${pendingList.length} 项` : ''
-    return `${seatLabel}已就绪。本案有待确认「${titles}${more}」· 确认后本席才能继续推进。请先点左栏「待确认」。`
-  }, [caseHasPending, pendingList, seatLabel])
+    // §130 G02：部台右栏已有硬请示时，就地确认，勿甩左栏寻路
+    const where = compactRail
+      ? '请在上方汇报确认或驳回'
+      : '请先点左栏「待确认」'
+    return `${seatLabel}已就绪。本案有待确认「${titles}${more}」· 确认后本席才能继续推进。${where}。`
+  }, [caseHasPending, pendingList, seatLabel, compactRail])
   const [panel, setPanel] = useState<'chat' | 'artifact' | 'worklog'>('chat')
   const setSafePanel = (next: 'chat' | 'artifact' | 'worklog') => {
     if (hideArtifactPanel && next === 'artifact') {
@@ -624,6 +633,16 @@ export function BusinessSeatWorkbench({
           )
         })}
       </ol>
+      ) : quietChrome ? (
+        <div
+          className="sr-only"
+          data-testid="business-seat-steps-fold"
+          data-progress-role="seat-rewind-only"
+          data-dual-progress="0"
+          data-quiet-chrome="1"
+        >
+          收口态 · 席内回退收起
+        </div>
       ) : (
         <details
           className="mb-1.5 shrink-0 px-0"

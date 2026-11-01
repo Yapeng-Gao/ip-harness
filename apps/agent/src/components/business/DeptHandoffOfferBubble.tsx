@@ -64,7 +64,7 @@ export function DeptHandoffOfferBubble({
         </button>
       </div>
       <p className="mt-2 text-[10px] text-slate-400" data-testid="dept-handoff-report-note">
-        齐套是闸，不是汇报 · 换站靠本条，不靠左栏切部
+        换站靠本条选择 · 齐套是闸不是汇报
       </p>
     </div>
   )
