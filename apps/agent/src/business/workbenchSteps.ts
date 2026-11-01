@@ -235,11 +235,13 @@ export function resolveCurrentStep(
     const hit = steps.find((s) => s.id === opts.forceStepId)
     if (hit) return hit
   }
-  if (opts.leadDone) return steps[steps.length - 1]!
+  // §109：交底部 leadDone 不再默认可交⑤流程墙；首屏成稿读交底书
+  if (opts.leadDone && kind !== 'd4') return steps[steps.length - 1]!
   if (kind === 'd4') {
-    if (opts.awaitingConfirm) return steps.find((s) => s.id === 'hand') ?? steps[1]!
-    if (opts.stepIndex <= 0) return steps[1]! // 默认进事实确认（样机默认）
-    if (opts.stepIndex === 1) return steps[2]!
+    if (opts.awaitingConfirm) return steps.find((s) => s.id === 'hand') ?? steps[3]!
+    if (opts.stepIndex <= 0) return steps[0]! // 成稿 · 交底书正文
+    if (opts.stepIndex === 1) return steps[1]! // 事实确认
+    if (opts.stepIndex === 2) return steps[2]! // 质检
     return steps[Math.min(opts.stepIndex, steps.length - 1)]!
   }
   if (kind === 'd5') {

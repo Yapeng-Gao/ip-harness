@@ -6,13 +6,21 @@ type Props = {
   step: WorkbenchStepDef
   caseId: string
   onRecordNote?: (note: string) => void
+  /** §109：中栏已渲染交底书/本稿纸面时只出本步控件，不重复正文墙 */
+  embedMode?: 'full' | 'widgets-only'
 }
 
 /**
  * 交底/申请/答复 按步主栏可点零件 · 对齐一期节点交付物密度（演示）
  * 正文仍可读；拍板仍在右栏硬请示。
  */
-export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) {
+export function ThickStepWorkPanel({
+  kind,
+  step,
+  caseId,
+  onRecordNote,
+  embedMode = 'full',
+}: Props) {
   const [picked, setPicked] = useState<string | null>(null)
   const [qc, setQc] = useState<Record<string, 'green' | 'yellow' | 'red'>>({})
 
@@ -57,6 +65,12 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
         ? 'bg-amber-500/15 text-amber-900 border-amber-200'
         : 'bg-rose-600/15 text-rose-800 border-rose-200'
 
+  const widgetsOnly = embedMode === 'widgets-only'
+  const isEndGate =
+    (kind === 'd4' && step.id === 'hand') ||
+    (kind === 'd5' && (step.id === 'c-submit' || step.id === 'c-qc')) ||
+    (kind === 'd6' && step.id === 'c')
+
   return (
     <div
       className="mt-2.5 space-y-2.5"
@@ -64,7 +78,9 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
       data-kind={kind}
       data-step={step.id}
       data-case={caseId}
+      data-embed={embedMode}
     >
+      {!widgetsOnly ? (
       <article
         className="rounded-xl border border-slate-200 bg-[#fbfaf7] p-3 shadow-sm"
         data-testid="thick-step-body-fold"
@@ -83,6 +99,11 @@ export function ThickStepWorkPanel({ kind, step, caseId, onRecordNote }: Props) 
           {step.mainBody}
         </pre>
       </article>
+      ) : isEndGate ? (
+        <p className="sr-only" data-testid="thick-step-body-summary">
+          本稿已在上方纸面；本步仅薄结束卡
+        </p>
+      ) : null}
 
       {kind === 'd4' && step.id === 'draft' ? (
         <div className="rounded-xl border border-slate-200 bg-white p-3" data-testid="thick-d4-draft">

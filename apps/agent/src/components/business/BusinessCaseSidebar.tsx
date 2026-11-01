@@ -278,7 +278,7 @@ export function BusinessCaseSidebar() {
       <li key={dept.id}>
         <Link
           to={deptHref(dept)}
-          className={`focus-ring mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-[12px] ${
+          className={`focus-ring mb-0.5 flex w-full items-center gap-1 rounded-md px-1.5 py-1 text-left text-[11px] leading-snug ${
             selected
               ? 'bg-slate-900 font-semibold text-white'
               : 'text-slate-700 hover:bg-white'
@@ -556,10 +556,11 @@ export function BusinessCaseSidebar() {
 
   return (
     <aside
-      className="business-case-sidebar flex w-[min(15rem,42vw)] min-w-[11.5rem] max-w-[16rem] shrink-0 flex-col border-r border-slate-200/90 bg-[#f5f5f7]"
+      className="business-case-sidebar flex w-[min(9.75rem,28vw)] min-w-[7.25rem] max-w-[10.5rem] shrink-0 flex-col border-r border-slate-200/90 bg-[#f5f5f7]"
       data-testid="business-case-sidebar"
       data-entry-role={entryRole}
       data-biz-case-ia="two-col"
+      data-rail="thin-eight"
     >
       <div className="shrink-0 px-2.5 pt-3 pb-1.5">
         {activeCaseId ? (

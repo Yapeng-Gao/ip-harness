@@ -237,7 +237,7 @@ export function BusinessCaseDeptPage() {
   const [rosterOpen, setRosterOpen] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)
   /** 窄屏：左目录可收起；右栏改底抽屉（G1 交卷可达） */
-  const [leftOpen, setLeftOpen] = useState(true)
+  const [leftOpen, setLeftOpen] = useState(false) // §109：材料目录默认 toc/抽屉
   const [mobileRightOpen, setMobileRightOpen] = useState(false)
   /** 演示：强制当前步（不改闸口真值） */
   const [forceStepId, setForceStepId] = useState<string | null>(
@@ -1042,16 +1042,18 @@ export function BusinessCaseDeptPage() {
         data-testid="dept-handoff-shell"
         data-layout="cursor-three-pane"
       >
-        {/* 左·目录（窄屏可收起） */}
+        {/* 左·材料目录 · §109 默认收折；展开为 toc 抽屉，非常驻宽柱 */}
         <aside
           className={`${
             leftOpen ? 'flex' : 'hidden'
-          } max-h-48 shrink-0 flex-col border-b border-slate-200 bg-white lg:flex lg:max-h-none lg:w-52 lg:border-b-0 lg:border-r`}
+          } max-h-48 shrink-0 flex-col border-b border-slate-200 bg-white lg:max-h-none lg:w-44 lg:border-b-0 lg:border-r`}
+          id="dept-left-tree"
           data-testid="dept-left-tree"
           data-slot="materials-tree"
           data-collapsed={leftOpen ? '0' : '1'}
+          data-materials-mode={leftOpen ? 'drawer' : 'toc-folded'}
         >
-          <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-2 py-1.5 lg:hidden">
+          <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-2 py-1.5">
             <span className="text-[11px] font-medium text-slate-600">材料目录</span>
             <button
               type="button"
@@ -1065,7 +1067,10 @@ export function BusinessCaseDeptPage() {
           </div>
           <DeptMaterialsTree nodes={materialNodes}
             selectedId={selectedMaterialId}
-            onSelect={setSelectedMaterialId}
+            onSelect={(id) => {
+              setSelectedMaterialId(id)
+              // 点选后保持抽屉开以便连点；中栏已切产物
+            }}
           />
         </aside>
 
@@ -1076,41 +1081,94 @@ export function BusinessCaseDeptPage() {
           data-slot="output-body"
         >
           <section
-            className="mx-auto flex w-full max-w-3xl flex-col gap-2"
+            className="mx-auto flex w-full max-w-4xl flex-col gap-2"
             data-testid="dept-deliverable"
             aria-labelledby="dept-output-title"
           >
-            <TeachingFadeTip deptId={dept.id} />
-            {!MAIN_CHAIN_DEPT_IDS.includes(dept.id) ? (
-              <AuxChainBanner deptLabel={deptLabel(dept)} />
-            ) : (
-              <ThreeLineStatusStrip prog={getProgress(caseId)} dense foldByDefault />
-            )}
-            {prefsHintForDept(deptLabel(dept)).length > 0 ? (
-              <details
-                className="rounded-lg border border-emerald-200/80 bg-emerald-50/50 px-2.5 py-1.5"
-                data-testid="pref-dept-hints"
+            {/* §109：材料 toc + 三线/工单顶薄条；不进主阅读区 */}
+            <div
+              className="flex flex-wrap items-center gap-1.5"
+              data-testid="dept-process-topstrip"
+              data-process-density="thin"
+            >
+              <button
+                type="button"
+                onClick={() => setLeftOpen((v) => !v)}
+                className="btn-press focus-ring inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[10px] font-medium text-slate-700"
+                data-testid="dept-materials-toc-toggle"
+                aria-pressed={leftOpen}
+                aria-controls="dept-left-tree"
               >
-                <summary className="cursor-pointer select-none text-[10px] font-semibold text-emerald-800/80">
-                  跨案偏好 · {prefsHintForDept(deptLabel(dept)).length} 条（可展开）
-                </summary>
-                <ul className="mt-1.5 space-y-1">
-                  {prefsHintForDept(deptLabel(dept)).slice(0, 3).map((p) => (
-                    <li key={p.id} className="text-[11px] text-slate-800" data-testid="pref-dept-hint">
-                      {p.text}
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ) : null}
-            <BranchFlowPanel
-              branch={params.get('branch')}
-              caseId={caseId}
-              deptSlug={slug || deptSlug(dept.id)}
-              onRecordJudgment={(j) => recordJudgment(j)}
-            />
+                <PanelLeft className="h-3 w-3" aria-hidden />
+                {leftOpen ? '收起材料' : '材料 · 本站交卷物'}
+              </button>
+              {currentStep ? (
+                <span
+                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600"
+                  data-testid="dept-step-chip"
+                >
+                  本步 {currentStep.label}
+                </span>
+              ) : null}
+              {showHandoffTicket ? (
+                <details
+                  className="rounded-full border border-emerald-200/80 bg-emerald-50/60"
+                  data-testid="dept-handoff-ticket-fold"
+                >
+                  <summary className="cursor-pointer select-none px-2.5 py-0.5 text-[10px] font-medium text-emerald-900">
+                    部间工单（展开）
+                  </summary>
+                </details>
+              ) : null}
+            </div>
+
+            <details
+              className="rounded-lg border border-slate-200/80 bg-white/70 px-2.5 py-1"
+              data-testid="dept-meta-fold"
+              data-meta-default="folded"
+            >
+              <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
+                三线 / 带教 / 支路（默折）
+              </summary>
+              <div className="mt-2 space-y-2">
+                <TeachingFadeTip deptId={dept.id} />
+                {!MAIN_CHAIN_DEPT_IDS.includes(dept.id) ? (
+                  <AuxChainBanner deptLabel={deptLabel(dept)} />
+                ) : (
+                  <ThreeLineStatusStrip prog={getProgress(caseId)} dense foldByDefault />
+                )}
+                {prefsHintForDept(deptLabel(dept)).length > 0 ? (
+                  <details
+                    className="rounded-lg border border-emerald-200/80 bg-emerald-50/50 px-2.5 py-1.5"
+                    data-testid="pref-dept-hints"
+                  >
+                    <summary className="cursor-pointer select-none text-[10px] font-semibold text-emerald-800/80">
+                      跨案偏好 · {prefsHintForDept(deptLabel(dept)).length} 条（可展开）
+                    </summary>
+                    <ul className="mt-1.5 space-y-1">
+                      {prefsHintForDept(deptLabel(dept)).slice(0, 3).map((p) => (
+                        <li key={p.id} className="text-[11px] text-slate-800" data-testid="pref-dept-hint">
+                          {p.text}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : null}
+                <BranchFlowPanel
+                  branch={params.get('branch')}
+                  caseId={caseId}
+                  deptSlug={slug || deptSlug(dept.id)}
+                  onRecordJudgment={(j) => recordJudgment(j)}
+                />
+              </div>
+            </details>
+
             {stepKind && currentStep && selectedMaterialId === 'deliverable' ? (
-              <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm" data-wb-density="v2">
+              <div
+                className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+                data-wb-density="v2"
+                data-mid-primary="manuscript"
+              >
                 <div
                   className="flex flex-wrap items-center gap-1.5"
                   data-testid="dept-step-demo"
@@ -1157,31 +1215,57 @@ export function BusinessCaseDeptPage() {
                       </button>
                     </div>
                   </details>
+                  <span className="ml-auto text-[10px] text-slate-400">
+                    主栏=本稿 · 拍板在右栏
+                  </span>
                 </div>
                 <div className="mt-3 flex items-baseline justify-between gap-2">
                   <h2
                     id="dept-output-title"
-                    className="text-[13px] font-semibold text-slate-900"
+                    className="text-[14px] font-semibold text-slate-900"
                   >
-                    {currentStep.label}
+                    {stepKind === 'd4'
+                      ? '交底书'
+                      : stepKind === 'd5'
+                        ? '申请稿'
+                        : stepKind === 'd6'
+                          ? '答复稿'
+                          : currentStep.label}
                     <span className="ml-2 text-[11px] font-normal text-slate-500">
                       {currentStep.hint}
                     </span>
                   </h2>
-                  <span className="text-[10px] text-slate-400">
-                    主栏=本步交付物 · 拍板在右栏
-                  </span>
                 </div>
                 <p
-                  className="mt-1 text-[12px] leading-relaxed text-slate-600"
+                  className="mt-1 text-[11px] leading-relaxed text-slate-500"
                   data-testid="dept-step-caption"
                 >
                   {currentStep.mainFocus}
                 </p>
+                {/* §109 G02/G03：纸面首屏 = 本稿正文（非流程卡墙） */}
+                <article
+                  className="mt-3 rounded-xl border border-slate-200/90 bg-[#fbfaf7] p-4 shadow-sm"
+                  data-testid="dept-manuscript-paper"
+                  data-doc-feel="1"
+                >
+                  <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                    本稿正文
+                  </p>
+                  <pre
+                    className="mt-2 max-h-[min(70vh,40rem)] overflow-auto text-[13px] leading-relaxed text-slate-800 whitespace-pre-wrap font-sans"
+                    data-testid="dept-output-body"
+                    data-empty={centerBody.trim() ? '0' : '1'}
+                  >
+                    {centerBody.trim() ||
+                      currentStep.mainBody ||
+                      '暂无产出正文。点右侧专家岗起草后，正文会出现在此。'}
+                  </pre>
+                </article>
                 <ThickStepWorkPanel
                   kind={stepKind}
                   step={currentStep}
                   caseId={caseId}
+                  embedMode="widgets-only"
                   onRecordNote={(note) => {
                     // 示意留痕；正式判断仍走右栏硬请示 / 支路面板
                     if (note.includes('不申')) {
@@ -1556,11 +1640,25 @@ export function BusinessCaseDeptPage() {
             ) : null}
 
             {showHandoffTicket ? (
-              <DeptHandoffTicket
-                caseId={caseId}
-                ticket={interTicket}
-                side={isDraftDept(dept.id) ? 'to' : 'from'}
-              />
+              <details
+                className="rounded-lg border border-emerald-200/70 bg-emerald-50/40 px-2.5 py-1.5"
+                data-testid="dept-handoff-ticket-details"
+                open={params.get('ticket') === '1'}
+              >
+                <summary
+                  className="cursor-pointer select-none text-[10px] font-semibold text-emerald-900"
+                  data-testid="dept-handoff-ticket-summary"
+                >
+                  部间工单 · 交底→申请（默折，不占主阅读）
+                </summary>
+                <div className="mt-2">
+                  <DeptHandoffTicket
+                    caseId={caseId}
+                    ticket={interTicket}
+                    side={isDraftDept(dept.id) ? 'to' : 'from'}
+                  />
+                </div>
+              </details>
             ) : null}
 
             <p className="text-center text-[10px] text-slate-300" data-testid="dept-demo-footer">
