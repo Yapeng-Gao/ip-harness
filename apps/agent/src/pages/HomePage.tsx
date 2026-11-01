@@ -8,15 +8,15 @@ import {
   pickLatestCaseId,
 } from '../business/entryRole'
 import { useEntryRole } from '../business/useEntryRole'
-import { HALL_DEPT_DOORS, hallDeptHref } from '../business/hallDepts'
 import { BranchDoors } from '../components/business/BranchDoors'
+import { HallEightDoors } from '../components/home/HallEightDoors'
 import { reopenAllTeachTips } from '../business/teachingFade'
 
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * §94：门口三件套打磨——前台话术短+主次清晰；老板待办薄轨；八部名牌密稳；
- * 产品一句＝专家向你汇报；支路仍 ?hallTools=1。IA 不变。
+ * §95：门口三件套 IA 不变；八部恢复一句话 + 薄专家预览（≤3）；
+ * 产品一句＝专家向你汇报；支路仍 ?hallTools=1。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -60,7 +60,7 @@ export function HomePage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v94"
+      data-hall-screen="one-pass-v95"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
@@ -138,65 +138,8 @@ export function HomePage() {
           />
         </div>
 
-        {/* 4 · 八部门名牌 · dense · 常显 */}
-        <section
-          aria-labelledby="home-eight-depts-title"
-          className="mb-2 mt-3 border-t border-slate-100 pt-2.5"
-          data-testid="home-eight-depts-fold"
-          data-folded="0"
-          data-hall-block="eight-depts"
-          data-dept-tone="steady"
-        >
-          <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
-            <h2
-              id="home-eight-depts-title"
-              className="text-[11px] font-semibold tracking-wide text-slate-600"
-            >
-              八个部门
-            </h2>
-            <span className="text-[10px] font-normal text-slate-400">
-              熟客直达
-            </span>
-          </div>
-          <ol
-            className="grid grid-cols-4 gap-1 sm:grid-cols-8"
-            data-testid="home-eight-depts"
-            data-dept-density="nameplate-v94"
-          >
-            {HALL_DEPT_DOORS.map((d) => (
-              <li key={d.deptId}>
-                <Link
-                  to={hallDeptHref(latestId, d)}
-                  className="btn-press focus-ring flex h-full flex-col items-start rounded border border-slate-200/90 bg-white px-1.5 py-1 hover:border-slate-300 hover:bg-slate-50"
-                  data-testid={`home-dept-door-${d.slug}`}
-                  data-thin={d.thin ? '1' : '0'}
-                  title={d.desc}
-                >
-                  <span className="flex items-center gap-0.5 text-[9px] font-medium text-slate-400">
-                    {d.num}
-                    {d.thin ? (
-                      <span className="rounded px-0.5 text-[8px] font-normal text-slate-400/90">
-                        薄
-                      </span>
-                    ) : null}
-                  </span>
-                  <span className="mt-0.5 text-[11px] font-semibold leading-tight text-slate-800">
-                    {d.label}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ol>
-          <button
-            type="button"
-            className="sr-only"
-            aria-expanded={true}
-            data-testid="home-eight-depts-toggle"
-            tabIndex={-1}
-          >
-            八个部门
-          </button>
-        </section>
+        {/* 4 · 八部门名牌 · 一句话 + 薄专家预览 */}
+        <HallEightDoors caseId={latestId} />
 
         {/* 支路 / 次要 · 仅 ?hallTools=1 出现（顶栏账户菜单入口），不占首屏 */}
         {hallTools ? (

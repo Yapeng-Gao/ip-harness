@@ -1,0 +1,70 @@
+PASS hall brand
+PASS hall no 专家台
+PASS hall no team
+PASS hall no 弱链
+PASS hall no 分诊
+PASS hall no 全员编制墙文案
+PASS hall one-pass v95
+PASS reception present
+PASS boss compact
+PASS no branch doors on idle
+PASS eight open
+PASS eight density v95
+PASS eight grid 2x4
+PASS door intake
+PASS blurb intake
+PASS blurb text intake
+PASS experts intake
+PASS experts bound intake
+PASS door inspire
+PASS blurb inspire
+PASS blurb text inspire
+PASS experts inspire
+PASS experts bound inspire
+PASS door mining
+PASS blurb mining
+PASS blurb text mining
+PASS experts mining
+PASS experts bound mining
+PASS door disclosure
+PASS blurb disclosure
+PASS blurb text disclosure
+PASS experts disclosure
+PASS experts bound disclosure
+PASS door draft
+PASS blurb draft
+PASS blurb text draft
+PASS experts draft
+PASS experts bound draft
+PASS door oa
+PASS blurb oa
+PASS blurb text oa
+PASS experts oa
+PASS experts bound oa
+PASS door annuity
+PASS blurb annuity
+PASS blurb text annuity
+PASS experts annuity
+PASS experts bound annuity
+PASS door monetize
+PASS blurb monetize
+PASS blurb text monetize
+PASS experts monetize
+PASS experts bound monetize
+PASS duty open disclosure
+PASS duty honest DEMO
+PASS door to disclosure
+hall scrollHeight=852
+PASS hall scroll not huge
+PASS reception before eight
+PASS reception in first screen
+PASS src HallEightDoors
+PASS src v95
+PASS src no inline HALL_DEPT map
+PASS src preview-v95
+PASS src expert bound comment
+PASS src hallDeptPreview
+PASS src no full roster
+PASS scan §95
+PASS scan no claim 四维落地
+PASS_RESCAN_95
