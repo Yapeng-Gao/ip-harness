@@ -1,6 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { HomeBossTodoBoard } from '../components/home/HomeBossTodoBoard'
 import { HomeReceptionGuide } from '../components/home/HomeReceptionGuide'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
@@ -15,7 +14,7 @@ import { reopenAllTeachTips } from '../business/teachingFade'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * §102：门口三件套；左栏「项目」唯一进案盘；大厅无「去项目/公司案盯盘」；支路仍 ?hallTools=1。
+ * §103：门口两件套 = 前台 + 八部门牌；「要你拍板」并入左栏「待确认」唯一入口；支路仍 ?hallTools=1。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -34,7 +33,6 @@ export function HomePage() {
   const hallTools = params.get('hallTools') === '1'
   const { entryRole } = useEntryRole()
   const { cases, getProgress, getProcessLogs } = useBusinessCases()
-  const [relayRefresh, setRelayRefresh] = useState(0)
 
   const getLogAt = useMemo(
     () => (id: string) => {
@@ -57,11 +55,11 @@ export function HomePage() {
     <div
       className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v102"
+      data-hall-screen="one-pass-v103"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
-      data-hall-dedupe="boss-todo-v102"
+      data-hall-dedupe="pending-left-only-v103"
       data-assistant-density="delegate-chain-v1"
       data-hall-tools={hallTools ? '1' : '0'}
     >
@@ -70,7 +68,7 @@ export function HomePage() {
         <header
           className="mb-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
           data-testid="home-hall-tagline"
-          data-hall-tagline="thin-v102"
+          data-hall-tagline="thin-v103"
         >
           <div className="min-w-0">
             <p
@@ -96,20 +94,10 @@ export function HomePage() {
           <HomeReceptionGuide
             initialAttachId={attachQ}
             latestCaseId={latestId}
-            onDispatched={() => setRelayRefresh((n) => n + 1)}
           />
         </div>
 
-        {/* 3 · 老板待办 · 唯一待办主轨（接力并入展开后） */}
-        <div data-rail="light" data-testid="home-boss-rail" className="mb-1">
-          <HomeBossTodoBoard
-            latestId={latestId}
-            compactDefault
-            relayRefreshKey={relayRefresh}
-          />
-        </div>
-
-        {/* 4 · 八部门名牌 · 一句话 + 薄专家预览 */}
+        {/* 3 · 八部门名牌 · 一句话 + 薄专家预览（拍板走左栏「待确认」） */}
         <HallEightDoors caseId={latestId} />
 
         {/* 支路 / 次要 · 仅 ?hallTools=1 出现（顶栏账户菜单入口），不占首屏 */}
@@ -183,7 +171,7 @@ export function HomePage() {
         ) : null}
 
         <footer className="mt-3 border-t border-slate-100 pt-2 text-[10px] text-slate-400">
-          拍板在部门工作台 · 支路在账户菜单
+          拍板走左栏待确认 · 支路在账户菜单
         </footer>
       </div>
     </div>

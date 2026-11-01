@@ -4477,3 +4477,63 @@ node --import tsx --test src/business/*.test.ts   # 151/151
 | 2026-11-01 CST | 项目入口去重；smoke `PASS_RESCAN_102`；shots `.tmp/rescan-102-shots/` + `/workspace/uploads/rescan-102-shots/`；§102；t677u–t678u |
 
 ---
+
+## 103. 大厅「要你拍板」并入左栏「待确认」（2026-11-01 Asia/Shanghai）
+
+> **问题：** t679u–t681u：折叠「要你拍板」与左栏「待确认」同数据叠入口；用户问能否合并。  
+> **真源：** 一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 左栏「待确认」+角标为唯一待确认入口；大厅门口改为**前台 + 八部门牌**两件套；pending 摘要机制迁到左栏，不再占大厅主轨。  
+> **产品答案：** 卸 `HomeBossTodoBoard`（及仅被其引用的 Todo/InProgress/Relay 条）；`HomePage` 首屏无 `home-boss-todo`；左栏待确认与 `/agent/pending` 不动。不宣称四维/六维落地。
+
+### 103.0 改前 vs 真源意思
+
+| 面 | 改前（§102） | 真源意思 |
+|---|---|---|
+| 大厅薄轨 | 「要你拍板」折叠摘要 → pending | 与左栏待确认重复 → 卸 |
+| 左栏待确认 | 全局入口+角标 | **保留，唯一** |
+| 门口结构 | 前台 + 薄轨 + 八部（三件套） | 前台 + 八部（两件套） |
+| 待确认页 | `/agent/pending` | 不动 |
+
+### 103.0b 缺口清单
+
+| ID | 面 | 缺口简述 | 维度 | 严重度 | 建议改法 | 本批 |
+|---|---|---|---|---|---|---|
+| G01 | 大厅薄轨 | 「要你拍板」镜像左栏待确认 | 使用成本 | P0 | 整轨卸掉 | ✅ |
+| G02 | 门口文案 | 仍写三件套 | 展示 | P1 | 改为两件套/机制迁左栏 | ✅ |
+| G03 | 死代码 | HomeBossTodoBoard 及孤儿条 | 工程 | P2 | 删除未用组件 | ✅ |
+| G04 | 待确认页 | — | — | — | 不碰坏 | 守住 |
+| G05 | main-path-sample | — | — | — | 不碰 | 未动 |
+
+### 103.1 本批落地
+
+| # | 对应 | 行为 |
+|---|---|---|
+| A | G01 | `HomePage` 去掉 `HomeBossTodoBoard` / `home-boss-rail` |
+| B | G02 | 注释/data/`footer`：门口两件套；拍板走左栏待确认 |
+| C | G03 | 删 `HomeBossTodoBoard` / `HomeTodoStrip` / `HomeInProgressStrip` / `HomeRelayStrip` |
+| D | G04 | `/agent/pending` 复扫仍可用 |
+| E | — | 扫描 §103；smoke `PASS_RESCAN_103` |
+
+### 103.2 复扫表（改后）
+
+| 面 | 结论 |
+|---|---|
+| `/agent` 大厅 | 无「要你拍板」轨；前台 + 八部；`data-hall-screen=one-pass-v103` |
+| 左栏 | 大厅·项目·待确认｜编制；待确认角标唯一全局入口 |
+| `/agent/pending` | 待你确认清单可用 |
+| 回潮 | main-path-sample 未碰；不宣称四维/六维落地 |
+
+### 103.3 六维（机制报告，不宣称落地）
+
+设计：同去向一处入口。使用成本：大厅不再叠第二套拍板品牌。逻辑：待确认仍由左栏进全清单。不宣称四维/六维落地。
+
+### 103.4 后置
+
+真集成；main-path-sample 不碰。
+
+### 103.5 修订
+
+| 时 | 记 |
+|---|---|
+| 2026-11-01 CST | 要你拍板并入左栏待确认；smoke `PASS_RESCAN_103`；shots `.tmp/rescan-103-shots/` + `/workspace/uploads/rescan-103-shots/`；§103；t679u–t681u |
+
+---
