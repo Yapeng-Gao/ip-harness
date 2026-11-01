@@ -31,8 +31,8 @@ function shortCaseNo(id: string): string {
 type FilterChip = 'all' | 'pending' | 'deadline' | 'disclosure'
 
 /**
- * /agent/cases · 项目列表（案盘）· 一期：清单，点行→公司案（非大厅、非部台）；顶栏段名「项目」
- * 机制：清单看卡点/下一步/谁在干；点行→公司首页。
+ * /agent/cases · 项目列表（案盘）· 一期：清单，点行→本案概况（非大厅、非部台）；左栏「项目」一律进此
+ * 机制：清单看卡点/下一步/谁在干；点行→薄本案概况 → 部台。
  * 禁：把待确认与近期限筛成同一条件；禁用待确认点冒充期限红点；
  * 禁：待确认钮与开新案同权抢主（拍板主路径=工作台右栏；审计另走）。
  */
@@ -116,7 +116,7 @@ export function BusinessCasesPage() {
               最近的案
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              点行进本案公司首页 · 拍板仍在部门工作台
+              点行进本案概况 · 拍板仍在部门工作台
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

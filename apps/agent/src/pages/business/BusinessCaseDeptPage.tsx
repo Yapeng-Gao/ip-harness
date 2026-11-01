@@ -599,7 +599,7 @@ export function BusinessCaseDeptPage() {
             to={`/agent/cases/${caseId}`}
             className="mt-2 inline-block text-xs text-slate-800 underline"
           >
-            回公司首页
+            回本案概况
           </Link>
         </div>
       </div>
@@ -1049,7 +1049,7 @@ export function BusinessCaseDeptPage() {
                 className="btn-press focus-ring rounded-md bg-amber-900 px-2.5 py-1 text-[11px] font-semibold text-white"
                 data-testid="dept-entry-gate-fix"
               >
-                回公司首页
+                回本案概况
               </Link>
             ) : null}
             <Link

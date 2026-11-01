@@ -23,7 +23,7 @@ import { midCaseHref } from '../../lib/deepLinks'
 import type { ProjectExpertId } from '../../projects/types'
 
 /**
- * 公司首页（一期：单案总览+缺口→部台）。?drill=1 仍为席位演练旁路。
+ * 本案概况（§114 薄路牌：案名+卡点+去当前部+薄八部）。?drill=1 仍为席位演练旁路。
  * 部门作业见 /cases/:id/depts/:slug
  */
 export function BusinessCasePage() {
@@ -163,7 +163,7 @@ export function BusinessCasePage() {
     )
   }
 
-  // 默认：公司首页（认知壳）；演练模式保留旧席位工作台
+  // 默认：本案概况（薄路牌）；演练模式保留旧席位工作台
   if (!drillMode) {
     return (
       <div
@@ -173,6 +173,7 @@ export function BusinessCasePage() {
         data-project-id={caseId}
         data-biz-case-ia="1"
         data-company-home="1"
+        data-page-kind="case-overview"
       >
         <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-2 lg:px-6">
           <div className="flex flex-wrap items-center justify-between gap-2">

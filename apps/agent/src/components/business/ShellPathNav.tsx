@@ -9,13 +9,13 @@ import { useBusinessCases } from '../../business/BusinessCaseContext'
 
 /**
  * §99 左栏路径轨（Kimi 式）· 大厅 · 项目 · 待确认 | 编制
- * Tab 文案锁定「项目」（勿用 多案/本案）；有路由案 → 链该案且 aria「项目（案名）」
+ * Tab 文案锁定「项目」（勿用 多案/本案）；§114：一律 → /agent/cases 案盘列表
  * 待确认 = 壳层唯一全局可见「待确认」字样+角标；编制弱入口 → /agent/departments
  * 顶栏段控已卸，勿双轨并存
  */
 export function ShellPathNav() {
   const loc = useLocation()
-  const { getPendingConfirms, getCase } = useBusinessCases()
+  const { getPendingConfirms } = useBusinessCases()
 
   const caseMatch = useMatch({ path: '/agent/cases/:caseId', end: false })
   const routeCaseId =
@@ -23,8 +23,6 @@ export function ShellPathNav() {
       ? caseMatch.params.caseId
       : undefined
 
-  const selectedCase = routeCaseId ? getCase(routeCaseId) : undefined
-  const hasSelectedCase = Boolean(routeCaseId && selectedCase)
   const pendingN = getPendingConfirms().length
 
   const inHall =
@@ -42,15 +40,11 @@ export function ShellPathNav() {
   const inDeptWorkbench = /\/agent\/cases\/[^/]+\/depts\//.test(loc.pathname)
   const iconRail = inDeptWorkbench
 
-  const caseTabTo = hasSelectedCase
-    ? `/agent/cases/${routeCaseId}`
-    : '/agent/cases'
-  const caseAria = hasSelectedCase
-    ? `项目（${selectedCase?.title ?? '当前案'}）`
-    : '项目'
-  const caseCurrent = hasSelectedCase
-    ? inCaseShell
-    : inCasesList || loc.pathname.startsWith('/agent/cases/')
+  /** §114：左栏「项目」一律进案盘列表（不直达当前案/公司页） */
+  const caseTabTo = '/agent/cases'
+  const caseAria = '项目'
+  const caseCurrent =
+    inCasesList || inCaseShell || loc.pathname.startsWith('/agent/cases/')
 
   type Primary = {
     id: 'hall' | 'case' | 'pending'
@@ -132,11 +126,7 @@ export function ShellPathNav() {
               data-testid={`shell-path-${tab.id}`}
               data-selected={selected ? '1' : '0'}
               data-case-mode={
-                tab.id === 'case'
-                  ? hasSelectedCase
-                    ? 'case'
-                    : 'list'
-                  : undefined
+                tab.id === 'case' ? 'list' : undefined
               }
               className={linkClass(selected)}
             >
