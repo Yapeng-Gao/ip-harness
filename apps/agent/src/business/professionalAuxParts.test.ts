@@ -22,7 +22,7 @@ describe('professionalAuxParts', () => {
   })
 
   it('methodLabel strips engine-y names', () => {
-    assert.equal(methodLabelFromSkill('MCP tool'), '方法配置（示意）')
+    assert.equal(methodLabelFromSkill('MCP tool'), '能力挂接（示意）')
     assert.ok(methodLabelFromSkill('六段采集').includes('六段'))
   })
 })

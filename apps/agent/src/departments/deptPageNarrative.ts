@@ -7,6 +7,8 @@ import type { OrgDeptId } from './orgDepts'
 export type DeptHandoffCopy = {
   /** 一句话目标（部门头） */
   purpose: string
+  /** 会拒绝什么 · 01c G 边界上屏 */
+  refuses: string
   deliverable: string
   checklist: string[]
   /**
@@ -23,6 +25,7 @@ export type DeptHandoffCopy = {
 export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   'dept-disclosure': {
     purpose: '写成可检索、可撰写的技术交底包（不拍板申不申）',
+    refuses: '不拍板申不申；不代替申请部过线',
     deliverable: '交底包：技术交底正文 + 附图说明 + 权属声明',
     checklist: [
       '技术交底正文',
@@ -44,6 +47,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
   'dept-research': {
     purpose: '可专利性证据齐套；给出继续/改写/暂缓/放弃建议',
+    refuses: '不代替交底全绿；不对外递交',
     deliverable: '查新报告：检索式、命中对比、结论稿',
     checklist: [
       '检索式',
@@ -66,6 +70,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
   'dept-intake': {
     purpose: 'D1 申不申 / D2 类型；报价与委托意向',
+    refuses: '不做交底撰写；不代替申请过线',
     deliverable: '单案决策书 + 范围报价（含决议签署）',
     checklist: [
       '评分卡汇总',
@@ -88,6 +93,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
   'dept-draft': {
     purpose: '单案权利边界成型；权项 + 说明书等',
+    refuses: '不替领导做技术取舍；对外提交必经硬请示',
     deliverable: '权项树与说明书（权利边界成型）',
     checklist: [
       '说明书骨架',
@@ -110,6 +116,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
   'dept-figure': {
     purpose: '图文一致的附图定稿',
+    refuses: '不改权项策略；不代替申请过线',
     deliverable: '附图包：图号、简要说明与说明书引用一致',
     checklist: [
       '图1',
@@ -132,6 +139,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
   'dept-filing': {
     purpose: '申请包齐套、缴费/递交责任确认；拿回执',
+    refuses: '不改权利边界；递交授权须你点头',
     deliverable: '申请包 + filing_check + 回执（含授权人确认）',
     checklist: [
       '申请包',
@@ -155,6 +163,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
   'dept-oa': {
     purpose: '登记 OA、定策略、改权项/陈述',
+    refuses: '不擅自对外发文；策略须你点头',
     deliverable: '答复包：争点、策略、修改对照、企业确认意见',
     checklist: [
       'OA登记',
@@ -178,6 +187,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   /** §134：大厅薄部交卷物补齐（样机叙事，非真卷宗引擎） */
   'dept-inspire': {
     purpose: '问题→路径→方案选题（可跳过留痕）',
+    refuses: '不代替交底成稿；选题可跳过须留痕',
     deliverable: '选题卡：问题卡点 + 路径 + 收藏/跳过留痕',
     checklist: ['问题卡点', '路径清单', '选题收藏或跳过留痕'],
     demoGap: '选题收藏或跳过留痕',
@@ -186,6 +196,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
   'dept-mining': {
     purpose: '研发资料 → 创新点 + 拆案排案',
+    refuses: '不代替交底全绿；不对外递交',
     deliverable: '点包：创新点清单 + 拆案建议（可交交底部）',
     checklist: ['创新点清单', '可专利性示意', '拆案建议'],
     demoGap: '拆案建议',
@@ -194,6 +205,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
   'dept-annuity': {
     purpose: '确权后期限 · 年费 · 明白账',
+    refuses: '不改权项策略；期限动作须可见',
     deliverable: '维护台账：期限日历 + 年费条目 + 缴费确认',
     checklist: ['申请/授权号', '期限日历', '年费明白账', '缴费确认'],
     demoGap: '缴费确认',
@@ -202,6 +214,7 @@ export const DEPT_HANDOFF: Partial<Record<OrgDeptId, DeptHandoffCopy>> = {
   },
   'dept-monetize': {
     purpose: '年末/阶段复盘报告（维持或放弃须拍或只读留痕）',
+    refuses: '不做日常办案主笔；维持/放弃须拍或只读留痕',
     deliverable: '复盘报告五块：研发/专利/系统/上下游/市场',
     checklist: ['复盘时段', '五块摘要', '维持或放弃或只读不拍'],
     demoGap: '维持或放弃或只读不拍',

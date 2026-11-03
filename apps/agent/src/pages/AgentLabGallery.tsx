@@ -75,7 +75,7 @@ const MAIN_SHORTCUTS: { id: string; label: string; href: string }[] = [
   { id: 'hall', label: '大厅', href: '/agent' },
   { id: 'cases', label: '案盘', href: '/agent/cases' },
   { id: 'pending', label: '待我确认', href: '/agent/pending' },
-  { id: 'departments', label: '全库编制', href: '/agent/departments' },
+  { id: 'departments', label: '部门管理', href: '/agent/departments' },
   { id: 'assets', label: '资产库', href: '/agent/assets' },
 ]
 

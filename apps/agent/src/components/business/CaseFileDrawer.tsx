@@ -48,6 +48,7 @@ type Props = {
   onSavePreference?: (prefId: string) => void
   onPrecipitateJudgment?: (judgmentId: string) => void
   lineBadges?: string[]
+  focusJudgmentId?: string | null
   initialTab?: CaseFileTab
 }
 
@@ -71,6 +72,7 @@ export function CaseFileDrawer({
   onPrecipitateJudgment,
   lineBadges = [],
   initialTab = '材料',
+  focusJudgmentId,
 }: Props) {
   const [tab, setTab] = useState<CaseFileTab>(initialTab)
   const [storeTick, setStoreTick] = useState(0)
@@ -110,6 +112,12 @@ export function CaseFileDrawer({
       requestAnimationFrame(() => prev?.focus?.())
     }
   }, [open, onClose])
+
+  useEffect(() => {
+    if (!open || tab !== '判断档案' || !focusJudgmentId) return
+    const raf = requestAnimationFrame(() => document.getElementById(`judgment-${focusJudgmentId}`)?.scrollIntoView({ block: 'center' }))
+    return () => cancelAnimationFrame(raf)
+  }, [open, tab, focusJudgmentId])
 
   if (!open) return null
 
@@ -278,10 +286,10 @@ export function CaseFileDrawer({
                 className="text-[13px] font-semibold text-slate-900"
                 data-testid="judgment-archive-title"
               >
-                判断档案
+                判断档案 · 决策账本
               </h3>
               <p className="mt-0.5 text-[11px] text-slate-500">
-                T10 · 结论 / 选项 / 理由 / 依据 · 确认后写回（≠操作考勤）
+                谁 / 何时 / 事项 / 拍板或退回 / 理由 · 只追加（≠操作考勤）
               </p>
 
               <div className="mt-3 space-y-2" data-testid="pref-list">
@@ -403,6 +411,9 @@ export function CaseFileDrawer({
                   judgments.map((j) => (
                     <li
                       key={j.id}
+                      id={`judgment-${j.id}`}
+                      tabIndex={-1}
+                      style={focusJudgmentId === j.id ? { outline: '2px solid #64748b' } : undefined}
                       className="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2"
                       data-testid="judgment-item"
                     >

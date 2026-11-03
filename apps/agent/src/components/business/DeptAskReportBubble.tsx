@@ -11,11 +11,14 @@ import { useEntryRole } from '../../business/useEntryRole'
 import { ExpertAvatar } from '../departments/ExpertAvatar'
 import { pendingAuditPath } from '../../business/pendingDeptQuery'
 import { buildAskEvidence } from '../../business/askEvidence'
+import type { OrgDeptId } from '../../departments/orgDepts'
 
 type Props = {
   item: BusinessConfirmItem
   leadName: string
   leadSeed?: string
+  /** 席徽部门色 */
+  deptId?: OrgDeptId
   /** 部门 slug · 审计深链 */
   deptSlug?: string
   busy?: boolean
@@ -36,6 +39,7 @@ export function DeptAskReportBubble({
   item,
   leadName,
   leadSeed,
+  deptId,
   deptSlug,
   busy = false,
   onConfirm,
@@ -113,7 +117,13 @@ export function DeptAskReportBubble({
       </span>
 
       <div className="flex items-start gap-2" data-testid="dept-ask-bubble-head">
-        <ExpertAvatar name={leadName} seed={leadSeed} size="sm" />
+        <ExpertAvatar
+          name={leadName}
+          seed={leadSeed}
+          size="sm"
+          deptId={deptId}
+          presence={done ? (item.status === 'confirmed' ? 'done' : 'returned') : 'waiting'}
+        />
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-amber-900">
             <span className="truncate">{leadName}</span>
@@ -133,6 +143,15 @@ export function DeptAskReportBubble({
                   : '已驳回'
                 : '要你拍'}
             </span>
+            {!done ? (
+              <span
+                className="rounded-full bg-slate-900/5 px-1.5 py-0.5 text-[9px] font-medium text-slate-600"
+                data-testid="dept-ask-level-tag"
+                title="补充条款 B · 硬请示 = L2/L3"
+              >
+                {item.kind === 'file_authorize' ? 'L3 · 递交授权' : 'L2 · 方案确认'}
+              </span>
+            ) : null}
           </p>
           <p
             className="mt-1 text-[14px] font-bold leading-snug text-slate-900 text-balance"
@@ -163,6 +182,12 @@ export function DeptAskReportBubble({
 
       {!done ? (
         <div className="mt-2.5 space-y-2" data-testid="dept-ask-report-acts">
+          <p className="text-[11px] text-slate-700" data-testid="ask-decision-effect">
+            本次确认：{decision.decisionMeaning}
+          </p>
+          <p className="text-[10px] text-slate-500">
+            样机仅记录决定并推进流程，不会对外递交或收费。若需修改，请填写退回意见，由当前部门继续处理。
+          </p>
           <button
             type="button"
             onClick={handleConfirm}
@@ -224,7 +249,7 @@ export function DeptAskReportBubble({
             data-fold-default="closed"
           >
             <summary className="cursor-pointer select-none text-[10px] font-medium text-slate-500">
-              可选 · 驳回并退回改稿
+              退回修改 · 填写意见
             </summary>
             <div className="mt-1.5 space-y-1">
               <label className="sr-only" htmlFor={`ask-return-${item.id}`}>
@@ -251,13 +276,13 @@ export function DeptAskReportBubble({
             </div>
           </details>
           <p className="text-center text-[9px] text-slate-400">
-            拍板在对话里完成 ·{' '}
+            确认与退回均会记录 ·{' '}
             <Link
               to={pendingAuditPath(item.id, deptSlug)}
               className="underline-offset-2 hover:underline"
               data-testid="dept-ask-audit-link"
             >
-              审计页
+              查看决策记录
             </Link>
           </p>
         </div>
@@ -302,7 +327,7 @@ function AskEvidencePanel(props: {
           </span>
         ) : (
           <span className="ml-1 text-emerald-700" data-testid="ask-t4-ready-tag">
-            · 依据已齐
+            · 四项已提供，待核验
           </span>
         )}
       </summary>
@@ -311,7 +336,7 @@ function AskEvidencePanel(props: {
           决策含义：{props.decisionMeaning}
         </p>
         <p className="text-[10px] text-slate-500">
-          确认人：{props.confirmerLabel}
+          确认人：你（当前用户）
           <span className="text-slate-400"> · 建议者 {props.suggesterLabel}</span>
         </p>
         <ul className="space-y-1.5" data-testid="ask-t4-pieces">
@@ -334,7 +359,7 @@ function AskEvidencePanel(props: {
           ))}
         </ul>
         <p className="text-[9px] leading-relaxed text-slate-400" data-testid="ask-t4-honesty">
-          缺来源/推演/对比不得装「可签字」。本气泡不提供一键过质检线；缺段须补材料或驳回改稿。
+          字段齐全不代表内容已核验。缺少依据时，请补材料或退回修改；示例文字不计入依据。
         </p>
         {props.resultPreview?.trim() ? (
           <div className="space-y-1">

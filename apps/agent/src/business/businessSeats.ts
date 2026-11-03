@@ -26,7 +26,7 @@ export const BUSINESS_SEAT_LABEL: Record<string, string> = {
   'expert-fto': '自由实施（FTO）',
   'expert-annuity': '维护',
   'expert-valuation': '价值',
-  'expert-monetize': '转化',
+  'expert-monetize': '复盘',
   'expert-enforcement': '维权',
 }
 
@@ -217,6 +217,24 @@ export const CONFIRM_META: Record<
 
 export function businessSeatLabel(id: string): string {
   return BUSINESS_SEAT_LABEL[id] ?? id
+}
+
+/** 01c G1 薄 · 主链负责人真人感显示名（职能短名仍用 businessSeatLabel） */
+const SEAT_PERSONA_NAME: Partial<Record<string, string>> = {
+  'expert-disclosure': '林交底',
+  'expert-draft': '顾知远',
+  'expert-oa': '沈答复',
+}
+
+export function businessSeatPersonaName(id: string): string | null {
+  return SEAT_PERSONA_NAME[id] ?? null
+}
+
+/** 右栏/移交：有人设名则「人名 · 岗」，否则岗名 */
+export function businessSeatDisplayName(id: string): string {
+  const persona = businessSeatPersonaName(id)
+  const job = businessSeatLabel(id)
+  return persona ? `${persona} · ${job}` : job
 }
 
 export type NodeExpert = { id: ProjectExpertId; label: string }

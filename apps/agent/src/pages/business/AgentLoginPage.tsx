@@ -67,7 +67,7 @@ export function AgentLoginPage() {
         </div>
 
         <p className="mb-3 text-sm text-slate-600">
-          选角色后进大厅（接待 + 老板待办 + 八部）。同一套系统，不按角色关门；代理/企业只调惯用密度。
+          选角色后进入（账号入口）。进大厅前可补几句粗画像（可跳过）；前台再帮你弄清今天先去哪。
         </p>
 
         <AuthDemoHonestBanner surface="login" className="mb-4" />

@@ -44,6 +44,12 @@ import {
 } from '../../business/artifactVersions'
 import { SeatMarkdownBody } from './SeatMarkdownBody'
 import { humanizeToolBubble, parseRewindIntent } from '../../lib/stepChatFormat'
+import { scrollBehavior } from '../../lib/motionPref'
+
+/** 席内 mock 推进：短 defer，可被下一次交互覆盖 busy（不锁死 300ms+） */
+function deferBusy(ms: number, fn: () => void): number {
+  return window.setTimeout(fn, Math.min(ms, 80))
+}
 
 /** 业务面默认藏工程文件名 / disclosure_pack 等（详情可展） */
 function sanitizeBizBlurb(raw: string): string {
@@ -317,13 +323,13 @@ export function BusinessSeatWorkbench({
 
   useEffect(() => {
     if (!flashBody) return
-    const t = window.setTimeout(() => setFlashBody(false), 1200)
+    const t = window.setTimeout(() => setFlashBody(false), 180)
     return () => window.clearTimeout(t)
   }, [flashBody])
 
   useEffect(() => {
     if (!flashLogId) return
-    const t = window.setTimeout(() => setFlashLogId(null), 1800)
+    const t = window.setTimeout(() => setFlashLogId(null), 220)
     return () => window.clearTimeout(t)
   }, [flashLogId])
 
@@ -331,15 +337,16 @@ export function BusinessSeatWorkbench({
     if (!flashBody) return
     bodyRef.current?.scrollTo({
       top: bodyRef.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: scrollBehavior(),
     })
   }, [flashBody, worklogBody, stepIndex])
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    chatEndRef.current?.scrollIntoView({ behavior: scrollBehavior() })
   }, [messages.length, busy])
 
   const runAdvance = (userLine?: string) => {
+    if (thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy') return
     if (oaLocked || busy) return
     const wantsDeliver =
       !!userLine &&
@@ -360,7 +367,7 @@ export function BusinessSeatWorkbench({
         meta: { backend: 'mock' },
       })
     }
-    window.setTimeout(() => {
+    deferBusy(48, () => {
       if (pendingForSeat.length > 0 || (submitted && atHitl)) {
         appendMessage(caseId, seatId, {
           role: 'assistant',
@@ -406,7 +413,7 @@ export function BusinessSeatWorkbench({
       }
       onAdvanced?.(r.confirm?.id)
       setBusy(false)
-    }, 320)
+    })
   }
 
   runAdvanceRef.current = runAdvance
@@ -437,14 +444,14 @@ export function BusinessSeatWorkbench({
   const runUpstreamFeedback = (toSeat: ProjectExpertId, reason: string) => {
     if (oaLocked || busy) return
     setBusy(true)
-    window.setTimeout(() => {
+    deferBusy(48, () => {
       const r = requestUpstreamFeedback(caseId, seatId, toSeat, reason)
       setBusy(false)
       setSafePanel('chat')
       if (r.ok && r.switchToSeat && onSwitchSeat) {
-        window.setTimeout(() => onSwitchSeat(r.switchToSeat!), 450)
+        deferBusy(80, () => onSwitchSeat(r.switchToSeat!))
       }
-    }, 200)
+    })
   }
 
   const runLoopAction = (
@@ -457,17 +464,24 @@ export function BusinessSeatWorkbench({
     }
     if (oaLocked && !prog.filed) return
     setBusy(true)
-    window.setTimeout(() => {
+    deferBusy(48, () => {
       runSeatLoop(caseId, seatId, actionId, note)
       setFlashLogId(null)
       setSafePanel('chat')
       setBusy(false)
-    }, 180)
+    })
   }
 
   const sendUser = () => {
     const text = draft.trim()
     if (!text || oaLocked || busy) return
+    if (thread?.followUpMode === 'paused') return
+    if (thread?.followUpMode === 'strategy') {
+      appendMessage(caseId, seatId, { role: 'user', content: text, meta: { backend: 'mock' } })
+      appendMessage(caseId, seatId, { role: 'assistant', content: `【${seatLabel}】先保留当前稿件。可以比较两条路径：补充原方案所需的事实与材料，或调整本轮方案范围。前者需要可用依据，后者需要重新确认取舍。以上为样机讨论提示，请补充你的选择，选定后点「继续修改」。`, meta: { backend: 'mock' } })
+      setDraft('')
+      return
+    }
     setDraft('')
     const rewind = parseRewindIntent(text, def.steps)
     if (rewind) {
@@ -477,7 +491,7 @@ export function BusinessSeatWorkbench({
         content: text,
         meta: { backend: 'mock' },
       })
-      window.setTimeout(() => {
+      deferBusy(48, () => {
         const r = rewindSeatWork(caseId, seatId, rewind.stepIndex)
         if (!r.ok) {
           appendMessage(caseId, seatId, {
@@ -494,7 +508,7 @@ export function BusinessSeatWorkbench({
           setSafePanel('chat')
         }
         setBusy(false)
-      }, 220)
+      })
       return
     }
     const fb = parseUpstreamFeedbackIntent(text, seatId)
@@ -533,7 +547,7 @@ export function BusinessSeatWorkbench({
   const onRewindStep = (targetIndex: number) => {
     if (oaLocked || busy || targetIndex > stepIndex) return
     setBusy(true)
-    window.setTimeout(() => {
+    deferBusy(48, () => {
       const r = rewindSeatWork(caseId, seatId, targetIndex)
       if (r.ok) {
         setFlashBody(true)
@@ -541,7 +555,7 @@ export function BusinessSeatWorkbench({
         setSafePanel('chat')
       }
       setBusy(false)
-    }, 180)
+    })
   }
 
   const onKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -613,9 +627,10 @@ export function BusinessSeatWorkbench({
           <button
             type="button"
             onClick={() => setMoreOpen((v) => !v)}
-            className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-500 hover:bg-slate-50"
+            className="btn-press focus-ring min-h-10 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-medium text-slate-500 hover:bg-slate-50"
             data-testid="business-seat-more"
             aria-expanded={moreOpen}
+            aria-label="更多操作"
           >
             更多
           </button>
@@ -666,7 +681,7 @@ export function BusinessSeatWorkbench({
                 type="button"
                 disabled={!canRewind}
                 onClick={() => onRewindStep(i)}
-                className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                className={`btn-press focus-ring min-h-10 rounded-full border px-2.5 py-1.5 text-[10px] font-medium transition-colors ${
                   done
                     ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:border-emerald-400 hover:bg-emerald-100'
                     : current
@@ -699,7 +714,7 @@ export function BusinessSeatWorkbench({
           data-dual-progress="0"
           data-quiet-chrome="1"
         >
-          收口态 · 席内回退收起
+          本阶段已提交，修改步骤暂时收起
         </div>
       ) : (
         <details
@@ -765,7 +780,7 @@ export function BusinessSeatWorkbench({
           data-handoff-gate={seatPlanHandoffGate.code}
         >
           <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-600">
-            排期本章 · 交卷闸
+            本阶段安排与提交条件
           </div>
           <p className="mt-0.5 text-[11px] leading-relaxed text-slate-800">
             {seatPlanHandoffGate.hint}
@@ -828,7 +843,7 @@ export function BusinessSeatWorkbench({
             aria-label={`${label}：${tip}`}
             aria-selected={panel === id}
             onClick={() => setSafePanel(id)}
-            className={`rounded-md px-2.5 py-1.5 text-[11px] font-semibold ${
+            className={`btn-press focus-ring min-h-10 rounded-md px-2.5 py-1.5 text-[11px] font-semibold ${
               panel === id
                 ? 'bg-white text-slate-900 shadow-sm'
                 : 'text-slate-500 hover:text-slate-800'
@@ -908,7 +923,7 @@ export function BusinessSeatWorkbench({
                   data-msg-id={m.id}
                 >
                   {m.role === 'assistant' || m.role === 'system' ? (
-                    <div className="mb-0.5 text-[9px] font-semibold uppercase tracking-wide text-violet-700/80">
+                    <div className="mb-0.5 text-[9px] font-semibold text-violet-700/80">
                       {seatLabel}
                     </div>
                   ) : null}
@@ -973,6 +988,17 @@ export function BusinessSeatWorkbench({
                 : 'shrink-0 border-t border-slate-100 px-2 py-2'
             }
           >
+            {canReviseAfterReturn ? (
+              <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs" data-testid="return-follow-up">
+                <p className="font-medium">{seatLabel}继续跟进：{seatReturnNote}</p>
+                <p className="mt-1 text-slate-600">{thread?.followUpMode === 'paused' ? '已暂停，材料和意见会保留。恢复后再继续。' : thread?.followUpMode === 'strategy' ? '先讨论修改方向，选定后点继续修改。' : '按意见修改后，再提交给你确认。'}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button type="button" className="focus-ring rounded border bg-white px-2 py-1" onClick={() => patchThread(caseId, seatId, { followUpMode: 'revise' })}>继续修改</button>
+                  <button type="button" className="focus-ring rounded border bg-white px-2 py-1" onClick={() => { patchThread(caseId, seatId, { followUpMode: 'strategy' }); setDraft('请对照退回意见分析原因，提出不同修改策略、依据和取舍，等我选定后再继续。') }}>换策略请示</button>
+                  <button type="button" className="focus-ring rounded border bg-white px-2 py-1" onClick={() => patchThread(caseId, seatId, { followUpMode: 'paused' })}>先暂停</button>
+                </div>
+              </div>
+            ) : null}
             {/* 简模式：主路径只留干活/交卷；feedback/loop 收进「高级」 */}
             {!caseHasPending ? (
               <div className="mb-1.5 space-y-1" data-testid="business-seat-chips">
@@ -981,7 +1007,7 @@ export function BusinessSeatWorkbench({
                     type="button"
                     className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-700 hover:bg-slate-50"
                     data-testid="business-seat-chip-work"
-                    disabled={oaLocked || busy}
+                    disabled={oaLocked || busy || thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy'}
                     onClick={() => runAdvance('请按剧本干下一步')}
                   >
                     让它干活
@@ -990,7 +1016,7 @@ export function BusinessSeatWorkbench({
                     type="button"
                     className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-950 hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
                     data-testid="business-seat-chip-deliver"
-                    disabled={oaLocked || busy || deliverBlocked}
+                    disabled={oaLocked || busy || deliverBlocked || thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy'}
                     title={
                       deliverBlocked
                         ? deliverBlockedReason ?? '齐套未齐，不能交卷'
@@ -1005,15 +1031,16 @@ export function BusinessSeatWorkbench({
                       type="button"
                       className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-medium text-rose-950 hover:bg-rose-100"
                       data-testid="business-seat-chip-revise"
-                      disabled={busy}
+                      disabled={busy || thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy'}
                       title={seatReturnNote ?? undefined}
                       onClick={() => {
                         setBusy(true)
-                        window.setTimeout(() => {
+                        deferBusy(48, () => {
+                          patchThread(caseId, seatId, { followUpMode: 'revise' })
                           runHitlReturnRevise(caseId, seatId)
                           setSafePanel('chat')
                           setBusy(false)
-                        }, 180)
+                        })
                       }}
                     >
                       {hitlReviseChipLabel(seatConfirmKind)}
@@ -1041,7 +1068,7 @@ export function BusinessSeatWorkbench({
                         type="button"
                         className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-950 hover:bg-violet-100"
                         data-testid={`business-seat-chip-feedback-${edge.to}`}
-                        disabled={oaLocked || busy}
+                        disabled={oaLocked || busy || thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy'}
                         title="请上游调整一版（不回退本席进度）· 优先用案子助手代办"
                         onClick={() =>
                           runUpstreamFeedback(edge.to, edge.defaultReason)
@@ -1078,7 +1105,7 @@ export function BusinessSeatWorkbench({
                 data-testid="business-seat-chips-deferred"
                 data-quiet-chrome="1"
               >
-                收口/硬请示态 · 待确认回声静默
+                请查看本部门的确认汇报
               </div>
             ) : (
               <div className="mb-1.5 space-y-1">
@@ -1115,7 +1142,7 @@ export function BusinessSeatWorkbench({
                         type="button"
                         className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-950 hover:bg-violet-100"
                         data-testid={`business-seat-chip-feedback-${edge.to}`}
-                        disabled={oaLocked || busy}
+                        disabled={oaLocked || busy || thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy'}
                         onClick={() =>
                           runUpstreamFeedback(edge.to, edge.defaultReason)
                         }
@@ -1173,7 +1200,7 @@ export function BusinessSeatWorkbench({
                   data-mid-selection-prefill={
                     composerPrefillNonce > 0 && draft.includes('>') ? '1' : '0'
                   }
-                  disabled={oaLocked || busy}
+                  disabled={oaLocked || busy || thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy'}
                 />
                 <button
                   type="button"

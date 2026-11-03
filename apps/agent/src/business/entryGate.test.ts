@@ -12,7 +12,8 @@ describe('entryGate', () => {
       doneSeatIds: [],
     })
     assert.equal(r.ok, false)
-    assert.ok(r.title.includes('⑤'))
+    assert.match(r.title, /申请部.*进入门槛未过/)
+    assert.match(r.reason, /交底全绿/)
   })
 
   it('allows draft after disclosure done', () => {

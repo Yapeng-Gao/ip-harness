@@ -25,6 +25,7 @@ import {
   isGeneralShellId,
 } from './generalShell'
 import { domainCommandOfficeLabel } from './domainCommandLabels'
+import { mergeProjectThreads, readDepartmentWorkspaces, persistDepartmentWorkspaces } from '../business/departmentWorkspaceStorage'
 import type {
   AgentProject,
   DomainCommandWriteLog,
@@ -240,6 +241,8 @@ type ProjectFolderContextValue = {
         | 'stepIndex'
         | 'artifactMarkdown'
         | 'artifactVersions'
+        | 'departmentBrief'
+        | 'followUpMode'
       >
     >,
   ) => void
@@ -267,7 +270,8 @@ const ProjectFolderContext = createContext<ProjectFolderContextValue | null>(
 export function ProjectFolderProvider({ children }: { children: ReactNode }) {
   const seed = useMemo(() => buildDemo(), [])
   const [projects, setProjects] = useState<AgentProject[]>(seed.projects)
-  const [threads, setThreads] = useState<ProjectThread[]>(seed.threads)
+  const [threads, setThreads] = useState<ProjectThread[]>(() => mergeProjectThreads(readDepartmentWorkspaces(), seed.threads))
+  useEffect(() => { persistDepartmentWorkspaces(threads) }, [threads])
   const [timeline, setTimeline] = useState<ProjectTimelineEvent[]>(seed.timeline)
   const [dispatches, setDispatches] = useState<ProjectDispatch[]>(seed.dispatches)
   const [domainCommandWrites, setDomainCommandWrites] = useState<DomainCommandWriteLog[]>([])
@@ -294,8 +298,14 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
   )
 
   const getThread = useCallback(
-    (projectId: string, expertId: ProjectExpertId) =>
-      threads.find((t) => t.projectId === projectId && t.expertId === expertId),
+    (projectId: string, expertId: ProjectExpertId): ProjectThread | undefined => {
+      const thread = threads.find((t) => t.projectId === projectId && t.expertId === expertId)
+      try {
+        const mode = localStorage.getItem(`ip-agent-followup-v1:${projectId}:${expertId}`)
+        if (mode === 'paused' || mode === 'strategy' || mode === 'revise') return { ...(thread ?? emptyThread(projectId, expertId)), followUpMode: mode }
+      } catch { /* storage unavailable */ }
+      return thread
+    },
     [threads],
   )
 
@@ -381,10 +391,7 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
       const newThreads = expertIds.map((eid) => emptyThread(id, eid))
       // 幂等：StrictMode 双调用 / 同 id 并发时不得重复插入
       setProjects((prev) => (prev.some((p) => p.id === id) ? prev : [project, ...prev]))
-      setThreads((prev) => [
-        ...newThreads.filter((t) => !prev.some((p) => p.id === t.id)),
-        ...prev,
-      ])
+      setThreads((prev) => mergeProjectThreads(prev, newThreads))
       setTimeline((prev) => [
         ...prev,
         {
@@ -720,9 +727,14 @@ export function ProjectFolderProvider({ children }: { children: ReactNode }) {
           | 'stepIndex'
           | 'artifactMarkdown'
           | 'artifactVersions'
+          | 'departmentBrief'
+        | 'followUpMode'
         >
       >,
     ) => {
+      if (patch.followUpMode) {
+        try { localStorage.setItem(`ip-agent-followup-v1:${projectId}:${expertId}`, patch.followUpMode) } catch { /* storage unavailable */ }
+      }
       updateThread(projectId, expertId, (t) => ({
         ...t,
         ...patch,

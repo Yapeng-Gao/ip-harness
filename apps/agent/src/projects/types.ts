@@ -130,9 +130,12 @@ export type ProjectThread = {
   /** Confirm succeeded (memory) — overview shows 已确认 */
   hitlCleared?: boolean
   updatedAt: string
+  followUpMode?: 'revise' | 'strategy' | 'paused'
   artifactSubmitted?: boolean
   /** 人改过的成果 markdown（有则覆盖递进拼装稿） */
   artifactMarkdown?: string
+  /** 本案本部门接待记录；不等于材料已核验或已完成工作。 */
+  departmentBrief?: { goal: string; context: string; fileNames: string[]; confirmedAt: string }
   /** 另存版本时间戳副本（样机） */
   artifactVersions?: Array<{ savedAt: string; markdown: string }>
 }

@@ -10,7 +10,7 @@ type Props = {
 }
 
 /**
- * 三线分名词条 · 交互大纲原则 3 / 00 §6.1
+ * 各阶段确认进度词条 · 交互大纲原则 3 / 00 §6.1
  * 机制：分开展示 交底全绿 / 申请过线 / 答复本轮过线，禁止混成一条「已过」。
  */
 export function ThreeLineStatusStrip({
@@ -24,15 +24,15 @@ export function ThreeLineStatusStrip({
     <>
       <div className={`flex flex-wrap items-baseline gap-2 ${dense ? 'mb-1' : 'mb-1.5'}`}>
         {!foldByDefault ? (
-          <h3 className="text-[11px] font-semibold text-slate-800">三线分名</h3>
+          <h3 className="text-[11px] font-semibold text-slate-800">各阶段确认进度</h3>
         ) : null}
         {!dense ? (
           <span className="text-[10px] text-slate-500">
-            交底全绿 ≠ 申请过线 ≠ 答复本轮过线 · 勿混
+            交底、申请文件和本轮答复分别确认
           </span>
         ) : !foldByDefault ? (
-          <span className="text-[9px] text-slate-400" title="交底全绿 ≠ 申请过线 ≠ 答复本轮过线 · 勿混">
-            分开展示 · 勿混
+          <span className="text-[9px] text-slate-400" title="交底、申请文件和本轮答复分别确认">
+            各阶段分别确认
           </span>
         ) : null}
       </div>
@@ -93,15 +93,15 @@ export function ThreeLineStatusStrip({
         data-testid="three-line-status"
         data-dense={dense ? '1' : '0'}
         data-fold="1"
-        aria-label="三线分名"
+        aria-label="各阶段确认进度"
       >
         <summary
           className="cursor-pointer select-none text-[11px] font-semibold text-slate-700"
           data-testid="three-line-fold-summary"
         >
-          三线分名 · {reached}/{rows.length} 已到
+          各阶段确认进度 · {reached}/{rows.length} 已确认
           <span className="ml-1.5 text-[9px] font-medium text-slate-400">
-            展开看分项 · 勿混成一条「已过」
+            展开查看每个阶段的确认结果
           </span>
         </summary>
         <div className="mt-1.5 border-t border-slate-100 pt-1.5">{body}</div>
@@ -118,7 +118,7 @@ export function ThreeLineStatusStrip({
       }
       data-testid="three-line-status"
       data-dense={dense ? '1' : '0'}
-      aria-label="三线分名"
+      aria-label="各阶段确认进度"
     >
       {body}
     </section>

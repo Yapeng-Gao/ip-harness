@@ -137,13 +137,13 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
     >
       <header className="min-w-0" data-testid="company-hero">
         <p
-          className="text-[11px] font-medium uppercase tracking-wide text-slate-400"
+          className="text-[11px] font-medium text-slate-400"
           data-testid="company-page-eyebrow"
         >
           本案概况
         </p>
         <h1
-          className="mt-0.5 text-[20px] font-semibold tracking-tight text-slate-900"
+          className="mt-0.5 text-balance text-[20px] font-semibold tracking-tight text-slate-900"
           data-testid="company-case-title"
         >
           {title}
@@ -174,56 +174,54 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
         </section>
       ) : null}
 
-      {/* 一句卡点 + 去当前部 */}
+      {/* 薄路牌：一句卡点 + 去当前部（非营销大卡） */}
       <section
-        className="rounded-xl border border-slate-900 bg-slate-900 p-4 text-white shadow-sm"
+        className="rounded-lg border border-slate-200 bg-white px-4 py-3"
         data-testid="company-gap-cta"
+        data-gap-density="thin"
         aria-labelledby="company-gap-title"
       >
         <p
           id="company-gap-title"
-          className="text-[11px] font-medium uppercase tracking-wider text-white/60"
+          className="text-[11px] font-medium text-slate-400"
         >
           本案卡点
         </p>
         <p
-          className="mt-1.5 text-[15px] font-semibold leading-snug"
+          className="mt-1 text-[15px] font-semibold leading-snug text-slate-900"
           data-testid="company-gap-checkpoint"
         >
           {gapBlock.checkpoint}
         </p>
         <p
-          className="mt-1 text-[12px] text-white/75"
+          className="mt-1 text-[12px] text-slate-500"
           data-testid="company-gap-next"
         >
           {gapBlock.nextStep}
         </p>
-        <p
-          className="sr-only"
-          data-testid="company-gap-who"
-        >
+        <p className="sr-only" data-testid="company-gap-who">
           {gapBlock.who}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Link
             to={currentHref}
-            className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-slate-900"
+            className="btn-press focus-ring inline-flex min-h-10 items-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
             data-testid="company-go-current-dept"
           >
             去当前部 · {deptLabel(currentDept)}
             <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
           <span
-            className="text-[11px] text-white/45"
+            className="text-[11px] tabular-nums text-slate-400"
             data-testid="company-pending-hint"
             data-pending={pending.length}
           >
             {pending.length > 0
-              ? '拍板请用左栏「待确认」或进部台右栏'
-              : '拍板入口在左栏「待确认」'}
+              ? `要你拍 ${pending.length} · 左栏待办或部台右栏`
+              : '拍板入口在左栏待办'}
           </span>
         </div>
-        <p className="mt-2 text-[10px] text-white/45">{gapBlock.statusLine}</p>
+        <p className="mt-2 text-[10px] text-slate-400">{gapBlock.statusLine}</p>
       </section>
 
 
@@ -260,6 +258,16 @@ export function CaseCompanyHome({ caseId, title, summary }: Props) {
           data-testid="company-link-members"
         >
           成员
+        </Link>
+        <span aria-hidden className="text-slate-300">
+          ·
+        </span>
+        <Link
+          to={`/agent/cases/${caseId}/professional`}
+          className="focus-ring rounded-sm font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+          data-testid="company-link-professional"
+        >
+          本案部门
         </Link>
       </nav>
     </div>

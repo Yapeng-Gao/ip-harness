@@ -211,19 +211,23 @@ export const POST_DEPTS_LIST: OrgDept[] = ORG_DEPTS.filter(
   (d) => d.group === 'post',
 )
 
+/** 席位能力挂接项（样机）。name＝目录级能力名；prompt 仅样机备忘，非产品真源。 */
 export type ExpertSkill = {
   id: string
   name: string
   level: 'core' | 'optional'
   enabled: boolean
-  /** 提示词：真正影响该 skill 执行口径的那段话 */
+  /** 样机备忘；产品真源在各产品开发能力目录 */
   prompt: string
-  /** 能力档 1–5，用于养成面板 */
+  /** 养成样机用；编制 UI 不主推 */
   capability: 1 | 2 | 3 | 4 | 5
 }
 
+/** 编制席位 id：花名册 ProjectExpertId，或本机加人/请来的 org 席 */
+export type OrgSeatId = ProjectExpertId | string
+
 export type ExpertConfig = {
-  seatId: ProjectExpertId
+  seatId: OrgSeatId
   /** 覆盖性 role 文案；空则回落到 expert.description */
   role: string
   skills: ExpertSkill[]
@@ -231,6 +235,25 @@ export type ExpertConfig = {
   notes: string
   /** 养成：累计经验，决定 level */
   xp: number
+  /** 自建/请来专家显示名（花名册席可空） */
+  displayName?: string
+}
+
+/** 部门内本机加的专家（含「请来」示意岗） */
+export type OrgExtraExpert = {
+  id: string
+  name: string
+  /** 来自 peers 的请来，稳定 id */
+  fromPeerId?: string
+}
+
+/** 公司能力库条目 · 编制挂接真源（样机本机） */
+export type OrgCapability = {
+  id: string
+  name: string
+  /** 空＝全公司通用；有值＝主要挂该部 */
+  deptId?: OrgDeptId
+  note?: string
 }
 
 export type OrgDeptConfig = {
@@ -238,6 +261,8 @@ export type OrgDeptConfig = {
   /** 覆盖 label；空则用 canonical */
   label: string
   enabled: boolean
+  /** 本机加人 / 请来的专家 */
+  extraExperts: OrgExtraExpert[]
 }
 
 function skill(
@@ -257,7 +282,7 @@ const DEFAULT_SKILLS: ExpertSkill[] = [
   skill('sk-style', '行文风格对齐', 'optional', '沿用本案已有稿件的术语与句式；同一技术特征全篇只用一个叫法。', 2),
 ]
 
-export function defaultSkillsFor(seatId: ProjectExpertId): ExpertSkill[] {
+export function defaultSkillsFor(seatId: OrgSeatId): ExpertSkill[] {
   if (seatId === 'expert-research') {
     return [
       skill('sk-country', '国家库利用', 'core', '优先覆盖中、美、欧、日、韩五局；小语种同族用机翻后标原文出处。', 4),

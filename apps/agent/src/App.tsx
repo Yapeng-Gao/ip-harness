@@ -27,10 +27,8 @@ import { BusinessCasesPage } from './pages/business/BusinessCasesPage'
 import { BusinessCaseNewPage } from './pages/business/BusinessCaseNewPage'
 import { BusinessCasePage } from './pages/business/BusinessCasePage'
 import { BusinessCaseDeptPage } from './pages/business/BusinessCaseDeptPage'
-import {
-  PendingConfirmDetailPage,
-  PendingConfirmInboxPage,
-} from './pages/business/PendingConfirmPage'
+import { PendingConfirmDetailPage } from './pages/business/PendingConfirmPage'
+import { BossTodoInboxPage } from './pages/business/BossTodoInboxPage'
 import { CaseDocketPage } from './pages/business/CaseDocketPage'
 import { CaseBillingPage } from './pages/business/CaseBillingPage'
 import { CaseMembersPage } from './pages/business/CaseMembersPage'
@@ -48,7 +46,7 @@ import { AuthSessionProvider } from './business/AuthSessionContext'
  * /agent/login        登录壳（角色二选一 + 样机会话；§4.0）
  * /agent              薄产品入口（§4.0a；登录后落点；主 CTA 按角色分流）
  * /agent/cases        多案流水（案表 → 公司首页）
- * /agent/departments  编制（全库旁路；壳层左栏弱入口；作业以案→公司首页八部为主）
+ * /agent/departments  编制 · 部门管理（公司级岗表；办活走大厅/本案/部台）
  * /agent/roster       → /agent/departments
  * /agent/assets       资产（全局库 + 文件树）
  */
@@ -80,7 +78,7 @@ export default function App() {
                 <Route path="cases/:caseId/members" element={<CaseMembersPage />} />
                 <Route path="cases/:caseId/professional" element={<CaseProfessionalPage />} />
                 <Route path="cases/:caseId/room" element={<Navigate to=".." relative="path" replace />} />
-                <Route path="pending" element={<PendingConfirmInboxPage />} />
+                <Route path="pending" element={<BossTodoInboxPage />} />
                 <Route path="pending/:confirmId" element={<PendingConfirmDetailPage />} />
                 <Route path="departments" element={<DepartmentsPage />} />
                 <Route path="roster" element={<Navigate to="/agent/departments" replace />} />

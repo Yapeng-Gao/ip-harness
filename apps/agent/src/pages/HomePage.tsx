@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { HomeReceptionGuide } from '../components/home/HomeReceptionGuide'
+import { PersonaSeedGate } from '../components/home/PersonaSeedGate'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 import {
   ENTRY_ROLE_LABEL,
@@ -10,6 +11,8 @@ import { useEntryRole } from '../business/useEntryRole'
 import { BranchDoors } from '../components/business/BranchDoors'
 import { HallEightDoors } from '../components/home/HallEightDoors'
 import { reopenAllTeachTips } from '../business/teachingFade'
+import { isPersonaSeedSettled, readPersonaSeed } from '../business/userPersona'
+import { isBusinessSeedCaseId } from '../business/businessSeeds'
 
 /**
  * 大厅着陆 · /agent
@@ -44,12 +47,20 @@ export function HomePage() {
   )
 
   const isAgency = entryRole === 'agency'
-  /** Soft routing only (doors/reception) — hall must not imply current case */
+  /** Only explicit legacy demo tools may reference a recent case; hall entry starts a new matter. */
+  const workspaceCases = cases.filter((c) => !isBusinessSeedCaseId(c.id))
   const latestId = pickLatestCaseId(
-    cases,
+    workspaceCases,
     (id) => getProgress(id).updatedAt,
     getLogAt,
   )
+  const [personaTick, setPersonaTick] = useState(0)
+  const personaSettled = useMemo(
+    () => isPersonaSeedSettled(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tick forces re-read storage
+    [personaTick],
+  )
+  const familiarWithTools = readPersonaSeed()?.familiarity === 'used_similar'
 
   return (
     <div
@@ -62,6 +73,7 @@ export function HomePage() {
       data-hall-dedupe="pending-left-only-v103"
       data-assistant-density="delegate-chain-v1"
       data-hall-tools={hallTools ? '1' : '0'}
+      data-persona-settled={personaSettled ? '1' : '0'}
     >
       <div className="mr-auto w-full max-w-5xl">
         {/* 1 · thin identity — reception speaks first; no fake current case */}
@@ -78,27 +90,28 @@ export function HomePage() {
               专家向你汇报 · 弄清去向
             </p>
           </div>
-          <p
-            className="max-w-full text-right text-[12px] text-slate-600"
+          <span
+            className="sr-only"
             data-testid="home-current-role"
             data-entry-role={entryRole}
           >
-            <span className="font-semibold text-slate-900">
-              {ENTRY_ROLE_LABEL[entryRole]}
-            </span>
-          </p>
+            {ENTRY_ROLE_LABEL[entryRole]}
+          </span>
         </header>
 
+        {!personaSettled ? (
+          <PersonaSeedGate onSettled={() => setPersonaTick((n) => n + 1)} />
+        ) : (
+          <>
         {/* 2 · 前台主动引导 */}
         <div data-hall-block="reception" data-testid="home-delegate-zone">
           <HomeReceptionGuide
             initialAttachId={attachQ}
-            latestCaseId={latestId}
           />
         </div>
 
         {/* 3 · 八部门名牌 · 一句话 + 薄专家预览（拍板走左栏「待确认」） */}
-        <HallEightDoors caseId={latestId} />
+        <HallEightDoors compact={!familiarWithTools} />
 
         {/* 支路 / 次要 · 仅 ?hallTools=1 出现（顶栏账户菜单入口），不占首屏 */}
         {hallTools ? (
@@ -170,9 +183,8 @@ export function HomePage() {
           </div>
         ) : null}
 
-        <footer className="mt-3 border-t border-slate-100 pt-2 text-[10px] text-slate-400">
-          拍板走左栏待确认 · 支路在账户菜单
-        </footer>
+          </>
+        )}
       </div>
     </div>
   )

@@ -30,7 +30,7 @@ const BY_DEPT: Partial<Record<OrgDeptId, AgentStyleTag>> = {
   'dept-disclosure': {
     id: 'style-disclosure',
     label: '事实优先',
-    line: '先钉技术事实与缺料，再谈全绿；禁空转。',
+    line: '先核对技术事实与缺项，再确认是否达到交付标准。',
   },
   'dept-draft': {
     id: 'style-draft',

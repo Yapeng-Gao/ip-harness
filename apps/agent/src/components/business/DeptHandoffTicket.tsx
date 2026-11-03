@@ -12,7 +12,7 @@ type Props = {
 
 /**
  * 交底→申请 部间工单卡 · 线框 s-handoff / 04§8.1
- * 打包方可见；三线分词；结束检查表摘要；进入申请部接单。
+ * 打包方可见；各阶段确认范围；结束检查表摘要；进入申请部接单。
  */
 export function DeptHandoffTicket({
   caseId,
@@ -68,7 +68,7 @@ export function DeptHandoffTicket({
       <div
         className="mt-3 flex flex-wrap gap-1.5"
         data-testid="ticket-three-lines"
-        aria-label="三线分词"
+        aria-label="各阶段确认范围"
       >
         {ticket.lines.map((line) => {
           const ok = line.includes('全绿') || line.includes('过线）')
@@ -135,7 +135,7 @@ export function DeptHandoffTicket({
           </Link>
         )}
         <p className="w-full text-[10px] text-slate-400">
-          全绿 ≠ 申请已过线 · 三线分词勿混
+          交底已确认；申请文件仍需由申请部办理并另行确认。
         </p>
       </div>
     </section>

@@ -85,10 +85,9 @@ export function buildAskEvidence(input: {
     summary ||
     ''
 
-  const source =
+  const sourceEvidence =
     pickSection(result, ['来源', '依据']) ||
     pickSection(process, ['来源', '依据']) ||
-    kindFallback(input.kind, 'source') ||
     ''
 
   const reasoning =
@@ -97,11 +96,13 @@ export function buildAskEvidence(input: {
     pickSection(result, ['推演', '理由']) ||
     ''
 
-  const contrast =
+  const contrastEvidence =
     pickSection(result, ['对比', '对照']) ||
     pickSection(process, ['对比', '对照']) ||
-    kindFallback(input.kind, 'contrast') ||
     ''
+
+  const source = sourceEvidence || kindFallback(input.kind, 'source') || ''
+  const contrast = contrastEvidence || kindFallback(input.kind, 'contrast') || ''
 
   const pieces: AskEvidencePiece[] = (
     [
@@ -111,11 +112,18 @@ export function buildAskEvidence(input: {
       ['contrast', contrast],
     ] as const
   ).map(([id, body]) => {
-    const present = body.trim().length >= 8
+    const evidenceWasSupplied =
+      id === 'source' ? Boolean(sourceEvidence) : id === 'contrast' ? Boolean(contrastEvidence) : true
+    const demoOnly = /示意|演示|样机|占位|非真/.test(body)
+    const present = body.trim().length >= 8 && evidenceWasSupplied && !demoOnly
     return {
       id,
       label: LABELS[id],
-      body: present ? body.trim() : `（待补 · ${LABELS[id]}未齐，不可宣称签字级依据链）`,
+      body: present
+        ? body.trim()
+        : body.trim() && (!evidenceWasSupplied || demoOnly)
+          ? `${body.trim()}（仅供界面示意，不计入依据）`
+          : `（待补 · ${LABELS[id]}未齐，不可宣称签字级依据链）`,
       present,
     }
   })

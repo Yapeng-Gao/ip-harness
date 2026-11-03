@@ -25,6 +25,8 @@ export type JudgmentRecord = {
   confidence: JudgmentConfidence
   /** 认风险类 */
   riskAccepted?: boolean
+  decision?: 'confirmed' | 'returned'
+  artifactSnapshot?: { markdown: string; savedAt: string; version: number }
   confirmId?: string
   kind?: BusinessConfirmKind
 }
@@ -119,6 +121,7 @@ export function buildJudgmentFromConfirm(input: {
     compare: compare.slice(0, 200),
     confidence: ev.signReady ? 'high' : 'mid',
     riskAccepted: Boolean(input.riskAccepted),
+    decision: input.decision,
     confirmId: input.confirmId,
     kind: input.kind,
   }

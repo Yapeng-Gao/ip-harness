@@ -32,13 +32,15 @@ export function thickenStatus(
       return {
         kind: 'work',
         text: '当前在办',
-        detail: `${lead} 主责 · 本稿交后待确认（示意 · 左栏待确认）`,
+        detail: `${lead} 主责 · 本稿交后要你拍（示意 · 左栏待办）`,
       }
     case '待确认':
       return {
         kind: 'gap',
-        text: '缺口：缺编制席 · 拍板在左栏「待确认」',
-        detail: confirm ? `${confirm} · 右栏闸` : '工作台右栏拍板',
+        text: '缺口：要你拍板',
+        detail: confirm
+          ? `${confirm} · 左栏待办或部台右栏`
+          : '左栏待办或部台右栏',
       }
     case '退回':
       return {
@@ -81,7 +83,13 @@ export function sortProfessionalCards<T extends { line: { kind: StatusKind } }>(
     .map((x) => x.c)
 }
 
-export type RosterSeat = { id: string; label: string; initial: string }
+export type RosterSeat = {
+  id: string
+  label: string
+  initial: string
+  /** false = 未请来（灰显 · 建议后请示） */
+  invited: boolean
+}
 
 export function rosterSeats(dept: OrgDept): RosterSeat[] {
   const rows: RosterSeat[] = [
@@ -89,16 +97,26 @@ export function rosterSeats(dept: OrgDept): RosterSeat[] {
       id: dept.leadSeatId,
       label: businessSeatLabel(dept.leadSeatId),
       initial: businessSeatLabel(dept.leadSeatId).slice(0, 1),
+      invited: true,
     },
   ]
-  for (const p of dept.peers.slice(0, 5)) {
-    if (!p.sessionSeatId) continue
-    const label = businessSeatLabel(p.sessionSeatId)
-    rows.push({
-      id: p.sessionSeatId,
-      label,
-      initial: label.slice(0, 1),
-    })
+  for (const p of dept.peers.slice(0, 6)) {
+    if (p.sessionSeatId) {
+      const label = businessSeatLabel(p.sessionSeatId)
+      rows.push({
+        id: p.sessionSeatId,
+        label,
+        initial: label.slice(0, 1),
+        invited: true,
+      })
+    } else {
+      rows.push({
+        id: p.id,
+        label: p.label,
+        initial: p.label.slice(0, 1),
+        invited: false,
+      })
+    }
   }
   return rows
 }

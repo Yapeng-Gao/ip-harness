@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { SoftEmpty } from '../../components/soft/SoftEmpty'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Plus, Search } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { currentSeatForProgress } from '../../business/businessSeats'
+import { collectBossTodos } from '../../business/bossTodos'
 import {
   MAIN_CHAIN_DEPTS,
   deptSlug,
@@ -11,6 +12,10 @@ import {
 } from '../../departments/orgDepts'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 import { useEntryRole } from '../../business/useEntryRole'
+import { useProjectFolder } from '../../projects/ProjectFolderContext'
+import { latestDepartmentSlug } from '../../business/departmentBrief'
+import { deptIdFromSlug, orgDeptById } from '../../departments/orgDepts'
+import { isBusinessSeedCaseId } from '../../business/businessSeeds'
 
 export type BusinessHomeStartState = {
   summary?: string
@@ -34,31 +39,88 @@ type FilterChip = 'all' | 'pending' | 'deadline' | 'disclosure'
 /**
  * /agent/cases · 项目列表（案盘）· 一期：单栏清单；§118：点行→当前部台（非概况）
  * §116：不挂侧栏案树；开新案/搜索各一处；不镜像壳层大厅/待确认链接。
- * 禁：把待确认与近期限筛成同一条件；禁用待确认点冒充期限红点。
+ * 禁：把待确认与近期限筛成同一条件；期限点仅同源 bossTodos B（有截止日）。
  */
 export function BusinessCasesPage() {
+  const { threads } = useProjectFolder()
   const { cases, getProgress, stageLabel, getPendingConfirms } = useBusinessCases()
   const { deptLabel } = useOrgConfig()
   const { entryRole } = useEntryRole()
-  const [query, setQuery] = useState('')
-  const [chip, setChip] = useState<FilterChip>('all')
+  const [params, setParams] = useSearchParams()
+  const query = params.get('q') ?? ''
+  const scope = params.get('scope') === 'demo' ? 'demo' : 'workspace'
+  const chipRaw = params.get('chip')
+  const chip: FilterChip =
+    chipRaw === 'pending' ||
+    chipRaw === 'deadline' ||
+    chipRaw === 'disclosure' ||
+    chipRaw === 'all'
+      ? chipRaw
+      : 'all'
+  const setQuery = (q: string) => {
+    const p = new URLSearchParams(params)
+    if (q.trim()) p.set('q', q)
+    else p.delete('q')
+    setParams(p, { replace: true })
+  }
+  const setChip = (c: FilterChip) => {
+    const p = new URLSearchParams(params)
+    if (c === 'all') p.delete('chip')
+    else p.set('chip', c)
+    setParams(p, { replace: true })
+  }
+
+  const setScope = (next: 'workspace' | 'demo') => {
+    const p = new URLSearchParams(params)
+    if (next === 'demo') p.set('scope', 'demo')
+    else p.delete('scope')
+    p.delete('q')
+    p.delete('chip')
+    setParams(p, { replace: true })
+  }
+
+  const visibleCases = useMemo(
+    () => cases.filter((c) => isBusinessSeedCaseId(c.id) === (scope === 'demo')),
+    [cases, scope],
+  )
+
+  const progressById = useMemo(() => {
+    const map: Record<string, ReturnType<typeof getProgress>> = {}
+    for (const c of cases) map[c.id] = getProgress(c.id)
+    return map
+  }, [cases, getProgress])
+
+  const todos = useMemo(
+    () =>
+      collectBossTodos({
+        scope,
+        pending: getPendingConfirms().filter((item) => isBusinessSeedCaseId(item.caseId) === (scope === 'demo')),
+        cases: visibleCases,
+        progressById,
+      }),
+    [getPendingConfirms, visibleCases, progressById, scope],
+  )
 
   const rows = useMemo(
     () =>
-      cases.map((c) => {
-        const prog = getProgress(c.id)
+      visibleCases.map((c) => {
+        const prog = progressById[c.id]!
         const seat = currentSeatForProgress({
           stageId: prog.stageId,
           doneSeatIds: prog.doneSeatIds,
           moreSeatIds: prog.moreSeatIds,
         })
-        const dept = orgDeptByLeadSeat(seat) ?? MAIN_CHAIN_DEPTS[0]!
+        const selectedSlug = latestDepartmentSlug(c.id, threads) ?? prog.receptionHandoff?.selectedSlug
+        const dept = (selectedSlug ? orgDeptById(deptIdFromSlug(selectedSlug) ?? '') : undefined) ?? orgDeptByLeadSeat(seat) ?? MAIN_CHAIN_DEPTS[0]!
         const pendingCount = getPendingConfirms(c.id).length
-        /** 期限阶段示意：已递交或已进答复轮 · 非官报、非把待拍当期限 */
-        const inDeadlinePhase =
-          Boolean(prog.filed) || (prog.oaRound ?? 0) > 0 || prog.stageId === 'oa'
+        /** 诚实 B：仅有截止日的催办，不用 filed/oa 启发式冒充 */
+        const hasDeadlineB = todos.b.some((x) => x.caseId === c.id)
+        const deadlineOverdue = todos.b.some(
+          (x) => x.caseId === c.id && x.overdue,
+        )
         return {
           id: c.id,
+          demo: isBusinessSeedCaseId(c.id),
           title: c.title,
           caseNo: shortCaseNo(c.id),
           deptId: dept.id,
@@ -66,11 +128,20 @@ export function BusinessCasesPage() {
           deptName: deptLabel(dept),
           stage: stageLabel(prog.stageId),
           pendingCount,
-          inDeadlinePhase,
+          inDeadlinePhase: hasDeadlineB,
+          deadlineOverdue,
           who: deptLabel(dept),
         }
       }),
-    [cases, getProgress, stageLabel, deptLabel, getPendingConfirms],
+    [
+      visibleCases,
+      progressById,
+      threads,
+      stageLabel,
+      deptLabel,
+      getPendingConfirms,
+      todos.b,
+    ],
   )
 
   const filtered = useMemo(() => {
@@ -101,13 +172,13 @@ export function BusinessCasesPage() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <h1
-              className="text-[20px] font-semibold tracking-tight text-slate-900"
+              className="text-balance text-[20px] font-semibold text-slate-900"
               data-testid="business-cases-title"
             >
               项目
             </h1>
             <p className="mt-1 text-sm text-slate-500" data-testid="business-cases-subtitle">
-              点行进当前部门工作台
+              {scope === 'demo' ? `演示项目 · ${visibleCases.length} 个，仅供查看流程` : `我的项目 · ${visibleCases.length} 个`}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -122,6 +193,11 @@ export function BusinessCasesPage() {
           </div>
         </div>
 
+        <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="项目范围">
+          <button type="button" aria-pressed={scope === 'workspace'} onClick={() => setScope('workspace')} className={'focus-ring min-h-9 rounded-lg border px-3 py-2 text-xs ' + (scope === 'workspace' ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-600')} data-testid="business-cases-scope-workspace">我的项目</button>
+          <button type="button" aria-pressed={scope === 'demo'} onClick={() => setScope('demo')} className={'focus-ring min-h-9 rounded-lg border px-3 py-2 text-xs ' + (scope === 'demo' ? 'border-amber-300 bg-amber-50 text-amber-900' : 'border-slate-200 bg-white text-slate-500')} data-testid="business-cases-scope-demo">演示项目</button>
+        </div>
+
 
         <div
           className="mt-4 flex flex-wrap gap-2"
@@ -132,8 +208,8 @@ export function BusinessCasesPage() {
           {(
             [
               ['all', '全部'],
-              ['pending', '待确认'],
-              ['deadline', '答复/期限阶段'],
+              ['pending', '要你拍'],
+              ['deadline', '有期限催办'],
               ['disclosure', '在交底部'],
             ] as const
           ).map(([id, label]) => (
@@ -141,7 +217,7 @@ export function BusinessCasesPage() {
               key={id}
               type="button"
               onClick={() => setChip(id)}
-              className={`btn-press focus-ring rounded-full border px-3 py-1 text-[12px] font-medium ${
+              className={`btn-press focus-ring min-h-10 rounded-full border px-3 py-1.5 text-[12px] font-medium ${
                 chip === id
                   ? 'border-slate-900 bg-slate-900 text-white'
                   : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
@@ -169,6 +245,9 @@ export function BusinessCasesPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="筛选案名 / 编号 / 部门"
+              type="search"
+              name="case-filter"
+              autoComplete="off"
               className="focus-ring w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-[13px] text-slate-800 placeholder:text-slate-400"
               data-testid="business-cases-filter-input"
             />
@@ -204,7 +283,7 @@ export function BusinessCasesPage() {
             <div className="mt-2 text-center">
               <button
                 type="button"
-                className="text-[12px] font-medium text-slate-700 underline-offset-2 hover:underline"
+                className="btn-press focus-ring rounded-md px-2 py-1.5 text-[12px] font-medium text-slate-700 underline-offset-2 hover:underline"
                 onClick={() => {
                   setQuery('')
                   setChip('all')
@@ -222,9 +301,9 @@ export function BusinessCasesPage() {
             <div className="hidden grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_4.5rem_4.5rem] gap-2 border-b border-slate-100 bg-slate-50/80 px-4 py-2 text-[11px] font-medium text-slate-500 lg:grid">
               <span>案名 / 编号</span>
               <span>当前部门 · 谁在干</span>
-              <span className="text-right">待确认</span>
-              <span className="text-center" title="答复/期限阶段示意 · 非官报">
-                期限态
+              <span className="text-right">要你拍</span>
+              <span className="text-center" title="带截止日的催办 · 样机日亦可">
+                期限
               </span>
             </div>
             <ul className="divide-y divide-slate-100" aria-label="案子列表">
@@ -239,6 +318,7 @@ export function BusinessCasesPage() {
                     <span className="min-w-0">
                       <span className="block truncate text-[14px] font-semibold text-slate-900">
                         {row.title}
+                        {row.demo ? <span className="ml-2 inline-flex rounded-sm bg-amber-50 px-1.5 py-0.5 align-middle text-[10px] font-medium text-amber-800">演示</span> : null}
                       </span>
                       <span
                         className="mt-0.5 block truncate font-mono text-[11px] text-slate-400"
@@ -248,7 +328,7 @@ export function BusinessCasesPage() {
                       </span>
                       <span className="mt-0.5 block truncate text-[11px] text-slate-400 lg:hidden">
                         {row.deptName}
-                        {row.pendingCount > 0 ? ' · 待确认' : ''}
+                        {row.pendingCount > 0 ? ' · 要你拍' : ''}
                       </span>
                     </span>
                     <span className="hidden min-w-0 lg:block">
@@ -259,7 +339,7 @@ export function BusinessCasesPage() {
                         className="mt-0.5 block truncate text-[11px] text-slate-400"
                         data-testid={`business-case-status-${row.id}`}
                       >
-                        {row.pendingCount > 0 ? '待确认' : '进行中'}
+                        {row.pendingCount > 0 ? '要你拍' : '进行中'}
                       </span>
                     </span>
                     <span
@@ -275,19 +355,30 @@ export function BusinessCasesPage() {
                     <span
                       className="hidden justify-center lg:flex"
                       title={
-                        row.inDeadlinePhase
-                          ? '已递交/答复阶段 · 示意 · 非官报'
-                          : '未进答复期限阶段'
+                        row.deadlineOverdue
+                          ? '有逾期催办'
+                          : row.inDeadlinePhase
+                            ? '有期限催办（含样机日）'
+                            : '无带截止日的催办'
                       }
                       data-testid={`business-case-docket-${row.id}`}
                       data-deadline={row.inDeadlinePhase ? '1' : '0'}
+                      data-overdue={row.deadlineOverdue ? '1' : '0'}
                       aria-label={
-                        row.inDeadlinePhase ? '期限阶段示意' : '未进期限阶段'
+                        row.deadlineOverdue
+                          ? '逾期催办'
+                          : row.inDeadlinePhase
+                            ? '期限催办'
+                            : '无期限催办'
                       }
                     >
                       <span
                         className={`h-2 w-2 rounded-full ${
-                          row.inDeadlinePhase ? 'bg-rose-500' : 'bg-slate-200'
+                          row.deadlineOverdue
+                            ? 'bg-rose-500'
+                            : row.inDeadlinePhase
+                              ? 'bg-orange-400'
+                              : 'bg-slate-200'
                         }`}
                         aria-hidden
                       />

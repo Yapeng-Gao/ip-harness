@@ -143,8 +143,8 @@ export const DEPT_RICH: Record<string, DeptRich> = {
     workerPrefix: 'INTA-W',
     workerCount: 8,
     tools: [
-      { id: 'tl-inta-01', name: '价值评分器', code: 'TL-INTA-01', version: 'v3.0', weeklyCalls: 128, automation: 82 },
-      { id: 'tl-inta-02', name: '报价测算', code: 'TL-INTA-02', version: 'v1.4', weeklyCalls: 41, automation: 55 },
+      { id: 'tl-inta-01', name: '立项价值判断（薄）', code: 'TL-INTA-01', version: 'v3.0', weeklyCalls: 128, automation: 82 },
+      { id: 'tl-inta-02', name: '范围与档位建议', code: 'TL-INTA-02', version: 'v1.4', weeklyCalls: 41, automation: 55 },
     ],
   },
   'dept-disclosure': {
@@ -164,8 +164,9 @@ export const DEPT_RICH: Record<string, DeptRich> = {
     workerPrefix: 'DISC-W',
     workerCount: 9,
     tools: [
-      { id: 'tl-disc-01', name: '交底结构化', code: 'TL-DISC-01', version: 'v2.5', weeklyCalls: 210, automation: 77 },
-      { id: 'tl-disc-02', name: '追问生成', code: 'TL-DISC-02', version: 'v2.0', weeklyCalls: 156, automation: 63 },
+      { id: 'tl-disc-01', name: '交底书撰写', code: 'TL-DISC-01', version: 'v2.5', weeklyCalls: 210, automation: 77 },
+      { id: 'tl-disc-02', name: '腾讯交底书完善', code: 'TL-DISC-02', version: 'v2.0', weeklyCalls: 156, automation: 63 },
+      { id: 'tl-disc-03', name: '评估工作台', code: 'TL-DISC-03', version: 'v1.0', weeklyCalls: 90, automation: 50 },
     ],
   },
   'dept-research': {
@@ -186,8 +187,8 @@ export const DEPT_RICH: Record<string, DeptRich> = {
     workerPrefix: 'RSRC-W',
     workerCount: 12,
     tools: [
-      { id: 'tl-rsrc-01', name: '检索式引擎', code: 'TL-RSRC-01', version: 'v5.2', weeklyCalls: 412, automation: 71 },
-      { id: 'tl-rsrc-02', name: '三性判断', code: 'TL-RSRC-02', version: 'v3.1', weeklyCalls: 288, automation: 66 },
+      { id: 'tl-rsrc-01', name: 'Ai检索 / 鉴新', code: 'TL-RSRC-01', version: 'v5.2', weeklyCalls: 412, automation: 71 },
+      { id: 'tl-rsrc-02', name: '查新报告解读', code: 'TL-RSRC-02', version: 'v3.1', weeklyCalls: 288, automation: 66 },
     ],
   },
   'dept-draft': {
@@ -196,7 +197,7 @@ export const DEPT_RICH: Record<string, DeptRich> = {
       name: '阿撰',
       code: 'AGT-DRFT-00',
       duty: '部门统筹 · 权要布局 · 定稿签发',
-      tags: ['完美主义', '改稿不倦', '手法挑剔'],
+      tags: ['完美主义', '改稿不倦', '口径严'],
     },
     experts: [
       EXPERT('sub-drft-elec', '电学申请专家', 'DRFT-E-01', 300, '权要布局 · 电学/通信', '任务中'),
@@ -208,9 +209,9 @@ export const DEPT_RICH: Record<string, DeptRich> = {
     workerPrefix: 'DRFT-W',
     workerCount: 14,
     tools: [
-      { id: 'tl-drft-01', name: '撰写生成引擎', code: 'TL-DRFT-01', version: 'v4.2', weeklyCalls: 312, automation: 71 },
-      { id: 'tl-drft-02', name: '权要优化引擎', code: 'TL-DRFT-02', version: 'v2.8', weeklyCalls: 148, automation: 66 },
-      { id: 'tl-drft-03', name: '说明书装配', code: 'TL-DRFT-03', version: 'v1.9', weeklyCalls: 205, automation: 58 },
+      { id: 'tl-drft-01', name: '申请文件撰写', code: 'TL-DRFT-01', version: 'v4.2', weeklyCalls: 312, automation: 71 },
+      { id: 'tl-drft-02', name: '装配说明书', code: 'TL-DRFT-02', version: 'v2.8', weeklyCalls: 148, automation: 66 },
+      { id: 'tl-drft-03', name: 'A–J 检查表', code: 'TL-DRFT-03', version: 'v1.9', weeklyCalls: 205, automation: 58 },
     ],
   },
   'dept-figure': {
@@ -270,8 +271,8 @@ export const DEPT_RICH: Record<string, DeptRich> = {
     workerPrefix: 'OANS-W',
     workerCount: 10,
     tools: [
-      { id: 'tl-oans-01', name: 'OA 理由分类', code: 'TL-OANS-01', version: 'v2.4', weeklyCalls: 164, automation: 79 },
-      { id: 'tl-oans-02', name: '答复草拟', code: 'TL-OANS-02', version: 'v2.1', weeklyCalls: 118, automation: 61 },
+      { id: 'tl-oans-01', name: 'OA答复', code: 'TL-OANS-01', version: 'v2.4', weeklyCalls: 164, automation: 79 },
+      { id: 'tl-oans-02', name: 'OA答复审核', code: 'TL-OANS-02', version: 'v2.1', weeklyCalls: 118, automation: 61 },
     ],
   },
 }

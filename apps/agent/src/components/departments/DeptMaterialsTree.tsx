@@ -51,13 +51,8 @@ export function DeptMaterialsTree({
       data-tree-fold="v1"
       aria-label="本部门材料目录"
     >
-      <header className="shrink-0 border-b border-slate-200 px-3 py-2">
-        <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-          材料目录
-        </p>
-        <p className="mt-0.5 text-[12px] font-medium text-slate-700">
-          点选决定中栏产出
-        </p>
+      <header className="sr-only">
+        <p>材料目录</p>
       </header>
       <ul className="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-2 py-2">
         {nodes.map((node) => (

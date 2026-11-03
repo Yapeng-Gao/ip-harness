@@ -16,6 +16,19 @@ import { deliverableForExpert } from '../projects/patentDeliverables'
 import { getProjectExpert } from '../projects/experts'
 
 describe('midAiProducts', () => {
+  it('a user case without a manuscript never falls back to example facts', () => {
+    const body = composeMidDeliverableBody({
+      allowExampleContent: false,
+      officeMainBody: '项目：边缘散热 PRJ-EDGE-1042，温升下降12℃',
+      dual: deliverableForExpert('expert-monetize'),
+      expertSteps: getProjectExpert('expert-monetize').steps,
+    })
+    assert.doesNotMatch(body, /边缘散热|1042|12℃/)
+    assert.match(body, /暂无.*正文/)
+  })
+  it('a user manuscript survives when example fallbacks are disabled', () => {
+    assert.equal(composeMidDeliverableBody({allowExampleContent: false, artifactMarkdown: '本案：机器人夹持结构'}), '本案：机器人夹持结构')
+  })
   it('prefers artifactMarkdown override', () => {
     const body = composeMidDeliverableBody({
       artifactMarkdown: '## 手改交底\n\n水道',

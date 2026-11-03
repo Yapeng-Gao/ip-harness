@@ -1,4 +1,5 @@
 import { Link, useLocation, useMatch } from 'react-router-dom'
+import { useEffect, useMemo } from 'react'
 import {
   ClipboardCheck,
   FolderKanban,
@@ -6,24 +7,46 @@ import {
   Users,
 } from 'lucide-react'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { collectBossTodos } from '../../business/bossTodos'
 
 /**
- * §99 左栏路径轨（Kimi 式）· 大厅 · 项目 · 待确认 | 编制
- * Tab 文案锁定「项目」（勿用 多案/本案）；§114：一律 → /agent/cases 案盘列表
- * 待确认 = 壳层唯一全局可见「待确认」字样+角标；编制弱入口 → /agent/departments
- * 顶栏段控已卸，勿双轨并存
+ * 左栏路径轨 · 大厅 · 项目 · 待办 | 编制
+ * 待办 = 老板 A/B/C 唯一全局入口；角标 = A+B（C 仅灰点）
+ * 项目角标 = 含 A/B 的案数
  */
 export function ShellPathNav() {
   const loc = useLocation()
-  const { getPendingConfirms } = useBusinessCases()
+  const { getPendingConfirms, cases, getProgress } = useBusinessCases()
 
   const caseMatch = useMatch({ path: '/agent/cases/:caseId', end: false })
   const routeCaseId =
     caseMatch?.params.caseId && caseMatch.params.caseId !== 'new'
       ? caseMatch.params.caseId
       : undefined
+  useEffect(() => {
+    if (!routeCaseId) return
+    try {
+      sessionStorage.setItem('ip-agent-last-case-id', routeCaseId)
+    } catch {
+      /* ignore quota */
+    }
+  }, [routeCaseId])
 
-  const pendingN = getPendingConfirms().length
+  const progressById = useMemo(() => {
+    const map: Record<string, ReturnType<typeof getProgress>> = {}
+    for (const c of cases) map[c.id] = getProgress(c.id)
+    return map
+  }, [cases, getProgress])
+
+  const { counts } = useMemo(
+    () =>
+      collectBossTodos({
+        pending: getPendingConfirms(),
+        cases,
+        progressById,
+      }),
+    [getPendingConfirms, cases, progressById],
+  )
 
   const inHall =
     loc.pathname === '/agent' || loc.pathname === '/agent/'
@@ -31,18 +54,16 @@ export function ShellPathNav() {
   const inCasesList =
     loc.pathname === '/agent/cases' || loc.pathname === '/agent/cases/'
   const inCaseShell = Boolean(routeCaseId)
-  const inRoster =
+  /** 编制 = 公司级部门管理；案级专业面不占此 Tab */
+  const inDepartments =
     loc.pathname === '/agent/departments' ||
     loc.pathname.startsWith('/agent/departments/') ||
     loc.pathname === '/agent/roster' ||
     loc.pathname.startsWith('/agent/roster/')
-  /** §111 Approach A：部台 = Cursor 图标轨（省操作成本） */
   const inDeptWorkbench = /\/agent\/cases\/[^/]+\/depts\//.test(loc.pathname)
   const iconRail = inDeptWorkbench
 
-  /** §114：左栏「项目」一律进案盘列表（不直达当前案/公司页） */
   const caseTabTo = '/agent/cases'
-  const caseAria = '项目'
   const caseCurrent =
     inCasesList || inCaseShell || loc.pathname.startsWith('/agent/cases/')
 
@@ -53,6 +74,7 @@ export function ShellPathNav() {
     aria: string
     current: boolean
     badge?: number
+    weakDot?: boolean
     Icon: typeof LayoutGrid
   }
 
@@ -69,17 +91,27 @@ export function ShellPathNav() {
       id: 'case',
       label: '项目',
       to: caseTabTo,
-      aria: caseAria,
-      current: caseCurrent && !inPending && !inHall && !inRoster,
+      aria:
+        counts.casesWithAb > 0
+          ? `项目，${counts.casesWithAb} 案有待办`
+          : '项目',
+      current: caseCurrent && !inPending && !inHall && !inDepartments,
+      badge: counts.casesWithAb > 0 ? counts.casesWithAb : undefined,
       Icon: FolderKanban,
     },
     {
       id: 'pending',
-      label: '待确认',
+      label: '待办',
       to: '/agent/pending',
-      aria: pendingN > 0 ? `待确认，${pendingN} 项` : '待确认，0 项',
+      aria:
+        counts.badge > 0
+          ? `待办，${counts.badge} 项要你拍或催办`
+          : counts.weakC
+            ? '待办，有进行中工单'
+            : '待办，0 项',
       current: inPending,
-      badge: pendingN,
+      badge: counts.badge > 0 ? counts.badge : undefined,
+      weakDot: counts.weakC,
       Icon: ClipboardCheck,
     },
   ]
@@ -111,6 +143,7 @@ export function ShellPathNav() {
       data-path-nav="v99"
       data-shell-rail="1"
       data-rail-mode={iconRail ? 'icons' : 'labeled'}
+      data-boss-todo="abc-v1"
     >
       <div className="flex min-h-0 flex-1 flex-col gap-0.5">
         {primary.map((tab) => {
@@ -125,9 +158,7 @@ export function ShellPathNav() {
               title={tab.label}
               data-testid={`shell-path-${tab.id}`}
               data-selected={selected ? '1' : '0'}
-              data-case-mode={
-                tab.id === 'case' ? 'list' : undefined
-              }
+              data-case-mode={tab.id === 'case' ? 'list' : undefined}
               className={linkClass(selected)}
             >
               <Icon
@@ -144,17 +175,34 @@ export function ShellPathNav() {
               ) : (
                 <span className="min-w-0 flex-1 truncate">{tab.label}</span>
               )}
-              {tab.id === 'pending' && (tab.badge ?? 0) > 0 ? (
+              {(tab.badge ?? 0) > 0 ? (
                 <span
-                  className={`tabular-nums inline-flex items-center justify-center rounded-full bg-amber-600 font-semibold text-white ${
+                  className={`tabular-nums inline-flex items-center justify-center rounded-full font-semibold text-white ${
+                    tab.id === 'case' ? 'bg-slate-700' : 'bg-amber-600'
+                  } ${
                     iconRail
                       ? 'absolute -right-0.5 -top-0.5 min-w-[0.95rem] px-0.5 py-px text-[9px]'
                       : 'min-w-[1.125rem] px-1 py-px text-[10px]'
                   }`}
-                  data-testid="shell-path-pending-badge"
+                  data-testid={
+                    tab.id === 'pending'
+                      ? 'shell-path-pending-badge'
+                      : `shell-path-${tab.id}-badge`
+                  }
                 >
                   {(tab.badge ?? 0) > 9 ? '9+' : tab.badge}
                 </span>
+              ) : tab.weakDot ? (
+                <span
+                  className={`rounded-full bg-slate-400 ${
+                    iconRail
+                      ? 'absolute -right-0.5 -top-0.5 h-2 w-2'
+                      : 'h-2 w-2'
+                  }`}
+                  data-testid="shell-path-pending-weak-c"
+                  title="有进行中工单"
+                  aria-hidden
+                />
               ) : null}
               {selected ? (
                 <span
@@ -174,19 +222,20 @@ export function ShellPathNav() {
 
         <Link
           to="/agent/departments"
-          aria-label="编制"
-          aria-current={inRoster ? 'page' : undefined}
+          aria-label="编制 · 部门管理"
+          aria-current={inDepartments ? 'page' : undefined}
           data-testid="shell-path-roster"
-          data-selected={inRoster ? '1' : '0'}
-          className={linkClass(inRoster, true)}
+          data-selected={inDepartments ? '1' : '0'}
+          data-roster-target="departments"
+          className={linkClass(inDepartments, true)}
         >
           <Users
             className={`h-4 w-4 shrink-0 ${
-              inRoster
+              inDepartments
                 ? 'fill-slate-900/10 text-slate-900'
                 : 'fill-none text-slate-400'
             }`}
-            strokeWidth={inRoster ? 2.25 : 1.75}
+            strokeWidth={inDepartments ? 2.25 : 1.75}
             aria-hidden
           />
           {iconRail ? (
@@ -196,7 +245,6 @@ export function ShellPathNav() {
           )}
         </Link>
       </div>
-
     </nav>
   )
 }

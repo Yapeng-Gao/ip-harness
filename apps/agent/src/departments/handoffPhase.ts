@@ -84,10 +84,8 @@ export function latestReturnNote(
   kind: string | null | undefined,
 ): string | null {
   if (!kind) return null
-  const hit = pending.find(
-    (p) => p.kind === kind && p.status === 'returned' && !!p.returnNote?.trim(),
-  )
-  return hit?.returnNote?.trim() || null
+  const hit = pending.find((p) => p.kind === kind)
+  return hit?.status === 'returned' ? hit.returnNote?.trim() || null : null
 }
 
 /** 右栏 / 公司抽屉脚注：建议稿可采纳 ≠ 确认（G2） */

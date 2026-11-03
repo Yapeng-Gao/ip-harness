@@ -84,6 +84,9 @@ export function DeptBoard() {
 
   return (
     <div className="mt-3 overflow-x-auto" data-testid="dept-board">
+      <p className="mb-2 text-[11px] text-slate-500" data-testid="dept-board-honest">
+        进展样机矩阵 · 非运营 KPI；办活请回大厅 / 部台
+      </p>
       <table className="ui-table min-w-[860px]">
         <thead>
           <tr>

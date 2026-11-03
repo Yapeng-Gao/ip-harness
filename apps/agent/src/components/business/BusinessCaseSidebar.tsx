@@ -510,17 +510,29 @@ export function BusinessCaseSidebar() {
               </p>
             ) : null}
 
+            <Link
+              to={hallHref}
+              className="focus-ring mb-1.5 flex w-full items-center justify-center rounded-md border border-slate-200/80 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50"
+              data-testid="business-side-hall-reselect"
+            >
+              回大厅选站
+            </Link>
+
             {lookbackDepts.length > 0 ? (
-              <div className="mb-1.5" data-testid="business-side-lookback">
-                <div className="mb-0.5 px-2 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-                  回看已办
-                </div>
-                <ul className="space-y-0.5">
+              <details
+                className="mb-1.5 rounded-md border border-slate-200/70 bg-white/70"
+                data-testid="business-side-lookback"
+                data-lookback-fold="1"
+              >
+                <summary className="cursor-pointer select-none px-2 py-1 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                  回看已办 · {lookbackDepts.length}
+                </summary>
+                <ul className="space-y-0.5 border-t border-slate-100 px-1 py-1">
                   {lookbackDepts.map((dept) => (
                     <li key={dept.id}>
                       <Link
                         to={`${deptHref(dept)}?lookback=1`}
-                        className="focus-ring mb-0.5 flex w-full items-center gap-1 rounded-md px-1.5 py-1 text-left text-[11px] leading-snug text-slate-600 hover:bg-white"
+                        className="focus-ring mb-0.5 flex w-full items-center gap-1 rounded-md px-1.5 py-1 text-left text-[11px] leading-snug text-slate-600 hover:bg-slate-50"
                         data-testid={`business-dept-lookback-${deptSlug(dept.id)}`}
                         data-lookback="1"
                         data-lookback-readonly="1"
@@ -532,23 +544,15 @@ export function BusinessCaseSidebar() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </details>
             ) : (
               <p
                 className="mb-1.5 px-2 text-[10px] leading-snug text-slate-500"
                 data-testid="business-side-lookback-empty"
               >
-                从本站开干 · 暂无已办可回看
+                暂无已办可回看
               </p>
             )}
-
-            <Link
-              to={hallHref}
-              className="focus-ring mb-1 flex w-full items-center justify-center rounded-md border border-slate-200/80 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50"
-              data-testid="business-side-hall-reselect"
-            >
-              回大厅选站
-            </Link>
 
             {/* 兼容：旧 smoke 曾点 business-dept-list；§128 不再列八部 peer */}
             <div className="hidden" data-testid="business-dept-list" data-removed="v128" hidden />
@@ -577,7 +581,7 @@ export function BusinessCaseSidebar() {
     <aside
       className={`business-case-sidebar flex shrink-0 flex-col border-r border-slate-200/90 bg-[#f5f5f7] ${
         activeDeptSlug && !deptsOpen
-          ? 'w-[min(8.5rem,26vw)] min-w-[6.75rem] max-w-[9.25rem]'
+          ? 'w-[6.75rem] min-w-[6.75rem] max-w-[6.75rem]'
           : 'w-[min(9.75rem,28vw)] min-w-[7.25rem] max-w-[10.5rem]'
       }`}
       data-testid="business-case-sidebar"
@@ -586,6 +590,7 @@ export function BusinessCaseSidebar() {
       data-rail="thin-eight"
       data-eight-mode="current-only"
       data-nav-role="current-station"
+      data-dept-rail={activeDeptSlug ? 'identity-slim' : 'default'}
     >
       <div className="shrink-0 px-2.5 pt-3 pb-1.5">
         {activeCaseId ? (

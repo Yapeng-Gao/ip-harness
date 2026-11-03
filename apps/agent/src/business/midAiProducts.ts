@@ -29,6 +29,7 @@ export function aiProductsFromMessages(
   if (!messages?.length) return []
   const out: Array<{ title: string; body: string }> = []
   for (const m of messages) {
+    if (m.meta?.stepId === 'department-intake') continue
     if (m.role !== 'assistant' && m.role !== 'tool') continue
     const body = (m.content || '').trim()
     if (body.length < 24) continue
@@ -58,6 +59,7 @@ function appendMessageProducts(
 }
 
 export function composeMidDeliverableBody(input: {
+  allowExampleContent?: boolean
   artifactMarkdown?: string | null
   officeMainBody?: string | null
   dual?: PatentDeliverable | null
@@ -69,6 +71,9 @@ export function composeMidDeliverableBody(input: {
   const products = aiProductsFromMessages(input.messages)
   const override = input.artifactMarkdown?.trim()
   if (override) return appendMessageProducts(override, products)
+  if (input.allowExampleContent === false) {
+    return appendMessageProducts('暂无本案产出正文。请先确认本次任务和材料，再补充本案稿件。', products)
+  }
 
   const office = input.officeMainBody?.trim() || ''
   const dual = input.dual

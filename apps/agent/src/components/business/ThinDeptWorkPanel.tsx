@@ -268,7 +268,7 @@ export function ThinDeptWorkPanel({ deptId, caseId, onRecordNote }: Props) {
                 </div>
               ) : null}
               <p className="mt-2 text-[10px] text-slate-400">
-                正式立项硬请示仍在右栏；≠完整论证报告。
+                请在右栏确认立项；完整论证报告可继续补充。
               </p>
             </div>
           ) : null}

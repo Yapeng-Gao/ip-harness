@@ -81,7 +81,7 @@ export const HALL_DEPT_DOORS: HallDeptDoor[] = [
   },
 ]
 
-export function hallDeptHref(caseId: string | undefined, door: HallDeptDoor): string {
-  if (!caseId) return '/agent/cases/new'
-  return `/agent/cases/${caseId}/depts/${door.slug}`
+export function hallDeptHref(_caseId: string | undefined, door: HallDeptDoor): string {
+  // The hall starts a new matter. Continuing a case requires an explicit case selection.
+  return `/agent/cases/new?dept=${encodeURIComponent(door.slug)}`
 }

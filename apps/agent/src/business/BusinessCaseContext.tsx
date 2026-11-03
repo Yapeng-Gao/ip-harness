@@ -73,6 +73,10 @@ import {
   appendChainAdvanceNote,
   type PlanChainStep,
 } from './delegateChain'
+import {
+  parseReceptionHandoff,
+  type ReceptionHandoff,
+} from './receptionHandoff'
 import { deptSlug, orgDeptByLeadSeat } from '../departments/orgDepts'
 import {
   buildJudgmentFromConfirm,
@@ -196,6 +200,8 @@ export type CaseProgress = {
   casePlan?: string
   /** 最近一次助手委托分发（计划可调→分发）；与 casePlan 同源可恢复 */
   delegate?: CaseDelegateDispatch
+  /** 前台领进意图（01c J2）；与 delegate 分字段，勿混 */
+  receptionHandoff?: ReceptionHandoff
   /**
    * 齐套逐项勾选 · deptSlug → 已勾标签（样机；G1）
    * 缺 key=未触碰，席内可回落启发式
@@ -552,6 +558,8 @@ type BusinessCaseContextValue = {
       chain?: PlanChainStep[]
     },
   ) => void
+  /** 前台领进意图写入 progress（01c J2） */
+  setReceptionHandoff: (caseId: string, handoff: ReceptionHandoff) => void
   /** 本案全部确认项（含已通过/已驳回；办完闸用） */
   getCaseConfirms: (caseId: string) => BusinessConfirmItem[]
   /**
@@ -1102,7 +1110,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         kind,
         title: CONFIRM_KIND_LABEL[kind],
         summary: afterRevise
-          ? `已按退回意见改一版 · ${businessSeatLabel(meta.seatId)}再请确认。`
+          ? `这版已按你的意见改过，请看修订稿 · ${businessSeatLabel(meta.seatId)}再请确认。`
           : kind === 'oa_strategy'
             ? `${roundLabel}${businessSeatLabel(meta.seatId)}已准备好，请确认答复策略。`
             : kind === 'layout_adjust'
@@ -1244,6 +1252,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           reason: opts?.reason?.trim() || '接受结论',
           riskAccepted: opts?.riskAccepted,
         })
+        const confirmedThread = getThread(target.caseId, meta.seatId)
+        const markdown = confirmedThread?.artifactMarkdown?.trim() || target.resultPreview || target.summary
+        j.artifactSnapshot = { markdown, savedAt: nowIso(), version: (confirmedThread?.artifactVersions?.length ?? 0) + 1 }
         setJudgments((prev) => [j, ...prev].slice(0, 200))
         setPreferences((prev) => {
           const cand = preferenceCandidateFromJudgment(j)
@@ -1462,11 +1473,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const hit = confirms.find(
         (c) =>
           c.caseId === caseId &&
-          c.kind === kind &&
-          c.status === 'returned' &&
-          !!c.returnNote,
+          c.kind === kind,
       )
-      return hit?.returnNote ?? null
+      return hit?.status === 'returned' ? hit.returnNote ?? null : null
     },
     [confirms],
   )
@@ -1752,6 +1761,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     (caseId: string, seatId: ProjectExpertId) => {
       const def = getProjectExpert(seatId)
       const thread = getThread(caseId, seatId)
+      if (thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy') return { stepLabel: '等待你恢复办理', delivered: false }
       const cur = thread?.stepIndex ?? 0
       const next = Math.min(cur + 1, Math.max(def.steps.length - 1, 0))
       advanceStep(caseId, seatId)
@@ -2280,6 +2290,26 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  const setReceptionHandoff = useCallback(
+    (caseId: string, handoff: ReceptionHandoff) => {
+      const parsed = parseReceptionHandoff(handoff)
+      if (!parsed) return
+      const at = nowIso()
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            receptionHandoff: { ...parsed, at: parsed.at || at },
+            updatedAt: at,
+          },
+        }
+      })
+    },
+    [],
+  )
+
   const recordDelegateDispatch = useCallback(
     (
       caseId: string,
@@ -2793,6 +2823,7 @@ const enableMoreDepartments = useCallback((caseId: string) => {
       acceptDrillDualFile,
       updateCasePlan,
       recordDelegateDispatch,
+      setReceptionHandoff,
       advancePlanChainStep,
       seedPlanHandoffPass,
       getKitChecklist,
@@ -2838,6 +2869,7 @@ const enableMoreDepartments = useCallback((caseId: string) => {
       acceptDrillDualFile,
       updateCasePlan,
       recordDelegateDispatch,
+      setReceptionHandoff,
       advancePlanChainStep,
       seedPlanHandoffPass,
       getKitChecklist,

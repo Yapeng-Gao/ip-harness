@@ -15,14 +15,14 @@ import { AgentSessionSidebar } from './AgentSessionSidebar'
 import { PersonaRouteGate } from '@shared/components/PersonaRouteGate'
 import { ShellPathNav } from './business/ShellPathNav'
 import { ShellAccountMenu } from './business/ShellAccountMenu'
+import { PrototypeScope } from './business/PrototypeScope'
 import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
 import { useAgentDebug } from '../business/useAgentDebug'
 import { useEntryRole } from '../business/useEntryRole'
 import { useBusinessCases } from '../business/BusinessCaseContext'
 /* 旧 lifecycle 三档顶栏已卸；一期进门＝大厅→公司→部台 */
 import { LabRouteBanner } from './LabRouteBanner'
-import { CaseShellSwitcher } from './business/CaseShellSwitcher'
-import { isCaseLevelShellPath } from '../business/caseShellSwitcher'
+/* 案级「最近/全部/开新」顶栏切换器已卸：换案走左栏项目/大厅，避免与壳层抢位 */
 
 export function AgentShell() {
   const { workspace, getCase, getHandoff } = useApp()
@@ -109,6 +109,8 @@ export function AgentShell() {
     const m = loc.pathname.match(/^\/agent\/cases\/([^/]+)/)
     return Boolean(m?.[1] && m[1] !== 'new')
   })()
+  /** 部台：身份轨多余；左栏改由页内「产出目录」承担 */
+  const inDeptWorkbench = /\/agent\/cases\/[^/]+\/depts\//.test(loc.pathname)
   const inProfessional = /\/agent\/cases\/[^/]+\/professional/.test(
     loc.pathname,
   )
@@ -164,7 +166,9 @@ export function AgentShell() {
             : inBusiness
               ? entryRole === 'agency'
                 ? '案盘'
-                : activeBizCase?.title ?? 'Novada Team'
+                : inDeptWorkbench
+                  ? '工作台'
+                  : activeBizCase?.title ?? 'Novada Team'
               : inHome
                 ? 'Novada Team'
                 : inPatentProject
@@ -201,15 +205,23 @@ export function AgentShell() {
           >
             NT
           </Link>
-          <div className="text-sm font-semibold tracking-tight text-slate-900">
-            {pageTitle}
+          <div className="min-w-0">
+            <div className="text-sm font-semibold tracking-tight text-slate-900">
+              {pageTitle}
+            </div>
+            {(inHome || inBusiness || inDepartments) && !inGrokShell ? (
+              <p
+                className="truncate text-[10px] text-slate-500"
+                data-testid="shell-decider-line"
+                title="补充条款 A · 样机单用户"
+              >
+                当前拍板人：你（当前用户）
+              </p>
+            ) : null}
           </div>
         </div>
 
-        {/* §99 路径迁左栏；顶栏不再放段控，避免顶+左双轨 */}
-        {isCaseLevelShellPath(loc.pathname) && activeBizCaseId ? (
-          <CaseShellSwitcher activeCaseId={activeBizCaseId} />
-        ) : null}
+        {/* §99 路径迁左栏；顶栏不放段控 / 案切换器 */}
 
         {!inGrokShell && showTenantChrome && (
           <>
@@ -232,6 +244,7 @@ export function AgentShell() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
+          {(inHome || inBusiness || inDepartments) && <PrototypeScope />}
           {/* §101: left rail pending is sole global entry; no top bell */}
           {(inHome || inBusiness || inDepartments || inAssets) && !inGrokShell && (
             <ShellAccountMenu />
@@ -275,7 +288,9 @@ export function AgentShell() {
         {!inGrokShell && (inHome || inBusiness || inDepartments || inAssets) ? (
           <ShellPathNav />
         ) : null}
-        {inActiveCaseShell && <BusinessCaseSidebar />}
+        {inActiveCaseShell && !inDeptWorkbench ? (
+          <BusinessCaseSidebar />
+        ) : null}
         {!(inProjects || inGrokShell || inBusiness || inCatalog || inDepartments || inAssets || inHome) && (
           <AgentSessionSidebar />
         )}

@@ -179,7 +179,29 @@ export function ThickStepWorkPanel({
 
       {qcItems.length > 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-3" data-testid="thick-qc-board">
-          <p className="text-[11px] font-semibold text-slate-800">质检分卡 · 未过优先</p>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <p className="text-[11px] font-semibold text-slate-800">质检分卡 · 未过优先</p>
+            <span
+              className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] font-medium text-slate-600"
+              data-testid="thick-qc-layer-self"
+            >
+              自检
+            </span>
+            <span
+              className="rounded-full bg-slate-50 px-1.5 py-0.5 text-[9px] font-medium text-slate-400"
+              data-testid="thick-qc-layer-dept"
+              title="样机示意"
+            >
+              出部质检
+            </span>
+            <span
+              className="rounded-full bg-slate-50 px-1.5 py-0.5 text-[9px] font-medium text-slate-400"
+              data-testid="thick-qc-layer-downstream"
+              title="样机示意"
+            >
+              下游抽检
+            </span>
+          </div>
           <ul className="mt-2 space-y-1.5">
             {qcItems
               .filter((item) => statusOf(item.id, item.def) !== 'green')
@@ -232,7 +254,7 @@ export function ThickStepWorkPanel({
             </details>
           ) : null}
           <p className="mt-2 text-[10px] text-slate-400">
-            质检全绿 ≠ 已交下一站；未在右栏拍板不得开工单，也不得装已递交。
+            检查通过后，请在右栏确认是否交接。正式递交需要另外确认。
           </p>
         </div>
       ) : null}
@@ -404,7 +426,7 @@ export function ThickStepWorkPanel({
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-[10px] text-amber-900/70">选后请到右栏完成硬请示。</p>
+          <p className="mt-2 text-[10px] text-amber-900/70">选好后，请到右栏确认。</p>
         </div>
       ) : null}
 
@@ -432,7 +454,7 @@ export function ThickStepWorkPanel({
 
       {picked ? (
         <p className="text-[11px] text-emerald-800" data-testid="thick-step-picked">
-          已点选：{picked} · 示意留痕；硬请示以右栏为准。
+          已点选：{picked} · 选择已记录，请在右栏完成确认。
         </p>
       ) : null}
     </div>

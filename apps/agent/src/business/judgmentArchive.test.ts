@@ -21,6 +21,7 @@ describe('judgmentArchive T10', () => {
       decision: 'confirmed',
       reason: '接受结论',
     })
+    assert.equal(j.decision, 'confirmed')
     assert.equal(j.gate, '可交申请部')
     assert.match(j.option, /确认/)
     assert.ok(j.conclusion.length > 4)
@@ -37,6 +38,7 @@ describe('judgmentArchive T10', () => {
       decision: 'returned',
       reason: '缩限过猛，先争辩',
     })
+    assert.equal(j.decision, 'returned')
     assert.match(j.option, /驳回/)
     assert.match(j.reason, /缩限过猛/)
   })

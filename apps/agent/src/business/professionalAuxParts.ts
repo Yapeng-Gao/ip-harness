@@ -1,5 +1,5 @@
 /**
- * 编制名册 · 本稿章节 / 辅助材料 / 办事方法（样机；非官报）
+ * 本案部门 · 本稿章节 / 辅助材料 / 能力挂接示意（样机；非官报）
  * 一期：辅链≠八部大门；禁任务板/CLI；非 lifecycle「专业」第三进门。
  */
 import type { OrgDeptId } from '../departments/orgDepts'
@@ -274,10 +274,10 @@ export function auxBundleFor(deptId: OrgDeptId): DeptAuxBundle {
   )
 }
 
-/** 把 skill 名收成办事方法短标（去掉引擎味） */
+/** 把 skill 名收成能力挂接短标（去掉引擎味） */
 export function methodLabelFromSkill(name: string): string {
   const t = name.trim()
-  if (!t) return '办事方法'
-  if (/MCP|Prompt|Agent|API|CLI/i.test(t)) return '方法配置（示意）'
+  if (!t) return '能力'
+  if (/MCP|Prompt|Agent|API|CLI/i.test(t)) return '能力挂接（示意）'
   return t.length > 14 ? `${t.slice(0, 14)}…` : t
 }
