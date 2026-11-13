@@ -14,7 +14,7 @@ import {
   receptionExamplesForPersona,
   weakUpdatePersonaFromDeptSlug,
 } from '../../business/userPersona'
-import { ExpertAvatar } from '../departments/ExpertAvatar'
+import { AppAvatar } from './officeIllustration'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 
 import { assessReceptionIntake, RECEPTION_GOALS, type ReceptionGoal, type ReceptionIntake } from '../../business/receptionIntake'
@@ -199,7 +199,7 @@ export function HomeReceptionGuide({
       </div>
 
       <div
-        className="rounded-[var(--radius-xl)] border border-slate-200 bg-white p-2 shadow-[var(--shadow-rest)]"
+        className="rounded-[var(--radius-lg)] border border-slate-200 bg-white p-2.5 shadow-[var(--shadow-rest)]"
         data-testid="home-reception-card"
       >
         <div
@@ -207,34 +207,20 @@ export function HomeReceptionGuide({
           data-testid="home-reception-persona"
         >
           <div
-            className="relative flex shrink-0 items-end justify-center overflow-visible rounded-xl bg-[#EEF1F5] px-1.5 pb-0.5 pt-1 ring-1 ring-slate-200/70"
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-[#f8fafc]"
             data-testid="home-reception-stage"
           >
-            <ExpertAvatar
-              name={RECEPTION_DESK.name}
-              seed={RECEPTION_DESK.seed}
-            size="md"
-              kind="reception"
-              deptId="reception"
-              appearance="stylized"
-              presence={
-                phase === 'clarify'
-                  ? 'waiting'
-                  : phase === 'suggest'
-                    ? 'waiting'
-                    : 'idle'
-              }
-            />
+            <AppAvatar id="reception" size={40} />
           </div>
           <div className="flex min-w-0 flex-1 flex-col justify-center py-0.5">
-            <p className="text-[13px] leading-snug text-slate-700">
+            <p className="text-[13px] leading-snug text-slate-600">
               <span
                 className="font-semibold text-slate-900"
                 data-testid="home-reception-persona-name"
               >
                 {RECEPTION_DESK.name}
               </span>
-              <span className="text-slate-400"> · </span>
+              <span className="text-slate-300"> · </span>
               <span>{RECEPTION_DESK.title}</span>
             </p>
             <p
@@ -273,7 +259,7 @@ export function HomeReceptionGuide({
                 </div>
               </div>
             ) : null}
-            <div className="rounded-md border border-slate-200 bg-slate-50/40 p-2">
+            <div className="rounded-md border border-slate-200 bg-slate-50 p-2">
               <label
                 htmlFor="home-reception-line"
                 className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500"
@@ -525,7 +511,7 @@ function DeptPick({
       onClick={onSelect}
       data-testid={`home-reception-pick-${door.slug}`}
       data-selected={selected ? '1' : '0'}
-      className={`btn-press focus-ring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-left text-[12px] ${
+      className={`btn-press focus-ring inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-left text-[12px] ${
         selected
           ? 'border-slate-900 bg-slate-900 text-white'
           : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'

@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -115,6 +116,8 @@ import {
   type MidSyncOutcome,
 } from './midSync'
 import { BUSINESS_SEED_IDS } from './businessSeeds'
+import { emitCompanyActivity } from './companyActivity'
+import { handoffRouteForSeat, pickHandoffPhrase } from './handoffCue'
 
 export { BUSINESS_SEED_IDS, isBusinessSeedCaseId } from './businessSeeds'
 
@@ -788,6 +791,10 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     useState<BusinessConfirmItem[]>(initial.confirms)
   const [caseIds, setCaseIds] = useState<string[]>(initial.caseIds)
   const [caseMeta, setCaseMeta] = useState<BusinessCaseMeta[]>(initial.caseMeta)
+  const caseMetaRef = useRef(caseMeta)
+  useEffect(() => {
+    caseMetaRef.current = caseMeta
+  }, [caseMeta])
   const [processLogs, setProcessLogs] = useState<ProcessLogEntry[]>(
     initial.processLogs,
   )
@@ -1308,6 +1315,15 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         const fail = `案卷交接未写入 · ${run.message}`
         setLastReturnHint(filedHint ? `${filedHint} · ${fail}` : fail)
       }
+      emitCompanyActivity({
+        category: 'pass',
+        roleId: meta.seatId,
+        roleName: businessSeatLabel(meta.seatId),
+        caseId: target.caseId,
+        caseTitle: caseMetaRef.current.find((m) => m.id === target.caseId)?.title,
+        message: `已通过「${CONFIRM_KIND_LABEL[target.kind]}」。`,
+        artifactPreview: (target.resultPreview || target.summary).slice(0, 80),
+      })
       return {
         businessOk: true,
         midOk: run.ok,
@@ -1342,6 +1358,15 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const meta = CONFIRM_META[target.kind]
       const log = hitlReturnLog(target.caseId, target.kind, noteText)
       appendLogs([log])
+      emitCompanyActivity({
+        category: 'critique',
+        roleId: meta.seatId,
+        roleName: businessSeatLabel(meta.seatId),
+        caseId: target.caseId,
+        caseTitle: caseMetaRef.current.find((m) => m.id === target.caseId)?.title,
+        message: `退回：${noteText.slice(0, 48)}`,
+        artifactPreview: (target.resultPreview || target.summary).slice(0, 80),
+      })
       const baseHint =
         target.kind === 'research_ready'
           ? `请再查一轮 · ${noteText}`
@@ -1814,6 +1839,41 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
             : `做了什么：${step?.script ?? stepLabel} · ${toolBit} · ${KIT_STEP_SYNC_HONEST}`,
         },
       ])
+      const caseTitle = caseMetaRef.current.find((m) => m.id === caseId)?.title
+      const spoken = (step?.script || stepLabel).replace(/^【[^】]+】/, '').trim()
+      emitCompanyActivity({
+        category: step?.triggersHitl ? 'pending' : 'speak',
+        roleId: seatId,
+        roleName: seatName,
+        caseId,
+        caseTitle,
+        deptSlug: leadDept ? deptSlug(leadDept.id) : undefined,
+        message: step?.triggersHitl
+          ? `${seatName}交卷「${stepLabel}」，请你确认。`
+          : `${seatName}：${spoken.slice(0, 42)}`,
+        artifactPreview: step?.tool?.preview,
+      })
+      if (step?.triggersHitl) {
+        const route = handoffRouteForSeat(seatId)
+        if (route) {
+          const phrase = pickHandoffPhrase()
+          emitCompanyActivity({
+            category: 'handoff',
+            roleId: seatId,
+            roleName: seatName,
+            caseId,
+            caseTitle,
+            deptSlug: route.fromSlug,
+            message: phrase,
+            artifactPreview: route.artifact,
+            handoff: {
+              fromSlug: route.fromSlug,
+              toSlug: route.toSlug,
+              phrase,
+            },
+          })
+        }
+      }
       if (!step?.triggersHitl) {
         return { stepLabel, delivered: false, processLogId: logId }
       }
@@ -1953,6 +2013,14 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const note = reason.trim() || '请按下游意见调整一版'
       const log = seatFeedbackLog(caseId, fromSeat, toSeat, note)
       appendLogs([log])
+      emitCompanyActivity({
+        category: 'critique',
+        roleId: fromSeat,
+        roleName: fromName,
+        caseId,
+        caseTitle: caseMetaRef.current.find((m) => m.id === caseId)?.title,
+        message: `${fromName}向${toName}挑刺：${note.slice(0, 36)}`,
+      })
 
       // 飞轮 / 回流目标席：挂到更多专家，避免点了切不过去
       if (feedbackNeedsMoreSeat(toSeat)) {

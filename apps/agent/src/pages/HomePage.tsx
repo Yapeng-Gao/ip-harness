@@ -9,9 +9,11 @@ import {
 } from '../business/entryRole'
 import { useEntryRole } from '../business/useEntryRole'
 import { BranchDoors } from '../components/business/BranchDoors'
-import { HallEightDoors } from '../components/home/HallEightDoors'
+import { HallFloorPlan } from '../components/home/HallFloorPlan'
+import { CompanyActivityFeed } from '../components/home/CompanyActivityFeed'
+import { LobbyDraftPane, LobbyTaskBar } from '../components/home/LobbyTaskBar'
 import { reopenAllTeachTips } from '../business/teachingFade'
-import { isPersonaSeedSettled, readPersonaSeed } from '../business/userPersona'
+import { isPersonaSeedSettled } from '../business/userPersona'
 import { isBusinessSeedCaseId } from '../business/businessSeeds'
 
 /**
@@ -60,14 +62,13 @@ export function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- tick forces re-read storage
     [personaTick],
   )
-  const familiarWithTools = readPersonaSeed()?.familiarity === 'used_similar'
   const latestCase = workspaceCases.find((c) => c.id === latestId)
 
   return (
     <div
-      className="flex-1 overflow-y-auto px-4 py-3 lg:px-8"
+      className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#f5f5f7] px-3 py-2 lg:overflow-hidden lg:px-4"
       data-hall-dense="1"
-      data-hall-screen="one-pass-v103"
+      data-hall-screen="floor-live-v1"
       data-testid="agent-home-page"
       data-home="assistant"
       data-entry-role={entryRole}
@@ -76,51 +77,45 @@ export function HomePage() {
       data-hall-tools={hallTools ? '1' : '0'}
       data-persona-settled={personaSettled ? '1' : '0'}
     >
-      <div className="mr-auto w-full max-w-5xl">
-        {/* 1 · thin identity — reception speaks first; no fake current case */}
-        <header
-          className="mb-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
-          data-testid="home-hall-tagline"
-          data-hall-tagline="thin-v103"
+      <header
+        className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1"
+        data-testid="home-hall-tagline"
+        data-hall-tagline="thin-v103"
+      >
+        <p
+          className="text-pretty text-[12px] font-medium text-slate-500"
+          data-testid="home-hall-tagline-sub"
         >
-          <div className="min-w-0">
-            <p
-              className="text-pretty text-[12px] font-medium text-slate-500"
-              data-testid="home-hall-tagline-sub"
-            >
-              专家向你汇报 · 弄清去向
-            </p>
-          </div>
-          <span
-            className="sr-only"
-            data-testid="home-current-role"
-            data-entry-role={entryRole}
-          >
-            {ENTRY_ROLE_LABEL[entryRole]}
-          </span>
-        </header>
+          专家向你汇报 · 弄清去向
+        </p>
+        <span
+          className="sr-only"
+          data-testid="home-current-role"
+          data-entry-role={entryRole}
+        >
+          {ENTRY_ROLE_LABEL[entryRole]}
+        </span>
+      </header>
 
-        {!personaSettled ? (
-          <PersonaSeedGate onSettled={() => setPersonaTick((n) => n + 1)} />
-        ) : (
-          <>
-        {/* 2 · 前台主动引导 */}
-        <div data-hall-block="reception" data-testid="home-delegate-zone">
-          <HomeReceptionGuide
-            initialAttachId={attachQ}
-            continueCase={
-              latestCase
-                ? { id: latestCase.id, title: latestCase.title }
-                : null
-            }
-          />
-        </div>
-
-        {/* 3 · 八部门名牌 · 一句话 + 薄专家预览（拍板走左栏「待确认」） */}
-        <HallEightDoors compact={!familiarWithTools} />
-
-        {/* 支路 / 次要 · 仅 ?hallTools=1 出现（顶栏账户菜单入口），不占首屏 */}
-        {hallTools ? (
+      {!personaSettled ? (
+        <PersonaSeedGate onSettled={() => setPersonaTick((n) => n + 1)} />
+      ) : (
+        <div className="flex min-h-0 flex-1 flex-col gap-2">
+          <LobbyTaskBar />
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[minmax(13rem,16rem)_minmax(0,1.7fr)_minmax(14rem,17rem)] lg:overflow-hidden">
+            <div className="min-h-0 space-y-2 lg:overflow-y-auto" data-hall-block="reception" data-testid="home-delegate-zone">
+              <p className="px-0.5 text-[11px] font-semibold text-slate-500">分派</p>
+              <div id="hall-reception">
+                <HomeReceptionGuide
+                  initialAttachId={attachQ}
+                  continueCase={
+                    latestCase
+                      ? { id: latestCase.id, title: latestCase.title }
+                      : null
+                  }
+                />
+              </div>
+              {hallTools ? (
           <div
             className="mt-3 space-y-3 border-t border-slate-100 pt-3"
             data-testid="home-hall-tools"
@@ -188,10 +183,19 @@ export function HomePage() {
             </div>
           </div>
         ) : null}
-
-          </>
-        )}
-      </div>
+            </div>
+            <div className="min-h-[22rem] lg:min-h-0" data-hall-block="eight-depts" data-testid="home-eight-depts-fold" data-folded="0">
+              <HallFloorPlan />
+            </div>
+            <div className="flex min-h-[24rem] flex-col gap-2 lg:min-h-0 lg:overflow-hidden">
+              <LobbyDraftPane />
+              <div className="min-h-0 flex-1">
+                <CompanyActivityFeed />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
