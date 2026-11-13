@@ -45,6 +45,10 @@ import {
 import { SeatMarkdownBody } from './SeatMarkdownBody'
 import { humanizeToolBubble, parseRewindIntent } from '../../lib/stepChatFormat'
 import { scrollBehavior } from '../../lib/motionPref'
+import { stepDraftLines } from '../../business/demoPace'
+import { useDemoPace } from '../../business/DemoPaceContext'
+import { useLineStream } from '../../business/useLineStream'
+import { DeliverableDrawer } from './DeliverableDrawer'
 
 /** 席内 mock 推进：短 defer，可被下一次交互覆盖 busy（不锁死 300ms+） */
 function deferBusy(ms: number, fn: () => void): number {
@@ -222,6 +226,26 @@ export function BusinessSeatWorkbench({
   const chatEndRef = useRef<HTMLDivElement>(null)
   const lastWorkNonce = useRef(0)
   const runAdvanceRef = useRef<(userLine?: string) => void>(() => {})
+  const pace = useDemoPace()
+  const beginStream = pace.beginStream
+  const finishStream = pace.finishStream
+  const paceAborted = pace.aborted
+  const [draftJob, setDraftJob] = useState<{
+    id: number
+    lines: string[]
+    stepLabel: string
+    stepIndex: number
+    hitl: boolean
+  } | null>(null)
+  const [drawer, setDrawer] = useState<{
+    title: string
+    summary: string
+    artifact: string
+    worklog: string
+  } | null>(null)
+  const draftSeq = useRef(0)
+  const finishedJob = useRef<number | null>(null)
+  const stream = useLineStream(draftJob?.lines ?? null)
 
   useEffect(() => {
     setPanel('chat')
@@ -232,6 +256,8 @@ export function BusinessSeatWorkbench({
     setShowFileNames(false)
     setMoreOpen(false)
     setAdvancedChipsOpen(false)
+    setDraftJob(null)
+    setDrawer(null)
   }, [seatId, caseId])
 
   /** §136：中栏选区带进驾驭框 */
@@ -263,6 +289,15 @@ export function BusinessSeatWorkbench({
     if (!dual) return ''
     return buildProgressiveWorklog(dual, def.steps, stepIndex)
   }, [dual, def.steps, stepIndex])
+
+  const displayArtifact = useMemo(() => {
+    if (!draftJob || stream.complete || !dual) return artifactBody
+    const prev =
+      draftJob.stepIndex > 0
+        ? buildProgressiveArtifact(dual, def.steps, draftJob.stepIndex - 1)
+        : dual.sampleArtifact.trimEnd()
+    return `${prev}\n\n${stream.text}`.trim()
+  }, [artifactBody, draftJob, stream.complete, stream.text, dual, def.steps])
 
   const beginEditArtifact = () => {
     setArtifactDraft(artifactBody)
@@ -345,6 +380,48 @@ export function BusinessSeatWorkbench({
     chatEndRef.current?.scrollIntoView({ behavior: scrollBehavior() })
   }, [messages.length, busy])
 
+  useEffect(() => {
+    const key = `${caseId}:${seatId}`
+    return () => {
+      finishStream(key)
+    }
+  }, [caseId, seatId, finishStream])
+
+  useEffect(() => {
+    if (!draftJob || !stream.complete) return
+    if (finishedJob.current === draftJob.id) return
+    finishedJob.current = draftJob.id
+    finishStream(`${caseId}:${seatId}`)
+    const summary = stream.text.split('\n').slice(0, 4).join('\n')
+    setDrawer({
+      title: draftJob.stepLabel,
+      summary: summary || draftJob.stepLabel,
+      artifact: dual
+        ? buildProgressiveArtifact(dual, def.steps, draftJob.stepIndex)
+        : stream.text,
+      worklog: dual
+        ? buildProgressiveWorklog(dual, def.steps, draftJob.stepIndex)
+        : stream.text,
+    })
+    if (hideArtifactPanel && onOpenAiProductInMid && stream.text.trim().length > 24) {
+      onOpenAiProductInMid({
+        title: `本步 · ${draftJob.stepLabel}`,
+        body: stream.text.slice(0, 4000),
+      })
+    }
+  }, [
+    draftJob,
+    stream.complete,
+    stream.text,
+    caseId,
+    seatId,
+    dual,
+    def.steps,
+    hideArtifactPanel,
+    onOpenAiProductInMid,
+    finishStream,
+  ])
+
   const runAdvance = (userLine?: string) => {
     if (thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy') return
     if (oaLocked || busy) return
@@ -380,23 +457,27 @@ export function BusinessSeatWorkbench({
         setSafePanel('chat')
         return
       }
+      const curIdx = getThread(caseId, seatId)?.stepIndex ?? 0
+      const nextIdx = Math.min(curIdx + 1, Math.max(def.steps.length - 1, 0))
       const r = advanceSeatWork(caseId, seatId)
       setFlashBody(true)
       if (r.processLogId) setFlashLogId(r.processLogId)
-      // §133 mid sync after advance：hideArtifactPanel 时右栏无「成果」tab，把本席产物写入中栏稿纸
-      if (hideArtifactPanel && onOpenAiProductInMid && dual) {
-        const idx = getThread(caseId, seatId)?.stepIndex ?? 0
-        const progressive = buildProgressiveArtifact(dual, def.steps, idx)
-        const marker = '## 本席推进记录'
-        const excerpt =
-          progressive.indexOf(marker) >= 0
-            ? progressive.slice(progressive.indexOf(marker)).trim()
-            : progressive.trim()
-        if (excerpt.length > 24) {
-          onOpenAiProductInMid({
-            title: r.stepLabel ? `本步 · ${r.stepLabel}` : '本席推进记录',
-            body: excerpt.slice(0, 4000),
+      if (r.stepLabel !== '等待你恢复办理') {
+        const step = def.steps[nextIdx] ?? def.steps[curIdx]
+        const lines = step ? stepDraftLines(step, nextIdx) : []
+        const streamKey = `${caseId}:${seatId}`
+        if (step && lines.length > 0) {
+          beginStream(streamKey, !!step.triggersHitl)
+          draftSeq.current += 1
+          setDraftJob({
+            id: draftSeq.current,
+            lines,
+            stepLabel: step.label,
+            stepIndex: nextIdx,
+            hitl: !!step.triggersHitl,
           })
+        } else if (step?.triggersHitl) {
+          finishStream(streamKey)
         }
       }
       if (r.delivered && r.confirm) {
@@ -592,6 +673,7 @@ export function BusinessSeatWorkbench({
       data-hide-artifact={hideArtifactPanel ? '1' : '0'}
       data-compact-rail={compactRail ? '1' : '0'}
       data-quiet-chrome={quietChrome ? '1' : '0'}
+      data-streaming={draftJob && !stream.complete ? '1' : '0'}
     >
       {!compactRail ? (
       <header className="mb-3 flex flex-wrap items-start justify-between gap-2">
@@ -818,6 +900,39 @@ export function BusinessSeatWorkbench({
           </ul>
         </div>
       )}
+
+      {draftJob ? (
+        <section
+          className="mb-2 rounded-[var(--radius-md)] border border-slate-200 bg-white px-3 py-2 shadow-[var(--shadow-rest)]"
+          data-testid="seat-draft-stream"
+          data-stream-complete={stream.complete ? '1' : '0'}
+          aria-live="polite"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[11px] font-semibold text-slate-700">
+              正在撰写 · {draftJob.stepLabel}
+            </p>
+            <span className="text-[10px] text-slate-400">
+              {paceAborted && !stream.complete
+                ? '已中止'
+                : stream.complete
+                  ? '写完了'
+                  : `${stream.shown}/${draftJob.lines.length} 行`}
+            </span>
+          </div>
+          <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap font-sans text-[12px] leading-relaxed text-slate-800">
+            {stream.text}
+            {!stream.complete && !paceAborted ? (
+              <span className="text-[#007aff]" aria-hidden>
+                ▍
+              </span>
+            ) : null}
+          </pre>
+          {draftJob.hitl && !stream.complete ? (
+            <p className="mt-1 text-[10px] text-amber-800">写完这一步才能确认。</p>
+          ) : null}
+        </section>
+      ) : null}
 
       {/* 会话主 · 成果/过程次 tab；右栏对话化默认只会话 */}
       {!compactRail ? (
@@ -1324,7 +1439,7 @@ export function BusinessSeatWorkbench({
                     }
                     data-step-index={stepIndex}
                   >
-                    {panel === 'artifact' ? artifactBody : worklogBody}
+                    {panel === 'artifact' ? displayArtifact : worklogBody}
                   </SeatMarkdownBody>
                   {panel === 'artifact' &&
                   (thread?.artifactVersions?.length ?? 0) > 0 ? (
@@ -1384,6 +1499,15 @@ export function BusinessSeatWorkbench({
           ) : null}
         </div>
       )}
+
+      <DeliverableDrawer
+        open={!!drawer}
+        title={drawer?.title ?? ''}
+        summary={drawer?.summary ?? ''}
+        artifact={drawer?.artifact ?? ''}
+        worklog={drawer?.worklog ?? ''}
+        onClose={() => setDrawer(null)}
+      />
 
       <div className="mb-3 hidden" aria-hidden>
         <button

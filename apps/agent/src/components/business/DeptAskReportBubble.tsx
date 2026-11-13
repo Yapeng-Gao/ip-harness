@@ -22,6 +22,8 @@ type Props = {
   /** 部门 slug · 审计深链 */
   deptSlug?: string
   busy?: boolean
+  /** 文稿还在逐行写时，确认钮先锁住 */
+  confirmLocked?: boolean
   onConfirm: (
     confirmId: string,
     opts?: { reason?: string; riskAccepted?: boolean },
@@ -42,6 +44,7 @@ export function DeptAskReportBubble({
   deptId,
   deptSlug,
   busy = false,
+  confirmLocked = false,
   onConfirm,
   onReturn,
   onOpenInMid,
@@ -72,7 +75,7 @@ export function DeptAskReportBubble({
     item.summary.length > 72 ? `${item.summary.slice(0, 72)}…` : item.summary
 
   const handleConfirm = () => {
-    if (!passOk || busy || done) return
+    if (!passOk || busy || done || confirmLocked) return
     void (async () => {
       setMsg(null)
       await onConfirm(item.id, {
@@ -188,21 +191,29 @@ export function DeptAskReportBubble({
           <p className="text-[10px] text-slate-500">
             样机仅记录决定并推进流程，不会对外递交或收费。若需修改，请填写退回意见，由当前部门继续处理。
           </p>
+          {confirmLocked ? (
+            <p className="text-[11px] text-amber-800" data-testid="dept-ask-confirm-locked">
+              文稿还在写，写完才能确认。
+            </p>
+          ) : null}
           <button
             type="button"
             onClick={handleConfirm}
-            disabled={!passOk || busy}
+            disabled={!passOk || busy || confirmLocked}
             className="btn-press focus-ring inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-3 py-1.5 text-[11px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
             data-testid="dept-right-confirm-link"
             data-ask-confirm="1"
             data-ask-primary="1"
+            data-confirm-locked={confirmLocked ? '1' : '0'}
             title={
-              !passOk
-                ? '材料未齐或当前身份不可自批'
-                : decision.decisionMeaning
+              confirmLocked
+                ? '文稿还在写，写完才能确认'
+                : !passOk
+                  ? '材料未齐或当前身份不可自批'
+                  : decision.decisionMeaning
             }
           >
-            {busy ? '提交中…' : `确认 · ${decision.decisionShort}`}
+            {busy ? '提交中…' : confirmLocked ? '写完才能确认' : `确认 · ${decision.decisionShort}`}
           </button>
           {decision.decisionArchiveCode ? (
             <span className="sr-only" data-testid="dept-ask-archive-code">

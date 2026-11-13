@@ -14,6 +14,8 @@ import { AgentHarnessOverview } from './pages/AgentHarnessOverview'
 import { ProjectFolderProvider } from './projects/ProjectFolderContext'
 import { GeneralBotsProvider } from './projects/GeneralBotsContext'
 import { BusinessCaseProvider } from './business/BusinessCaseContext'
+import { CompanyActivityProvider } from './business/CompanyActivityContext'
+import { DemoPaceProvider } from './business/DemoPaceContext'
 import { OrgConfigProvider } from './departments/OrgConfigContext'
 import { AssetLibraryProvider } from './assets/AssetLibraryContext'
 import { GeneralBotNewPage } from './pages/GeneralBotNewPage'
@@ -58,6 +60,8 @@ export default function App() {
           <ProjectFolderProvider>
           <GeneralBotsProvider>
           <BusinessCaseProvider>
+          <CompanyActivityProvider>
+          <DemoPaceProvider>
           <OrgConfigProvider>
           <AssetLibraryProvider>
           <EntryRoleProvider>
@@ -117,6 +121,8 @@ export default function App() {
           </EntryRoleProvider>
           </AssetLibraryProvider>
           </OrgConfigProvider>
+          </DemoPaceProvider>
+          </CompanyActivityProvider>
           </BusinessCaseProvider>
           </GeneralBotsProvider>
           </ProjectFolderProvider>
