@@ -13,7 +13,6 @@ import { collectBossTodos } from '../../business/bossTodos'
 import { prefersReducedMotion } from '../../lib/motionPref'
 import {
   SIGN,
-  boardCopy,
   CHATTER,
   OFFICE_H,
   OFFICE_W,
@@ -138,6 +137,7 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
   const [trackedId, setTrackedId] = useState<string | null>(play?.id ?? null)
   const [showPhrase, setShowPhrase] = useState(true)
   const [frame, setFrame] = useState(0)
+  const [chatterTick, setChatterTick] = useState(0)
   const playId = play?.id ?? null
   if (playId !== trackedId) {
     setTrackedId(playId)
@@ -201,6 +201,20 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
     return () => window.clearInterval(timer)
   }, [reduced, aborted, speed])
 
+  const talking = useMemo(() => {
+    const slugs = rooms.map((room) => room.slug)
+    if (slugs.length === 0) return new Set<string>()
+    const first = slugs[(chatterTick + 4) % slugs.length]!
+    const second = slugs[(chatterTick + 2) % slugs.length]!
+    return new Set([first, second])
+  }, [rooms, chatterTick])
+
+  useEffect(() => {
+    if (reduced) return
+    const timer = window.setInterval(() => setChatterTick((n) => n + 1), 4800)
+    return () => window.clearInterval(timer)
+  }, [reduced])
+
   useEffect(() => {
     if (!playId || !arrived) return
     const timer = window.setTimeout(() => setShowPhrase(false), 4200)
@@ -252,7 +266,6 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               const status = statusBySlug[room.slug] ?? '待机'
               const sign = place({ x: room.x + room.w / 2, y: room.y + 7 }, fit)
               const badge = place({ x: room.x + room.w - 3, y: room.y + 7 }, fit)
-              const note = place({ x: room.board.x + 8, y: room.board.y + room.board.h + 3 }, fit)
               const count = countByDept[door.deptId] ?? 0
               return (
                 <div key={room.slug}>
@@ -283,12 +296,6 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                   >
                     {status}
                   </span>
-                  <span
-                    className="pointer-events-none absolute z-[4] whitespace-nowrap rounded-sm bg-white/95 px-1 text-[10px] font-medium leading-4 text-[#2a2118]"
-                    style={{ left: note.left, top: note.top }}
-                  >
-                    {boardCopy(status)[0]}
-                  </span>
                   {count > 0 ? (
                     <Link
                       to={`/agent/pending?dept=${room.slug}&seg=AB`}
@@ -309,8 +316,11 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               const walking = actor.id === walker?.id && !!route
               const spot = walking && route ? polylinePoint(route, progress) : { x: actor.x, y: actor.y }
               const at = place({ x: spot.x, y: spot.y - 18 }, fit)
+              const room = rooms.find((item) => item.slug === actor.slug)
               const preview = hallDeptExpertPreviews(door).find((item) => item.id === actor.id)
               const label = shortName(actor.id, preview?.name ?? actor.slug)
+              const toLeft = room?.doorSide === 'e'
+              const line = CHATTER[actor.slug]?.[chatterTick % (CHATTER[actor.slug]?.length ?? 1)] ?? ''
               return (
                 <Link
                   key={actor.id}
@@ -324,21 +334,37 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                   data-to={walking ? play?.toSlug : undefined}
                 >
                   {label}
+                  {actor.lead && !walking && talking.has(actor.slug) && line ? (
+                    <span
+                      className={`pointer-events-none absolute top-0 z-[6] w-max max-w-[7.5rem] -translate-y-full rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#2a2118] ${
+                        toLeft ? 'right-full mr-1' : 'left-full ml-1'
+                      }`}
+                      data-testid={`hall-idle-bubble-${actor.slug}`}
+                    >
+                      <span
+                        className={`absolute bottom-0 h-1.5 w-1.5 translate-y-1/2 rotate-45 border-[#2a2118] bg-[#fff8e8] ${
+                          toLeft ? '-right-1 border-b border-r' : '-left-1 border-b border-l'
+                        }`}
+                      />
+                      {line}
+                    </span>
+                  ) : null}
                 </Link>
               )
             })
           : null}
         {ready && walker && route && showPhrase && play ? (
           <div
-            className="pointer-events-none absolute z-[6] max-w-[10rem] -translate-x-1/2 -translate-y-full rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-semibold text-[#2a2118]"
+            className="pointer-events-none absolute z-[6] max-w-[10rem] rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-semibold text-[#2a2118]"
             style={{
-              left: place(polylinePoint(route, progress), fit).left,
-              top: place({ x: 0, y: polylinePoint(route, progress).y - 28 }, fit).top,
-              transform: 'translate(-50%, -100%)',
+              left: place(polylinePoint(route, progress), fit).left + 18,
+              top: place({ x: 0, y: polylinePoint(route, progress).y - 22 }, fit).top,
+              transform: 'translate(0, -100%)',
             }}
             data-testid="hall-handoff-bubble"
             role="status"
           >
+            <span className="absolute -left-1 bottom-1 h-1.5 w-1.5 rotate-45 border-b border-l border-[#2a2118] bg-[#fff8e8]" />
             {play.phrase}
           </div>
         ) : null}

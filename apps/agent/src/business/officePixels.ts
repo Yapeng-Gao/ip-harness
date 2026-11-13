@@ -58,8 +58,14 @@ function woodFloor(
     ctx.fillStyle = Math.floor(py / 6) % 2 === 0 ? a : b
     ctx.fillRect(x, y + py, w, 1)
   }
-  ctx.fillStyle = 'rgba(90,60,30,0.1)'
+  ctx.fillStyle = '#c4a06a'
   for (let py = 5; py < h; py += 6) ctx.fillRect(x, y + py, w, 1)
+}
+
+function dusk(hex: string): string {
+  const n = Number.parseInt(hex.slice(1), 16)
+  const ch = (shift: number) => Math.max(0, ((n >> shift) & 255) - 36).toString(16).padStart(2, '0')
+  return `#${ch(16)}${ch(8)}${ch(0)}`
 }
 
 function rug(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color = RUG) {
@@ -67,7 +73,7 @@ function rug(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: 
   ctx.fillRect(x - 1, y - 1, w + 2, h + 2)
   ctx.fillStyle = color
   ctx.fillRect(x, y, w, h)
-  ctx.fillStyle = 'rgba(255,255,255,0.28)'
+  ctx.fillStyle = '#f6ead6'
   ctx.fillRect(x + 2, y + 2, w - 4, 1)
 }
 
@@ -101,24 +107,6 @@ function printer(ctx: CanvasRenderingContext2D, x: number, y: number) {
   ctx.fillRect(x + 9, y + 7, 1, 1)
 }
 
-function whiteboard(ctx: CanvasRenderingContext2D, x: number, y: number, status: RoomLiveStatus) {
-  block(ctx, x, y, 26, 14, '#fffaf2')
-  ctx.fillStyle = '#8d5a2b'
-  ctx.fillRect(x, y, 26, 2)
-  const notes =
-    status === '待确认'
-      ? ['#e85d4c', '#f2c14e']
-      : status === '进行中'
-        ? ['#f2c14e', '#7dcea0', '#7ec8e3']
-        : ['#f2c14e']
-  notes.forEach((color, i) => {
-    ctx.fillStyle = INK
-    ctx.fillRect(x + 2 + i * 7, y + 4, 6, 6)
-    ctx.fillStyle = color
-    ctx.fillRect(x + 3 + i * 7, y + 5, 4, 4)
-  })
-}
-
 function drawPerson(
   ctx: CanvasRenderingContext2D,
   fx: number,
@@ -132,25 +120,32 @@ function drawPerson(
   const x = Math.round(fx) - 5
   const y = Math.round(fy) - 16
   const step = walking ? frame % 2 : 0
-  ctx.fillStyle = 'rgba(42,33,24,0.28)'
-  ctx.fillRect(x + 1, fy - 1, 8, 2)
+  ctx.fillStyle = '#c9b08a'
+  ctx.fillRect(x + 1, Math.round(fy) - 1, 8, 1)
   block(ctx, x + 1, y + 12 + step, 3, 3, pants)
   block(ctx, x + 6, y + 12 + (walking ? 1 - step : 0), 3, 3, pants)
   ctx.fillStyle = INK
   ctx.fillRect(x + 1, y + 14, 3, 1)
   ctx.fillRect(x + 6, y + 14, 3, 1)
   block(ctx, x + 1, y + 6, 8, 6, shirt)
+  ctx.fillStyle = dusk(shirt)
+  ctx.fillRect(x + 2, y + 10, 6, 2)
+  ctx.fillStyle = '#fff8e8'
+  ctx.fillRect(x + 3, y + 7, 4, 1)
   ctx.fillStyle = '#f3c7a8'
   ctx.fillRect(x, y + 7 + (frame % 2), 2, 3)
   ctx.fillRect(x + 8, y + 8 - (frame % 2), 2, 3)
   block(ctx, x + 2, y + 1, 6, 5, '#f3c7a8')
   ctx.fillStyle = hair
   ctx.fillRect(x + 1, y, 8, 3)
-  ctx.fillRect(x + 1, y + 2, 1, 2)
-  ctx.fillRect(x + 8, y + 2, 1, 2)
+  ctx.fillRect(x + 1, y + 3, 2, 2)
+  ctx.fillRect(x + 7, y + 3, 2, 2)
+  ctx.fillStyle = '#fffaf2'
+  ctx.fillRect(x + 3, y + 3, 2, 2)
+  ctx.fillRect(x + 6, y + 3, 2, 2)
   ctx.fillStyle = INK
-  ctx.fillRect(x + 3, y + 3, 1, 1)
-  ctx.fillRect(x + 6, y + 3, 1, 1)
+  ctx.fillRect(x + 4, y + 4, 1, 1)
+  ctx.fillRect(x + 7, y + 4, 1, 1)
 }
 
 function deskFront(ctx: CanvasRenderingContext2D, fx: number, fy: number, glow: string) {
@@ -164,6 +159,38 @@ function deskFront(ctx: CanvasRenderingContext2D, fx: number, fy: number, glow: 
   ctx.fillRect(fx - 4, fy - 2, 8, 2)
 }
 
+function beanbag(ctx: CanvasRenderingContext2D, x: number, y: number, color: string) {
+  const rows = ['  ####', ' ######', '########', ' ######', '  ####']
+  rows.forEach((row, iy) => {
+    for (let ix = 0; ix < row.length; ix++) {
+      if (row[ix] !== '#') continue
+      ctx.fillStyle = INK
+      ctx.fillRect(x + ix - 1, y + iy - 1, 3, 3)
+    }
+  })
+  rows.forEach((row, iy) => {
+    for (let ix = 0; ix < row.length; ix++) {
+      if (row[ix] !== '#') continue
+      ctx.fillStyle = color
+      ctx.fillRect(x + ix, y + iy, 1, 1)
+    }
+  })
+  ctx.fillStyle = '#fffaf2'
+  ctx.fillRect(x + 3, y + 1, 2, 1)
+}
+
+function stickies(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  const colors = ['#f2c14e', '#e85d4c', '#7dcea0', '#7ec8e3', '#f4a3c8']
+  colors.forEach((color, i) => {
+    const col = i % 3
+    const row = Math.floor(i / 3)
+    ctx.fillStyle = INK
+    ctx.fillRect(x + col * 8, y + row * 8, 7, 7)
+    ctx.fillStyle = color
+    ctx.fillRect(x + 1 + col * 8, y + 1 + row * 8, 5, 5)
+  })
+}
+
 function folder(ctx: CanvasRenderingContext2D, x: number, y: number) {
   block(ctx, x, y, 7, 8, '#f2c14e')
   ctx.fillStyle = '#fff8dc'
@@ -175,7 +202,9 @@ function folder(ctx: CanvasRenderingContext2D, x: number, y: number) {
 
 function furnish(ctx: CanvasRenderingContext2D, room: OfficeRoom & { status: RoomLiveStatus }) {
   const tone = FLOOR[room.slug] ?? FLOOR.draft!
-  woodFloor(ctx, room.x + 1, room.y + 1, room.w - 2, room.h - 2, tone.a, tone.b)
+  const floorA = room.thin ? dusk(tone.a) : tone.a
+  const floorB = room.thin ? dusk(tone.b) : tone.b
+  woodFloor(ctx, room.x + 1, room.y + 1, room.w - 2, room.h - 2, floorA, floorB)
   const glow = room.status === '进行中' ? GLOW : '#7ec8e3'
   if (room.slug === 'intake') {
     rug(ctx, room.x + 18, room.y + 24, 46, 24, tone.rug)
@@ -184,19 +213,42 @@ function furnish(ctx: CanvasRenderingContext2D, room: OfficeRoom & { status: Roo
     ctx.fillStyle = glow
     ctx.fillRect(room.x + 37, room.y + 28, 4, 2)
   } else if (room.slug === 'inspire') {
-    whiteboard(ctx, room.x + 8, room.y + 16, room.status)
-    whiteboard(ctx, room.x + 36, room.y + 16, room.status)
-    ctx.fillStyle = tone.rug
-    ctx.beginPath()
-    ctx.arc(room.x + 22, room.y + 46, 6, 0, Math.PI * 2)
-    ctx.arc(room.x + 48, room.y + 48, 6, 0, Math.PI * 2)
-    ctx.fill()
+    block(ctx, room.x + 6, room.y + 14, 36, 22, '#fffaf2')
+    ctx.fillStyle = '#8d5a2b'
+    ctx.fillRect(room.x + 6, room.y + 14, 36, 2)
+    stickies(ctx, room.x + 8, room.y + 18)
+    beanbag(ctx, room.x + 8, room.y + 40, '#3d8f6e')
+    beanbag(ctx, room.x + 28, room.y + 42, '#e07a5f')
+  } else if (room.slug === 'annuity') {
+    const calX = room.x + 40
+    const calY = room.y + 14
+    block(ctx, calX, calY, 36, 22, '#fffaf2')
+    ctx.fillStyle = INK
+    for (let row = 0; row < 4; row++) ctx.fillRect(calX + 2, calY + 4 + row * 4, 32, 1)
+    for (let col = 0; col < 6; col++) ctx.fillRect(calX + 4 + col * 5, calY + 2, 1, 18)
+    const marks: Array<[number, number, string]> = [[0, 1, '#e85d4c'], [2, 0, '#f2c14e'], [3, 2, '#2f6f9f'], [4, 3, '#e85d4c'], [5, 1, '#3d8f6e']]
+    for (const [col, row, color] of marks) {
+      ctx.fillStyle = color
+      ctx.fillRect(calX + 5 + col * 5, calY + 5 + row * 4, 3, 2)
+    }
+    block(ctx, room.x + 8, room.y + 36, 8, 14, '#8d6e63')
+    block(ctx, room.x + 18, room.y + 40, 8, 10, '#a1887f')
+  } else if (room.slug === 'monetize') {
+    block(ctx, room.x + 6, room.y + 14, 40, 24, '#fffaf2')
+    ctx.fillStyle = INK
+    ctx.fillRect(room.x + 10, room.y + 32, 32, 2)
+    const bars: Array<[number, string]> = [[14, '#e85d4c'], [8, '#f2c14e'], [18, '#2f6f9f'], [11, '#3d8f6e']]
+    bars.forEach(([h, color], i) => {
+      ctx.fillStyle = INK
+      ctx.fillRect(room.x + 11 + i * 8, room.y + 32 - h - 1, 6, h + 2)
+      ctx.fillStyle = color
+      ctx.fillRect(room.x + 12 + i * 8, room.y + 32 - h, 4, h)
+    })
   } else if (room.slug === 'mining') {
     shelf(ctx, room.x + 6, room.y + 16)
     shelf(ctx, room.x + 16, room.y + 16)
     block(ctx, room.x + 28, room.y + 28, 10, 8, '#d7d2cb')
     block(ctx, room.x + 40, room.y + 26, 10, 10, '#c4b8a8')
-    plant(ctx, room.x + room.w - 16, room.y + room.h - 16)
   } else if (room.slug === 'disclosure') {
     rug(ctx, room.x + 16, room.y + 26, 40, 22, tone.rug)
     block(ctx, room.x + 24, room.y + 32, 24, 10, '#6b4428')
@@ -220,31 +272,10 @@ function furnish(ctx: CanvasRenderingContext2D, room: OfficeRoom & { status: Roo
     ctx.fillRect(room.x + 50, room.y + 31, 4, 3)
     ctx.fillStyle = '#fffaf2'
     ctx.fillRect(room.x + 48, room.y + 24, 10, 4)
-  } else if (room.slug === 'annuity') {
-    block(ctx, room.x + 8, room.y + 16, 22, 16, '#fffaf2')
-    ctx.fillStyle = INK
-    for (let i = 0; i < 3; i++) ctx.fillRect(room.x + 10, room.y + 19 + i * 4, 18, 1)
-    for (let i = 0; i < 4; i++) ctx.fillRect(room.x + 12 + i * 4, room.y + 18, 1, 12)
-    block(ctx, room.x + room.w - 18, room.y + 18, 8, 16, '#8d6e63')
-    block(ctx, room.x + room.w - 28, room.y + 22, 8, 12, '#a1887f')
-  } else if (room.slug === 'monetize') {
-    block(ctx, room.x + 8, room.y + 16, 28, 16, '#fffaf2')
-    const bars = [6, 10, 4, 12]
-    bars.forEach((h, i) => {
-      ctx.fillStyle = i % 2 ? tone.rug : '#2f6f9f'
-      ctx.fillRect(room.x + 11 + i * 6, room.y + 28 - h, 4, h)
-    })
-    rug(ctx, room.x + 42, room.y + 32, 28, 14, tone.rug)
   } else {
     rug(ctx, room.x + 10, room.y + 30, 32, 16, tone.rug)
   }
   plant(ctx, room.x + room.w - 14, room.y + room.h - 14)
-  if (room.thin) dimRoom(ctx, room)
-}
-
-function dimRoom(ctx: CanvasRenderingContext2D, room: OfficeRoom) {
-  ctx.fillStyle = 'rgba(42,28,16,0.38)'
-  ctx.fillRect(room.x + 1, room.y + 1, room.w - 2, room.h - 2)
 }
 
 export type PixelActor = {
@@ -361,8 +392,6 @@ export function drawOffice(ctx: CanvasRenderingContext2D, scene: PixelScene) {
   drawPerson(ctx, RECEPTIONIST.x, RECEPTIONIST.y, '#1f8f8a', '#3a2414', '#243044', scene.frame, false)
   if (walker) {
     const along = scene.path ? polylinePoint(scene.path, scene.progress) : { x: walker.x, y: walker.y }
-    ctx.fillStyle = 'rgba(242,193,78,0.55)'
-    ctx.fillRect(Math.round(along.x) - 6, Math.round(along.y) - 26, 12, 10)
     folder(ctx, along.x - 3, along.y - 26)
     drawPerson(ctx, along.x, along.y, walker.shirt, walker.hair, walker.pants, scene.frame, true)
   }
