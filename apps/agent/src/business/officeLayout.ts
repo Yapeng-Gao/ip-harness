@@ -97,18 +97,15 @@ export function roomBySlug(slug: string): OfficeRoom | undefined {
   return officeRooms().find((room) => room.slug === slug)
 }
 
-/** 从出发座位经走廊走到对方桌边。 */
+/** 从门口经走廊走到对方门口，方便看见交接的人。 */
 export function handoffWaypoints(from: OfficeRoom, to: OfficeRoom): Pt[] {
-  const side = to.doorSide === 'e' ? 36 : -36
   return [
-    from.seats[0]!,
     from.door,
     from.doorOut,
     { x: LANE_X, y: from.door.y },
     { x: LANE_X, y: to.door.y },
     to.doorOut,
     to.door,
-    { x: to.seats[0]!.x + side, y: to.seats[0]!.y },
   ]
 }
 

@@ -12,6 +12,8 @@ import { handoffDurationMs, type DemoSpeed } from '../../business/demoPace'
 import { collectBossTodos } from '../../business/bossTodos'
 import { prefersReducedMotion } from '../../lib/motionPref'
 import {
+  SIGN,
+  boardCopy,
   CHATTER,
   OFFICE_H,
   OFFICE_W,
@@ -104,7 +106,12 @@ function actorsFor(room: OfficeRoom): PixelActor[] {
   const door = HALL_DEPT_DOORS.find((item) => item.slug === room.slug)
   if (!door) return []
   const previews = hallDeptExpertPreviews(door).slice(0, room.thin ? 1 : 3)
-  const roles: PixelActor['role'][] = ['desk', 'board', 'side']
+  const roles: PixelActor['role'][] =
+    room.slug === 'inspire'
+      ? ['board', 'board', 'side']
+      : room.slug === 'disclosure'
+        ? ['desk', 'board', 'side']
+        : ['desk', 'board', 'side']
   return previews.map((preview, index) => ({
     id: preview.id,
     slug: room.slug,
@@ -243,7 +250,9 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               const origin = place({ x: room.x, y: room.y }, fit)
               const far = place({ x: room.x + room.w, y: room.y + room.h }, fit)
               const status = statusBySlug[room.slug] ?? '待机'
-              const badge = place(room.door, fit)
+              const sign = place({ x: room.x + room.w / 2, y: room.y + 7 }, fit)
+              const badge = place({ x: room.x + room.w - 3, y: room.y + 7 }, fit)
+              const note = place({ x: room.board.x + 8, y: room.board.y + room.board.h + 3 }, fit)
               const count = countByDept[door.deptId] ?? 0
               return (
                 <div key={room.slug}>
@@ -256,17 +265,29 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                     aria-label={`${door.label}，${status}`}
                   />
                   <span
-                    className={`pointer-events-none absolute z-[3] -translate-x-1/2 -translate-y-1/2 rounded-sm px-1 text-[10px] font-semibold ${
+                    className="pointer-events-none absolute z-[4] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-sm border-2 border-[#5c3b22] bg-[#e7c48a] px-1.5 text-[12px] font-semibold leading-5 text-[#2a2118] shadow-[2px_2px_0_#5c3b22]"
+                    style={{ left: sign.left, top: sign.top }}
+                  >
+                    {SIGN[room.slug] ?? room.label}
+                  </span>
+                  <span
+                    className={`pointer-events-none absolute z-[4] -translate-x-full whitespace-nowrap rounded-sm border border-[#2a2118] px-1 text-[11px] font-semibold leading-4 ${
                       status === '待确认'
                         ? 'bg-[#f2c14e] text-[#2a2118]'
                         : status === '进行中'
-                          ? 'bg-[#8ef6ff] text-[#123044]'
-                          : 'bg-[#f6ead6] text-[#6b5436]'
+                          ? 'bg-[#d9fbff] text-[#123044]'
+                          : 'bg-[#fff8e8] text-[#6b5436]'
                     }`}
                     style={{ left: badge.left, top: badge.top }}
                     data-testid={`hall-room-status-${room.slug}`}
                   >
                     {status}
+                  </span>
+                  <span
+                    className="pointer-events-none absolute z-[4] whitespace-nowrap rounded-sm bg-white/95 px-1 text-[10px] font-medium leading-4 text-[#2a2118]"
+                    style={{ left: note.left, top: note.top }}
+                  >
+                    {boardCopy(status)[0]}
                   </span>
                   {count > 0 ? (
                     <Link
@@ -294,7 +315,7 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                 <Link
                   key={actor.id}
                   to={hallDeptHref(caseId, door)}
-                  className="focus-ring absolute z-[5] -translate-x-1/2 whitespace-nowrap rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1 text-[10px] font-semibold leading-4 text-[#2a2118]"
+                  className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1 text-[10px] font-semibold leading-4 text-[#2a2118]"
                   style={{ left: at.left, top: at.top }}
                   aria-label={`${label}，${door.label}`}
                   title={preview?.name ?? label}
@@ -311,8 +332,9 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
           <div
             className="pointer-events-none absolute z-[6] max-w-[10rem] -translate-x-1/2 -translate-y-full rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-semibold text-[#2a2118]"
             style={{
-              ...place(polylinePoint(route, progress), fit),
-              marginTop: -36,
+              left: place(polylinePoint(route, progress), fit).left,
+              top: place({ x: 0, y: polylinePoint(route, progress).y - 28 }, fit).top,
+              transform: 'translate(-50%, -100%)',
             }}
             data-testid="hall-handoff-bubble"
             role="status"
@@ -329,11 +351,12 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
             onClick={() => document.getElementById('home-reception-line')?.focus()}
           >
             小林
-            {!play ? (
-              <span className="pointer-events-none absolute bottom-full left-1/2 mb-1 w-max max-w-[9rem] -translate-x-1/2 rounded-sm border border-[#2a2118] bg-white px-1.5 py-0.5 text-[11px] text-[#2a2118]">
-                {greet}
-              </span>
-            ) : null}
+            <span className="pointer-events-none absolute left-full top-0 ml-1 w-max max-w-[9rem] rounded-sm border border-[#2a2118] bg-white px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#2a2118]">
+              {play ? '案子正在送去下一间。' : greet}
+            </span>
+            <span className="pointer-events-none absolute bottom-full left-1/2 mb-6 -translate-x-1/2 text-[11px] font-bold tracking-wide text-[#f6ead6]">
+              NT
+            </span>
           </button>
         ) : null}
         <div className="sr-only" data-testid="home-eight-depts" data-dept-grid="floor">
