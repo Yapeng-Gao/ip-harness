@@ -39,6 +39,10 @@ const PAPER = '#fffaf3'
 const WOOD_DARK = '#c4925a'
 const TEAL = '#7ec8c3'
 
+/** 头发顶在脚点上方这么多单位。名牌底边再往上留一点空隙。 */
+export const PERSON_HAIR = 32
+export const PERSON_LABEL_LIFT = 34
+
 const FLOOR: Record<string, string> = {
   intake: '#f6e3c8',
   inspire: '#f4ead8',
@@ -78,17 +82,17 @@ function Hair({ cx, cy, cut, color, scale }: { cx: number; cy: number; cut: 0 | 
   if (cut === 1) {
     return (
       <path
-        d={`M${cx - 3.2 * scale} ${cy - 0.2 * scale} Q${cx - 1 * scale} ${cy - 3.4 * scale} ${cx + 3 * scale} ${cy - 1.2 * scale} L${cx + 2.2 * scale} ${cy + 1.4 * scale} Q${cx} ${cy + 0.2 * scale} ${cx - 2.8 * scale} ${cy + 1.6 * scale} Z`}
+        d={`M${cx - 3.4 * scale} ${cy - 0.6 * scale} Q${cx - 0.4 * scale} ${cy - 3.8 * scale} ${cx + 3.6 * scale} ${cy - 1.4 * scale} L${cx + 2.4 * scale} ${cy - 0.2 * scale} Q${cx} ${cy - 1.2 * scale} ${cx - 3 * scale} ${cy - 0.2 * scale} Z`}
         fill={color}
       />
     )
   }
   if (cut === 2) {
-    return <ellipse cx={cx} cy={cy - 1.3 * scale} rx={3.3 * scale} ry={2.3 * scale} fill={color} />
+    return <ellipse cx={cx} cy={cy - 1.6 * scale} rx={3.5 * scale} ry={2.2 * scale} fill={color} />
   }
   return (
     <path
-      d={`M${cx - 3.3 * scale} ${cy} Q${cx} ${cy - 3.6 * scale} ${cx + 3.3 * scale} ${cy} L${cx + 3 * scale} ${cy + 1.8 * scale} Q${cx} ${cy + 0.4 * scale} ${cx - 3 * scale} ${cy + 1.8 * scale} Z`}
+      d={`M${cx - 3.6 * scale} ${cy - 0.4 * scale} Q${cx} ${cy - 4 * scale} ${cx + 3.6 * scale} ${cy - 0.4 * scale} L${cx + 3.1 * scale} ${cy + 0.2 * scale} Q${cx} ${cy - 0.8 * scale} ${cx - 3.1 * scale} ${cy + 0.2 * scale} Z`}
       fill={color}
     />
   )
@@ -115,22 +119,22 @@ function Person({
   walking: boolean
   reduced: boolean
 }) {
-  const step = walking && !reduced ? (frame % 2 ? 1.1 : -1.1) : 0
+  const step = walking && !reduced ? (frame % 2 ? 1.3 : -1.3) : 0
   return (
     <g transform={`translate(${x} ${y})`}>
+      <ellipse cx="0" cy="0.7" rx="6.4" ry="1.15" fill="#e4c9a6" />
       <g className={reduced || walking ? undefined : 'office-idle'}>
-        <ellipse cx="0" cy="0.4" rx="5.2" ry="1.5" fill="#e2c8a4" />
-        <rect x={-3.3} y={-10.5 + step} width="2.5" height="5.2" rx="1.2" fill={pants} />
-        <rect x={0.8} y={-10.5 - step} width="2.5" height="5.2" rx="1.2" fill={pants} />
-        <rect x="-4.6" y="-16.2" width="9.2" height="7.2" rx="2.6" fill={shirt} />
-        <rect x="-2.2" y="-15.6" width="4.4" height="1.5" rx="0.7" fill="#fff6ea" />
-        <rect x="-5.4" y="-14.2" width="1.8" height="4.2" rx="0.8" fill="#f4c7a8" />
-        <rect x="3.6" y="-14.2" width="1.8" height="4.2" rx="0.8" fill="#f4c7a8" />
-        <circle cx="0" cy="-19.2" r="3.7" fill="#f4c7a8" />
-        <Hair cx={0} cy={-19.4} cut={cut} color={hair} scale={1} />
-        <circle cx="-1.25" cy="-19.3" r="0.48" fill="#3d2b22" />
-        <circle cx="1.25" cy="-19.3" r="0.48" fill="#3d2b22" />
-        <path d="M-1.1 -17.8 Q0 -17.1 1.1 -17.8" stroke="#e09a86" strokeWidth="0.35" fill="none" strokeLinecap="round" />
+        <rect x={-4.1} y={-12 + step} width="3.1" height="12.2" rx="1.4" fill={pants} />
+        <rect x={1} y={-12 - step} width="3.1" height="12.2" rx="1.4" fill={pants} />
+        <rect x="-5.6" y="-22" width="11.2" height="11" rx="3" fill={shirt} />
+        <rect x="-2.6" y="-21.2" width="5.2" height="1.7" rx="0.8" fill="#fff6ea" />
+        <rect x="-6.6" y="-19.2" width="2.1" height="5.4" rx="1" fill="#f4c7a8" />
+        <rect x="4.5" y="-19.2" width="2.1" height="5.4" rx="1" fill="#f4c7a8" />
+        <circle cx="0" cy="-25.2" r="5" fill="#f4c7a8" />
+        <Hair cx={0} cy={-27.4} cut={cut} color={hair} scale={1.2} />
+        <circle cx="-1.7" cy="-25.3" r="0.62" fill="#3d2b22" />
+        <circle cx="1.7" cy="-25.3" r="0.62" fill="#3d2b22" />
+        <path d="M-1.6 -23.2 Q0 -22.2 1.6 -23.2" stroke="#e08a78" strokeWidth="0.5" fill="none" strokeLinecap="round" />
       </g>
     </g>
   )
@@ -139,11 +143,11 @@ function Person({
 function Desk({ x, y, glow }: { x: number; y: number; glow: string }) {
   return (
     <g transform={`translate(${x} ${y})`} filter="url(#office-soft)">
-      <rect x="-12" y="-5" width="24" height="7.5" rx="1.8" fill={WOOD_DARK} />
-      <rect x="-11" y="-4.4" width="22" height="1.6" rx="0.7" fill="#e7b578" />
-      <rect x="-5.2" y="-11.2" width="10.4" height="6.2" rx="1.1" fill="#1d3344" />
-      <rect x="-4.2" y="-10.2" width="8.4" height="4.2" rx="0.7" fill={glow} />
-      <rect x="-3.2" y="-1.6" width="6.4" height="1.6" rx="0.4" fill="#3d2c22" />
+      <rect x="-9" y="-4" width="18" height="6" rx="1.6" fill={WOOD_DARK} />
+      <rect x="-8.2" y="-3.4" width="16.4" height="1.3" rx="0.6" fill="#e7b578" />
+      <rect x="-3.6" y="-8.2" width="7.2" height="4.2" rx="0.8" fill="#1d3344" />
+      <rect x="-2.8" y="-7.4" width="5.6" height="2.6" rx="0.5" fill={glow} />
+      <rect x="-2.2" y="-0.8" width="4.4" height="1.2" rx="0.4" fill="#3d2c22" />
     </g>
   )
 }
@@ -210,10 +214,12 @@ function furnish(room: RoomPaint) {
         <rect x={x + 8} y={y + 13} width="40" height="20" rx="2" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.6" />
         <rect x={x + 8} y={y + 13} width="40" height="2.2" rx="1" fill={WOOD_DARK} />
         <Stickies x={x + 12} y={y + 17} />
-        <ellipse cx={x + 16} cy={y + 42} rx="7" ry="4.2" fill="#3d8f6e" />
-        <ellipse cx={x + 14} cy={y + 41} rx="2.4" ry="1.2" fill="#8fd0ae" />
-        <ellipse cx={x + 32} cy={y + 44} rx="7" ry="4.2" fill="#e07a5f" />
-        <ellipse cx={x + 30} cy={y + 43} rx="2.4" ry="1.2" fill="#f4b5a4" />
+        <ellipse cx={x + 16} cy={y + 40} rx="7" ry="4.2" fill="#3d8f6e" />
+        <ellipse cx={x + 14} cy={y + 39} rx="2.4" ry="1.2" fill="#8fd0ae" />
+        <ellipse cx={x + 32} cy={y + 42} rx="7" ry="4.2" fill="#e07a5f" />
+        <ellipse cx={x + 30} cy={y + 41} rx="2.4" ry="1.2" fill="#f4b5a4" />
+        <rect x={x + 46} y={y + 30} width="1.4" height="12" rx="0.6" fill="#c4a574" />
+        <ellipse cx={x + 46.7} cy={y + 29} rx="3.2" ry="1.6" fill="#f2c14e" />
       </g>
     )
   }
@@ -225,8 +231,8 @@ function furnish(room: RoomPaint) {
         {['#c4493a', '#2f6f9f', '#e0b04a', '#2f8f4e', '#f4efe4'].map((color, i) => (
           <rect key={color} x={x + 9 + (i % 3) * 3} y={y + 16 + Math.floor(i / 3) * 9} width="2.2" height="7" rx="0.4" fill={color} />
         ))}
-        <rect x={x + 34} y={y + 28} width="10" height="7" rx="1" fill="#d7d2cb" />
-        <rect x={x + 46} y={y + 26} width="10" height="9" rx="1" fill="#c4b8a8" />
+        <rect x={x + 34} y={y + 36} width="8" height="7" rx="1" fill="#d7d2cb" />
+        <rect x={x + 44} y={y + 34} width="8" height="9" rx="1" fill="#c4b8a8" />
       </g>
     )
   }
@@ -240,21 +246,21 @@ function furnish(room: RoomPaint) {
   if (room.slug === 'draft') {
     return (
       <g>
-        <rect x={x + 46} y={y + 18} width="8" height="10" rx="0.6" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.4" />
-        <rect x={x + 48} y={y + 16} width="8" height="10" rx="0.6" fill="#fff" stroke="#eadcc8" strokeWidth="0.4" />
-        <rect x={x + 64} y={y + 36} width="12" height="8" rx="1.2" fill="#d7d2cb" />
-        <rect x={x + 66} y={y + 33} width="8" height="4" rx="0.6" fill={PAPER} />
-        <circle cx={x + 73} cy={y + 41} r="1" fill="#3dcea0" />
+        <rect x={x + 8} y={y + 12} width="8" height="5" rx="0.6" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.4" />
+        <rect x={x + 18} y={y + 12} width="8" height="5" rx="0.6" fill="#fff" stroke="#eadcc8" strokeWidth="0.4" />
+        <rect x={x + 64} y={y + 12} width="12" height="5" rx="1.1" fill="#d7d2cb" />
+        <rect x={x + 66} y={y + 10.6} width="8" height="2.6" rx="0.5" fill={PAPER} />
+        <circle cx={x + 73} cy={y + 15.2} r="0.7" fill="#3dcea0" />
       </g>
     )
   }
   if (room.slug === 'oa') {
     return (
       <g>
-        <rect x={x + 10} y={y + 16} width="16" height="11" rx="1" fill={PAPER} stroke="#eadcc8" strokeWidth="0.4" />
-        <rect x={x + 12} y={y + 14} width="16" height="11" rx="1" fill="#fff" stroke="#eadcc8" strokeWidth="0.4" />
-        <circle cx={x + 24} cy={y + 20} r="2.2" fill="#e85d4c" />
-        <rect x={x + 36} y={y + 18} width="18" height="12" rx="1.2" fill="#efe6d4" />
+        <rect x={x + 8} y={y + 12} width="14" height="5" rx="1" fill={PAPER} stroke="#eadcc8" strokeWidth="0.4" />
+        <rect x={x + 22} y={y + 12} width="12" height="5" rx="1" fill="#fff" stroke="#eadcc8" strokeWidth="0.4" />
+        <circle cx={x + 30} cy={y + 14.5} r="1.3" fill="#e85d4c" />
+        <rect x={x + 40} y={y + 12} width="12" height="5" rx="1" fill="#efe6d4" />
       </g>
     )
   }
@@ -279,23 +285,24 @@ function furnish(room: RoomPaint) {
             />
           )
         })}
-        <rect x={x + 8} y={y + 30} width="8" height="14" rx="1" fill="#8d6e63" />
-        <rect x={x + 18} y={y + 34} width="8" height="10" rx="1" fill="#a1887f" />
+        <rect x={x + 58} y={y + 38} width="8" height="12" rx="1" fill="#8d6e63" />
+        <rect x={x + 68} y={y + 40} width="8" height="10" rx="1" fill="#a1887f" />
       </g>
     )
   }
   return (
     <g>
       <rect x={x + 8} y={y + 14} width="40" height="22" rx="2" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.5" />
-      <line x1={x + 12} y1={y + 32} x2={x + 44} y2={y + 32} stroke="#eadcc8" strokeWidth="0.8" />
+      <line x1={x + 12} y1={y + 30} x2={x + 44} y2={y + 30} stroke="#eadcc8" strokeWidth="0.8" />
       {[
         [14, '#e85d4c'],
         [8, '#f2c14e'],
         [18, '#2f6f9f'],
         [11, '#3d8f6e'],
       ].map(([h, color], i) => (
-        <rect key={color as string} x={x + 13 + i * 8} y={y + 32 - Number(h)} width="5" height={Number(h)} rx="1" fill={String(color)} />
+        <rect key={color as string} x={x + 13 + i * 8} y={y + 30 - Number(h)} width="5" height={Number(h)} rx="1" fill={String(color)} />
       ))}
+      <Plant x={x + 50} y={y + 42} />
     </g>
   )
 }
@@ -374,9 +381,20 @@ export function OfficeScene({
           fill={room.thin ? dusk(FLOOR[room.slug] ?? '#f3e4cc') : FLOOR[room.slug]}
         />
       ))}
-      <rect x={CORRIDOR_TOP} y={4} width={CORRIDOR_BOT - CORRIDOR_TOP} height={SOUTH_Y - 4} fill="#ecd7b4" />
-      <rect x={LANE_X - 6} y={8} width="12" height={SOUTH_Y - 16} rx="6" fill={TEAL} />
-      <rect x={LANE_X - 1.4} y={10} width="2.8" height={SOUTH_Y - 22} rx="1.4" fill="#f6ead6" opacity="0.45" />
+      <rect x={CORRIDOR_TOP} y={4} width={CORRIDOR_BOT - CORRIDOR_TOP} height={SOUTH_Y - 4} fill="#f0dcc0" />
+      {Array.from({ length: 28 }, (_, i) => (
+        <line
+          key={i}
+          x1={CORRIDOR_TOP + 1}
+          x2={CORRIDOR_BOT - 1}
+          y1={8 + i * 8}
+          y2={8 + i * 8}
+          stroke="#e4cba6"
+          strokeWidth="0.7"
+        />
+      ))}
+      <rect x={LANE_X - 7} y={8} width="14" height={SOUTH_Y - 18} rx="1.5" fill="#e7d0aa" />
+      <line x1={LANE_X} x2={LANE_X} y1={10} y2={SOUTH_Y - 12} stroke="#d9bc90" strokeWidth="0.45" />
       <rect x={8} y={SOUTH_Y + 2} width={OFFICE_W - 16} height={OFFICE_H - SOUTH_Y - 8} rx="4" fill="#f6e3c8" />
       {rooms.map((room) => (
         <g key={`furn-${room.slug}`}>{furnish(room)}</g>
@@ -438,7 +456,7 @@ export function OfficeScene({
       />
       {walker && along ? (
         <g>
-          <g transform={`translate(${along.x} ${along.y - 24})`} filter="url(#office-soft)">
+          <g transform={`translate(${along.x + 9} ${along.y - 16})`} filter="url(#office-soft)">
             <rect x="-4.2" y="-5" width="8.4" height="7" rx="1" fill="#f2c14e" />
             <rect x="-2.2" y="-6.4" width="3.6" height="2.2" rx="0.5" fill="#e07a5f" />
             <line x1="-2.4" y1="-2.2" x2="2.4" y2="-2.2" stroke="#fff6dc" strokeWidth="0.5" />

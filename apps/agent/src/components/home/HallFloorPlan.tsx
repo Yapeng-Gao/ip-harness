@@ -27,7 +27,7 @@ import {
   type OfficeRoom,
   type Pt,
 } from '../../business/officeLayout'
-import { OfficeScene, type OfficeActor } from './officeIllustration'
+import { OfficeScene, PERSON_HAIR, PERSON_LABEL_LIFT, type OfficeActor } from './officeIllustration'
 
 function playableHandoff(events: CompanyActivityEvent[], openedAt: number) {
   const hit = events.find((event) => event.handoff)
@@ -105,6 +105,7 @@ function placeBesideHead(
   lines: string[],
   preferLeft: boolean,
   fit: Fit,
+  hairLine: number,
 ) {
   const box = bubbleBox(lines)
   const nameW = label.length * 10 + 12
@@ -125,8 +126,11 @@ function placeBesideHead(
   const w = Math.max(36, Math.min(box.w, space))
   let left = side === 'left' ? nameLeft - gap - w : nameLeft + nameW + gap
   left = Math.max(sceneLeft, Math.min(left, sceneRight - w))
-  let top = nameTop + nameH - box.h
-  top = Math.max(fit.y + margin, Math.min(top, fit.y + fit.h - box.h - margin))
+  let top = nameTop
+  if (box.h > nameH) top = nameTop - (box.h - nameH)
+  const maxBottom = hairLine - 4
+  if (top + box.h > maxBottom) top = maxBottom - box.h
+  top = Math.max(fit.y + margin, top)
   return { left, top, w, h: box.h, tail: side === 'left' ? 'right' : 'left' }
 }
 
@@ -137,18 +141,12 @@ function placeHandoffBubble(
 ) {
   const box = bubbleBox(lines)
   const nameW = 56
-  const nameH = 20
   const gap = 8
   const margin = 8
   let left = head.left - nameW / 2 - gap - box.w
-  let top = head.top - nameH / 2 - box.h / 2
+  let top = head.top - box.h
   left = Math.max(fit.x + margin, Math.min(left, fit.x + fit.w - box.w - margin))
   top = Math.max(fit.y + margin, Math.min(top, fit.y + fit.h - box.h - margin))
-  const nameLeft = head.left - nameW / 2
-  const nameTop = head.top - nameH
-  const hitX = left < nameLeft + nameW && left + box.w > nameLeft
-  const hitY = top < head.top && top + box.h > nameTop
-  if (hitX && hitY) top = Math.max(fit.y + margin, nameTop - box.h - gap)
   return { left, top, w: box.w, h: box.h, tailRight: left + box.w / 2 <= head.left }
 }
 
@@ -167,11 +165,23 @@ function actorsFor(room: OfficeRoom): OfficeActor[] {
       : room.slug === 'disclosure'
         ? ['desk', 'board', 'side']
         : ['desk', 'board', 'side']
+  const foot = room.y + 50
+  const spots =
+    previews.length === 1
+      ? [
+          {
+            x: room.slug === 'annuity' ? room.x + 22 : room.doorSide === 'e' ? room.x + 64 : room.x + room.w - 22,
+            y: foot,
+          },
+        ]
+      : (room.doorSide === 'e' ? [22, 46, 68] : [room.w - 22, room.w - 46, room.w - 68])
+          .slice(0, previews.length)
+          .map((dx) => ({ x: room.x + dx, y: foot }))
   return previews.map((preview, index) => ({
     id: preview.id,
     slug: room.slug,
-    x: room.seats[index]?.x ?? room.seats[0]!.x,
-    y: room.seats[index]?.y ?? room.seats[0]!.y,
+    x: spots[index]?.x ?? spots[0]!.x,
+    y: spots[index]?.y ?? spots[0]!.y,
     shirt: shirtFor(preview.id),
     hair: hairFor(preview.id),
     pants: pantsFor(preview.id),
@@ -316,7 +326,7 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               const origin = place({ x: room.x, y: room.y }, fit)
               const far = place({ x: room.x + room.w, y: room.y + room.h }, fit)
               const status = statusBySlug[room.slug] ?? '待机'
-              const sign = place({ x: room.x + room.w / 2, y: room.y + 7 }, fit)
+              const sign = place({ x: room.x + room.w / 2, y: room.y + 5 }, fit)
               const badge = place({ x: room.x + room.w - 3, y: room.y + 7 }, fit)
               const count = countByDept[door.deptId] ?? 0
               return (
@@ -367,18 +377,19 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               const door = HALL_DEPT_DOORS.find((item) => item.slug === actor.slug) as HallDeptDoor
               const walking = actor.id === walker?.id && !!route
               const spot = walking && route ? polylinePoint(route, progress) : { x: actor.x, y: actor.y }
-              const at = place({ x: spot.x, y: spot.y - 18 }, fit)
+              const at = place({ x: spot.x, y: spot.y - PERSON_LABEL_LIFT }, fit)
+              const hairLine = place({ x: spot.x, y: spot.y - PERSON_HAIR }, fit).top
               const room = rooms.find((item) => item.slug === actor.slug)
               const preview = hallDeptExpertPreviews(door).find((item) => item.id === actor.id)
               const label = shortName(actor.id, preview?.name ?? actor.slug)
               const preferLeft = room?.doorSide === 'e'
               const line = CHATTER[actor.slug]?.[chatterTick % (CHATTER[actor.slug]?.length ?? 1)] ?? ''
-              const idle = actor.lead && !walking && talking.has(actor.slug) && line ? placeBesideHead(at, label, wrapCn(line), preferLeft, fit) : null
+              const idle = actor.lead && !walking && talking.has(actor.slug) && line ? placeBesideHead(at, label, wrapCn(line), preferLeft, fit, hairLine) : null
               return (
                 <span key={actor.id}>
                   <Link
                     to={hallDeptHref(caseId, door)}
-                    className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border border-[#ead9c2] bg-[#fffaf3] px-1.5 text-[10px] font-semibold leading-4 text-[#5c4030] shadow-[0_1px_3px_rgba(90,60,30,0.12)]"
+                    className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border border-[#ead9c2] bg-[#fffaf3]/95 px-1 py-px text-[10px] font-medium leading-none text-[#5c4030]"
                     style={{ left: at.left, top: at.top }}
                     aria-label={`${label}，${door.label}`}
                     title={preview?.name ?? label}
@@ -414,7 +425,7 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
         {ready && walker && route && showPhrase && play
           ? (() => {
               const along = polylinePoint(route, progress)
-              const head = place({ x: along.x, y: along.y - 18 }, fit)
+              const head = place({ x: along.x, y: along.y - PERSON_LABEL_LIFT }, fit)
               const lines = wrapCn(play.phrase)
               const bubble = placeHandoffBubble(head, lines, fit)
               return (
@@ -441,8 +452,8 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
         {ready ? (
           <button
             type="button"
-            className="focus-ring absolute z-[5] -translate-x-1/2 rounded-full border border-[#ead9c2] bg-white px-1.5 text-[10px] font-semibold text-[#1f8f8a] shadow-[0_1px_3px_rgba(90,60,30,0.12)]"
-            style={place({ x: RECEPTIONIST.x, y: RECEPTIONIST.y - 18 }, fit)}
+            className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border border-[#ead9c2] bg-white px-1 py-px text-[10px] font-medium leading-none text-[#1f8f8a]"
+            style={place({ x: RECEPTIONIST.x, y: RECEPTIONIST.y - PERSON_LABEL_LIFT }, fit)}
             data-testid="hall-reception-room"
             onClick={() => document.getElementById('home-reception-line')?.focus()}
           >
