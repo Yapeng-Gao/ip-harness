@@ -100,7 +100,7 @@ export function HomePage() {
       ) : (
         <div className="flex min-h-0 flex-1 flex-col gap-2">
           <LobbyTaskBar />
-          <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[minmax(16rem,20rem)_minmax(0,1fr)_minmax(16rem,19rem)] lg:overflow-hidden">
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[minmax(13rem,16rem)_minmax(0,1.7fr)_minmax(14rem,17rem)] lg:overflow-hidden">
             <div className="min-h-0 space-y-2 lg:overflow-y-auto" data-hall-block="reception" data-testid="home-delegate-zone">
               <p className="px-0.5 text-[11px] font-semibold text-slate-500">分派</p>
               <div id="hall-reception">

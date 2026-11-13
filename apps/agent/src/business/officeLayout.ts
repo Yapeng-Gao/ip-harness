@@ -5,8 +5,9 @@
 import { HALL_DEPT_DOORS } from './hallDepts'
 import type { RoomLiveStatus } from './roomLiveStatus'
 
-export const OFFICE_W = 820
-export const OFFICE_H = 1080
+/** 像素网格。屏幕上按整数倍放大，image-rendering: pixelated。 */
+export const OFFICE_W = 200
+export const OFFICE_H = 280
 
 export type Pt = { x: number; y: number }
 
@@ -25,25 +26,25 @@ export type OfficeRoom = {
   board: { x: number; y: number; w: number; h: number }
 }
 
-const LEFT_X = 18
-const LEFT_W = 292
-const CORRIDOR_X = 310
-const CORRIDOR_W = 200
-const RIGHT_X = 510
-const RIGHT_W = 292
-const ROW_Y = 18
-const ROW_H = 230
-const LOBBY_Y = 938
+const LEFT_X = 2
+const LEFT_W = 84
+const CORRIDOR_X = 86
+const CORRIDOR_W = 28
+const RIGHT_X = 114
+const RIGHT_W = 84
+const ROW_Y = 2
+const ROW_H = 58
+const LOBBY_Y = 234
 
 export const CORRIDOR_TOP = CORRIDOR_X
 export const CORRIDOR_BOT = CORRIDOR_X + CORRIDOR_W
 export const SOUTH_Y = LOBBY_Y
 export const LANE_X = CORRIDOR_X + CORRIDOR_W / 2
 
-export const BUILDING = { x: LEFT_X, y: ROW_Y, w: RIGHT_X + RIGHT_W - LEFT_X, h: 1044 }
+export const BUILDING = { x: LEFT_X, y: ROW_Y, w: RIGHT_X + RIGHT_W - LEFT_X, h: OFFICE_H - 4 }
 
-export const RECEPTIONIST: Pt = { x: LANE_X, y: 1004 }
-export const RECEPTION_DESK = { x: LANE_X - 46, y: 968, w: 92, h: 32 }
+export const RECEPTIONIST: Pt = { x: LANE_X, y: 266 }
+export const RECEPTION_DESK = { x: LANE_X - 22, y: 248, w: 44, h: 12 }
 
 const ORDER = ['intake', 'mining', 'draft', 'annuity', 'inspire', 'disclosure', 'oa', 'monetize']
 
@@ -58,21 +59,23 @@ export function officeRooms(): OfficeRoom[] {
     const y = ROW_Y + row * ROW_H
     const h = ROW_H
     const door = left
-      ? { x: x + w - 28, y: y + h / 2 }
-      : { x: x + 28, y: y + h / 2 }
+      ? { x: x + w - 1, y: y + Math.round(h / 2) }
+      : { x: x + 1, y: y + Math.round(h / 2) }
     const doorOut = { x: LANE_X, y: door.y }
     const seats = left
       ? [
-          { x: x + 108, y: y + 132 },
-          { x: x + 108, y: y + 196 },
-          { x: x + 200, y: y + 164 },
+          { x: x + 26, y: y + 46 },
+          { x: x + 68, y: y + 36 },
+          { x: x + 60, y: y + 54 },
         ]
       : [
-          { x: x + w - 108, y: y + 132 },
-          { x: x + w - 108, y: y + 196 },
-          { x: x + w - 200, y: y + 164 },
+          { x: x + w - 26, y: y + 46 },
+          { x: x + w - 68, y: y + 36 },
+          { x: x + w - 60, y: y + 54 },
         ]
-    const board = { x: x + 16, y: y + 14, w: 132, h: 40 }
+    const board = left
+      ? { x: x + 6, y: y + 16, w: 26, h: 14 }
+      : { x: x + w - 32, y: y + 16, w: 26, h: 14 }
     return {
       slug: meta.slug,
       label: meta.label.replace(/部$/, ''),
@@ -134,6 +137,17 @@ export function polylinePoint(points: Pt[], t: number): Pt {
     remain -= len
   }
   return points[points.length - 1]!
+}
+
+export const SIGN: Record<string, string> = {
+  intake: '立项',
+  inspire: '激发',
+  mining: '挖掘',
+  disclosure: '交底',
+  draft: '申请',
+  oa: '答复',
+  annuity: '维护',
+  monetize: '复盘',
 }
 
 export function boardCopy(status: RoomLiveStatus): [string, string] {
