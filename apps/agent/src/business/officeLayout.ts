@@ -43,8 +43,8 @@ export const LANE_X = CORRIDOR_X + CORRIDOR_W / 2
 
 export const BUILDING = { x: LEFT_X, y: ROW_Y, w: RIGHT_X + RIGHT_W - LEFT_X, h: OFFICE_H - 4 }
 
-export const RECEPTIONIST: Pt = { x: LANE_X, y: 266 }
-export const RECEPTION_DESK = { x: LANE_X - 22, y: 248, w: 44, h: 12 }
+export const RECEPTIONIST: Pt = { x: LANE_X, y: 248 }
+export const RECEPTION_DESK = { x: 28, y: 256, w: 144, h: 10 }
 
 const ORDER = ['intake', 'mining', 'draft', 'annuity', 'inspire', 'disclosure', 'oa', 'monetize']
 

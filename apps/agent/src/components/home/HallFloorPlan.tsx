@@ -27,7 +27,7 @@ import {
   type OfficeRoom,
   type Pt,
 } from '../../business/officeLayout'
-import { OfficeScene, PERSON_LABEL_LIFT, type OfficeActor } from './officeIllustration'
+import { OfficeScene, PERSON_LABEL_LIFT, roomIconBox, type OfficeActor } from './officeIllustration'
 
 function playableHandoff(events: CompanyActivityEvent[], openedAt: number) {
   const hit = events.find((event) => event.handoff)
@@ -143,10 +143,10 @@ function placeBesideHead(
   const box = bubbleBox(lines)
   const margin = 6
   const bounds = { left: fit.x + margin, top: fit.y + margin, w: fit.w - margin * 2, h: fit.h - margin * 2 }
-  const above = { left: name.left + name.w / 2 - box.w / 2, top: name.top - box.h - 4, w: box.w, h: box.h }
   const left = { left: name.left - box.w - 6, top: name.top - 2, w: box.w, h: box.h }
   const right = { left: name.left + name.w + 6, top: name.top - 2, w: box.w, h: box.h }
-  const candidates = preferLeft ? [above, left, right] : [above, right, left]
+  const above = { left: name.left + name.w / 2 - box.w / 2, top: name.top - box.h - 4, w: box.w, h: box.h }
+  const candidates = preferLeft ? [left, right, above] : [right, left, above]
   for (const candidate of candidates) {
     const cleared = clearOf(candidate, [...blockers, name], bounds)
     if (!hit(cleared, name) && !blockers.some((item) => hit(cleared, item))) {
@@ -334,14 +334,18 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
   if (ready) {
     const bounds = { left: fit.x + 4, top: fit.y + 4, w: fit.w - 8, h: fit.h - 8 }
     for (const room of rooms) {
-      const signAt = place({ x: room.x + room.w / 2, y: room.y + 5 }, fit)
+      const signAt = place({ x: room.x + 6, y: room.y + 4 }, fit)
       const signText = SIGN[room.slug] ?? room.label
-      const signW = signText.length * 13 + 16
-      fixedBlocks.push({ left: signAt.left - signW / 2, top: signAt.top - 11, w: signW, h: 22 })
-      const badgeAt = place({ x: room.x + room.w - 3, y: room.y + 7 }, fit)
+      const signW = signText.length * 13 + 12
+      fixedBlocks.push({ left: signAt.left, top: signAt.top, w: signW, h: 20 })
+      const badgeAt = place({ x: room.x + room.w - 5, y: room.y + 4 }, fit)
       const status = statusBySlug[room.slug] ?? '待机'
       const badgeW = status.length * 11 + 14
       fixedBlocks.push({ left: badgeAt.left - badgeW, top: badgeAt.top, w: badgeW, h: 18 })
+      const prop = roomIconBox(room)
+      const propOrigin = place({ x: prop.x, y: prop.y }, fit)
+      const propFar = place({ x: prop.x + prop.w, y: prop.y + prop.h }, fit)
+      fixedBlocks.push({ left: propOrigin.left, top: propOrigin.top, w: propFar.left - propOrigin.left, h: propFar.top - propOrigin.top })
     }
     const taken = [...fixedBlocks]
     for (const actor of [...cast].sort((a, b) => b.x - a.x)) {
@@ -393,8 +397,8 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               const origin = place({ x: room.x, y: room.y }, fit)
               const far = place({ x: room.x + room.w, y: room.y + room.h }, fit)
               const status = statusBySlug[room.slug] ?? '待机'
-              const sign = place({ x: room.x + room.w / 2, y: room.y + 5 }, fit)
-              const badge = place({ x: room.x + room.w - 3, y: room.y + 7 }, fit)
+              const sign = place({ x: room.x + 6, y: room.y + 4 }, fit)
+              const badge = place({ x: room.x + room.w - 5, y: room.y + 4 }, fit)
               const count = countByDept[door.deptId] ?? 0
               return (
                 <div key={room.slug}>
@@ -407,7 +411,7 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                     aria-label={`${door.label}，${status}`}
                   />
                   <span
-                    className="pointer-events-none absolute z-[4] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-md border border-slate-200 bg-white px-1.5 text-[12px] font-semibold leading-5 text-slate-900 shadow-[var(--shadow-rest)]"
+                    className="pointer-events-none absolute z-[4] whitespace-nowrap rounded-md border border-slate-200 bg-white px-1.5 text-[12px] font-semibold leading-5 text-slate-900 shadow-[var(--shadow-rest)]"
                     style={{ left: sign.left, top: sign.top }}
                   >
                     {SIGN[room.slug] ?? room.label}
