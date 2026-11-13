@@ -16,6 +16,7 @@ import {
   CHATTER,
   OFFICE_H,
   OFFICE_W,
+  SOUTH_Y,
   hairFor,
   handoffWaypoints,
   officeRooms,
@@ -26,7 +27,7 @@ import {
   type OfficeRoom,
   type Pt,
 } from '../../business/officeLayout'
-import { OfficeScene, PERSON_HAIR, PERSON_LABEL_LIFT, roomIconBox, type OfficeActor } from './officeIllustration'
+import { OfficeScene, PERSON_HAIR, PERSON_LABEL_LIFT, furnitureBlocks, seatPlan, type OfficeActor } from './officeIllustration'
 
 function playableHandoff(events: CompanyActivityEvent[], openedAt: number) {
   const hit = events.find((event) => event.handoff)
@@ -100,7 +101,7 @@ function bubbleBox(lines: string[]) {
 type CssBox = { left: number; top: number; w: number; h: number }
 
 function hit(a: CssBox, b: CssBox) {
-  return a.left < b.left + b.w + 3 && a.left + a.w + 3 > b.left && a.top < b.top + b.h + 2 && a.top + a.h + 2 > b.top
+  return a.left < b.left + b.w + 8 && a.left + a.w + 8 > b.left && a.top < b.top + b.h + 6 && a.top + a.h + 6 > b.top
 }
 
 function clampBox(box: CssBox, bounds: CssBox): CssBox {
@@ -168,10 +169,11 @@ function placeHandoffBubble(
   const box = bubbleBox(lines)
   const gap = 6
   const margin = 6
+  const nameHalf = 22
   const candidates = [
-    { left: head.left - box.w - gap, top: head.top - box.h },
-    { left: head.left - box.w / 2, top: head.top - box.h - 16 },
-    { left: head.left + 28, top: head.top - box.h },
+    { left: head.left - nameHalf - box.w - gap, top: head.top - box.h },
+    { left: head.left - box.w / 2, top: head.top - box.h - 22 },
+    { left: head.left + nameHalf + gap, top: head.top - box.h },
   ]
   const bounds = { left: fit.x + margin, top: fit.y + margin, w: fit.w - margin * 2, h: fit.h - margin * 2 }
   for (const candidate of candidates) {
@@ -180,7 +182,7 @@ function placeHandoffBubble(
       return { ...clamped, tailRight: clamped.left + clamped.w / 2 <= head.left }
     }
   }
-  const fallback = clampBox({ ...candidates[0]!, w: box.w, h: box.h }, bounds)
+  const fallback = clampBox({ left: head.left - box.w / 2, top: head.top - box.h - 22, w: box.w, h: box.h }, bounds)
   return { ...fallback, tailRight: fallback.left + fallback.w / 2 <= head.left }
 }
 
@@ -197,28 +199,11 @@ function actorsFor(room: OfficeRoom): OfficeActor[] {
     room.slug === 'inspire'
       ? ['board', 'board', 'side']
       : room.slug === 'disclosure'
-        ? ['desk', 'board', 'side']
-        : ['desk', 'board', 'side']
-  const foot = room.y
-  const spots =
-    previews.length === 1
-      ? [
-          {
-            x: room.slug === 'annuity' ? room.x + 26 : room.slug === 'inspire' ? room.x + room.w - 22 : room.doorSide === 'e' ? room.x + 50 : room.x + room.w - 32,
-            y: foot + 52,
-          },
-        ]
-      : room.doorSide === 'e'
-        ? [
-            { x: room.x + 26, y: foot + 56 },
-            { x: room.x + 54, y: foot + 47 },
-            { x: room.x + 38, y: foot + 51 },
-          ].slice(0, previews.length)
-        : [
-            { x: room.x + room.w - 32, y: foot + 56 },
-            { x: room.x + 32, y: foot + 47 },
-            { x: room.x + 48, y: foot + 51 },
-          ].slice(0, previews.length)
+        ? ['desk', 'desk', 'desk']
+        : room.slug === 'draft'
+          ? ['desk', 'desk', 'desk']
+          : ['desk', 'board', 'side']
+  const spots = seatPlan(room).slice(0, previews.length)
   return previews.map((preview, index) => ({
     id: preview.id,
     slug: room.slug,
@@ -343,10 +328,11 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
       const status = statusBySlug[room.slug] ?? '待机'
       const badgeW = status.length * 11 + 14
       fixedBlocks.push({ left: badgeAt.left - badgeW, top: badgeAt.top, w: badgeW, h: 18 })
-      const prop = roomIconBox(room)
-      const propOrigin = place({ x: prop.x, y: prop.y }, fit)
-      const propFar = place({ x: prop.x + prop.w, y: prop.y + prop.h }, fit)
-      fixedBlocks.push({ left: propOrigin.left, top: propOrigin.top, w: propFar.left - propOrigin.left, h: propFar.top - propOrigin.top })
+      for (const piece of furnitureBlocks(room)) {
+        const propOrigin = place({ x: piece.x, y: piece.y }, fit)
+        const propFar = place({ x: piece.x + piece.w, y: piece.y + piece.h }, fit)
+        fixedBlocks.push({ left: propOrigin.left, top: propOrigin.top, w: propFar.left - propOrigin.left, h: propFar.top - propOrigin.top })
+      }
     }
     const taken = [...fixedBlocks]
     for (const actor of [...cast].sort((a, b) => b.x - a.x)) {
@@ -515,6 +501,14 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               )
             })
           : null}
+        {ready ? (
+          <span
+            className="pointer-events-none absolute z-[4] -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold tracking-wide text-slate-400"
+            style={place({ x: 22, y: SOUTH_Y + 20 }, fit)}
+          >
+            Entrance
+          </span>
+        ) : null}
         {ready && walker && route && showPhrase && play
           ? (() => {
               const along = polylinePoint(route, progress)
