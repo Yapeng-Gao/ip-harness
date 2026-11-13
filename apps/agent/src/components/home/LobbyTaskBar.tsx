@@ -31,7 +31,6 @@ export function LobbyTaskBar() {
   return (
     <div data-testid="lobby-task-bar">
       <StagePipelineBar
-        tone="warm"
         index={pipelineIndexFromStage(focus?.stageId ?? 'prepare', !!focus?.pending)}
         pending={!!focus?.pending}
         done={false}
@@ -63,23 +62,23 @@ export function LobbyDraftPane() {
 
   return (
     <section
-      className="rounded-2xl border border-[#eadcc8] bg-[#fffaf3] p-3 shadow-[0_8px_24px_rgba(90,60,30,0.08)]"
+      className="rounded-[var(--radius-lg)] border border-slate-200 bg-white p-3 shadow-[var(--shadow-rest)]"
       data-testid="lobby-draft-pane"
       data-stream-complete={stream.complete ? '1' : '0'}
     >
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-[12px] font-semibold text-[#5c4030]">正在写</h2>
-        <span className="text-[10px] text-[#a68462]">
+        <h2 className="text-[12px] font-semibold text-slate-800">正在写</h2>
+        <span className="text-[10px] text-slate-400">
           {stream.complete ? '这一段写完了' : '按行往下写'}
         </span>
       </div>
       <pre
-        className="mt-2 max-h-36 overflow-auto whitespace-pre-wrap font-sans text-[12px] leading-relaxed text-[#3d2c22]"
+        className="mt-2 max-h-36 overflow-auto whitespace-pre-wrap font-sans text-[12px] leading-relaxed text-slate-800"
         data-testid="lobby-draft-body"
       >
         {stream.text || '…'}
         {!stream.complete ? (
-          <span className="ml-0.5 text-[#2f8f8a]" aria-hidden>
+          <span className="ml-0.5 text-[#007aff]" aria-hidden>
             ▍
           </span>
         ) : null}

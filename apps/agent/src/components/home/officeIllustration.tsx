@@ -1,20 +1,17 @@
 /**
- * 大厅扁平插画。房间、家具、人物都是圆角矢量，和前台卡、动态共用同一套暖色。
+ * 大厅平面用应用自己的界面语言：白面板、细边、灰图标、青色点缀。
+ * 颜色只取自 src/index.css 的 surface / accent / status。
  */
 import type { RoomLiveStatus } from '../../business/roomLiveStatus'
 import {
   BUILDING,
-  CORRIDOR_TOP,
   CORRIDOR_BOT,
-  LANE_X,
+  CORRIDOR_TOP,
   OFFICE_H,
   OFFICE_W,
-  RECEPTIONIST,
   RECEPTION_DESK,
+  RECEPTIONIST,
   SOUTH_Y,
-  cutFor,
-  hairFor,
-  pantsFor,
   shirtFor,
   type OfficeRoom,
   type Pt,
@@ -35,308 +32,170 @@ export type OfficeActor = {
 
 type RoomPaint = OfficeRoom & { status: RoomLiveStatus }
 
-const PAPER = '#fffaf3'
-const WOOD_DARK = '#c4925a'
-const TEAL = '#7ec8c3'
+const SURFACE = '#ffffff'
+const CANVAS = '#f5f5f7'
+const BAND = '#f2f2f7'
+const LINE = '#e2e8f0'
+const INK = '#0f172a'
+const MUTED = '#64748b'
+const ACCENT = '#007aff'
+const ACCENT_SOFT = '#e8f2ff'
 
-/** 头发顶在脚点上方这么多单位（人物已按 0.8 缩过）。名牌底边再往上留一点空隙。 */
-export const PERSON_HAIR = 26
-export const PERSON_LABEL_LIFT = 30
+const AVATAR = ['#007aff', '#0f172a', '#64748b', '#059669', '#0066d6']
 
-const FLOOR: Record<string, string> = {
-  intake: '#f6e3c8',
-  inspire: '#f4ead8',
-  mining: '#f0d8b6',
-  disclosure: '#f8e0cc',
-  draft: '#f3e4cc',
-  oa: '#f6dcc8',
-  annuity: '#efe0cc',
-  monetize: '#f4e0d4',
-}
+/** 头顶到脚的高度。名牌底边再抬一点。 */
+export const PERSON_HAIR = 15
+export const PERSON_LABEL_LIFT = 18
 
-function dusk(hex: string): string {
-  const n = Number.parseInt(hex.slice(1), 16)
-  const ch = (shift: number) => Math.max(0, ((n >> shift) & 255) - 18).toString(16).padStart(2, '0')
-  return `#${ch(16)}${ch(8)}${ch(0)}`
-}
-
-export function FlatBust({ id, size = 28 }: { id: string; size?: number }) {
+function fillFor(id: string): string {
   const shirt = shirtFor(id)
-  const hair = hairFor(id)
-  const cut = cutFor(id)
+  const known = AVATAR.find((color) => color.toLowerCase() === shirt.toLowerCase())
+  if (known) return known
+  let h = 0
+  for (const ch of id) h = (h * 33 + ch.charCodeAt(0)) >>> 0
+  return AVATAR[h % AVATAR.length]!
+}
+
+export function AppAvatar({ id, size = 28 }: { id: string; size?: number }) {
+  const body = fillFor(id)
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden className="shrink-0">
-      <circle cx="16" cy="16" r="15" fill="#f8efe4" />
-      <ellipse cx="16" cy="27" rx="10" ry="7" fill={shirt} />
-      <path d="M11 24h10v2.2a5 5 0 0 1-10 0Z" fill="#fff6ea" />
-      <circle cx="16" cy="13.5" r="6.2" fill="#f4c7a8" />
-      <Hair cx={16} cy={12} cut={cut} color={hair} scale={1.7} />
-      <circle cx="13.8" cy="13.6" r="0.85" fill="#3d2b22" />
-      <circle cx="18.2" cy="13.6" r="0.85" fill="#3d2b22" />
-      <path d="M14.2 16.2q1.8 1.2 3.6 0" stroke="#e09a86" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+      <rect width="32" height="32" rx="10" fill="#f8fafc" />
+      <rect x="8" y="18" width="16" height="10" rx="5" fill={body} />
+      <circle cx="16" cy="13" r="6" fill="#f8fafc" stroke={LINE} strokeWidth="1" />
+      <path d="M11 12.5c.4-3 2-4.5 5-4.5s4.6 1.5 5 4.5" fill="#1e293b" />
+      <circle cx="14" cy="13.2" r="0.8" fill={INK} />
+      <circle cx="18" cy="13.2" r="0.8" fill={INK} />
     </svg>
-  )
-}
-
-function Hair({ cx, cy, cut, color, scale }: { cx: number; cy: number; cut: 0 | 1 | 2; color: string; scale: number }) {
-  if (cut === 1) {
-    return (
-      <path
-        d={`M${cx - 3.4 * scale} ${cy - 0.6 * scale} Q${cx - 0.4 * scale} ${cy - 3.8 * scale} ${cx + 3.6 * scale} ${cy - 1.4 * scale} L${cx + 2.4 * scale} ${cy - 0.2 * scale} Q${cx} ${cy - 1.2 * scale} ${cx - 3 * scale} ${cy - 0.2 * scale} Z`}
-        fill={color}
-      />
-    )
-  }
-  if (cut === 2) {
-    return <ellipse cx={cx} cy={cy - 1.6 * scale} rx={3.5 * scale} ry={2.2 * scale} fill={color} />
-  }
-  return (
-    <path
-      d={`M${cx - 3.6 * scale} ${cy - 0.4 * scale} Q${cx} ${cy - 4 * scale} ${cx + 3.6 * scale} ${cy - 0.4 * scale} L${cx + 3.1 * scale} ${cy + 0.2 * scale} Q${cx} ${cy - 0.8 * scale} ${cx - 3.1 * scale} ${cy + 0.2 * scale} Z`}
-      fill={color}
-    />
   )
 }
 
 function Person({
   x,
   y,
-  shirt,
-  hair,
-  pants,
-  cut,
+  id,
   frame,
   walking,
   reduced,
 }: {
   x: number
   y: number
-  shirt: string
-  hair: string
-  pants: string
-  cut: 0 | 1 | 2
+  id: string
   frame: number
   walking: boolean
   reduced: boolean
 }) {
-  const step = walking && !reduced ? (frame % 2 ? 1.3 : -1.3) : 0
+  const body = fillFor(id)
+  const step = walking && !reduced ? (frame % 2 ? 0.8 : -0.8) : 0
   return (
-    <g transform={`translate(${x} ${y}) scale(0.8)`}>
-      <ellipse cx="0" cy="0.7" rx="6.4" ry="1.15" fill="#e4c9a6" />
+    <g transform={`translate(${x} ${y})`}>
+      <ellipse cx="0" cy="0.5" rx="4.2" ry="0.7" fill="#e2e8f0" />
       <g className={reduced || walking ? undefined : 'office-idle'}>
-        <rect x={-4.1} y={-12 + step} width="3.1" height="12.2" rx="1.4" fill={pants} />
-        <rect x={1} y={-12 - step} width="3.1" height="12.2" rx="1.4" fill={pants} />
-        <rect x="-5.6" y="-22" width="11.2" height="11" rx="3" fill={shirt} />
-        <rect x="-2.6" y="-21.2" width="5.2" height="1.7" rx="0.8" fill="#fff6ea" />
-        <rect x="-6.6" y="-19.2" width="2.1" height="5.4" rx="1" fill="#f4c7a8" />
-        <rect x="4.5" y="-19.2" width="2.1" height="5.4" rx="1" fill="#f4c7a8" />
-        <circle cx="0" cy="-25.2" r="5" fill="#f4c7a8" />
-        <Hair cx={0} cy={-27.4} cut={cut} color={hair} scale={1.2} />
-        <circle cx="-1.7" cy="-25.3" r="0.62" fill="#3d2b22" />
-        <circle cx="1.7" cy="-25.3" r="0.62" fill="#3d2b22" />
-        <path d="M-1.6 -23.2 Q0 -22.2 1.6 -23.2" stroke="#e08a78" strokeWidth="0.5" fill="none" strokeLinecap="round" />
+        <rect x={-1.7} y={-6.2 + step} width="1.5" height="6" rx="0.7" fill={MUTED} />
+        <rect x={0.3} y={-6.2 - step} width="1.5" height="6" rx="0.7" fill={MUTED} />
+        <rect x="-3.2" y="-10.4" width="6.4" height="5.2" rx="2" fill={body} />
+        <circle cx="0" cy="-13.2" r="2.7" fill="#f8fafc" stroke={LINE} strokeWidth="0.4" />
+        <path d="M-2.2 -14.2c.3-1.6 1.2-2.4 2.2-2.4s1.9.8 2.2 2.4" fill={INK} />
+        <circle cx="-0.8" cy="-13.1" r="0.32" fill={INK} />
+        <circle cx="0.8" cy="-13.1" r="0.32" fill={INK} />
       </g>
     </g>
   )
 }
 
 function Chair({ x, y }: { x: number; y: number }) {
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      <rect x="-6" y="-18" width="12" height="8" rx="2" fill="#8d5a3a" />
-      <rect x="-5" y="-17" width="10" height="5" rx="1.4" fill="#c4925a" />
-    </g>
-  )
+  return <rect x={x - 2.6} y={y - 12} width="5.2" height="4.2" rx="1.2" fill="#e2e8f0" />
 }
 
 function Desk({ x, y, glow }: { x: number; y: number; glow: string }) {
   return (
-    <g transform={`translate(${x} ${y})`} filter="url(#office-soft)">
-      <rect x="-8" y="-12" width="16" height="13" rx="2" fill={WOOD_DARK} />
-      <rect x="-7.2" y="-11.2" width="14.4" height="2" rx="0.6" fill="#e7b578" />
-      <rect x="-3.6" y="-16.4" width="7.2" height="4.4" rx="0.8" fill="#1d3344" />
-      <rect x="-2.8" y="-15.6" width="5.6" height="2.6" rx="0.4" fill={glow} />
-    </g>
-  )
-}
-
-function WideTable({ x, y }: { x: number; y: number }) {
-  return (
-    <g transform={`translate(${x} ${y})`} filter="url(#office-soft)">
-      <rect x="-11" y="-11" width="22" height="12" rx="2.2" fill={WOOD_DARK} />
-      <rect x="-10" y="-10.2" width="20" height="2" rx="0.7" fill="#e7b578" />
-    </g>
-  )
-}
-
-function Plant({ x, y }: { x: number; y: number }) {
-  return (
     <g transform={`translate(${x} ${y})`}>
-      <rect x="-2.2" y="1.2" width="4.4" height="3.2" rx="0.8" fill="#d06a3a" />
-      <ellipse cx="-1.6" cy="-0.4" rx="2.2" ry="1.8" fill="#1d6b38" />
-      <ellipse cx="1.8" cy="-0.8" rx="2.2" ry="1.8" fill="#2f9d55" />
-      <ellipse cx="0" cy="-2" rx="2" ry="2.2" fill="#3cb56a" />
+      <rect x="-7.2" y="-7.2" width="14.4" height="8" rx="1.6" fill={SURFACE} stroke={LINE} strokeWidth="0.6" />
+      <rect x="-2.4" y="-10.2" width="4.8" height="3.2" rx="0.6" fill={INK} />
+      <rect x="-1.8" y="-9.6" width="3.6" height="2" rx="0.3" fill={glow} />
     </g>
   )
 }
 
-function Stickies({ x, y }: { x: number; y: number }) {
-  const colors = ['#f2c14e', '#e07a5f', '#7dcea0', '#7ec8e3', '#f4a3c8']
-  return (
-    <g>
-      {colors.map((color, i) => {
-        const col = i % 3
-        const row = Math.floor(i / 3)
-        return (
-          <rect
-            key={color}
-            x={x + col * 8}
-            y={y + row * 7}
-            width="6.4"
-            height="5.6"
-            rx="0.8"
-            fill={color}
-            transform={`rotate(${i % 2 ? -4 : 3} ${x + col * 8 + 3} ${y + row * 7 + 2})`}
-          />
-        )
-      })}
-    </g>
-  )
-}
-
-function furnish(room: RoomPaint) {
+function icon(room: RoomPaint) {
   const x = room.x
   const y = room.y
+  const ink = MUTED
   if (room.slug === 'intake') {
     return (
-      <g>
-        <rect x={x + 22} y={y + 16} width="28" height="12" rx="1.4" fill="#243044" />
-        <rect x={x + 25} y={y + 18} width="22" height="7" rx="0.8" fill="#9fd4ea" />
-        <ellipse cx={x + 36} cy={y + 34} rx="16" ry="7" fill="#e2b04a" opacity="0.85" />
+      <g stroke={ink} fill="none" strokeWidth="0.7">
+        <rect x={x + 10} y={y + 16} width="22" height="12" rx="2" fill={ACCENT_SOFT} />
+        <rect x={x + 16} y={y + 19} width="10" height="6" rx="1" fill={INK} stroke="none" />
       </g>
     )
   }
   if (room.slug === 'inspire') {
     return (
       <g>
-        <rect x={x + 8} y={y + 13} width="40" height="20" rx="2" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.6" />
-        <rect x={x + 8} y={y + 13} width="40" height="2.2" rx="1" fill={WOOD_DARK} />
-        <Stickies x={x + 12} y={y + 17} />
-        <ellipse cx={x + 16} cy={y + 40} rx="7" ry="4.2" fill="#3d8f6e" />
-        <ellipse cx={x + 14} cy={y + 39} rx="2.4" ry="1.2" fill="#8fd0ae" />
-        <ellipse cx={x + 32} cy={y + 42} rx="7" ry="4.2" fill="#e07a5f" />
-        <ellipse cx={x + 30} cy={y + 41} rx="2.4" ry="1.2" fill="#f4b5a4" />
-        <rect x={x + 38} y={y + 32} width="1.4" height="12" rx="0.6" fill="#c4a574" />
-        <ellipse cx={x + 38.7} cy={y + 31} rx="3.2" ry="1.6" fill="#f2c14e" />
+        <rect x={x + 8} y={y + 14} width="28" height="16" rx="2" fill={SURFACE} stroke={LINE} strokeWidth="0.6" />
+        {['#007aff', '#64748b', '#059669', '#d97706'].map((color, i) => (
+          <rect key={color} x={x + 11 + (i % 2) * 8} y={y + 17 + Math.floor(i / 2) * 6} width="6" height="4" rx="0.8" fill={color} opacity="0.85" />
+        ))}
       </g>
     )
   }
   if (room.slug === 'mining') {
     return (
-      <g>
-        <rect x={x + 8} y={y + 14} width="10" height="22" rx="1.2" fill="#8d5a3a" />
-        <rect x={x + 20} y={y + 14} width="10" height="22" rx="1.2" fill="#a56b42" />
-        {['#c4493a', '#2f6f9f', '#e0b04a', '#2f8f4e', '#f4efe4'].map((color, i) => (
-          <rect key={color} x={x + 9 + (i % 3) * 3} y={y + 16 + Math.floor(i / 3) * 9} width="2.2" height="7" rx="0.4" fill={color} />
-        ))}
-        <rect x={x + 34} y={y + 38} width="8" height="7" rx="1" fill="#d7d2cb" />
-        <rect x={x + 8} y={y + 38} width="8" height="8" rx="1" fill="#c4b8a8" />
+      <g stroke={ink} strokeWidth="0.7" fill="none">
+        <rect x={x + 8} y={y + 14} width="16" height="18" rx="1.5" />
+        <line x1={x + 10} y1={y + 19} x2={x + 22} y2={y + 19} />
+        <line x1={x + 10} y1={y + 23} x2={x + 22} y2={y + 23} />
+        <line x1={x + 10} y1={y + 27} x2={x + 22} y2={y + 27} />
       </g>
     )
   }
   if (room.slug === 'disclosure') {
-    return (
-      <g>
-        <ellipse cx={x + 40} cy={y + 34} rx="16" ry="8" fill="#e09070" opacity="0.8" />
-      </g>
-    )
+    return <rect x={x + 28} y={y + 16} width="22" height="8" rx="2" fill={SURFACE} stroke={LINE} strokeWidth="0.6" />
   }
   if (room.slug === 'draft') {
     return (
       <g>
-        <rect x={x + 6} y={y + 16} width="11" height="14" rx="1" fill="#fff" stroke="#eadcc8" strokeWidth="0.5" />
-        <rect x={x + 9} y={y + 18} width="11" height="14" rx="1" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.5" />
-        <line x1={x + 11} y1={y + 22} x2={x + 18} y2={y + 22} stroke="#e7d3b8" strokeWidth="0.4" />
-        <line x1={x + 11} y1={y + 25} x2={x + 17} y2={y + 25} stroke="#e7d3b8" strokeWidth="0.4" />
-        <rect x={x + 64} y={y + 30} width="14" height="11" rx="1.4" fill="#d7d2cb" />
-        <rect x={x + 66} y={y + 27} width="10" height="4" rx="0.6" fill="#fff" />
-        <circle cx={x + 74} cy={y + 36} r="1.2" fill="#3dcea0" />
+        <rect x={x + 8} y={y + 14} width="10" height="13" rx="1" fill={SURFACE} stroke={LINE} strokeWidth="0.5" />
+        <line x1={x + 10} y1={y + 18} x2={x + 16} y2={y + 18} stroke={LINE} strokeWidth="0.5" />
+        <line x1={x + 10} y1={y + 21} x2={x + 15} y2={y + 21} stroke={LINE} strokeWidth="0.5" />
+        <rect x={x + 62} y={y + 28} width="14" height="9" rx="1.4" fill={SURFACE} stroke={LINE} strokeWidth="0.6" />
+        <rect x={x + 64} y={y + 26} width="8" height="3" rx="0.4" fill={SURFACE} stroke={LINE} strokeWidth="0.4" />
+        <circle cx={x + 72} cy={y + 33} r="1" fill={ACCENT} />
       </g>
     )
   }
   if (room.slug === 'oa') {
     return (
       <g>
-        <rect x={x + 6} y={y + 20} width="16" height="12" rx="1.2" fill="#efe6d4" />
-        <rect x={x + 8} y={y + 18} width="16" height="11" rx="1" fill="#fff" stroke="#eadcc8" strokeWidth="0.45" />
-        <circle cx={x + 20} cy={y + 23} r="2" fill="#e85d4c" />
-        <rect x={x + 10} y={y + 28} width="10" height="1" rx="0.3" fill="#eadcc8" />
+        <rect x={x + 8} y={y + 18} width="16" height="11" rx="1.2" fill={SURFACE} stroke={LINE} strokeWidth="0.6" />
+        <circle cx={x + 18} cy={y + 23} r="1.6" fill="#e11d48" />
       </g>
     )
   }
   if (room.slug === 'annuity') {
     return (
       <g>
-        <rect x={x + 36} y={y + 14} width="38" height="22" rx="2" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.5" />
-        <rect x={x + 36} y={y + 14} width="38" height="4" rx="1" fill={WOOD_DARK} />
-        {Array.from({ length: 24 }, (_, i) => {
-          const col = i % 6
-          const row = Math.floor(i / 6)
-          const mark: Record<number, string> = { 1: '#e85d4c', 8: '#f2c14e', 14: '#2f6f9f', 17: '#3d8f6e', 22: '#e07a5f' }
-          return (
-            <rect
-              key={i}
-              x={x + 38.2 + col * 5.8}
-              y={y + 19.2 + row * 4}
-              width="4.2"
-              height="2.8"
-              rx="0.5"
-              fill={mark[i] ?? '#f3e6d4'}
-            />
-          )
-        })}
-        <rect x={x + 58} y={y + 38} width="8" height="12" rx="1" fill="#8d6e63" />
-        <rect x={x + 68} y={y + 40} width="8" height="10" rx="1" fill="#a1887f" />
+        <rect x={x + 34} y={y + 14} width="28" height="16" rx="2" fill={SURFACE} stroke={LINE} strokeWidth="0.6" />
+        {Array.from({ length: 12 }, (_, i) => (
+          <rect
+            key={i}
+            x={x + 37 + (i % 6) * 4}
+            y={y + 20 + Math.floor(i / 6) * 4}
+            width="2.4"
+            height="2.4"
+            rx="0.4"
+            fill={i === 2 || i === 9 ? ACCENT : '#e2e8f0'}
+          />
+        ))}
       </g>
     )
   }
   return (
     <g>
-      <rect x={x + 8} y={y + 14} width="40" height="22" rx="2" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.5" />
-      <line x1={x + 12} y1={y + 30} x2={x + 44} y2={y + 30} stroke="#eadcc8" strokeWidth="0.8" />
-      {[
-        [14, '#e85d4c'],
-        [8, '#f2c14e'],
-        [18, '#2f6f9f'],
-        [11, '#3d8f6e'],
-      ].map(([h, color], i) => (
-        <rect key={color as string} x={x + 13 + i * 8} y={y + 30 - Number(h)} width="5" height={Number(h)} rx="1" fill={String(color)} />
+      <rect x={x + 8} y={y + 16} width="26" height="14" rx="2" fill={SURFACE} stroke={LINE} strokeWidth="0.6" />
+      {[10, 6, 13, 8].map((h, i) => (
+        <rect key={h} x={x + 11 + i * 5.5} y={y + 27 - h} width="3.5" height={h} rx="0.6" fill={i % 2 ? ACCENT : MUTED} />
       ))}
-      <Plant x={x + 34} y={y + 42} />
-    </g>
-  )
-}
-
-function walls(room: OfficeRoom, hot: 'from' | 'to' | null) {
-  const { x, y, w, h, door, doorSide } = room
-  const gap = 8
-  const stroke = '#d7b48a'
-  const doorFill = hot === 'from' ? '#f2c14e' : hot === 'to' ? '#8ee7ea' : '#e7b578'
-  return (
-    <g>
-      {y > 4 ? <line x1={x} y1={y} x2={x + w} y2={y} stroke={stroke} strokeWidth="1.6" strokeLinecap="round" /> : null}
-      {doorSide === 'e' ? (
-        <>
-          <line x1={x + w} y1={y} x2={x + w} y2={door.y - gap} stroke={stroke} strokeWidth="1.6" />
-          <line x1={x + w} y1={door.y + gap} x2={x + w} y2={y + h} stroke={stroke} strokeWidth="1.6" />
-        </>
-      ) : (
-        <>
-          <line x1={x} y1={y} x2={x} y2={door.y - gap} stroke={stroke} strokeWidth="1.6" />
-          <line x1={x} y1={door.y + gap} x2={x} y2={y + h} stroke={stroke} strokeWidth="1.6" />
-        </>
-      )}
-      <rect x={door.x - 2.2} y={door.y - 5} width="4.4" height="10" rx="1.2" fill={doorFill} />
     </g>
   )
 }
@@ -364,67 +223,43 @@ export function OfficeScene({
 }) {
   const walker = actors.find((actor) => actor.id === walkerId)
   const along = walker && path ? polylinePoint(path, progress) : null
-  const glowFor = (slug: string) => (rooms.find((room) => room.slug === slug)?.status === '进行中' ? '#c9f6ff' : '#b7d7ea')
+  const glowFor = (slug: string) => (rooms.find((room) => room.slug === slug)?.status === '进行中' ? ACCENT : '#cbd5e1')
   return (
     <>
-      <defs>
-        <filter id="office-soft" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="0.5" stdDeviation="0.5" floodColor="#8a5a32" floodOpacity="0.22" />
-        </filter>
-      </defs>
-      {reduced ? null : (
-        <style>
-          {`@keyframes office-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-0.7px); } }
-            .office-idle { animation: office-idle 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+      <style>
+        {reduced
+          ? ''
+          : `@keyframes office-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-0.4px); } }
+            .office-idle { animation: office-idle 2.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
             @media (prefers-reduced-motion: reduce) { .office-idle { animation: none; } }`}
-        </style>
-      )}
-      <rect width={OFFICE_W} height={OFFICE_H} rx="8" fill="#f3e6d2" />
-      <rect x={BUILDING.x} y={BUILDING.y} width={BUILDING.w} height={BUILDING.h} rx="6" fill="#efe0c8" />
+      </style>
+      <rect width={OFFICE_W} height={OFFICE_H} rx="8" fill={CANVAS} />
+      <rect x={BUILDING.x} y={BUILDING.y} width={BUILDING.w} height={BUILDING.h} rx="6" fill={BAND} />
+      <rect x={CORRIDOR_TOP} y={4} width={CORRIDOR_BOT - CORRIDOR_TOP} height={SOUTH_Y - 4} fill="#eef0f3" />
       {rooms.map((room) => (
-        <rect
-          key={room.slug}
-          x={room.x + 0.6}
-          y={room.y + 0.6}
-          width={room.w - 1.2}
-          height={room.h - 1.2}
-          fill={room.thin ? dusk(FLOOR[room.slug] ?? '#f3e4cc') : FLOOR[room.slug]}
-        />
+        <g key={room.slug}>
+          <rect
+            x={room.x + 1.5}
+            y={room.y + 1.5}
+            width={room.w - 3}
+            height={room.h - 3}
+            rx="3"
+            fill={room.status === '进行中' ? '#f5f9ff' : SURFACE}
+            stroke={room.slug === fromSlug || room.slug === toSlug ? ACCENT : LINE}
+            strokeWidth={room.slug === fromSlug || room.slug === toSlug ? 1 : 0.6}
+          />
+          {icon(room)}
+        </g>
       ))}
-      <rect x={CORRIDOR_TOP} y={4} width={CORRIDOR_BOT - CORRIDOR_TOP} height={SOUTH_Y - 4} fill="#f0dcc0" />
-      {Array.from({ length: 28 }, (_, i) => (
-        <line
-          key={i}
-          x1={CORRIDOR_TOP + 1}
-          x2={CORRIDOR_BOT - 1}
-          y1={8 + i * 8}
-          y2={8 + i * 8}
-          stroke="#e4cba6"
-          strokeWidth="0.7"
-        />
-      ))}
-      <rect x={LANE_X - 7} y={8} width="14" height={SOUTH_Y - 18} rx="1.5" fill="#e7d0aa" />
-      <line x1={LANE_X} x2={LANE_X} y1={10} y2={SOUTH_Y - 12} stroke="#d9bc90" strokeWidth="0.45" />
-      <rect x={8} y={SOUTH_Y + 2} width={OFFICE_W - 16} height={OFFICE_H - SOUTH_Y - 8} rx="4" fill="#f6e3c8" />
-      {rooms.map((room) => (
-        <g key={`furn-${room.slug}`}>{furnish(room)}</g>
-      ))}
-      <g filter="url(#office-soft)">
-        <rect x={RECEPTION_DESK.x} y={RECEPTION_DESK.y} width={RECEPTION_DESK.w} height={RECEPTION_DESK.h} rx="2" fill={WOOD_DARK} />
-        <rect x={RECEPTION_DESK.x + 2} y={RECEPTION_DESK.y + 1.4} width={RECEPTION_DESK.w - 4} height="2" rx="1" fill="#e7b578" />
-      </g>
-      <rect x={16} y={252} width="28" height="12" rx="3" fill={TEAL} />
-      <rect x={18} y={254} width="10" height="6" rx="1.5" fill="#b7ebe4" />
-      <Plant x={18} y={244} />
-      <Plant x={168} y={250} />
-      <rect x={LANE_X - 10} y={270} width="20" height="6" rx="1.2" fill="#c47a3a" />
+      <rect x={RECEPTION_DESK.x} y={RECEPTION_DESK.y} width={RECEPTION_DESK.w} height={RECEPTION_DESK.h} rx="2" fill={SURFACE} stroke={LINE} strokeWidth="0.6" />
+      <rect x={18} y={252} width="26" height="10" rx="2" fill={SURFACE} stroke={LINE} strokeWidth="0.5" />
       {path && path.length > 1 ? (
         <polyline
           points={path.map((pt) => `${pt.x},${pt.y}`).join(' ')}
           fill="none"
-          stroke="#fffaf3"
-          strokeWidth="1.3"
-          strokeDasharray="1.4 2.2"
+          stroke={ACCENT}
+          strokeWidth="1.1"
+          strokeDasharray="2 2"
           strokeLinecap="round"
         />
       ) : null}
@@ -436,66 +271,35 @@ export function OfficeScene({
       {actors
         .filter((actor) => actor.id !== walkerId)
         .map((actor) => (
-          <Person
-            key={actor.id}
-            x={actor.x}
-            y={actor.y}
-            shirt={actor.shirt}
-            hair={actor.hair}
-            pants={actor.pants}
-            cut={cutFor(actor.id)}
-            frame={frame}
-            walking={false}
-            reduced={reduced}
-          />
+          <Person key={actor.id} x={actor.x} y={actor.y} id={actor.id} frame={frame} walking={false} reduced={reduced} />
         ))}
       {actors
-        .filter((actor) => actor.id !== walkerId && actor.role === 'desk')
+        .filter((actor) => actor.id !== walkerId && actor.role === 'desk' && actor.slug !== 'inspire')
         .map((actor) =>
           actor.slug === 'intake' || actor.slug === 'disclosure' ? (
-            <WideTable key={`table-${actor.id}`} x={actor.x} y={actor.y} />
-          ) : actor.slug === 'inspire' ? null : (
+            <rect key={`table-${actor.id}`} x={actor.x - 8} y={actor.y - 6} width="16" height="7" rx="1.6" fill={SURFACE} stroke={LINE} strokeWidth="0.6" />
+          ) : (
             <Desk key={`desk-${actor.id}`} x={actor.x} y={actor.y} glow={glowFor(actor.slug)} />
           ),
         )}
-      <Person
-        x={RECEPTIONIST.x}
-        y={RECEPTIONIST.y}
-        shirt={shirtFor('reception')}
-        hair={hairFor('reception')}
-        pants={pantsFor('reception')}
-        cut={cutFor('reception')}
-        frame={frame}
-        walking={false}
-        reduced={reduced}
-      />
+      <Person x={RECEPTIONIST.x} y={RECEPTIONIST.y} id="reception" frame={frame} walking={false} reduced={reduced} />
       {walker && along ? (
         <g>
-          <g transform={`translate(${along.x + 8} ${along.y - 12})`} filter="url(#office-soft)">
-            <rect x="-4.2" y="-5" width="8.4" height="7" rx="1" fill="#f2c14e" />
-            <rect x="-2.2" y="-6.4" width="3.6" height="2.2" rx="0.5" fill="#e07a5f" />
-            <line x1="-2.4" y1="-2.2" x2="2.4" y2="-2.2" stroke="#fff6dc" strokeWidth="0.5" />
-          </g>
-          <Person
-            x={along.x}
-            y={along.y}
-            shirt={walker.shirt}
-            hair={walker.hair}
-            pants={walker.pants}
-            cut={cutFor(walker.id)}
-            frame={frame}
-            walking
-            reduced={reduced}
-          />
+          <rect x={along.x + 4} y={along.y - 11} width="5" height="4" rx="0.6" fill={ACCENT_SOFT} stroke={ACCENT} strokeWidth="0.4" />
+          <Person x={along.x} y={along.y} id={walker.id} frame={frame} walking reduced={reduced} />
         </g>
       ) : null}
       {rooms.map((room) => (
-        <g key={`wall-${room.slug}`}>
-          {walls(room, room.slug === fromSlug ? 'from' : room.slug === toSlug ? 'to' : null)}
-        </g>
+        <rect
+          key={`door-${room.slug}`}
+          x={room.door.x - 1.5}
+          y={room.door.y - 3.5}
+          width="3"
+          height="7"
+          rx="0.8"
+          fill={room.slug === fromSlug ? '#d97706' : room.slug === toSlug ? ACCENT : '#cbd5e1'}
+        />
       ))}
-      <Plant x={LANE_X - 10} y={40} />
-      <Plant x={LANE_X + 8} y={150} />
     </>
   )
 }

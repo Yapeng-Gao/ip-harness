@@ -359,7 +359,7 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
 
   return (
     <section
-      className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-[#eadcc8] bg-[#f6ead8] shadow-[0_10px_28px_rgba(90,60,30,0.08)]"
+      className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[var(--radius-xl)] border border-slate-200 bg-[#f5f5f7] shadow-[var(--shadow-rest)]"
       data-testid="hall-floor-plan"
       aria-labelledby="home-eight-depts-title"
     >
@@ -407,18 +407,18 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                     aria-label={`${door.label}，${status}`}
                   />
                   <span
-                    className="pointer-events-none absolute z-[4] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-[#e2c4a0] bg-[#fff7ec] px-2 text-[12px] font-semibold leading-5 text-[#5c4030] shadow-[0_2px_6px_rgba(90,60,30,0.12)]"
+                    className="pointer-events-none absolute z-[4] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-md border border-slate-200 bg-white px-1.5 text-[12px] font-semibold leading-5 text-slate-900 shadow-[var(--shadow-rest)]"
                     style={{ left: sign.left, top: sign.top }}
                   >
                     {SIGN[room.slug] ?? room.label}
                   </span>
                   <span
-                    className={`pointer-events-none absolute z-[4] -translate-x-full whitespace-nowrap rounded-full border border-[#ead9c2] px-1.5 text-[11px] font-semibold leading-4 ${
+                    className={`pointer-events-none absolute z-[4] -translate-x-full whitespace-nowrap rounded-full border px-1.5 text-[11px] font-medium leading-4 ${
                       status === '待确认'
-                        ? 'bg-[#f2c14e] text-[#2a2118]'
+                        ? 'border-[#fde68a] bg-[#fffbeb] text-[#d97706]'
                         : status === '进行中'
-                          ? 'bg-[#d9fbff] text-[#123044]'
-                          : 'bg-[#fff8e8] text-[#6b5436]'
+                          ? 'border-[#bfdbfe] bg-[#e8f2ff] text-[#007aff]'
+                          : 'border-slate-200 bg-white text-slate-500'
                     }`}
                     style={{ left: badge.left, top: badge.top }}
                     data-testid={`hall-room-status-${room.slug}`}
@@ -465,7 +465,7 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                 <span key={actor.id}>
                   <Link
                     to={hallDeptHref(caseId, door)}
-                    className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border border-[#ead9c2] bg-[#fffaf3]/95 px-1 py-px text-[10px] font-medium leading-none text-[#5c4030]"
+                    className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border border-slate-200 bg-white px-1 py-px text-[10px] font-medium leading-none text-slate-700 shadow-[var(--shadow-rest)]"
                     style={{ left: at.left, top: at.top }}
                     aria-label={`${label}，${door.label}`}
                     title={preview?.name ?? label}
@@ -477,13 +477,13 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                   </Link>
                   {idle ? (
                     <span
-                      className="pointer-events-none absolute z-[6] rounded-xl border border-[#ead9c2] bg-white px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#5c4030] shadow-[0_4px_12px_rgba(90,60,30,0.1)]"
+                      className="pointer-events-none absolute z-[6] rounded-lg border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] font-medium leading-4 text-slate-800 shadow-[var(--shadow-elevated)]"
                       style={{ left: idle.left, top: idle.top, width: idle.w }}
                       data-testid={`hall-idle-bubble-${actor.slug}`}
                       data-side={idle.tail === 'left' ? 'right' : 'left'}
                     >
                       <span
-                        className={`absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-[#ead9c2] bg-white ${
+                        className={`absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-slate-200 bg-white ${
                           idle.tail === 'right' ? '-right-1 border-b border-r' : '-left-1 border-b border-l'
                         }`}
                       />
@@ -510,13 +510,13 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               ])
               return (
                 <div
-                  className="pointer-events-none absolute z-[6] rounded-xl border border-[#ead9c2] bg-white px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-[#5c4030] shadow-[0_4px_12px_rgba(90,60,30,0.1)]"
+                  className="pointer-events-none absolute z-[6] rounded-lg border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-slate-800 shadow-[var(--shadow-elevated)]"
                   style={{ left: bubble.left, top: bubble.top, width: bubble.w }}
                   data-testid="hall-handoff-bubble"
                   role="status"
                 >
                   <span
-                    className={`absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-[#ead9c2] bg-white ${
+                    className={`absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-slate-200 bg-white ${
                       bubble.tailRight ? '-right-1 border-b border-r' : '-left-1 border-b border-l'
                     }`}
                   />
@@ -532,16 +532,16 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
         {ready ? (
           <button
             type="button"
-            className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border border-[#ead9c2] bg-white px-1 py-px text-[10px] font-medium leading-none text-[#1f8f8a]"
+            className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border border-slate-200 bg-white px-1 py-px text-[10px] font-medium leading-none text-slate-700 shadow-[var(--shadow-rest)]"
             style={place({ x: RECEPTIONIST.x, y: RECEPTIONIST.y - PERSON_LABEL_LIFT }, fit)}
             data-testid="hall-reception-room"
             onClick={() => document.getElementById('home-reception-line')?.focus()}
           >
             小林
-            <span className="pointer-events-none absolute left-full top-0 ml-1 w-max max-w-[9rem] rounded-xl border border-[#ead9c2] bg-white px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#5c4030] shadow-[0_4px_12px_rgba(90,60,30,0.1)]">
+            <span className="pointer-events-none absolute left-full top-0 ml-1 w-max max-w-[9rem] rounded-lg border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] font-medium leading-4 text-slate-800 shadow-[var(--shadow-elevated)]">
               {play ? '案子正在送去下一间。' : greet}
             </span>
-            <span className="pointer-events-none absolute bottom-full left-1/2 mb-5 -translate-x-1/2 rounded-md bg-[#c47a3a] px-1 text-[10px] font-bold tracking-wide text-white">
+            <span className="pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 text-[10px] font-semibold tracking-wide text-slate-400">
               NT
             </span>
           </button>

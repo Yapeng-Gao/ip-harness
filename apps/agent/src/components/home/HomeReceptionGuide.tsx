@@ -14,7 +14,7 @@ import {
   receptionExamplesForPersona,
   weakUpdatePersonaFromDeptSlug,
 } from '../../business/userPersona'
-import { FlatBust } from './officeIllustration'
+import { AppAvatar } from './officeIllustration'
 
 import { assessReceptionIntake, RECEPTION_GOALS, type ReceptionGoal, type ReceptionIntake } from '../../business/receptionIntake'
 
@@ -169,15 +169,15 @@ export function HomeReceptionGuide({
       <div className="mb-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <h2
           id="home-reception-title"
-          className="text-[12px] font-semibold text-[#5c4030]"
+          className="text-[12px] font-semibold text-slate-900"
         >
           前台
         </h2>
-        <span className="text-[10px] text-[#8a6a4a]">弄清去向</span>
+        <span className="text-[10px] text-slate-500">弄清去向</span>
         {(
           <Link
             to="/agent/cases/new"
-            className="btn-press focus-ring ml-auto inline-flex items-center gap-1 rounded-full border border-[#ead9c2] bg-[#fffaf3] px-2 py-0.5 text-[10px] font-medium text-[#5c4030]"
+            className="btn-press focus-ring ml-auto inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700"
             data-testid="home-reception-start"
           >
             先开案子
@@ -186,7 +186,7 @@ export function HomeReceptionGuide({
       </div>
 
       <div
-        className="rounded-2xl border border-[#eadcc8] bg-[#fffaf3] p-2.5 shadow-[0_8px_24px_rgba(90,60,30,0.08)]"
+        className="rounded-[var(--radius-lg)] border border-slate-200 bg-white p-2.5 shadow-[var(--shadow-rest)]"
         data-testid="home-reception-card"
       >
         <div
@@ -194,24 +194,24 @@ export function HomeReceptionGuide({
           data-testid="home-reception-persona"
         >
           <div
-            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#f6ead8]"
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-[#f8fafc]"
             data-testid="home-reception-stage"
           >
-            <FlatBust id="reception" size={40} />
+            <AppAvatar id="reception" size={40} />
           </div>
           <div className="flex min-w-0 flex-1 flex-col justify-center py-0.5">
-            <p className="text-[13px] leading-snug text-[#6b5436]">
+            <p className="text-[13px] leading-snug text-slate-600">
               <span
-                className="font-semibold text-[#3d2c22]"
+                className="font-semibold text-slate-900"
                 data-testid="home-reception-persona-name"
               >
                 {RECEPTION_DESK.name}
               </span>
-              <span className="text-[#c4a574]"> · </span>
+              <span className="text-slate-300"> · </span>
               <span>{RECEPTION_DESK.title}</span>
             </p>
             <p
-              className="mt-1 text-[11px] leading-snug text-[#8a6a4a]"
+              className="mt-1 text-[11px] leading-snug text-slate-500"
               data-testid="home-reception-persona-tagline"
             >
               {RECEPTION_DESK.tagline}
@@ -246,10 +246,10 @@ export function HomeReceptionGuide({
                 </div>
               </div>
             ) : null}
-            <div className="rounded-xl border border-[#ead9c2] bg-[#fbf6ee] p-2">
+            <div className="rounded-md border border-slate-200 bg-slate-50 p-2">
               <label
                 htmlFor="home-reception-line"
-                className="mb-1 block text-[10px] font-semibold tracking-wide text-[#8a6a4a]"
+                className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500"
               >
                 今天想办的事
               </label>
@@ -266,12 +266,12 @@ export function HomeReceptionGuide({
                     }
                   }}
                   placeholder="例如：研发卡住了，想找改进方案"
-                  className="focus-ring min-h-10 w-full flex-1 rounded-xl border border-[#ead9c2] bg-white px-3 py-2 text-[13px] text-[#3d2c22] placeholder:text-[#c4a88a]"
+                  className="focus-ring min-h-10 w-full flex-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-800 placeholder:text-slate-400"
                   data-testid="home-reception-line-input"
                 />
                 <button
                   type="button"
-                  className="btn-press focus-ring shrink-0 rounded-full bg-[#2f8f8a] px-3 py-2 text-[12px] font-semibold text-white hover:bg-[#277a76] disabled:opacity-40 sm:min-h-10 sm:px-4"
+                  className="btn-press focus-ring shrink-0 rounded-md bg-slate-900 px-3 py-2 text-[12px] font-semibold text-white hover:bg-slate-800 disabled:opacity-40 sm:min-h-10 sm:px-4"
                   data-testid="home-reception-submit-line"
                   disabled={!draft.trim() && !fileNames.length}
                   onClick={submitLine}
@@ -446,7 +446,7 @@ export function HomeReceptionGuide({
               </button>
               <button
                 type="button"
-                className="btn-press focus-ring ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#2f8f8a] px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-[#277a76]"
+                className="btn-press focus-ring ml-auto inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-slate-800"
                 data-testid="home-reception-confirm"
                 onClick={confirmGo}
               >
@@ -481,8 +481,8 @@ function DeptPick({
       data-selected={selected ? '1' : '0'}
       className={`btn-press focus-ring inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-left text-[12px] ${
         selected
-          ? 'border-[#2f8f8a] bg-[#2f8f8a] text-white'
-          : 'border-[#ead9c2] bg-[#fffaf3] text-[#5c4030] hover:border-[#d7b48a]'
+          ? 'border-slate-900 bg-slate-900 text-white'
+          : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'
       }`}
     >
       <span className={selected ? 'text-slate-300' : 'text-slate-400'}>
