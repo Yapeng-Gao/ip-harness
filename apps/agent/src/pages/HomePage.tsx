@@ -17,7 +17,7 @@ import { isBusinessSeedCaseId } from '../business/businessSeeds'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * §103：门口两件套 = 前台 + 八部门牌；「要你拍板」并入左栏「待确认」唯一入口；支路仍 ?hallTools=1。
+ * 门口 = 前台 + 八部；待办只在左栏 Tab。支路仍 ?hallTools=1。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -61,6 +61,7 @@ export function HomePage() {
     [personaTick],
   )
   const familiarWithTools = readPersonaSeed()?.familiarity === 'used_similar'
+  const latestCase = workspaceCases.find((c) => c.id === latestId)
 
   return (
     <div
@@ -107,6 +108,11 @@ export function HomePage() {
         <div data-hall-block="reception" data-testid="home-delegate-zone">
           <HomeReceptionGuide
             initialAttachId={attachQ}
+            continueCase={
+              latestCase
+                ? { id: latestCase.id, title: latestCase.title }
+                : null
+            }
           />
         </div>
 
