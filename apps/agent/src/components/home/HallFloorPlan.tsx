@@ -14,6 +14,7 @@ import { prefersReducedMotion } from '../../lib/motionPref'
 import {
   SIGN,
   CHATTER,
+  CORRIDOR_BOT,
   OFFICE_H,
   OFFICE_W,
   RECEPTIONIST,
@@ -94,6 +95,51 @@ function place(pt: Pt, fit: Fit): { left: number; top: number } {
     left: fit.x + (pt.x / OFFICE_W) * fit.w,
     top: fit.y + (pt.y / OFFICE_H) * fit.h,
   }
+}
+
+const BUBBLE_CHARS = 12
+
+function wrapCn(text: string, size = BUBBLE_CHARS): string[] {
+  const lines: string[] = []
+  for (let i = 0; i < text.length; i += size) lines.push(text.slice(i, i + size))
+  return lines.length > 0 ? lines : ['']
+}
+
+function bubbleBox(lines: string[]) {
+  const chars = Math.max(1, ...lines.map((line) => line.length))
+  return { w: chars * 12 + 16, h: lines.length * 16 + 10 }
+}
+
+/** 气泡贴在名牌一侧；贴边时换到另一侧，并钳在画面内。 */
+function placeBesideHead(
+  anchor: { left: number; top: number },
+  label: string,
+  lines: string[],
+  preferLeft: boolean,
+  fit: Fit,
+) {
+  const box = bubbleBox(lines)
+  const nameW = label.length * 10 + 12
+  const nameH = 18
+  const nameLeft = anchor.left - nameW / 2
+  const nameTop = anchor.top - nameH
+  const gap = 8
+  const margin = 8
+  const sceneLeft = fit.x + margin
+  const sceneRight = fit.x + fit.w - margin
+  const spaceLeft = nameLeft - gap - sceneLeft
+  const spaceRight = sceneRight - (nameLeft + nameW + gap)
+  let side: 'left' | 'right' = preferLeft ? 'left' : 'right'
+  const roomy = (space: number) => space >= box.w
+  if (side === 'left' && !roomy(spaceLeft) && spaceRight > spaceLeft) side = 'right'
+  if (side === 'right' && !roomy(spaceRight) && spaceLeft > spaceRight) side = 'left'
+  const space = side === 'left' ? spaceLeft : spaceRight
+  const w = Math.max(36, Math.min(box.w, space))
+  let left = side === 'left' ? nameLeft - gap - w : nameLeft + nameW + gap
+  left = Math.max(sceneLeft, Math.min(left, sceneRight - w))
+  let top = nameTop + nameH - box.h
+  top = Math.max(fit.y + margin, Math.min(top, fit.y + fit.h - box.h - margin))
+  return { left, top, w, h: box.h, tail: side === 'left' ? 'right' : 'left' }
 }
 
 function shortName(id: string, fallback: string): string {
@@ -319,55 +365,75 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               const room = rooms.find((item) => item.slug === actor.slug)
               const preview = hallDeptExpertPreviews(door).find((item) => item.id === actor.id)
               const label = shortName(actor.id, preview?.name ?? actor.slug)
-              const toLeft = room?.doorSide === 'e'
+              const preferLeft = room?.doorSide === 'e'
               const line = CHATTER[actor.slug]?.[chatterTick % (CHATTER[actor.slug]?.length ?? 1)] ?? ''
+              const idle = actor.lead && !walking && talking.has(actor.slug) && line ? placeBesideHead(at, label, wrapCn(line), preferLeft, fit) : null
               return (
-                <Link
-                  key={actor.id}
-                  to={hallDeptHref(caseId, door)}
-                  className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1 text-[10px] font-semibold leading-4 text-[#2a2118]"
-                  style={{ left: at.left, top: at.top }}
-                  aria-label={`${label}，${door.label}`}
-                  title={preview?.name ?? label}
-                  data-testid={walking ? 'hall-live-token' : undefined}
-                  data-from={walking ? play?.fromSlug : undefined}
-                  data-to={walking ? play?.toSlug : undefined}
-                >
-                  {label}
-                  {actor.lead && !walking && talking.has(actor.slug) && line ? (
+                <span key={actor.id}>
+                  <Link
+                    to={hallDeptHref(caseId, door)}
+                    className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1 text-[10px] font-semibold leading-4 text-[#2a2118]"
+                    style={{ left: at.left, top: at.top }}
+                    aria-label={`${label}，${door.label}`}
+                    title={preview?.name ?? label}
+                    data-testid={walking ? 'hall-live-token' : undefined}
+                    data-from={walking ? play?.fromSlug : undefined}
+                    data-to={walking ? play?.toSlug : undefined}
+                  >
+                    {label}
+                  </Link>
+                  {idle ? (
                     <span
-                      className={`pointer-events-none absolute top-0 z-[6] w-max max-w-[7.5rem] -translate-y-full rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#2a2118] ${
-                        toLeft ? 'right-full mr-1' : 'left-full ml-1'
-                      }`}
+                      className="pointer-events-none absolute z-[6] rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#2a2118]"
+                      style={{ left: idle.left, top: idle.top, width: idle.w }}
                       data-testid={`hall-idle-bubble-${actor.slug}`}
+                      data-side={idle.tail === 'left' ? 'right' : 'left'}
                     >
                       <span
-                        className={`absolute bottom-0 h-1.5 w-1.5 translate-y-1/2 rotate-45 border-[#2a2118] bg-[#fff8e8] ${
-                          toLeft ? '-right-1 border-b border-r' : '-left-1 border-b border-l'
+                        className={`absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-[#2a2118] bg-[#fff8e8] ${
+                          idle.tail === 'right' ? '-right-1 border-b border-r' : '-left-1 border-b border-l'
                         }`}
                       />
-                      {line}
+                      {wrapCn(line).map((part) => (
+                        <span key={part} className="block">
+                          {part}
+                        </span>
+                      ))}
                     </span>
                   ) : null}
-                </Link>
+                </span>
               )
             })
           : null}
-        {ready && walker && route && showPhrase && play ? (
-          <div
-            className="pointer-events-none absolute z-[6] max-w-[10rem] rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-semibold text-[#2a2118]"
-            style={{
-              left: place(polylinePoint(route, progress), fit).left + 18,
-              top: place({ x: 0, y: polylinePoint(route, progress).y - 22 }, fit).top,
-              transform: 'translate(0, -100%)',
-            }}
-            data-testid="hall-handoff-bubble"
-            role="status"
-          >
-            <span className="absolute -left-1 bottom-1 h-1.5 w-1.5 rotate-45 border-b border-l border-[#2a2118] bg-[#fff8e8]" />
-            {play.phrase}
-          </div>
-        ) : null}
+        {ready && walker && route && showPhrase && play
+          ? (() => {
+              const along = polylinePoint(route, progress)
+              const head = place({ x: along.x, y: along.y - 18 }, fit)
+              const lines = wrapCn(play.phrase)
+              const box = bubbleBox(lines)
+              const corridorRight = place({ x: CORRIDOR_BOT, y: 0 }, fit).left
+              const rightEdge = corridorRight - 6
+              let left = rightEdge - box.w
+              left = Math.max(fit.x + 8, Math.min(left, fit.x + fit.w - box.w - 8))
+              let top = head.top - box.h - 4
+              top = Math.max(fit.y + 8, Math.min(top, fit.y + fit.h - box.h - 8))
+              return (
+                <div
+                  className="pointer-events-none absolute z-[6] rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-[#2a2118]"
+                  style={{ left, top, width: box.w }}
+                  data-testid="hall-handoff-bubble"
+                  role="status"
+                >
+                  <span className="absolute top-1/2 -right-1 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-b border-r border-[#2a2118] bg-[#fff8e8]" />
+                  {lines.map((part) => (
+                    <span key={part} className="block">
+                      {part}
+                    </span>
+                  ))}
+                </div>
+              )
+            })()
+          : null}
         {ready ? (
           <button
             type="button"
