@@ -128,6 +128,28 @@ export function ShellAccountMenu() {
             重开部门说明
           </button>
           <div className="my-1 border-t border-slate-100" />
+          <p className="px-3 pt-1 text-[10px] font-medium uppercase tracking-wide text-slate-400">
+            非产品面
+          </p>
+          <Link
+            to="/agent/sessions"
+            role="menuitem"
+            className="btn-press focus-ring block px-3 py-2 text-xs text-slate-500 hover:bg-slate-100"
+            data-testid="shell-account-lab-sessions"
+            onClick={() => setOpen(false)}
+          >
+            工程旁路 · 会话
+          </Link>
+          <Link
+            to="/agent/harness"
+            role="menuitem"
+            className="btn-press focus-ring block px-3 py-2 text-xs text-slate-500 hover:bg-slate-100"
+            data-testid="shell-account-lab-harness"
+            onClick={() => setOpen(false)}
+          >
+            工程旁路 · Harness
+          </Link>
+          <div className="my-1 border-t border-slate-100" />
           <Link
             to="/agent/welcome"
             role="menuitem"
