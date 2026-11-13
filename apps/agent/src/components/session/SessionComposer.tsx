@@ -1,17 +1,12 @@
 import { Send } from 'lucide-react'
 import { AGENT_CATALOG, AGENT_TIER_LABEL } from '@shared/data/agents'
-import type { PatentCase } from '@shared/types'
 
 type Props = {
   goal: string
   onGoalChange: (v: string) => void
   agentPick: string
   onAgentPickRequest: (nextAgentId: string) => void
-  casePick: string
-  onCasePick: (caseId: string) => void
-  visibleCases: PatentCase[]
   composerRef: React.RefObject<HTMLTextAreaElement | null>
-  caseSelectRef: React.RefObject<HTMLSelectElement | null>
   onSubmit: () => void
   pendingAgentSwitch: { id: string; reason?: string } | null
   onConfirmAgentSwitch: () => void
@@ -19,6 +14,10 @@ type Props = {
   hitlActive?: boolean
   /** R-P1-3 · 仅复述 Confirm 主因 */
   hitlDisableReason?: string | null
+  /** P1-AF-3 · 不重复渲染可见禁用原因（Confirm 已展示） */
+  hideDisableReason?: boolean
+  /** Optional case bind toolbar (create/bind) above composer */
+  caseBindSlot?: React.ReactNode
 }
 
 export function SessionComposer({
@@ -26,20 +25,21 @@ export function SessionComposer({
   onGoalChange,
   agentPick,
   onAgentPickRequest,
-  casePick,
-  onCasePick,
-  visibleCases,
   composerRef,
-  caseSelectRef,
   onSubmit,
   pendingAgentSwitch,
   onConfirmAgentSwitch,
   onCancelAgentSwitch,
   hitlActive = false,
   hitlDisableReason = null,
+  hideDisableReason = false,
+  caseBindSlot,
 }: Props) {
   return (
     <div className="shrink-0 border-t border-slate-200/90 bg-white px-4 py-3.5 shadow-[0_-4px_16px_rgba(15,23,42,0.04)] lg:px-5 lg:py-4">
+      {caseBindSlot ? (
+        <div className="mx-auto mb-2 max-w-3xl">{caseBindSlot}</div>
+      ) : null}
       {pendingAgentSwitch && (
         <div className="mx-auto mb-2 flex max-w-3xl flex-wrap items-center gap-2 border-l-4 border-l-amber-500 bg-amber-50/60 px-3 py-2 text-xs text-slate-800">
           <span className="min-w-0 flex-1">换人后要重新确认，继续？</span>
@@ -67,7 +67,7 @@ export function SessionComposer({
           rows={2}
           aria-label="会话目标输入"
           placeholder="描述要办的事… 例如：对固态电解质配方做现有技术检索并输出结论"
-          className="w-full resize-none bg-transparent px-3.5 pt-3 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+          className="focus-ring w-full resize-none bg-transparent px-3.5 pt-3 text-sm text-slate-800 placeholder:text-slate-400 focus-visible:rounded-[var(--radius-md)]"
           disabled={hitlActive}
         />
         <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-3 py-2.5">
@@ -84,20 +84,6 @@ export function SessionComposer({
               </option>
             ))}
           </select>
-          <select
-            ref={caseSelectRef}
-            value={casePick}
-            onChange={(e) => onCasePick(e.target.value)}
-            className="ui-input ui-input-sm focus-ring max-w-[180px] truncate w-auto"
-            aria-label="关联案件"
-          >
-            <option value="">案件 · 未关联</option>
-            {visibleCases.map((cs) => (
-              <option key={cs.id} value={cs.id}>
-                {cs.title}
-              </option>
-            ))}
-          </select>
           {hitlActive ? (
             <span className="agent-confirm-cta-wrap ml-auto">
               <button
@@ -110,13 +96,19 @@ export function SessionComposer({
               >
                 <Send className="h-3.5 w-3.5" aria-hidden /> 确认完成后再办理
               </button>
-              <span
-                id="agent-confirm-reason-composer"
-                className="agent-confirm-reason"
-                role="status"
-              >
-                {hitlDisableReason ?? '请先完成上方确认步骤'}
-              </span>
+              {!hideDisableReason ? (
+                <span
+                  id="agent-confirm-reason-composer"
+                  className="agent-confirm-reason"
+                  role="status"
+                >
+                  {hitlDisableReason ?? '请先完成上方确认步骤'}
+                </span>
+              ) : (
+                <span id="agent-confirm-reason-composer" className="sr-only">
+                  {hitlDisableReason ?? '请先完成上方确认步骤'}
+                </span>
+              )}
             </span>
           ) : (
             <button
@@ -130,7 +122,7 @@ export function SessionComposer({
         </div>
       </div>
       <p className="mx-auto mt-1.5 max-w-3xl text-center text-[11px] text-slate-400">
-        办理结果会写回业务台账（演示）
+        办理结果确认后写入案件（演示）
       </p>
     </div>
   )

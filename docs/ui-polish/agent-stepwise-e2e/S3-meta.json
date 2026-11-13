@@ -1,0 +1,21 @@
+{
+  "id": "S3",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent/sessions/sess-oa-1",
+  "assertions": [
+    "no mid deep-link",
+    "session-timeline-scroller 可见",
+    "timeline content length=303 · mock steps present",
+    "无 BillingHold 全宽黄条"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "session-timeline-scroller": {
+      "x": 224,
+      "y": 186.5,
+      "width": 832,
+      "height": 302.703125
+    }
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S3-timeline.png"
+}

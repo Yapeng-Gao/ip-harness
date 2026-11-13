@@ -1,0 +1,51 @@
+{
+  "vw": 1280,
+  "vh": 800,
+  "asides": [
+    {
+      "tag": "ASIDE",
+      "cls": "shell-aside flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex-col sm:w-",
+      "w": 224,
+      "h": 752,
+      "left": 0,
+      "top": 105,
+      "overflowY": "visible",
+      "position": "static"
+    }
+  ],
+  "mains": [
+    {
+      "tag": "MAIN",
+      "cls": "flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-none focus-visible:ring-2 focus",
+      "w": 1056,
+      "h": 752,
+      "left": 224,
+      "overflowY": "visible",
+      "position": "static"
+    }
+  ],
+  "sticky": [],
+  "scrollers": [
+    {
+      "cls": "flex flex-1 items-center justify-center overflow-y-auto",
+      "scrollH": 821,
+      "clientH": 752,
+      "w": 1056,
+      "h": 752,
+      "left": 224
+    }
+  ],
+  "confirm": null,
+  "visibleTextareas": [
+    {
+      "ph": "例如：对本案固态电解质配方完成现有技术检索，并对照答复期限输出可专利性结论",
+      "w": 622,
+      "h": 130,
+      "top": 209,
+      "visible": true
+    }
+  ],
+  "bodyScroll": true,
+  "h1": "知产 Agent",
+  "title": "IP Harness · 知产 Agent"
+}

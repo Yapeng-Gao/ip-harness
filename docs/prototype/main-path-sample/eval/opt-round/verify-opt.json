@@ -1,0 +1,28 @@
+{
+  "searchM": {
+    "filters": 5,
+    "hits": 5,
+    "snips": 5,
+    "goBtns": 5
+  },
+  "filtM": {
+    "hits": [
+      "检索\nD1 · 壳体螺旋水道（示意）\n最接近现有技术 · 点开看对照\n公开螺旋水"
+    ]
+  },
+  "d4": {
+    "composerVisible": true,
+    "composerTop": 781
+  },
+  "d5": {
+    "board": true,
+    "pairs": 2,
+    "marks": 7,
+    "prior": 3,
+    "hint": true
+  },
+  "d6": {
+    "board": true,
+    "pairs": 2
+  }
+}

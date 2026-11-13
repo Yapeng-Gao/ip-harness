@@ -1,0 +1,32 @@
+{
+  "recipe": "sft-ip-mvp.v1",
+  "dataset": {
+    "id": "ds-ip-sft-mvp",
+    "version": "v0.1.0",
+    "manifest_path": "docs/ai-data/mvp-sft/manifest.json",
+    "data_commit_sha": "d0a66f7ab23f879b506aaac38143917759b30387",
+    "checksums": {
+      "train": {
+        "sha256": "0b580c46fab521d84b16e21d28b3916abedfd2f4063ff8d5a1d89cc88d99f79a",
+        "rows": 48
+      },
+      "val": {
+        "sha256": "dcf7be139e8b8e53058a778281cbf1b30aeb2ff140d941ad95a38f64d158b56b",
+        "rows": 14
+      },
+      "test": {
+        "sha256": "556b62b402fa7840c7990055698f99be0f575cd7fc309ad0bfd532551ec5eaa0",
+        "rows": 14
+      }
+    }
+  },
+  "base_model": "external/qwen2.5-0.5b-instruct",
+  "lr": 2e-4,
+  "epochs": 1,
+  "max_seq_len": 1024,
+  "batch_size": 1,
+  "lora_r": 8,
+  "lora_alpha": 16,
+  "seed": 42,
+  "notes": "Frozen for I2 MVP. Pin ds-ip-sft-mvp@v0.1.0 via docs/ai-data/mvp-sft/manifest.json (data commit d0a66f7)."
+}

@@ -1,0 +1,432 @@
+{
+  "vw": 1440,
+  "vh": 900,
+  "title": "IP Harness · 知产 Agent",
+  "h1": "知产 Agent",
+  "dock": null,
+  "confirm": null,
+  "timeline": null,
+  "composerFold": null,
+  "aside": null,
+  "shellAside": {
+    "w": 224,
+    "h": 852,
+    "top": 105,
+    "left": 0,
+    "bottom": 957,
+    "fontSize": "15px",
+    "radius": "0px",
+    "position": "static",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "shell-aside flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex-col sm:w-",
+    "text": "开始 Agent 会话 更多 首屏主路径：主区输入后点「开始办理」开工。 待确认 · 3 项目模式（次级）"
+  },
+  "composerRect": {
+    "w": 622,
+    "h": 130,
+    "top": 259,
+    "left": 521,
+    "bottom": 389,
+    "fontSize": "14px",
+    "radius": "0px",
+    "position": "static",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "focus-ring w-full resize-none bg-transparent px-4 pt-4 text-sm leading-relaxed text-slate-",
+    "text": ""
+  },
+  "bodyScroll": false,
+  "bodyOverflow": "hidden/hidden",
+  "reasonCount": 0,
+  "reasonText": null,
+  "stepChips": [],
+  "transitionAllCount": 10,
+  "transitionAll": [
+    {
+      "tag": "A",
+      "cls": "skip-link",
+      "text": "跳到主要内容",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "text-center text-[11px] text-slate-400 hover:text-slate-600 ",
+      "text": "项目模式（次级）",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "text-slate-500 underline-offset-2 hover:text-slate-700 hover",
+      "text": "项目模式",
+      "transition": "all"
+    },
+    {
+      "tag": "TEXTAREA",
+      "cls": "focus-ring w-full resize-none bg-transparent px-4 pt-4 text-",
+      "text": "",
+      "transition": "all"
+    },
+    {
+      "tag": "SELECT",
+      "cls": "focus-ring appearance-none rounded-md border border-slate-20",
+      "text": "可稍后创建或绑定案件 一种边缘计算节点调度方法 无人机集群协同避障方法 车载毫米",
+      "transition": "all"
+    },
+    {
+      "tag": "SELECT",
+      "cls": "focus-ring appearance-none rounded-md border border-slate-20",
+      "text": "自动匹配 Core · 调研检索 Agent Core · 交底整理 Agent",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "text-[11px] text-slate-400 hover:text-slate-700 hover:underl",
+      "text": "目录 · 分层",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "hover:underline",
+      "text": "目录 Beta",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "inline-flex items-center rounded-full border border-amber-20",
+      "text": "待确认 · 3",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "hover:text-slate-700 hover:underline",
+      "text": "Agent 目录",
+      "transition": "all"
+    }
+  ],
+  "smallFonts": [],
+  "smallFontsMin": null,
+  "smallHits": [
+    {
+      "w": 72,
+      "h": 32,
+      "text": "作业中台",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 60,
+      "h": 32,
+      "text": "办理台",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 83,
+      "h": 32,
+      "text": "知产 Agent",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 48,
+      "h": 32,
+      "text": "运维",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 45,
+      "h": 32,
+      "text": "IAM",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 116,
+      "h": 37,
+      "text": "跳到主要内容",
+      "cls": "skip-link"
+    },
+    {
+      "w": 55,
+      "h": 28,
+      "text": "开始",
+      "cls": "btn-press focus-ring relative flex flex-1 flex-col"
+    },
+    {
+      "w": 56,
+      "h": 28,
+      "text": "Agent",
+      "cls": "btn-press focus-ring relative flex flex-1 flex-col"
+    },
+    {
+      "w": 55,
+      "h": 28,
+      "text": "会话",
+      "cls": "btn-press focus-ring relative flex flex-1 flex-col"
+    },
+    {
+      "w": 52,
+      "h": 28,
+      "text": "更多",
+      "cls": "btn-press focus-ring relative flex h-full flex-col"
+    },
+    {
+      "w": 199,
+      "h": 30,
+      "text": "待确认 · 3",
+      "cls": "btn-press focus-ring inline-flex items-center just"
+    },
+    {
+      "w": 199,
+      "h": 17,
+      "text": "项目模式（次级）",
+      "cls": "text-center text-[11px] text-slate-400 hover:text-"
+    },
+    {
+      "w": 44,
+      "h": 16,
+      "text": "项目模式",
+      "cls": "text-slate-500 underline-offset-2 hover:text-slate"
+    },
+    {
+      "w": 111,
+      "h": 23,
+      "text": "创建并绑定新案",
+      "cls": "btn-press focus-ring inline-flex items-center gap-"
+    },
+    {
+      "w": 89,
+      "h": 23,
+      "text": "绑定已有案",
+      "cls": "btn-press focus-ring inline-flex items-center gap-"
+    },
+    {
+      "w": 209,
+      "h": 32,
+      "text": "Core 检索现有技术 · 可专利性",
+      "cls": "btn-press focus-ring inline-flex min-h-8 items-cen"
+    },
+    {
+      "w": 167,
+      "h": 32,
+      "text": "Core 拆 OA · 起草答复",
+      "cls": "btn-press focus-ring inline-flex min-h-8 items-cen"
+    },
+    {
+      "w": 161,
+      "h": 32,
+      "text": "Core 立项评估 · 报价",
+      "cls": "btn-press focus-ring inline-flex min-h-8 items-cen"
+    },
+    {
+      "w": 155,
+      "h": 32,
+      "text": "Core 整理发明交底包",
+      "cls": "btn-press focus-ring inline-flex min-h-8 items-cen"
+    },
+    {
+      "w": 185,
+      "h": 32,
+      "text": "Core 核对年费 · 解锁付款",
+      "cls": "btn-press focus-ring inline-flex min-h-8 items-cen"
+    },
+    {
+      "w": 179,
+      "h": 32,
+      "text": "Core 梳理权利要求与期限",
+      "cls": "btn-press focus-ring inline-flex min-h-8 items-cen"
+    },
+    {
+      "w": 60,
+      "h": 17,
+      "text": "目录 · 分层",
+      "cls": "text-[11px] text-slate-400 hover:text-slate-700 ho"
+    },
+    {
+      "w": 43,
+      "h": 15,
+      "text": "目录 Beta",
+      "cls": "hover:underline"
+    },
+    {
+      "w": 77,
+      "h": 23,
+      "text": "待确认 · 3",
+      "cls": "inline-flex items-center rounded-full border borde"
+    },
+    {
+      "w": 54,
+      "h": 17,
+      "text": "Agent 目录",
+      "cls": "hover:text-slate-700 hover:underline"
+    }
+  ],
+  "smallHitsCount": 25,
+  "pressBtns": [
+    {
+      "text": "作业中台",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "办理台",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "知产 Agent",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "运维",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "IAM",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "代理所租户 · 德恒知产",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "代理所",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "作业中台",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "知产 Agent",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "开始",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 28
+    },
+    {
+      "text": "Agent",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 28
+    },
+    {
+      "text": "会话",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 28
+    },
+    {
+      "text": "更多",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 28
+    },
+    {
+      "text": "待确认 · 3",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 30
+    },
+    {
+      "text": "开始办理",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    }
+  ],
+  "toolIds": [],
+  "floatJump": [
+    {
+      "text": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Age",
+      "cls": "",
+      "pos": "static"
+    },
+    {
+      "text": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Age",
+      "cls": "",
+      "pos": "static"
+    },
+    {
+      "text": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Age",
+      "cls": "",
+      "pos": "static"
+    }
+  ],
+  "focusSample": [
+    {
+      "text": "作业中台",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    },
+    {
+      "text": "办理台",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    },
+    {
+      "text": "知产 Agent",
+      "outline": "rgb(15, 23, 42) none 3px",
+      "boxShadow": "rgba(0, 0, 0, 0.04) 0px 1px 2px 0px, rgba(0, 0, 0, 0.05) 0px",
+      "hasFocusRing": true
+    },
+    {
+      "text": "运维",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    },
+    {
+      "text": "IAM",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    }
+  ],
+  "caseBind": {
+    "softOptional": true,
+    "mustBind": false,
+    "bindCreate": true,
+    "bindBar": true
+  },
+  "cards": [],
+  "timelineEmpty": {
+    "hasTimeline": false,
+    "textSnippet": null,
+    "hasNextCta": true
+  },
+  "path": "/agent"
+}

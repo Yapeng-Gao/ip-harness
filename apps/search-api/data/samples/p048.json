@@ -1,0 +1,17 @@
+{
+  "id": "p048",
+  "publicationNumber": "KR100000048B1",
+  "title": "Automated parking path planning method (#48)",
+  "applicant": "Toyota Motor Corporation",
+  "inventor": "Inventor 4",
+  "date": "2018-01-01",
+  "ipc": [
+    "B60L53/00"
+  ],
+  "familyId": "fam-auto-3",
+  "country": "KR",
+  "legalStatus": "有效",
+  "abstract": "【样本·非真库】 Multi-segment path planning for tight parking.",
+  "claims": "1. A device or method comprising… (sample p048)",
+  "snippet": "Automated parking path planning method"
+}

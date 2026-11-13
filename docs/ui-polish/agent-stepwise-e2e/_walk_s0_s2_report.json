@@ -1,0 +1,168 @@
+{
+  "head": "1fb148255e7757295e45d07327f08768c883e81d",
+  "base": "http://127.0.0.1:5175",
+  "startedAt": "2026-09-19T03:55:10.161Z",
+  "steps": {
+    "S0": {
+      "probe": {
+        "url": "http://127.0.0.1:5175/agent",
+        "verticalNav": true,
+        "asideW": 224,
+        "navLinks": [
+          {
+            "text": "开始",
+            "href": "/agent"
+          },
+          {
+            "text": "Agent",
+            "href": "/agent/agents"
+          },
+          {
+            "text": "会话",
+            "href": "/agent/sessions"
+          },
+          {
+            "text": "更多",
+            "href": ""
+          },
+          {
+            "text": "待确认 · 3",
+            "href": "/agent/sessions?filter=needs_human"
+          },
+          {
+            "text": "一通创造性答复 · 边缘调度",
+            "href": "/agent/sessions/sess-oa-1?focus=hitl"
+          },
+          {
+            "text": "边缘侧布局空白点洞察",
+            "href": "/agent/sessions/sess-layout-1?focus=hitl"
+          },
+          {
+            "text": "打开会话 Inbox",
+            "href": "/agent/sessions"
+          },
+          {
+            "text": "项目模式（次级）",
+            "href": "/agent/projects"
+          }
+        ],
+        "needsHumanChip": {
+          "text": "待确认 · 3",
+          "href": "/agent/sessions?filter=needs_human"
+        },
+        "compose": true,
+        "startText": "开始办理",
+        "homeCaseBind": 1,
+        "caseBindControls": 1,
+        "createBind": true,
+        "bindExisting": true,
+        "associateSelect": 0,
+        "softHint": true
+      },
+      "gates": {
+        "midDeep": [],
+        "midCtaText": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "caseEntry": {
+          "homeCaseBind": 1,
+          "caseBindControls": 1,
+          "associateSelect": 0,
+          "associateLabel": 0,
+          "single": true
+        },
+        "hasForbiddenMidText": false
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S0/S0-home.png",
+        "docs/ui-polish/agent-stepwise-ui/S0/S0-case-bind-closeup.png",
+        "docs/ui-polish/agent-stepwise-ui/S0/S0-compose.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true,
+        "hardGates": true
+      }
+    },
+    "S1": {
+      "probe": {
+        "url": "http://127.0.0.1:5175/agent",
+        "caseIdText": "走查S1新案-112858· 样机",
+        "unbind": true,
+        "startEnabled": true,
+        "startText": "开始办理",
+        "urlCase": null,
+        "bound": true,
+        "homeCaseBind": 1,
+        "associateSelect": 0,
+        "stillSingleEntry": true
+      },
+      "gates": {
+        "midDeep": [],
+        "midCtaText": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "caseEntry": {
+          "homeCaseBind": 1,
+          "caseBindControls": 1,
+          "associateSelect": 0,
+          "associateLabel": 0,
+          "single": true
+        },
+        "hasForbiddenMidText": false
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S1/S1-bound.png",
+        "docs/ui-polish/agent-stepwise-ui/S1/S1-case-bind-bound.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true
+      }
+    },
+    "S2": {
+      "pre": {
+        "unbound": true,
+        "current": null,
+        "urlCase": null
+      },
+      "probe": {
+        "url": "http://127.0.0.1:5175/agent/sessions/sess-1789790114330",
+        "path": "/agent/sessions/sess-1789790114330",
+        "sessionId": "sess-1789790114330",
+        "onSession": true,
+        "mustBindBanner": false,
+        "caseBound": false,
+        "createBind": true,
+        "softOptional": true,
+        "midHrefs": [],
+        "bodySnippet": "跳到主要内容\nIP\n知产 Agent\n代理所租户 · 德恒知产\n代理所\n·\n自动匹配 · 调研检索 Agent\n作业中台\n知产 Agent\n上下文\n开始\nAgent\n会话\n更多\n新建会话\n会话\n筛选\n搜索会话\n全部 · 5\n待确认 · 3\n进行中 · 1\n走查S2：无案开始办理，确认进会话且无强制案\n自动匹配 · 排队\n未关联案件\n一通创造性答复 · 边缘调度\nOA 答复 Agent · 待确认\n待企业\n边缘侧布局空白点洞察\n布局洞察 Agent · 待确认\n待企业\n无人机竞品 · 监控告警\n监控预警 Agent · 待确认\n待企业\n竞品扫描 · 办理失败（演示）\n监控预警 Agent · 失败\n代理所租户 · 德恒知产\n全部会话 →\n走查S2：无案开始办理，确认进会话且无强制案\n改名\n\n自动匹配 · 调研检索 Agent · 排队\n\n更多操作\n可稍后创建或绑定案件 · 无案也可继续聊 · 确认后不会写入案件\n绑定已有案\n\n开始办理后可在此绑定案件 · 无案确认不会写入案件\n\n案件（可选）\n可稍后创建或绑定案件\n创建并绑定新案\n绑定已有案\n系统\n2026-09-19 03:55:14\n会话已创建\n\n已为「调研检索 Agent」备好会话 · 在底部启动，或从 ⋯ 预览\n\n自动匹配\nCore · 调研检索 Agent\nCore · 交底整理 Agent\nCore · 立项评估 Agent\nCore · 权利要求撰写 Agent\nCore · OA 答复 Agent\nCore · 年费与维持 Agent\nBeta · 转化条款 Agent\nAssist · 监控预警 Agent\nBeta · 布局洞察 Agent\n可稍后创建或绑定案件\n走查S1新案-112858\n一种边缘计算节点调度方法\n无人机集群协同避障方法\n车载毫米波雷达杂波抑制方法\n工业现场总线冗余心跳协议\n启动\n\n办理结"
+      },
+      "gates": {
+        "midDeep": [],
+        "midCtaText": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "caseEntry": {
+          "homeCaseBind": 0,
+          "caseBindControls": 1,
+          "associateSelect": 1,
+          "associateLabel": 0,
+          "single": false
+        },
+        "hasForbiddenMidText": false
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S2/S2-home-unbound.png",
+        "docs/ui-polish/agent-stepwise-ui/S2/S2-session.png",
+        "docs/ui-polish/agent-stepwise-ui/S2/S2-session-full.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true
+      }
+    }
+  },
+  "consoleErrors": [],
+  "finishedAt": "2026-09-19T03:55:16.285Z"
+}

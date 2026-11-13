@@ -1,0 +1,195 @@
+import { Link, Navigate, useParams } from 'react-router-dom'
+import { useProjectFolder } from '../../projects/ProjectFolderContext'
+import { ProjectFolderSidebar } from '../../components/projects/ProjectFolderSidebar'
+import { ProjectChatPane } from '../../components/projects/ProjectChatPane'
+import { ProjectTimelinePanel } from '../../components/projects/ProjectTimelinePanel'
+import { SeatDualFilePanel } from '../../components/patent/SeatDualFilePanel'
+import type { ProjectExpertId } from '../../projects/types'
+import {
+  PROJECT_EXPERTS,
+  getProjectExpert,
+  orchestratorIdForProject,
+  projectKindBadge,
+  resolveExpertId,
+} from '../../projects/experts'
+import { CaseBindControls } from '../../components/case/CaseBindControls'
+import { PatentMidMapPanel } from '../../components/projects/PatentMidMapPanel'
+import { PackHitlOverview } from '../../components/patent/PackHitlOverview'
+import { PackHitlWalkBar } from '../../components/patent/PackHitlWalkBar'
+import { packHitlSeatProgress } from '../../projects/pack/patentHitlWalk'
+import { SeatValidatorPanel } from '../../components/patent/SeatValidatorPanel'
+import { hasMockValidator } from '../../projects/pack/patentValidator'
+import { useBusinessCases } from '../../business/BusinessCaseContext'
+import { CaseProcessPanel } from '../../components/business/CaseProcessPanel'
+import { businessSeatLabel } from '../../business/businessSeats'
+
+export function ProjectWorkspacePage() {
+  const { projectId, botId, expertId } = useParams<{
+    projectId: string
+    botId?: string
+    expertId?: string
+  }>()
+  const { getProject, patchProject, getThread } = useProjectFolder()
+  const { isBusinessCase, getPendingConfirms } = useBusinessCases()
+
+  if (!projectId) return <Navigate to="/agent/projects" replace />
+  const project = getProject(projectId)
+  if (!project) {
+    return (
+      <div className="flex flex-1 items-center justify-center text-sm text-slate-500">
+        项目不存在 ·{' '}
+        <a className="underline" href="/agent/projects">
+          返回列表
+        </a>
+      </div>
+    )
+  }
+
+  const seatParam = botId ?? expertId
+  const orchId = orchestratorIdForProject(project)
+  const resolvedRaw =
+    seatParam && (seatParam in PROJECT_EXPERTS || seatParam === 'expert-search')
+      ? resolveExpertId(seatParam)
+      : orchId
+
+  if (expertId && !botId && expertId in PROJECT_EXPERTS) {
+    return (
+      <Navigate
+        to={`/agent/projects/${projectId}/bots/${resolveExpertId(expertId)}`}
+        replace
+      />
+    )
+  }
+
+  if (seatParam && !(resolveExpertId(seatParam) in PROJECT_EXPERTS) && seatParam !== 'expert-search') {
+    return <Navigate to={`/agent/projects/${projectId}`} replace />
+  }
+
+  const resolved = resolvedRaw as ProjectExpertId
+  const badge = projectKindBadge(project)
+  const isPatent =
+    project.kind === 'domain' || project.domainPackId === 'patent'
+  const def = getProjectExpert(resolved)
+  const bizCase = isBusinessCase(projectId)
+  const bizPendingCount = bizCase ? getPendingConfirms(projectId).length : 0
+  // 业务案：案 id = projectId，Confirm 同源；勿另开平行宇宙
+  const chatCaseId = bizCase ? projectId : project.caseId
+
+  return (
+    <div className="flex min-h-0 flex-1" data-testid="patent-project-workspace">
+      <ProjectFolderSidebar />
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <div className="shrink-0 space-y-2 border-b border-slate-200 bg-white px-3 py-2">
+          <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
+            <span
+              className="rounded border border-amber-200 bg-amber-50 px-1.5 py-px text-amber-900"
+              data-testid="project-experts-fixed-badge"
+            >
+              项目 · 专家固定
+            </span>
+            {isPatent && (
+              <span
+                className="rounded border border-violet-300 bg-violet-50 px-1.5 py-px font-semibold text-violet-800"
+                data-testid="project-l3-badge"
+              >
+                专利壳 · 双文件
+              </span>
+            )}
+            <span className={`rounded border px-1 py-px ${badge.className}`}>
+              {badge.label}
+            </span>
+            {def.ownerLabel && (
+              <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-px">
+                对接 · {def.ownerLabel}
+              </span>
+            )}
+            <span>{project.caseId ? '已绑案件' : '未绑案件'}</span>
+            
+            <Link to="/agent/seats" className="text-slate-400 underline" data-testid="workspace-to-seats">
+              席位样机目录
+            </Link>
+          </div>
+          {bizCase ? (
+            <div
+              className="flex flex-wrap items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50/80 px-2.5 py-1.5 text-[11px] text-emerald-950"
+              data-testid="project-biz-case-weld"
+            >
+              <span className="font-semibold">
+                业务案 · 同 id={projectId}
+              </span>
+              <span>待确认 {bizPendingCount}</span>
+              <span>
+                当前席 {businessSeatLabel(resolved)}
+              </span>
+              <Link
+                to={`/agent/cases/${projectId}?seat=${resolved}`}
+                className="ml-auto font-medium underline"
+                data-testid="project-back-biz-case"
+              >
+                回案子工作台
+              </Link>
+            </div>
+          ) : (
+            <CaseBindControls
+              caseId={project.caseId}
+              prominence={isPatent ? 'strong' : 'soft'}
+              onCreateStart={() =>
+                patchProject(projectId, { caseBindState: 'pending_create' })
+              }
+              onBind={(id) =>
+                patchProject(projectId, { caseId: id, caseBindState: 'bound' })
+              }
+              onUnbind={() =>
+                patchProject(projectId, {
+                  caseId: undefined,
+                  caseBindState: 'none',
+                })
+              }
+            />
+          )}
+        </div>
+        {isPatent && (
+          <div className="shrink-0 space-y-2 border-b border-slate-100 bg-slate-50/60 px-3 py-2">
+            <PackHitlOverview
+              compact
+              projectId={projectId}
+              {...packHitlSeatProgress(getThread, projectId)}
+            />
+            <PackHitlWalkBar compact />
+            {hasMockValidator(resolved) && (
+              <SeatValidatorPanel expertId={resolved} projectId={projectId} />
+            )}
+          </div>
+        )}
+        <div className="flex min-h-0 flex-1">
+          <ProjectChatPane
+            projectId={projectId}
+            expertId={resolved}
+            caseId={chatCaseId}
+          />
+          {isPatent ? (
+            <div className="flex min-h-0 shrink-0 flex-col">
+              <SeatDualFilePanel expertId={resolved} projectId={projectId} />
+              {bizCase && (
+                <div className="hidden max-h-56 w-[min(20rem,36vw)] overflow-y-auto border-l border-slate-200 lg:block">
+                  <CaseProcessPanel caseId={projectId} showDemos />
+                </div>
+              )}
+            </div>
+          ) : (
+            <ProjectTimelinePanel projectId={projectId} currentExpertId={resolved} />
+          )}
+          {isPatent && (
+            <div className="hidden xl:flex">
+              <PatentMidMapPanel
+                projectId={projectId}
+                expertId={resolved}
+                caseId={chatCaseId}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

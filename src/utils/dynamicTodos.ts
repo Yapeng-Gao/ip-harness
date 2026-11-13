@@ -61,6 +61,8 @@ export interface BuildHandoffTodoInput {
   action: HandoffAction
   due?: string
   now?: number
+  /** 业务壳同步：待办文案不写租户角色 */
+  neutral?: boolean
 }
 
 /**
@@ -75,6 +77,7 @@ export function buildTodoFromHandoffTransition(
   input: BuildHandoffTodoInput,
 ): { kind: 'upsert'; todo: WorkbenchTodo } | { kind: 'complete' } | { kind: 'noop' } {
   const { caseId, caseTitle, stage, key, action, due } = input
+  const plain = input.neutral === true
   const label = HANDOFF_ARTIFACT_LABELS[key]
   const actionPath = HANDOFF_ACTION_PATH[key](caseId)
   const id = `dyn-${input.now ?? Date.now()}`
@@ -90,11 +93,13 @@ export function buildTodoFromHandoffTransition(
       id,
       caseId,
       stage,
-      title: `${caseTitle} · ${label}待企业审核`,
+      title: plain
+        ? `${caseTitle} · ${label}待确认`
+        : `${caseTitle} · ${label}待企业审核`,
       due: dueDate,
       priority: '高',
-      enterpriseLabel: '审核并确认策略 / 退回修改 / 批准',
-      agencyLabel: '等待企业审核结果',
+      enterpriseLabel: plain ? '待确认' : '审核并确认策略 / 退回修改 / 批准',
+      agencyLabel: plain ? '等待确认结果' : '等待企业审核结果',
       actionPath,
       assignee: 'enterprise',
       assigneePersona: 'enterprise_ip',
@@ -111,11 +116,11 @@ export function buildTodoFromHandoffTransition(
       id,
       caseId,
       stage,
-      title: `${caseTitle} · ${label}需修改`,
+      title: plain ? `${caseTitle} · ${label}未通过` : `${caseTitle} · ${label}需修改`,
       due: dueDate,
       priority: '高',
-      enterpriseLabel: '等待代理修改后重新提交',
-      agencyLabel: '按企业意见修改并重新提交',
+      enterpriseLabel: plain ? '已退回' : '等待代理修改后重新提交',
+      agencyLabel: plain ? '请按意见修改后再提交' : '按企业意见修改并重新提交',
       actionPath,
       assignee: 'agency',
       assigneePersona: 'agency',
@@ -132,12 +137,19 @@ export function buildTodoFromHandoffTransition(
       id,
       caseId,
       stage,
-      title: `${caseTitle} · ${label}${action === 'authorize' ? '可递交' : '已批准'}`,
+      title: plain
+        ? `${caseTitle} · ${label}已通过`
+        : `${caseTitle} · ${label}${action === 'authorize' ? '可递交' : '已批准'}`,
       due: dueDate,
       priority: '中',
-      enterpriseLabel: '已完成审核',
-      agencyLabel:
-        action === 'authorize' ? '按授权完成递交并归档' : '企业已批准，可继续办理 / 递交',
+      enterpriseLabel: plain ? '已通过' : '已完成审核',
+      agencyLabel: plain
+        ? action === 'authorize'
+          ? '可继续递交归档'
+          : '可继续办理'
+        : action === 'authorize'
+          ? '按授权完成递交并归档'
+          : '企业已批准，可继续办理 / 递交',
       actionPath,
       assignee: 'agency',
       assigneePersona: 'agency',

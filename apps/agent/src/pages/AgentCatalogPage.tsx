@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom'
+import { SoftEmpty } from '../components/soft/SoftEmpty'
 import { Search } from 'lucide-react'
 import { useAgents } from '@shared/context/AgentContext'
 import { useApp } from '@shared/context/AppContext'
@@ -14,7 +15,6 @@ import {
 import { AgentPickerCard } from '../components/AgentPickerCard'
 import { AgentTierBadge } from '../components/AgentTierBadge'
 import type { AgentTier, StageId } from '@shared/types'
-import { resolvePreferredCaseId } from '@shared/utils/lastVisited'
 import { agentSessionPath } from '../lib/deepLinks'
 
 export function AgentCatalogPage() {
@@ -28,7 +28,7 @@ export function AgentCatalogPage() {
   const [q, setQ] = useState('')
   const [highlight, setHighlight] = useState<string | null>(null)
   const [caseId, setCaseId] = useState('')
-  const [pickerTouched, setPickerTouched] = useState(false)
+  const [, setPickerTouched] = useState(false)
 
   useEffect(() => {
     const fromQuery = params.get('agent') || params.get('highlight')
@@ -59,15 +59,8 @@ export function AgentCatalogPage() {
     }
   }, [params])
 
-  const visibleIds = visibleCases.map((c) => c.id)
-  const visibleMeta = visibleCases.map((c) => ({ id: c.id, stage: c.stage }))
-  const explicitCase =
-    params.get('case') || (pickerTouched ? caseId : null)
-  const preferredFor = (stage: StageId) =>
-    resolvePreferredCaseId(visibleIds, explicitCase, {
-      stage,
-      visible: visibleMeta,
-    })
+  // agent-case-binding: only explicit picker / URL — no auto prefer
+  const chosenCaseId = caseId || params.get('case') || ''
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase()
@@ -89,7 +82,7 @@ export function AgentCatalogPage() {
   }, [filtered])
 
   const startWith = (a: (typeof agents)[number]) => {
-    const chosen = preferredFor(a.stage)
+    const chosen = chosenCaseId
     const chosenCase = visibleCases.find((c) => c.id === chosen)
     // Fix W · 阶段错配二次确认，不只 amber
     if (chosenCase && chosenCase.stage !== a.stage) {
@@ -115,19 +108,35 @@ export function AgentCatalogPage() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-8">
+    <div
+      className="flex-1 overflow-y-auto px-6 py-8 lg:px-8"
+      data-testid="agent-catalog-page"
+      data-catalog-bypass="1"
+    >
       <header className="mb-5 max-w-5xl">
-        <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">Agent</h1>
+        <p
+          className="text-[11px] font-medium uppercase tracking-wider text-amber-800/80"
+          data-testid="catalog-bypass-kicker"
+        >
+          旁路 · 助手目录
+        </p>
+        <h1 className="mt-1 text-[22px] font-semibold tracking-tight text-slate-900">
+          助手目录
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
-          选 Agent 开会话 · 有最近案时默认带上 ·{' '}
-          <Link to="/agent/harness" className="ui-link-weak">
-            运行说明
+          选助手开会话（旁路）· 主办理请回大厅委托或公司案八部 · 案可选，可稍后绑定 ·{' '}
+          <Link to="/agent/harness" className="ui-link-weak" data-testid="catalog-to-harness-paper">
+            纸面运行说明
           </Link>
         </p>
-        <p className="mt-1.5 text-[11px] leading-snug text-slate-400" role="note">
-          平台分层纪律：Core 主办理闭环 · Assist 辅助薄层 · Beta 非采购闭环 — 勿把 Assist/Beta
-          卖成 Core。
-        </p>
+        <details className="mt-1.5" data-testid="catalog-tier-honesty">
+          <summary className="cursor-pointer select-none text-[11px] text-slate-400 hover:text-slate-600">
+            分层说明（示意）
+          </summary>
+          <p className="mt-1 text-[11px] leading-snug text-slate-500" role="note">
+            主办理闭环 / 辅助薄层 / 试用不进采购闭环 — 勿把辅助或试用卖成主办理。
+          </p>
+        </details>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <select
             value={caseId}
@@ -136,9 +145,9 @@ export function AgentCatalogPage() {
               setCaseId(e.target.value)
             }}
             className="ui-input ui-input-sm focus-ring max-w-[220px] truncate"
-            aria-label="覆盖关联案件，空则按 Agent 阶段优选"
+            aria-label="关联案件（可选）"
           >
-            <option value="">自动（按 Agent 阶段）</option>
+            <option value="">可稍后创建或绑定案件</option>
             {visibleCases.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.title} · {getStageMeta(c.stage).shortName}
@@ -147,8 +156,8 @@ export function AgentCatalogPage() {
           </select>
           <span className="text-[11px] text-slate-400">
             {caseId
-              ? '已覆盖：所有 Agent 将带上所选案件'
-              : '未覆盖 · 启动按该 Agent 阶段优选最近案'}
+              ? '已选：新建会话将带上所选案件'
+              : '可不选 · 无案也可开会话'}
           </span>
         </div>
         <div className="mt-2.5 flex flex-wrap items-center gap-2">
@@ -211,13 +220,16 @@ export function AgentCatalogPage() {
       </header>
 
       {filtered.length === 0 ? (
-        <div className="ui-empty max-w-xl">
-          <p className="ui-empty-title">没有匹配的 Agent</p>
-          <p className="ui-empty-desc">
-            {q.trim() || stageFilter !== 'all' || tierFilter !== 'all'
-              ? '试试清空搜索或换一层 / 阶段。'
-              : '当前目录为空。'}
-          </p>
+        <div className="ui-empty max-w-xl" data-testid="agent-catalog-empty-wrap">
+          <SoftEmpty
+            kind={
+              q.trim() || stageFilter !== 'all' || tierFilter !== 'all'
+                ? 'catalog-filter'
+                : 'catalog-empty'
+            }
+            testId="agent-catalog-empty"
+            className="border-0 bg-transparent px-0 py-0"
+          />
           <div className="mt-1 flex flex-wrap justify-center gap-2">
             <button
               type="button"
@@ -248,13 +260,17 @@ export function AgentCatalogPage() {
                   className="flex items-center gap-2 text-[13px] font-semibold tracking-tight text-slate-900"
                 >
                   <AgentTierBadge tier={tier} />
-                  <span>{AGENT_TIER_SHORT[tier]}</span>
+                  <span>
+                    {tier === 'beta'
+                      ? AGENT_TIER_SHORT.beta.replace(/^Beta[·・]?/, '')
+                      : AGENT_TIER_SHORT[tier]}
+                  </span>
                 </h2>
                 <span className="tabular text-[11px] text-slate-400">{list.length} 个</span>
               </div>
               <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {list.map((a) => {
-                  const chosenId = preferredFor(a.stage)
+                  const chosenId = chosenCaseId
                   const chosen = visibleCases.find((c) => c.id === chosenId)
                   const mismatch = !!chosen && chosen.stage !== a.stage
                   return (

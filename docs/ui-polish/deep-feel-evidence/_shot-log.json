@@ -1,0 +1,306 @@
+[
+  {
+    "name": "mid-5173-dashboard-home.png",
+    "ok": true
+  },
+  {
+    "name": "mid-5173-inbox-or-next-click.png",
+    "ok": true
+  },
+  {
+    "name": "mid-5173-pipeline-stage.png",
+    "ok": true
+  },
+  {
+    "name": "mid-5173-pipeline-after-click.png",
+    "ok": true
+  },
+  {
+    "name": "mid-5173-docket-list.png",
+    "ok": true
+  },
+  {
+    "name": "mid-5173-docket-focus.png",
+    "ok": true
+  },
+  {
+    "name": "mid-5173-cases-list.png",
+    "ok": true
+  },
+  {
+    "name": "mid-5173-case-detail.png",
+    "ok": true
+  },
+  {
+    "name": "wb-5174-workbench-home.png",
+    "ok": true
+  },
+  {
+    "name": "wb-5174-intake-empty-or-step.png",
+    "ok": true
+  },
+  {
+    "name": "wb-5174-intake-filled.png",
+    "ok": true
+  },
+  {
+    "name": "wb-5174-intake-after-action.png",
+    "ok": true
+  },
+  {
+    "name": "wb-5174-research.png",
+    "ok": true
+  },
+  {
+    "name": "wb-5174-research-interact.png",
+    "ok": true
+  },
+  {
+    "name": "agent-5175-home.png",
+    "ok": true
+  },
+  {
+    "name": "agent-5175-session-confirm.png",
+    "ok": true
+  },
+  {
+    "name": "agent-5175-composer-focus.png",
+    "ok": true
+  },
+  {
+    "name": "agent-5175-composer-filled.png",
+    "ok": true
+  },
+  {
+    "name": "agent-5175-confirm-interact.png",
+    "ok": true
+  },
+  {
+    "name": "ops-5176-logs.png",
+    "ok": true
+  },
+  {
+    "name": "ops-5176-logs-filtered.png",
+    "ok": true
+  },
+  {
+    "name": "ops-5176-logs-tab.png",
+    "ok": true
+  },
+  {
+    "name": "ops-5176-models.png",
+    "ok": true
+  },
+  {
+    "name": "ops-5176-config.png",
+    "ok": true
+  },
+  {
+    "name": "ops-5176-config-toggle.png",
+    "ok": true
+  },
+  {
+    "name": "iam-5177-home-persona.png",
+    "ok": true
+  },
+  {
+    "name": "iam-5177-persona-interact.png",
+    "ok": true
+  },
+  {
+    "name": "iam-5177-login.png",
+    "ok": true
+  },
+  {
+    "name": "iam-5177-login-focus.png",
+    "ok": true
+  },
+  {
+    "name": "iam-5177-login-filled.png",
+    "ok": true
+  },
+  {
+    "name": "doc-5178-editor.png",
+    "ok": true
+  },
+  {
+    "name": "doc-5178-editor-typed.png",
+    "ok": true
+  },
+  {
+    "name": "doc-5178-revision-or-anno.png",
+    "ok": true
+  },
+  {
+    "name": "ai-infra-5179-loadtest.png",
+    "ok": true
+  },
+  {
+    "name": "ai-infra-5179-jobs.png",
+    "ok": true
+  },
+  {
+    "name": "ai-infra-5179-jobs-interact.png",
+    "ok": true
+  },
+  {
+    "name": "ai-infra-5179-endpoints.png",
+    "ok": true
+  },
+  {
+    "name": "ai-data-5181-datasets.png",
+    "ok": true
+  },
+  {
+    "name": "ai-data-5181-datasets-publish-gate.png",
+    "ok": true
+  },
+  {
+    "name": "ai-data-5181-sources.png",
+    "ok": true
+  },
+  {
+    "name": "ai-data-5181-sources-pull.png",
+    "ok": true
+  },
+  {
+    "name": "ai-data-5181-exports.png",
+    "ok": true
+  },
+  {
+    "name": "ai-data-5181-exports-cta.png",
+    "ok": true
+  },
+  {
+    "name": "search-5182-home-empty.png",
+    "ok": true
+  },
+  {
+    "name": "search-5182-query-filled.png",
+    "ok": true
+  },
+  {
+    "name": "search-5182-results.png",
+    "ok": true
+  },
+  {
+    "name": "search-5182-result-interact.png",
+    "ok": true
+  },
+  {
+    "name": "search-5182-saved.png",
+    "ok": true
+  },
+  {
+    "name": "search-5182-corpus.png",
+    "ok": true
+  },
+  {
+    "name": "fto-5183-features.png",
+    "ok": true
+  },
+  {
+    "name": "fto-5183-features-filled.png",
+    "ok": true
+  },
+  {
+    "name": "fto-5183-hits.png",
+    "ok": true
+  },
+  {
+    "name": "fto-5183-hits-select.png",
+    "ok": true
+  },
+  {
+    "name": "fto-5183-matrix.png",
+    "ok": true
+  },
+  {
+    "name": "fto-5183-matrix-interact.png",
+    "ok": true
+  },
+  {
+    "name": "mining-5184-disclosure.png",
+    "ok": true
+  },
+  {
+    "name": "mining-5184-disclosure-filled.png",
+    "ok": true
+  },
+  {
+    "name": "mining-5184-candidates.png",
+    "ok": true
+  },
+  {
+    "name": "mining-5184-candidates-select.png",
+    "ok": true
+  },
+  {
+    "name": "mining-5184-score.png",
+    "ok": true
+  },
+  {
+    "name": "inspire-5185-prompt.png",
+    "ok": true
+  },
+  {
+    "name": "inspire-5185-prompt-filled.png",
+    "ok": true
+  },
+  {
+    "name": "inspire-5185-after-submit.png",
+    "ok": true
+  },
+  {
+    "name": "inspire-5185-sparks.png",
+    "ok": true
+  },
+  {
+    "name": "inspire-5185-sparks-fav.png",
+    "ok": true
+  },
+  {
+    "name": "inspire-5185-favorites.png",
+    "ok": true
+  },
+  {
+    "name": "landscape-5186-domain.png",
+    "ok": true
+  },
+  {
+    "name": "landscape-5186-domain-select.png",
+    "ok": true
+  },
+  {
+    "name": "landscape-5186-tree.png",
+    "ok": true
+  },
+  {
+    "name": "landscape-5186-tree-expand.png",
+    "ok": true
+  },
+  {
+    "name": "landscape-5186-node-edrive.png",
+    "ok": true
+  },
+  {
+    "name": "figure-5187-list.png",
+    "ok": true
+  },
+  {
+    "name": "figure-5187-new.png",
+    "ok": true
+  },
+  {
+    "name": "figure-5187-new-filled.png",
+    "ok": true
+  },
+  {
+    "name": "figure-5187-edit-seed.png",
+    "ok": true
+  },
+  {
+    "name": "figure-5187-edit-interact.png",
+    "ok": true
+  }
+]

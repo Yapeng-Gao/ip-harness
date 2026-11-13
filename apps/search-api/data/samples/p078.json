@@ -1,0 +1,17 @@
+{
+  "id": "p078",
+  "publicationNumber": "CN110000078A",
+  "title": "Multimodal retrieval re-ranking method (#78)",
+  "applicant": "Samsung Electronics Co., Ltd.",
+  "inventor": "Inventor 7",
+  "date": "2024-07-15",
+  "ipc": [
+    "G06N3/08"
+  ],
+  "familyId": "fam-ai-3",
+  "country": "CN",
+  "legalStatus": "有效",
+  "abstract": "【样本·非真库】 Cross-modal feature fusion for retrieval re-ranking.",
+  "claims": "1. A device or method comprising… (sample p078)",
+  "snippet": "Multimodal retrieval re-ranking method"
+}

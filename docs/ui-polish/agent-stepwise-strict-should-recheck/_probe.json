@@ -1,0 +1,190 @@
+{
+  "at": "2026-09-19T05:56:50.605Z",
+  "tipSha": "9d0fa9954e53545d3e370aa95e27095fd7fa6a30",
+  "fixSha": "0fe67d5a7a0f61f3b51b55a7b8ea8b69b544ec51",
+  "should": {
+    "SS-S-S0-1": {
+      "pass": true,
+      "detail": {
+        "hasHelp": true,
+        "helpOpen": false,
+        "helpClosed": true,
+        "helpSummary": "说明",
+        "stacked11": 0,
+        "openDualRows": false,
+        "bodyHasCoreAssistWall": false,
+        "gates": {
+          "caseBind": 1,
+          "billing": false,
+          "mid": 0
+        }
+      }
+    },
+    "SS-S-S6-1": {
+      "pass": true,
+      "detail": {
+        "h1": "待确认会话",
+        "awkward": false,
+        "human": true
+      }
+    },
+    "SS-S-S7-1": {
+      "pass": true,
+      "detail": {
+        "measured": [
+          {
+            "h": 205,
+            "tier": "core",
+            "noteH": null,
+            "clamp": null,
+            "label": "调研检索 Agent"
+          },
+          {
+            "h": 205,
+            "tier": "core",
+            "noteH": null,
+            "clamp": null,
+            "label": "交底整理 Agent"
+          },
+          {
+            "h": 205,
+            "tier": "core",
+            "noteH": null,
+            "clamp": null,
+            "label": "立项评估 Agent"
+          },
+          {
+            "h": 205,
+            "tier": "core",
+            "noteH": null,
+            "clamp": null,
+            "label": "权利要求撰写 Agent"
+          },
+          {
+            "h": 205,
+            "tier": "core",
+            "noteH": null,
+            "clamp": null,
+            "label": "OA 答复 Agent"
+          },
+          {
+            "h": 205,
+            "tier": "core",
+            "noteH": null,
+            "clamp": null,
+            "label": "年费与维持 Agent"
+          },
+          {
+            "h": 238,
+            "tier": "assist",
+            "noteH": 33,
+            "clamp": "none",
+            "label": "监控预警 Agent"
+          },
+          {
+            "h": 238,
+            "tier": "beta",
+            "noteH": 33,
+            "clamp": "none",
+            "label": "转化条款 Agent"
+          },
+          {
+            "h": 238,
+            "tier": "beta",
+            "noteH": 33,
+            "clamp": "none",
+            "label": "布局洞察 Agent"
+          }
+        ],
+        "maxCore": 205,
+        "maxAssist": 238,
+        "delta": 33,
+        "noteCount": 3,
+        "allClamp1": true,
+        "passHint": true
+      }
+    },
+    "SS-S-S8-1": {
+      "pass": true,
+      "detail": {
+        "list": {
+          "hasDomainPack": false,
+          "hasMock": false,
+          "hasPackEq": false,
+          "hasBackendMock": false,
+          "snippet": "跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Agent 项目模式 可选模式：通用多席协作，或启用专利领域流程。默认入口仍是 /agent 通用单聊。 新建项目 项目类型 通用（无专利步骤） 领域包 通用项目不含专利步骤条、自由实施分析或权利要求确认。 关联案件（可选） 可稍后创建或绑定案件 一种边缘计算节点调度方法 无人机集群协同避障方法 车载毫米波雷达杂波抑制方法 工业现场总线冗余心跳协议 不强制选案 · 进工作区后再「创建并绑定」或「绑定已有案」 创建并打开总控 课题协作 · 通用演示 通用 通用：总控 + 研究 / 写作 / 审查（无专利步骤） 席位 3 · 含总控席 边缘调度模组 · 专利演示 专利 专利领域：总控 + 检索 / 撰稿 / 自由实施 席位 3 · 含总控席 · 专利领域"
+        },
+        "create": {
+          "skipped": true
+        }
+      }
+    },
+    "SS-S-S9-1": {
+      "pass": true,
+      "detail": {
+        "url": "/agent/projects/proj-demo-patent/bots/expert-search",
+        "hasBoolean": false,
+        "hasArrowChain": false,
+        "hasHuman": true,
+        "snake": false,
+        "snippet": "跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Agent 项目模式 项目 课题协作 · 通用演示 通用 边缘调度模组 · 专利演示 专利 总控席 检索专家 撰稿专家 自由实施专家 项目次级入口 · 总控编排 专利 专利领域 未绑案件 请先绑定案件 写入前请先绑定案件 创建并绑定新案 绑定已有案 检索专家 现有技术检索 · 工作篮 先写好检索词并查看结果，再把有用文献放进工作篮；需要时请你确认检索策略（默认只读，不直接改案件）。 1检索式 2命中 3工作篮 4策略确认 · 待确认 工具卡 高级说明 商业专利检索 query=(边缘计算 OR edge) AND (调度) AND (负载预测) · limit=20 聚类命中 起草调研报告 绑定新颖性点 项目协作 · 总控编排 【检索】已扩展关键词：边缘调度 / 负载预测 / 能耗约束。下一步进行商业专利检索。 2026/9/19 05:56:56 跑检索式 看命中 入工作篮 回报总控/项目 推进一步 发送 护栏：禁止空命中过闸 · 命中须可核验 pubNo+url · 输出非法律意见 项目时间线 创建 2026/9/19 05:56:56 专利演示项目已种子 专利领域 · 总控 + 检索 / 撰稿 / 自由实施 下一步 用中栏「推进一步」继续本席剧本；需要换席时再回总控分派。 回总控分派 去撰"
+      },
+      "note": "Should only: 布尔检索工程链；snake_case 属 Must 面，仅备注"
+    },
+    "SS-S-S3-1": {
+      "pass": true,
+      "detail": {
+        "url": "/agent/sessions/sess-oa-1",
+        "groupCount": 1,
+        "groupLabels": [
+          "调用组 ·OA 争点分析×22 次同类办理 · 默认折叠细节"
+        ],
+        "callLikeCount": 4,
+        "maxDup": 2,
+        "oaCallCount": 0,
+        "freq": {
+          "调用 ·修改建议2026-09-10 09:12:10未写库 · 缓冲": 2,
+          "调用 ·修改建议": 1,
+          "调用 ·": 1
+        }
+      }
+    },
+    "SS-S-S4-1": {
+      "pass": true,
+      "detail": {
+        "url": "/agent/sessions/sess-oa-1?focus=hitl",
+        "collapse": true,
+        "collapseOpen": false,
+        "confirm": true,
+        "openSecondary": 0,
+        "closedSecondary": 0,
+        "collapseSummary": "案件与 Agent 概况"
+      }
+    },
+    "SS-S-S5-1": {
+      "pass": true,
+      "detail": {
+        "url": "/agent/sessions/sess-1789797424174",
+        "matchHint": false,
+        "switchTestId": false,
+        "anySwitch": false,
+        "loudSwitch": false,
+        "bound": true,
+        "via": "create-bind"
+      }
+    }
+  },
+  "gates": {
+    "caseBind": 1,
+    "billing": false,
+    "mid": [],
+    "midCount": 0
+  },
+  "passCount": 8,
+  "failIds": [],
+  "allPass": true,
+  "tipShaShort": "9d0fa99",
+  "fixShaShort": "0fe67d5",
+  "ancestor": true,
+  "atCst": "2026-09-19 13:58 CST"
+}

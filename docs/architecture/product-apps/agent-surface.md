@@ -8,12 +8,14 @@ Catalog 源：`src/data/agents.ts`（`AGENT_CATALOG` / `AgentDef`）；类型：
 
 ## 1. 产品面路由（样机）
 
+> 本表是 Agent 通用产品壳的基础路由，不覆盖专利业务壳。专利业务路由权威见 [agent-business-mode](./agent-business-mode.md)：`/agent`=我的案子，`/agent/catalog`=专家工作台；不要把下面旧式 Home/Catalog 路径当作专利业务冷启动。
+
 | 路由 | 意图 |
 |------|------|
-| `/agent` | Home |
+| `/agent` | 通用壳 Home；专利业务模式下由 `agent-business-mode` 覆盖 |
 | `/agent/sessions` | 会话列表 |
 | `/agent/sessions/:id` | 会话工作区（Composer + Confirm + 上下文） |
-| `/agent/agents` | Catalog |
+| `/agent/agents` | 通用壳兼容 Catalog；专利专家工作台使用 `/agent/catalog` |
 | `/agent/harness` | Harness 架构说明页（目标形状，非已实现 runtime） |
 | `/agent/skills` · `/agent/tools` | → Catalog |
 
@@ -54,6 +56,9 @@ HITL 闸键（勿另起）：`go_nogo` · `approve_strategy` · `authorize_file`
 - 试运行 / 草稿 / 工具预览 → **不写**案态。
 - 正式提交 / HITL 通过 → 只经 `dispatchCommand`（`actor: 'agent'`）。
 - 工具副作用必须可映射到 DomainCommand 或只读（见 [agent-tools-mcp.md](./agent-tools-mcp.md)）。
+
+入口模式（**通用=Grok 多 bot+专利专家**；项目=其上挂夹）见 [agent-entry-modes.md](./agent-entry-modes.md)。  
+项目文件夹 / 专家分剧本 IA 见 [agent-project-folder.md](./agent-project-folder.md)。
 
 ## 5. 样机 vs 落地
 

@@ -1,0 +1,209 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { FolderPlus, FolderKanban } from 'lucide-react'
+import { useProjectFolder } from '../../projects/ProjectFolderContext'
+import { isOrchestratorExpert, projectKindBadge } from '../../projects/experts'
+import { useApp } from '@shared/context/AppContext'
+import type { DomainPackId, ProjectKind } from '../../projects/types'
+
+export function ProjectListPage() {
+  const { folderProjects, createProject } = useProjectFolder()
+  const { visibleCases } = useApp()
+  const navigate = useNavigate()
+  const [title, setTitle] = useState('')
+  const [summary, setSummary] = useState('')
+  const [kind, setKind] = useState<ProjectKind>('domain')
+  const [domainPackId, setDomainPackId] = useState<DomainPackId>('patent')
+  const [caseId, setCaseId] = useState('')
+
+  const onCreate = () => {
+    const p = createProject({
+      title: title.trim() || '新项目文件夹',
+      summary: summary.trim(),
+      kind,
+      domainPackId: kind === 'domain' ? domainPackId : undefined,
+      caseId: caseId || undefined,
+    })
+    setTitle('')
+    setSummary('')
+    setCaseId('')
+    navigate(`/agent/projects/${p.id}`)
+  }
+
+  return (
+    <div className="flex flex-1 flex-col overflow-y-auto">
+      <div className="mx-auto w-full max-w-2xl px-4 py-8">
+        <div
+          className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[12px] text-amber-950"
+          data-testid="projects-demote-banner"
+          role="status"
+        >
+          <p className="font-semibold">遗留项目夹已降权（旁路）</p>
+          <p className="mt-0.5 text-amber-900/90">
+            一期主路径是大厅接待+八部 → 公司案 → 部台。本页为遗留深链，勿当第二套产品进门。
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Link
+              to="/agent"
+              className="rounded-md bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+              data-testid="projects-to-hall"
+            >
+              回大厅
+            </Link>
+            <Link
+              to="/agent/cases"
+              className="rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium"
+              data-testid="projects-to-cases"
+            >
+              去案盘
+            </Link>
+          </div>
+        </div>
+        <h1 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+          <FolderKanban className="h-5 w-5" aria-hidden />
+          遗留项目夹（旁路）
+        </h1>
+        <p className="mt-1 text-sm text-slate-600">
+          遗留专班项目夹。请优先用{' '}
+          <Link to="/agent" className="underline">
+            大厅
+          </Link>
+          {' '}与{' '}
+          <Link to="/agent/cases" className="underline">
+            案盘
+          </Link>
+          。实验室旁路见{' '}
+          <Link to="/agent/lab" className="underline" data-testid="projects-to-lab">
+            原型展廊
+          </Link>
+          （沙盒 / 多助手仅展廊入口，非主办理）。
+        </p>
+
+        <details
+          className="mt-6 rounded-xl border border-dashed border-amber-200/80 bg-amber-50/40 p-4"
+          data-testid="projects-create-fold"
+        >
+          <summary className="flex cursor-pointer select-none items-center gap-1.5 text-sm font-medium text-amber-950/80">
+            <FolderPlus className="h-4 w-4" aria-hidden />
+            新建遗留项目夹（旁路·收折）
+          </summary>
+          <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="项目标题"
+            className="focus-ring mb-2 w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
+            aria-label="项目标题"
+          />
+          <textarea
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            placeholder="一句话目标（可选）"
+            rows={2}
+            className="focus-ring mb-2 w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
+            aria-label="项目摘要"
+          />
+          <fieldset className="mb-3">
+            <legend className="mb-1 text-xs font-medium text-slate-600">项目类型</legend>
+            <div className="flex flex-wrap gap-3 text-xs text-slate-700">
+              <label className="inline-flex items-center gap-1.5">
+                <input
+                  type="radio"
+                  name="kind"
+                  checked={kind === 'general'}
+                  onChange={() => setKind('general')}
+                />
+                通用（无专利步骤）
+              </label>
+              <label className="inline-flex items-center gap-1.5">
+                <input
+                  type="radio"
+                  name="kind"
+                  checked={kind === 'domain'}
+                  onChange={() => setKind('domain')}
+                />
+                领域包
+              </label>
+            </div>
+          </fieldset>
+          {kind === 'domain' ? (
+            <label className="mb-2 flex items-center gap-2 text-xs text-slate-500">
+              领域
+              <select
+                value={domainPackId}
+                onChange={(e) => setDomainPackId(e.target.value as DomainPackId)}
+                className="focus-ring rounded border border-slate-200 bg-slate-50 px-2 py-1"
+              >
+                <option value="patent">专利</option>
+              </select>
+            </label>
+          ) : (
+            <p className="mb-2 text-[11px] text-slate-400">
+              通用项目不含专利步骤条、自由实施分析或权利要求确认。
+            </p>
+          )}
+          <label className="mb-1 flex items-center gap-2 text-xs text-slate-500">
+            关联案件（可选）
+            <select
+              value={caseId}
+              onChange={(e) => setCaseId(e.target.value)}
+              className="focus-ring rounded border border-slate-200 bg-slate-50 px-2 py-1"
+              aria-label="关联案件（可选）"
+              data-testid="project-create-case"
+            >
+              <option value="">可稍后创建或绑定案件</option>
+              {visibleCases.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="mb-3 text-[11px] text-slate-400">
+            不强制选案 · 进工作区后再「创建并绑定」或「绑定已有案」
+          </p>
+          <button
+            type="button"
+            onClick={onCreate}
+            data-testid="project-create-submit"
+            className="btn-press focus-ring rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white"
+          >
+            创建并打开总控
+          </button>
+          </div>
+        </details>
+
+        <ul className="mt-6 space-y-2" data-testid="projects-folder-list">
+          {folderProjects.map((p) => {
+            const badge = projectKindBadge(p)
+            return (
+              <li key={p.id}>
+                <Link
+                  to={`/agent/projects/${p.id}`}
+                  className="focus-ring block rounded-lg border border-slate-200 bg-white px-4 py-3 hover:border-slate-300 hover:shadow-sm"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-medium text-slate-900">{p.title}</span>
+                    <span
+                      className={`rounded border px-1.5 py-px text-[10px] font-medium ${badge.className}`}
+                    >
+                      {badge.label}
+                    </span>
+                  </div>
+                  {p.summary && (
+                    <div className="mt-0.5 text-xs text-slate-500">{p.summary}</div>
+                  )}
+                  <div className="mt-1 text-[10px] text-slate-400">
+                    席位 {p.expertIds.filter((e) => !isOrchestratorExpert(e)).length} ·
+                    含总控席
+                    {p.domainPackId === 'patent' ? ' · 专利领域' : p.domainPackId ? ` · ${p.domainPackId}` : ''}
+                  </div>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    </div>
+  )
+}

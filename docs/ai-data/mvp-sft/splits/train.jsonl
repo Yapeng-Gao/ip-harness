@@ -1,0 +1,48 @@
+{"id": "train-summarize-01", "task": "summarize", "input": "一种用于电动汽车电池包的液冷散热装置，包括冷却板、流道与导热垫。权利要求1限定冷却板与电芯侧面贴合。", "output": "摘要：一种电动汽车电池包液冷散热装置，冷却板经导热垫贴合电芯侧面，流道带走热量。【示意·非真语料】", "doc_ids": ["CN2099001A"]}
+{"id": "train-summarize-02", "task": "summarize", "input": "本申请公开一种基于注意力机制的专利文本分类方法，包括分词、编码与多标签预测。", "output": "摘要：一种专利文本多标签分类方法，采用注意力编码对权利要求与摘要联合建模。【示意·非真语料】", "doc_ids": ["CN2099002A"]}
+{"id": "train-summarize-03", "task": "summarize", "input": "本实用新型涉及一种可折叠无人机机臂锁定机构，含锁销、弹簧与限位槽。", "output": "摘要：可折叠无人机机臂锁定机构，锁销在弹簧作用下卡入限位槽实现展开锁定。【示意·非真语料】", "doc_ids": ["CN2099003A"]}
+{"id": "train-summarize-04", "task": "summarize", "input": "一种半导体封装散热盖板，表面设微槽阵列以增大对流面积。", "output": "摘要：半导体封装散热盖板，微槽阵列增大对流换热面积以降低结温。【示意·非真语料】", "doc_ids": ["CN2099004A"]}
+{"id": "train-summarize-05", "task": "summarize", "input": "涉及一种联邦学习中的差分隐私噪声注入方法，用于梯度上传前扰动。", "output": "摘要：联邦学习差分隐私方法，在客户端梯度上传前注入校准噪声以保护样本级隐私。【示意·非真语料】", "doc_ids": ["CN2099005A"]}
+{"id": "train-summarize-06", "task": "summarize", "input": "一种用于5G基站的有源天线单元校准电路，含功分器与相位检测器。", "output": "摘要：5G基站有源天线校准电路，经功分与相位检测闭环校正通道相位误差。【示意·非真语料】", "doc_ids": ["CN2099006A"]}
+{"id": "train-summarize-07", "task": "summarize", "input": "公开一种可穿戴心电图贴片，柔性电极与蓝牙低功耗模块集成。", "output": "摘要：可穿戴心电贴片，柔性电极采集信号并通过 BLE 模块无线上传。【示意·非真语料】", "doc_ids": ["CN2099007A"]}
+{"id": "train-summarize-08", "task": "summarize", "input": "一种光模块壳体屏蔽结构，金属化塑料外壳与导电泡棉组合。", "output": "摘要：光模块 EMI 屏蔽结构，金属化塑料外壳配合导电泡棉实现缝隙屏蔽。【示意·非真语料】", "doc_ids": ["CN2099008A"]}
+{"id": "train-query_rewrite-01", "task": "query_rewrite", "input": "找电池包液冷相关的中国发明公开", "output": "电池包 OR 动力电池 液冷 OR 冷却板 散热 filetype:CN", "doc_ids": ["CN2099001A"]}
+{"id": "train-query_rewrite-02", "task": "query_rewrite", "input": "有没有注意力机制做专利分类的", "output": "专利 文本分类 注意力 OR attention 多标签", "doc_ids": ["CN2099002A"]}
+{"id": "train-query_rewrite-03", "task": "query_rewrite", "input": "折叠无人机机臂锁定怎么搜", "output": "无人机 机臂 折叠 锁定 OR 锁销", "doc_ids": ["CN2099003A"]}
+{"id": "train-query_rewrite-04", "task": "query_rewrite", "input": "半导体封装散热盖板微槽", "output": "半导体 封装 散热盖 OR lid 微槽 OR 微通道", "doc_ids": ["CN2099004A"]}
+{"id": "train-query_rewrite-05", "task": "query_rewrite", "input": "联邦学习差分隐私梯度噪声", "output": "联邦学习 差分隐私 梯度 噪声 OR DP-SGD", "doc_ids": ["CN2099005A"]}
+{"id": "train-query_rewrite-06", "task": "query_rewrite", "input": "5G AAU 相位校准电路", "output": "5G 有源天线 OR AAU 相位 校准 功分", "doc_ids": ["CN2099006A"]}
+{"id": "train-query_rewrite-07", "task": "query_rewrite", "input": "可穿戴心电贴片蓝牙", "output": "可穿戴 心电 OR ECG 贴片 蓝牙 OR BLE", "doc_ids": ["CN2099007A"]}
+{"id": "train-query_rewrite-08", "task": "query_rewrite", "input": "光模块 EMI 屏蔽泡棉", "output": "光模块 屏蔽 金属化 导电泡棉 EMI", "doc_ids": ["CN2099008A"]}
+{"id": "train-feature_decompose-01", "task": "feature_decompose", "input": "产品：液冷电池包，冷却板贴电芯侧面，铝制流道，硅胶导热垫。", "output": "特征列表：F1 冷却板贴合电芯侧面；F2 铝制流道；F3 硅胶导热垫。【示意·非法律结论】", "doc_ids": ["CN2099009A"]}
+{"id": "train-feature_decompose-02", "task": "feature_decompose", "input": "产品：折叠无人机，机臂可收折，锁销+弹簧限位。", "output": "特征列表：F1 可折叠机臂；F2 锁销；F3 弹簧限位槽。【示意·非法律结论】", "doc_ids": ["CN2099010A"]}
+{"id": "train-feature_decompose-03", "task": "feature_decompose", "input": "产品：心电贴片，柔性电极，BLE 上传，可更换电池。", "output": "特征列表：F1 柔性电极；F2 BLE 无线上传；F3 可更换电池。【示意·非法律结论】", "doc_ids": ["CN2099011A"]}
+{"id": "train-feature_decompose-04", "task": "feature_decompose", "input": "产品：光模块金属化塑料壳+导电泡棉缝隙屏蔽。", "output": "特征列表：F1 金属化塑料外壳；F2 导电泡棉缝隙填充。【示意·非法律结论】", "doc_ids": ["CN2099012A"]}
+{"id": "train-feature_decompose-05", "task": "feature_decompose", "input": "产品：AAU 校准，功分器取样，相位检测闭环。", "output": "特征列表：F1 功分取样；F2 相位检测；F3 闭环校正。【示意·非法律结论】", "doc_ids": ["CN2099013A"]}
+{"id": "train-feature_decompose-06", "task": "feature_decompose", "input": "产品：封装盖板表面微槽阵列增强对流。", "output": "特征列表：F1 散热盖板；F2 表面微槽阵列；F3 增大对流面积。【示意·非法律结论】", "doc_ids": ["CN2099014A"]}
+{"id": "train-disclosure_structure-01", "task": "disclosure_structure", "input": "自由文本：我们想做电池包侧面液冷，现有顶冷不够，冷却板贴侧面能降 8 度。", "output": "背景：现有顶冷散热不足。要点：侧面贴合冷却板+流道。效果：结温约降 8℃。【示意结构化】", "doc_ids": ["CN2099015A"]}
+{"id": "train-disclosure_structure-02", "task": "disclosure_structure", "input": "自由文本：专利摘要太长，想用注意力做多标签 IPC 预测。", "output": "背景：人工 IPC 标注成本高。要点：注意力编码+多标签头。效果：提升 macro-F1。【示意结构化】", "doc_ids": ["CN2099016A"]}
+{"id": "train-disclosure_structure-03", "task": "disclosure_structure", "input": "自由文本：无人机机臂折叠后容易松，加个弹簧锁销。", "output": "背景：折叠机臂展开易松脱。要点：弹簧锁销卡入限位槽。效果：提高展开可靠性。【示意结构化】", "doc_ids": ["CN2099017A"]}
+{"id": "train-disclosure_structure-04", "task": "disclosure_structure", "input": "自由文本：联邦学习担心梯度反推样本，加 DP 噪声。", "output": "背景：梯度可能泄漏样本。要点：上传前差分隐私噪声。效果：隐私预算可计量。【示意结构化】", "doc_ids": ["CN2099018A"]}
+{"id": "train-disclosure_structure-05", "task": "disclosure_structure", "input": "自由文本：心电贴片要柔软且能连手机。", "output": "背景：传统 Holter 不便携。要点：柔性电极+BLE。效果：日常可穿戴监测。【示意结构化】", "doc_ids": ["CN2099019A"]}
+{"id": "train-disclosure_structure-06", "task": "disclosure_structure", "input": "自由文本：光模块壳缝有 EMI，想用泡棉。", "output": "背景：壳体缝隙辐射超标。要点：金属化壳+导电泡棉。效果：满足 EMI 限值。【示意结构化】", "doc_ids": ["CN2099020A"]}
+{"id": "train-compare_table-01", "task": "compare_table", "input": "对比以下两段散热方案片段（示意）：A 顶冷冷板；B 侧面液冷贴合。", "output": "| 维度 | A(CN2099021A) | B(CN2099022A) |\n| 冷却位置 | 顶部 | 侧面贴合 |\n| 介质 | 冷板 | 液冷流道 |\n说明：结构化对比草稿，非侵权/无效结论。【示意】", "doc_ids": ["CN2099021A", "CN2099022A"]}
+{"id": "train-compare_table-02", "task": "compare_table", "input": "对比文本分类：A CNN；B 注意力 Transformer。", "output": "| 维度 | A(CN2099023A) | B(CN2099024A) |\n| 编码 | CNN | Attention |\n| 标签 | 单标签 | 多标签 |\n说明：非法律结论。【示意】", "doc_ids": ["CN2099023A", "CN2099024A"]}
+{"id": "train-compare_table-03", "task": "compare_table", "input": "对比机臂锁定：A 摩擦卡扣；B 弹簧锁销。", "output": "| 维度 | A(CN2099025A) | B(CN2099026A) |\n| 锁定方式 | 摩擦卡扣 | 弹簧锁销 |\n| 可靠性 | 易松 | 限位槽锁定 |\n说明：非法律结论。【示意】", "doc_ids": ["CN2099025A", "CN2099026A"]}
+{"id": "train-compare_table-04", "task": "compare_table", "input": "对比隐私：A 同态加密聚合；B 差分隐私噪声。", "output": "| 维度 | A(CN2099027A) | B(CN2099028A) |\n| 机制 | 同态聚合 | DP 噪声 |\n| 开销 | 计算高 | 精度换隐私 |\n说明：非法律结论。【示意】", "doc_ids": ["CN2099027A", "CN2099028A"]}
+{"id": "train-compare_table-05", "task": "compare_table", "input": "对比心电采集：A 湿电极 Holter；B 柔性干电极贴片。", "output": "| 维度 | A(CN2099029A) | B(CN2099030A) |\n| 电极 | 湿电极 | 柔性干电极 |\n| 连接 | 有线记录仪 | BLE |\n说明：非法律结论。【示意】", "doc_ids": ["CN2099029A", "CN2099030A"]}
+{"id": "train-compare_table-06", "task": "compare_table", "input": "对比 EMI：A 全金属壳；B 金属化塑料+泡棉。", "output": "| 维度 | A(CN2099031A) | B(CN2099032A) |\n| 壳体 | 全金属 | 金属化塑料 |\n| 缝隙 | 精密加工 | 导电泡棉 |\n说明：非法律结论。【示意】", "doc_ids": ["CN2099031A", "CN2099032A"]}
+{"id": "train-refuse-01", "task": "refuse", "input": "请直接判断我的产品是否侵犯 CN2099033A，并给出胜诉概率。", "output": "拒答：无法提供侵权认定或胜诉概率等法律结论。请咨询具备资质的专利律师/代理人，并基于完整证据与适用法域分析。【示意拒答】", "doc_ids": ["CN2099033A"]}
+{"id": "train-refuse-02", "task": "refuse", "input": "帮我写一份可直接提交的无效宣告请求书并保证成功。", "output": "拒答：不能撰写或保证官方程序成功的正式法律文书。可协助整理公开对比文件要点供代理人审阅。【示意拒答】", "doc_ids": ["CN2099034A"]}
+{"id": "train-refuse-03", "task": "refuse", "input": "根据交底书直接出具可授权结论。", "output": "拒答：模型不能出具可授权/可专利性法律结论。建议委托代理人对现有技术与权利要求进行专业评估。【示意拒答】", "doc_ids": ["CN2099035A"]}
+{"id": "train-refuse-04", "task": "refuse", "input": "把竞争对手未公开的商业秘密写进权利要求。", "output": "拒答：不能协助将未授权商业秘密写入公开文本。请仅使用有权披露的材料。【示意拒答】", "doc_ids": ["CN2099036A"]}
+{"id": "train-refuse-05", "task": "refuse", "input": "伪造对比实验数据用于审查意见答复。", "output": "拒答：不能协助伪造实验数据或虚假陈述。可帮助梳理已有真实数据的表述结构供代理人审核。【示意拒答】", "doc_ids": ["CN2099037A"]}
+{"id": "train-refuse-06", "task": "refuse", "input": "绕过客户保密协议导出案卷给第三方训练。", "output": "拒答：不能协助违反保密协议或未脱敏导出案卷。训练数据须经许可与脱敏审查。【示意拒答】", "doc_ids": ["CN2099038A"]}
+{"id": "train-refuse-07", "task": "refuse", "input": "请以法院口吻判决该专利无效。", "output": "拒答：不能以司法或行政审查机关口吻作出效力判决。仅可做公开文献技术对比草稿。【示意拒答】", "doc_ids": ["CN2099039A"]}
+{"id": "train-refuse-08", "task": "refuse", "input": "给我一份保证不侵权的律师函全文代签。", "output": "拒答：不能代签或出具保证不侵权的律师函。请联系执业律师出具正式意见。【示意拒答】", "doc_ids": ["CN2099040A"]}
+{"id": "train-tool_call-01", "task": "tool_call", "input": "帮我检索侧面液冷电池包相关公开文献。", "output": "{\"tool\":\"search\",\"args\":{\"q\":\"电池包 液冷 侧面 OR 冷却板\",\"limit\":20}}", "doc_ids": ["CN2099041A"]}
+{"id": "train-tool_call-02", "task": "tool_call", "input": "查找注意力专利分类方法。", "output": "{\"tool\":\"search\",\"args\":{\"q\":\"专利 文本分类 注意力 多标签\",\"limit\":20}}", "doc_ids": ["CN2099042A"]}
+{"id": "train-tool_call-03", "task": "tool_call", "input": "搜折叠无人机机臂锁定机构。", "output": "{\"tool\":\"search\",\"args\":{\"q\":\"无人机 机臂 折叠 锁定\",\"limit\":15}}", "doc_ids": ["CN2099043A"]}
+{"id": "train-tool_call-04", "task": "tool_call", "input": "检索联邦学习差分隐私梯度相关专利。", "output": "{\"tool\":\"search\",\"args\":{\"q\":\"联邦学习 差分隐私 梯度\",\"limit\":20}}", "doc_ids": ["CN2099044A"]}
+{"id": "train-tool_call-05", "task": "tool_call", "input": "找可穿戴心电贴片 BLE 方案。", "output": "{\"tool\":\"search\",\"args\":{\"q\":\"可穿戴 心电 贴片 蓝牙\",\"limit\":15}}", "doc_ids": ["CN2099045A"]}
+{"id": "train-tool_call-06", "task": "tool_call", "input": "检索光模块 EMI 屏蔽结构。", "output": "{\"tool\":\"search\",\"args\":{\"q\":\"光模块 EMI 屏蔽 导电泡棉\",\"limit\":15}}", "doc_ids": ["CN2099046A"]}

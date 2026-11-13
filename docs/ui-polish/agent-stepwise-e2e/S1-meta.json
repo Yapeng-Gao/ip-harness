@@ -1,0 +1,26 @@
+{
+  "id": "S1",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent",
+  "assertions": [
+    "case bound label=逐步走查样机案 S1 1789790086224· 样机",
+    "绑定后仍可开工 (home-send enabled)",
+    "Home 案件入口仍=1"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "case-bind-current": {
+      "x": 503,
+      "y": 347.625,
+      "width": 213.421875,
+      "height": 16.5
+    },
+    "home-send": {
+      "x": 963,
+      "y": 261.875,
+      "width": 88,
+      "height": 40
+    }
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S1-case-bound.png"
+}

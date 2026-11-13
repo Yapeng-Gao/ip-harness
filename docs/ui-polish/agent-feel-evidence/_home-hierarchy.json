@@ -1,0 +1,15 @@
+{
+  "cta": {
+    "h": 40,
+    "w": 88,
+    "top": 403
+  },
+  "chip": {
+    "h": 30,
+    "w": 199,
+    "top": 206,
+    "text": "待确认 · 3"
+  },
+  "recommendStartCount": 0,
+  "recommendStartSample": []
+}

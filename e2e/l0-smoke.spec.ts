@@ -35,13 +35,16 @@ test.describe('L0-WB-01', () => {
 test.describe('L0-AG-01', () => {
   test.use({ baseURL: 'http://localhost:5175' })
 
-  test('L0-AG-01 agent home / 办理入口', async ({ page }) => {
+  test('L0-AG-01 agent home / 工作起点', async ({ page }) => {
     await page.goto('http://localhost:5175/agent')
-    const cue = page
-      .getByText(/要办哪件事/)
-      .or(page.getByRole('button', { name: /发送|启动/ }))
-      .or(page.getByLabel('办理目标'))
-    await expect(cue.first()).toBeVisible()
+    // 2026-10-21：/agent 首页 = 项目列表 + 简报 + 对话框；「我的案子」迁 /agent/cases
+    await expect(page.getByRole('heading', { name: '今天要办什么？' })).toBeVisible()
+    await expect(page.getByTestId('agent-home-page')).toBeVisible()
+    await expect(page.getByTestId('home-composer-send')).toBeVisible()
+
+    await page.goto('http://localhost:5175/agent/cases')
+    await expect(page.getByRole('heading', { name: '我的案子' })).toBeVisible()
+    await expect(page.getByTestId('business-cases-page')).toBeVisible()
   })
 })
 

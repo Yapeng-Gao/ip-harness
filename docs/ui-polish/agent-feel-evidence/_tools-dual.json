@@ -1,0 +1,152 @@
+{
+  "hits": [
+    {
+      "tag": "DIV",
+      "t": "dispatch_task",
+      "w": 89,
+      "h": 27,
+      "fs": "11px",
+      "cls": "max-w-[14rem] rounded-md border px-2 py-1 text-[11px] border"
+    },
+    {
+      "tag": "DIV",
+      "t": "dispatch_task",
+      "w": 71,
+      "h": 17,
+      "fs": "11px",
+      "cls": "font-medium"
+    },
+    {
+      "tag": "DIV",
+      "t": "summarize_timeline",
+      "w": 123,
+      "h": 27,
+      "fs": "11px",
+      "cls": "max-w-[14rem] rounded-md border px-2 py-1 text-[11px] border"
+    },
+    {
+      "tag": "DIV",
+      "t": "summarize_timeline",
+      "w": 105,
+      "h": 17,
+      "fs": "11px",
+      "cls": "font-medium"
+    },
+    {
+      "tag": "DIV",
+      "t": "open_expert_dm",
+      "w": 106,
+      "h": 27,
+      "fs": "11px",
+      "cls": "max-w-[14rem] rounded-md border px-2 py-1 text-[11px] border"
+    },
+    {
+      "tag": "DIV",
+      "t": "open_expert_dm",
+      "w": 88,
+      "h": 17,
+      "fs": "11px",
+      "cls": "font-medium"
+    }
+  ],
+  "broader": [
+    {
+      "tag": "DIV",
+      "t": "工具卡 · ORCHESTRATOR dispatch_task summarize_timeline open_exp",
+      "w": 992,
+      "h": 63,
+      "fs": "15px"
+    },
+    {
+      "tag": "DIV",
+      "t": "dispatch_task summarize_timeline open_expert_dm",
+      "w": 968,
+      "h": 27,
+      "fs": "15px"
+    },
+    {
+      "tag": "DIV",
+      "t": "dispatch_task",
+      "w": 89,
+      "h": 27,
+      "fs": "11px"
+    },
+    {
+      "tag": "DIV",
+      "t": "dispatch_task",
+      "w": 71,
+      "h": 17,
+      "fs": "11px"
+    },
+    {
+      "tag": "DIV",
+      "t": "summarize_timeline",
+      "w": 123,
+      "h": 27,
+      "fs": "11px"
+    },
+    {
+      "tag": "DIV",
+      "t": "summarize_timeline",
+      "w": 105,
+      "h": 17,
+      "fs": "11px"
+    },
+    {
+      "tag": "DIV",
+      "t": "open_expert_dm",
+      "w": 106,
+      "h": 27,
+      "fs": "11px"
+    },
+    {
+      "tag": "DIV",
+      "t": "open_expert_dm",
+      "w": 88,
+      "h": 17,
+      "fs": "11px"
+    }
+  ],
+  "dualLinks": [
+    {
+      "t": "作业中台",
+      "top": 12,
+      "left": 62,
+      "h": 32,
+      "href": "http://localhost:5173",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "t": "办理台",
+      "top": 12,
+      "left": 138,
+      "h": 32,
+      "href": "http://localhost:5174",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "t": "知产 Agent",
+      "top": 12,
+      "left": 202,
+      "h": 32,
+      "href": "http://localhost:5175",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "t": "作业中台",
+      "top": 39,
+      "left": 1341,
+      "h": 40,
+      "href": null,
+      "cls": "btn-press focus-ring rounded-[calc(var(--radius-md"
+    },
+    {
+      "t": "知产 Agent",
+      "top": 83,
+      "left": 1341,
+      "h": 40,
+      "href": null,
+      "cls": "btn-press focus-ring rounded-[calc(var(--radius-md"
+    }
+  ]
+}

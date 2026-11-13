@@ -1,0 +1,84 @@
+{
+  "recipeId": "recipe-ip-sft-mvp-v0.1.0",
+  "stage": "sft",
+  "datasetRef": "ds-ip-sft-mvp@v0.1.0",
+  "immutable": true,
+  "description": "I2 MVP 第一刀：仅 SFT 任务族。无预训练/CPT、无偏好/DPO、无评测金标并入训练。小样本合成示意，非真训练语料仓。",
+  "stagesExcluded": ["pretrain", "cpt", "preference", "dpo", "rlhf", "eval_into_train"],
+  "seed": 20260918,
+  "licenseGate": "licenses.md Pass only",
+  "excludesEvalIds": [],
+  "mix": [
+    {
+      "task": "summarize",
+      "typeId": "T3",
+      "targetCount": 12,
+      "splitPreview": { "train": 8, "val": 2, "test": 2 },
+      "ratioOfTotal": 0.158
+    },
+    {
+      "task": "query_rewrite",
+      "typeId": "T3",
+      "targetCount": 12,
+      "splitPreview": { "train": 8, "val": 2, "test": 2 },
+      "ratioOfTotal": 0.158
+    },
+    {
+      "task": "feature_decompose",
+      "typeId": "T3",
+      "targetCount": 10,
+      "splitPreview": { "train": 6, "val": 2, "test": 2 },
+      "ratioOfTotal": 0.132
+    },
+    {
+      "task": "disclosure_structure",
+      "typeId": "T3",
+      "targetCount": 10,
+      "splitPreview": { "train": 6, "val": 2, "test": 2 },
+      "ratioOfTotal": 0.132
+    },
+    {
+      "task": "compare_table",
+      "typeId": "T3",
+      "targetCount": 10,
+      "splitPreview": { "train": 6, "val": 2, "test": 2 },
+      "ratioOfTotal": 0.132
+    },
+    {
+      "task": "refuse",
+      "typeId": "T7",
+      "targetCount": 12,
+      "splitPreview": { "train": 8, "val": 2, "test": 2 },
+      "ratioOfTotal": 0.158
+    },
+    {
+      "task": "tool_call",
+      "typeId": "T4",
+      "targetCount": 10,
+      "splitPreview": { "train": 6, "val": 2, "test": 2 },
+      "ratioOfTotal": 0.132
+    }
+  ],
+  "totals": {
+    "rows": 76,
+    "train": 48,
+    "val": 14,
+    "test": 14,
+    "note": "ratioOfTotal 相对全量 76 行；train/val/test 按行冻结，评测切分不回灌训练"
+  },
+  "sampleRules": {
+    "minPerTask": 5,
+    "syntheticOk": true,
+    "fakePublicationNumbers": "CN2099xxxA 系列（示意假号）",
+    "docIdSplit": "文献号级 train ∩ (val∪test) = ∅",
+    "noPatentCase": true,
+    "noUndesensitizedDisclosure": true,
+    "noSearchApiBypassIngest": true
+  },
+  "alignment": {
+    "sftTaskTable": "docs/architecture/model-training/sft.md §3",
+    "dataPrep": "docs/architecture/model-training/data-prep.md",
+    "mvp": "docs/architecture/model-training/MVP.md §2 工作包2",
+    "aiInfraJob": "train.sft 必须钉死 dataset@version = ds-ip-sft-mvp@v0.1.0"
+  }
+}

@@ -1,0 +1,444 @@
+{
+  "homeNeedsHuman": [
+    {
+      "tag": "A",
+      "text": "待确认 · 3",
+      "w": 77,
+      "h": 23,
+      "top": 865,
+      "left": 758,
+      "fontSize": "11px",
+      "fontWeight": "500",
+      "bg": "oklch(0.987 0.022 95.277)",
+      "color": "oklch(0.279 0.077 45.635)",
+      "border": "1px solid oklch(0.924 0.12 95.746)",
+      "radius": "3.35544e+07px",
+      "display": "flex",
+      "role": null,
+      "ariaPressed": null,
+      "ariaCurrent": null,
+      "className": "inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-medium text-amb"
+    }
+  ],
+  "homeStrip": [
+    {
+      "text": "待确认 · 3",
+      "tag": "A",
+      "className": "btn-press focus-ring inline-flex items-center justify-center gap-1.5 rounded-full border border-ambe",
+      "h": 30,
+      "fs": "12px"
+    },
+    {
+      "text": "待确认 · 3",
+      "tag": "A",
+      "className": "inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] ",
+      "h": 23,
+      "fs": "11px"
+    }
+  ],
+  "segmented": [
+    {
+      "tag": "DIV",
+      "text": "全部4 待确认3",
+      "w": 207,
+      "h": 40,
+      "top": 197,
+      "left": 8,
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "bg": "rgba(120, 120, 128, 0.12)",
+      "color": "rgb(15, 23, 42)",
+      "border": "0px solid rgb(15, 23, 42)",
+      "radius": "12px",
+      "display": "flex",
+      "role": "group",
+      "ariaPressed": null,
+      "ariaCurrent": null,
+      "className": "segmented mx-2 mb-1.5 w-[calc(100%-1rem)]"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "全部4",
+      "w": 98,
+      "h": 32,
+      "top": 201,
+      "left": 12,
+      "fontSize": "12px",
+      "fontWeight": "500",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "border": "0px solid rgb(15, 23, 42)",
+      "radius": "8px",
+      "display": "block",
+      "role": null,
+      "ariaPressed": "true",
+      "ariaCurrent": null,
+      "className": "segmented-item btn-press focus-ring flex-1 tabular"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "待确认3",
+      "w": 98,
+      "h": 32,
+      "top": 201,
+      "left": 114,
+      "fontSize": "12px",
+      "fontWeight": "500",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgba(60, 60, 67, 0.6)",
+      "border": "0px solid rgba(60, 60, 67, 0.6)",
+      "radius": "8px",
+      "display": "block",
+      "role": null,
+      "ariaPressed": "false",
+      "ariaCurrent": null,
+      "className": "segmented-item btn-press focus-ring flex-1 tabular"
+    }
+  ],
+  "sidebarBadges": [],
+  "listBadges": [
+    {
+      "text": "待确认3",
+      "fs": "12px",
+      "h": 32,
+      "w": 98,
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "className": "segmented-item btn-press focus-ring flex-1 tabular"
+    },
+    {
+      "text": "一通创造性答复 · 边缘调度\nOA 答复 Agent · 待你确认\n待企业确认",
+      "fs": "15px",
+      "h": 72,
+      "w": 166,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "className": "agent-rail-row__link min-w-0 flex-1 text-left"
+    },
+    {
+      "text": "待企业确认",
+      "fs": "9px",
+      "h": 18,
+      "w": 55,
+      "bg": "oklch(0.987 0.022 95.277)",
+      "color": "oklch(0.414 0.112 45.904)",
+      "className": "inline-flex rounded-full border px-1 py-px text-[9px] font-medium border-amber-200 bg-ambe"
+    },
+    {
+      "text": "Inbox",
+      "fs": "9px",
+      "h": 14,
+      "w": 31,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.704 0.04 256.788)",
+      "className": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:text-slate-700 hover:underline"
+    },
+    {
+      "text": "边缘侧布局空白点洞察\n布局洞察 Agent · 待你确认\n待企业确认",
+      "fs": "15px",
+      "h": 72,
+      "w": 166,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "className": "agent-rail-row__link min-w-0 flex-1 text-left"
+    },
+    {
+      "text": "待企业确认",
+      "fs": "9px",
+      "h": 18,
+      "w": 55,
+      "bg": "oklch(0.987 0.022 95.277)",
+      "color": "oklch(0.414 0.112 45.904)",
+      "className": "inline-flex rounded-full border px-1 py-px text-[9px] font-medium border-amber-200 bg-ambe"
+    },
+    {
+      "text": "Inbox",
+      "fs": "9px",
+      "h": 14,
+      "w": 31,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.704 0.04 256.788)",
+      "className": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:text-slate-700 hover:underline"
+    },
+    {
+      "text": "无人机竞品 · 监控告警\n监控预警 Agent · 待你确认\n待企业确认",
+      "fs": "15px",
+      "h": 72,
+      "w": 166,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "className": "agent-rail-row__link min-w-0 flex-1 text-left"
+    },
+    {
+      "text": "待企业确认",
+      "fs": "9px",
+      "h": 18,
+      "w": 55,
+      "bg": "oklch(0.987 0.022 95.277)",
+      "color": "oklch(0.414 0.112 45.904)",
+      "className": "inline-flex rounded-full border px-1 py-px text-[9px] font-medium border-amber-200 bg-ambe"
+    },
+    {
+      "text": "Inbox",
+      "fs": "9px",
+      "h": 14,
+      "w": 31,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.704 0.04 256.788)",
+      "className": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:text-slate-700 hover:underline"
+    },
+    {
+      "text": "待企业确认",
+      "fs": "10px",
+      "h": 19,
+      "w": 64,
+      "bg": "oklch(0.987 0.022 95.277)",
+      "color": "oklch(0.414 0.112 45.904)",
+      "className": "inline-flex rounded-full border px-1.5 py-0.5 text-[10px] font-medium border-amber-200 bg-"
+    },
+    {
+      "text": "运营 Inbox",
+      "fs": "10px",
+      "h": 13,
+      "w": 48,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.704 0.04 256.788)",
+      "className": "text-[10px] text-slate-400 underline-offset-2 hover:text-slate-700 hover:underline"
+    },
+    {
+      "text": "待企业确认",
+      "fs": "10px",
+      "h": 19,
+      "w": 64,
+      "bg": "oklch(0.987 0.022 95.277)",
+      "color": "oklch(0.414 0.112 45.904)",
+      "className": "inline-flex rounded-full border px-1.5 py-0.5 text-[10px] font-medium border-amber-200 bg-"
+    },
+    {
+      "text": "运营 Inbox",
+      "fs": "10px",
+      "h": 13,
+      "w": 48,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.704 0.04 256.788)",
+      "className": "text-[10px] text-slate-400 underline-offset-2 hover:text-slate-700 hover:underline"
+    },
+    {
+      "text": "待企业确认",
+      "fs": "10px",
+      "h": 19,
+      "w": 64,
+      "bg": "oklch(0.987 0.022 95.277)",
+      "color": "oklch(0.414 0.112 45.904)",
+      "className": "inline-flex rounded-full border px-1.5 py-0.5 text-[10px] font-medium border-amber-200 bg-"
+    },
+    {
+      "text": "运营 Inbox",
+      "fs": "10px",
+      "h": 13,
+      "w": 48,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.704 0.04 256.788)",
+      "className": "text-[10px] text-slate-400 underline-offset-2 hover:text-slate-700 hover:underline"
+    }
+  ],
+  "confirmRegion": {
+    "sel": ".agent-hitl-dock",
+    "x": 224,
+    "y": 669,
+    "w": 992,
+    "h": 190
+  },
+  "amberNearHitl": [
+    {
+      "text": "待企业确认",
+      "fs": "9px",
+      "h": 18,
+      "top": 289,
+      "className": "inline-flex rounded-full border px-1 py-px text-[9px] font-medium border-amber-200 bg-amber-50 text-",
+      "bg": "oklch(0.987 0.022 95.277)"
+    },
+    {
+      "text": "待企业确认",
+      "fs": "9px",
+      "h": 18,
+      "top": 361,
+      "className": "inline-flex rounded-full border px-1 py-px text-[9px] font-medium border-amber-200 bg-amber-50 text-",
+      "bg": "oklch(0.987 0.022 95.277)"
+    },
+    {
+      "text": "待企业确认",
+      "fs": "9px",
+      "h": 18,
+      "top": 433,
+      "className": "inline-flex rounded-full border px-1 py-px text-[9px] font-medium border-amber-200 bg-amber-50 text-",
+      "bg": "oklch(0.987 0.022 95.277)"
+    },
+    {
+      "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中\n待批准\n待授权\n\n批准策略\n授权递交\n退回\n在运营 Inbox 中查看\n逐步\n\n请先选争点类型并填策略要点\n\n还有 3 条\n补充项 ·",
+      "fs": "15px",
+      "h": 190,
+      "top": 669,
+      "className": "confirm-hitl shrink-0 rounded-[var(--radius-md)] border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 s",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "text": "需要你确认：",
+      "fs": "14px",
+      "h": 20,
+      "top": 693,
+      "className": "text-amber-800/90",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "text": "",
+      "fs": "11px",
+      "h": 21,
+      "top": 880,
+      "className": "rounded-full px-2 py-0.5 font-medium ring-1 bg-amber-50 text-amber-900 ring-amber-200",
+      "bg": "oklch(0.987 0.022 95.277)"
+    },
+    {
+      "text": "",
+      "fs": "11px",
+      "h": 17,
+      "top": 882,
+      "className": "text-amber-800/90",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "text": "",
+      "fs": "12px",
+      "h": 14,
+      "top": 587,
+      "className": "font-mono text-amber-700",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inboxLinks": [
+    {
+      "text": "在运营 Inbox 中查看",
+      "href": "http://localhost:5173/?inbox=ag-sess-oa-1#ops-inbox",
+      "fs": "12px"
+    }
+  ],
+  "projectSidebar": {
+    "w": 224,
+    "h": 852,
+    "links": [
+      {
+        "text": "项目模式",
+        "h": 40,
+        "fs": "12px",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "oklch(0.372 0.044 257.287)",
+        "ariaCurrent": null,
+        "className": "project-bot-link focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs fon"
+      },
+      {
+        "text": "课题协作 · 通用演示\n通用",
+        "h": 28,
+        "fs": "12px",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "oklch(0.372 0.044 257.287)",
+        "ariaCurrent": null,
+        "className": "focus-ring flex w-full items-center gap-1 truncate rounded-md px-2 py-1.5 text-left text-x"
+      },
+      {
+        "text": "边缘调度模组 · 专利演示\n专利",
+        "h": 28,
+        "fs": "12px",
+        "bg": "oklch(0.208 0.042 265.755)",
+        "color": "rgb(255, 255, 255)",
+        "ariaCurrent": "page",
+        "className": "focus-ring flex w-full items-center gap-1 truncate rounded-md px-2 py-1.5 text-left text-x"
+      },
+      {
+        "text": "总控席",
+        "h": 40,
+        "fs": "12px",
+        "bg": "rgb(232, 242, 255)",
+        "color": "rgb(0, 102, 214)",
+        "ariaCurrent": "page",
+        "className": "project-bot-link focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs bg-"
+      },
+      {
+        "text": "检索专家",
+        "h": 40,
+        "fs": "12px",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "oklch(0.446 0.043 257.281)",
+        "ariaCurrent": null,
+        "className": "project-bot-link focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs tex"
+      },
+      {
+        "text": "撰稿专家",
+        "h": 40,
+        "fs": "12px",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "oklch(0.446 0.043 257.281)",
+        "ariaCurrent": null,
+        "className": "project-bot-link focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs tex"
+      },
+      {
+        "text": "FTO 专家",
+        "h": 40,
+        "fs": "12px",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "oklch(0.446 0.043 257.281)",
+        "ariaCurrent": null,
+        "className": "project-bot-link focus-ring hit-40 flex items-center gap-1.5 rounded-md px-1.5 text-xs tex"
+      }
+    ]
+  },
+  "catalogCompact": null,
+  "navChrome": [
+    {
+      "i": 0,
+      "top": 197,
+      "left": 8,
+      "w": 207,
+      "h": 40,
+      "items": [
+        {
+          "text": "全部4",
+          "h": 32,
+          "w": 98,
+          "fs": "12px",
+          "fw": "500",
+          "pressed": "true",
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(15, 23, 42)"
+        },
+        {
+          "text": "待确认3",
+          "h": 32,
+          "w": 98,
+          "fs": "12px",
+          "fw": "500",
+          "pressed": "false",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgba(60, 60, 67, 0.6)"
+        }
+      ]
+    }
+  ],
+  "dotStatus": [],
+  "filterMenu": null,
+  "at1280": {
+    "sidebarW": null,
+    "segH": 40,
+    "segItems": [
+      {
+        "text": "全部4",
+        "w": 98,
+        "fs": "12px"
+      },
+      {
+        "text": "待确认3",
+        "w": 98,
+        "fs": "12px"
+      }
+    ]
+  }
+}

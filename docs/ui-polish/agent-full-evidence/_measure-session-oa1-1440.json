@@ -1,0 +1,161 @@
+{
+  "vw": 1440,
+  "vh": 900,
+  "asides": [
+    {
+      "tag": "ASIDE",
+      "cls": "shell-aside flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex",
+      "w": 224,
+      "h": 852,
+      "left": 0,
+      "top": 48,
+      "overflowY": "visible",
+      "position": "static"
+    },
+    {
+      "tag": "ASIDE",
+      "cls": "agent-aside hidden w-72 shrink-0 flex-col lg:flex xl:w-80",
+      "w": 320,
+      "h": 852,
+      "left": 1120,
+      "top": 48,
+      "overflowY": "visible",
+      "position": "static"
+    },
+    {
+      "tag": "SECTION",
+      "cls": "agent-aside-section",
+      "w": 319,
+      "h": 148,
+      "left": 1121,
+      "top": 174,
+      "overflowY": "visible",
+      "position": "static"
+    },
+    {
+      "tag": "DIV",
+      "cls": "agent-aside-meta-body",
+      "w": 319,
+      "h": 111,
+      "left": 1121,
+      "top": 448,
+      "overflowY": "visible",
+      "position": "static"
+    }
+  ],
+  "mains": [
+    {
+      "tag": "MAIN",
+      "cls": "flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-none focus-visible:ri",
+      "w": 1216,
+      "h": 852,
+      "left": 224,
+      "overflowY": "visible",
+      "position": "static"
+    }
+  ],
+  "sticky": [
+    {
+      "cls": "agent-hitl-dock sticky bottom-0 z-20 shrink-0",
+      "tag": "DIV",
+      "pos": "sticky",
+      "top": "auto",
+      "w": 896,
+      "h": 383,
+      "y": 517
+    }
+  ],
+  "confirm": {
+    "sel": ".confirm-hitl, [class*=\"confirm\"], [class*=\"Confirm\"]",
+    "w": 896,
+    "h": 173,
+    "top": 517,
+    "left": 224,
+    "bottom": 690,
+    "overflowY": "visible",
+    "position": "relative",
+    "stickyTop": "0px"
+  },
+  "composer": {
+    "sel": "textarea, [class*=\"composer\"], [class*=\"Composer\"]",
+    "w": 0,
+    "h": 0,
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "overflowY": "auto",
+    "position": "static",
+    "stickyTop": "auto",
+    "tag": "TEXTAREA"
+  },
+  "scrollers": [
+    {
+      "cls": "flex-1 space-y-1.5 overflow-y-auto px-4 py-5 lg:px-6",
+      "scrollH": 369,
+      "clientH": 347,
+      "w": 896,
+      "h": 347
+    },
+    {
+      "cls": "agent-artifact-editor focus-ring",
+      "scrollH": 243,
+      "clientH": 206,
+      "w": 293,
+      "h": 207
+    }
+  ],
+  "bodyScroll": true,
+  "nestedScroll": 2,
+  "btns": [
+    {
+      "text": "代理所租户 · 德恒知产",
+      "cls": "btn-press focus-ring hit-40 flex items-center gap-",
+      "minH": 40,
+      "minW": 183
+    },
+    {
+      "text": "代理所",
+      "cls": "btn-press focus-ring hit-40 flex items-center gap-",
+      "minH": 40,
+      "minW": 94
+    },
+    {
+      "text": "作业中台",
+      "cls": "btn-press focus-ring rounded-[calc(var(--radius-md",
+      "minH": 40,
+      "minW": 79
+    },
+    {
+      "text": "知产 Agent",
+      "cls": "btn-press focus-ring rounded-[calc(var(--radius-md",
+      "minH": 40,
+      "minW": 79
+    },
+    {
+      "text": "上下文 2",
+      "cls": "btn-press focus-ring hit-40 hidden items-center ga",
+      "minH": 40,
+      "minW": 100
+    },
+    {
+      "text": "更多",
+      "cls": "btn-press focus-ring relative flex h-full flex-col",
+      "minH": 28,
+      "minW": 52
+    },
+    {
+      "text": "新建会话",
+      "cls": "btn-press focus-ring flex w-full items-center just",
+      "minH": 27,
+      "minW": 203
+    },
+    {
+      "text": "筛选",
+      "cls": "btn-press focus-ring rounded px-1 py-0.5 text-[11p",
+      "minH": 21,
+      "minW": 30
+    }
+  ],
+  "title": "IP Harness · 知产 Agent",
+  "h1": "一通创造性答复 · 边缘调度\n改名"
+}

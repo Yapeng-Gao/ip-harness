@@ -1,0 +1,410 @@
+{
+  "session": {
+    "dockH": 190,
+    "dockTop": 669,
+    "timelineH": 481,
+    "bodyScroll": false,
+    "nestedScrollers": [
+      {
+        "testid": "",
+        "cls": "agent-artifact-editor focus-ring",
+        "h": 207
+      }
+    ],
+    "transitionScoped": {
+      "dock": {
+        "count": 0,
+        "samples": []
+      },
+      "confirm": {
+        "count": 0,
+        "samples": []
+      },
+      "rail": {
+        "count": 0,
+        "samples": []
+      },
+      "total": 0
+    },
+    "transitionFullSession": {
+      "count": 90,
+      "samples": [
+        {
+          "tag": "MAIN",
+          "cls": "flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-none focus-",
+          "testid": ""
+        },
+        {
+          "tag": "DIV",
+          "cls": "flex min-h-0 flex-1",
+          "testid": ""
+        },
+        {
+          "tag": "SECTION",
+          "cls": "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-surface-50",
+          "testid": ""
+        },
+        {
+          "tag": "DIV",
+          "cls": "shrink-0 border-b border-slate-200/80 bg-white/95 px-4 py-3 backdrop-b",
+          "testid": ""
+        },
+        {
+          "tag": "DIV",
+          "cls": "flex flex-wrap items-center justify-between gap-2",
+          "testid": ""
+        },
+        {
+          "tag": "DIV",
+          "cls": "min-w-0",
+          "testid": ""
+        },
+        {
+          "tag": "H1",
+          "cls": "group flex items-center gap-1.5 truncate text-[15px] font-semibold tra",
+          "testid": ""
+        },
+        {
+          "tag": "SPAN",
+          "cls": "truncate",
+          "testid": ""
+        },
+        {
+          "tag": "P",
+          "cls": "truncate text-xs text-slate-500",
+          "testid": ""
+        },
+        {
+          "tag": "DIV",
+          "cls": "flex flex-wrap gap-2",
+          "testid": ""
+        }
+      ]
+    },
+    "statusFonts": [
+      {
+        "lab": "待批准",
+        "fs": 14,
+        "h": 16,
+        "text": "待批准\n待授权"
+      },
+      {
+        "lab": "待授权",
+        "fs": 14,
+        "h": 16,
+        "text": "待批准\n待授权"
+      },
+      {
+        "lab": "逐步",
+        "fs": 12,
+        "h": 40,
+        "text": "逐步"
+      }
+    ],
+    "primaryChrome": [
+      {
+        "name": "批准策略",
+        "h": 40,
+        "w": 74,
+        "text": "批准策略"
+      },
+      {
+        "name": "还有N条",
+        "h": 40,
+        "w": 60,
+        "text": "还有 3 条"
+      },
+      {
+        "name": "composer-fold",
+        "h": 41,
+        "w": 992,
+        "text": "输入 / 切换 Agent（默认收起 · 确认完成前可不展开）"
+      }
+    ],
+    "primaryFontOff": [],
+    "hitByClass": {
+      "sidebar-nav": 4,
+      "sidebar-new": 1,
+      "filter-micro": 1,
+      "segmented": 2,
+      "inbox-micro": 3,
+      "other": 5,
+      "timeline-invoke": 3,
+      "hitl-dock": 2,
+      "aside": 5
+    },
+    "hitList": [
+      {
+        "text": "开始",
+        "h": 28,
+        "w": 55,
+        "cat": "sidebar-nav",
+        "testid": ""
+      },
+      {
+        "text": "Agent",
+        "h": 28,
+        "w": 56,
+        "cat": "sidebar-nav",
+        "testid": ""
+      },
+      {
+        "text": "会话",
+        "h": 28,
+        "w": 55,
+        "cat": "sidebar-nav",
+        "testid": ""
+      },
+      {
+        "text": "更多",
+        "h": 28,
+        "w": 52,
+        "cat": "sidebar-nav",
+        "testid": "agent-side-more"
+      },
+      {
+        "text": "新建会话",
+        "h": 27,
+        "w": 203,
+        "cat": "sidebar-new",
+        "testid": "sidebar-new-session"
+      },
+      {
+        "text": "筛选",
+        "h": 21,
+        "w": 30,
+        "cat": "filter-micro",
+        "testid": ""
+      },
+      {
+        "text": "全部4",
+        "h": 32,
+        "w": 98,
+        "cat": "segmented",
+        "testid": ""
+      },
+      {
+        "text": "待确认3",
+        "h": 32,
+        "w": 98,
+        "cat": "segmented",
+        "testid": ""
+      },
+      {
+        "text": "Inbox",
+        "h": 14,
+        "w": 31,
+        "cat": "inbox-micro",
+        "testid": ""
+      },
+      {
+        "text": "会话操作",
+        "h": 22,
+        "w": 22,
+        "cat": "other",
+        "testid": ""
+      },
+      {
+        "text": "Inbox",
+        "h": 14,
+        "w": 31,
+        "cat": "inbox-micro",
+        "testid": ""
+      },
+      {
+        "text": "会话操作",
+        "h": 22,
+        "w": 22,
+        "cat": "other",
+        "testid": ""
+      },
+      {
+        "text": "Inbox",
+        "h": 14,
+        "w": 31,
+        "cat": "inbox-micro",
+        "testid": ""
+      },
+      {
+        "text": "会话操作",
+        "h": 22,
+        "w": 22,
+        "cat": "other",
+        "testid": ""
+      },
+      {
+        "text": "会话操作",
+        "h": 22,
+        "w": 22,
+        "cat": "other",
+        "testid": ""
+      },
+      {
+        "text": "改名",
+        "h": 20,
+        "w": 31,
+        "cat": "other",
+        "testid": ""
+      },
+      {
+        "text": "调用 · OA 争点分析",
+        "h": 20,
+        "w": 137,
+        "cat": "timeline-invoke",
+        "testid": ""
+      },
+      {
+        "text": "调用 · OA 争点分析",
+        "h": 20,
+        "w": 137,
+        "cat": "timeline-invoke",
+        "testid": ""
+      },
+      {
+        "text": "调用 · 修改建议",
+        "h": 20,
+        "w": 119,
+        "cat": "timeline-invoke",
+        "testid": ""
+      },
+      {
+        "text": "授权递交",
+        "h": 36,
+        "w": 72,
+        "cat": "hitl-dock",
+        "testid": ""
+      },
+      {
+        "text": "退回",
+        "h": 36,
+        "w": 66,
+        "cat": "hitl-dock",
+        "testid": ""
+      },
+      {
+        "text": "期限 2",
+        "h": 37,
+        "w": 223,
+        "cat": "aside",
+        "testid": ""
+      },
+      {
+        "text": "产物 1",
+        "h": 37,
+        "w": 223,
+        "cat": "aside",
+        "testid": ""
+      },
+      {
+        "text": "",
+        "h": 29,
+        "w": 197,
+        "cat": "aside",
+        "testid": ""
+      },
+      {
+        "text": "办理记录",
+        "h": 37,
+        "w": 223,
+        "cat": "aside",
+        "testid": ""
+      },
+      {
+        "text": "高级 · 能力与架构",
+        "h": 37,
+        "w": 223,
+        "cat": "aside",
+        "testid": ""
+      }
+    ],
+    "composerFoldInDock": false,
+    "reasonCount": 1
+  },
+  "general": {
+    "chips": [
+      {
+        "lab": "分派任务",
+        "h": 40,
+        "fs": 12,
+        "title": "dispatch_task"
+      },
+      {
+        "lab": "汇总时间线",
+        "h": 40,
+        "fs": 12,
+        "title": "summarize_timeline"
+      },
+      {
+        "lab": "打开专家私信",
+        "h": 40,
+        "fs": 12,
+        "title": "open_expert_dm"
+      }
+    ],
+    "composerTop": 774,
+    "vh": 900,
+    "bodyScroll": false
+  },
+  "patent": {
+    "chips": [
+      {
+        "lab": "分派任务",
+        "h": 40,
+        "fs": 12,
+        "title": "dispatch_task"
+      },
+      {
+        "lab": "汇总时间线",
+        "h": 40,
+        "fs": 12,
+        "title": "summarize_timeline"
+      },
+      {
+        "lab": "打开专家私信",
+        "h": 40,
+        "fs": 12,
+        "title": "open_expert_dm"
+      }
+    ],
+    "composerTop": 774,
+    "vh": 900,
+    "bodyScroll": false
+  },
+  "catalog": {
+    "compact": true,
+    "bodyScroll": false,
+    "hitlt40": 12,
+    "title": "IP Harness · 知产 Agent"
+  },
+  "harness": {
+    "compact": true,
+    "bodyScroll": false,
+    "hitlt40": 17,
+    "title": "IP Harness · 知产 Agent"
+  },
+  "home": {
+    "startCtaCount": 1,
+    "startCtaH": 40,
+    "bodyScroll": false
+  },
+  "console": {
+    "errorUnique": 0,
+    "nonWhitelist": [],
+    "nonWhitelistCount": 0,
+    "whitelistSample": []
+  },
+  "baselines": {
+    "feelGo_dockH": 157,
+    "feelGo_timelineH": 539,
+    "full_dockMax": 200,
+    "full_timelineMin1440": 480,
+    "feel_transitionScoped": 0
+  },
+  "deltas": {
+    "dockH_vs_feel": 33,
+    "timelineH_vs_feel": -58,
+    "dockWithinFull": true,
+    "timelineWithinFull": true,
+    "transitionScopedStill0": true
+  }
+}

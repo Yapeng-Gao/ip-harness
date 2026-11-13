@@ -42,7 +42,7 @@ export function MidWorkspaceMenu({ variant = 'sidebar', className = '' }: Props)
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="btn-press focus-ring flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-700 hover:border-slate-300"
+        className="btn-press focus-ring hit-40 flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 text-xs text-slate-700 hover:border-slate-300"
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label="切换工作区"

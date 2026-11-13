@@ -1,0 +1,16 @@
+{
+  "confirmReason": "请先选争点类型并填策略要点",
+  "ctaDisabled": true,
+  "ctaText": "批准策略",
+  "ctaCls": "ui-btn ui-btn-sm btn-press focus-ring agent-confirm-cta ui-btn-success",
+  "iconBtnsMissingAria": [
+    "<button type=\"button\" class=\"btn-press focus-ring rounded border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-80",
+    "<button type=\"button\" class=\"rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ring-slate-200\">新颖性</button>",
+    "<button type=\"button\" class=\"rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ring-slate-200\">创造性</button>",
+    "<button type=\"button\" class=\"rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ring-slate-200\">清楚</button>",
+    "<button type=\"button\" class=\"rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ring-slate-200\">支持 / 充分公开</button>",
+    "<button type=\"button\" class=\"rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ring-slate-200\">其他</button>",
+    "<button type=\"button\" role=\"tab\" aria-selected=\"true\" data-active=\"true\" class=\"agent-artifact-tab btn-press focus-ring\">OA 答复书草稿</button>"
+  ],
+  "transitionAllCountSample": 9
+}

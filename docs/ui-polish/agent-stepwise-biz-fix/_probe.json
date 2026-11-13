@@ -1,0 +1,37 @@
+{
+  "title": null,
+  "context": null,
+  "sidebar": null,
+  "noCaseGate": {
+    "present": false
+  },
+  "errors": [],
+  "titleCandidates": [
+    "通用历史"
+  ],
+  "titleHas通用历史": true,
+  "pageHas通用历史": true,
+  "pageHas全部会话": false,
+  "sidebarHas副文": true,
+  "sessionUrl": "http://127.0.0.1:5175/agent/sessions/sess-oa-1",
+  "afterStartUrl": "http://127.0.0.1:5175/agent/sessions/sess-1789794242498",
+  "noCaseGateFromNeedsHuman": {
+    "present": true,
+    "noCaseBtn": false,
+    "reason": "请先选争点类型并填策略要点",
+    "disabledBtns": [
+      {
+        "text": "批准策略",
+        "testid": null,
+        "title": "请先选争点类型并填策略要点"
+      },
+      {
+        "text": "授权递交",
+        "testid": null,
+        "title": "代理 Persona：该闸仅企业可确认"
+      }
+    ],
+    "has须绑定": false,
+    "bodyHas无案": false
+  }
+}

@@ -1,0 +1,368 @@
+{
+  "barFound": true,
+  "barTag": "DIV",
+  "barCls": "confirm-hitl shrink-0 rounded-[var(--radius-md)] border-l-4 border-l-amber-500 p",
+  "chips": [
+    {
+      "t": "待批准",
+      "text": "待批准",
+      "fs": 12,
+      "h": 16,
+      "cls": "inline-flex items-center gap-0.5 text-xs text-slate-400",
+      "tag": "SPAN"
+    },
+    {
+      "t": "待授权",
+      "text": "待授权",
+      "fs": 12,
+      "h": 16,
+      "cls": "inline-flex items-center gap-0.5 text-xs text-slate-400",
+      "tag": "SPAN"
+    },
+    {
+      "t": "逐步",
+      "text": "逐步",
+      "fs": 12,
+      "h": 40,
+      "cls": "inline-flex min-h-10 items-center gap-1.5 px-1 text-xs text-",
+      "tag": "LABEL"
+    }
+  ],
+  "allText": [
+    {
+      "own": "需要你确认：",
+      "tag": "SPAN",
+      "cls": "text-amber-800/90",
+      "fs": 14,
+      "h": 20
+    },
+    {
+      "own": "批准策略",
+      "tag": "SPAN",
+      "cls": "font-semibold text-slate-900",
+      "fs": 14,
+      "h": 20
+    },
+    {
+      "own": "·|OA 答复 Agent",
+      "tag": "SPAN",
+      "cls": "font-normal text-slate-400",
+      "fs": 14,
+      "h": 20
+    },
+    {
+      "own": "交接：|代理起草中",
+      "tag": "SPAN",
+      "cls": "inline-flex items-center rounded-full border px-2 py-0.5 tex",
+      "fs": 12,
+      "h": 22
+    },
+    {
+      "own": "待批准",
+      "tag": "SPAN",
+      "cls": "inline-flex items-center gap-0.5 text-xs text-slate-400",
+      "fs": 12,
+      "h": 16
+    },
+    {
+      "own": "待授权",
+      "tag": "SPAN",
+      "cls": "inline-flex items-center gap-0.5 text-xs text-slate-400",
+      "fs": 12,
+      "h": 16
+    },
+    {
+      "own": "批准策略",
+      "tag": "BUTTON",
+      "cls": "ui-btn ui-btn-sm btn-press focus-ring agent-confirm-cta ui-b",
+      "fs": 12,
+      "h": 40
+    },
+    {
+      "own": "授权递交",
+      "tag": "BUTTON",
+      "cls": "ui-btn ui-btn-sm btn-press focus-ring  ui-btn-ghost",
+      "fs": 12,
+      "h": 36
+    },
+    {
+      "own": "退回",
+      "tag": "BUTTON",
+      "cls": "ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring",
+      "fs": 12,
+      "h": 36
+    },
+    {
+      "own": "在运营 Inbox 中查看",
+      "tag": "A",
+      "cls": "btn-press focus-ring hit-expand inline-flex min-h-10 items-c",
+      "fs": 12,
+      "h": 40
+    },
+    {
+      "own": "逐步",
+      "tag": "LABEL",
+      "cls": "inline-flex min-h-10 items-center gap-1.5 px-1 text-xs text-",
+      "fs": 12,
+      "h": 40
+    },
+    {
+      "own": "请先选争点类型并填策略要点",
+      "tag": "P",
+      "cls": "agent-confirm-reason",
+      "fs": 12,
+      "h": 17
+    },
+    {
+      "own": "还有 3 条",
+      "tag": "BUTTON",
+      "cls": "agent-confirm-more btn-press focus-ring hit-expand",
+      "fs": 12,
+      "h": 40
+    },
+    {
+      "own": "补充项|· 陈述/争点 · Full-check",
+      "tag": "SPAN",
+      "cls": "",
+      "fs": 11,
+      "h": 15
+    },
+    {
+      "own": "护栏 ·|须先选争点类型并写策略要点再 HITL · 未确认陈述禁用授权 · 授",
+      "tag": "P",
+      "cls": "truncate text-[11px] text-slate-400",
+      "fs": 11,
+      "h": 17
+    },
+    {
+      "own": "答复草稿",
+      "tag": "SPAN",
+      "cls": "rounded-full px-2 py-0.5 font-medium ring-1 bg-amber-50 text",
+      "fs": 11,
+      "h": 21
+    },
+    {
+      "own": "确认陈述",
+      "tag": "BUTTON",
+      "cls": "btn-press focus-ring rounded border border-slate-300 bg-whit",
+      "fs": 11,
+      "h": 23
+    },
+    {
+      "own": "未确认前授权/递交请先确认陈述",
+      "tag": "SPAN",
+      "cls": "text-amber-800/90",
+      "fs": 11,
+      "h": 17
+    },
+    {
+      "own": "OA 争点类型 + 策略要点",
+      "tag": "DIV",
+      "cls": "mb-1 text-[11px] font-medium text-slate-600",
+      "fs": 11,
+      "h": 17
+    },
+    {
+      "own": "· 须填写后再 HITL 批准",
+      "tag": "SPAN",
+      "cls": "ml-1 font-normal text-slate-400",
+      "fs": 11,
+      "h": 16
+    },
+    {
+      "own": "新颖性",
+      "tag": "BUTTON",
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-sl",
+      "fs": 11,
+      "h": 21
+    },
+    {
+      "own": "创造性",
+      "tag": "BUTTON",
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-sl",
+      "fs": 11,
+      "h": 21
+    },
+    {
+      "own": "清楚",
+      "tag": "BUTTON",
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-sl",
+      "fs": 11,
+      "h": 21
+    },
+    {
+      "own": "支持 / 充分公开",
+      "tag": "BUTTON",
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-sl",
+      "fs": 11,
+      "h": 21
+    },
+    {
+      "own": "其他",
+      "tag": "BUTTON",
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-sl",
+      "fs": 11,
+      "h": 21
+    },
+    {
+      "own": "未选类型或未填要点：禁用批准策略",
+      "tag": "P",
+      "cls": "mt-1 text-[11px] text-rose-600",
+      "fs": 11,
+      "h": 17
+    },
+    {
+      "own": "递交前 Full-check",
+      "tag": "DIV",
+      "cls": "mb-1 flex flex-wrap items-center gap-2 text-[11px] font-medi",
+      "fs": 11,
+      "h": 17
+    },
+    {
+      "own": "·|OA|· 案级共享勾选 · 演示",
+      "tag": "SPAN",
+      "cls": "font-normal text-slate-400",
+      "fs": 11,
+      "h": 17
+    },
+    {
+      "own": "术语与交底/对比文献口径一致（轻量）",
+      "tag": "SPAN",
+      "cls": "",
+      "fs": 11,
+      "h": 17
+    },
+    {
+      "own": "说明书/附图对权项有支持（轻量勾选）",
+      "tag": "SPAN",
+      "cls": "",
+      "fs": 11,
+      "h": 17
+    },
+    {
+      "own": "非法律意见戳 · 本输出不构成律师意见",
+      "tag": "SPAN",
+      "cls": "",
+      "fs": 11,
+      "h": 17
+    },
+    {
+      "own": "未过：|意见陈述未确认；未选 OA 争点类型；未填策略要点；术语一致性未勾|…",
+      "tag": "P",
+      "cls": "mt-1 text-[11px] text-rose-600",
+      "fs": 11,
+      "h": 17
+    }
+  ],
+  "byClass": [
+    {
+      "t": "需要你确认：",
+      "fs": 14,
+      "h": 20,
+      "cls": "text-amber-800/90"
+    },
+    {
+      "t": "批准策略",
+      "fs": 14,
+      "h": 20,
+      "cls": "font-semibold text-slate-900"
+    },
+    {
+      "t": "· OA 答复 Agent",
+      "fs": 14,
+      "h": 20,
+      "cls": "font-normal text-slate-400"
+    },
+    {
+      "t": "交接：代理起草中",
+      "fs": 14,
+      "h": 23,
+      "cls": "ml-1.5 inline-block align-middle"
+    },
+    {
+      "t": "交接：代理起草中",
+      "fs": 12,
+      "h": 22,
+      "cls": "inline-flex items-center rounded-full border px-2 "
+    },
+    {
+      "t": "待批准待授权",
+      "fs": 14,
+      "h": 16,
+      "cls": "ml-2 inline-flex flex-wrap items-center gap-1 alig"
+    },
+    {
+      "t": "待批准",
+      "fs": 12,
+      "h": 16,
+      "cls": "inline-flex items-center gap-0.5 text-xs text-slat"
+    },
+    {
+      "t": "待授权",
+      "fs": 12,
+      "h": 16,
+      "cls": "inline-flex items-center gap-0.5 text-xs text-slat"
+    },
+    {
+      "t": "批准策略",
+      "fs": 15,
+      "h": 40,
+      "cls": "agent-confirm-cta-wrap"
+    },
+    {
+      "t": "授权递交",
+      "fs": 15,
+      "h": 36,
+      "cls": "agent-confirm-cta-wrap"
+    },
+    {
+      "t": "补充项 · 陈述/争点 · Full-check",
+      "fs": 11,
+      "h": 15,
+      "cls": ""
+    },
+    {
+      "t": "答复草稿",
+      "fs": 11,
+      "h": 21,
+      "cls": "rounded-full px-2 py-0.5 font-medium ring-1 bg-amb"
+    },
+    {
+      "t": "未确认前授权/递交请先确认陈述",
+      "fs": 11,
+      "h": 17,
+      "cls": "text-amber-800/90"
+    },
+    {
+      "t": "· 须填写后再 HITL 批准",
+      "fs": 11,
+      "h": 16,
+      "cls": "ml-1 font-normal text-slate-400"
+    },
+    {
+      "t": "· OA · 案级共享勾选 · 演示",
+      "fs": 11,
+      "h": 17,
+      "cls": "font-normal text-slate-400"
+    },
+    {
+      "t": "术语与交底/对比文献口径一致（轻量）",
+      "fs": 11,
+      "h": 17,
+      "cls": ""
+    },
+    {
+      "t": "说明书/附图对权项有支持（轻量勾选）",
+      "fs": 11,
+      "h": 17,
+      "cls": ""
+    },
+    {
+      "t": "非法律意见戳 · 本输出不构成律师意见",
+      "fs": 11,
+      "h": 17,
+      "cls": ""
+    }
+  ],
+  "barHtml": "<div id=\"session-confirm-bar\" data-confirm-bar=\"true\" class=\"confirm-hitl shrink-0 rounded-[var(--radius-md)] border-l-4 border-l-amber-500 px-4 py-3.5 sm:px-5 sm:py-4\" data-agent=\"agent-oa\"><div class=\"confirm-hitl-inner\"><p class=\"min-w-0 flex-1 text-[13px] leading-relaxed text-slate-800 sm:text-sm\"><span class=\"text-amber-800/90\">需要你确认：</span><span class=\"font-semibold text-slate-900\">批准策略</span><span class=\"font-normal text-slate-400\"> · OA 答复 Agent</span><span class=\"ml-1.5 inline-block align-middle\"><span class=\"inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-700 border-slate-200\">交接：代理起草中</span></span><span class=\"ml-2 inline-flex flex-wrap items-center gap-1 align-middle\"><span class=\"inline-flex items-center gap-0.5 text-xs text-slate-400\" title=\"待批准\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-circle h-2.5 w-2.5\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle></svg>待批准</span><span class=\"inline-flex items-center gap-0.5 text-xs text-slate-400\" title=\"待授权\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-circle h-2.5 w-2.5\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle></svg>待授权</span></span></p><div class=\"confirm-hitl-actions\"><span class=\"agent-confirm-cta-wrap\"><button type=\"button\" disabled=\"\" title=\"请先选争点类型并填策略要点\" aria-label=\"批准策略\" aria-describedby=\"agent-confirm-reason-primary\" class=\"ui-btn ui-btn-sm btn-press focus-ring agent-confirm-cta ui-btn-success\">批准策略</button></span><span class=\"agent-confirm-cta-wrap\"><button type=\"button\" disabled=\"\" title=\"代理 Persona：该闸仅企业可确认\" aria-label=\"授权递交\" aria-describedby=\"agent-confirm-reason-primary\" class=\"ui-btn ui-btn-sm btn-press focus-ring  ui-btn-ghost\">授权递交</button></span><button type=\"button\" class=\"ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-rotate-ccw h-3 w-3\" aria-hidden=\"true\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"></path><path d=\"M3 3v5h5\"></path></svg>退回</button><a href=\"http://loca"
+}

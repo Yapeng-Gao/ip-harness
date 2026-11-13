@@ -1,0 +1,29 @@
+{
+  "id": "S2",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent/sessions/sess-1789790087814",
+  "assertions": [
+    "无案状态确认 (case-bind-hint)",
+    "entered session url=http://localhost:5175/agent/sessions/sess-1789790087814",
+    "无强制绑案弹死 dialog",
+    "无顶栏绑案带（亦可）",
+    "会话主区可见",
+    "会话页无 BillingHold 全宽黄条"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "session-case-bind-top": {
+      "x": 224,
+      "y": 167,
+      "width": 1056,
+      "height": 97.5
+    },
+    "agent-side-nav": {
+      "x": 0,
+      "y": 48,
+      "width": 223,
+      "height": 179
+    }
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S2-session.png"
+}

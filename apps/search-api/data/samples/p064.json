@@ -1,0 +1,18 @@
+{
+  "id": "p064",
+  "publicationNumber": "CN110000064A",
+  "title": "NVH suppression for e-drive assembly (#64)",
+  "applicant": "Toyota Motor Corporation",
+  "inventor": "Inventor 2",
+  "date": "2018-01-01",
+  "ipc": [
+    "B60L53/00",
+    "B60W30/06"
+  ],
+  "familyId": "fam-auto-1",
+  "country": "CN",
+  "legalStatus": "审查中",
+  "abstract": "【样本·非真库】 Active suppression of gear-mesh NVH.",
+  "claims": "1. A device or method comprising… (sample p064)",
+  "snippet": "NVH suppression for e-drive assembly"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "S4",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent/sessions/sess-oa-1?focus=hitl",
+  "assertions": [
+    "entered sess-oa-1 focus=hitl",
+    ".confirm-hitl 可见",
+    "专科 CTA「批准策略」可见（scoped .confirm-hitl）",
+    "已选争点类型「新颖性」",
+    "已填策略要点",
+    "专科 CTA「批准策略」enabled（业务闸正确）",
+    "无 BillingHold 全宽黄条",
+    "R5: CTA 断言限制在 .confirm-hitl 内"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "confirm-hitl": {
+      "x": 224,
+      "y": 285,
+      "width": 832,
+      "height": 473.421875
+    }
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S4-confirm.png"
+}

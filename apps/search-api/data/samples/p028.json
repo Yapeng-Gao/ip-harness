@@ -1,0 +1,18 @@
+{
+  "id": "p028",
+  "publicationNumber": "TW2024100028A",
+  "title": "Uplink control information multiplexing for 5G",
+  "applicant": "Huawei Technologies Co., Ltd.",
+  "inventor": "Inventor 2",
+  "date": "2022-01-01",
+  "ipc": [
+    "H04W16/28",
+    "H04W72/04"
+  ],
+  "familyId": "fam-comms-3",
+  "country": "TW",
+  "legalStatus": "审查中",
+  "abstract": "【样本·非真库】 Multiplexing UCI on PUSCH for NR uplink.",
+  "claims": "1. A device or method comprising… (sample p028)",
+  "snippet": "Uplink control information multiplexing "
+}

@@ -24,6 +24,11 @@ export interface CommandMeta {
   actor: 'user' | 'agent'
   agentId?: string
   detail?: string
+  /**
+   * 业务壳同步：按本条动作所需身份过闸，不切换工作区。
+   * 调用方与页面不要据此展示租户角色。
+   */
+  syncPass?: boolean
 }
 
 export type DomainCommand =

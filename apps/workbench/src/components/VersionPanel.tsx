@@ -55,7 +55,7 @@ export function VersionPanel({
                 <span className="font-medium text-slate-800">{v.version}</span>
                 <span className="text-slate-500">{v.at}</span>
                 <span className="text-slate-500">
-                  {v.byRole === 'enterprise' ? '企业 IP' : '代理所'}
+                  {v.byLabel ?? (v.byRole === 'enterprise' ? '企业 IP' : '代理所')}
                 </span>
                 <span className="rounded bg-white px-1.5 py-0.5 text-[10px] text-slate-600 ring-1 ring-slate-200">
                   {HANDOFF_LABELS[v.status]}

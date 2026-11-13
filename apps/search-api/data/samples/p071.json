@@ -1,0 +1,19 @@
+{
+  "id": "p071",
+  "publicationNumber": "CN110000071A",
+  "title": "有机发光显示装置的像素电路 (#71)",
+  "applicant": "三星显示株式会社",
+  "inventor": "发明人9",
+  "date": "2021-10-22",
+  "ipc": [
+    "H01L27/32",
+    "G09G3/3208",
+    "H01L51/50"
+  ],
+  "familyId": "fam-display-1",
+  "country": "CN",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 OLED 画素补偿电路改善亮度均匀性。",
+  "claims": "1. 一种装置或方法，其特征在于…（样本 p071）",
+  "snippet": "有机发光显示装置的像素电路"
+}

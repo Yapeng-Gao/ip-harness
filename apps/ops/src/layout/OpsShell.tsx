@@ -20,8 +20,8 @@ const NAV = [
 
 function linkClass(active: boolean): string {
   return active
-    ? 'sidebar-link list-row-active flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium'
-    : 'sidebar-link flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+    ? 'sidebar-link list-row-active focus-ring flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium'
+    : 'sidebar-link focus-ring flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900'
 }
 
 export function OpsShell() {
@@ -69,8 +69,8 @@ export function OpsShell() {
                 end={item.end}
                 className={({ isActive }) =>
                   isActive
-                    ? 'rounded-[var(--radius-sm)] bg-[var(--color-accent-soft)] px-2.5 py-1 text-xs font-medium text-slate-900'
-                    : 'rounded-[var(--radius-sm)] px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-100'
+                    ? 'focus-ring rounded-[var(--radius-sm)] bg-[var(--color-accent-soft)] px-2.5 py-1 text-xs font-medium text-slate-900'
+                    : 'focus-ring rounded-[var(--radius-sm)] px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-100'
                 }
               >
                 {item.label}

@@ -1,0 +1,99 @@
+{
+  "1280": {
+    "viewport": {
+      "w": 1280,
+      "h": 800
+    },
+    "dockH": 173,
+    "confirmH": 173,
+    "confirmRadius": "12px",
+    "dockRadius": "12px 12px 0px 0px",
+    "timelineH": 501,
+    "asideW": 256,
+    "midW": 800,
+    "bodyScroll": false,
+    "visibleReasons": [
+      "请先选争点类型并填策略要点"
+    ],
+    "foldOpen": false,
+    "foldExists": true,
+    "sampleChips": [
+      "需要你确认：",
+      "批准策略",
+      "· OA 答复 Agent",
+      "交接：代理起草中",
+      "交接：代理起草中",
+      "待批准待授权",
+      "待批准",
+      "待授权",
+      "批准策略",
+      "授权递交",
+      "补充项 · 陈述/争点 · Full-check",
+      "答复草稿"
+    ]
+  },
+  "1440": {
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "dockH": 157,
+    "confirmH": 157,
+    "confirmRadius": "12px",
+    "dockRadius": "12px 12px 0px 0px",
+    "timelineH": 601,
+    "asideW": 256,
+    "midW": 960,
+    "bodyScroll": false,
+    "visibleReasons": [
+      "请先选争点类型并填策略要点"
+    ],
+    "foldOpen": false,
+    "foldExists": true,
+    "sampleChips": [
+      "需要你确认：",
+      "批准策略",
+      "· OA 答复 Agent",
+      "交接：代理起草中",
+      "交接：代理起草中",
+      "待批准待授权",
+      "待批准",
+      "待授权",
+      "批准策略",
+      "授权递交",
+      "补充项 · 陈述/争点 · Full-check",
+      "答复草稿"
+    ]
+  },
+  "catalog": {
+    "compact": true,
+    "hasFullList": false
+  },
+  "harness": {
+    "compact": true
+  },
+  "home": {
+    "startCta": 1,
+    "homeCompact": true
+  },
+  "1440_final": {
+    "dockH": 157,
+    "timelineH": 539,
+    "asideW": 224,
+    "midW": 992,
+    "reasonCount": 1,
+    "reasonText": [
+      "请先选争点类型并填策略要点"
+    ],
+    "radius": "12px 12px 0px 0px",
+    "confirmRadius": "12px",
+    "bodyScroll": false,
+    "foldOpen": false
+  },
+  "1280_final": {
+    "asideW": 224,
+    "midW": 832,
+    "timelineH": 424,
+    "dockH": 173
+  }
+}

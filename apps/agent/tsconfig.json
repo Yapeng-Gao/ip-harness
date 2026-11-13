@@ -68,5 +68,8 @@
     "../../packages/app-state/src",
     "../../packages/ui/src",
     "../../packages/api/src"
+  ],
+  "exclude": [
+    "src/**/*.test.ts"
   ]
 }

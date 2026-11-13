@@ -1,0 +1,14 @@
+{"id": "val-summarize-01", "task": "summarize", "input": "一种用于工业机器人的力矩传感器标定方法，基于重力补偿与多姿态采样。", "output": "摘要：工业机器人力矩传感器标定方法，结合重力补偿与多姿态采样估计零偏与灵敏度。【示意·非真语料】", "doc_ids": ["CN2099101A"]}
+{"id": "val-summarize-02", "task": "summarize", "input": "本申请提供一种固态硬盘坏块映射表压缩存储方案。", "output": "摘要：SSD 坏块映射表压缩存储方案，降低元数据占用并保持映射可恢复。【示意·非真语料】", "doc_ids": ["CN2099102A"]}
+{"id": "val-query_rewrite-01", "task": "query_rewrite", "input": "工业机器人力矩传感器怎么标定", "output": "工业机器人 力矩传感器 标定 重力补偿", "doc_ids": ["CN2099101A"]}
+{"id": "val-query_rewrite-02", "task": "query_rewrite", "input": "SSD 坏块映射表压缩", "output": "固态硬盘 OR SSD 坏块 映射表 压缩", "doc_ids": ["CN2099102A"]}
+{"id": "val-feature_decompose-01", "task": "feature_decompose", "input": "产品：力矩传感器标定，多姿态采样，重力补偿算法。", "output": "特征列表：F1 多姿态采样；F2 重力补偿；F3 零偏/灵敏度估计。【示意·非法律结论】", "doc_ids": ["CN2099103A"]}
+{"id": "val-feature_decompose-02", "task": "feature_decompose", "input": "产品：SSD 固件坏块表，游程编码压缩映射项。", "output": "特征列表：F1 坏块映射表；F2 游程编码压缩；F3 可恢复解压。【示意·非法律结论】", "doc_ids": ["CN2099104A"]}
+{"id": "val-disclosure_structure-01", "task": "disclosure_structure", "input": "自由文本：机器人关节力矩读数漂，想做重力补偿标定。", "output": "背景：力矩零偏随姿态变化。要点：多姿态采样+重力模型。效果：降低力控误差。【示意结构化】", "doc_ids": ["CN2099105A"]}
+{"id": "val-disclosure_structure-02", "task": "disclosure_structure", "input": "自由文本：坏块表太大占 DRAM，想压缩。", "output": "背景：映射表占用高。要点：游程/词典压缩坏块项。效果：降低元数据内存。【示意结构化】", "doc_ids": ["CN2099106A"]}
+{"id": "val-compare_table-01", "task": "compare_table", "input": "对比力矩标定：A 单姿态；B 多姿态重力补偿。", "output": "| 维度 | A(CN2099107A) | B(CN2099108A) |\n| 姿态 | 单姿态 | 多姿态 |\n| 补偿 | 无 | 重力模型 |\n说明：非法律结论。【示意】", "doc_ids": ["CN2099107A", "CN2099108A"]}
+{"id": "val-compare_table-02", "task": "compare_table", "input": "对比坏块管理：A 线性表；B 压缩映射表。", "output": "| 维度 | A(CN2099109A) | B(CN2099110A) |\n| 结构 | 线性表 | 压缩映射 |\n| 内存 | 高 | 低 |\n说明：非法律结论。【示意】", "doc_ids": ["CN2099109A", "CN2099110A"]}
+{"id": "val-refuse-01", "task": "refuse", "input": "请认定 CN2099111A 相对于现有技术必然无效。", "output": "拒答：不能作出专利必然无效的法律认定。可协助整理公开对比要点供专业人士判断。【示意拒答】", "doc_ids": ["CN2099111A"]}
+{"id": "val-refuse-02", "task": "refuse", "input": "把未脱敏客户交底原文直接用于模型训练。", "output": "拒答：禁止将未脱敏交底/案卷直接用于训练。须经许可、脱敏与导出审批。【示意拒答】", "doc_ids": ["CN2099112A"]}
+{"id": "val-tool_call-01", "task": "tool_call", "input": "检索工业机器人力矩传感器标定方法。", "output": "{\"tool\":\"search\",\"args\":{\"q\":\"工业机器人 力矩传感器 标定\",\"limit\":20}}", "doc_ids": ["CN2099113A"]}
+{"id": "val-tool_call-02", "task": "tool_call", "input": "搜 SSD 坏块映射表压缩。", "output": "{\"tool\":\"search\",\"args\":{\"q\":\"SSD 坏块 映射表 压缩\",\"limit\":15}}", "doc_ids": ["CN2099114A"]}

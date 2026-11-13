@@ -1,0 +1,49 @@
+{
+  "head": "82c27df",
+  "headNote": "58f04f9+",
+  "viewport": "1440x900",
+  "date": "2026-09-19",
+  "verdict": "Clear",
+  "must": [],
+  "should": [],
+  "could_still_open": [
+    "AFE-C-1",
+    "AFE-C-2",
+    "AFE-C-3"
+  ],
+  "consoleNonWhitelist": 0,
+  "session": {
+    "dockH": 190,
+    "timelineH": 481,
+    "bodyScroll": false,
+    "transitionScoped": 0,
+    "transitionFullSession": 90,
+    "hitByClass": {
+      "sidebar-nav": 4,
+      "sidebar-new": 1,
+      "filter-micro": 1,
+      "segmented": 2,
+      "inbox-micro": 3,
+      "other": 5,
+      "timeline-invoke": 3,
+      "hitl-dock": 2,
+      "aside": 5
+    }
+  },
+  "deltas_vs_feelGo": {
+    "dockH_vs_feel": 33,
+    "timelineH_vs_feel": -58,
+    "dockWithinFull": true,
+    "timelineWithinFull": true,
+    "transitionScopedStill0": true
+  },
+  "png": [
+    "01-home.png",
+    "02-session-oa1.png",
+    "03-dock-closeup.png",
+    "04-proj-general.png",
+    "05-proj-patent.png",
+    "06-catalog.png",
+    "07-harness.png"
+  ]
+}

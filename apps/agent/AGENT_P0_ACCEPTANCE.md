@@ -69,5 +69,5 @@ npm run typecheck -w @ip/agent
 ## 已知遗漏 / 边界
 - 共享 `@shared` 的 `WorkspaceMenu` / `BillingHoldBanner` 本身未改（按约束只读根 src）；agent 面已本地替换
 - `ProductSwitcher` / `PersonaSwitcher` 仍用共享组件；ProductSwitcher 已走 `APP_DEV_URLS`，Persona 无跨口链
-- mid(5173) 上 `/agent/*` MetaRedirect 丢 path 问题仍在 mid 侧（agent README 已知限制）
+- mid→agent：已用 `RedirectExternal` 保留 path+search+hash（不再丢 path；见 README「mid → agent 深链」）
 - workbench 面仍直接挂共享 `BillingHoldBanner`（相对链在 5174 上同样会错口）— 非本任务范围

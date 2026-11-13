@@ -1,0 +1,23 @@
+{
+  "url": "http://127.0.0.1:5199/agent/sessions/sess-oa-1?focus=hitl",
+  "hits": [
+    {
+      "text": "回中台",
+      "aria": "回中台案件",
+      "href": "http://localhost:5173/cases/c1?from=agent",
+      "matched": [
+        "回中台",
+        "回中台案件"
+      ]
+    },
+    {
+      "text": "在运营 Inbox 中查看",
+      "aria": null,
+      "href": "http://localhost:5173/?inbox=ag-sess-oa-1#ops-inbox",
+      "matched": [
+        "运营 Inbox",
+        "在运营 Inbox"
+      ]
+    }
+  ]
+}

@@ -45,8 +45,16 @@
 | 通知 | skipped/mock | notify 消费 outbox；ops 只配渠道 |
 | 壳职责 | 独立 Vite、无 AppProvider 办案态 | 保持薄壳；不引入 PatentCase |
 
-## 5. 相关链接
 
-- [../landing/backends.md](../landing/backends.md)（ops-platform / notify）
+## 5. 不做 AI Infra（指向）
+
+**`ops-platform` ≠ `ai-infra`。** 本壳 / ops-platform **不做**：GPU 池与作业调度、训练/批量推理/在线推理基建、模型权重发布流水线、训推压测与性能优化平台。
+
+上述能力见 **[../ai-infra/README.md](../ai-infra/README.md)**；产品默认并行壳 `apps/ai-infra` **:5179**（不掏空本六路由）。`/models` 样机页仅配置引用示意，**不**升级成训推控制台。
+
+## 6. 相关链接
+
+- [../landing/backends.md](../landing/backends.md)（ops-platform / notify / ai-infra）
+- [../ai-infra/README.md](../ai-infra/README.md)（训推基建 · ≠ ops）
 - [../backends.md](../backends.md)
 - [cross-cutting.md](./cross-cutting.md)

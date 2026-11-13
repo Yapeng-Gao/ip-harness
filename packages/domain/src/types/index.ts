@@ -69,6 +69,8 @@ export interface ArtifactVersion {
   version: string
   at: string
   byRole: UserRole
+  /** 业务同步写入时的展示名；缺省仍按 byRole */
+  byLabel?: string
   note: string
   status: HandoffStatus
   annotation?: string

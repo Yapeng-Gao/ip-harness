@@ -1,0 +1,9 @@
+{
+  "id": "q-bad-01",
+  "applicant": "未知申请人 A",
+  "date": "2020-01-01",
+  "abstract": "故意缺必填：无 title 且无公开号",
+  "ipc": [
+    "G06F"
+  ]
+}

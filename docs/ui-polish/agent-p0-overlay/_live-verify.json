@@ -1,0 +1,135 @@
+{
+  "base": "http://127.0.0.1:5175",
+  "startedAt": "2026-09-19T03:22:49.502Z",
+  "pages": [
+    {
+      "label": "home",
+      "url": "http://127.0.0.1:5175/agent",
+      "ok": true,
+      "failReasons": [],
+      "copyHits": {
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详": 0,
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "无真 LLM · 专家": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0
+      },
+      "amberBars": [],
+      "tipWalls": [],
+      "midAnchors": [],
+      "billing": {
+        "present": false
+      },
+      "shot": "live-01-home.png",
+      "title": "IP Harness · 知产 Agent"
+    },
+    {
+      "label": "sessions",
+      "url": "http://127.0.0.1:5175/agent/sessions",
+      "ok": true,
+      "failReasons": [],
+      "copyHits": {
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详": 0,
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "无真 LLM · 专家": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0
+      },
+      "amberBars": [],
+      "tipWalls": [],
+      "midAnchors": [],
+      "billing": {
+        "present": false
+      },
+      "shot": "live-02-sessions.png",
+      "title": "IP Harness · 知产 Agent"
+    },
+    {
+      "label": "session-via-click",
+      "url": "http://127.0.0.1:5175/agent/sessions/sess-oa-1?focus=hitl",
+      "ok": true,
+      "failReasons": [],
+      "copyHits": {
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详": 0,
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "无真 LLM · 专家": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0
+      },
+      "amberBars": [],
+      "tipWalls": [],
+      "midAnchors": [],
+      "billing": {
+        "present": false
+      },
+      "shot": "live-03-session-via-click.png",
+      "title": "IP Harness · 知产 Agent"
+    },
+    {
+      "label": "projects-list",
+      "url": "http://127.0.0.1:5175/agent/projects",
+      "ok": true,
+      "failReasons": [],
+      "copyHits": {
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详": 0,
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "无真 LLM · 专家": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0
+      },
+      "amberBars": [],
+      "tipWalls": [],
+      "midAnchors": [],
+      "billing": {
+        "present": false
+      },
+      "shot": "live-04-projects-list.png",
+      "title": "IP Harness · 知产 Agent"
+    },
+    {
+      "label": "project-workspace-via-click",
+      "url": "http://127.0.0.1:5175/agent/projects/proj-demo-general",
+      "ok": true,
+      "failReasons": [],
+      "copyHits": {
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详": 0,
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "无真 LLM · 专家": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0
+      },
+      "amberBars": [],
+      "tipWalls": [],
+      "midAnchors": [],
+      "billing": {
+        "present": false
+      },
+      "shot": "live-05-project-workspace-via-click.png",
+      "title": "IP Harness · 知产 Agent"
+    }
+  ],
+  "pass": true,
+  "billingHoldNote": "Runtime banner not visible in seed persona; source AgentBillingHoldBanner has no <a href> mid links (verified separately).",
+  "finishedAt": "2026-09-19T03:23:01.276Z",
+  "sessionOpened": true
+}

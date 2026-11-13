@@ -1,0 +1,55 @@
+{
+  "cards": [
+    {
+      "h": 193,
+      "w": 376,
+      "startH": 32,
+      "laterGap": null,
+      "text": "调研检索 Agent"
+    },
+    {
+      "h": 193,
+      "w": 376,
+      "startH": 32,
+      "laterGap": null,
+      "text": "交底整理 Agent"
+    },
+    {
+      "h": 193,
+      "w": 376,
+      "startH": 32,
+      "laterGap": null,
+      "text": "立项评估 Agent"
+    },
+    {
+      "h": 193,
+      "w": 376,
+      "startH": 32,
+      "laterGap": null,
+      "text": "权利要求撰写 Agent"
+    },
+    {
+      "h": 193,
+      "w": 376,
+      "startH": 32,
+      "laterGap": null,
+      "text": "OA 答复 Agent"
+    },
+    {
+      "h": 193,
+      "w": 376,
+      "startH": 32,
+      "laterGap": null,
+      "text": "年费与维持 Agent"
+    },
+    {
+      "h": 234,
+      "w": 376,
+      "startH": 32,
+      "laterGap": null,
+      "text": "监控预警 Agent"
+    }
+  ],
+  "caseHint": [],
+  "betaDup": []
+}

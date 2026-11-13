@@ -1,0 +1,19 @@
+{
+  "id": "p095",
+  "publicationNumber": "WO2025100095A",
+  "title": "触控与显示驱动集成芯片 (#95)",
+  "applicant": "三星显示株式会社",
+  "inventor": "发明人6",
+  "date": "2021-10-22",
+  "ipc": [
+    "H01L27/32",
+    "G09G3/3208",
+    "H01L51/50"
+  ],
+  "familyId": "fam-display-2",
+  "country": "WO",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 TDDI 时序共享降低功耗。",
+  "claims": "1. 一种装置或方法，其特征在于…（样本 p095）",
+  "snippet": "触控与显示驱动集成芯片"
+}

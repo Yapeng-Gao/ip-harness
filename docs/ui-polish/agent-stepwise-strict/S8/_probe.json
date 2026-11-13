@@ -1,0 +1,54 @@
+{
+  "s8": {
+    "url": "http://127.0.0.1:5175/agent/projects/proj-1789794354979-82f0b",
+    "noPatent": true,
+    "domainStepBar": 0,
+    "orch": true,
+    "english": [],
+    "toolish": [
+      {
+        "text": "分派任务",
+        "h": 40,
+        "fs": "12px",
+        "tag": "BUTTON"
+      },
+      {
+        "text": "汇总时间线",
+        "h": 40,
+        "fs": "12px",
+        "tag": "BUTTON"
+      },
+      {
+        "text": "分派给研究",
+        "h": 27,
+        "fs": "11px",
+        "tag": "BUTTON"
+      },
+      {
+        "text": "分派给写作",
+        "h": 27,
+        "fs": "11px",
+        "tag": "BUTTON"
+      },
+      {
+        "text": "分派给审查",
+        "h": 27,
+        "fs": "11px",
+        "tag": "BUTTON"
+      },
+      {
+        "text": "打开总控分派",
+        "h": 40,
+        "fs": "12px",
+        "tag": "A"
+      }
+    ],
+    "composerTop": 815,
+    "vh": 900
+  },
+  "gates": {
+    "midDeep": [],
+    "billing": false,
+    "origin": "http://127.0.0.1:5175"
+  }
+}

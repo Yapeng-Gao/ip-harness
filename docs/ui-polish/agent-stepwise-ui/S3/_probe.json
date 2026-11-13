@@ -1,0 +1,40 @@
+{
+  "before": {
+    "url": "http://127.0.0.1:5175/agent/sessions/sess-disclosure-1",
+    "hasScroller": true,
+    "stepishCount": 0,
+    "textLen": 82,
+    "textSnippet": "系统 2026-09-10 11:05:00 会话已创建 交底整理 Agent 已就绪 · 请正式执行；批准后写入 disclosure_pack（不改立项报价）。",
+    "hasStart": true,
+    "startText": "启动",
+    "startDisabled": false
+  },
+  "after": {
+    "url": "http://127.0.0.1:5175/agent/sessions/sess-disclosure-1",
+    "hasScroller": true,
+    "textLen": 341,
+    "textSnippet": "系统 2026-09-10 11:05:00 会话已创建 交底整理 Agent 已就绪 · 请正式执行；批准后写入 disclosure_pack（不改立项报价）。 系统 2026-09-19 03:57:09 正式执行 正式模式：关联案件后工具成功将写入领域命令；仍须经你批准确认。 思考 2026-09-19 03:57:10 确认专利类型与 intake 未显式指定时默认发明；核对发明人叙述是否足以支撑问题/方案/效果骨架。 调用 · 交底结构化 2026-09-19 03:57:11 未写库 · 缓冲 调用 · 交底结构化 2026-09-19 03:57:11 未写库 · 缓冲 调用 · 特征抽取 2026-09-19 03:57:12 未写库 · 缓冲 正在处理…",
+    "bubbles": 0,
+    "systemOrAgent": true,
+    "hitlVisible": false
+  },
+  "started": true,
+  "advanced": true,
+  "gates": {
+    "midDeep": [],
+    "midCta": [],
+    "billingBanner": null,
+    "amberFullWidth": [],
+    "shell5173Count": 0
+  },
+  "evidence": [
+    "docs/ui-polish/agent-stepwise-ui/S3/S3-before-start.png",
+    "docs/ui-polish/agent-stepwise-ui/S3/S3-after-advance.png",
+    "docs/ui-polish/agent-stepwise-ui/S3/S3-timeline-closeup.png"
+  ],
+  "checks": {
+    "bizLogic": true,
+    "pageLogic": true,
+    "hardOk": true
+  }
+}

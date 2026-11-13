@@ -1,0 +1,93 @@
+{
+  "dept-top": {
+    "top": 48,
+    "bottom": 107,
+    "h": 59,
+    "visiblePx": 59.25,
+    "fullyAboveFold": true,
+    "startsAboveFold": true
+  },
+  "task-rail": null,
+  "lead": {
+    "top": 303,
+    "bottom": 365,
+    "h": 62,
+    "visiblePx": 62,
+    "fullyAboveFold": true,
+    "startsAboveFold": true
+  },
+  "roster": {
+    "top": 392,
+    "bottom": 487,
+    "h": 96,
+    "visiblePx": 95.84375,
+    "fullyAboveFold": true,
+    "startsAboveFold": true
+  },
+  "progress": {
+    "top": 383,
+    "bottom": 476,
+    "h": 94,
+    "visiblePx": 93.59375,
+    "fullyAboveFold": true,
+    "startsAboveFold": true
+  },
+  "workbench": {
+    "top": 476,
+    "bottom": 2116,
+    "h": 1640,
+    "visiblePx": 423.65625,
+    "fullyAboveFold": false,
+    "startsAboveFold": true
+  },
+  "main": {
+    "top": 486,
+    "bottom": 2100,
+    "h": 1614,
+    "visiblePx": 413.65625,
+    "fullyAboveFold": false,
+    "startsAboveFold": true
+  },
+  "side": {
+    "top": 486,
+    "bottom": 2100,
+    "h": 1614,
+    "visiblePx": 413.65625,
+    "fullyAboveFold": false,
+    "startsAboveFold": true
+  },
+  "petition": null,
+  "composer": {
+    "top": 1991,
+    "bottom": 2099,
+    "h": 108,
+    "visiblePx": 0,
+    "fullyAboveFold": false,
+    "startsAboveFold": false
+  },
+  "doc": {
+    "top": 526,
+    "bottom": 2099,
+    "h": 1573,
+    "visiblePx": 373.90625,
+    "fullyAboveFold": false,
+    "startsAboveFold": true
+  },
+  "vh": 900,
+  "scrollH": 2116,
+  "bodyScroll": 2116,
+  "banners": [
+    {
+      "t": "案卷 → 顶栏「案卷」",
+      "top": 68
+    },
+    {
+      "t": "跨案偏好\n你上次要求：效果必须标测法（样机测 / 仿真 / 文献）",
+      "top": 573
+    },
+    {
+      "t": "案卷 → 顶栏「案卷」",
+      "top": 0
+    }
+  ]
+}

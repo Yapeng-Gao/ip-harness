@@ -1,0 +1,22 @@
+{
+  "id": "S8",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent/projects/proj-1789790310642-b3loc",
+  "assertions": [
+    "项目列表页可见",
+    "选「通用（无专利步骤）」",
+    "进总控席 http://localhost:5175/agent/projects/proj-1789790310642-b3loc",
+    "general-no-patent-steps 可见 · domain-step-bar=0",
+    "project-chat-general-orchestrator 可见"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "general-no-patent-steps": {
+      "x": 240,
+      "y": 208,
+      "width": 800,
+      "height": 16.5
+    }
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S8-general-project.png"
+}

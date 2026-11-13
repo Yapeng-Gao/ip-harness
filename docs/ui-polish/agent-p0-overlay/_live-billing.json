@@ -1,0 +1,11 @@
+{
+  "lsKeys": [
+    "ip-harness-activeProduct",
+    "ip-harness.cross.v1.snapshot"
+  ],
+  "forced": {
+    "ip-harness.cross.v1.snapshot": "{\"v\":1,\"revisedAt\":\"2026-09-19T03:24:16.643Z\",\"cases\":[{\"id\":\"c1\",\"title\":\"一种边缘计算节点调度方法\",\"caseNo\":\"CN202410328901.2\",\"type\":\"发明\",\"ownerTeam\":\"云计算研发部\",\"stage\":\"prosecution\",\"risk\":\"高\",\"nextDeadline\":\"2"
+  },
+  "texts": [],
+  "midInBanner": []
+}

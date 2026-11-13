@@ -1,0 +1,35 @@
+{
+  "checks": {
+    "SW-S6-1": true,
+    "SW-S6-2": true,
+    "SW-S0-1": true,
+    "SW-S5-1": true,
+    "SW-S7-1": true
+  },
+  "segmentButtonCount": 3,
+  "clickedText": "待确认·3",
+  "afterClickUrl": "http://127.0.0.1:5175/agent/sessions?filter=needs_human",
+  "filterInUrl": true,
+  "h1": "待确认会话",
+  "titleOk": true,
+  "mainRowCount": 3,
+  "badgeCount": 3,
+  "rowMatchesBadge": true,
+  "afterRefreshUrl": "http://127.0.0.1:5175/agent/sessions?filter=needs_human",
+  "refreshKeepsFilter": true,
+  "h1AfterRefresh": "待确认会话",
+  "homeRecommendDetails": 1,
+  "homeCompose": 1,
+  "catalogH2": [
+    "Core\n主办理闭环",
+    "Assist\n辅助薄层",
+    "Beta\n非采购闭环"
+  ],
+  "betaDoubleGone": true,
+  "betaH2": "Beta\n非采购闭环",
+  "sessionUrl": "http://127.0.0.1:5175/agent/sessions/sess-oa-1?focus=hitl",
+  "noCaseHint": 0,
+  "caseBindControls": 0,
+  "caseSelectInComposer": 0,
+  "topBind": 0
+}

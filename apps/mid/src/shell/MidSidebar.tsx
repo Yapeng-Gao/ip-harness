@@ -231,7 +231,7 @@ export function MidSidebar() {
         <button
           type="button"
           onClick={toggleInsight}
-          className="btn-press focus-ring nav-section mt-4 mb-1 flex w-full items-center justify-between hover:text-slate-600"
+          className="btn-press focus-ring nav-section-btn"
           aria-expanded={insightOpen || insightActive}
         >
           <span>洞察</span>

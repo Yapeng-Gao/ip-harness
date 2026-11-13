@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>一期主链线框 · 大厅→④→⑤→⑥</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #666;
+      --line: #222;
+      --paper: #fafafa;
+      --box: #fff;
+      --ask: #1a1a1a;
+      --ok: #0d5c2e;
+      --warn: #8a5a00;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Songti SC", "Noto Serif SC", Georgia, serif;
+      color: var(--ink);
+      background: #e8e8e8;
+      line-height: 1.45;
+    }
+    .app {
+      max-width: 960px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--paper);
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+    }
+    header.top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--line);
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    header.top strong { font-size: 14px; }
+    header.top .nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    header.top button {
+      font: inherit;
+      font-size: 12px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+    }
+    header.top button.on { background: var(--ink); color: #fff; }
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 8px 14px;
+      border-bottom: 1px dashed var(--line);
+      font-family: ui-monospace, Menlo, monospace;
+    }
+    .screen { display: none; padding: 16px 14px 40px; }
+    .screen.on { display: block; }
+    .wire {
+      border: 2px solid var(--line);
+      background: var(--box);
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .wire.dash { border-style: dashed; background: #f3f3f3; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .row > * { flex: 1 1 200px; }
+    h1 { font-size: 22px; margin: 0 0 6px; font-weight: 700; }
+    h2 { font-size: 15px; margin: 0 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+    h3 { font-size: 13px; margin: 0 0 6px; }
+    p, li { font-size: 13px; margin: 0 0 6px; }
+    ul { margin: 0; padding-left: 1.2em; }
+    .tag {
+      display: inline-block;
+      border: 1px solid var(--line);
+      padding: 1px 6px;
+      font-size: 11px;
+      font-family: ui-monospace, Menlo, monospace;
+      margin-right: 4px;
+    }
+    .tag.ok { border-color: var(--ok); color: var(--ok); }
+    .tag.warn { border-color: var(--warn); color: var(--warn); }
+    .tag.muted { color: var(--muted); border-color: #999; }
+    .ask {
+      border: 3px solid var(--ask);
+      padding: 12px;
+      margin: 12px 0;
+      background: #fffef5;
+    }
+    .ask .acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .ask .acts button, .btn {
+      font: inherit;
+      font-size: 13px;
+      padding: 6px 12px;
+      border: 2px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+    }
+    .ask .acts button.primary, .btn.primary {
+      background: var(--ink);
+      color: #fff;
+    }
+    .dept-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--line);
+    }
+    .roster { display: flex; flex-wrap: wrap; gap: 8px; }
+    .card {
+      border: 1px solid var(--line);
+      padding: 8px;
+      min-width: 100px;
+      font-size: 12px;
+    }
+    .card.off { opacity: 0.45; border-style: dashed; }
+    .doors { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .door {
+      border: 2px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      background: #fff;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+    }
+    .door strong { display: block; font-size: 14px; margin-bottom: 4px; }
+    .door.later {
+      border-style: dashed;
+      color: var(--muted);
+      cursor: default;
+    }
+    .desk {
+      border: 3px solid var(--line);
+      padding: 14px;
+      margin-bottom: 14px;
+      background: #fff;
+    }
+    .progress li { margin-bottom: 4px; }
+    .mono { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+    .toast {
+      display: none;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px dashed var(--warn);
+      background: #fff8e8;
+      font-size: 13px;
+    }
+    .toast.on { display: block; }
+    footer {
+      padding: 12px 14px 24px;
+      font-size: 11px;
+      color: var(--muted);
+      border-top: 1px dashed var(--line);
+      font-family: ui-monospace, Menlo, monospace;
+    }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <strong>主链线框</strong>
+      <nav class="nav" id="nav"></nav>
+    </header>
+    <div class="note">低保真 · 对齐交互大纲 · 硬请示粗框 · 三线分词 · ①②③⑦⑧细屏后置（门在、不误链）</div>
+
+    <!-- 大厅 -->
+    <section class="screen on" id="s-lobby" data-title="大厅">
+      <h1>新质数研发创新团队</h1>
+      <p class="mono">你是<strong>老板（当前用户）</strong> · 专家向你汇报 · 可找前台，也可直达部门</p>
+
+      <div class="wire" style="margin-top:12px;border-width:3px">
+        <h2>老板待办</h2>
+        <p>
+          <span class="tag warn">待你拍 2</span>
+          <span class="tag warn">期限催办 1</span>
+          <span class="tag muted">进行中 1</span>
+          <button class="btn primary" type="button" data-go="s-boss">打开待办</button>
+        </p>
+        <ul class="mono">
+          <li>⑥ · 示例案 · 答复截止 11-20 · 催办</li>
+          <li>④ · 示例案 · 待确认可交⑤ · 请示</li>
+        </ul>
+      </div>
+
+      <div class="wire dash">
+        <span class="tag muted">案卷条</span>
+        当前卷：示例案 ·
+        <button class="btn" type="button" data-go="s-docket">打开案卷</button>
+      </div>
+
+      <div class="desk">
+        <h2>前台接待</h2>
+        <p>需要帮忙从这儿开始 —— 上传材料、弄清要去哪一站</p>
+        <button class="btn primary" type="button" data-go="s-front">进前台分诊</button>
+      </div>
+
+      <h2>八个部门</h2>
+      <div class="doors">
+        <button class="door" type="button" data-go="s-thin" data-focus="1"><strong>① 立项</strong>开项目容器 · 薄部占位</button>
+        <button class="door" type="button" data-go="s-thin" data-focus="2"><strong>② 激发</strong>问题→路径 · 薄部占位</button>
+        <button class="door" type="button" data-go="s-thin" data-focus="3"><strong>③ 挖掘</strong>挖点·拆案 · 薄部占位</button>
+        <button class="door" type="button" data-go="s-d04"><strong>④ 交底</strong>交底书全绿</button>
+        <button class="door" type="button" data-go="s-d05"><strong>⑤ 申请</strong>撰写·递交</button>
+        <button class="door" type="button" data-go="s-d06"><strong>⑥ 答复</strong>OA 本轮</button>
+        <button class="door" type="button" data-go="s-thin" data-focus="7"><strong>⑦ 维护</strong>期限·年费 · 薄部占位</button>
+        <button class="door" type="button" data-go="s-thin" data-focus="8"><strong>⑧ 复盘</strong>年末报告 · 薄部占位</button>
+      </div>
+      <p class="mono" style="margin-top:10px">
+        主链：④⑤⑥ · 支路：
+        <button class="btn" type="button" data-go="s-b2">B2 冲⑤挡回</button>
+        <button class="btn" type="button" data-go="s-b5">B5 不申</button>
+        <button class="btn" type="button" data-go="s-b1">B1 跳过①②③</button>
+        · 情报官 ≠ 第九扇门
+      </p>
+    </section>
+
+    <!-- 老板待办 -->
+    <section class="screen" id="s-boss" data-title="老板待办">
+      <div class="dept-bar">
+        <div><button class="btn" type="button" data-go="s-lobby">← 大厅</button> <strong>老板待办 · 三类</strong></div>
+      </div>
+      <div class="wire">
+        <h2>A. 待你拍（请示）</h2>
+        <ul>
+          <li>④ 交底部 · 示例案 · 确认可交⑤
+            <button class="btn" type="button" data-go="s-d04">去处理</button></li>
+          <li>⑤ 申请部 · 示例案 · 确认递交（示意）
+            <button class="btn" type="button" data-go="s-d05">去处理</button></li>
+        </ul>
+      </div>
+      <div class="wire">
+        <h2>B. 期限催办</h2>
+        <ul>
+          <li><span class="tag warn">临近</span> ⑥ 答复部 · 截止 2026-11-20 · 一通未递交
+            <button class="btn" type="button" data-go="s-d06">去处理</button></li>
+          <li><span class="tag muted">示意</span> ⑦ 维护 · 年费 D-15（系统内提醒）
+            <button class="btn" type="button" data-go="s-thin" data-focus="7">看⑦说明</button></li>
+        </ul>
+        <p class="mono">超期须升级可见，不可静默。外发短信＝缺口不超卖。</p>
+      </div>
+      <div class="wire">
+        <h2>C. 进行中</h2>
+        <ul>
+          <li>工单「现在做⑤」· 交底已全绿 · 申请未过线
+            <button class="btn" type="button" data-go="s-handoff">打开工单</button></li>
+        </ul>
+      </div>
+      <div class="wire dash">
+        <p><strong>不上待办：</strong>专家正在起草/检索/质检出项（自决）——你可进部门看进度，但不刷屏。</p>
+        <p><strong>空态：</strong>「各部门暂无要你拍的事。」</p>
+      </div>
+    </section>
+
+    <!-- 薄部占位 -->
+    <section class="screen" id="s-thin" data-title="薄部占位">
+      <div class="dept-bar">
+        <div><button class="btn" type="button" data-go="s-lobby">← 大厅</button> <strong>①②③⑦⑧ · 薄部示意（非细屏）</strong></div>
+      </div>
+      <div class="wire dash">
+        <p>主链线框不展开细交互；本屏只保证<strong>门存在、合格线一句话、不挡主链</strong>可见。</p>
+      </div>
+      <div class="wire" id="thin-1">
+        <h2>① 立项</h2>
+        <p>一期＝创建项目容器 · 论证后置 · <strong>可跳过</strong> · 事后可补挂</p>
+        <p><span class="tag">合格线</span> 项目可引用 + 用户确认建项</p>
+        <p class="mono">编制：负责人兼建项（薄）</p>
+      </div>
+      <div class="wire" id="thin-2">
+        <h2>② 激发</h2>
+        <p>问题→路径→收藏 · 报告仅种子 · <strong>整段可跳</strong></p>
+        <p><span class="tag">合格线</span> 选题+收藏或跳过留痕；开③/④须先过线</p>
+      </div>
+      <div class="wire" id="thin-3">
+        <h2>③ 挖掘</h2>
+        <p>点+拆案排案+报告 · 交④是点包 ≠ 交底全绿</p>
+        <p><span class="tag">合格线</span> 报告路径或交④路径其一</p>
+      </div>
+      <div class="wire" id="thin-7">
+        <h2>⑦ 维护</h2>
+        <p>录入·期限·明白账 · 缴费前硬请示 · <span class="tag warn">看板缺口不超卖</span></p>
+        <p><span class="tag">合格线</span> 托管纪律（非一次性交卷绿灯）</p>
+      </div>
+      <div class="wire" id="thin-8">
+        <h2>⑧ 复盘</h2>
+        <p>五块报告 · 逐件拍或只读不拍 · <strong>≠情报官</strong></p>
+        <p><span class="tag">合格线</span> 报告已交 + 拍或认不拍留痕</p>
+      </div>
+      <button class="btn primary" type="button" data-go="s-d04">去主链④</button>
+      <button class="btn" type="button" data-go="s-lobby">回大厅</button>
+    </section>
+
+    <!-- B1 跳过 -->
+    <section class="screen" id="s-b1" data-title="支路B1">
+      <div class="dept-bar">
+        <div><button class="btn" type="button" data-go="s-lobby">大厅</button> <strong>B1 · 跳过①②③直达④</strong></div>
+      </div>
+      <div class="wire">
+        <p>案卷可无正式项目 · 不假装已激发/已挖点</p>
+        <p>需要聚合键时 → <strong>事后补挂①</strong>（不强迫先过立项）</p>
+        <button class="btn primary" type="button" data-go="s-d04">短收件进交底部</button>
+      </div>
+    </section>
+
+    <!-- 前台 -->
+    <section class="screen" id="s-front" data-title="前台分诊">
+      <div class="dept-bar">
+        <div><button class="btn" type="button" data-go="s-lobby">← 大厅</button> <strong>前台 · 分诊结果</strong></div>
+      </div>
+      <div class="wire">
+        <h2>材料清单</h2>
+        <ul>
+          <li>技术说明.pdf · 高 · 问题/方案草稿</li>
+          <li>结构图.png · 中 · 附图线索</li>
+        </ul>
+        <h2>意图假设</h2>
+        <p>你可能想先把技术写成交底书，再考虑申请。</p>
+        <h2>建议部门</h2>
+        <p><span class="tag">主推</span> <strong>④ 交底部</strong> — 尚无合格交底，不宜直冲⑤</p>
+        <p><span class="tag muted">备选</span> ③ 挖掘 — 若还要拆点/排案（细屏后置）</p>
+      </div>
+      <div class="ask">
+        <h3>【请示】这次先去哪一部？</h3>
+        <p>建议先去 <strong>交底部</strong>。你也可以改主意。</p>
+        <div class="acts">
+          <button class="primary" type="button" data-go="s-d04">确认去 ④</button>
+          <button type="button" data-go="s-b2">改去 ⑤（将过门槛）</button>
+          <button type="button" data-go="s-lobby">先回大厅</button>
+        </div>
+      </div>
+      <div class="wire dash">
+        <h3>领进前 · 交办材料（确认后）</h3>
+        <p>已有：技术说明、图 · 缺口：领域待确认 · 上家：无</p>
+      </div>
+    </section>
+
+    <!-- 支路 B2 -->
+    <section class="screen" id="s-b2" data-title="支路B2">
+      <div class="dept-bar">
+        <div><button class="btn" type="button" data-go="s-lobby">大厅</button> <strong>申请部 · 短收件（自带/误冲）</strong></div>
+        <span class="tag warn">进入门槛 · 未过</span>
+      </div>
+      <div class="wire">
+        <h2>进入检查表</h2>
+        <ul>
+          <li>交底正文 · <strong>无 / 仅技术说明</strong></li>
+          <li>交底质检全绿 · <strong>无</strong></li>
+        </ul>
+        <p>负责人：还不能开写申请文件。建议退④先全绿；你也可补传已有交底再检。</p>
+      </div>
+      <div class="ask">
+        <h3>【请示】门槛不过 · 怎么走？</h3>
+        <div class="acts">
+          <button class="primary" type="button" data-go="s-d04">去交底部</button>
+          <button type="button">补传交底再检（示意）</button>
+          <button type="button" data-go="s-lobby">回大厅</button>
+        </div>
+      </div>
+      <p class="mono">禁止：用「先查新」绕过交底门槛硬写。</p>
+    </section>
+
+    <!-- ④ -->
+    <section class="screen" id="s-d04" data-title="④ 交底">
+      <div class="dept-bar">
+        <div>
+          <button class="btn" type="button" data-go="s-lobby">大厅</button>
+          <strong> 交底部</strong>
+        </div>
+        <div>
+          <span class="tag warn" id="tag-04">交底质检 · 未全绿</span>
+          <button class="btn" type="button" data-go="s-docket">案卷</button>
+        </div>
+      </div>
+      <div class="wire dash">
+        <span class="tag muted">带教 · 首次可关</span>
+        办完标志＝<strong>交底质检全绿</strong>且你确认可交⑤。要你拍：事实确认、可交⑤。
+        <button class="btn" type="button">知道了</button>
+      </div>
+      <div class="wire">
+        <h2>部门负责人</h2>
+        <p>目标：交底书 + 全绿。质检必做；查新选做未派。</p>
+      </div>
+      <div class="row">
+        <div class="wire">
+          <h2>专家名册</h2>
+          <div class="roster">
+            <div class="card">部门负责人<br/>主持中</div>
+            <div class="card">成稿专家<br/>进行中</div>
+            <div class="card">质检专家<br/>待命</div>
+            <div class="card off">检索 · 未请来</div>
+          </div>
+        </div>
+        <div class="wire">
+          <h2>段进度</h2>
+          <ul class="progress" id="prog-04">
+            <li>进入门槛 · 已过</li>
+            <li data-step="draft">成稿 · 进行中 → <strong>待你确认</strong></li>
+            <li data-step="qc">质检 · 未开始</li>
+            <li data-step="hand">可交⑤ · 未到</li>
+          </ul>
+        </div>
+      </div>
+      <div class="wire">
+        <h2>协同场 · 成稿</h2>
+        <p class="mono">（交底书正文预览）问题 / 方案 / 效果 …</p>
+      </div>
+
+      <div class="ask" id="ask-fact">
+        <h3>【请示】确认交底事实</h3>
+        <p>请确认技术事实无误。<span class="mono">依据：材料痕迹</span></p>
+        <div class="acts">
+          <button class="primary" type="button" id="btn-fact">确认事实</button>
+          <button type="button">还要改</button>
+          <button type="button">暂停</button>
+        </div>
+      </div>
+
+      <!-- 质检循环：先红灯再全绿 -->
+      <div class="wire" id="block-qc1" hidden>
+        <h2>质检 · 首次</h2>
+        <p><span class="tag warn">未全绿</span> 示例红灯：效果段缺数据支撑（示意）</p>
+        <p>质检专家推动成稿优化 → 再检。预检绿 ≠ 可交⑤。</p>
+        <button class="btn primary" type="button" id="btn-qc-fix">限定焦点已改 · 再检</button>
+      </div>
+
+      <div class="wire dash" id="block-qc2" hidden>
+        <h2>质检 · 再检</h2>
+        <p><span class="tag ok">交底质检全绿</span> 末次检测无未关闭红灯</p>
+        <div class="ask">
+          <h3>【请示】确认可交申请部？</h3>
+          <p>全绿 ≠ 申请已过线。打包方：<strong>交底部 · 部门负责人</strong></p>
+          <div class="acts">
+            <button class="primary" type="button" data-go="s-handoff">确认 · 开「现在做⑤」</button>
+            <button type="button">暂不交</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 工单 -->
+    <section class="screen" id="s-handoff" data-title="④→⑤ 工单">
+      <div class="dept-bar">
+        <div><button class="btn" type="button" data-go="s-d04">← 交底部</button> <strong>部间工单</strong></div>
+      </div>
+      <div class="wire">
+        <h2>现在做⑤ · 申请部</h2>
+        <p><span class="tag">打包</span> 交底部 · 部门负责人</p>
+        <p><span class="tag">接单</span> 申请部 · 部门负责人</p>
+        <p><span class="tag ok">交底质检全绿</span> <span class="tag muted">申请尚未过线</span></p>
+        <h3>结束检查表摘要</h3>
+        <ul>
+          <li>交底正文 · 有</li>
+          <li>成稿事实确认 · 有</li>
+          <li>质检全绿记录 · 有（含再检）</li>
+          <li>选做查新 · 未做（备注）</li>
+        </ul>
+        <button class="btn primary" type="button" data-go="s-d05">进入申请部接单</button>
+      </div>
+    </section>
+
+    <!-- ⑤ -->
+    <section class="screen" id="s-d05" data-title="⑤ 申请">
+      <div class="dept-bar">
+        <div>
+          <button class="btn" type="button" data-go="s-lobby">大厅</button>
+          <strong> 申请部</strong>
+        </div>
+        <div>
+          <span class="tag muted" id="tag-05">申请文件可递交 · 未过线</span>
+          <button class="btn" type="button" data-go="s-docket">案卷</button>
+        </div>
+      </div>
+      <div class="wire">
+        <h2>部门负责人</h2>
+        <p>已接④工单 · 交底全绿已继承。建议 B 后你再拍申不申。</p>
+      </div>
+      <div class="row">
+        <div class="wire">
+          <h2>专家名册</h2>
+          <div class="roster">
+            <div class="card">负责人</div>
+            <div class="card">接案 A</div>
+            <div class="card">检索 B</div>
+            <div class="card">撰写 C1+C2</div>
+            <div class="card">质检 C3</div>
+          </div>
+        </div>
+        <div class="wire">
+          <h2>段进度</h2>
+          <ul class="progress" id="prog-05">
+            <li>进入门槛 · 已过</li>
+            <li data-s="a">A 理解 · <strong>待你确认</strong></li>
+            <li data-s="b">B 查新·申不申 · 未到</li>
+            <li data-s="c">C1/C2 撰写 · 未到</li>
+            <li data-s="c3">C3 过线·递交 · 未到</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ask" id="ask-a">
+        <h3>【请示】确认开案理解</h3>
+        <p>复述：本发明解决… 区别在于… <span class="mono">可对回交底</span></p>
+        <div class="acts">
+          <button class="primary" type="button" id="btn-a">确认理解</button>
+          <button type="button">补料</button>
+          <button type="button" data-go="s-d04">退④</button>
+        </div>
+      </div>
+
+      <div id="block-b" hidden>
+        <div class="wire dash">
+          <h2>B · 申请向查新（摘要）</h2>
+          <p>命中示意已整理 · ≠④薄查新 · ≠授权承诺</p>
+        </div>
+        <div class="ask">
+          <h3>【请示】申不申 / 类型</h3>
+          <div class="acts">
+            <button class="primary" type="button" id="btn-file">发明 · 要申</button>
+            <button type="button" data-go="s-b5">不申 · 结案</button>
+            <button type="button" id="btn-skip-b">跳过查新并认风险</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wire" id="block-write" hidden>
+        <h2>C1 / C2 · 撰写中</h2>
+        <p>权项树 + 说明书块（示意）。理解未确认时不得锁独权终稿——此处已确认。</p>
+        <p class="mono">范围请示可另卡；本期线框从简：进入质检。</p>
+        <button class="btn primary" type="button" id="btn-to-c3">稿件齐套 · 送 C3 质检</button>
+      </div>
+
+      <div class="wire dash" id="block-c3" hidden>
+        <h2>C3 · 申请文件质检</h2>
+        <p><span class="tag ok" id="tag-c3-line">申请文件可递交（过线）</span> A–J 法定红灯已关闭 · ≠ 可授权</p>
+        <div class="ask">
+          <h3>【请示】确认递交？</h3>
+          <p>回执入案卷与⑦。通道实现后置。</p>
+          <div class="acts">
+            <button class="primary" type="button" id="btn-submit5">确认递交</button>
+            <button type="button">暂不递交</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wire" id="block-oa" hidden>
+        <p>已有申请号（示意）· 回执入⑦。</p>
+        <button class="btn primary" type="button" data-go="s-d06">开「现在做⑥」（示意收到 OA）</button>
+        <button class="btn" type="button" data-go="s-lobby">回大厅</button>
+      </div>
+    </section>
+
+    <!-- 支路 B5 -->
+    <section class="screen" id="s-b5" data-title="支路B5">
+      <div class="dept-bar">
+        <div><button class="btn" type="button" data-go="s-d05">← 申请部</button> <strong>不申 · 结案</strong></div>
+      </div>
+      <div class="wire">
+        <p>用户拍<strong>不申</strong> → 不进撰写主路径；可转秘密等备注。</p>
+        <p><span class="tag muted">不得</span> 标已申请 / 不得出申请号充数</p>
+        <button class="btn primary" type="button" data-go="s-docket">写入判断痕迹</button>
+        <button class="btn" type="button" data-go="s-lobby">回大厅</button>
+      </div>
+    </section>
+
+    <!-- ⑥ -->
+    <section class="screen" id="s-d06" data-title="⑥ 答复">
+      <div class="dept-bar">
+        <div>
+          <button class="btn" type="button" data-go="s-lobby">大厅</button>
+          <strong> 答复部（OA）</strong>
+        </div>
+        <div>
+          <span class="tag warn">期限 2026-11-20 · 可催</span>
+          <span class="tag muted" id="tag-06d">本轮 D · 未过线</span>
+        </div>
+      </div>
+      <div class="wire">
+        <h2>部门负责人</h2>
+        <p>一通创造性 · <strong>先 A 中立拆争点，再 B 出策略</strong>。禁止混步定调。</p>
+      </div>
+
+      <div class="wire" id="block-a6">
+        <h2>A · 争点清单（中立）</h2>
+        <p>争点1：独权相对对比文件1 创造性…</p>
+        <p class="mono">本步不夹带「建议缩限」定调</p>
+        <div class="ask">
+          <h3>【请示】审查意见理解是否如此？</h3>
+          <div class="acts">
+            <button class="primary" type="button" id="btn-a6">确认争点理解</button>
+            <button type="button">补料 / 改拆</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="block-b6" hidden>
+        <div class="wire">
+          <h2>B · 策略选项（A 确认后才展开）</h2>
+          <ul>
+            <li>争辩</li>
+            <li>修改（缩限）· 推荐</li>
+            <li>组合</li>
+          </ul>
+          <p class="mono">缩前 / 缩后人话另附</p>
+        </div>
+        <div class="ask">
+          <h3>【请示】重大缩限 · 策略选定</h3>
+          <div class="acts">
+            <button class="primary" type="button" id="btn-strat">确认：修改缩限</button>
+            <button type="button">改选争辩</button>
+            <button type="button">分案 / 放弃</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wire dash" id="block-d" hidden>
+        <h2>C 起草已毕 · D 审核</h2>
+        <p><span class="tag ok">本轮答复可递交（D 过线）</span></p>
+        <div class="ask">
+          <h3>【请示】确认本轮递交？</h3>
+          <div class="acts">
+            <button class="primary" type="button" data-go="s-docket">确认递交 · 看判断痕迹</button>
+            <button type="button">暂不</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 案卷 -->
+    <section class="screen" id="s-docket" data-title="案卷">
+      <div class="dept-bar">
+        <div><button class="btn" type="button" data-go="s-lobby">← 大厅</button> <strong>案卷抽屉</strong></div>
+      </div>
+      <div class="row">
+        <div class="wire">
+          <h2>材料</h2>
+          <p>技术说明 · 图 · 交底定稿 · 申请包 · 通知书…</p>
+        </div>
+        <div class="wire">
+          <h2>检查表</h2>
+          <p>④进入/结束 · ⑤进入/结束 · ⑥本轮…</p>
+        </div>
+      </div>
+      <div class="wire">
+        <h2>工单</h2>
+        <p>现在做⑤ · 现在做⑥（示意）· 不申结案（若走 B5）</p>
+      </div>
+      <div class="wire">
+        <h2>判断痕迹（沉淀）</h2>
+        <ul class="mono">
+          <li>前台：确认去④（或 B2 门槛挡回）</li>
+          <li>④：事实确认 → 质检再检 → 全绿 → 可交⑤</li>
+          <li>⑤：理解 → 申不申（或不申）→ 撰写 → 过线 → 递交</li>
+          <li>⑥：争点确认 → 缩限确认 → D 过线 → 递交</li>
+        </ul>
+      </div>
+      <p class="mono">
+        <span class="tag ok">交底质检全绿</span>
+        <span class="tag ok">申请文件可递交（过线）</span>
+        <span class="tag ok">本轮答复可递交（D 过线）</span>
+        — 三词勿混用
+      </p>
+    </section>
+
+    <footer>
+      真源：交互大纲 · 故事板 · 编制总览 · 00§6.1<br />
+      浏览器打开本 HTML · 非 apps 样机 · 修订含质检循环 / A→B 分步 / 支路 B2·B5
+    </footer>
+  </div>
+
+  <script>
+    const screens = [...document.querySelectorAll(".screen")];
+    const nav = document.getElementById("nav");
+
+    function show(id) {
+      screens.forEach((s) => s.classList.toggle("on", s.id === id));
+      [...nav.querySelectorAll("button")].forEach((b) => {
+        b.classList.toggle("on", b.dataset.go === id);
+      });
+      window.scrollTo(0, 0);
+    }
+
+    screens.forEach((s) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = s.dataset.title;
+      b.dataset.go = s.id;
+      b.addEventListener("click", () => show(s.id));
+      nav.appendChild(b);
+    });
+
+    document.querySelectorAll("[data-go]").forEach((el) => {
+      el.addEventListener("click", () => show(el.dataset.go));
+    });
+
+    document.querySelectorAll("[data-focus]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const id = "thin-" + el.dataset.focus;
+        setTimeout(() => {
+          const node = document.getElementById(id);
+          if (node) node.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 50);
+      });
+    });
+
+    function setProg04(step) {
+      const map = { draft: "成稿 · 已确认", qc: "质检 · 进行中", hand: "可交⑤ · 待你确认" };
+      document.querySelectorAll("#prog-04 [data-step]").forEach((li) => {
+        const k = li.dataset.step;
+        if (k === "draft" && step !== "draft") li.innerHTML = "成稿 · 事实已确认";
+        if (k === "qc" && step === "qc") li.innerHTML = "质检 · <strong>进行中（有红灯）</strong>";
+        if (k === "qc" && step === "hand") li.innerHTML = "质检 · 全绿";
+        if (k === "hand" && step === "hand") li.innerHTML = "可交⑤ · <strong>待你确认</strong>";
+      });
+    }
+
+    document.getElementById("btn-fact").addEventListener("click", () => {
+      document.getElementById("ask-fact").hidden = true;
+      document.getElementById("block-qc1").hidden = false;
+      setProg04("qc");
+    });
+
+    document.getElementById("btn-qc-fix").addEventListener("click", () => {
+      document.getElementById("block-qc1").hidden = true;
+      document.getElementById("block-qc2").hidden = false;
+      const tag = document.getElementById("tag-04");
+      tag.className = "tag ok";
+      tag.textContent = "交底质检全绿";
+      setProg04("hand");
+    });
+
+    function setProg05(s) {
+      const el = document.getElementById("prog-05");
+      const labels = {
+        a: ["A 理解 · 已确认", "B 查新·申不申 · <strong>待你拍</strong>", "C1/C2 撰写 · 未到", "C3 过线·递交 · 未到"],
+        b: ["A 理解 · 已确认", "B · 已拍要申", "C1/C2 撰写 · <strong>进行中</strong>", "C3 过线·递交 · 未到"],
+        c3: ["A 理解 · 已确认", "B · 已拍要申", "C1/C2 · 齐套", "C3 · <strong>过线 · 待递交确认</strong>"],
+      };
+      const items = el.querySelectorAll("li[data-s]");
+      const arr = labels[s];
+      if (!arr) return;
+      items.forEach((li, i) => {
+        li.innerHTML = arr[i];
+      });
+    }
+
+    document.getElementById("btn-a").addEventListener("click", () => {
+      document.getElementById("ask-a").hidden = true;
+      document.getElementById("block-b").hidden = false;
+      setProg05("a");
+    });
+
+    function goWrite() {
+      document.getElementById("block-b").hidden = true;
+      document.getElementById("block-write").hidden = false;
+      setProg05("b");
+    }
+    document.getElementById("btn-file").addEventListener("click", goWrite);
+    document.getElementById("btn-skip-b").addEventListener("click", goWrite);
+
+    document.getElementById("btn-to-c3").addEventListener("click", () => {
+      document.getElementById("block-write").hidden = true;
+      document.getElementById("block-c3").hidden = false;
+      const tag = document.getElementById("tag-05");
+      tag.className = "tag ok";
+      tag.textContent = "申请文件可递交（过线）";
+      setProg05("c3");
+    });
+
+    document.getElementById("btn-submit5").addEventListener("click", () => {
+      document.getElementById("block-oa").hidden = false;
+    });
+
+    document.getElementById("btn-a6").addEventListener("click", () => {
+      document.getElementById("block-b6").hidden = false;
+      document.getElementById("block-a6").querySelector(".ask").hidden = true;
+    });
+
+    document.getElementById("btn-strat").addEventListener("click", () => {
+      document.getElementById("block-d").hidden = false;
+      const t = document.getElementById("tag-06d");
+      t.className = "tag ok";
+      t.textContent = "本轮答复可递交（D 过线）";
+    });
+  </script>
+</body>
+</html>

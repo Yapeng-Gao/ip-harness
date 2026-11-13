@@ -26,5 +26,6 @@ export {
   pickNewerSnapshot,
   requestBridgeSnapshot,
   subscribeCrossPortSnapshot,
+  isMidCrossPortHub,
   CROSS_PORT_LIMITS_ZH,
 } from './crossPortStore'

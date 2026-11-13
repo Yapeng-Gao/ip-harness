@@ -1,0 +1,9 @@
+{
+  "nest": {
+    "outerR": 20,
+    "innerR": 16,
+    "pad": 10,
+    "concentricOk": false,
+    "delta": -6
+  }
+}

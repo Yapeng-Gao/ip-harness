@@ -21,7 +21,24 @@
 | 原型后落地（landing） | [landing/README.md](./landing/README.md) | 落地切分与数据归属、默认栈、三阶段路线、提醒/通知；评审 [landing/REVIEW.md](./landing/REVIEW.md) **通过** |
 | 企业级后端 + Agent 平台 | [enterprise/README.md](./enterprise/README.md) | 七面之上拓扑/多租户/HA/安全/审计/私有化；Agent 选型（**C 混合 + DSH 和/或 Codex app-server + 自有闸**；LangGraph 降档；见 [enterprise/agent-runtime-options.md](./enterprise/agent-runtime-options.md)）；相对旧 [enterprise/REVIEW.md](./enterprise/REVIEW.md)（曾锁 C+LangGraph）再评已**通过**（见 REVIEW） |
 | 开发前规格包（dev-spec） | [dev-spec/README.md](./dev-spec/README.md) | 照文档开 PR：拓扑 / 落地表 / 冻 URL / 构建验收 / ADR；评审 [dev-spec/REVIEW.md](./dev-spec/REVIEW.md) **通过**（`678b54e`） |
+| 创新激发（D3/W5） | [inspire/README.md](./inspire/README.md) · [REVIEW](./inspire/REVIEW.md) | 问题→扩召卡→收藏→送交底/挖掘；壳 :5185；**无真 LLM** |
+| 专利挖掘（D2/W4） | [mining/README.md](./mining/README.md) · [REVIEW](./mining/REVIEW.md) | 交底→发明点→评分→送立项/撰写；壳 :5184；可吃 Search Hit；**≠ case-core 写库** |
+| 附图生成·编辑（D5/W3） | [figure/README.md](./figure/README.md) · [REVIEW](./figure/REVIEW.md) | **生成+编辑双闭环**；壳建议 :5187（可挂 doc-harness）；无真文生图；版本→挂文档章 |
+| 产业全景（D4/W5） | [landscape/README.md](./landscape/README.md) · [REVIEW](./landscape/REVIEW.md) | 汽车种子域：树+企业+布局+竞品+卡脖子/围剿/前沿；壳 :5186；**无全球实时库**；真全行业另立项 |
+| FTO 样机（D1/W2） | [fto/README.md](./fto/README.md) · [REVIEW](./fto/REVIEW.md) | 特征→命中→矩阵→风险→报告 Confirm；壳 :5183；吃 Search Hit；**无真 FTO 引擎**；≠ case-core 写库 |
+| 检索样机（search） | [search/README.md](./search/README.md) · [REVIEW](./search/REVIEW.md) | 人+Agent 同引擎形状；用法对标智慧芽/Innojoy；**无真后台**；壳 :5182；≠ ai-data |
+| AI Data（数据 Pipeline） | [ai-data/README.md](./ai-data/README.md) · [REVIEW](./ai-data/REVIEW.md) | **≠ ops / ≠ ai-infra / ≠ case-core**；dataset→训推；产品壳建议 :5181；禁 PatentCase；无真 Spark/湖仓/PII |
+| AI Infra（训推基建） | [ai-infra/README.md](./ai-infra/README.md) · [REVIEW](./ai-infra/REVIEW.md) | **≠ ops**：GPU/调度/训练/批推/在线推理/发布；产品壳建议 :5179；禁 PatentCase |
+| 文档编辑器并行样机（doc-harness） | [doc-harness/README.md](./doc-harness/README.md) | 另壳 :5178；三栏文档+Agent；MVP draft 权利要求；五壳零改 |
 | 产品面规格（product-apps） | [product-apps/README.md](./product-apps/README.md) | 五壳产品规格；默认同壳不拆节点 app；工具/MCP/插件；评审 [product-apps/REVIEW.md](./product-apps/REVIEW.md) **通过** |
+| Agent 沙箱平台 | [agent-platform.md](./agent-platform.md) | L0 工具层 · Solo/Team/Domain · 一 Run 一沙箱 · OpenSandbox/Cube · Driver |
+| Domain Packs | [domain-packs/README.md](./domain-packs/README.md) | 专利 Pack 设计/实现；F1–F9 · 16 席 · HITL×8 |
+| **AgentOS v1.1 定稿快照** | [incoming/AgentOS-design-docs-v1.1/](./incoming/AgentOS-design-docs-v1.1/) · [incoming 索引](./incoming/README.md) | 目标全景原件（平台/Pack/实现/线框/资产台账）；正式稿见上两行 |
+| **原型总方案（执行表）** | [../PROTOTYPE_MASTER_PLAN.md](../PROTOTYPE_MASTER_PLAN.md) | 已有/在建/待建队列 · 端口 · 波次 · 标准剧本；样机口径 |
+| **方案波入口** | [../SCHEME_WAVE.md](../SCHEME_WAVE.md) · [汇总 REVIEW](./SCHEME_WAVE_REVIEW.md) | 停原型 · 检索数据面 · 模型训练 |
+| 检索数据面 | [search-data/README.md](./search-data/README.md) · [REVIEW](./search-data/REVIEW.md) | 处理/存储/检索/增量版本/合规/拓扑；≠ ai-data（方案波 S1） |
+| 模型训练方案 | [model-training/README.md](./model-training/README.md) · [REVIEW](./model-training/REVIEW.md) | 预训练/SFT/偏好RL · 配比 · 评测安全 · 课表/拓扑（方案波 S2） |
+| 探索猎虫 Harness（e2e-hunt） | [e2e-hunt/README.md](./e2e-hunt/README.md) · [完善版闭环](./e2e-hunt/AGENTIC_CLOSED_LOOP.md) · [REVIEW](./e2e-hunt/REVIEW.md) | L0/L1 管绿灯；Hunt 管找虫；Agentic L1–L7 贴仓；无 L5 自动修 |
 
 阅读顺序建议：本页 → [codebase](./codebase.md) → [data-flow](./data-flow.md) → [data-model](./data-model.md) → [backends](./backends.md) → [landing](./landing/README.md)（落地）→ [enterprise](./enterprise/README.md)（企业级 + Agent）→ [dev-spec](./dev-spec/README.md)（开发前规格 · 开 PR）→ [product-apps](./product-apps/README.md)（产品面规格 · 照壳设计）→（仓库策略附录）[repos-and-vcs](./repos-and-vcs.md)。
 

@@ -45,7 +45,7 @@ export function ConfigPage() {
       <Card>
         <ul className="divide-y divide-slate-100">
           {FEATURE_FLAGS.map((f) => (
-            <li key={f.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
+            <li key={f.id} className="flex min-h-10 items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
               <div>
                 <p className="text-sm text-slate-800">{f.label}</p>
                 <p className="font-mono text-xs text-slate-400">{f.id}</p>
@@ -55,7 +55,8 @@ export function ConfigPage() {
                 role="switch"
                 aria-checked={flags[f.id]}
                 onClick={() => setFlags((prev) => ({ ...prev, [f.id]: !prev[f.id] }))}
-                className={`btn-press relative h-6 w-10 rounded-full ${flags[f.id] ? 'bg-slate-900' : 'bg-slate-300'}`}
+                className={`btn-press ops-switch focus-ring ${flags[f.id] ? 'bg-slate-900' : 'bg-slate-300'}`}
+                aria-label={`${f.label}：${flags[f.id] ? '开' : '关'}`}
               >
                 <span
                   className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm"

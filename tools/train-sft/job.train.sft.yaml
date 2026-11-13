@@ -1,0 +1,59 @@
+# train.sft Job contract — I2 MVP (ip-harness)
+# Honesty: no K8s / no GPU cluster assumed. Stub or optional local CPU is enough.
+# Dataset pin frozen by AI Data (commit d0a66f7ab23f879b506aaac38143917759b30387).
+
+type: train.sft
+id: job-train-sft-ip-mvp
+recipe: sft-ip-mvp.v1
+
+dataset:
+  id: ds-ip-sft-mvp
+  version: v0.1.0
+  manifest_path: docs/ai-data/mvp-sft/manifest.json
+  data_commit_sha: d0a66f7ab23f879b506aaac38143917759b30387
+  checksums:
+    train:
+      path: docs/ai-data/mvp-sft/splits/train.jsonl
+      sha256: 0b580c46fab521d84b16e21d28b3916abedfd2f4063ff8d5a1d89cc88d99f79a
+      rows: 48
+    val:
+      path: docs/ai-data/mvp-sft/splits/val.jsonl
+      sha256: dcf7be139e8b8e53058a778281cbf1b30aeb2ff140d941ad95a38f64d158b56b
+      rows: 14
+    test:
+      path: docs/ai-data/mvp-sft/splits/test.jsonl
+      sha256: 556b62b402fa7840c7990055698f99be0f575cd7fc309ad0bfd532551ec5eaa0
+      rows: 14
+
+base_model: external/qwen2.5-0.5b-instruct
+# Honest: weights are NOT in this repo; external download / host-provided only.
+
+hyperparams:
+  lr: 0.0002
+  epochs: 1
+  max_seq_len: 1024
+  batch_size: 1
+  lora_r: 8
+  lora_alpha: 16
+  seed: 42
+  # Full list also frozen in hyperparams.json — keep in sync.
+
+outputs:
+  checkpoint_uri: artifacts/checkpoints/<run_id>/
+  metrics_uri: artifacts/checkpoints/<run_id>/metrics.json
+  registry_revision: registry/revisions.md
+
+gates:
+  go_no_go: eval/go-no-go.md
+  frozen_split: eval/frozen-split.md
+
+# Honesty fields — do not pretend a cluster exists
+cluster: none
+gpu: optional-local-or-cpu-stub
+
+forbidden:
+  - pretrain
+  - dpo
+  - rlhf
+  - patent_case_raw
+  - real_k8s

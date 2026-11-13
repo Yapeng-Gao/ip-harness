@@ -1,0 +1,19 @@
+{
+  "id": "p092",
+  "publicationNumber": "CN110000092A",
+  "title": "Terminal apparatus for beam measurement reporting (#92)",
+  "applicant": "Huawei Technologies Co., Ltd.",
+  "inventor": "Inventor 3",
+  "date": "2022-01-01",
+  "ipc": [
+    "H04W16/28",
+    "H04W72/04",
+    "H04L5/00"
+  ],
+  "familyId": "fam-comms-2",
+  "country": "CN",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 Terminal-side beam measurement reporting configuration.",
+  "claims": "1. A device or method comprising… (sample p092)",
+  "snippet": "Terminal apparatus for beam measurement "
+}

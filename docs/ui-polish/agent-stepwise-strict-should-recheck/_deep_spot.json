@@ -1,0 +1,52 @@
+{
+  "s7deep": [
+    {
+      "text": "辅助薄层：告警处置与 claim_chart 草稿；诉讼维权升级为长尾，非本 Agent 采购闭环",
+      "h": 17,
+      "webkitLineClamp": "1",
+      "display": "flow-root",
+      "overflow": "hidden",
+      "cardH": 238,
+      "tier": "assist"
+    },
+    {
+      "text": "Beta·非采购闭环 · 无法务会签闸，批准≠合同 PDF/电子签",
+      "h": 17,
+      "webkitLineClamp": "1",
+      "display": "flow-root",
+      "overflow": "hidden",
+      "cardH": 238,
+      "tier": "beta"
+    },
+    {
+      "text": "Beta·非采购闭环 · 洞察矩阵/建案示意仍薄，勿当布局采购主路径",
+      "h": 17,
+      "webkitLineClamp": "1",
+      "display": "flow-root",
+      "overflow": "hidden",
+      "cardH": 238,
+      "tier": "beta"
+    }
+  ],
+  "s8": {
+    "url": "/agent/projects",
+    "hasDomainPack": false,
+    "hasMock": false,
+    "hasPackEq": false,
+    "has领域包": true,
+    "formBits": "form-visible",
+    "snippet": "跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Agent 项目模式 可选模式：通用多席协作，或启用专利领域流程。默认入口仍是 /agent 通用单聊。 新建项目 项目类型 通用（无专利步骤） 领域包 通用项目不含专利步骤条、自由实施分析或权利要求确认。 关联案件（可选） 可稍后创建或绑定案件 一种边缘计算节点调度方法 无人机集群协同避障方法 车载毫米波雷达杂波抑制方法 工业现场总线冗余心跳协议 不强制选案 · 进工作区后再「创建并绑定」或「绑定已有案」 创建并打开总控 课题协作 · 通用演示 通用 通用：总控 + 研究 / 写作 / 审查（无专利步骤） 席位 3 · 含总控席 边缘调度模组 · 专利演示 专利 专利领域：总控 + 检索 / 撰稿 / 自由实施 席位 3 · 含总控席 · 专利领域"
+  },
+  "s5oa": {
+    "switch": false,
+    "match": false,
+    "anySwitch": false,
+    "bodyHas切换": false
+  },
+  "s3": {
+    "open": null,
+    "tag": "DIV",
+    "text": "调用组 ·OA 争点分析×22 次同类办理 · 默认折叠细节",
+    "detailsOpen": null
+  }
+}

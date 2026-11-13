@@ -1,6 +1,6 @@
 # apps/agent · 知产 Agent
 
-Phase 0 monorepo 独立面：`/agent/*` Cursor 式 Harness（会话 / Catalog / HITL ConfirmBar）。
+Phase 0 monorepo 独立面：`/agent/*` Cursor 式 Harness（会话 / Catalog / HITL ConfirmBar）+ **项目文件夹**（总控编排 + 专家私聊，形式像 Grok Bot，专家自带业务逻辑）。
 
 ## 启动
 
@@ -20,13 +20,47 @@ npm run dev:agent
 
 | Path | 页面 |
 |------|------|
-| `/agent` | Home · 新建任务 |
-| `/agent/sessions` | 全部会话列表 |
+| `/agent` | **默认**通用单聊（Catalog 选 AgentDef / Composer） |
+| `/agent/sessions` | 通用历史会话（兼容；不抢主心智） |
 | `/agent/sessions/:id` | 会话工作区（Timeline + ConfirmBar + Composer） |
 | `/agent/agents` | Agent Catalog |
 | `/agent/harness` | 运行时说明 |
+| `/agent/projects` | 项目模式列表（general | domain）+ 新建 |
+| `/agent/projects/:projectId` | 项目总控席 + 侧栏 bot + 时间线 |
+| `/agent/projects/:projectId/bots/:botId` | 一对一 bot 聊（该 bot 剧本） |
+| `/agent/projects/:projectId/experts/:expertId` | 兼容深链 → 重定向到 `/bots/:id` |
 
 兼容重定向：`/` → `/agent`；`/ip-agent/*`、`/agents/*` → `/agent`。
+
+## 口播：案绑定（先聊/先项目，案不挡入口）
+
+规格：[docs/architecture/product-apps/agent-case-binding.md](../../docs/architecture/product-apps/agent-case-binding.md)
+
+1. **无案建项目**：`/agent/projects` → 不选案 → 创建 general 或 domain/patent → 进夹。
+2. **区内创建并绑定**：工作区顶栏「创建并绑定新案」→ 输入标题 → 生成 `mock-case-<ts>`（本地 `addCase` 种子，非真 case-core）→ 再继续聊。
+3. **或绑定已有**：同栏「绑定已有案」下拉 `visibleCases`。
+4. Home `/agent`「新对话」默认不自动填案（勿 `resolvePreferredCaseId`）；文案「可稍后创建或绑定案件」。
+5. general **无**专利步骤条；patent **有**；侧栏总控/专家进对应主区。
+
+## 口播：入口收敛（样机 · 无真 LLM）
+
+规格：[docs/architecture/product-apps/agent-entry-modes.md](../../docs/architecture/product-apps/agent-entry-modes.md)
+
+1. **通用单聊（默认）**：打开 `/agent` → Composer / pills / Catalog 开单会话；**不**强制建项目。sessions 只作历史，不抢主入口。
+2. **新建通用项目**：`/agent/projects` → 选「通用」→ 创建 → 侧栏总控 + 研究/写作/审查；**无**专利步骤条 / FTO / 权利要求 HITL。
+3. **新建专利项目**：同页选「领域包 · patent」→ 总控 + 检索/撰稿/FTO；保留步骤条与 ExpertHitlBridge。
+4. 列表/侧栏徽章区分「通用」「专利」；bot 深链用 `/bots/:botId`（`/experts/:id` 兼容重定向）。
+5. 专利逻辑不泄漏进通用：`expertsGeneral.ts` 与 `expertsPatent.ts` 分文件；general 的 `catalogAgentId=null`。
+
+### domain/patent 三专家差异（摘要）
+
+| 专家 | 工具条 | 快捷 | 剧本步骤 | Confirm / 命令候选 |
+|------|--------|------|----------|-------------------|
+| 检索 `expert-search` | commercial_patent_search / cluster_hits / … | 跑检索式·看命中·入工作篮 | query→hits→basket→策略 | `approve_strategy`；通常只读 / 可选 submitResearch |
+| 撰稿 `expert-draft` | draft_claims / expand_dependent / … | 生成章节·修订·提请确认 | 章节→修订→策略→授权 | `approve_strategy` + `authorize_file`；saveDraft / submitHandoff |
+| FTO `expert-fto` | extract_fto_features / 矩阵 / 风险卡… | 抽特征·风险矩阵·风险卡片 | 特征→命中→矩阵→风险→报告 | `approve_strategy` 仅确认口径；**默认不写案** |
+
+总控席：仅 `dispatch_task` / 汇总；**禁止**一键写库。
 
 ## Inbox 深链协议（Wave2）
 
@@ -54,12 +88,14 @@ midInboxHref({ sessionId }) // 或 { itemId }
 
 ## 包内结构
 
-- `src/pages/*` · Home / Sessions / Workspace / Catalog / Harness（已从根 `src/pages/agent` 迁入）
-- `src/components/*` · Shell / Sidebar / Catalog 卡 / session/*（含 HITL ConfirmBar）
-- `src/lib/deepLinks.ts` · 跨端口深链
+- `src/pages/*` · Home / Sessions / Workspace / Catalog / Harness / **projects/**
+- `src/components/*` · Shell / Sidebar / session/* / **projects/**（HITL 桥接）
+- `src/projects/*` · ProjectFolderContext · `expertsGeneral.ts` / `expertsPatent.ts`（按 kind/pack 分剧本）
+- `src/lib/deepLinks.ts` · re-export `@shared/lib/deepLinks` + 本面专用
 - 共享 context / data / domain / utils 仍引用 `@shared/...`（根 `src/`，本包只读）
 
-## 已知限制
+## mid → agent 深链（已对齐）
 
-- mid(5173) 上 `/agent/*` 的 MetaRedirect 仍可能丢 path；需中台助手改 mid。Agent 侧已能正确接收完整 `/agent/sessions/:id?focus=…` 并正确外链回 Inbox。
-- 其它跨面链接（如 `/cases`、`/workbench/*`）若仍用相对 path，在 Agent 端口会停错面；Inbox 已优先修绝对 URL。
+mid(5173) 对 `/agent/*` 使用 `RedirectExternal`（`base=APP_DEV_URLS.agent`，`prefix=/agent`），**保留** pathname + search + hash。
+
+跨口 mid/workbench/iam helper 已 re-export `@shared/lib/deepLinks`（见 `src/lib/deepLinks.ts`）。

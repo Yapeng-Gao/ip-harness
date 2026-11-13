@@ -1,0 +1,96 @@
+{
+  "vw": 1440,
+  "vh": 900,
+  "asides": [
+    {
+      "tag": "ASIDE",
+      "cls": "shell-aside flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex",
+      "w": 224,
+      "h": 852,
+      "left": 0,
+      "top": 105,
+      "overflowY": "visible",
+      "position": "static"
+    }
+  ],
+  "mains": [
+    {
+      "tag": "MAIN",
+      "cls": "flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-none focus-visible:ri",
+      "w": 1216,
+      "h": 852,
+      "left": 224,
+      "overflowY": "visible",
+      "position": "static"
+    }
+  ],
+  "sticky": [],
+  "confirm": null,
+  "composer": {
+    "sel": "textarea, [class*=\"composer\"], [class*=\"Composer\"]",
+    "w": 622,
+    "h": 130,
+    "top": 259,
+    "left": 521,
+    "bottom": 389,
+    "overflowY": "auto",
+    "position": "static",
+    "stickyTop": "auto",
+    "tag": "TEXTAREA"
+  },
+  "scrollers": [],
+  "bodyScroll": true,
+  "nestedScroll": 0,
+  "btns": [
+    {
+      "text": "代理所租户 · 德恒知产",
+      "cls": "btn-press focus-ring hit-40 flex items-center gap-",
+      "minH": 40,
+      "minW": 183
+    },
+    {
+      "text": "代理所",
+      "cls": "btn-press focus-ring hit-40 flex items-center gap-",
+      "minH": 40,
+      "minW": 94
+    },
+    {
+      "text": "作业中台",
+      "cls": "btn-press focus-ring rounded-[calc(var(--radius-md",
+      "minH": 40,
+      "minW": 79
+    },
+    {
+      "text": "知产 Agent",
+      "cls": "btn-press focus-ring rounded-[calc(var(--radius-md",
+      "minH": 40,
+      "minW": 79
+    },
+    {
+      "text": "更多",
+      "cls": "btn-press focus-ring relative flex h-full flex-col",
+      "minH": 28,
+      "minW": 52
+    },
+    {
+      "text": "开始办理",
+      "cls": "btn-press focus-ring cta-work rounded-md px-4 py-1",
+      "minH": 40,
+      "minW": 88
+    },
+    {
+      "text": "创建并绑定新案",
+      "cls": "btn-press focus-ring inline-flex items-center gap-",
+      "minH": 23,
+      "minW": 111
+    },
+    {
+      "text": "绑定已有案",
+      "cls": "btn-press focus-ring inline-flex items-center gap-",
+      "minH": 23,
+      "minW": 89
+    }
+  ],
+  "title": "IP Harness · 知产 Agent",
+  "h1": "知产 Agent"
+}

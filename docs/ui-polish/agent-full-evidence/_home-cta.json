@@ -1,0 +1,22 @@
+{
+  "navy": [
+    {
+      "text": "跳到主要内容",
+      "w": 116,
+      "h": 37,
+      "top": 0,
+      "left": -9999,
+      "cls": "skip-link"
+    },
+    {
+      "text": "开始办理",
+      "w": 88,
+      "h": 40,
+      "top": 403,
+      "left": 1043,
+      "cls": "btn-press focus-ring cta-work rounded-md px-4 py-1.5 text-sm"
+    }
+  ],
+  "sidebarNew": [],
+  "topbarH": 48
+}

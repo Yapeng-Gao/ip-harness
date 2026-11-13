@@ -14,7 +14,7 @@ import {
   firstGuardrailMessage,
   hasVerifiableResearchHitsFromSession,
 } from '@shared/domain/guardrails'
-import { COMMAND_LABELS } from '@shared/domain/commands'
+import { domainCommandOfficeLabel } from '../projects/domainCommandLabels'
 import { setLastAgentSessionId } from '@shared/utils/lastVisited'
 import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { SessionConfirmBar } from '../components/session/SessionConfirmBar'
@@ -27,11 +27,14 @@ import {
 } from '../components/session/SessionWorkspaceHeader'
 import {
   DEMO_AGENTS,
+  gateRequiresCase,
   gateToAction,
+  NO_CASE_GATE_REASON,
   sortGatesForRole,
   workbenchHref,
 } from '../components/session/sessionGates'
-import { midHref, workbenchHref as workbenchAbsHref } from '../lib/deepLinks'
+import { workbenchHref as workbenchAbsHref } from '../lib/deepLinks'
+import { CaseBindControls } from '../components/case/CaseBindControls'
 
 type OutletCtx = { rightOpen: boolean }
 
@@ -52,7 +55,6 @@ export function AgentSessionWorkspace() {
   } = useAgents()
   const {
     getCase,
-    visibleCases,
     visibleDocketEvents,
     hasBlockingInvoiceForCase,
     getDraftFilingCheck,
@@ -125,9 +127,10 @@ export function AgentSessionWorkspace() {
   const [toastVisible, setToastVisible] = useState(false)
   /** Prefer deep-link after layout建案 etc. over Catalog workbenchPath */
   const [toastWbOverride, setToastWbOverride] = useState<string | null>(null)
+  const [caseBindGuide, setCaseBindGuide] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLTextAreaElement>(null)
-  const caseSelectRef = useRef<HTMLSelectElement>(null)
+  const caseBindTopRef = useRef<HTMLDivElement>(null)
   const switchChipTimer = useRef<number | null>(null)
   const toastTimer = useRef<number | null>(null)
   const location = useLocation()
@@ -173,12 +176,25 @@ export function AgentSessionWorkspace() {
   }, [sess?.agentId, sess?.id])
 
   useEffect(() => {
-    const st = location.state as { focusComposer?: boolean } | null
+    const st = location.state as {
+      focusComposer?: boolean
+      focusCaseBind?: boolean
+    } | null
+    if (st?.focusCaseBind && !(sess?.caseId)) {
+      setCaseBindGuide(true)
+      const tid = window.setTimeout(() => {
+        caseBindTopRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        })
+      }, 80)
+      return () => window.clearTimeout(tid)
+    }
     if (st?.focusComposer && composerRef.current) {
       const tid = window.setTimeout(() => composerRef.current?.focus(), 50)
       return () => window.clearTimeout(tid)
     }
-  }, [sess?.id, location.state])
+  }, [sess?.id, sess?.caseId, location.state])
 
   /** Wave2 InboxDeepLink · ?focus=hitl / gate= → 滚到并高亮 ConfirmBar */
   useEffect(() => {
@@ -324,6 +340,8 @@ export function AgentSessionWorkspace() {
   /** Session 闸禁用原因 · 走 domain/guardrails【唯一入口】evaluateGuardrails */
   const gateDisabledReason = (g: HitlGateId): string | null => {
     if (clearedGates.includes(g)) return '已通过'
+    // P0 HITL：无案仅禁须案闸（付款/授权/报价）；approve_strategy / go_nogo 可清闸不写库
+    if (!sess.caseId && gateRequiresCase(g)) return NO_CASE_GATE_REASON
     const hitsVerifiable =
       agent?.id === 'agent-research' || handoffKey === 'research_report'
         ? hasVerifiableResearchHitsFromSession(sess)
@@ -378,11 +396,28 @@ export function AgentSessionWorkspace() {
     }
     const action = gateToAction(gate)
     const r = await sessionHitlAction(sess.id, action, opts?.note, opts)
-    markDomainSync(
-      r.ok,
-      `${HITL_GATE_LABELS[gate]} · ${r.message}`,
-      r.navigateTo,
-    )
+    const toastMsg = r.message.includes('未绑案不写入')
+      ? r.message
+      : `${HITL_GATE_LABELS[gate]} · ${r.message}`
+    markDomainSync(r.ok, toastMsg, r.navigateTo)
+  }
+
+  const onBlockedGateClick = (gate: HitlGateId, reason: string) => {
+    showToast(`${HITL_GATE_LABELS[gate]} · ${reason}`, false)
+  }
+
+  const scrollToCaseBind = () => {
+    setCaseBindGuide(true)
+    window.setTimeout(() => {
+      caseBindTopRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      })
+      const el = document.querySelector<HTMLElement>(
+        '[data-testid="case-bind-controls"] button, [data-testid="case-bind-existing"]',
+      )
+      el?.focus()
+    }, 60)
   }
 
   const doHitl = async (action: HitlSessionAction, opts?: { stepwise?: boolean; note?: string }) => {
@@ -420,16 +455,14 @@ export function AgentSessionWorkspace() {
     (!!msg && msg.includes('中台已更新') && !!sess.caseId)
   const wbPath = sess.caseId ? workbenchHref(agent?.workbenchPath, sess.caseId) : null
   const toastWbPath = toastWbOverride ?? wbPath
-  const toastCaseId =
-    toastWbOverride?.match(/\/workbench\/research\/([^/?#]+)/)?.[1] ??
-    sess.caseId
 
   // P1-6: max one status banner — failed > no_case > route suggestion
   // Idle confirm chips stay in ConfirmBar only (not topbar when not hitlActive stacking)
   const activeBanner: BannerKind = (() => {
     if (sess.status === 'failed') return 'failed'
-    if (!(casePick || sess.caseId)) return 'no_case'
-    if (sess.agentId === 'auto' && suggested && !hitlActive) return 'route'
+    // SW-S5-1: CaseBindControls is sole bind entry — no parallel no_case banner
+    // SS-S-S5-1 · after case bind, demote/collapse match bar (no route CTA)
+    if (sess.agentId === 'auto' && suggested && !hitlActive && !sess.caseId) return 'route'
     return null
   })()
 
@@ -440,7 +473,7 @@ export function AgentSessionWorkspace() {
 
   return (
     <div className="flex min-h-0 flex-1">
-      <section className="flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50">
+      <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-surface-50">
         <SessionWorkspaceHeader
           sess={sess}
           subtitleLabel={subtitleLabel}
@@ -466,7 +499,6 @@ export function AgentSessionWorkspace() {
               mode: 'formal',
             })
           }}
-          onFocusCaseSelect={() => caseSelectRef.current?.focus()}
           onSwitchSuggested={switchToSuggested}
           onStop={() => stopSessionPlay(sess.id)}
           onDryRun={() => {
@@ -490,15 +522,7 @@ export function AgentSessionWorkspace() {
           <div className="toast-enter pointer-events-none fixed bottom-6 right-6 z-50 max-w-sm">
             {domainSynced && (sess.caseId || toastWbOverride) ? (
               <div className="pointer-events-auto flex flex-wrap items-center gap-2 border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-950 shadow-lg">
-                <span className="min-w-0 flex-1 font-medium">中台案件已同步更新</span>
-                {toastCaseId && (
-                <a
-                  href={midHref(`/cases/${toastCaseId}?from=agent`)}
-                  className="btn-press focus-ring shrink-0 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-emerald-500"
-                >
-                  打开案件
-                </a>
-                )}
+                <span className="min-w-0 flex-1 font-medium">案件已同步更新</span>
                 {toastWbPath && (
                   <a
                     href={workbenchAbsHref(toastWbPath)}
@@ -534,6 +558,35 @@ export function AgentSessionWorkspace() {
           </div>
         )}
 
+        {/* P1-AE-2: when HITL, case bind lives in top band — not beside ConfirmBar */}
+        {!sess.caseId && (hitlActive || caseBindGuide) && (
+          <div
+            ref={caseBindTopRef}
+            className="shrink-0 border-b border-slate-100 bg-white px-4 py-2"
+            data-testid="session-case-bind-top"
+          >
+            {caseBindGuide && !sess.caseId ? (
+              <p className="mb-1.5 text-[11px] text-sky-900" role="status">
+                开始办理后可在此绑定案件 · 无案确认不会写入案件
+              </p>
+            ) : null}
+            <CaseBindControls
+              caseId={sess.caseId}
+              prominence="soft"
+              writebackRequiresBind={false}
+              onBind={(id) => {
+                setCasePick(id)
+                patchSession(sess.id, { caseId: id })
+                setCaseBindGuide(false)
+              }}
+              onUnbind={() => {
+                setCasePick('')
+                patchSession(sess.id, { caseId: undefined })
+              }}
+            />
+          </div>
+        )}
+
         <SessionTimeline
           steps={sess.steps}
           playing={playing}
@@ -541,92 +594,206 @@ export function AgentSessionWorkspace() {
           runMode={sessionRunMode(sess.id)}
         />
 
-        {(hitlActive ||
-          handoffStatus === 'authorized_to_file' ||
-          (handoffKey === 'maintain_annuity' && handoffStatus === 'approved')) && (
-          <div ref={confirmBarRef}>
-            <SessionConfirmBar
-            sessionId={sess.id}
-            agent={agent}
-            gates={gates}
-            clearedGates={clearedGates}
-            handoffStatus={handoffStatus}
-            handoffKey={handoffKey}
-            caseId={sess.caseId}
-            isEnterprise={isEnterprise}
-            role={role}
-            block={block}
-            gateDisabledReason={gateDisabledReason}
-            onGate={doGate}
-            onHitl={doHitl}
-            focusHitl={focusHitl}
-            focusGate={focusGate}
-            onPrimaryBlockerChange={setPrimaryBlocker}
-            runMode={sessionRunMode(sess.id)}
-            invoicePayable={
-              !!(c?.engagement?.invoices ?? []).some(
-                (i) =>
-                  i.status === '逾期' ||
-                  i.status === '已开票' ||
-                  i.status === '待开票',
-              )
-            }
-            onFileResponse={
-              sess.caseId &&
-              (handoffKey === 'prosecution_response' ||
-                handoffKey === 'draft_claims' ||
-                handoffKey === 'maintain_annuity')
-                ? (receiptNo, filedAt) => {
-                    void (async () => {
-                      const r = await dispatchCommand(
-                        {
-                          type: 'fileResponse',
-                          caseId: sess.caseId!,
-                          handoffKey: handoffKey,
-                          receiptNo,
-                          filedAt,
-                          note: '知产 Agent 递交归档（回执已确认）',
-                        },
-                        {
-                          actor: 'agent',
-                          agentId: resolvedAgentId,
-                          detail: 'file_oa_response → FileResponse',
-                        },
-                      )
-                      showToast(
-                        r.ok
-                          ? `已写入领域：${COMMAND_LABELS.fileResponse} · ${r.message}`
-                          : r.message,
-                        r.ok && !!sess.caseId,
-                      )
-                    })()
-                  }
-                : undefined
-            }
+        {/* P0-AF-1: needs_human → Confirm alone sticky; Composer folded out of dock */}
+        {hitlActive ? (
+          <>
+            <div
+              className="agent-hitl-dock sticky bottom-0 z-20 shrink-0"
+              data-testid="session-bottom-dock"
+            >
+            <div ref={confirmBarRef}>
+              <SessionConfirmBar
+                sessionId={sess.id}
+                agent={agent}
+                gates={gates}
+                clearedGates={clearedGates}
+                handoffStatus={handoffStatus}
+                handoffKey={handoffKey}
+                caseId={sess.caseId}
+                isEnterprise={isEnterprise}
+                role={role}
+                block={block}
+                gateDisabledReason={gateDisabledReason}
+                onGate={doGate}
+                onHitl={doHitl}
+                onBlockedGateClick={onBlockedGateClick}
+                onScrollToCaseBind={scrollToCaseBind}
+                focusHitl={focusHitl}
+                focusGate={focusGate}
+                onPrimaryBlockerChange={setPrimaryBlocker}
+                runMode={sessionRunMode(sess.id)}
+                invoicePayable={
+                  !!(c?.engagement?.invoices ?? []).some(
+                    (i) =>
+                      i.status === '逾期' ||
+                      i.status === '已开票' ||
+                      i.status === '待开票',
+                  )
+                }
+                onFileResponse={
+                  sess.caseId &&
+                  (handoffKey === 'prosecution_response' ||
+                    handoffKey === 'draft_claims' ||
+                    handoffKey === 'maintain_annuity')
+                    ? (receiptNo, filedAt) => {
+                        void (async () => {
+                          const r = await dispatchCommand(
+                            {
+                              type: 'fileResponse',
+                              caseId: sess.caseId!,
+                              handoffKey: handoffKey,
+                              receiptNo,
+                              filedAt,
+                              note: '知产 Agent 递交归档（回执已确认）',
+                            },
+                            {
+                              actor: 'agent',
+                              agentId: resolvedAgentId,
+                              detail: '递交答复归档示意',
+                            },
+                          )
+                          showToast(
+                            r.ok
+                              ? `已写入领域：${domainCommandOfficeLabel('fileResponse')} · ${r.message}`
+                              : r.message,
+                            r.ok && !!sess.caseId,
+                          )
+                        })()
+                      }
+                    : undefined
+                }
+              />
+            </div>
+            </div>
+            <details
+              className="agent-hitl-composer-fold shrink-0 border-t border-slate-200/90 bg-white"
+              data-testid="session-composer-fold"
+            >
+              <summary className="btn-press focus-ring hit-expand flex min-h-10 cursor-pointer select-none items-center px-4 text-xs font-medium text-slate-600 hover:bg-slate-50 lg:px-5">
+                输入 / 切换 Agent（默认收起 · 确认完成前可不展开）
+              </summary>
+          <SessionComposer
+            goal={goal}
+            onGoalChange={setGoal}
+            agentPick={agentPick}
+            onAgentPickRequest={(v) => requestAgentSwitch(v)}
+            composerRef={composerRef}
+            onSubmit={submitComposer}
+            pendingAgentSwitch={pendingAgentSwitch}
+            onConfirmAgentSwitch={confirmPendingAgentSwitch}
+            onCancelAgentSwitch={() => setPendingAgentSwitch(null)}
+            hitlActive={hitlActive}
+            hitlDisableReason={primaryBlocker}
+            hideDisableReason
+            caseBindSlot={undefined}
+          />
+            </details>
+          </>
+        ) : (
+          <div className="shrink-0" data-testid="session-bottom-dock">
+            {(handoffStatus === 'authorized_to_file' ||
+              (handoffKey === 'maintain_annuity' &&
+                handoffStatus === 'approved')) && (
+            <div ref={confirmBarRef}>
+              <SessionConfirmBar
+                sessionId={sess.id}
+                agent={agent}
+                gates={gates}
+                clearedGates={clearedGates}
+                handoffStatus={handoffStatus}
+                handoffKey={handoffKey}
+                caseId={sess.caseId}
+                isEnterprise={isEnterprise}
+                role={role}
+                block={block}
+                gateDisabledReason={gateDisabledReason}
+                onGate={doGate}
+                onHitl={doHitl}
+                onBlockedGateClick={onBlockedGateClick}
+                onScrollToCaseBind={scrollToCaseBind}
+                focusHitl={focusHitl}
+                focusGate={focusGate}
+                onPrimaryBlockerChange={setPrimaryBlocker}
+                runMode={sessionRunMode(sess.id)}
+                invoicePayable={
+                  !!(c?.engagement?.invoices ?? []).some(
+                    (i) =>
+                      i.status === '逾期' ||
+                      i.status === '已开票' ||
+                      i.status === '待开票',
+                  )
+                }
+                onFileResponse={
+                  sess.caseId &&
+                  (handoffKey === 'prosecution_response' ||
+                    handoffKey === 'draft_claims' ||
+                    handoffKey === 'maintain_annuity')
+                    ? (receiptNo, filedAt) => {
+                        void (async () => {
+                          const r = await dispatchCommand(
+                            {
+                              type: 'fileResponse',
+                              caseId: sess.caseId!,
+                              handoffKey: handoffKey,
+                              receiptNo,
+                              filedAt,
+                              note: '知产 Agent 递交归档（回执已确认）',
+                            },
+                            {
+                              actor: 'agent',
+                              agentId: resolvedAgentId,
+                              detail: '递交答复归档示意',
+                            },
+                          )
+                          showToast(
+                            r.ok
+                              ? `已写入领域：${domainCommandOfficeLabel('fileResponse')} · ${r.message}`
+                              : r.message,
+                            r.ok && !!sess.caseId,
+                          )
+                        })()
+                      }
+                    : undefined
+                }
+              />
+            </div>
+            )}
+          <SessionComposer
+            goal={goal}
+            onGoalChange={setGoal}
+            agentPick={agentPick}
+            onAgentPickRequest={(v) => requestAgentSwitch(v)}
+            composerRef={composerRef}
+            onSubmit={submitComposer}
+            pendingAgentSwitch={pendingAgentSwitch}
+            onConfirmAgentSwitch={confirmPendingAgentSwitch}
+            onCancelAgentSwitch={() => setPendingAgentSwitch(null)}
+            hitlActive={hitlActive}
+            hitlDisableReason={primaryBlocker}
+            caseBindSlot={
+              !sess.caseId && (hitlActive || caseBindGuide)
+                ? undefined
+                : (
+            <CaseBindControls
+              caseId={sess.caseId}
+              prominence="soft"
+              writebackRequiresBind={false}
+              onBind={(id) => {
+                setCasePick(id)
+                patchSession(sess.id, { caseId: id })
+                setCaseBindGuide(false)
+              }}
+              onUnbind={() => {
+                setCasePick('')
+                patchSession(sess.id, { caseId: undefined })
+              }}
             />
+                  )
+            }
+          />
           </div>
         )}
 
-        <SessionComposer
-          goal={goal}
-          onGoalChange={setGoal}
-          agentPick={agentPick}
-          onAgentPickRequest={(v) => requestAgentSwitch(v)}
-          casePick={casePick}
-          onCasePick={(v) => {
-            setCasePick(v)
-            patchSession(sess.id, { caseId: v || undefined })
-          }}
-          visibleCases={visibleCases}
-          composerRef={composerRef}
-          caseSelectRef={caseSelectRef}
-          onSubmit={submitComposer}
-          pendingAgentSwitch={pendingAgentSwitch}
-          onConfirmAgentSwitch={confirmPendingAgentSwitch}
-          onCancelAgentSwitch={() => setPendingAgentSwitch(null)}
-          hitlActive={hitlActive}
-          hitlDisableReason={primaryBlocker}
-        />
       </section>
 
       {rightOpen && (
@@ -647,6 +814,7 @@ export function AgentSessionWorkspace() {
           sessionId={sess.id}
           persona={persona}
           clearedHitlGates={sess.clearedHitlGates}
+          hitlActive={hitlActive}
         />
       )}
     </div>

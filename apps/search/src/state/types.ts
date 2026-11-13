@@ -1,0 +1,230 @@
+import { APP_DEV_URLS } from '@ip/contracts'
+
+export type SearchMode = 'semantic' | 'keyword' | 'advanced'
+
+export type SearchFilters = {
+  dateFrom?: string
+  dateTo?: string
+  ipcPrefix?: string[]
+  applicants?: string[]
+  docTypes?: string[]
+  legalStatus?: string[]
+  collapseFamily?: boolean
+}
+
+export type SearchQuery = {
+  mode: SearchMode
+  text?: string
+  advanced?: Record<string, string>
+  filters?: SearchFilters
+  limit?: number
+}
+
+/** Spec SearchHit — Agent JSON must use these field names. */
+export type SearchHit = {
+  id: string
+  publicationNumber: string
+  title: string
+  applicant?: string
+  date?: string
+  ipc?: string[]
+  score: number
+  familyId?: string
+  snippet?: string
+  /** Drawer extras (optional; not required on Agent contract) */
+  inventor?: string
+  country?: string
+  legalStatus?: string
+  claims?: string
+  abstract?: string
+}
+
+export type FamilyGroup = {
+  familyId: string
+  members: SearchHit[]
+}
+
+/** Engine id — mock default; Search API returns e.g. 'sqlite-fts'. */
+export type SearchBackend = 'mock' | 'sqlite-fts' | (string & {})
+
+export type SearchResponse = {
+  query: SearchQuery
+  hits: SearchHit[]
+  families?: FamilyGroup[]
+  tookMs: number
+  backend: SearchBackend
+  indexVersion?: string
+  warnings?: string[]
+}
+
+export type AdvancedRow = {
+  id: string
+  field: 'title' | 'abstract' | 'applicant' | 'ipc' | 'publicationNumber' | 'date'
+  value: string
+}
+
+export type QueryStatus = 'idle' | 'running' | 'done' | 'empty' | 'error'
+
+export type EventLogEntry = {
+  id: string
+  at: string
+  action:
+    | 'search'
+    | 'openDetail'
+    | 'basket.add'
+    | 'basket.remove'
+    | 'sendToAgent'
+    | 'sendDownstream'
+    | 'getFamily'
+    | 'save'
+    | 'corpus.ingest'
+    | 'corpus.publishIndex'
+  tool?: string
+  note?: string
+  hitIds?: string[]
+  hits?: { id: string; publicationNumber: string; title: string }[]
+  payload?: Record<string, unknown>
+}
+
+export type SearchState = {
+  mode: SearchMode
+  text: string
+  advancedRows: AdvancedRow[]
+  filters: SearchFilters
+  status: QueryStatus
+  error: string | null
+  forceNextFail: boolean
+  hits: SearchHit[]
+  families: FamilyGroup[]
+  lastQuery: SearchQuery | null
+  lastResponse: SearchResponse | null
+  selectedHitId: string | null
+  basketIds: string[]
+  savedIds: string[]
+  events: EventLogEntry[]
+  toast: string | null
+  limit: number
+  /** C1 corpus / index slice */
+  corpusSources: CorpusSource[]
+  corpusJobs: CorpusIngestJob[]
+  corpusForceNextFail: boolean
+  indexVersions: IndexVersion[]
+  currentIndexTag: string
+  pendingPublishDocs: number | null
+}
+
+export const HONESTY_BANNER =
+  '样机 · 无真检索后台 · 非真专利库 / 非真 ES·向量 · 用法对标智慧芽/Innojoy'
+
+/** When lastResponse.backend === 'sqlite-fts' (flag-wired Search API). */
+export const API_STATUS_BANNER =
+  '已接 Search API · backend: sqlite-fts · 样机索引（非全球专利库）'
+
+/** P0 — downstream shells exist; basket is not cross-port synced. */
+export const DOWNSTREAM_HONESTY =
+  '已开壳 · 篮未跨口同步 · 请用共享种子/本壳导入'
+
+/** P5 strategy A — toast when sending to FTO/mining/etc. */
+export const STRATEGY_A_TOAST =
+  '样机·跨口未共享 LS，已用共享种子'
+
+export const ADVANCED_FIELD_LABELS: Record<AdvancedRow['field'], string> = {
+  title: '标题',
+  abstract: '摘要',
+  applicant: '申请人',
+  ipc: 'IPC',
+  publicationNumber: '公开号',
+  date: '日期',
+}
+
+export function emptyFilters(collapseFamily = true): SearchFilters {
+  return {
+    dateFrom: '',
+    dateTo: '',
+    ipcPrefix: [],
+    applicants: [],
+    docTypes: [],
+    legalStatus: [],
+    collapseFamily,
+  }
+}
+
+/** C1 — corpus / index ops (≠ ai-data DatasetVersion) */
+export type CorpusJobStatus = 'queued' | 'running' | 'done' | 'fail'
+
+export type CorpusSource = {
+  id: string
+  name: string
+  kind: string
+  note: string
+  lastIngestAt: string | null
+  docsIngested: number
+}
+
+export type CorpusIngestJob = {
+  id: string
+  sourceId: string
+  sourceName: string
+  status: CorpusJobStatus
+  progress: number
+  docsWritten: number
+  createdAt: string
+  updatedAt: string
+  note: string
+}
+
+export type FieldCoverageKey =
+  | 'publicationNumber'
+  | 'title'
+  | 'applicant'
+  | 'date'
+  | 'ipc'
+  | 'abstract'
+  | 'claims'
+  | 'familyId'
+
+export type FieldCoverageRow = {
+  field: FieldCoverageKey
+  label: string
+  coveragePct: number
+  note: string
+}
+
+export type IndexVersion = {
+  tag: string
+  docs: number
+  publishedAt: string
+  checksum: string
+  fieldCoverage: FieldCoverageRow[]
+  immutable: true
+  note: string
+}
+
+export type DownstreamTarget = 'fto' | 'mining' | 'landscape' | 'doc'
+
+export type DownstreamPlaceholder = {
+  target: DownstreamTarget
+  label: string
+  href: string
+}
+
+export const DOWNSTREAM_PLACEHOLDERS: DownstreamPlaceholder[] = [
+  { target: 'fto', label: '送 FTO', href: APP_DEV_URLS.fto },
+  { target: 'mining', label: '送 挖掘', href: APP_DEV_URLS.mining },
+  { target: 'landscape', label: '送 全景', href: APP_DEV_URLS.landscape },
+  { target: 'doc', label: '送 文档', href: APP_DEV_URLS.docHarness },
+]
+
+export const CORPUS_HONESTY =
+  '≠ ai-data（这不是训练语料湖）· 无真 ES / 倒排 / 对象存储 · 入库不写 PatentCase'
+
+export const FIELD_COVERAGE_LABELS: Record<FieldCoverageKey, string> = {
+  publicationNumber: 'publicationNumber',
+  title: 'title',
+  applicant: 'applicant',
+  date: 'date',
+  ipc: 'ipc',
+  abstract: 'abstract',
+  claims: 'claims',
+  familyId: 'familyId',
+}

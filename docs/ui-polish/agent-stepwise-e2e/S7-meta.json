@@ -1,0 +1,20 @@
+{
+  "id": "S7",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent/agents",
+  "assertions": [
+    "URL=/agent/agents",
+    "Catalog 9 heading 可见: 调研检索/立项评估/交底/权利要求/OA/年费/监控/转化/布局",
+    "OA heading 可见（无独立卡 click）"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "catalog": {
+      "x": 0,
+      "y": 48,
+      "width": 1280,
+      "height": 672
+    }
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S7-catalog.png"
+}

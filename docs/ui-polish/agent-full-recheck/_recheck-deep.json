@@ -1,0 +1,101 @@
+{
+  "dockAnatomy": {
+    "dockH": 157,
+    "children": [
+      {
+        "tag": "DIV",
+        "cls": "",
+        "h": 157,
+        "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 | 待批准 | 待授权 |  | 批准策略 | 授权递交 | 退回 | 在运营 Inbox 中查看 | 逐步 |  | 请先选争点类型"
+      }
+    ],
+    "detailsOpen": false,
+    "detailsSummary": "补充项 · 陈述/争点 · Full-check",
+    "visibleComposerInputs": 1,
+    "stepChipDump": [
+      {
+        "tag": "SPAN",
+        "cls": "font-semibold text-slate-900",
+        "text": "批准策略",
+        "isButton": false
+      },
+      {
+        "tag": "SPAN",
+        "cls": "inline-flex items-center gap-0.5 text-[10px] text-slate-400",
+        "text": "待批准",
+        "isButton": false
+      },
+      {
+        "tag": "SPAN",
+        "cls": "inline-flex items-center gap-0.5 text-[10px] text-slate-400",
+        "text": "待授权",
+        "isButton": false
+      },
+      {
+        "tag": "SPAN",
+        "cls": "agent-confirm-cta-wrap",
+        "text": "批准策略",
+        "isButton": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "ui-btn ui-btn-sm btn-press focus-ring agent-confirm-cta ui-b",
+        "text": "批准策略",
+        "isButton": true
+      }
+    ],
+    "confirmAloneSticky": true
+  },
+  "home": {
+    "name": "home",
+    "testids": [
+      "home-sidebar-compact"
+    ],
+    "collapseHint": false,
+    "sessionLinksInAside": [],
+    "sessionLinksInAsideCount": 0,
+    "allSessionLinksOnPage": 0,
+    "fullListMarkers": 0,
+    "asideTextHead": "IP Apps ¶ 作业中台 ¶ 办理台 ¶ 知产 Agent ¶ 运维 ¶ IAM",
+    "asideW": 1440
+  },
+  "catalog": {
+    "name": "catalog",
+    "testids": [
+      "browse-sidebar-compact"
+    ],
+    "collapseHint": false,
+    "sessionLinksInAside": [],
+    "sessionLinksInAsideCount": 0,
+    "allSessionLinksOnPage": 0,
+    "fullListMarkers": 0,
+    "asideTextHead": "IP Apps ¶ 作业中台 ¶ 办理台 ¶ 知产 Agent ¶ 运维 ¶ IAM",
+    "asideW": 1440
+  },
+  "harness": {
+    "name": "harness",
+    "testids": [
+      "browse-sidebar-compact"
+    ],
+    "collapseHint": false,
+    "sessionLinksInAside": [],
+    "sessionLinksInAsideCount": 0,
+    "allSessionLinksOnPage": 4,
+    "fullListMarkers": 0,
+    "asideTextHead": "IP Apps ¶ 作业中台 ¶ 办理台 ¶ 知产 Agent ¶ 运维 ¶ IAM",
+    "asideW": 1440
+  },
+  "sessions": {
+    "name": "sessions",
+    "testids": [
+      "sidebar-new-session"
+    ],
+    "collapseHint": false,
+    "sessionLinksInAside": [],
+    "sessionLinksInAsideCount": 0,
+    "allSessionLinksOnPage": 0,
+    "fullListMarkers": 0,
+    "asideTextHead": "IP Apps ¶ 作业中台 ¶ 办理台 ¶ 知产 Agent ¶ 运维 ¶ IAM",
+    "asideW": 1440
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "ignoreDeprecations": "6.0",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": [
+      "vite/client"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": [
+        "../../src/*"
+      ],
+      "@ip/contracts": [
+        "../../packages/contracts/src/index.ts"
+      ],
+      "@ip/domain": [
+        "../../packages/domain/src/index.ts"
+      ],
+      "@ip/domain/*": [
+        "../../packages/domain/src/*"
+      ],
+      "@ip/domain/types": [
+        "../../packages/domain/src/types/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "../../src",
+    "../../packages/contracts/src",
+    "../../packages/domain/src"
+  ]
+}

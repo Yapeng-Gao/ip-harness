@@ -1,0 +1,36 @@
+{
+  "probe": {
+    "url": "http://127.0.0.1:5175/agent",
+    "caseIdText": "走查S1新案-112858· 样机",
+    "unbind": true,
+    "startEnabled": true,
+    "startText": "开始办理",
+    "urlCase": null,
+    "bound": true,
+    "homeCaseBind": 1,
+    "associateSelect": 0,
+    "stillSingleEntry": true
+  },
+  "gates": {
+    "midDeep": [],
+    "midCtaText": [],
+    "billingBanner": null,
+    "amberFullWidth": [],
+    "caseEntry": {
+      "homeCaseBind": 1,
+      "caseBindControls": 1,
+      "associateSelect": 0,
+      "associateLabel": 0,
+      "single": true
+    },
+    "hasForbiddenMidText": false
+  },
+  "evidence": [
+    "docs/ui-polish/agent-stepwise-ui/S1/S1-bound.png",
+    "docs/ui-polish/agent-stepwise-ui/S1/S1-case-bind-bound.png"
+  ],
+  "checks": {
+    "bizLogic": true,
+    "pageLogic": true
+  }
+}

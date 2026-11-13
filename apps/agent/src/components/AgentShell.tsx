@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import {
   PanelRightClose,
   PanelRightOpen,
@@ -12,13 +12,25 @@ import { AgentWorkspaceMenu } from './AgentWorkspaceMenu'
 import { PersonaSwitcher } from '@shared/components/PersonaSwitcher'
 import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { AgentSessionSidebar } from './AgentSessionSidebar'
-import { AgentBillingHoldBanner } from './AgentBillingHoldBanner'
 import { PersonaRouteGate } from '@shared/components/PersonaRouteGate'
+import { ShellPathNav } from './business/ShellPathNav'
+import { ShellAccountMenu } from './business/ShellAccountMenu'
+import { PrototypeScope } from './business/PrototypeScope'
+import { BusinessCaseSidebar } from './business/BusinessCaseSidebar'
+import { useAgentDebug } from '../business/useAgentDebug'
+import { useEntryRole } from '../business/useEntryRole'
+import { useBusinessCases } from '../business/BusinessCaseContext'
+/* 旧 lifecycle 三档顶栏已卸；一期进门＝大厅→公司→部台 */
+import { LabRouteBanner } from './LabRouteBanner'
+/* 案级「最近/全部/开新」顶栏切换器已卸：换案走左栏项目/大厅，避免与壳层抢位 */
 
 export function AgentShell() {
   const { workspace, getCase, getHandoff } = useApp()
   const { getSession } = useAgents()
   const loc = useLocation()
+  const debug = useAgentDebug()
+  const { entryRole } = useEntryRole()
+  const { getCase: getBizCase } = useBusinessCases()
   const [rightOpen, setRightOpen] = useState(false)
   /** P1-C · pending-confirm 首次进入自动展开上下文一次（视觉，不改 HITL） */
   const autoExpandedFor = useRef<string | null>(null)
@@ -87,25 +99,137 @@ export function AgentShell() {
   ])
 
   const inSession = loc.pathname.startsWith('/agent/sessions/')
+  const inProjects = loc.pathname.startsWith('/agent/projects')
+  const inHome = loc.pathname === '/agent' || loc.pathname === '/agent/'
+  const inBusiness =
+    loc.pathname.startsWith('/agent/cases') ||
+    loc.pathname.startsWith('/agent/pending')
+  /** §116：案盘列表/开新案/待确认不挂 BusinessCaseSidebar（单栏，避双列表） */
+  const inActiveCaseShell = (() => {
+    const m = loc.pathname.match(/^\/agent\/cases\/([^/]+)/)
+    return Boolean(m?.[1] && m[1] !== 'new')
+  })()
+  /** 部台：身份轨多余；左栏改由页内「产出目录」承担 */
+  const inDeptWorkbench = /\/agent\/cases\/[^/]+\/depts\//.test(loc.pathname)
+  const inProfessional = /\/agent\/cases\/[^/]+\/professional/.test(
+    loc.pathname,
+  )
+  const inDepartments =
+    loc.pathname === '/agent/departments' ||
+    loc.pathname.startsWith('/agent/departments/') ||
+    inProfessional
+  const inAssets =
+    loc.pathname === '/agent/assets' || loc.pathname.startsWith('/agent/assets/')
+  const inCatalog =
+    loc.pathname === '/agent/seats' ||
+    loc.pathname.startsWith('/agent/seats/')
+  const inSandbox =
+    loc.pathname === '/agent/sandbox' || loc.pathname.startsWith('/agent/sandbox/')
+  const inL2Shell =
+    loc.pathname === '/agent/team' ||
+    loc.pathname.startsWith('/agent/team/') ||
+    loc.pathname.startsWith('/agent/bots/')
+  const inPatentProject = loc.pathname.startsWith('/agent/projects')
+  const inGrokShell = inSandbox || inL2Shell
+  const inLabPath =
+    inSandbox ||
+    inL2Shell ||
+    loc.pathname.startsWith('/agent/compose') ||
+    loc.pathname.startsWith('/agent/agents') ||
+    loc.pathname.startsWith('/agent/harness') ||
+    loc.pathname.startsWith('/agent/lab') ||
+    loc.pathname.startsWith('/agent/gallery') ||
+    loc.pathname.startsWith('/agent/seats')
+  /** sessions 自有 SessionDemoHonestBanner · 不与 LabRouteBanner 叠条 */
+  const showLabBanner =
+    (inLabPath || inPatentProject) &&
+    !loc.pathname.startsWith('/agent/sessions')
+  /** 业务面默认隐藏租户/Persona；?debug=1 显示 */
+  const showTenantChrome = debug || inGrokShell || inCatalog
+
+  const activeBizCaseId = useMemo(() => {
+    const m = loc.pathname.match(/^\/agent\/cases\/([^/]+)/)
+    return m?.[1] && m[1] !== 'new' ? m[1] : undefined
+  }, [loc.pathname])
+  const activeBizCase = activeBizCaseId ? getBizCase(activeBizCaseId) : undefined
+
+  const pageTitle = inL2Shell
+    ? '多助手壳 · 旁路'
+    : inSandbox
+      ? '通用沙盒'
+      : inCatalog
+        ? '席位样机（旁路）'
+        : inDepartments
+          ? '编制'
+          : inAssets
+            ? '资产'
+            : inBusiness
+              ? entryRole === 'agency'
+                ? '案盘'
+                : inDeptWorkbench
+                  ? '工作台'
+                  : activeBizCase?.title ?? 'Novada Team'
+              : inHome
+                ? 'Novada Team'
+                : inPatentProject
+                  ? '项目（旁路）'
+                  : inLabPath
+                    ? '实验室'
+                    : '工作台'
 
   return (
-    <div className="app-shell-bg flex h-full min-h-screen flex-col">
+    <div
+      className="app-shell-bg flex h-full flex-col overflow-hidden"
+      data-entry-role={entryRole}
+      data-testid="agent-shell"
+    >
       <a href="#agent-main" className="skip-link">
         跳到主要内容
       </a>
 
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-3 shadow-[var(--shadow-rest)] backdrop-blur lg:px-4">
+      <header
+        className={`flex h-12 shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-3 backdrop-blur lg:px-4 ${
+          inGrokShell ? '' : 'shadow-[var(--shadow-rest)]'
+        }`}
+        data-grok-chrome={inGrokShell ? '1' : '0'}
+        data-business-mode={inBusiness ? '1' : '0'}
+        data-entry-role={entryRole}
+      >
         <div className="flex items-center gap-2">
-          <div className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[10px] font-semibold">
-            IP
+          <Link
+            to="/agent"
+            className="shell-brand-mark flex h-7 w-7 items-center justify-center text-[9px] font-semibold focus-ring rounded-md"
+            title="回大厅"
+            data-testid="shell-brand-hall"
+            aria-label="回大厅"
+          >
+            NT
+          </Link>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold tracking-tight text-slate-900">
+              {pageTitle}
+            </div>
+            {(inHome || inBusiness || inDepartments) && !inGrokShell ? (
+              <p
+                className="truncate text-[10px] text-slate-500"
+                data-testid="shell-decider-line"
+                title="补充条款 A · 样机单用户"
+              >
+                当前拍板人：你（当前用户）
+              </p>
+            ) : null}
           </div>
-          <div className="text-sm font-semibold tracking-tight text-slate-900">知产 Agent</div>
         </div>
 
-        <div className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
+        {/* §99 路径迁左栏；顶栏不放段控 / 案切换器 */}
 
-        <AgentWorkspaceMenu variant="topbar" />
-        <PersonaSwitcher variant="topbar" />
+        {!inGrokShell && showTenantChrome && (
+          <>
+            <div className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
+            <AgentWorkspaceMenu variant="topbar" />
+            <PersonaSwitcher variant="topbar" />
+          </>
+        )}
 
         {inSession && (
           <div
@@ -120,7 +244,14 @@ export function AgentShell() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
-          <ProductSwitcher current="agent" size="md" className="hidden sm:grid" />
+          {(inHome || inBusiness || inDepartments) && <PrototypeScope />}
+          {/* §101: left rail pending is sole global entry; no top bell */}
+          {(inHome || inBusiness || inDepartments || inAssets) && !inGrokShell && (
+            <ShellAccountMenu />
+          )}
+          {!inGrokShell && showTenantChrome && (
+            <ProductSwitcher current="agent" size="md" className="hidden sm:grid" />
+          )}
           {inSession && (
             <button
               type="button"
@@ -149,18 +280,25 @@ export function AgentShell() {
         </div>
       </header>
 
-      <AgentBillingHoldBanner
-        compact
-        className="mx-3 mt-2 shrink-0 lg:mx-4"
-      />
+      {showLabBanner ? (
+        <LabRouteBanner kind={inPatentProject ? 'projects' : 'lab'} />
+      ) : null}
 
       <div className="flex min-h-0 flex-1">
-        <AgentSessionSidebar />
+        {!inGrokShell && (inHome || inBusiness || inDepartments || inAssets) ? (
+          <ShellPathNav />
+        ) : null}
+        {inActiveCaseShell && !inDeptWorkbench ? (
+          <BusinessCaseSidebar />
+        ) : null}
+        {!(inProjects || inGrokShell || inBusiness || inCatalog || inDepartments || inAssets || inHome) && (
+          <AgentSessionSidebar />
+        )}
 
         <main
           id="agent-main"
           tabIndex={-1}
-          className="flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-none"
+          className="flex min-h-0 min-w-0 flex-1 flex-col bg-surface-50 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-accent)]"
           data-right-open={rightOpen ? '1' : '0'}
         >
           <PersonaRouteGate>

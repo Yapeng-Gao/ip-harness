@@ -1,0 +1,304 @@
+{
+  "at": "2026-09-19T05:20:40.736Z",
+  "tipSha": "3f911ce",
+  "fixSha": "b0a0a00",
+  "base": "http://127.0.0.1:5175",
+  "viewport": {
+    "w": 1440,
+    "h": 900
+  },
+  "must": {
+    "SS-M-S0-1": {
+      "pass": true,
+      "detail": {
+        "foldOpen": false,
+        "foldTestId": "home-common-fold",
+        "pillsVisibleWhenClosed": 0,
+        "pillsSample": [],
+        "solidPrimary": [
+          {
+            "t": "开始办理",
+            "bg": "rgb(15, 23, 42)",
+            "h": 40
+          }
+        ],
+        "sendBox": {
+          "bg": "rgb(15, 23, 42)",
+          "fw": "500",
+          "h": 40,
+          "w": 88,
+          "t": "开始办理"
+        },
+        "chipBox": {
+          "bg": "rgb(255, 255, 255)",
+          "fw": "500",
+          "border": "rgba(60, 60, 67, 0.22)",
+          "h": 32,
+          "w": 199,
+          "t": "待确认 · 3"
+        },
+        "caseBind": 1,
+        "billing": false,
+        "mid": [],
+        "chipWeaker": true
+      },
+      "evidence": "fold closed; Core pills not under compose; solid CTA=开始办理×1; chip weaker than send"
+    },
+    "SS-M-S2-1": {
+      "pass": true,
+      "detail": {
+        "hasAutoCore": false,
+        "switchSolid": false,
+        "switchText": "切换到该 Agent",
+        "viewportSolids": [
+          {
+            "t": "启动",
+            "bg": "rgb(15, 23, 42)"
+          }
+        ],
+        "solidMainCount": 1,
+        "emptyAnchor": "还没有办理轨迹\n\n下一步：在底部确认目标后点「启动」，系统会按步骤推进并在需要时请你确认。",
+        "emptyish": "还没有办理轨迹\n\n下一步：在底部确认目标后点「启动」，系统会按步骤推进并在需要时请你确认。",
+        "matchedHuman": true,
+        "url": "/agent/sessions/sess-1789795242811",
+        "mid": [],
+        "billing": false
+      },
+      "evidence": "solid CTA≤1; empty anchor; no Auto/Core jargon; switch not solid"
+    },
+    "SS-M-S4-1": {
+      "pass": true,
+      "detail": {
+        "present": true,
+        "jargon": false,
+        "hasGoComplete": true,
+        "hasViewAll": true,
+        "tiny": [],
+        "sample": "待确认：批准策略 · OA 答复 Agent交接：代理起草中\n待批准\n待授权\n\n批准策略\n授权递交\n退回\n逐步\n\n请先选争点类型并填策略要点\n\n去补全\n查看全部条件\n补充项 · 陈述/争点 · 齐套检查",
+        "goBox": {
+          "t": "去补全",
+          "h": 32,
+          "tag": "BUTTON"
+        },
+        "url": "/agent/sessions/sess-oa-1?focus=hitl"
+      },
+      "evidence": "去补全 1-click; no Full-check/Persona/HITL; font≥12"
+    },
+    "SS-M-S6-1": {
+      "pass": true,
+      "detail": {
+        "searchCount": 1,
+        "newCount": 1,
+        "news": [
+          {
+            "t": "新建会话",
+            "bg": "rgb(15, 23, 42)",
+            "border": "rgb(255, 255, 255)"
+          }
+        ],
+        "h1": "待确认会话",
+        "mid": [],
+        "billing": false,
+        "url": "/agent/sessions?filter=needs_human"
+      },
+      "evidence": "search=1; new=1; h1=待确认会话"
+    },
+    "SS-M-S7-1": {
+      "pass": true,
+      "detail": {
+        "startCount": 9,
+        "minH": 40,
+        "maxH": 40,
+        "hs": [
+          40,
+          40,
+          40,
+          40,
+          40,
+          40
+        ],
+        "hintGaps": [
+          {
+            "gap": 8,
+            "hint": "可稍后关联案件"
+          },
+          {
+            "gap": 8,
+            "hint": "可稍后关联案件"
+          },
+          {
+            "gap": 8,
+            "hint": "可稍后关联案件"
+          },
+          {
+            "gap": 8,
+            "hint": "可稍后关联案件"
+          },
+          {
+            "gap": 8,
+            "hint": "可稍后关联案件"
+          },
+          {
+            "gap": 8,
+            "hint": "可稍后关联案件"
+          }
+        ],
+        "solidPerCard": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0
+        ],
+        "cardSolids": [
+          {
+            "t": "启动",
+            "bg": "rgb(15, 23, 42)",
+            "solid": true
+          },
+          {
+            "t": "启动",
+            "bg": "rgb(15, 23, 42)",
+            "solid": true
+          },
+          {
+            "t": "启动",
+            "bg": "rgb(15, 23, 42)",
+            "solid": true
+          },
+          {
+            "t": "启动",
+            "bg": "rgb(15, 23, 42)",
+            "solid": true
+          }
+        ],
+        "mid": []
+      },
+      "evidence": "start minH=40; gaps=[{\"gap\":8,\"hint\":\"可稍后关联案件\"},{\"gap\":8,\"hint\":\"可稍后关联案件\"},{\"gap\":8,\"hint\":\"可稍后关联案件\"},{\"gap\":8,\"hint\":\"可稍后关联案件\"},{\"gap\":8,\"hint\":\"可稍后关联案件\"},{\"gap\":8,\"hint\":\"可稍后关联案件\"}]; solid/card≤1"
+    },
+    "SS-M-S8-1": {
+      "pass": true,
+      "detail": {
+        "solidMain": [
+          {
+            "t": "跳到主要内容",
+            "bg": "rgb(15, 23, 42)",
+            "h": 37
+          }
+        ],
+        "solidCount": 1,
+        "pillMetrics": [
+          {
+            "h": 32,
+            "fs": 12,
+            "t": "分派给研究",
+            "clickable": true
+          },
+          {
+            "h": 32,
+            "fs": 12,
+            "t": "分派给写作",
+            "clickable": true
+          },
+          {
+            "h": 32,
+            "fs": 12,
+            "t": "分派给审查",
+            "clickable": true
+          }
+        ],
+        "contentBand": 140,
+        "orchTag": "P",
+        "orchSolid": false,
+        "orchText": "← 请用中栏「分派给…」快捷",
+        "url": "/agent/projects/proj-demo-general",
+        "mid": [],
+        "billing": false
+      },
+      "evidence": "solid≤1; pills≥32/12; contentBand=140; orch not solid"
+    },
+    "SS-M-S9-1": {
+      "pass": true,
+      "detail": {
+        "isAmberFull": false,
+        "amberBars": [
+          {
+            "amber": false,
+            "bg": "rgba(0, 0, 0, 0)",
+            "border": "oklch(0.929 0.013 255.508)",
+            "w": 1192,
+            "h": 54,
+            "fullish": true,
+            "text": "请先绑定案件\n写入前请先绑定案件\n创建并绑定新案\n绑定已有案"
+          },
+          {
+            "amber": false,
+            "bg": "rgb(255, 255, 255)",
+            "border": "oklch(0.828 0.111 230.318)",
+            "w": 122,
+            "h": 40,
+            "fullish": false,
+            "text": "创建并绑定新案"
+          },
+          {
+            "amber": false,
+            "bg": "rgb(255, 255, 255)",
+            "border": "oklch(0.828 0.111 230.318)",
+            "w": 98,
+            "h": 40,
+            "fullish": false,
+            "text": "绑定已有案"
+          }
+        ],
+        "solidBlack": [
+          {
+            "t": "跳到主要内容",
+            "h": 37
+          }
+        ],
+        "solidMainCtas": [],
+        "snake": [],
+        "wrongNext": false,
+        "hasAdvance": true,
+        "advanceText": "推进一步",
+        "url": "/agent/projects/proj-demo-patent/bots/expert-search",
+        "mid": [],
+        "billing": false
+      },
+      "evidence": "no amber full bar; solid main=0; snake=0; next ok"
+    }
+  },
+  "hardGates": {
+    "noMidDeep": true,
+    "noBillingHold": true,
+    "homeCaseEntry1": true,
+    "noPrototypeAmberBilling": true
+  },
+  "shots": [
+    "docs/ui-polish/agent-stepwise-strict-recheck/S0/S0-home.png",
+    "docs/ui-polish/agent-stepwise-strict-recheck/S2/S2-session.png",
+    "docs/ui-polish/agent-stepwise-strict-recheck/S4/S4-confirm.png",
+    "docs/ui-polish/agent-stepwise-strict-recheck/S6/S6-list.png",
+    "docs/ui-polish/agent-stepwise-strict-recheck/S7/S7-catalog.png",
+    "docs/ui-polish/agent-stepwise-strict-recheck/S8/S8-general.png",
+    "docs/ui-polish/agent-stepwise-strict-recheck/S9/S9-expert.png"
+  ],
+  "summary": {
+    "passCount": 7,
+    "failCount": 0,
+    "passIds": [
+      "SS-M-S0-1",
+      "SS-M-S2-1",
+      "SS-M-S4-1",
+      "SS-M-S6-1",
+      "SS-M-S7-1",
+      "SS-M-S8-1",
+      "SS-M-S9-1"
+    ],
+    "failIds": [],
+    "overall": "Go"
+  }
+}

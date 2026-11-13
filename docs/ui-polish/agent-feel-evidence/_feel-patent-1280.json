@@ -1,0 +1,399 @@
+{
+  "vw": 1280,
+  "vh": 800,
+  "title": "IP Harness · 知产 Agent",
+  "h1": null,
+  "dock": null,
+  "confirm": null,
+  "timeline": null,
+  "composerFold": null,
+  "aside": null,
+  "shellAside": null,
+  "composerRect": {
+    "w": 734,
+    "h": 58,
+    "top": 772,
+    "left": 236,
+    "bottom": 830,
+    "fontSize": "14px",
+    "radius": "12px",
+    "position": "static",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "focus-ring min-h-[2.5rem] flex-1 resize-none rounded-md border border-slate-200 bg-slate-5",
+    "text": ""
+  },
+  "bodyScroll": false,
+  "bodyOverflow": "hidden/hidden",
+  "reasonCount": 0,
+  "reasonText": null,
+  "stepChips": [],
+  "transitionAllCount": 9,
+  "transitionAll": [
+    {
+      "tag": "A",
+      "cls": "skip-link",
+      "text": "跳到主要内容",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px-1.5 py-1 ",
+      "text": "项目模式",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "focus-ring flex w-full items-center gap-1 truncate rounded-m",
+      "text": "课题协作 · 通用演示 通用",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "focus-ring flex w-full items-center gap-1 truncate rounded-m",
+      "text": "边缘调度模组 · 专利演示 专利",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px-1.5 py-1 ",
+      "text": "总控席",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px-1.5 py-1 ",
+      "text": "检索专家",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px-1.5 py-1 ",
+      "text": "撰稿专家",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px-1.5 py-1 ",
+      "text": "FTO 专家",
+      "transition": "all"
+    },
+    {
+      "tag": "TEXTAREA",
+      "cls": "focus-ring min-h-[2.5rem] flex-1 resize-none rounded-md bord",
+      "text": "",
+      "transition": "all"
+    }
+  ],
+  "smallFonts": [],
+  "smallFontsMin": null,
+  "smallHits": [
+    {
+      "w": 72,
+      "h": 32,
+      "text": "作业中台",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 60,
+      "h": 32,
+      "text": "办理台",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 83,
+      "h": 32,
+      "text": "知产 Agent",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 48,
+      "h": 32,
+      "text": "运维",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 45,
+      "h": 32,
+      "text": "IAM",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 116,
+      "h": 37,
+      "text": "跳到主要内容",
+      "cls": "skip-link"
+    },
+    {
+      "w": 203,
+      "h": 24,
+      "text": "项目模式",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px"
+    },
+    {
+      "w": 207,
+      "h": 28,
+      "text": "课题协作 · 通用演示 通用",
+      "cls": "focus-ring flex w-full items-center gap-1 truncate"
+    },
+    {
+      "w": 207,
+      "h": 28,
+      "text": "边缘调度模组 · 专利演示 专利",
+      "cls": "focus-ring flex w-full items-center gap-1 truncate"
+    },
+    {
+      "w": 194,
+      "h": 27,
+      "text": "总控席",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px"
+    },
+    {
+      "w": 194,
+      "h": 27,
+      "text": "检索专家",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px"
+    },
+    {
+      "w": 194,
+      "h": 27,
+      "text": "撰稿专家",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px"
+    },
+    {
+      "w": 194,
+      "h": 27,
+      "text": "FTO 专家",
+      "cls": "focus-ring flex items-center gap-1.5 rounded-md px"
+    },
+    {
+      "w": 111,
+      "h": 23,
+      "text": "创建并绑定新案",
+      "cls": "btn-press focus-ring inline-flex items-center gap-"
+    },
+    {
+      "w": 89,
+      "h": 23,
+      "text": "绑定已有案",
+      "cls": "btn-press focus-ring inline-flex items-center gap-"
+    },
+    {
+      "w": 57,
+      "h": 23,
+      "text": "1收目标",
+      "cls": "btn-press focus-ring inline-flex items-center gap-"
+    },
+    {
+      "w": 46,
+      "h": 23,
+      "text": "2拆派",
+      "cls": "btn-press focus-ring inline-flex items-center gap-"
+    },
+    {
+      "w": 57,
+      "h": 23,
+      "text": "3等回执",
+      "cls": "btn-press focus-ring inline-flex items-center gap-"
+    },
+    {
+      "w": 46,
+      "h": 23,
+      "text": "4汇总",
+      "cls": "btn-press focus-ring inline-flex items-center gap-"
+    },
+    {
+      "w": 77,
+      "h": 27,
+      "text": "分派给检索",
+      "cls": "btn-press focus-ring rounded-full border border-sl"
+    },
+    {
+      "w": 77,
+      "h": 27,
+      "text": "分派给撰稿",
+      "cls": "btn-press focus-ring rounded-full border border-sl"
+    },
+    {
+      "w": 78,
+      "h": 27,
+      "text": "分派给 FTO",
+      "cls": "btn-press focus-ring rounded-full border border-sl"
+    }
+  ],
+  "smallHitsCount": 22,
+  "pressBtns": [
+    {
+      "text": "作业中台",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "办理台",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "知产 Agent",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "运维",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "IAM",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "代理所租户 · 德恒知产",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "代理所",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "作业中台",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "知产 Agent",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "创建并绑定新案",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 23
+    },
+    {
+      "text": "绑定已有案",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 23
+    },
+    {
+      "text": "1收目标",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 23
+    },
+    {
+      "text": "2拆派",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 23
+    },
+    {
+      "text": "3等回执",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 23
+    },
+    {
+      "text": "4汇总",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 23
+    }
+  ],
+  "toolIds": [
+    "dispatch_task",
+    "summarize_timeline",
+    "open_expert_dm"
+  ],
+  "floatJump": [
+    {
+      "text": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Age",
+      "cls": "",
+      "pos": "static"
+    },
+    {
+      "text": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Age",
+      "cls": "",
+      "pos": "static"
+    },
+    {
+      "text": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Age",
+      "cls": "",
+      "pos": "static"
+    }
+  ],
+  "focusSample": [
+    {
+      "text": "作业中台",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    },
+    {
+      "text": "办理台",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    },
+    {
+      "text": "知产 Agent",
+      "outline": "rgb(15, 23, 42) none 3px",
+      "boxShadow": "rgba(0, 0, 0, 0.04) 0px 1px 2px 0px, rgba(0, 0, 0, 0.05) 0px",
+      "hasFocusRing": true
+    },
+    {
+      "text": "运维",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    },
+    {
+      "text": "IAM",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    }
+  ],
+  "caseBind": {
+    "softOptional": false,
+    "mustBind": true,
+    "bindCreate": true,
+    "bindBar": true
+  },
+  "cards": [],
+  "timelineEmpty": {
+    "hasTimeline": false,
+    "textSnippet": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Agent 项目模式 项目 课题协作 · 通用演示 通用 边缘调度模组 · 专利演示 专利 总控席 检索专家 撰稿专家 FTO 专家 样机 · 无真 LLM · 专家分剧本 样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Co",
+    "hasNextCta": true
+  },
+  "path": "/agent/projects/proj-demo-patent"
+}

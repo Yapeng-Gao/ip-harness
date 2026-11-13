@@ -1,0 +1,19 @@
+{
+  "id": "p014",
+  "publicationNumber": "TW2022100014A",
+  "title": "Differential privacy mechanism for federated learning",
+  "applicant": "Samsung Electronics Co., Ltd.",
+  "inventor": "Inventor 6",
+  "date": "2024-07-15",
+  "ipc": [
+    "G06N3/08",
+    "G06N3/063",
+    "G06F40/216"
+  ],
+  "familyId": "fam-ai-1",
+  "country": "TW",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 Local update noise injection satisfying DP.",
+  "claims": "1. A device or method comprising… (sample p014)",
+  "snippet": "Differential privacy mechanism for feder"
+}

@@ -1,0 +1,39 @@
+{
+  "S0": {
+    "homeRecommendFold": true,
+    "foldOpen": false,
+    "homeCaseBind": 1
+  },
+  "S6url": {
+    "url": "http://127.0.0.1:5175/agent/sessions?filter=needs_human",
+    "h1": "待确认会话",
+    "mainRows": 3
+  },
+  "S6click": {
+    "url": "http://127.0.0.1:5175/agent/sessions?filter=needs_human",
+    "h1": "待确认会话",
+    "mainRows": 3
+  },
+  "S5": {
+    "noCaseHint": false,
+    "caseBind": 1,
+    "top": 0,
+    "bodyHasAssociateLabel": false
+  },
+  "S7": {
+    "h2": [
+      "Core主办理闭环",
+      "Assist辅助薄层",
+      "Beta非采购闭环"
+    ],
+    "betaDup": []
+  },
+  "verdicts": {
+    "SW-S0-1": "PASS",
+    "SW-S6-1": "PASS",
+    "SW-S6-2": "PASS",
+    "SW-S5-1": "PASS",
+    "SW-S7-1": "PASS"
+  },
+  "allPass": true
+}

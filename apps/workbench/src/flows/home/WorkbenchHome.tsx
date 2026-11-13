@@ -23,6 +23,7 @@ import { daysUntil, urgencyLevel } from '@shared/utils/deadline'
 import { TenantBanner } from '@shared/components/TenantBanner'
 import { PageHeader } from '@shared/components/PageHeader'
 import { WorkbenchBillingHoldBanner } from '../../components/WorkbenchBillingHoldBanner'
+import { StageSkuDemoPanel } from '../../components/StageSkuDemoPanel'
 
 const stageCards = [
   { stage: 'pre_research' as const, icon: Search, path: '/workbench/research' },
@@ -92,6 +93,8 @@ export function WorkbenchHome() {
       </PageHeader>
 
       <WorkbenchBillingHoldBanner className="mb-4" />
+
+      <StageSkuDemoPanel />
 
       <div className="segmented mb-5" role="tablist" aria-label="工作台页签">
         {(

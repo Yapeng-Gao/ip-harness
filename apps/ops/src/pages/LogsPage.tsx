@@ -53,7 +53,7 @@ export function LogsPage() {
             role="tab"
             aria-selected={channel === id}
             onClick={() => setChannel(id)}
-            className={`btn-press flex-1 rounded-lg px-3 py-2 text-sm font-medium sm:flex-none ${
+            className={`btn-press focus-ring flex-1 rounded-lg px-3 py-2 text-sm font-medium sm:flex-none ${
               channel === id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -71,7 +71,7 @@ export function LogsPage() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="服务 / 文案 / 案号"
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-400"
+              className="ui-input mt-1"
             />
           </label>
           <label className="text-xs text-slate-500">
@@ -102,7 +102,7 @@ export function LogsPage() {
           <button
             type="button"
             onClick={onExport}
-            className="btn-press rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 hover:bg-slate-50"
+            className="btn-press focus-ring rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 hover:bg-slate-50"
           >
             导出
           </button>
@@ -113,6 +113,19 @@ export function LogsPage() {
         <EmptyState
           title="当前过滤无匹配 mock 行"
           body="样机无真实采集管道。放宽级别 / 时间或清空检索后仍可能为空——这是诚实空态，不是故障。"
+          action={
+            <button
+              type="button"
+              onClick={() => {
+                setQ('')
+                setLevel('all')
+                setRange('24h')
+              }}
+              className="btn-press focus-ring rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 hover:bg-slate-50"
+            >
+              重置过滤
+            </button>
+          }
         />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-rest">
@@ -161,7 +174,7 @@ export function LogsPage() {
       <p className="mt-3 text-xs text-slate-500">
         案详审计深链：中台 <code className="font-mono">/cases/:id?tab=audit</code>
         （中台同步就绪后可用）。示例：{' '}
-        <ExtLink href={midCaseUrl('c1')}>{midCaseUrl('c1')}</ExtLink>
+        <ExtLink href={midCaseUrl('c1')}>打开中台案详示例</ExtLink>
       </p>
 
       {toast ? <Toast message={toast} /> : null}

@@ -1,0 +1,20 @@
+{
+  "id": "S5",
+  "status": "Pass",
+  "finalUrl": "http://localhost:5175/agent/sessions/sess-1789790277125",
+  "assertions": [
+    "Home 无案 (case-bind-hint)",
+    "entered session http://localhost:5175/agent/sessions/sess-1789790277125",
+    "session-case-bind-top + case-bind-controls 可见",
+    "软引导文案可见（先聊后案）",
+    "顶栏创建并绑定成功 (case-bind-current) · title=逐步走查顶栏绑案 S5 1789790277196",
+    "绑案后顶栏收起（caseBindGuide 关闭 · 符合先聊后案）",
+    "无强制绑案弹死",
+    "无 BillingHold 全宽黄条"
+  ],
+  "consoleErrors": [],
+  "bbox": {
+    "session-case-bind-top": null
+  },
+  "screenshot": "/workspace/ip-harness/docs/ui-polish/agent-stepwise-e2e/S5-case-bind-top.png"
+}

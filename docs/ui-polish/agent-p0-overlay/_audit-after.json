@@ -1,0 +1,143 @@
+{
+  "sha": null,
+  "pages": {
+    "home": {
+      "copy": {
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "样机·无真 LLM": 0,
+        "无真 LLM": 0,
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详 mid": 0,
+        "案详": 0,
+        "费用 mid": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0,
+        "打开案件": 0
+      },
+      "href5173": [],
+      "any5173Attr": [],
+      "amberBars": [],
+      "amber50Full": [],
+      "url": "http://127.0.0.1:5175/agent"
+    },
+    "sessions": {
+      "copy": {
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "样机·无真 LLM": 0,
+        "无真 LLM": 0,
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详 mid": 0,
+        "案详": 0,
+        "费用 mid": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0,
+        "打开案件": 0
+      },
+      "href5173": [],
+      "any5173Attr": [],
+      "amberBars": [],
+      "amber50Full": [],
+      "url": "http://127.0.0.1:5175/agent/sessions"
+    },
+    "session": {
+      "copy": {
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "样机·无真 LLM": 0,
+        "无真 LLM": 0,
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详 mid": 0,
+        "案详": 0,
+        "费用 mid": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0,
+        "打开案件": 0
+      },
+      "href5173": [],
+      "any5173Attr": [],
+      "amberBars": [],
+      "amber50Full": [],
+      "url": "http://127.0.0.1:5175/agent/sessions/sess-oa-1?focus=hitl"
+    },
+    "projectsList": {
+      "copy": {
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "样机·无真 LLM": 0,
+        "无真 LLM": 0,
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详 mid": 0,
+        "案详": 0,
+        "费用 mid": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0,
+        "打开案件": 0
+      },
+      "href5173": [],
+      "any5173Attr": [],
+      "amberBars": [],
+      "amber50Full": [],
+      "url": "http://127.0.0.1:5175/agent/projects"
+    },
+    "projectWorkspace": {
+      "copy": {
+        "样机 · 无真 LLM": 0,
+        "样机·无真LLM": 0,
+        "样机·无真 LLM": 0,
+        "无真 LLM": 0,
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详 mid": 0,
+        "案详": 0,
+        "费用 mid": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0,
+        "打开案件": 0
+      },
+      "href5173": [],
+      "any5173Attr": [],
+      "amberBars": [],
+      "amber50Full": [],
+      "url": "http://127.0.0.1:5175/agent/projects/proj-demo-general"
+    }
+  },
+  "checklist": {
+    "1_no_fullwidth_amber_prototype_bar": {
+      "pass": true,
+      "tipCopyCount": 0,
+      "projAmberTipBars": [],
+      "projectsListAmber50Full": [],
+      "projectWorkspaceAmber50Full": []
+    },
+    "2_no_mid_5173_href": {
+      "pass": true,
+      "href5173": [],
+      "any5173Attr": []
+    },
+    "2b_no_mid_cta_copy": {
+      "pass": true,
+      "midCopyHits": {
+        "回中台": 0,
+        "运营 Inbox": 0,
+        "在运营 Inbox": 0,
+        "案详 mid": 0,
+        "费用 mid": 0,
+        "打开费用中心": 0,
+        "在作业中台打开": 0,
+        "案详": 0
+      }
+    }
+  },
+  "allPass": true
+}

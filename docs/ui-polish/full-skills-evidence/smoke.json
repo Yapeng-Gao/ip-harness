@@ -1,0 +1,112 @@
+[
+  {
+    "port": 5174,
+    "name": "workbench",
+    "status": 200,
+    "title": "IP Harness · 办理工作台",
+    "file": "docs/ui-polish/full-skills-evidence/workbench-5174-home.png",
+    "ok": true
+  },
+  {
+    "port": 5175,
+    "name": "agent",
+    "status": 200,
+    "title": "IP Harness · 知产 Agent",
+    "file": "docs/ui-polish/full-skills-evidence/agent-5175-home.png",
+    "ok": true
+  },
+  {
+    "port": 5176,
+    "name": "ops",
+    "status": 200,
+    "title": "IP Harness · 运维面（样机）",
+    "file": "docs/ui-polish/full-skills-evidence/ops-5176-home.png",
+    "ok": true
+  },
+  {
+    "port": 5177,
+    "name": "iam",
+    "status": 200,
+    "title": "IP Harness · IAM",
+    "file": "docs/ui-polish/full-skills-evidence/iam-5177-home.png",
+    "ok": true
+  },
+  {
+    "port": 5178,
+    "name": "doc-harness",
+    "status": 200,
+    "title": "IP Harness · TipTap 批注样机 · 非 Word 修订/协同",
+    "file": "docs/ui-polish/full-skills-evidence/doc-harness-5178-home.png",
+    "ok": true
+  },
+  {
+    "port": 5179,
+    "name": "ai-infra",
+    "status": 200,
+    "title": "IP Harness · AI Infra（样机）",
+    "file": "docs/ui-polish/full-skills-evidence/ai-infra-5179-home.png",
+    "ok": true
+  },
+  {
+    "port": 5181,
+    "name": "ai-data",
+    "status": 200,
+    "title": "IP Harness · AI Data（样机）",
+    "file": "docs/ui-polish/full-skills-evidence/ai-data-5181-home.png",
+    "ok": true
+  },
+  {
+    "port": 5182,
+    "name": "search",
+    "status": 200,
+    "title": "IP Harness · 检索服务（样机）",
+    "file": "docs/ui-polish/full-skills-evidence/search-5182-home.png",
+    "ok": true
+  },
+  {
+    "port": 5183,
+    "name": "fto",
+    "status": 200,
+    "title": "IP Harness · FTO（样机）",
+    "file": "docs/ui-polish/full-skills-evidence/fto-5183-home.png",
+    "ok": true
+  },
+  {
+    "port": 5184,
+    "name": "mining",
+    "status": 200,
+    "title": "IP Harness · 专利挖掘（样机）",
+    "file": "docs/ui-polish/full-skills-evidence/mining-5184-home.png",
+    "ok": true
+  },
+  {
+    "port": 5185,
+    "name": "inspire",
+    "status": 200,
+    "title": "IP Harness · 创新激发（样机）",
+    "file": "docs/ui-polish/full-skills-evidence/inspire-5185-home.png",
+    "ok": true
+  },
+  {
+    "port": 5186,
+    "name": "landscape",
+    "status": 200,
+    "title": "IP Harness · 产业全景（样机）",
+    "file": "docs/ui-polish/full-skills-evidence/landscape-5186-home.png",
+    "ok": true
+  },
+  {
+    "port": 5187,
+    "name": "figure",
+    "status": 200,
+    "title": "IP Harness · 附图（样机）",
+    "file": "docs/ui-polish/full-skills-evidence/figure-5187-home.png",
+    "ok": true
+  },
+  {
+    "port": 5173,
+    "name": "mid",
+    "ok": false,
+    "err": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5173/\nCall log:\n  - navigating to \"http://127.0.0.1:5173/\", waiting until \"networkidle\"\n"
+  }
+]

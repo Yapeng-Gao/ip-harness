@@ -1,0 +1,661 @@
+{
+  "vw": 1440,
+  "vh": 900,
+  "title": "IP Harness · 知产 Agent",
+  "h1": "一通创造性答复 · 边缘调度\n改名",
+  "dock": {
+    "w": 992,
+    "h": 157,
+    "top": 500,
+    "left": 224,
+    "bottom": 657,
+    "fontSize": "15px",
+    "radius": "12px 12px 0px 0px",
+    "position": "sticky",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "agent-hitl-dock sticky bottom-0 z-20 shrink-0",
+    "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 待批准 待授权 批准策略 授权递交 退回 在运营 Inbox 中查看 逐步 请先选争点类型并填"
+  },
+  "confirm": {
+    "w": 992,
+    "h": 157,
+    "top": 500,
+    "left": 224,
+    "bottom": 657,
+    "fontSize": "15px",
+    "radius": "12px",
+    "position": "static",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "confirm-hitl shrink-0 rounded-[var(--radius-md)] border-l-4 border-l-amber-500 px-4 py-3.5",
+    "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 待批准 待授权 批准策略 授权递交 退回 在运营 Inbox 中查看 逐步 请先选争点类型并填"
+  },
+  "timeline": {
+    "w": 992,
+    "h": 329,
+    "top": 171,
+    "left": 224,
+    "bottom": 500,
+    "fontSize": "15px",
+    "radius": "0px",
+    "position": "static",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "min-h-0 flex-1 space-y-1.5 overflow-y-auto px-4 py-5 lg:px-6",
+    "text": "思考 2026-09-10 09:12:01 解析 OA 识别权利要求 1、3 相对对比文件 1 的创造性争点。 调用 · OA 争点分析 2026-09-10"
+  },
+  "composerFold": {
+    "w": 992,
+    "h": 243,
+    "top": 657,
+    "left": 224,
+    "bottom": 900,
+    "fontSize": "15px",
+    "radius": "0px",
+    "position": "static",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "agent-hitl-composer-fold shrink-0 border-t border-slate-200/90 bg-white",
+    "text": "输入 / 切换 Agent（默认收起 · 确认完成前可不展开） 自动匹配 Core · 调研检索 Agent Core · 交底整理 Agent Core · "
+  },
+  "aside": {
+    "w": 224,
+    "h": 852,
+    "top": 48,
+    "left": 1216,
+    "bottom": 900,
+    "fontSize": "15px",
+    "radius": "0px",
+    "position": "static",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "agent-aside hidden w-56 shrink-0 flex-col lg:flex 2xl:w-72",
+    "text": "上下文 当前 Agent OA 答复 Agent Core 审查答复 · 争点策略 案件 一种边缘计算节点调度方法 CN202410328901.2 · 风险 "
+  },
+  "shellAside": {
+    "w": 224,
+    "h": 852,
+    "top": 48,
+    "left": 0,
+    "bottom": 900,
+    "fontSize": "15px",
+    "radius": "0px",
+    "position": "static",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "shell-aside flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex-col sm:w-",
+    "text": "开始 Agent 会话 更多 新建会话 会话 筛选 搜索会话 全部4 待确认3 一通创造性答复 · 边缘调度 OA 答复 Agent · 待你确认 待企业确认 "
+  },
+  "composerRect": {
+    "w": 922,
+    "h": 47,
+    "top": 754,
+    "left": 261,
+    "bottom": 801,
+    "fontSize": "11px",
+    "radius": "12px",
+    "position": "static",
+    "transition": "all",
+    "opacity": "1",
+    "cls": "focus-ring w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] text",
+    "text": ""
+  },
+  "bodyScroll": false,
+  "bodyOverflow": "hidden/hidden",
+  "reasonCount": 1,
+  "reasonText": "请先选争点类型并填策略要点",
+  "stepChips": [
+    "需要你确认：",
+    "批准策略",
+    "· OA 答复 Agent",
+    "交接：代理起草中",
+    "交接：代理起草中",
+    "待批准 待授权",
+    "待批准",
+    "待授权",
+    "批准策略",
+    "批准策略",
+    "授权递交",
+    "授权递交"
+  ],
+  "transitionAllCount": 25,
+  "transitionAll": [
+    {
+      "tag": "A",
+      "cls": "skip-link",
+      "text": "跳到主要内容",
+      "transition": "all"
+    },
+    {
+      "tag": "INPUT",
+      "cls": "focus-ring w-full rounded-[var(--radius-sm)] border border-s",
+      "text": "",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+      "text": "一通创造性答复 · 边缘调度 OA 答复 Agent · 待你确认 待企业确认",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:te",
+      "text": "Inbox",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+      "text": "边缘侧布局空白点洞察 布局洞察 Agent · 待你确认 待企业确认",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:te",
+      "text": "Inbox",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+      "text": "无人机竞品 · 监控告警 监控预警 Agent · 待你确认 待企业确认",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "shrink-0 self-center px-1 text-[9px] text-slate-400 hover:te",
+      "text": "Inbox",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+      "text": "竞品扫描 · 办理失败（演示） 监控预警 Agent · 失败",
+      "transition": "all"
+    },
+    {
+      "tag": "A",
+      "cls": "text-[11px] text-slate-600 hover:underline",
+      "text": "全部会话 →",
+      "transition": "all"
+    },
+    {
+      "tag": "DIV",
+      "cls": "confirm-hitl shrink-0 rounded-[var(--radius-md)] border-l-4 ",
+      "text": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 待批准 待授权",
+      "transition": "all"
+    },
+    {
+      "tag": "INPUT",
+      "cls": "focus-ring h-3 w-3 rounded border-slate-300",
+      "text": "",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-sl",
+      "text": "",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-sl",
+      "text": "",
+      "transition": "all"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-sl",
+      "text": "",
+      "transition": "all"
+    }
+  ],
+  "smallFonts": [
+    {
+      "fs": 10,
+      "tag": "SPAN",
+      "cls": "inline-flex items-center gap-0.5 text-[10px] text-",
+      "text": "待批准"
+    },
+    {
+      "fs": 10,
+      "tag": "svg",
+      "cls": "[object SVGAnimatedString]",
+      "text": ""
+    },
+    {
+      "fs": 10,
+      "tag": "circle",
+      "cls": "[object SVGAnimatedString]",
+      "text": ""
+    },
+    {
+      "fs": 10,
+      "tag": "SPAN",
+      "cls": "inline-flex items-center gap-0.5 text-[10px] text-",
+      "text": "待授权"
+    },
+    {
+      "fs": 10,
+      "tag": "svg",
+      "cls": "[object SVGAnimatedString]",
+      "text": ""
+    },
+    {
+      "fs": 10,
+      "tag": "circle",
+      "cls": "[object SVGAnimatedString]",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "A",
+      "cls": "btn-press focus-ring rounded px-1.5 py-1 text-[11p",
+      "text": "在运营 Inbox 中查看"
+    },
+    {
+      "fs": 10,
+      "tag": "LABEL",
+      "cls": "inline-flex items-center gap-1 text-[10px] text-sl",
+      "text": "逐步"
+    },
+    {
+      "fs": 10,
+      "tag": "INPUT",
+      "cls": "focus-ring h-3 w-3 rounded border-slate-300",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "SUMMARY",
+      "cls": "flex cursor-pointer list-none items-center gap-1.5",
+      "text": "补充项 · 陈述/争点 · Full-check"
+    },
+    {
+      "fs": 11,
+      "tag": "svg",
+      "cls": "[object SVGAnimatedString]",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "path",
+      "cls": "[object SVGAnimatedString]",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "SPAN",
+      "cls": "",
+      "text": "补充项 · 陈述/争点 · Full-check"
+    },
+    {
+      "fs": 11,
+      "tag": "P",
+      "cls": "truncate text-[11px] text-slate-400",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "DIV",
+      "cls": "flex flex-wrap items-center gap-2 text-[11px] text",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "SPAN",
+      "cls": "rounded-full px-2 py-0.5 font-medium ring-1 bg-amb",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "BUTTON",
+      "cls": "btn-press focus-ring rounded border border-slate-3",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "SPAN",
+      "cls": "text-amber-800/90",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "DIV",
+      "cls": "mb-1 text-[11px] font-medium text-slate-600",
+      "text": ""
+    },
+    {
+      "fs": 11,
+      "tag": "SPAN",
+      "cls": "ml-1 font-normal text-slate-400",
+      "text": ""
+    }
+  ],
+  "smallFontsMin": 10,
+  "smallHits": [
+    {
+      "w": 72,
+      "h": 32,
+      "text": "作业中台",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 60,
+      "h": 32,
+      "text": "办理台",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 83,
+      "h": 32,
+      "text": "知产 Agent",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 48,
+      "h": 32,
+      "text": "运维",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 45,
+      "h": 32,
+      "text": "IAM",
+      "cls": "segmented-item btn-press focus-ring inline-flex it"
+    },
+    {
+      "w": 116,
+      "h": 37,
+      "text": "跳到主要内容",
+      "cls": "skip-link"
+    },
+    {
+      "w": 55,
+      "h": 28,
+      "text": "开始",
+      "cls": "btn-press focus-ring relative flex flex-1 flex-col"
+    },
+    {
+      "w": 56,
+      "h": 28,
+      "text": "Agent",
+      "cls": "btn-press focus-ring relative flex flex-1 flex-col"
+    },
+    {
+      "w": 55,
+      "h": 28,
+      "text": "会话",
+      "cls": "btn-press focus-ring relative flex flex-1 flex-col"
+    },
+    {
+      "w": 52,
+      "h": 28,
+      "text": "更多",
+      "cls": "btn-press focus-ring relative flex h-full flex-col"
+    },
+    {
+      "w": 203,
+      "h": 27,
+      "text": "新建会话",
+      "cls": "btn-press focus-ring flex w-full items-center just"
+    },
+    {
+      "w": 30,
+      "h": 21,
+      "text": "筛选",
+      "cls": "btn-press focus-ring rounded px-1 py-0.5 text-[11p"
+    },
+    {
+      "w": 98,
+      "h": 32,
+      "text": "全部4",
+      "cls": "segmented-item btn-press focus-ring flex-1 tabular"
+    },
+    {
+      "w": 98,
+      "h": 32,
+      "text": "待确认3",
+      "cls": "segmented-item btn-press focus-ring flex-1 tabular"
+    },
+    {
+      "w": 31,
+      "h": 14,
+      "text": "Inbox",
+      "cls": "shrink-0 self-center px-1 text-[9px] text-slate-40"
+    },
+    {
+      "w": 22,
+      "h": 22,
+      "text": "会话操作",
+      "cls": "btn-press focus-ring rounded p-1 text-slate-400 op"
+    },
+    {
+      "w": 31,
+      "h": 14,
+      "text": "Inbox",
+      "cls": "shrink-0 self-center px-1 text-[9px] text-slate-40"
+    },
+    {
+      "w": 22,
+      "h": 22,
+      "text": "会话操作",
+      "cls": "btn-press focus-ring rounded p-1 text-slate-400 op"
+    },
+    {
+      "w": 31,
+      "h": 14,
+      "text": "Inbox",
+      "cls": "shrink-0 self-center px-1 text-[9px] text-slate-40"
+    },
+    {
+      "w": 22,
+      "h": 22,
+      "text": "会话操作",
+      "cls": "btn-press focus-ring rounded p-1 text-slate-400 op"
+    },
+    {
+      "w": 22,
+      "h": 22,
+      "text": "会话操作",
+      "cls": "btn-press focus-ring rounded p-1 text-slate-400 op"
+    },
+    {
+      "w": 57,
+      "h": 16,
+      "text": "全部会话 →",
+      "cls": "text-[11px] text-slate-600 hover:underline"
+    },
+    {
+      "w": 31,
+      "h": 20,
+      "text": "改名",
+      "cls": "btn-press focus-ring shrink-0 rounded px-1 py-0.5 "
+    },
+    {
+      "w": 62,
+      "h": 23,
+      "text": "解除绑定",
+      "cls": "btn-press focus-ring rounded border border-slate-2"
+    },
+    {
+      "w": 111,
+      "h": 23,
+      "text": "创建并绑定新案",
+      "cls": "btn-press focus-ring inline-flex items-center gap-"
+    }
+  ],
+  "smallHitsCount": 44,
+  "pressBtns": [
+    {
+      "text": "作业中台",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "办理台",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "知产 Agent",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "运维",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "IAM",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "background-color, color, box-shadow, transform",
+      "h": 32
+    },
+    {
+      "text": "代理所租户 · 德恒知产",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "代理所",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "作业中台",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "知产 Agent",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "上下文 2",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 40
+    },
+    {
+      "text": "开始",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 28
+    },
+    {
+      "text": "Agent",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 28
+    },
+    {
+      "text": "会话",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 28
+    },
+    {
+      "text": "更多",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 28
+    },
+    {
+      "text": "新建会话",
+      "hasBtnPress": true,
+      "transform": "none",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter",
+      "h": 27
+    }
+  ],
+  "toolIds": [],
+  "floatJump": [
+    {
+      "text": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 · OA 答复 Age",
+      "cls": "",
+      "pos": "static"
+    },
+    {
+      "text": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 · OA 答复 Age",
+      "cls": "",
+      "pos": "static"
+    },
+    {
+      "text": "IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 · OA 答复 Age",
+      "cls": "",
+      "pos": "static"
+    }
+  ],
+  "focusSample": [
+    {
+      "text": "作业中台",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    },
+    {
+      "text": "办理台",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    },
+    {
+      "text": "知产 Agent",
+      "outline": "rgb(15, 23, 42) none 3px",
+      "boxShadow": "rgba(0, 0, 0, 0.04) 0px 1px 2px 0px, rgba(0, 0, 0, 0.05) 0px",
+      "hasFocusRing": true
+    },
+    {
+      "text": "运维",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    },
+    {
+      "text": "IAM",
+      "outline": "rgba(60, 60, 67, 0.6) none 3px",
+      "boxShadow": "none",
+      "hasFocusRing": true
+    }
+  ],
+  "caseBind": {
+    "softOptional": false,
+    "mustBind": false,
+    "bindCreate": true,
+    "bindBar": true
+  },
+  "cards": [],
+  "timelineEmpty": {
+    "hasTimeline": true,
+    "textSnippet": null,
+    "hasNextCta": true
+  },
+  "path": "/agent/sessions/sess-oa-1"
+}

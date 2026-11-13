@@ -49,7 +49,7 @@ export function IamLoginPage() {
               <p className="mt-1 break-all font-mono text-xs text-slate-600">{returnUrl}</p>
               <a
                 href={returnUrl}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-500"
+                className="btn-press focus-ring mt-3 inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-500"
               >
                 回跳到来源
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -89,7 +89,7 @@ export function IamLoginPage() {
                 <li>
                   <a
                     href={returnUrl}
-                    className="ui-btn ui-btn-sm ui-btn-primary btn-press"
+                    className="ui-btn ui-btn-sm ui-btn-primary btn-press focus-ring"
                   >
                     <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                     来源 return
@@ -99,7 +99,7 @@ export function IamLoginPage() {
               <li>
                 <a
                   href={midHref('/')}
-                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring"
                 >
                   mid
                 </a>
@@ -107,7 +107,7 @@ export function IamLoginPage() {
               <li>
                 <a
                   href={workbenchHref('/workbench')}
-                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring"
                 >
                   workbench
                 </a>
@@ -115,7 +115,7 @@ export function IamLoginPage() {
               <li>
                 <a
                   href={agentHref('/agent')}
-                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring"
                 >
                   agent
                 </a>
@@ -123,7 +123,7 @@ export function IamLoginPage() {
               <li>
                 <a
                   href={opsHref('/')}
-                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press"
+                  className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring"
                 >
                   ops
                 </a>

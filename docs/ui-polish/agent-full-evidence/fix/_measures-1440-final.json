@@ -1,0 +1,14 @@
+{
+  "dockH": 157,
+  "timelineH": 539,
+  "asideW": 224,
+  "midW": 992,
+  "reasonCount": 1,
+  "reasonText": [
+    "请先选争点类型并填策略要点"
+  ],
+  "radius": "12px 12px 0px 0px",
+  "confirmRadius": "12px",
+  "bodyScroll": false,
+  "foldOpen": false
+}

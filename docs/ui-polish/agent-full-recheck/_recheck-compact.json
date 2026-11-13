@@ -1,0 +1,140 @@
+{
+  "session": {
+    "inputs": [
+      {
+        "inDock": true,
+        "h": 47,
+        "w": 922,
+        "visible": true,
+        "placeholder": "策略要点：缩限 / 争辩 / 补实验…",
+        "cls": "focus-ring w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[",
+        "parentDetails": true,
+        "detailsOpen": false,
+        "nearConfirm": true
+      },
+      {
+        "inDock": false,
+        "h": 52,
+        "w": 766,
+        "visible": true,
+        "placeholder": "描述要办的事… 例如：对固态电解质配方做现有技术检索并输出结论",
+        "cls": "focus-ring w-full resize-none bg-transparent px-3.5 pt-3 text-sm text-slate-800 ",
+        "parentDetails": true,
+        "detailsOpen": false,
+        "nearConfirm": false
+      },
+      {
+        "inDock": false,
+        "h": 207,
+        "w": 197,
+        "visible": true,
+        "placeholder": "",
+        "cls": "agent-artifact-editor focus-ring",
+        "parentDetails": true,
+        "detailsOpen": false,
+        "nearConfirm": false
+      }
+    ],
+    "allTestids": [
+      "agent-side-nav",
+      "agent-side-more",
+      "sidebar-new-session",
+      "session-case-bind-top",
+      "case-bind-controls",
+      "case-bind-current",
+      "case-unbind",
+      "case-create-bind",
+      "case-bind-existing",
+      "session-timeline-scroller",
+      "session-bottom-dock",
+      "session-composer-fold"
+    ],
+    "composerDetails": [
+      {
+        "open": false,
+        "summary": "补充项 · 陈述/争点 · Full-check",
+        "inDock": true,
+        "h": 35
+      },
+      {
+        "open": false,
+        "summary": "输入 / 切换 Agent（默认收起 · 确认完成前可不展开）",
+        "inDock": false,
+        "h": 33
+      },
+      {
+        "open": false,
+        "summary": "上下文契约 v2026.09.1· 审查答复 · 会话对齐只读",
+        "inDock": false,
+        "h": 51
+      },
+      {
+        "open": false,
+        "summary": "案级 Drive · 空演示内存 · 与产物去重展示",
+        "inDock": false,
+        "h": 54
+      },
+      {
+        "open": false,
+        "summary": "期限\n2",
+        "inDock": false,
+        "h": 38
+      },
+      {
+        "open": false,
+        "summary": "产物\n1",
+        "inDock": false,
+        "h": 38
+      },
+      {
+        "open": false,
+        "summary": "",
+        "inDock": false,
+        "h": 31
+      },
+      {
+        "open": false,
+        "summary": "办理记录",
+        "inDock": false,
+        "h": 38
+      },
+      {
+        "open": false,
+        "summary": "高级 · 能力与架构",
+        "inDock": false,
+        "h": 37
+      }
+    ],
+    "composerInDock": null
+  },
+  "catalog": {
+    "found": true,
+    "testid": "browse-sidebar-compact",
+    "w": 223,
+    "h": 815,
+    "sessionLinks": 0,
+    "listItems": 0,
+    "text": "浏览目录 / 运行说明时收起会话列表；需要办理请打开会话 Inbox。 ¶ 待确认 · 3 ¶ 项目模式（次级）",
+    "hasFullSessionList": false
+  },
+  "harness": {
+    "found": true,
+    "testid": "browse-sidebar-compact",
+    "w": 223,
+    "h": 815,
+    "sessionLinks": 0,
+    "listItems": 0,
+    "text": "浏览目录 / 运行说明时收起会话列表；需要办理请打开会话 Inbox。 ¶ 待确认 · 3 ¶ 项目模式（次级）",
+    "hasFullSessionList": false
+  },
+  "home": {
+    "found": true,
+    "testid": "home-sidebar-compact",
+    "w": 223,
+    "h": 815,
+    "sessionLinks": 0,
+    "listItems": 0,
+    "text": "首屏主路径：主区输入后点「开始办理」开工。 ¶ 待确认 · 3 ¶ 项目模式（次级）",
+    "hasFullSessionList": false
+  }
+}

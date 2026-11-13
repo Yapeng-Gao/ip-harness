@@ -1,0 +1,1102 @@
+{
+  "meta": {
+    "at": "2026-09-19T03:22:17.169Z",
+    "base": "http://127.0.0.1:5199",
+    "productSha": "c665a7d",
+    "tip": "5e5a750",
+    "note": "Measured against clean worktree at 5e5a750 (c665a7d product), not dirty WIP on :5175",
+    "pathWalk": [
+      "/agent",
+      "/agent/sessions",
+      "/agent/sessions/sess-oa-1",
+      "/agent/projects",
+      "/agent/projects/proj-demo-general",
+      "/agent/projects/proj-demo-patent"
+    ],
+    "measureBase": "http://127.0.0.1:5199 clean worktree 5e5a750 (product c665a7d)",
+    "noteDirty5175": "Workspace /workspace/ip-harness has uncommitted WIP that already strips some Y1/Y2; :5175 therefore not authoritative for this recheck. Authoritative = committed tip via worktree :5199."
+  },
+  "y1": {
+    "projectsList": {
+      "honesty": [
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本（项目次级入口 · general 无专利步骤 · domain/patent 挂 DomainPack）",
+          "top": 48,
+          "h": 33,
+          "w": 1440,
+          "bg": "oklch(0.987 0.022 95.277)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-950",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本",
+          "top": 55,
+          "h": 17,
+          "w": 170,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": true,
+          "nearTop": true,
+          "className": "",
+          "tag": "STRONG"
+        }
+      ],
+      "amberBands": []
+    },
+    "workspace_general": {
+      "url": "http://127.0.0.1:5199/agent/projects/proj-demo-general",
+      "honesty": [
+        {
+          "text": "项目模式项目课题协作 · 通用演示通用总控研究写作审查边缘调度模组 · 专利演示专利样机 · 无真 LLM · 专家分剧本",
+          "top": 48,
+          "h": 852,
+          "w": 224,
+          "bg": "rgb(255, 255, 255)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "flex w-[min(14rem,42vw)] min-w-[11rem] max-w-[15rem] shrink-0 flex-col border-r border-slate-200 bg-",
+          "tag": "ASIDE"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 通用 · 未绑案件案件（可选）可稍后创建或绑定案件创建并绑定新案绑定已有案",
+          "top": 48,
+          "h": 100,
+          "w": 1216,
+          "bg": "oklch(0.987 0.022 95.277)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "shrink-0 space-y-2 border-b border-amber-200 bg-amber-50 px-3 py-2",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 通用 · 未绑案件",
+          "top": 56,
+          "h": 17,
+          "w": 1192,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": true,
+          "nearTop": true,
+          "className": "text-[11px] text-amber-950",
+          "tag": "DIV"
+        },
+        {
+          "text": "总控编排 · 分派 · 汇总样机 · 无真 LLM · 专家分剧本通用项目总控：拆派研究 / 写作 / 审查，汇总回执。无专利写库权。通用项目 · 无专利步骤条（协作剧本仍可推进）",
+          "top": 148,
+          "h": 80,
+          "w": 992,
+          "bg": "rgb(255, 255, 255)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "project-chat-header shrink-0 border-b border-slate-200 bg-white px-4 py-1.5",
+          "tag": "HEADER"
+        },
+        {
+          "text": "总控编排 · 分派 · 汇总样机 · 无真 LLM · 专家分剧本",
+          "top": 154,
+          "h": 22,
+          "w": 960,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "flex flex-wrap items-center gap-2",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本",
+          "top": 155,
+          "h": 19,
+          "w": 152,
+          "bg": "oklch(0.987 0.022 95.277)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-800",
+          "tag": "SPAN"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · backend=mock 【通用总控·mock】已记下课题目标。请用「分派给研究/写作/审查」下发；我不会替专家跑专利领域剧本。2026/9/19 03:22:19",
+          "top": 300,
+          "h": 474,
+          "w": 992,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": false,
+          "className": "project-chat-messages min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-2",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · backend=mock 【通用总控·mock】已记下课题目标。请用「分派给研究/写作/审查」下发；我不会替专家跑专利领域剧本。2026/9/19 03:22:19",
+          "top": 688,
+          "h": 77,
+          "w": 864,
+          "bg": "oklch(0.984 0.003 247.858)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": false,
+          "className": "max-w-[90%] rounded-lg px-3 py-2 text-sm leading-relaxed border border-slate-200 bg-slate-50 text-xs",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · backend=mock 【通用总控·mock】已记下课题目标。请用「分派给研究/写作/审查」下发；我不会替专家跑专利领域剧本。",
+          "top": 697,
+          "h": 39,
+          "w": 838,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": false,
+          "className": "whitespace-pre-wrap",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本",
+          "top": 867,
+          "h": 33,
+          "w": 223,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": false,
+          "className": "border-t border-slate-100 px-2.5 py-2 text-[10px] leading-relaxed text-slate-400",
+          "tag": "DIV"
+        }
+      ],
+      "amberBands": [],
+      "y2": []
+    },
+    "workspace_patent": {
+      "url": "http://127.0.0.1:5199/agent/projects/proj-demo-patent",
+      "honesty": [
+        {
+          "text": "项目模式项目课题协作 · 通用演示通用边缘调度模组 · 专利演示专利总控席检索专家撰稿专家FTO 专家样机 · 无真 LLM · 专家分剧本",
+          "top": 48,
+          "h": 852,
+          "w": 224,
+          "bg": "rgb(255, 255, 255)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "flex w-[min(14rem,42vw)] min-w-[11rem] max-w-[15rem] shrink-0 flex-col border-r border-slate-200 bg-",
+          "tag": "ASIDE"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 专利 · pack=patent · 未绑案件写回中台前须绑定领域办理写回中台前须先绑定案件创建并绑定新案绑定已有案",
+          "top": 48,
+          "h": 104,
+          "w": 1216,
+          "bg": "oklch(0.987 0.022 95.277)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "shrink-0 space-y-2 border-b border-amber-200 bg-amber-50 px-3 py-2",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 专利 · pack=patent · 未绑案件",
+          "top": 56,
+          "h": 17,
+          "w": 1192,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": true,
+          "nearTop": true,
+          "className": "text-[11px] text-amber-950",
+          "tag": "DIV"
+        },
+        {
+          "text": "总控席编排 · 分派 · 汇总样机 · 无真 LLM · 专家分剧本只拆派任务与汇总专家回执；禁止直接改 handoff / 写案。深链可打开各专家私聊。1收目标2拆派3等回执4汇总",
+          "top": 152,
+          "h": 87,
+          "w": 992,
+          "bg": "rgb(255, 255, 255)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "project-chat-header shrink-0 border-b border-slate-200 bg-white px-4 py-1.5",
+          "tag": "HEADER"
+        },
+        {
+          "text": "总控席编排 · 分派 · 汇总样机 · 无真 LLM · 专家分剧本",
+          "top": 158,
+          "h": 22,
+          "w": 960,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "flex flex-wrap items-center gap-2",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本",
+          "top": 159,
+          "h": 19,
+          "w": 152,
+          "bg": "oklch(0.987 0.022 95.277)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-800",
+          "tag": "SPAN"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · backend=mock 【总控·mock】已记下项目目标。请用下方「分派给…」把任务交给检索 / 撰稿 / FTO；我不会替专家跑领域剧本。2026/9/19 03:22:20",
+          "top": 311,
+          "h": 463,
+          "w": 992,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": false,
+          "className": "project-chat-messages min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-2",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · backend=mock 【总控·mock】已记下项目目标。请用下方「分派给…」把任务交给检索 / 撰稿 / FTO；我不会替专家跑领域剧本。2026/9/19 03:22:20",
+          "top": 688,
+          "h": 77,
+          "w": 864,
+          "bg": "oklch(0.984 0.003 247.858)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": false,
+          "className": "max-w-[90%] rounded-lg px-3 py-2 text-sm leading-relaxed border border-slate-200 bg-slate-50 text-xs",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · backend=mock 【总控·mock】已记下项目目标。请用下方「分派给…」把任务交给检索 / 撰稿 / FTO；我不会替专家跑领域剧本。",
+          "top": 697,
+          "h": 39,
+          "w": 838,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": false,
+          "className": "whitespace-pre-wrap",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本",
+          "top": 867,
+          "h": 33,
+          "w": 223,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": false,
+          "className": "border-t border-slate-100 px-2.5 py-2 text-[10px] leading-relaxed text-slate-400",
+          "tag": "DIV"
+        }
+      ],
+      "amberBands": [],
+      "y2": []
+    },
+    "summary": {
+      "failReasons": [
+        "projects_list_top_honesty_amber",
+        "workspace_general_top_honesty",
+        "workspace_patent_top_honesty"
+      ],
+      "listAmberBands": [],
+      "listHonestySample": [
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本（项目次级入口 · general 无专利步骤 · domain/patent 挂 DomainPack）",
+          "top": 48,
+          "h": 33,
+          "w": 1440,
+          "bg": "oklch(0.987 0.022 95.277)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-950",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本",
+          "top": 55,
+          "h": 17,
+          "w": 170,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": true,
+          "nearTop": true,
+          "className": "",
+          "tag": "STRONG"
+        }
+      ],
+      "wsGeneralAmber": [],
+      "wsPatentAmber": [],
+      "wsGeneralHonesty": [
+        {
+          "text": "项目模式项目课题协作 · 通用演示通用总控研究写作审查边缘调度模组 · 专利演示专利样机 · 无真 LLM · 专家分剧本",
+          "top": 48,
+          "h": 852,
+          "w": 224,
+          "bg": "rgb(255, 255, 255)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "flex w-[min(14rem,42vw)] min-w-[11rem] max-w-[15rem] shrink-0 flex-col border-r border-slate-200 bg-",
+          "tag": "ASIDE"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 通用 · 未绑案件案件（可选）可稍后创建或绑定案件创建并绑定新案绑定已有案",
+          "top": 48,
+          "h": 100,
+          "w": 1216,
+          "bg": "oklch(0.987 0.022 95.277)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "shrink-0 space-y-2 border-b border-amber-200 bg-amber-50 px-3 py-2",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 通用 · 未绑案件",
+          "top": 56,
+          "h": 17,
+          "w": 1192,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": true,
+          "nearTop": true,
+          "className": "text-[11px] text-amber-950",
+          "tag": "DIV"
+        },
+        {
+          "text": "总控编排 · 分派 · 汇总样机 · 无真 LLM · 专家分剧本通用项目总控：拆派研究 / 写作 / 审查，汇总回执。无专利写库权。通用项目 · 无专利步骤条（协作剧本仍可推进）",
+          "top": 148,
+          "h": 80,
+          "w": 992,
+          "bg": "rgb(255, 255, 255)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "project-chat-header shrink-0 border-b border-slate-200 bg-white px-4 py-1.5",
+          "tag": "HEADER"
+        },
+        {
+          "text": "总控编排 · 分派 · 汇总样机 · 无真 LLM · 专家分剧本",
+          "top": 154,
+          "h": 22,
+          "w": 960,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "flex flex-wrap items-center gap-2",
+          "tag": "DIV"
+        }
+      ],
+      "wsPatentHonesty": [
+        {
+          "text": "项目模式项目课题协作 · 通用演示通用边缘调度模组 · 专利演示专利总控席检索专家撰稿专家FTO 专家样机 · 无真 LLM · 专家分剧本",
+          "top": 48,
+          "h": 852,
+          "w": 224,
+          "bg": "rgb(255, 255, 255)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "flex w-[min(14rem,42vw)] min-w-[11rem] max-w-[15rem] shrink-0 flex-col border-r border-slate-200 bg-",
+          "tag": "ASIDE"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 专利 · pack=patent · 未绑案件写回中台前须绑定领域办理写回中台前须先绑定案件创建并绑定新案绑定已有案",
+          "top": 48,
+          "h": 104,
+          "w": 1216,
+          "bg": "oklch(0.987 0.022 95.277)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "shrink-0 space-y-2 border-b border-amber-200 bg-amber-50 px-3 py-2",
+          "tag": "DIV"
+        },
+        {
+          "text": "样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 专利 · pack=patent · 未绑案件",
+          "top": 56,
+          "h": 17,
+          "w": 1192,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": true,
+          "parentAmber": true,
+          "nearTop": true,
+          "className": "text-[11px] text-amber-950",
+          "tag": "DIV"
+        },
+        {
+          "text": "总控席编排 · 分派 · 汇总样机 · 无真 LLM · 专家分剧本只拆派任务与汇总专家回执；禁止直接改 handoff / 写案。深链可打开各专家私聊。1收目标2拆派3等回执4汇总",
+          "top": 152,
+          "h": 87,
+          "w": 992,
+          "bg": "rgb(255, 255, 255)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "project-chat-header shrink-0 border-b border-slate-200 bg-white px-4 py-1.5",
+          "tag": "HEADER"
+        },
+        {
+          "text": "总控席编排 · 分派 · 汇总样机 · 无真 LLM · 专家分剧本",
+          "top": 158,
+          "h": 22,
+          "w": 960,
+          "bg": "rgba(0, 0, 0, 0)",
+          "amberBg": false,
+          "amberClass": false,
+          "parentAmber": false,
+          "nearTop": true,
+          "className": "flex flex-wrap items-center gap-2",
+          "tag": "DIV"
+        }
+      ]
+    }
+  },
+  "y2": {
+    "surfaces": {
+      "home": [],
+      "sessions": [
+        {
+          "text": "回中台案件库",
+          "aria": "回中台案件库",
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "回中台",
+            "回中台案件库",
+            "回中台案件"
+          ],
+          "top": 80,
+          "w": 134,
+          "h": 40,
+          "visible": true
+        },
+        {
+          "text": "一通创造性答复 · 边缘调度针对一通创造性争点生成答复策略与修改对照，等待你确认。OA 答复 AgentCN202410328901.2 · 一种边缘计算节点调",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 244,
+          "w": 1150,
+          "h": 111,
+          "visible": true
+        },
+        {
+          "text": "案详",
+          "aria": null,
+          "title": "打开中台案详",
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "打开中台"
+          ],
+          "top": 290,
+          "w": 34,
+          "h": 19,
+          "visible": true
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-oa-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 302,
+          "w": 123,
+          "h": 40,
+          "visible": true
+        },
+        {
+          "text": "边缘侧布局空白点洞察交叉技术×场景矩阵，识别空白点并建议补强申请方向；批准后建案/派所。布局洞察 AgentCN202410328901.2 · 一种边缘计算节",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 355,
+          "w": 1150,
+          "h": 111,
+          "visible": true
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-layout-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 413,
+          "w": 123,
+          "h": 40,
+          "visible": true
+        },
+        {
+          "text": "无人机竞品 · 监控告警扫描新公开并输出威胁评级；告警已就绪，请在确认条处置（确认 / 升级 / 关闭）。监控预警 AgentZL202110234567.8 ",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 466,
+          "w": 1150,
+          "h": 111,
+          "visible": true
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-watch-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 524,
+          "w": 123,
+          "h": 40,
+          "visible": true
+        }
+      ],
+      "sessions_needs_human": [
+        {
+          "text": "回中台案件库",
+          "aria": "回中台案件库",
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "回中台",
+            "回中台案件库",
+            "回中台案件"
+          ],
+          "top": 80,
+          "w": 134,
+          "h": 40,
+          "visible": true
+        },
+        {
+          "text": "一通创造性答复 · 边缘调度针对一通创造性争点生成答复策略与修改对照，等待你确认。OA 答复 AgentCN202410328901.2 · 一种边缘计算节点调",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 244,
+          "w": 1150,
+          "h": 111,
+          "visible": true
+        },
+        {
+          "text": "案详",
+          "aria": null,
+          "title": "打开中台案详",
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "打开中台"
+          ],
+          "top": 290,
+          "w": 34,
+          "h": 19,
+          "visible": true
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-oa-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 302,
+          "w": 123,
+          "h": 40,
+          "visible": true
+        },
+        {
+          "text": "边缘侧布局空白点洞察交叉技术×场景矩阵，识别空白点并建议补强申请方向；批准后建案/派所。布局洞察 AgentCN202410328901.2 · 一种边缘计算节",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 355,
+          "w": 1150,
+          "h": 111,
+          "visible": true
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-layout-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 413,
+          "w": 123,
+          "h": 40,
+          "visible": true
+        },
+        {
+          "text": "无人机竞品 · 监控告警扫描新公开并输出威胁评级；告警已就绪，请在确认条处置（确认 / 升级 / 关闭）。监控预警 AgentZL202110234567.8 ",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 466,
+          "w": 1150,
+          "h": 110,
+          "visible": true
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-watch-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 524,
+          "w": 123,
+          "h": 40,
+          "visible": true
+        }
+      ],
+      "projects": [],
+      "agents": [],
+      "session_workspace": [
+        {
+          "text": "回中台",
+          "aria": "回中台案件",
+          "href": "http://localhost:5173/cases/c1?from=agent",
+          "tag": "A",
+          "matched": [
+            "回中台",
+            "回中台案件"
+          ],
+          "visible": true
+        },
+        {
+          "text": "在运营 Inbox 中查看",
+          "aria": null,
+          "href": "http://localhost:5173/?inbox=ag-sess-oa-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 中查看"
+          ],
+          "visible": true
+        }
+      ]
+    },
+    "sessionsTextAudit": {
+      "回中台": 1,
+      "运营 Inbox": 3,
+      "打开中台": 0,
+      "在运营 Inbox 打开": 3,
+      "在运营 Inbox 中查看": 0,
+      "回中台案件库": 1,
+      "回中台案件": 1
+    },
+    "summary": {
+      "clickableDeepLinkCount": 18,
+      "byPattern": {
+        "回中台": 3,
+        "运营 Inbox": 13,
+        "打开中台": 2,
+        "在运营 Inbox 打开": 12,
+        "在运营 Inbox 中查看": 7,
+        "回中台案件库": 2,
+        "回中台案件": 3
+      },
+      "samples": [
+        {
+          "text": "回中台案件库",
+          "aria": "回中台案件库",
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "回中台",
+            "回中台案件库",
+            "回中台案件"
+          ],
+          "top": 80,
+          "w": 134,
+          "h": 40,
+          "visible": true,
+          "surface": "sessions"
+        },
+        {
+          "text": "一通创造性答复 · 边缘调度针对一通创造性争点生成答复策略与修改对照，等待你确认。OA 答复 AgentCN202410328901.2 · 一种边缘计算节点调",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 244,
+          "w": 1150,
+          "h": 111,
+          "visible": true,
+          "surface": "sessions"
+        },
+        {
+          "text": "案详",
+          "aria": null,
+          "title": "打开中台案详",
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "打开中台"
+          ],
+          "top": 290,
+          "w": 34,
+          "h": 19,
+          "visible": true,
+          "surface": "sessions"
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-oa-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 302,
+          "w": 123,
+          "h": 40,
+          "visible": true,
+          "surface": "sessions"
+        },
+        {
+          "text": "边缘侧布局空白点洞察交叉技术×场景矩阵，识别空白点并建议补强申请方向；批准后建案/派所。布局洞察 AgentCN202410328901.2 · 一种边缘计算节",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 355,
+          "w": 1150,
+          "h": 111,
+          "visible": true,
+          "surface": "sessions"
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-layout-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 413,
+          "w": 123,
+          "h": 40,
+          "visible": true,
+          "surface": "sessions"
+        },
+        {
+          "text": "无人机竞品 · 监控告警扫描新公开并输出威胁评级；告警已就绪，请在确认条处置（确认 / 升级 / 关闭）。监控预警 AgentZL202110234567.8 ",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 466,
+          "w": 1150,
+          "h": 111,
+          "visible": true,
+          "surface": "sessions"
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-watch-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 524,
+          "w": 123,
+          "h": 40,
+          "visible": true,
+          "surface": "sessions"
+        },
+        {
+          "text": "回中台案件库",
+          "aria": "回中台案件库",
+          "title": null,
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "回中台",
+            "回中台案件库",
+            "回中台案件"
+          ],
+          "top": 80,
+          "w": 134,
+          "h": 40,
+          "visible": true,
+          "surface": "sessions_needs_human"
+        },
+        {
+          "text": "一通创造性答复 · 边缘调度针对一通创造性争点生成答复策略与修改对照，等待你确认。OA 答复 AgentCN202410328901.2 · 一种边缘计算节点调",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 244,
+          "w": 1150,
+          "h": 111,
+          "visible": true,
+          "surface": "sessions_needs_human"
+        },
+        {
+          "text": "案详",
+          "aria": null,
+          "title": "打开中台案详",
+          "href": null,
+          "tag": "BUTTON",
+          "matched": [
+            "打开中台"
+          ],
+          "top": 290,
+          "w": 34,
+          "h": 19,
+          "visible": true,
+          "surface": "sessions_needs_human"
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-oa-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 302,
+          "w": 123,
+          "h": 40,
+          "visible": true,
+          "surface": "sessions_needs_human"
+        },
+        {
+          "text": "边缘侧布局空白点洞察交叉技术×场景矩阵，识别空白点并建议补强申请方向；批准后建案/派所。布局洞察 AgentCN202410328901.2 · 一种边缘计算节",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 355,
+          "w": 1150,
+          "h": 111,
+          "visible": true,
+          "surface": "sessions_needs_human"
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-layout-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 413,
+          "w": 123,
+          "h": 40,
+          "visible": true,
+          "surface": "sessions_needs_human"
+        },
+        {
+          "text": "无人机竞品 · 监控告警扫描新公开并输出威胁评级；告警已就绪，请在确认条处置（确认 / 升级 / 关闭）。监控预警 AgentZL202110234567.8 ",
+          "aria": null,
+          "title": null,
+          "href": null,
+          "tag": "TR",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开"
+          ],
+          "top": 466,
+          "w": 1150,
+          "h": 110,
+          "visible": true,
+          "surface": "sessions_needs_human"
+        },
+        {
+          "text": "在运营 Inbox 打开",
+          "aria": null,
+          "title": "在运营 Inbox 中查看",
+          "href": "http://localhost:5173/?inbox=ag-sess-watch-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 打开",
+            "在运营 Inbox 中查看"
+          ],
+          "top": 524,
+          "w": 123,
+          "h": 40,
+          "visible": true,
+          "surface": "sessions_needs_human"
+        },
+        {
+          "text": "回中台",
+          "aria": "回中台案件",
+          "href": "http://localhost:5173/cases/c1?from=agent",
+          "tag": "A",
+          "matched": [
+            "回中台",
+            "回中台案件"
+          ],
+          "visible": true,
+          "surface": "session_workspace"
+        },
+        {
+          "text": "在运营 Inbox 中查看",
+          "aria": null,
+          "href": "http://localhost:5173/?inbox=ag-sess-oa-1#ops-inbox",
+          "tag": "A",
+          "matched": [
+            "运营 Inbox",
+            "在运营 Inbox 中查看"
+          ],
+          "visible": true,
+          "surface": "session_workspace"
+        }
+      ],
+      "sessionsTextAudit": {
+        "回中台": 1,
+        "运营 Inbox": 3,
+        "打开中台": 0,
+        "在运营 Inbox 打开": 3,
+        "在运营 Inbox 中查看": 0,
+        "回中台案件库": 1,
+        "回中台案件": 1
+      }
+    }
+  },
+  "sessionLink": "/agent/sessions/sess-oa-1?focus=hitl",
+  "verdictHints": {
+    "P0-Y1": "FAIL",
+    "P0-Y2": "FAIL"
+  }
+}

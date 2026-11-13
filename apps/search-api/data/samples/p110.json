@@ -1,0 +1,19 @@
+{
+  "id": "p110",
+  "publicationNumber": "JP2022100110A",
+  "title": "Knowledge-graph assisted claim analysis (#110)",
+  "applicant": "Samsung Electronics Co., Ltd.",
+  "inventor": "Inventor 3",
+  "date": "2024-07-15",
+  "ipc": [
+    "G06N3/08",
+    "G06N3/063",
+    "G06F40/216"
+  ],
+  "familyId": "fam-ai-2",
+  "country": "JP",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 KG-based claim element extraction.",
+  "claims": "1. A device or method comprising… (sample p110)",
+  "snippet": "Knowledge-graph assisted claim analysis"
+}

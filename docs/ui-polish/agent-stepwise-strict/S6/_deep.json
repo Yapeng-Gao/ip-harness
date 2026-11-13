@@ -1,0 +1,16 @@
+{
+  "url": "http://127.0.0.1:5175/agent/sessions?filter=needs_human",
+  "h1": "待确认 · 通用历史",
+  "searchCount": 2,
+  "searchPlaceholders": [
+    "搜索",
+    "搜索标题 / 目标 / 案件（与左侧同步）"
+  ],
+  "newCount": 2,
+  "newTexts": [
+    "新建会话",
+    "新建任务会话"
+  ],
+  "mainRows": 3,
+  "filter": "needs_human"
+}

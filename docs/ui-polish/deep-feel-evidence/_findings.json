@@ -1,0 +1,65 @@
+[
+  {
+    "id": "HIT-SMALL",
+    "shell": "agent",
+    "msg": "session has tiny hits",
+    "tiny": [
+      {
+        "w": 179,
+        "h": 26,
+        "label": "切换工作区",
+        "tag": "BUTTON"
+      },
+      {
+        "w": 90,
+        "h": 26,
+        "label": "切换 Persona",
+        "tag": "BUTTON"
+      }
+    ]
+  },
+  {
+    "id": "HIT-SMALL",
+    "shell": "figure",
+    "msg": "edit toolbar many sub-32 hits",
+    "n": 12,
+    "sample": [
+      {
+        "w": 24,
+        "h": 16,
+        "label": "文档",
+        "tag": "A"
+      },
+      {
+        "w": 44,
+        "h": 24,
+        "label": "资产",
+        "tag": "A"
+      },
+      {
+        "w": 56,
+        "h": 24,
+        "label": "上下文",
+        "tag": "A"
+      },
+      {
+        "w": 44,
+        "h": 24,
+        "label": "画布",
+        "tag": "A"
+      },
+      {
+        "w": 44,
+        "h": 24,
+        "label": "版本",
+        "tag": "A"
+      },
+      {
+        "w": 44,
+        "h": 24,
+        "label": "挂章",
+        "tag": "A"
+      }
+    ]
+  }
+]

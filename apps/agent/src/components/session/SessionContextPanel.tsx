@@ -7,15 +7,14 @@ import type {
   PatentCase,
 } from '@shared/types'
 import {
-  COMMAND_LABELS,
   auditSchemaVersionLabel,
   isLegacyAudit,
   type AuditEntry,
 } from '@shared/domain/commands'
+import { domainCommandOfficeLabel } from '../../projects/domainCommandLabels'
 import { HANDOFF_LABELS } from '@shared/data/handoff'
 import { DOCKET_STATUS_LABEL, toolCatalogLabel } from '@shared/data/sessions'
 import { workbenchHref } from './sessionGates'
-import { midHref } from '../../lib/deepLinks'
 import { driveDuplicatesArtifactTitle } from '@shared/utils/productDisplay'
 import {
   buildCaseContextFromSession,
@@ -49,6 +48,8 @@ type Props = {
   sessionId?: string
   persona?: PersonaId
   clearedHitlGates?: HitlGateId[]
+  /** SS-S-S4-1 · HITL 时默认折叠右栏次要块 */
+  hitlActive?: boolean
 }
 
 export function SessionContextPanel({
@@ -66,6 +67,7 @@ export function SessionContextPanel({
   sessionId,
   persona = 'enterprise_ip',
   clearedHitlGates,
+  hitlActive = false,
 }: Props) {
   const wb = caseData ? workbenchHref(agent?.workbenchPath, caseData.id) : null
   const caseContextSnap = buildCaseContextFromSession({
@@ -83,9 +85,15 @@ export function SessionContextPanel({
   const driveHidden = caseDriveItems.length - driveVisible.length
 
   return (
-    <aside className="agent-aside hidden w-72 shrink-0 flex-col lg:flex xl:w-80">
+    <aside className="agent-aside agent-aside--demoted hidden w-56 shrink-0 flex-col lg:flex 2xl:w-72">
       <div className="agent-aside-head">上下文</div>
       <div className="flex-1 overflow-y-auto">
+        {hitlActive ? (
+          <details className="border-b border-slate-100" data-testid="aside-hitl-collapse">
+            <summary className="cursor-pointer px-3 py-2.5 text-[11px] font-medium text-slate-400 hover:text-slate-600">
+              案件与 Agent 概况
+            </summary>
+            <div className="pb-1">
         {agent && (
           <section className="agent-aside-section">
             <div className="agent-aside-kicker">当前 Agent</div>
@@ -107,10 +115,7 @@ export function SessionContextPanel({
           </div>
           {caseData ? (
             <div>
-              <a
-                href={midHref(`/cases/${caseData.id}?from=agent`)}
-                className="block py-1 hover:bg-slate-50/80"
-              >
+              <div className="py-1">
                 <div className="text-xs font-medium text-slate-900">{caseData.title}</div>
                 <div className="mt-0.5 text-xs text-slate-500">
                   {caseData.caseNo} · 风险 {caseData.risk} · {caseData.progress}%
@@ -118,12 +123,11 @@ export function SessionContextPanel({
                     ? ` · 交接 ${HANDOFF_LABELS[handoffStatus]}`
                     : ''}
                 </div>
-                <div className="mt-1 text-xs text-slate-700">在作业中台打开 →</div>
-              </a>
+              </div>
               {wb && (
                 <a
                   href={wb}
-                  className="mt-1 inline-block text-xs text-slate-600 hover:underline"
+                  className="agent-aside-form-link btn-press focus-ring hit-40 mt-1 inline-flex items-center text-xs text-slate-600 hover:underline"
                 >
                   打开对应表单工作台
                 </a>
@@ -134,6 +138,56 @@ export function SessionContextPanel({
           )}
         </section>
 
+            </div>
+          </details>
+        ) : (
+          <>
+        {agent && (
+          <section className="agent-aside-section">
+            <div className="agent-aside-kicker">当前 Agent</div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <div className="text-xs font-semibold tracking-tight text-slate-900">
+                {agent.name}
+              </div>
+              <AgentTierBadge tier={agent.tier} />
+            </div>
+            <p className="mt-0.5 text-pretty text-xs leading-relaxed text-slate-600">
+              {agent.specialty || agent.description}
+            </p>
+          </section>
+        )}
+
+        <section className="agent-aside-section">
+          <div className="agent-aside-kicker">
+            <FolderOpen className="h-3 w-3" aria-hidden /> 案件
+          </div>
+          {caseData ? (
+            <div>
+              <div className="py-1">
+                <div className="text-xs font-medium text-slate-900">{caseData.title}</div>
+                <div className="mt-0.5 text-xs text-slate-500">
+                  {caseData.caseNo} · 风险 {caseData.risk} · {caseData.progress}%
+                  {handoffStatus
+                    ? ` · 交接 ${HANDOFF_LABELS[handoffStatus]}`
+                    : ''}
+                </div>
+              </div>
+              {wb && (
+                <a
+                  href={wb}
+                  className="agent-aside-form-link btn-press focus-ring hit-40 mt-1 inline-flex items-center text-xs text-slate-600 hover:underline"
+                >
+                  打开对应表单工作台
+                </a>
+              )}
+            </div>
+          ) : (
+            <p className="agent-aside-empty">未关联案件</p>
+          )}
+        </section>
+
+          </>
+        )}
         <div className="border-b border-slate-100 px-2 py-2">
           <CaseContextContractPanel snap={caseContextSnap} compact />
         </div>
@@ -187,70 +241,81 @@ export function SessionContextPanel({
           </details>
         )}
 
-        <section className="agent-aside-section">
-          <div className="agent-aside-kicker">
+        {/* DF-S3 · demote deadline / deliverables so Confirm CTA keeps L1 */}
+        <details className="agent-aside-meta border-b border-slate-100">
+          <summary className="agent-aside-meta-summary">
             <CalendarDays className="h-3 w-3" aria-hidden /> 期限
-          </div>
-          {caseDockets.length === 0 ? (
-            <p className="agent-aside-empty">无关联期限</p>
-          ) : (
-            <ul className="divide-y divide-slate-100 border-y border-slate-100">
-              {caseDockets.map((d) => (
-                <li key={d.id} className="py-2 text-xs">
-                  <div className="font-medium text-slate-800">{d.title}</div>
-                  <div className="text-xs text-slate-500">
-                    截止 {d.dueDate} · {DOCKET_STATUS_LABEL[d.status] ?? d.status}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section className="agent-aside-section">
-          <div className="agent-aside-kicker">
-            <FileText className="h-3 w-3" aria-hidden /> 产物
-          </div>
-          {artifacts.length === 0 ? (
-            <p className="agent-aside-empty">办理后出现草稿</p>
-          ) : (
-            <div className="space-y-2">
-              <div className="agent-artifact-tabs" role="tablist" aria-label="会话产物">
-                {artifacts.map((a) => (
-                  <button
-                    key={a.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeArt?.id === a.id}
-                    data-active={activeArt?.id === a.id ? 'true' : 'false'}
-                    onClick={() => onSelectArtifact(a.id)}
-                    className="agent-artifact-tab btn-press focus-ring"
-                  >
-                    {a.title}
-                  </button>
+            <span className="ml-auto tabular-nums text-slate-300">
+              {caseDockets.length}
+            </span>
+          </summary>
+          <div className="agent-aside-meta-body">
+            {caseDockets.length === 0 ? (
+              <p className="agent-aside-empty">无关联期限</p>
+            ) : (
+              <ul className="divide-y divide-slate-100 border-y border-slate-100">
+                {caseDockets.map((d) => (
+                  <li key={d.id} className="py-2 text-xs">
+                    <div className="font-medium text-slate-600">{d.title}</div>
+                    <div className="text-xs text-slate-400">
+                      截止 {d.dueDate} · {DOCKET_STATUS_LABEL[d.status] ?? d.status}
+                    </div>
+                  </li>
                 ))}
+              </ul>
+            )}
+          </div>
+        </details>
+
+        <details className="agent-aside-meta border-b border-slate-100">
+          <summary className="agent-aside-meta-summary">
+            <FileText className="h-3 w-3" aria-hidden /> 产物
+            <span className="ml-auto tabular-nums text-slate-300">
+              {artifacts.length}
+            </span>
+          </summary>
+          <div className="agent-aside-meta-body">
+            {artifacts.length === 0 ? (
+              <p className="agent-aside-empty">办理后出现草稿</p>
+            ) : (
+              <div className="space-y-2">
+                <div className="agent-artifact-tabs" role="tablist" aria-label="会话产物">
+                  {artifacts.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeArt?.id === a.id}
+                      data-active={activeArt?.id === a.id ? 'true' : 'false'}
+                      onClick={() => onSelectArtifact(a.id)}
+                      className="agent-artifact-tab btn-press focus-ring"
+                    >
+                      {a.title}
+                    </button>
+                  ))}
+                </div>
+                {activeArt && (
+                  <details className="agent-artifact-panel">
+                    <summary className="cursor-pointer px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-700">
+                      {activeArt.editable ? '编辑产物' : '查看产物'}
+                      {' · '}
+                      {activeArt.title}
+                    </summary>
+                    <textarea
+                      value={activeArt.content}
+                      onChange={(e) =>
+                        onUpdateArtifact(activeArt.id, e.target.value)
+                      }
+                      rows={10}
+                      className="agent-artifact-editor focus-ring"
+                      readOnly={!activeArt.editable}
+                    />
+                  </details>
+                )}
               </div>
-              {activeArt && (
-                <details className="agent-artifact-panel" open>
-                  <summary className="cursor-pointer px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-700">
-                    {activeArt.editable ? '编辑产物' : '查看产物'}
-                    {' · '}
-                    {activeArt.title}
-                  </summary>
-                  <textarea
-                    value={activeArt.content}
-                    onChange={(e) =>
-                      onUpdateArtifact(activeArt.id, e.target.value)
-                    }
-                    rows={10}
-                    className="agent-artifact-editor focus-ring"
-                    readOnly={!activeArt.editable}
-                  />
-                </details>
-              )}
-            </div>
-          )}
-        </section>
+            )}
+          </div>
+        </details>
 
         {caseId && (
           <details className="border-b border-slate-100">
@@ -269,7 +334,7 @@ export function SessionContextPanel({
                   </span>
                   {' · '}
                   <span className="text-slate-700">
-                    {COMMAND_LABELS[a.command]}
+                    {domainCommandOfficeLabel(a.command)}
                   </span>
                   {' · '}
                   <span

@@ -1,0 +1,19 @@
+{
+  "id": "p062",
+  "publicationNumber": "KR100000062B1",
+  "title": "Neural network accelerator with sparse attention (#62)",
+  "applicant": "Samsung Electronics Co., Ltd.",
+  "inventor": "Inventor 9",
+  "date": "2024-07-15",
+  "ipc": [
+    "G06N3/08",
+    "G06N3/063",
+    "G06F40/216"
+  ],
+  "familyId": "fam-ai-2",
+  "country": "KR",
+  "legalStatus": "失效",
+  "abstract": "【样本·非真库】 Hardware accelerator for sparse transformer attention.",
+  "claims": "1. A device or method comprising… (sample p062)",
+  "snippet": "Neural network accelerator with sparse a"
+}

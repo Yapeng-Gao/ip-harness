@@ -1,0 +1,81 @@
+{
+  "probe": {
+    "url": "http://127.0.0.1:5175/agent",
+    "verticalNav": true,
+    "asideW": 224,
+    "navLinks": [
+      {
+        "text": "开始",
+        "href": "/agent"
+      },
+      {
+        "text": "Agent",
+        "href": "/agent/agents"
+      },
+      {
+        "text": "会话",
+        "href": "/agent/sessions"
+      },
+      {
+        "text": "更多",
+        "href": ""
+      },
+      {
+        "text": "待确认 · 3",
+        "href": "/agent/sessions?filter=needs_human"
+      },
+      {
+        "text": "一通创造性答复 · 边缘调度",
+        "href": "/agent/sessions/sess-oa-1?focus=hitl"
+      },
+      {
+        "text": "边缘侧布局空白点洞察",
+        "href": "/agent/sessions/sess-layout-1?focus=hitl"
+      },
+      {
+        "text": "打开会话 Inbox",
+        "href": "/agent/sessions"
+      },
+      {
+        "text": "项目模式（次级）",
+        "href": "/agent/projects"
+      }
+    ],
+    "needsHumanChip": {
+      "text": "待确认 · 3",
+      "href": "/agent/sessions?filter=needs_human"
+    },
+    "compose": true,
+    "startText": "开始办理",
+    "homeCaseBind": 1,
+    "caseBindControls": 1,
+    "createBind": true,
+    "bindExisting": true,
+    "associateSelect": 0,
+    "softHint": true
+  },
+  "gates": {
+    "midDeep": [],
+    "midCtaText": [],
+    "billingBanner": null,
+    "amberFullWidth": [],
+    "caseEntry": {
+      "homeCaseBind": 1,
+      "caseBindControls": 1,
+      "associateSelect": 0,
+      "associateLabel": 0,
+      "single": true
+    },
+    "hasForbiddenMidText": false
+  },
+  "evidence": [
+    "docs/ui-polish/agent-stepwise-ui/S0/S0-home.png",
+    "docs/ui-polish/agent-stepwise-ui/S0/S0-case-bind-closeup.png",
+    "docs/ui-polish/agent-stepwise-ui/S0/S0-compose.png"
+  ],
+  "checks": {
+    "bizLogic": true,
+    "pageLogic": true,
+    "hardGates": true
+  }
+}

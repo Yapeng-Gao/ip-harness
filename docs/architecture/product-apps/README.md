@@ -1,10 +1,16 @@
+> **变更摘要（2026-09-21 · 深度与可靠）**：[agent-depth-reliability](./agent-depth-reliability.md) = **原型定稿** · 共享深度层 · 查新→三席 · 真沙箱 Out of scope。  
+> **变更摘要（2026-09-21 · AgentOS v1.1 归档）**：目标全景快照 → [../incoming/AgentOS-design-docs-v1.1/](../incoming/AgentOS-design-docs-v1.1/)。
+> **变更摘要（2026-09-21 · 案页三刀）**：[agent-biz-case-ia](./agent-biz-case-ia.md) = 两栏 / 单一主 CTA / 单一进度。
+> **变更摘要（2026-09-21 · 席=bot）**：[agent-seat-as-bot](./agent-seat-as-bot.md) = 案内席独立会话 / 交卷 HITL。  
+> **变更摘要（2026-09-21 · 环边三刀）**：[agent-pack-loops-roadmap](./agent-pack-loops-roadmap.md) = Pack 内/外循环样机派工。  
+> **变更摘要（2026-09-21 · 业务模式）**：[agent-business-mode](./agent-business-mode.md) = 专利业务冷启动（我的案子）。  
+> **变更摘要（2026-09-21）**：索引补 **agent-platform** · **domain-packs** · **agent-platform-gap**；Solo/Team/Domain 叠名见 [agent-layers](./agent-layers.md)。
 # 产品面规格（product-apps）
 
 > **样机诚实**：今日是多 Vite 壳（`APP_PORTS`）+ 共享 `@ip/*` + `api-mock:5180` 内存店；无真 SSO、真 MCP、真 Agent harness、真可观测。  
 > **落地目标**：本目录按**产品壳**写开发可照着设计的规格——路由面、读写边界、与 landing 七面 / case-core / Agent 分层对齐。  
 > **不是**架构评审文（评审见 landing / enterprise / dev-spec 的 REVIEW）；**不是**已交付实现说明。
-
-## 本目录九篇
+## 本目录
 
 | 篇 | 路径 | 回答什么 |
 |----|------|----------|
@@ -16,6 +22,28 @@
 | Agent 产品面 | [agent-surface.md](./agent-surface.md) | 5175 Catalog/会话/Confirm；与 ① runtime 分层 |
 | 工具与 MCP | [agent-tools-mcp.md](./agent-tools-mcp.md) | tools[] vs MCP；副作用→DomainCommand |
 | Agent 插件 | [agent-plugins.md](./agent-plugins.md) | AgentDef 插件；版本化 catalog；对齐 stage |
+| Agent 项目文件夹 IA | [agent-project-folder.md](./agent-project-folder.md) | 项目=文件夹；专家分剧本；总控只编排 |
+| Agent 入口模式 | [agent-entry-modes.md](./agent-entry-modes.md) | 通用 Grok**自由**（自设 bot+互通）；项目**专家固定** |
+| Grok Bot 复刻 | [agent-grok-replica.md](./agent-grok-replica.md) | **优先**：通用壳布局/交互对标 Grok |
+| Agent 三层叠法 | [agent-layers.md](./agent-layers.md) | **L1→L2→L3**；非并列双产品；L3↔中台映射 |
+| L2 团队互通 | [agent-l2-team.md](./agent-l2-team.md) | bot 自发消息；协作任务样机；仅 /agent/team |
+| L3 专利 bot | [agent-l3-patent.md](./agent-l3-patent.md) | 固定专家；产出↔中台；仅项目模式 |
+| **产品定义** | [agent-product-definition.md](./agent-product-definition.md) | **用户与画像**：中小企业技术负责人 + 代理人第一波；F1–F9 在册；实现状态见 D4 验收 |
+| **用户旅程** | [agent-user-journeys.md](./agent-user-journeys.md) | **D1**：技术负责人确认链 + 代理人交卷链；同一 F1–F9 |
+| **范围切片** | [agent-scope-slice.md](./agent-scope-slice.md) | **D2**：默认主作业立项→答复；前研可展开；授权后锁定 |
+| **信息架构** | [agent-case-ia-v2.md](./agent-case-ia-v2.md) | **D3**：一节点一部门；同一页看见部门之间的交接和部门里面的路径 |
+| **交互说明** | [agent-interaction.md](./agent-interaction.md) | **D4**：点击、空态、确认退回；文件名、连线、过/未过、日常任务 |
+| **业务模式** | [agent-business-mode.md](./agent-business-mode.md) | **业务冷启动**：我的案子+向导+待确认；Catalog 降级 |
+| **席=独立 bot** | [agent-seat-as-bot.md](./agent-seat-as-bot.md) | 点席=人↔席会话；交卷→本案 HITL；与旧推进关系 |
+| **业务案页 IA 三刀** | [agent-biz-case-ia.md](./agent-biz-case-ia.md) | 两栏 · 藏工程词+单一主 CTA · 单一进度 |
+| **深度与可靠优化** | [agent-depth-reliability.md](./agent-depth-reliability.md) | **原型定稿**：共享专家脑 · 查新样板 · 三席打透 · 真沙箱出局 |
+| **Pack 环边三刀** | [agent-pack-loops-roadmap.md](./agent-pack-loops-roadmap.md) | F5 内循环+跨席 · F6 OA N通 · F9→F3；样机无真沙箱 |
+| 专利 Agent 壳（专家台） | [agent-patent-shell.md](./agent-patent-shell.md) | 专家工作台/双文件；路由 `/agent/catalog` |
+| **平台差距表** | [agent-platform-gap.md](./agent-platform-gap.md) | 样机 ↔ Solo/Team/Domain+Pack 目标；**样机本轮未动** |
+| 专利席花名册副本 | [patent-drill-ref/](./patent-drill-ref/) | SEAT_ROSTER / OWNER 矩阵 / PROCESS_VISIBILITY |
+| Agent 案绑定 | [agent-case-binding.md](./agent-case-binding.md) | 先聊/先项目；案可后创建或绑定；不挡入口 |
+| 跨面项目串接 | [project-cross-surface.md](./project-cross-surface.md) | 建项目串 mid/workbench/Agent/IAM；禁专家中截 |
+| Sessions×项目线程 | [agent-sessions-project-threads.md](./agent-sessions-project-threads.md) | 列表聚合展示；存储可分；标签筛选 |
 | 横切 | [cross-cutting.md](./cross-cutting.md) | 深链、contracts、禁壳直写库、Persona、e2e |
 
 ## 与五壳 + api 对照表
@@ -32,6 +60,23 @@
 | api | 5180 | `apps/api-mock`（今日） | 见 [cross-cutting.md](./cross-cutting.md) | MVP 同口换 **case-core** / 网关 |
 
 壳 **不是**微服务；勿把 mid/workbench 升级成服务进程。
+
+## 并行样机壳（非五壳规格正文）
+
+| 壳 | 端口 | 规格 |
+|----|------|------|
+| doc-harness | 5178 | [../doc-harness/](../doc-harness/README.md) |
+| ai-infra | 5179 | [../ai-infra/](../ai-infra/README.md) |
+| ai-data | **5181** | [../ai-data/](../ai-data/README.md) |
+| search | **5182** | [../search/](../search/README.md) |
+| fto | **5183** | [../fto/](../fto/README.md) |
+| mining | **5184** | [../mining/](../mining/README.md) |
+| inspire | **5185** | [../inspire/](../inspire/README.md) |
+| landscape | **5186** | [../landscape/](../landscape/README.md) |
+| figure | **5187** | [../figure/](../figure/README.md) |
+
+以上**不**改 `APP_PORTS`；不扩写为本目录九篇正文。
+
 
 ## 阅读顺序
 
@@ -50,6 +95,9 @@
 | 开发前规格（开 PR） | [../dev-spec/README.md](../dev-spec/README.md) |
 | 样机数据流 / 模型 | [../data-flow.md](../data-flow.md) · [../data-model.md](../data-model.md) |
 | Harness / 命令纪律 | [../../HARNESS.md](../../HARNESS.md) · [../../COMMANDS.md](../../COMMANDS.md) |
+
+| Agent 沙箱平台（正式） | [../agent-platform.md](../agent-platform.md) | L0 工具层 · Solo/Team/Domain · 一 Run 一沙箱 · Driver |
+| Domain Packs | [../domain-packs/README.md](../domain-packs/README.md) | 专利 Pack 设计/实现蓝图；16 席 · F1–F9 |
 | 运维可观测样机 | [../ops-observability.md](../ops-observability.md) |
 | workbench Owner 现状 | [../../workbench/OWNER_STATUS.md](../../workbench/OWNER_STATUS.md) |
 | mid Owner 现状 | [../../mid/STATUS.md](../../mid/STATUS.md) |

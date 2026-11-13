@@ -1,0 +1,146 @@
+[
+  {
+    "fs": 15,
+    "t": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 待批准 待授权",
+    "tag": "DIV",
+    "cls": "confirm-hitl-inner"
+  },
+  {
+    "fs": 14,
+    "t": "需要你确认：批准策略 · OA 答复 Agent交接：代理起草中 待批准 待授权",
+    "tag": "P",
+    "cls": "min-w-0 flex-1 text-[13px] leading-relax"
+  },
+  {
+    "fs": 14,
+    "t": "需要你确认：",
+    "tag": "SPAN",
+    "cls": "text-amber-800/90"
+  },
+  {
+    "fs": 14,
+    "t": "批准策略",
+    "tag": "SPAN",
+    "cls": "font-semibold text-slate-900"
+  },
+  {
+    "fs": 14,
+    "t": "· OA 答复 Agent",
+    "tag": "SPAN",
+    "cls": "font-normal text-slate-400"
+  },
+  {
+    "fs": 14,
+    "t": "交接：代理起草中",
+    "tag": "SPAN",
+    "cls": "ml-1.5 inline-block align-middle"
+  },
+  {
+    "fs": 12,
+    "t": "交接：代理起草中",
+    "tag": "SPAN",
+    "cls": "inline-flex items-center rounded-full bo"
+  },
+  {
+    "fs": 14,
+    "t": "待批准 待授权",
+    "tag": "SPAN",
+    "cls": "ml-2 inline-flex flex-wrap items-center "
+  },
+  {
+    "fs": 10,
+    "t": "待批准",
+    "tag": "SPAN",
+    "cls": "inline-flex items-center gap-0.5 text-[1"
+  },
+  {
+    "fs": 10,
+    "t": "待授权",
+    "tag": "SPAN",
+    "cls": "inline-flex items-center gap-0.5 text-[1"
+  },
+  {
+    "fs": 15,
+    "t": "批准策略 授权递交 退回 在运营 Inbox 中查看 逐步",
+    "tag": "DIV",
+    "cls": "confirm-hitl-actions"
+  },
+  {
+    "fs": 15,
+    "t": "批准策略",
+    "tag": "SPAN",
+    "cls": "agent-confirm-cta-wrap"
+  },
+  {
+    "fs": 12,
+    "t": "批准策略",
+    "tag": "BUTTON",
+    "cls": "ui-btn ui-btn-sm btn-press focus-ring ag"
+  },
+  {
+    "fs": 15,
+    "t": "授权递交",
+    "tag": "SPAN",
+    "cls": "agent-confirm-cta-wrap"
+  },
+  {
+    "fs": 12,
+    "t": "授权递交",
+    "tag": "BUTTON",
+    "cls": "ui-btn ui-btn-sm btn-press focus-ring  u"
+  },
+  {
+    "fs": 12,
+    "t": "退回",
+    "tag": "BUTTON",
+    "cls": "ui-btn ui-btn-sm ui-btn-ghost btn-press "
+  },
+  {
+    "fs": 11,
+    "t": "在运营 Inbox 中查看",
+    "tag": "A",
+    "cls": "btn-press focus-ring rounded px-1.5 py-1"
+  },
+  {
+    "fs": 10,
+    "t": "逐步",
+    "tag": "LABEL",
+    "cls": "inline-flex items-center gap-1 text-[10p"
+  },
+  {
+    "fs": 15,
+    "t": "请先选争点类型并填策略要点 还有 3 条",
+    "tag": "DIV",
+    "cls": "agent-confirm-blockers mt-1.5"
+  },
+  {
+    "fs": 12,
+    "t": "请先选争点类型并填策略要点",
+    "tag": "P",
+    "cls": "agent-confirm-reason"
+  },
+  {
+    "fs": 15,
+    "t": "还有 3 条",
+    "tag": "DIV",
+    "cls": "mt-1"
+  },
+  {
+    "fs": 12,
+    "t": "还有 3 条",
+    "tag": "BUTTON",
+    "cls": "agent-confirm-more btn-press focus-ring"
+  },
+  {
+    "fs": 15,
+    "t": "补充项 · 陈述/争点 · Full-check",
+    "tag": "DETAILS",
+    "cls": "confirm-hitl-sheet agent-confirm-sheet"
+  },
+  {
+    "fs": 11,
+    "t": "补充项 · 陈述/争点 · Full-check",
+    "tag": "SUMMARY",
+    "cls": "flex cursor-pointer list-none items-cent"
+  }
+]

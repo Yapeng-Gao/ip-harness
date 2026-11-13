@@ -1,0 +1,67 @@
+SHOT 03d-agent-session-three-columns.png
+
+MEASURE session-oa1-1440b
+
+SHOT 03c-agent-session-composer-focus.png
+
+SHOT 03e-session-after-inner-scroll.png
+
+SHOT 10-session-confirm-closeup.png
+
+SHOT 04-agent-projects-list.png
+
+MEASURE projects-list-1440
+
+KIND /agent/projects/proj-demo-general {"hasPatentSteps":false,"isGeneral":true,"hasResearch":true,"hasFTO":false,"snippet":"IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Agent 项目模式 项目 课题协作 · 通用演示 通用 总控 研究 写作 审查 边缘调度模组 · 专利演示 专利 样机 · 无真 LLM · 专家分剧本 样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 通用 · 未绑案件 案件（可选） 可稍后创建或绑定案件 创建并绑定新案 绑定已有案 总控 编排 · 分派 · 汇总 样机 · 无真 LLM · 专家分剧本 通用项目总控：拆派研究 / 写作 / 审查，汇总回执。无专利写库权。 通用项目 · 无专利步骤条（协作剧本仍可推进） 工具卡 · GENERAL-ORCHESTRATOR dispatch_task summarize"}
+
+SHOT 05d-general-workspace.png
+
+MEASURE general-1440
+
+SHOT 05e-general-bot-研究.png
+
+SHOT 05f-general-timeline-tools.png
+
+SHOT 05c-general-casebind.png
+
+KIND /agent/projects/proj-demo-patent {"hasPatentSteps":true,"isGeneral":false,"hasResearch":false,"hasFTO":true,"snippet":"IP Apps 作业中台 办理台 知产 Agent 运维 IAM 跳到主要内容 IP 知产 Agent 代理所租户 · 德恒知产 代理所 作业中台 知产 Agent 项目模式 项目 课题协作 · 通用演示 通用 边缘调度模组 · 专利演示 专利 总控席 检索专家 撰稿专家 FTO 专家 样机 · 无真 LLM · 专家分剧本 样机 · 无真 LLM · 专家分剧本 · 总控只编排 · 写库须 Confirm→DomainCommand · 专利 · pack=patent · 未绑案件 写回中台前须绑定 领域办理写回中台前须先绑定案件 创建并绑定新案 绑定已有案 总控席 编排 · 分派 · 汇总 样机 · 无真 LLM · 专家分剧本 只拆派任务与汇总专家回执；禁止直接改 handoff / 写案。深链可打开各专家私聊。 1收目标 2拆派 3等回执 4汇总 工具卡 · ORCHESTRAT"}
+
+SHOT 06c-patent-workspace.png
+
+MEASURE patent-1440
+
+SHOT 06d-patent-bot-检索.png
+
+SHOT 06e-patent-bot-总控.png
+
+SHOT 06f-patent-casebind-bar.png
+
+SHOT 06g-patent-timeline-tools.png
+
+SHOT 04b-projects-create-panel.png
+
+SHOT 07-agent-catalog.png
+
+MEASURE catalog-1440
+
+SHOT 07b-agent-catalog-scrolled.png
+
+SHOT 08-agent-harness.png
+
+MEASURE harness-1440
+
+SHOT 08b-agent-harness-scrolled.png
+
+SHOT 09-session-1280.png
+
+MEASURE session-oa1-1280
+
+SHOT 09b-home-1280.png
+
+MEASURE home-1280
+
+SHOT 09c-catalog-1280.png
+
+SHOT 09d-projects-1280.png
+
+SHOT 01d-agent-home-remeasure.png

@@ -1,0 +1,100 @@
+{
+  "m1_action": {
+    "w": 100,
+    "h": 40,
+    "fs": "12px",
+    "fw": "600",
+    "cls": "dash-inbox-action",
+    "text": "办理"
+  },
+  "m1_row": {
+    "w": 1158,
+    "h": 100,
+    "fs": "15px",
+    "fw": "400",
+    "cls": "dash-inbox-row list-row focus-ring",
+    "text": "监控·维持CN202410328901.2 · 一种边缘计算节点调度方法Watch · 待处理同案另有 5 条（监控·维持/期限/Agent/工作台）· 非重复"
+  },
+  "m4_insight": {
+    "w": 215,
+    "h": 40,
+    "fs": "11px",
+    "fw": "600",
+    "cls": "btn-press focus-ring nav-section-btn",
+    "text": "洞察"
+  },
+  "m4_persona": {
+    "w": 94,
+    "h": 40,
+    "fs": "12px",
+    "fw": "400",
+    "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-[var(--color-accent-soft)] px-2.5 py-2 text-xs text-",
+    "text": "代理所"
+  },
+  "m4_workspace": {
+    "w": 183,
+    "h": 40,
+    "fs": "12px",
+    "fw": "400",
+    "cls": "btn-press focus-ring hit-40 flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 text-xs text-slate-700 hover:border-slate-300",
+    "text": "代理所租户 · 德恒知产"
+  },
+  "m4_doc": {
+    "w": 44,
+    "h": 40,
+    "fs": "12px",
+    "fw": "600",
+    "cls": "figure-top-link focus-ring",
+    "text": "文档"
+  },
+  "m4_step": {
+    "w": 48,
+    "h": 40,
+    "fs": "12px",
+    "fw": "500",
+    "cls": "figure-step-chip focus-ring text-slate-600 hover:bg-slate-100",
+    "text": "资产"
+  },
+  "s1_switch": {
+    "w": 40,
+    "h": 24,
+    "fs": "15px",
+    "fw": "400",
+    "cls": "btn-press ops-switch focus-ring bg-slate-900",
+    "text": ""
+  },
+  "s1_switch_hit": {
+    "visibleH": 24,
+    "visibleW": 40,
+    "hasOps": true
+  },
+  "s5_draft": {
+    "present": true,
+    "outerR": 18,
+    "pad": 12,
+    "innerR": 6
+  },
+  "s6_cell": {
+    "w": 183,
+    "h": 74,
+    "fs": "12px",
+    "fw": "400",
+    "cls": "fto-matrix-cell border-b border-l border-slate-100",
+    "text": "— 未填 —可能覆盖需人工未涉及点击选择比对结论"
+  },
+  "s6_select": {
+    "w": 166,
+    "h": 40,
+    "fs": "12px",
+    "fw": "400",
+    "cls": "fto-matrix-select focus-ring",
+    "text": "— 未填 —可能覆盖需人工未涉及"
+  },
+  "m2_filter": {
+    "hasHumanFilter": true,
+    "hasApiAsTitle": false,
+    "hasDevFold": true,
+    "hasCollapseApiBare": false,
+    "hasCollapseHuman": true
+  }
+}

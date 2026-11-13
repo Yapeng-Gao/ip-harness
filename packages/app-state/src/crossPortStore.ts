@@ -46,6 +46,19 @@ function canUseDom(): boolean {
   return typeof window !== 'undefined' && typeof document !== 'undefined'
 }
 
+/** Mid :5173 is the cross-port hub — agent/workbench iframe here for LS sync. */
+export function isMidCrossPortHub(): boolean {
+  if (!canUseDom()) return false
+  try {
+    return (
+      window.location.port === '5173' ||
+      window.location.origin === APP_DEV_URLS.mid
+    )
+  } catch {
+    return false
+  }
+}
+
 export function readCookie(name: string): string | null {
   if (!canUseDom()) return null
   const parts = document.cookie.split(';')
@@ -132,6 +145,7 @@ let bc: BroadcastChannel | null = null
 let bridgeIframe: HTMLIFrameElement | null = null
 let bridgeReady = false
 let bridgeQueue: CrossPortSnapshotV1[] = []
+let bridgeRetryTimer: ReturnType<typeof setTimeout> | null = null
 let bridgeReqId = 0
 const pendingGets = new Map<
   number,
@@ -148,17 +162,31 @@ function tryBroadcast(snap: CrossPortSnapshotV1): void {
   }
 }
 
-function ensureBridge(): void {
-  if (!canUseDom()) return
-  // Mid itself is the hub — no need to iframe self
-  try {
-    if (window.location.port === '5173' || window.location.origin === APP_DEV_URLS.mid) {
-      return
+function resetBridgeIframe(): void {
+  bridgeReady = false
+  if (bridgeIframe) {
+    try {
+      bridgeIframe.remove()
+    } catch {
+      /* ignore */
     }
-  } catch {
-    /* ignore */
+    bridgeIframe = null
   }
-  if (bridgeIframe) return
+}
+
+function scheduleBridgeRetry(): void {
+  if (bridgeRetryTimer || !canUseDom()) return
+  bridgeRetryTimer = window.setTimeout(() => {
+    bridgeRetryTimer = null
+    ensureBridge(true)
+  }, 1500)
+}
+
+function ensureBridge(force = false): void {
+  if (!canUseDom()) return
+  if (isMidCrossPortHub()) return
+  if (bridgeIframe && !force) return
+  if (force) resetBridgeIframe()
   const iframe = document.createElement('iframe')
   iframe.src = `${APP_DEV_URLS.mid}/__cross_port_bridge.html`
   iframe.title = 'ip-harness cross-port bridge'
@@ -171,6 +199,10 @@ function ensureBridge(): void {
     bridgeQueue = []
     // pull hub snapshot once ready
     requestBridgeSnapshot()
+  })
+  iframe.addEventListener('error', () => {
+    resetBridgeIframe()
+    scheduleBridgeRetry()
   })
   document.documentElement.appendChild(iframe)
   bridgeIframe = iframe
@@ -273,9 +305,24 @@ function onStorage(ev: StorageEvent): void {
 function onBroadcast(ev: MessageEvent): void {
   const d = ev.data as {
     type?: string
+    op?: string
+    raw?: string
     snap?: CrossPortSnapshotV1
   } | null
-  if (!d || d.type !== CROSS_PORT_BRIDGE_MESSAGE_TYPE || !d.snap) return
+  if (!d || d.type !== CROSS_PORT_BRIDGE_MESSAGE_TYPE) return
+  if (d.op === 'push' && typeof d.raw === 'string') {
+    const snap = parseSnapshot(d.raw)
+    if (snap) {
+      try {
+        localStorage.setItem(CROSS_PORT_SNAPSHOT_LS_KEY, d.raw)
+      } catch {
+        /* ignore */
+      }
+      notifyListeners(snap)
+    }
+    return
+  }
+  if (!d.snap) return
   notifyListeners(d.snap)
 }
 

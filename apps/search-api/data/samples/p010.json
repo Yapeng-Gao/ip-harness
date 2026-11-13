@@ -1,0 +1,18 @@
+{
+  "id": "p010",
+  "publicationNumber": "EP4000010A",
+  "title": "EUV lithography overlay correction",
+  "applicant": "Taiwan Semiconductor Manufacturing Company, Ltd.",
+  "inventor": "Inventor 2",
+  "date": "2020-07-15",
+  "ipc": [
+    "H01L29/66",
+    "H01L29/78"
+  ],
+  "familyId": "fam-semicon-2",
+  "country": "EP",
+  "legalStatus": "审查中",
+  "abstract": "【样本·非真库】 Marker-based EUV overlay error compensation.",
+  "claims": "1. A device or method comprising… (sample p010)",
+  "snippet": "EUV lithography overlay correction"
+}

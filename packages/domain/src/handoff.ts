@@ -187,6 +187,34 @@ const TRANSITIONS: Record<
 
 const AGENCY_ACTIONS: HandoffAction[] = ['save_draft', 'submit', 'file']
 
+const HANDOFF_PASS_RANK: Record<HandoffStatus, number> = {
+  drafting: 0,
+  changes_requested: 0,
+  submitted_to_enterprise: 1,
+  enterprise_review: 2,
+  approved: 3,
+  authorized_to_file: 4,
+  filed: 5,
+}
+
+export function roleRequiredForHandoff(action: HandoffAction): UserRole {
+  return TRANSITIONS[action].role
+}
+
+/**
+ * 业务同步重入：当前状态已经不早于该动作的落点。
+ * 退回、保存草稿不走这条捷径（退回要留下未通过；草稿要补摘要）。
+ */
+export function handoffActionAlreadySatisfied(
+  status: HandoffStatus | undefined,
+  action: HandoffAction,
+): boolean {
+  if (action === 'request_changes' || action === 'save_draft') return false
+  const current = status ?? 'drafting'
+  const target = TRANSITIONS[action].to
+  return HANDOFF_PASS_RANK[current] >= HANDOFF_PASS_RANK[target]
+}
+
 /** OrgSettings「投票硬挡 Go」未齐时的统一错误文案 */
 export const COMMITTEE_VOTE_HARD_GATE_MSG = '委员投票未达硬闸'
 

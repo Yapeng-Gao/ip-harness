@@ -1,5 +1,5 @@
 import { matchSessionSearch } from '@shared/utils/sessionSearch'
-import { NavLink, useNavigate, useLocation, Link } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation, Link, useSearchParams } from 'react-router-dom'
 import {
   Plus,
   MessageSquare,
@@ -11,16 +11,22 @@ import {
   ChevronDown,
   Home,
   Users,
+  FolderKanban,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '@shared/context/AppContext'
 import { useAgents } from '@shared/context/AgentContext'
-import { RUN_STATUS_LABEL, getAgent, AGENT_CATALOG, AGENT_TIER_LABEL } from '@shared/data/agents'
+import { getAgent, AGENT_CATALOG, AGENT_TIER_LABEL } from '@shared/data/agents'
 import {
   sessionBizBadges,
   BIZ_BADGE_CLASS,
 } from './session/sessionGates'
-import { agentSessionPath, midInboxHref } from '../lib/deepLinks'
+import { agentSessionPath } from '../lib/deepLinks'
+import { agentRunStatusLabel } from '../lib/statusLabels'
+import {
+  BILLING_HOLD_COPY,
+  summarizeBillingHold,
+} from '@shared/utils/billingHoldBanner'
 
 const STATUS_DOT: Record<string, string> = {
   running: 'bg-[var(--color-status-info)]',
@@ -32,7 +38,7 @@ const STATUS_DOT: Record<string, string> = {
 
 /** Mail-like session list sidebar for AgentShell. */
 export function AgentSessionSidebar() {
-  const { workspace, getCase, hasBlockingInvoiceForCase, role } = useApp()
+  const { workspace, getCase, hasBlockingInvoiceForCase, role, visibleCases, persona, overdueStopEnabled } = useApp()
   const {
     visibleSessions,
     createSession,
@@ -45,6 +51,18 @@ export function AgentSessionSidebar() {
   } = useAgents()
   const navigate = useNavigate()
   const loc = useLocation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  /** Compat compose: demote Inbox list (Grok shell hides this sidebar entirely) */
+  const isHome =
+    loc.pathname === '/agent/compose' || loc.pathname === '/agent/compose/'
+  /** P1-AF-5 · Catalog / Harness 默认收起会话 Inbox（与 Home compact 一致） */
+  const isCatalogOrHarness =
+    loc.pathname.startsWith('/agent/agents') ||
+    loc.pathname.startsWith('/agent/harness')
+  const collapseInbox = isHome || isCatalogOrHarness
+  /** SS-M-S6-1 · on sessions list, main pane owns search + new CTA */
+  const isSessionsList =
+    loc.pathname === '/agent/sessions' || loc.pathname === '/agent/sessions/'
   const [overflowOpen, setOverflowOpen] = useState(false)
   const overflowRef = useRef<HTMLDivElement>(null)
   const [renamingId, setRenamingId] = useState<string | null>(null)
@@ -56,6 +74,17 @@ export function AgentSessionSidebar() {
   const filterMenuRef = useRef<HTMLDivElement>(null)
   const [archiveToast, setArchiveToast] = useState<{ id: string; title: string } | null>(null)
   const archiveToastTimer = useRef<number | null>(null)
+  const [createToast, setCreateToast] = useState<string | null>(null)
+  const createToastTimer = useRef<number | null>(null)
+
+  const showCreateFailedToast = (msg?: string) => {
+    setCreateToast(
+      msg ??
+        '当前角色不能新建会话，请切换为企业 IP / 代理所',
+    )
+    if (createToastTimer.current) window.clearTimeout(createToastTimer.current)
+    createToastTimer.current = window.setTimeout(() => setCreateToast(null), 4500)
+  }
 
   const archiveWithUndo = (sessionId: string, title: string) => {
     archiveSession(sessionId)
@@ -106,8 +135,51 @@ export function AgentSessionSidebar() {
 
   const [statusFilter, setStatusFilter] = useState<
     'all' | 'needs_human' | 'running' | 'done' | 'archived'
-  >('all')
+  >(() => {
+    const f = searchParams.get('filter')
+    if (f === 'needs_human' || f === 'running' || f === 'done' || f === 'archived')
+      return f
+    return 'all'
+  })
   const [agentFilter, setAgentFilter] = useState<string>('all')
+
+  useEffect(() => {
+    const f = searchParams.get('filter')
+    if (f === 'needs_human' || f === 'running' || f === 'done' || f === 'archived') {
+      setStatusFilter(f)
+      if (f === 'archived') setShowArchivedSessions(true)
+    } else {
+      setStatusFilter('all')
+      if (f === 'all') setShowArchivedSessions(false)
+    }
+  }, [searchParams, setShowArchivedSessions])
+
+  /** SW-S6-1 · segmented / menu write ?filter= (same contract as Home chip) */
+  const applyStatusFilter = (
+    key: 'all' | 'needs_human' | 'running' | 'done' | 'archived',
+  ) => {
+    setStatusFilter(key)
+    if (key === 'archived') {
+      setShowArchivedSessions(true)
+    } else if (showArchivedSessions) {
+      setShowArchivedSessions(false)
+    }
+    const onList =
+      loc.pathname === '/agent/sessions' || loc.pathname === '/agent/sessions/'
+    if (onList) {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          if (key === 'all') next.delete('filter')
+          else next.set('filter', key)
+          return next
+        },
+        { replace: true },
+      )
+    } else {
+      navigate(key === 'all' ? '/agent/sessions' : `/agent/sessions?filter=${key}`)
+    }
+  }
 
   const sorted = useMemo(
     () =>
@@ -140,7 +212,7 @@ export function AgentSessionSidebar() {
       if (statusFilter === 'archived') {
         if (!s.archived) return false
       } else {
-        if (statusFilter === 'needs_human' && s.status !== 'needs_human') return false
+        if (statusFilter === 'needs_human' && s.status !== 'needs_human' && !s.hitlPending) return false
         if (
           statusFilter === 'running' &&
           s.status !== 'running' &&
@@ -166,7 +238,10 @@ export function AgentSessionSidebar() {
       agentId: 'auto',
       title: '新 IP 任务会话',
     })
-    if (!s) return
+    if (!s) {
+      showCreateFailedToast()
+      return
+    }
     navigate(agentSessionPath(s.id), { state: { focusComposer: true } })
   }
 
@@ -178,85 +253,217 @@ export function AgentSessionSidebar() {
   }
 
   const extraActive =
-    statusFilter === 'running' ||
     statusFilter === 'done' ||
     agentFilter !== 'all'
 
   const clearExtras = () => {
-    setStatusFilter('all')
     setAgentFilter('all')
     setAgentFilterOpen(false)
-    setShowArchivedSessions(false)
+    applyStatusFilter('all')
   }
 
   const navCls = ({ isActive }: { isActive: boolean }) =>
-    `btn-press focus-ring relative flex flex-1 flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[11px] sm:flex-row sm:gap-1 sm:text-xs ${
+    `btn-press focus-ring flex min-h-10 w-full items-center gap-2 rounded-[var(--radius-sm)] px-2.5 py-2 text-xs ${
       isActive
-        ? 'font-semibold text-slate-900 after:absolute after:inset-x-1 after:bottom-0 after:h-0.5 after:rounded-full after:bg-slate-900'
-        : 'font-normal text-slate-500 hover:text-slate-800'
+        ? 'list-row-active font-semibold text-slate-900'
+        : 'font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900'
     }`
+  const moreActive =
+    loc.pathname.startsWith('/agent/harness') ||
+    loc.pathname.startsWith('/agent/projects')
+
+  const billingHold = useMemo(
+    () =>
+      summarizeBillingHold({
+        cases: visibleCases,
+        role,
+        persona,
+        overdueStopEnabled,
+      }),
+    [visibleCases, role, persona, overdueStopEnabled],
+  )
+  const billingHoldCopy = billingHold.visible
+    ? billingHold.variant === 'agency_hard'
+      ? BILLING_HOLD_COPY.agency
+      : BILLING_HOLD_COPY.enterprise
+    : null
 
   return (
     <>
       <aside className="shell-aside flex w-[min(13rem,40vw)] min-w-[10rem] max-w-[14.5rem] shrink-0 flex-col sm:w-52 lg:w-56">
-        <div className="border-b border-slate-100 px-2.5 py-2">
-          <button
-            type="button"
-            onClick={newSession}
-            className="btn-press focus-ring hit-40 flex w-full items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
-          >
-            <Plus className="h-3.5 w-3.5" aria-hidden /> 新建会话
-          </button>
-        </div>
-
         <nav
-          className="flex gap-0 border-b border-slate-100 px-0.5 py-1"
+          className="flex flex-col gap-0.5 border-b border-slate-100 px-1.5 py-1.5"
           aria-label="办理导航"
+          data-testid="agent-side-nav"
         >
           <NavLink to="/agent" end className={navCls}>
-            <Home className="h-3 w-3 shrink-0" aria-hidden />
-            开始
+            <Home className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+            {isHome ? '回 Grok' : '开始'}
           </NavLink>
-          <NavLink to="/agent/agents" className={navCls}>
-            <Users className="h-3 w-3 shrink-0" aria-hidden />
-            Agent
-          </NavLink>
-          <NavLink to="/agent/sessions" end className={navCls}>
-            <MessageSquare className="h-3 w-3 shrink-0" aria-hidden />
-            会话
-          </NavLink>
-          <div ref={overflowRef} className="relative shrink-0">
+          {/* compose / catalog：会话·Agent 收进「更多」，勿与主入口同权 */}
+          {!collapseInbox ? (
+            <>
+              <NavLink
+                to="/agent/agents"
+                className={navCls}
+                data-testid="sidebar-catalog-bypass"
+                title="旁路 · 助手目录"
+              >
+                <Users className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+                助手目录
+              </NavLink>
+              <NavLink to="/agent/sessions" end className={navCls}>
+                <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+                会话
+              </NavLink>
+            </>
+          ) : null}
+          <div ref={overflowRef} className="relative">
             <button
               type="button"
               onClick={() => setOverflowOpen((v) => !v)}
-              className={`btn-press focus-ring relative flex h-full flex-col items-center justify-center gap-0.5 px-1.5 py-1.5 text-[11px] sm:flex-row sm:gap-1 sm:text-xs ${
-                loc.pathname.startsWith('/agent/harness')
-                  ? 'font-semibold text-slate-900 after:absolute after:inset-x-1 after:bottom-0 after:h-0.5 after:rounded-full after:bg-slate-900'
-                  : 'font-normal text-slate-500 hover:text-slate-800'
+              className={`btn-press focus-ring flex min-h-10 w-full items-center gap-2 rounded-[var(--radius-sm)] px-2.5 py-2 text-xs ${
+                moreActive || (collapseInbox && (loc.pathname.startsWith('/agent/agents') || loc.pathname.startsWith('/agent/sessions')))
+                  ? 'list-row-active font-semibold text-slate-900'
+                  : 'font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
               aria-label="更多"
               aria-expanded={overflowOpen}
+              data-testid="agent-side-more"
             >
-              <MoreHorizontal className="h-3 w-3" aria-hidden />
-              <span className="hidden sm:inline">更多</span>
+              <MoreHorizontal className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+              更多
             </button>
             {overflowOpen && (
-              <div className="menu-enter absolute right-0 top-full z-30 mt-0.5 w-36 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+              <div className="menu-enter absolute left-0 right-0 top-full z-30 mt-0.5 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+                {collapseInbox ? (
+                  <>
+                    <Link
+                      to="/agent/sessions"
+                      onClick={() => setOverflowOpen(false)}
+                      className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                      data-testid="sidebar-sessions-secondary"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5 text-slate-400" /> 会话 · 历史
+                    </Link>
+                    <Link
+                      to="/agent/agents"
+                      onClick={() => setOverflowOpen(false)}
+                      className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                      data-testid="sidebar-catalog-secondary"
+                    >
+                      <Users className="h-3.5 w-3.5 text-slate-400" /> 助手目录 · 旁路
+                    </Link>
+                    <div className="border-t border-slate-100" />
+                  </>
+                ) : null}
+                {!isSessionsList ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOverflowOpen(false)
+                    newSession()
+                  }}
+                  className="focus-ring flex min-h-10 w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                  data-testid="sidebar-new-session-secondary"
+                >
+                  <Plus className="h-3.5 w-3.5 text-slate-400" /> 新建会话
+                </button>
+                ) : null}
+                <Link
+                  to="/agent/projects"
+                  onClick={() => setOverflowOpen(false)}
+                  className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                  data-testid="sidebar-projects-secondary"
+                >
+                  <FolderKanban className="h-3.5 w-3.5 text-slate-400" /> 项目（旁路）
+                </Link>
+                <div className="border-t border-slate-100" />
                 <Link
                   to="/agent/harness"
                   onClick={() => setOverflowOpen(false)}
-                  className="focus-ring flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                  className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
                 >
-                  <Network className="h-3.5 w-3.5 text-slate-400" /> 运行说明
+                  <Network className="h-3.5 w-3.5 text-slate-400" /> 纸面运行说明
                 </Link>
               </div>
             )}
           </div>
         </nav>
 
+        {/* P0-AE-1: no navy primary「新建」competing with Home 发送 */}
+        {!collapseInbox && !isSessionsList && (
+          <div className="border-b border-slate-100 px-2.5 py-1.5">
+            <button
+              type="button"
+              onClick={newSession}
+              className="btn-press focus-ring flex w-full items-center justify-center gap-1 rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-50"
+              data-testid="sidebar-new-session"
+            >
+              <Plus className="h-3 w-3" aria-hidden /> 新建会话
+            </button>
+          </div>
+        )}
+
+        {collapseInbox ? (
+          <div
+            className="flex flex-1 flex-col gap-3 px-3 py-4"
+            data-testid={isHome ? "home-sidebar-compact" : "browse-sidebar-compact"}
+          >
+            <p className="text-[11px] leading-relaxed text-slate-500">
+              {isHome
+                ? '主区输入后点「开始办理」开工。'
+                : '目录 / 纸面运行说明收起列表；办理请打开会话。'}
+            </p>
+            {statusCounts.needs_human > 0 ? (
+              <Link
+                to="/agent/sessions?filter=needs_human"
+                className="agent-remind-chip btn-press focus-ring"
+                data-testid="home-needs-human-chip"
+              >
+                待确认队列 · {statusCounts.needs_human}
+              </Link>
+            ) : null}
+            {/* ATT-S-1 · mini structure without restoring full inbox list */}
+            <div className="space-y-1">
+              <div className="nav-section !m-0 !px-0">待确认队列（演示）</div>
+              {sorted
+                .filter((s) => !s.archived && s.status === 'needs_human')
+                .slice(0, 2)
+                .map((s) => (
+                  <Link
+                    key={s.id}
+                    to={agentSessionPath(s.id, { focus: 'hitl' })}
+                    className="btn-press focus-ring block truncate rounded-[var(--radius-sm)] px-2 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    {s.title}
+                  </Link>
+                ))}
+              {statusCounts.needs_human === 0 && (
+                <p className="px-2 text-[11px] text-slate-400">暂无待确认</p>
+              )}
+            </div>
+            <div className="mt-auto space-y-2 pt-2">
+              <Link
+                to="/agent/sessions"
+                className="ui-btn ui-btn-sm ui-btn-secondary btn-press focus-ring w-full justify-center"
+              >
+                打开历史
+              </Link>
+              <Link
+                to="/agent/projects"
+                className="block text-center text-[11px] text-slate-400 hover:text-slate-600 hover:underline"
+                data-testid="home-projects-text-link"
+              >
+                项目模式（旁路）
+              </Link>
+            </div>
+          </div>
+        ) : (
+        <>
         <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-          <span className="nav-section !m-0 !px-0">
-            会话
+          <span className="nav-section !m-0 !px-0" title="会话历史 · 旁路函件史（列表页聚合）">
+            会话历史
           </span>
           <div className="relative" ref={filterMenuRef}>
             <button
@@ -281,19 +488,7 @@ export function AgentSessionSidebar() {
                   type="button"
                   className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                   onClick={() => {
-                    setStatusFilter('running')
-                    setShowArchivedSessions(false)
-                    setFilterMenuOpen(false)
-                  }}
-                >
-                  进行中 · {statusCounts.running}
-                </button>
-                <button
-                  type="button"
-                  className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
-                  onClick={() => {
-                    setStatusFilter('done')
-                    setShowArchivedSessions(false)
+                    applyStatusFilter('done')
                     setFilterMenuOpen(false)
                   }}
                 >
@@ -307,7 +502,7 @@ export function AgentSessionSidebar() {
                     setFilterMenuOpen(false)
                   }}
                 >
-                  按 Agent…
+                  按助手…
                 </button>
                 <div className="border-t border-slate-100" />
                 <button
@@ -315,8 +510,7 @@ export function AgentSessionSidebar() {
                   className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                   onClick={() => {
                     const next = !(showArchivedSessions && statusFilter === 'archived')
-                    setShowArchivedSessions(next)
-                    setStatusFilter(next ? 'archived' : 'all')
+                    applyStatusFilter(next ? 'archived' : 'all')
                     setFilterMenuOpen(false)
                   }}
                 >
@@ -340,6 +534,11 @@ export function AgentSessionSidebar() {
           </div>
         </div>
 
+        <p className="px-3 pb-1 text-[10px] leading-snug text-slate-400">
+          旁路函件史 · 主办理在大厅→公司→部台
+        </p>
+
+        {!isSessionsList ? (
         <div className="px-2 pb-1.5">
           <label className="sr-only" htmlFor="agent-session-search">
             搜索会话
@@ -359,9 +558,10 @@ export function AgentSessionSidebar() {
             />
           </div>
         </div>
+        ) : null}
 
         <div
-          className="segmented mx-2 mb-1.5 w-[calc(100%-1rem)]"
+          className="segmented agent-session-segments mx-2 mb-1.5 w-[calc(100%-1rem)]"
           role="group"
           aria-label="会话状态筛选"
         >
@@ -369,45 +569,34 @@ export function AgentSessionSidebar() {
             [
               ['all', '全部', statusCounts.all],
               ['needs_human', '待确认', statusCounts.needs_human],
+              ['running', '进行中', statusCounts.running],
             ] as const
           ).map(([key, label, count]) => (
             <button
               key={key}
               type="button"
-              onClick={() => {
-                setStatusFilter(key)
-                if (showArchivedSessions) setShowArchivedSessions(false)
-              }}
+              onClick={() => applyStatusFilter(key)}
               className="segmented-item btn-press focus-ring flex-1 tabular"
               aria-pressed={statusFilter === key}
+              data-tone={key === 'needs_human' ? 'remind' : undefined}
             >
               {label}
-              <span className="ml-0.5 font-normal opacity-60">{count}</span>
+              <span className="agent-seg-count font-normal opacity-70">
+                {' '}· {count}
+              </span>
             </button>
           ))}
         </div>
 
         {(extraActive || agentFilterOpen) && (
           <div className="mx-2 mb-1.5 space-y-1 border-b border-slate-100 pb-1.5">
-            {statusFilter === 'running' && (
-              <div className="flex items-center justify-between text-[11px] text-slate-600">
-                <span>进行中</span>
-                <button
-                  type="button"
-                  className="text-slate-400 hover:text-slate-700"
-                  onClick={() => setStatusFilter('all')}
-                >
-                  清除
-                </button>
-              </div>
-            )}
             {statusFilter === 'done' && (
               <div className="flex items-center justify-between text-[11px] text-slate-600">
                 <span>已完成</span>
                 <button
                   type="button"
                   className="text-slate-400 hover:text-slate-700"
-                  onClick={() => setStatusFilter('all')}
+                  onClick={() => applyStatusFilter('all')}
                 >
                   清除
                 </button>
@@ -421,7 +610,7 @@ export function AgentSessionSidebar() {
                   className="btn-press focus-ring flex w-full items-center justify-between text-[11px] text-slate-600"
                   aria-expanded={agentFilterOpen}
                 >
-                  <span>Agent</span>
+                  <span>助手</span>
                   <ChevronDown className={`h-3 w-3 ${agentFilterOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {agentFilterOpen && (
@@ -430,7 +619,7 @@ export function AgentSessionSidebar() {
                     value={agentFilter}
                     onChange={(e) => setAgentFilter(e.target.value)}
                     className="focus-ring mt-1 w-full truncate rounded border border-slate-200 bg-white px-1.5 py-1 text-xs text-slate-700"
-                    aria-label="按 Agent 筛选"
+                    aria-label="按助手筛选"
                   >
                     <option value="all">全部（{sorted.length}）</option>
                     <option value="auto">自动匹配（{agentCounts.get('auto') ?? 0}）</option>
@@ -459,7 +648,9 @@ export function AgentSessionSidebar() {
                 {sorted.length === 0 ? '暂无会话' : '无匹配结果'}
               </p>
               <p className="ui-empty-desc">
-                {sorted.length === 0 ? '新建一条会话开始办理。' : '试试清空筛选或换关键词。'}
+                {sorted.length === 0
+                  ? '侧栏为通用单聊快捷入口；完整历史（含项目线程）见「会话」页。'
+                  : '试试清空筛选或换关键词。'}
               </p>
               <button
                 type="button"
@@ -511,9 +702,11 @@ export function AgentSessionSidebar() {
                           active ? 'list-row-active' : 'hover:bg-slate-50'
                         }`}
                       >
-                        <Link
-                          to={agentSessionPath(s.id)}
-                          className="agent-rail-row__link"
+                        <button
+                          type="button"
+                          onClick={() => navigate('/agent/sessions/' + s.id)}
+                          className="agent-rail-row__link min-w-0 flex-1 text-left"
+                          title="打开会话"
                         >
                           <div className="flex items-start gap-2">
                             <span
@@ -533,35 +726,24 @@ export function AgentSessionSidebar() {
                                 ) : null}
                               </div>
                               <div className="agent-rail-sub truncate">
-                                {ag?.name ?? '自动匹配'} · {RUN_STATUS_LABEL[s.status]}
+                                {ag?.name ?? '自动匹配'} ·{' '}
+                                {agentRunStatusLabel(s.status)}
                               </div>
                               {badges.length > 0 && (
                                 <div className="mt-0.5 flex flex-wrap gap-0.5">
                                   {badges.map((b) => (
                                     <span
                                       key={b}
-                                      className={`inline-flex rounded-full border px-1 py-px text-[9px] font-medium ${BIZ_BADGE_CLASS[b]}`}
+                                      className={`agent-biz-badge inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium ${BIZ_BADGE_CLASS[b]}`}
                                     >
                                       {b}
                                     </span>
                                   ))}
-                                  {(badges.includes('待我确认') ||
-                                    badges.includes('待企业确认') ||
-                                    badges.includes('待代理')) && (
-                                    <a
-                                      href={midInboxHref({ sessionId: s.id })}
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="text-[9px] text-slate-400 hover:text-slate-700 hover:underline"
-                                      title="在运营 Inbox 中查看"
-                                    >
-                                      Inbox
-                                    </a>
-                                  )}
                                 </div>
                               )}
                             </div>
                           </div>
-                        </Link>
+                        </button>
                         <div
                           className="relative shrink-0 self-center pr-1"
                           ref={rowMenuId === s.id ? rowMenuRef : undefined}
@@ -574,15 +756,15 @@ export function AgentSessionSidebar() {
                               e.stopPropagation()
                               setRowMenuId((id) => (id === s.id ? null : s.id))
                             }}
-                            className="btn-press focus-ring rounded p-1 text-slate-400 opacity-0 hover:bg-slate-100 hover:text-slate-700 group-hover:opacity-100 focus:opacity-100"
+                            className="btn-press focus-ring hit-40 rounded p-1 text-slate-400 opacity-0 hover:bg-slate-100 hover:text-slate-700 group-hover:opacity-100 focus:opacity-100"
                           >
                             <MoreHorizontal className="h-3.5 w-3.5" />
                           </button>
                           {rowMenuId === s.id && (
-                            <div className="menu-enter absolute right-0 z-40 mt-1 w-28 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+                            <div className="menu-enter absolute right-0 z-40 mt-1 w-40 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
                               <button
                                 type="button"
-                                className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                                className="focus-ring flex min-h-10 w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                                 onClick={() => {
                                   setRenamingId(s.id)
                                   setRenameDraft(s.title)
@@ -594,7 +776,7 @@ export function AgentSessionSidebar() {
                               {!s.archived ? (
                                 <button
                                   type="button"
-                                  className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                                  className="focus-ring flex min-h-10 w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                                   onClick={() => {
                                     archiveWithUndo(s.id, s.title)
                                     setRowMenuId(null)
@@ -605,7 +787,7 @@ export function AgentSessionSidebar() {
                               ) : (
                                 <button
                                   type="button"
-                                  className="focus-ring flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                                  className="focus-ring flex min-h-10 w-full items-center gap-2 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
                                   onClick={() => {
                                     patchSession(s.id, { archived: false })
                                     setRowMenuId(null)
@@ -629,9 +811,27 @@ export function AgentSessionSidebar() {
         <div className="border-t border-slate-100 px-3 py-2">
           <div className="truncate text-[11px] text-slate-400">{workspace.chipLabel}</div>
           <Link to="/agent/sessions" className="text-[11px] text-slate-600 hover:underline">
-            全部会话 →
+            会话历史 →
           </Link>
         </div>
+        </>
+        )}
+
+        {billingHold.visible && billingHoldCopy ? (
+          <div
+            className="mx-2 mb-2 shrink-0 rounded-md border border-slate-200/90 bg-slate-50 px-2 py-1.5 text-[10px] leading-snug text-slate-500"
+            role="status"
+            aria-label={billingHoldCopy.headline}
+            data-billing-hold-chip={billingHold.variant}
+            title={`${billingHold.cases.length} 案 · ${billingHold.invoiceCount} 张欠票`}
+          >
+            <span className="font-medium text-slate-600">{billingHoldCopy.headline}</span>
+            <span className="opacity-80">
+              {' '}
+              · {billingHold.cases.length} 案 · {billingHold.invoiceCount} 张欠票
+            </span>
+          </div>
+        ) : null}
       </aside>
 
       {archiveToast && (
@@ -645,6 +845,14 @@ export function AgentSessionSidebar() {
             >
               撤销
             </button>
+          </div>
+        </div>
+      )}
+
+      {createToast && (
+        <div className="toast-enter pointer-events-none fixed bottom-6 right-6 z-50 max-w-sm">
+          <div role="status" className="ui-toast ui-toast-info">
+            {createToast}
           </div>
         </div>
       )}

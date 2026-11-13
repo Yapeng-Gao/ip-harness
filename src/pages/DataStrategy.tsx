@@ -187,7 +187,7 @@ export function DataStrategy() {
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                   <div
-                    className={`h-full rounded-full transition-all ${
+                    className={`h-full rounded-full transition-[width] duration-300 ease-out ${
                       step.status === '进行中' ? 'bg-slate-700' : 'bg-slate-300'
                     }`}
                     style={{ width: `${step.progress}%` }}

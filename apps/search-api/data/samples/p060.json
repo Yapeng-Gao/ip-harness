@@ -1,0 +1,17 @@
+{
+  "id": "p060",
+  "publicationNumber": "WO2020100060A",
+  "title": "Beam failure recovery during handover (#60)",
+  "applicant": "Huawei Technologies Co., Ltd.",
+  "inventor": "Inventor 7",
+  "date": "2022-01-01",
+  "ipc": [
+    "H04W16/28"
+  ],
+  "familyId": "fam-comms-2",
+  "country": "WO",
+  "legalStatus": "有效",
+  "abstract": "【样本·非真库】 Beam failure detection and recovery during HO.",
+  "claims": "1. A device or method comprising… (sample p060)",
+  "snippet": "Beam failure recovery during handover"
+}

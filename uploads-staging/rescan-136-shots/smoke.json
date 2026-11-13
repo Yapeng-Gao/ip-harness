@@ -1,0 +1,19 @@
+{
+  "fails": 0,
+  "pass": true,
+  "tag": "PASS_RESCAN_136",
+  "log": [
+    "PASS mid-editable-textarea",
+    "PASS mid-edit-toolbar",
+    "PASS mid-has-body",
+    "PASS mid-dirty-after-edit",
+    "PASS mid-save-clears-dirty",
+    "PASS mid-save-persists-text",
+    "PASS mid-save-version",
+    "PASS selection-chip-visible",
+    "PASS composer-has-selection-quote",
+    "PASS composer-prefill-flag",
+    "PASS composer-revise-prefill",
+    "PASS zones-present-or-skipped"
+  ]
+}

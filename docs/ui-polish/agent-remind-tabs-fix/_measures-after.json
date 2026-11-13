@@ -1,0 +1,128 @@
+{
+  "homeRemindClickables": [
+    {
+      "t": "待确认 · 3",
+      "testid": "home-needs-human-chip",
+      "tag": "A",
+      "clickable": true
+    }
+  ],
+  "homeChip": {
+    "x": 12,
+    "y": 272.875,
+    "width": 199,
+    "height": 36
+  },
+  "navItems": [
+    {
+      "text": "开始",
+      "h": 40,
+      "w": 211,
+      "fs": "12px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "active": false
+    },
+    {
+      "text": "Agent",
+      "h": 40,
+      "w": 211,
+      "fs": "12px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "active": false
+    },
+    {
+      "text": "会话",
+      "h": 40,
+      "w": 211,
+      "fs": "12px",
+      "bg": "rgb(232, 242, 255)",
+      "active": true
+    },
+    {
+      "text": "更多",
+      "h": 40,
+      "w": 211,
+      "fs": "12px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "active": false
+    }
+  ],
+  "segments": [
+    {
+      "text": "全部 · 4",
+      "pressed": "true",
+      "tone": null,
+      "color": "rgb(15, 23, 42)",
+      "bg": "rgb(255, 255, 255)",
+      "h": 32
+    },
+    {
+      "text": "待确认 · 3",
+      "pressed": "false",
+      "tone": "remind",
+      "color": "rgba(60, 60, 67, 0.6)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "h": 32
+    },
+    {
+      "text": "进行中 · 0",
+      "pressed": "false",
+      "tone": null,
+      "color": "rgba(60, 60, 67, 0.6)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "h": 32
+    }
+  ],
+  "badges": [
+    {
+      "text": "待企业",
+      "fs": "11px",
+      "h": 20
+    },
+    {
+      "text": "待企业",
+      "fs": "11px",
+      "h": 20
+    },
+    {
+      "text": "待企业",
+      "fs": "11px",
+      "h": 20
+    },
+    {
+      "text": "待企业",
+      "fs": "11px",
+      "h": 20
+    },
+    {
+      "text": "待企业",
+      "fs": "11px",
+      "h": 20
+    },
+    {
+      "text": "待企业",
+      "fs": "11px",
+      "h": 20
+    }
+  ],
+  "copyHits": {
+    "待你确认": 1,
+    "待企业确认": 0,
+    "待我确认": 0,
+    "需确认": 0,
+    "待确认": 7,
+    "我方": 0,
+    "待企业": 6
+  },
+  "remindSelected": {
+    "text": "待确认 · 3",
+    "pressed": "true",
+    "bg": "rgb(255, 251, 235)",
+    "color": "rgb(146, 64, 14)",
+    "boxShadow": "color(srgb 0.960784 0.619608 0.0431373 / 0.55) 0px 0px 0px 1px inset, rgb(217, 119, 6) 2px 0px 0px 0px inset, rgba(0, 0, 0, 0.04) 0px 1px 2px 0px, rgba(0, 0, 0, 0.05) 0px 4px 14px 0px"
+  },
+  "catalogCopy": {
+    "需确认": 0,
+    "待确认": 11
+  }
+}

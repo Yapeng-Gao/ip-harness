@@ -1,0 +1,173 @@
+{
+  "asideLineCount": 18,
+  "asideH": 852,
+  "fold": {
+    "h": 33,
+    "w": 992,
+    "text": "输入 / 切换 Agent（默认收起 · 确认完成前可不展开）"
+  },
+  "moreLink": {
+    "h": 22,
+    "w": 49,
+    "t": "还有 3 条"
+  },
+  "ctaDisabled": true,
+  "reasonVisible": true,
+  "btns": [
+    {
+      "t": "批准策略",
+      "h": 32,
+      "w": 74,
+      "disabled": true,
+      "cls": "ui-btn ui-btn-sm btn-press focus-ring agent-confirm-cta ui-btn-success",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter"
+    },
+    {
+      "t": "授权递交",
+      "h": 32,
+      "w": 72,
+      "disabled": true,
+      "cls": "ui-btn ui-btn-sm btn-press focus-ring  ui-btn-ghost",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter"
+    },
+    {
+      "t": "退回",
+      "h": 32,
+      "w": 66,
+      "disabled": false,
+      "cls": "ui-btn ui-btn-sm ui-btn-ghost btn-press focus-ring",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter"
+    },
+    {
+      "t": "还有 3 条",
+      "h": 22,
+      "w": 49,
+      "disabled": false,
+      "cls": "agent-confirm-more btn-press focus-ring",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter"
+    },
+    {
+      "t": "",
+      "h": 23,
+      "w": 62,
+      "disabled": false,
+      "cls": "btn-press focus-ring rounded border border-slate-300 bg-white px-2 py-",
+      "transition": "transform, background-color, box-shadow, border-color, color, filter"
+    },
+    {
+      "t": "",
+      "h": 21,
+      "w": 49,
+      "disabled": false,
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ri",
+      "transition": "all"
+    },
+    {
+      "t": "",
+      "h": 21,
+      "w": 49,
+      "disabled": false,
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ri",
+      "transition": "all"
+    },
+    {
+      "t": "",
+      "h": 21,
+      "w": 38,
+      "disabled": false,
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ri",
+      "transition": "all"
+    },
+    {
+      "t": "",
+      "h": 21,
+      "w": 91,
+      "disabled": false,
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ri",
+      "transition": "all"
+    },
+    {
+      "t": "",
+      "h": 21,
+      "w": 38,
+      "disabled": false,
+      "cls": "rounded-full px-2 py-0.5 text-[11px] ring-1 bg-white text-slate-700 ri",
+      "transition": "all"
+    }
+  ],
+  "transitionAllExact": 26,
+  "transitionAllSamples": [
+    {
+      "tag": "A",
+      "cls": "skip-link",
+      "t": "跳到主要内容"
+    },
+    {
+      "tag": "INPUT",
+      "cls": "focus-ring w-full rounded-[var(--radius-sm)] borde",
+      "t": ""
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+      "t": "一通创造性答复 · 边缘调度 OA 答复 Agent · 待"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "shrink-0 self-center px-1 text-[9px] text-slate-40",
+      "t": "Inbox"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+      "t": "边缘侧布局空白点洞察 布局洞察 Agent · 待你确认 待"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "shrink-0 self-center px-1 text-[9px] text-slate-40",
+      "t": "Inbox"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+      "t": "无人机竞品 · 监控告警 监控预警 Agent · 待你确认"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "shrink-0 self-center px-1 text-[9px] text-slate-40",
+      "t": "Inbox"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "agent-rail-row__link min-w-0 flex-1 text-left",
+      "t": "竞品扫描 · 办理失败（演示） 监控预警 Agent · 失"
+    },
+    {
+      "tag": "A",
+      "cls": "text-[11px] text-slate-600 hover:underline",
+      "t": "全部会话 →"
+    },
+    {
+      "tag": "DIV",
+      "cls": "agent-hitl-dock sticky bottom-0 z-20 shrink-0",
+      "t": "需要你确认：批准策略 · OA 答复 Agent交接：代理起"
+    },
+    {
+      "tag": "DIV",
+      "cls": "confirm-hitl shrink-0 rounded-[var(--radius-md)] b",
+      "t": "需要你确认：批准策略 · OA 答复 Agent交接：代理起"
+    }
+  ],
+  "asideLinks": [
+    {
+      "t": "一种边缘计算节点调度方法 CN202410328901.2 · 风险 高 · 6",
+      "h": 78,
+      "w": 195
+    },
+    {
+      "t": "打开对应表单工作台",
+      "h": 16,
+      "w": 108
+    }
+  ]
+}

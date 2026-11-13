@@ -4,7 +4,7 @@
 |----|-----|
 | **使用者** | UI评估助手（只评不改） |
 | **对照规范** | [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md)（条款 `DS-*`） |
-| **技能** | apple-hig-full · make-interfaces-feel-better · web-design-guidelines |
+| **技能** | `apple-design`（Emil Kowalski）· `make-interfaces-feel-better`（Jakub）· `web-design-guidelines`（Vercel） |
 | **输出** | `docs/ui-polish/REVIEW_*.md`：七维分 + 附加分 + Go 门 + P0/P1/P2 |
 | **样例** | `REVIEW_2026-09-12.md`（Conditional）· `REVIEW_P0_RECHECK.md`（P0 Go） |
 

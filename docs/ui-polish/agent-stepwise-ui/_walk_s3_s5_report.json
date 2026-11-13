@@ -1,0 +1,141 @@
+{
+  "headHint": "continue-from-S0-S2",
+  "base": "http://127.0.0.1:5175",
+  "startedAt": "2026-09-19T03:57:07.715Z",
+  "steps": {
+    "S3": {
+      "before": {
+        "url": "http://127.0.0.1:5175/agent/sessions/sess-disclosure-1",
+        "hasScroller": true,
+        "stepishCount": 0,
+        "textLen": 82,
+        "textSnippet": "系统 2026-09-10 11:05:00 会话已创建 交底整理 Agent 已就绪 · 请正式执行；批准后写入 disclosure_pack（不改立项报价）。",
+        "hasStart": true,
+        "startText": "启动",
+        "startDisabled": false
+      },
+      "after": {
+        "url": "http://127.0.0.1:5175/agent/sessions/sess-disclosure-1",
+        "hasScroller": true,
+        "textLen": 341,
+        "textSnippet": "系统 2026-09-10 11:05:00 会话已创建 交底整理 Agent 已就绪 · 请正式执行；批准后写入 disclosure_pack（不改立项报价）。 系统 2026-09-19 03:57:09 正式执行 正式模式：关联案件后工具成功将写入领域命令；仍须经你批准确认。 思考 2026-09-19 03:57:10 确认专利类型与 intake 未显式指定时默认发明；核对发明人叙述是否足以支撑问题/方案/效果骨架。 调用 · 交底结构化 2026-09-19 03:57:11 未写库 · 缓冲 调用 · 交底结构化 2026-09-19 03:57:11 未写库 · 缓冲 调用 · 特征抽取 2026-09-19 03:57:12 未写库 · 缓冲 正在处理…",
+        "bubbles": 0,
+        "systemOrAgent": true,
+        "hitlVisible": false
+      },
+      "started": true,
+      "advanced": true,
+      "gates": {
+        "midDeep": [],
+        "midCta": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "shell5173Count": 0
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S3/S3-before-start.png",
+        "docs/ui-polish/agent-stepwise-ui/S3/S3-after-advance.png",
+        "docs/ui-polish/agent-stepwise-ui/S3/S3-timeline-closeup.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true,
+        "hardOk": true
+      }
+    },
+    "S4": {
+      "probe": {
+        "url": "http://127.0.0.1:5175/agent/sessions/sess-oa-1?focus=hitl",
+        "hasConfirm": true,
+        "hasDock": true,
+        "barBox": {
+          "w": 992,
+          "h": 190,
+          "top": 669,
+          "bottom": 859
+        },
+        "approveVisible": true,
+        "approveDisabled": true,
+        "approveText": "批准策略",
+        "otherCtas": [
+          "批准策略",
+          "授权递交",
+          "退回",
+          "还有 3 条"
+        ],
+        "disabledReason": "请先选争点类型并填策略要点",
+        "sticky": true,
+        "caseTopPresent": true,
+        "caseTopY": 112,
+        "confirmY": 669,
+        "caseConfirmSeparated": true,
+        "focusClass": true
+      },
+      "clickProbe": {
+        "attempted": true,
+        "kind": "disabled-with-reason",
+        "disabled": true,
+        "reason": "请先选争点类型并填策略要点",
+        "sheetOpened": true
+      },
+      "gates": {
+        "midDeep": [],
+        "midCta": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "shell5173Count": 0
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S4/S4-hitl-session.png",
+        "docs/ui-polish/agent-stepwise-ui/S4/S4-confirmbar-closeup.png",
+        "docs/ui-polish/agent-stepwise-ui/S4/S4-confirm-sheet.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true,
+        "hardOk": true
+      }
+    },
+    "S5": {
+      "pre": {
+        "url": "http://127.0.0.1:5175/agent/sessions/sess-1789790267780",
+        "sessionId": "sess-1789790267780",
+        "hasTop": true,
+        "hasControls": true,
+        "bound": false,
+        "currentText": null,
+        "createVisible": true,
+        "existingVisible": true,
+        "guide": true
+      },
+      "post": {
+        "url": "http://127.0.0.1:5175/agent/sessions/sess-1789790267780",
+        "bound": true,
+        "currentText": "走查S5绑案-269268· 样机",
+        "unbind": true,
+        "hasTop": false,
+        "stillOnSession": true
+      },
+      "bindMode": "create",
+      "gates": {
+        "midDeep": [],
+        "midCta": [],
+        "billingBanner": null,
+        "amberFullWidth": [],
+        "shell5173Count": 0
+      },
+      "evidence": [
+        "docs/ui-polish/agent-stepwise-ui/S5/S5-unbound-top.png",
+        "docs/ui-polish/agent-stepwise-ui/S5/S5-case-bind-top-unbound.png",
+        "docs/ui-polish/agent-stepwise-ui/S5/S5-bound.png"
+      ],
+      "checks": {
+        "bizLogic": true,
+        "pageLogic": true,
+        "hardOk": true
+      }
+    }
+  },
+  "consoleErrors": [],
+  "finishedAt": "2026-09-19T03:57:50.106Z"
+}

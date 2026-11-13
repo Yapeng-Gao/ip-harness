@@ -1,0 +1,54 @@
+{
+  "id": "ds-ip-sft-mvp",
+  "name": "ip-sft-mvp",
+  "version": "v0.1.0",
+  "ref": "ds-ip-sft-mvp@v0.1.0",
+  "immutable": true,
+  "createdAt": "2026-09-18T03:00:00Z",
+  "purpose": "I2 MVP SFT dataset@version — synthetic illustrative samples, not a production corpus",
+  "stage": "sft",
+  "rowCounts": {
+    "train": 48,
+    "val": 14,
+    "test": 14,
+    "total": 76
+  },
+  "files": [
+    {
+      "path": "splits/train.jsonl",
+      "sha256": "0b580c46fab521d84b16e21d28b3916abedfd2f4063ff8d5a1d89cc88d99f79a",
+      "rows": 48,
+      "role": "train"
+    },
+    {
+      "path": "splits/val.jsonl",
+      "sha256": "dcf7be139e8b8e53058a778281cbf1b30aeb2ff140d941ad95a38f64d158b56b",
+      "rows": 14,
+      "role": "val"
+    },
+    {
+      "path": "splits/test.jsonl",
+      "sha256": "556b62b402fa7840c7990055698f99be0f575cd7fc309ad0bfd532551ec5eaa0",
+      "rows": 14,
+      "role": "test"
+    }
+  ],
+  "splits": {
+    "train": "splits/train.jsonl",
+    "val": "splits/val.jsonl",
+    "test": "splits/test.jsonl"
+  },
+  "recipe": "recipe.json",
+  "licenses": "licenses.md",
+  "leakageReport": "leakage-check.md",
+  "aiInfraContract": {
+    "jobType": "train.sft",
+    "datasetId": "ds-ip-sft-mvp",
+    "version": "v0.1.0"
+  },
+  "honesty": {
+    "synthetic": true,
+    "notProductionCorpus": true,
+    "independentOfSeed": "claims-sft@v1.4"
+  }
+}

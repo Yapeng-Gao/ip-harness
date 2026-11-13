@@ -1,0 +1,76 @@
+{
+  "at": "2026-09-19T13:18:34.700725+08:00",
+  "must": {
+    "SS-M-S0-1": {
+      "pass": true,
+      "detail": {
+        "chipBg": "rgb(255, 255, 255)",
+        "sendH": 40
+      }
+    },
+    "SS-M-S2-1": {
+      "pass": true,
+      "detail": {
+        "empty": true,
+        "solidStarts": 1,
+        "matched": true
+      }
+    },
+    "SS-M-S4-1": {
+      "pass": true,
+      "detail": {
+        "fs": "12px",
+        "go": true
+      }
+    },
+    "SS-M-S6-1": {
+      "pass": true,
+      "detail": {
+        "sc": 1,
+        "nc": 1,
+        "h1": "待确认会话"
+      }
+    },
+    "SS-M-S7-1": {
+      "pass": true,
+      "detail": {
+        "minH": 40
+      }
+    },
+    "SS-M-S8-1": {
+      "pass": true,
+      "detail": {
+        "solidOrch": 0,
+        "pills": [
+          {
+            "h": 32,
+            "fs": "12px"
+          },
+          {
+            "h": 32,
+            "fs": "12px"
+          },
+          {
+            "h": 32,
+            "fs": "12px"
+          }
+        ],
+        "band": 140
+      }
+    },
+    "SS-M-S9-1": {
+      "pass": true,
+      "detail": {
+        "amber": false,
+        "snake": [],
+        "advSolid": true,
+        "advBg": "oklch(0.208 0.042 265.755) · bg-slate-900",
+        "sendBg": "rgb(255,255,255) · outline",
+        "orchBg": "rgb(255,255,255) · 回总控分派 demoted",
+        "wrongNext": false,
+        "url": "/agent/projects/proj-demo-patent/bots/expert-search"
+      }
+    }
+  },
+  "allPass": true
+}
