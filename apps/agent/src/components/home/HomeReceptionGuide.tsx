@@ -15,6 +15,7 @@ import {
   weakUpdatePersonaFromDeptSlug,
 } from '../../business/userPersona'
 import { AppAvatar } from './officeIllustration'
+import { useBusinessCases } from '../../business/BusinessCaseContext'
 
 import { assessReceptionIntake, RECEPTION_GOALS, type ReceptionGoal, type ReceptionIntake } from '../../business/receptionIntake'
 
@@ -23,6 +24,8 @@ type Phase = 'idle' | 'clarify' | 'suggest'
 type Props = {
   onDispatched?: () => void
   initialAttachId?: string | null
+  /** 有案时默认续领；用户可勾「另开新案」 */
+  continueCase?: { id: string; title: string } | null
 }
 
 /** 大厅前台人设 · 01 §9 接待专家（单一名片） */
@@ -40,8 +43,10 @@ export const RECEPTION_DESK = {
 export function HomeReceptionGuide({
   onDispatched,
   initialAttachId,
+  continueCase = null,
 }: Props) {
   const navigate = useNavigate()
+  const { setReceptionHandoff } = useBusinessCases()
   const { upload, getDoc } = useAssetLibrary()
   const fileRef = useRef<HTMLInputElement>(null)
   const [phase, setPhase] = useState<Phase>('idle')
@@ -54,6 +59,7 @@ export function HomeReceptionGuide({
   const [chosenGoal, setChosenGoal] = useState<ReceptionGoal | undefined>()
   const [goalSummary, setGoalSummary] = useState('')
   const [materialState, setMaterialState] = useState<'have' | 'missing' | 'unsure' | undefined>()
+  const [openNewCase, setOpenNewCase] = useState(false)
 
   const examples = useMemo(
     () => receptionExamplesForPersona(readPersonaSeed()),
@@ -134,6 +140,13 @@ export function HomeReceptionGuide({
     })
     weakUpdatePersonaFromDeptSlug(door.slug)
     onDispatched?.()
+    if (continueCase && !openNewCase) {
+      setReceptionHandoff(continueCase.id, handoff)
+      navigate(
+        `/agent/cases/${continueCase.id}/depts/${door.slug}?reception=1`,
+      )
+      return
+    }
     writeReceptionPending(handoff)
     navigate('/agent/cases/new?after=reception')
   }
@@ -435,6 +448,25 @@ export function HomeReceptionGuide({
             ) : null}
 
             <button type="button" className="focus-ring mt-2 inline-flex items-center gap-1 rounded text-xs text-slate-600 underline" onClick={() => fileRef.current?.click()}><Paperclip className="h-3.5 w-3.5" />附上手头材料，也可稍后补</button>
+            {continueCase ? (
+              <label
+                className="mt-3 flex items-start gap-2 text-[11px] leading-snug text-slate-600"
+                data-testid="home-reception-case-choice"
+              >
+                <input
+                  type="checkbox"
+                  className="mt-0.5"
+                  checked={openNewCase}
+                  onChange={(e) => setOpenNewCase(e.target.checked)}
+                  data-testid="home-reception-new-case"
+                />
+                <span>
+                  {openNewCase
+                    ? '另开新案。取消勾选则写入当前案。'
+                    : `写入当前案「${continueCase.title}」。勾选则另开新案。`}
+                </span>
+              </label>
+            ) : null}
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <button
                 type="button"

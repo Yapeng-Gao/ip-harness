@@ -21,18 +21,22 @@
 
 ## 0.1 文档与 IA 定案（防再扯皮）
 
+> **2026-11-03 收口**：待办只在左栏 Tab，大厅不叠薄条；前台不加边界提醒句（「不办」在部台）；产品面 ≠ 工程旁路；J2 有案续领。
+
 | 议题 | 定案 |
 |---|---|
 | 登录落点 | 仍 `/agent` **大厅**（前台 + 八部） |
-| E「待我拍板=主视图」 | 落在左栏 **`/agent/pending`** 加厚为驾驶舱三视图；**不**取代大厅进门 |
-| 前台主路径 | 沿用 01b **desk-line**（来意主、附件次）；本 spec 补 **J2 领进无损** |
+| E「待我拍板」 | **只在左栏** `/agent/pending` 三视图；角标在 Tab 上。大厅不另加待办条 |
+| 产品面 vs 工程旁路 | **产品面**：大厅 / 项目 / 待办 / 编制（薄）；**工程旁路**：sessions、harness、lab、sandbox、agents catalog——**不**进主 IA，样机须藏或标「非产品面」 |
+| 前台主路径 | 沿用 01b **desk-line**（来意主、附件次）；边界不在前台名片下再写一句，部台「不办」承担；本 spec 补 **J2 领进无损** |
+| J2 有案 / 无案 | **有**当前/最近案 → 写入该案 `receptionHandoff` → 进部；**无**案 → pending → 建案 → 进部；用户可显式「另开新案」。**禁止**有案时静默总开新案 |
 | 决策账本 | 产品名对外可用「决策账本」；工程继续用 `JudgmentRecord` / 判断档案，UI 双标 |
-| 头像 H1 | 符号化（色+字）；去掉写实照片依赖 |
+| 头像 H1 | 风格化半身 SVG（默认）；不做写实照片依赖；3D/GLB 仅试线，非主表面 |
 | 不做本轮 | A 全量双人接管、C 四层记忆服务、F KPI 看板、真三级质检引擎、全八部工单状态机 |
 
 ```
 登录 →（L2 可跳过）→ 大厅
-                      ├─ 前台领进 ──J2──→ 部台收件条 → 办稿/请示 → 移交J3
+                      ├─ 前台领进 ──J2（有案续领 / 无案建案）──→ 部台第一稿（按「要办成什么」起笔）→ 请示只在该拍时 → 移交J3
                       └─ 八部/项目直达（计绕过，本轮不计 KPI 数）
 左栏「待办」→ 驾驶舱三视图（E）→ 点进部台汇报气泡
 硬请示确认/退回 → 判断档案（D）
@@ -46,7 +50,7 @@
 |---|---|---|---|
 | A 拍板权 | **薄示意已落**：壳「当前拍板人：你」；不做接管三选一 | AgentShell | 薄 ✓ |
 | B 请示分级 | **薄已落**：硬请示气泡标「L2 请示」；岗表不新做编制后台 | DeptAskReportBubble | 薄 ✓ |
-| C 记忆分层 | **不做服务**；J2 接待意图写入 progress，收件条标「项目记忆示意」 | receptionHandoff | 1 ✓ |
+| C 记忆分层 | **不做服务**；J2 把「要办成什么」写入 progress，并成为该部第一稿。顶上再贴一句来意不算听懂 | receptionHandoff + 主栏稿 | 1，稿面待补 |
 | D 决策账本 | 判断档案双标 + 驾驶舱「已交付回查」 | CaseFileDrawer / pending | 2–3 ✓ |
 | E 领导驾驶舱 | `/agent/pending` 三 Tab 加厚 | BossTodoInboxPage | 2 ✓ |
 | F 前台 KPI | **占位条已落**（分诊/引导/绕过 —）；非真统计 | pending 脚注 | 2 ✓ |
@@ -68,7 +72,7 @@
 ```ts
 type ReceptionHandoff = {
   at: string                 // ISO
-  goalText: string           // 用户来意（可空若仅附件）
+  goalText: string           // 这单要办成什么；第一稿按这句起笔（可空若仅附件，则稿从材料起笔）
   selectedSlug: string       // 确认领进的部门 slug
   primarySlug: string        // 主推
   altSlugs: string[]         // 备选
@@ -81,14 +85,14 @@ type ReceptionHandoff = {
 }
 ```
 
-**写入时机（钉死无案路径）**：
+**写入时机（钉死；样机须对齐）**：
 
 | 条件 | 行为 |
 |---|---|
-| 有 `latestCaseId` | `setReceptionHandoff(caseId, payload)` → `navigate(dept?reception=1)` |
-| 无案 | 写入 `sessionStorage` 键 `ip-agent-reception-pending-v1` → `navigate(/agent/cases/new?after=reception)`；**建案成功**后读 pending → 写入新案 `progress.receptionHandoff` → 跳转 `selectedSlug?reception=1` 并清 pending |
+| 有当前/最近案，且用户**未**点「另开新案」 | `setReceptionHandoff(caseId, payload)` → `navigate(/agent/cases/{id}/depts/{slug}?reception=1)` |
+| 无案，或用户显式「另开新案」 | 写入 `sessionStorage` 键 `ip-agent-reception-pending-v1` → `navigate(/agent/cases/new?after=reception)`；**建案成功**后读 pending → 写入新案 `progress.receptionHandoff` → 跳转 `selectedSlug?reception=1` 并清 pending |
 
-说明：现 `hallDeptHref(undefined)` 已落到 `/agent/cases/new`；本波显式带 `after=reception` + pending，避免开案后丢失来意。
+说明：八部直达无案时仍可落到 `/agent/cases/new`；**前台确认领进**不得在有案时静默总开新案（违 J2-1）。样机若仍总开新案＝**欠账**，改 `HomeReceptionGuide.confirmGo`，不改本表。
 
 **读取时机**：`BusinessCaseDeptPage` 当 `progress.receptionHandoff?.selectedSlug === 当前部 slug`（`?reception=1` 仅作高亮/展开提示，**不以 query 为唯一真相**）。
 
@@ -96,15 +100,15 @@ type ReceptionHandoff = {
 
 对照：`progress.delegate` = 助手委托链；**接待意图另字段 `receptionHandoff`**，勿混入 `delegate.chain`。
 
-### 2.2 UI · 部台收件条（J2）
+### 2.2 UI · 部台第一稿（J2）
+
+听懂落在**主栏正在写的那份产出**上，不落在一条复述来意的收件条上。各部第一稿见 [产品逻辑-一单活 §3.1](产品逻辑-一单活.md)。进入检查表仍在开写前核；不过则主栏是补/退，不出稿。
 
 | 项 | 规格 |
 |---|---|
-| 位置 | 部台中栏顶或右栏负责人下；`data-testid="dept-reception-intake"` |
-| 标题 | 前台已交代（小林） |
-| 正文 | 来意一句；材料名（若有）；粗缺口 |
-| 次文 | 「不必再复述；缺的在部内补」 |
-| 关闭 | 可「知道了」折叠；progress 仍保留供回看 |
+| 主栏 | 门槛过了：第一稿正文从 `goalText` 和已有材料起笔，不是空白模板 |
+| 收件条 | 可折叠的材料/缺口备忘，`data-testid="dept-reception-intake"`；**不是**听懂的证明。现样机只有这条、主栏仍空＝欠账 |
+| 关闭 | 「知道了」只折叠备忘；progress 与第一稿都留着。禁止再问用户复述来意 |
 
 ### 2.3 UI · G 边界上屏
 
@@ -132,7 +136,7 @@ refuses: string  // 一句「不办：…」
 `本职：{purpose}` · `不办：{refuses}`  
 `data-testid="dept-persona-boundary"`
 
-**前台卡**：idle 说明末补半句边界（已有 desk-line 则追加，不恢复气泡）。
+**前台卡**：不另加边界提醒句。`refuses` 在部台「不办」。
 
 ### 2.4 波次 1 改码清单
 
@@ -149,10 +153,10 @@ refuses: string  // 一句「不办：…」
 
 | # | 期望 |
 |---|---|
-| J2-1 | 有案时前台确认领进 → 部台见来意/缺口，无需重打字 |
+| J2-1 | 有案时前台确认领进 → 该部主栏第一稿已按「要办成什么」起笔，无需重打字。只见收件条、稿仍空＝未过 |
 | J2-2 | 刷新部台 URL 去 `reception=1` 后，progress 仍能回显收件（若未清） |
 | G-1 | ④⑤⑥ 部台可见「不办：…」 |
-| G-2 | 前台文案含「不代替部内合格线」类边界 |
+| G-2 | 部台可见「不办」；前台不另加提醒句 |
 
 ---
 
@@ -366,3 +370,5 @@ CTA：仍「查看并确认」→ `workbenchAskPath`（部台气泡）。
 | 2026-11-02 | H 纠偏：弃 blob；统一工牌席徽；状态按 idle/分诊/在途/等拍/退回/办完分机制 |
 | 2026-11-02 | H 再纠：席徽不像人 → 风格化同事肖像（脸+部色环/领+情境状态） |
 | 2026-11-02 | H：否全身数字人；主表面半身+手势；拉开脸差；前台耳麦可读；加大主像 |
+| 2026-11-03 | **收口**：待办只在左栏；前台不加边界提醒；有案续领；产品面≠工程旁路 |
+| 2026-11-03 | **J2**：听懂＝该部第一稿按「要办成什么」起笔；收件条只作备忘，单独贴来意不算过 |

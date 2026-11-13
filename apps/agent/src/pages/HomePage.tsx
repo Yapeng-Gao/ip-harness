@@ -19,7 +19,7 @@ import { isBusinessSeedCaseId } from '../business/businessSeeds'
 /**
  * 大厅着陆 · /agent
  * 真源：一期节点 + 一期-产品逻辑 + 一期-产品理念 —— 公司门口第一眼。
- * §103：门口两件套 = 前台 + 八部门牌；「要你拍板」并入左栏「待确认」唯一入口；支路仍 ?hallTools=1。
+ * 门口 = 前台 + 八部；待办只在左栏 Tab。支路仍 ?hallTools=1。
  */
 export function HomePage() {
   const [params] = useSearchParams()
@@ -62,6 +62,8 @@ export function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- tick forces re-read storage
     [personaTick],
   )
+  const latestCase = workspaceCases.find((c) => c.id === latestId)
+
   return (
     <div
       className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#f5f5f7] px-3 py-2 lg:overflow-hidden lg:px-4"
@@ -104,7 +106,14 @@ export function HomePage() {
             <div className="min-h-0 space-y-2 lg:overflow-y-auto" data-hall-block="reception" data-testid="home-delegate-zone">
               <p className="px-0.5 text-[11px] font-semibold text-slate-500">分派</p>
               <div id="hall-reception">
-                <HomeReceptionGuide initialAttachId={attachQ} />
+                <HomeReceptionGuide
+                  initialAttachId={attachQ}
+                  continueCase={
+                    latestCase
+                      ? { id: latestCase.id, title: latestCase.title }
+                      : null
+                  }
+                />
               </div>
               {hallTools ? (
           <div
