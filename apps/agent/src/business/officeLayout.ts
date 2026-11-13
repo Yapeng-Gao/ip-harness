@@ -33,8 +33,8 @@ const CORRIDOR_W = 28
 const RIGHT_X = 114
 const RIGHT_W = 84
 const ROW_Y = 2
-const ROW_H = 58
-const LOBBY_Y = 234
+const ROW_H = 69
+const LOBBY_Y = ROW_Y + 4 * ROW_H
 
 export const CORRIDOR_TOP = CORRIDOR_X
 export const CORRIDOR_BOT = CORRIDOR_X + CORRIDOR_W
@@ -100,8 +100,7 @@ export function roomBySlug(slug: string): OfficeRoom | undefined {
 /** 从门口经走廊走到对方门口，方便看见交接的人。 */
 export function handoffWaypoints(from: OfficeRoom, to: OfficeRoom): Pt[] {
   return [
-    from.door,
-    from.doorOut,
+    { x: CORRIDOR_TOP, y: from.door.y },
     { x: LANE_X, y: from.door.y },
     { x: LANE_X, y: to.door.y },
     to.doorOut,

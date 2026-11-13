@@ -9,7 +9,6 @@ import {
   CORRIDOR_TOP,
   OFFICE_H,
   OFFICE_W,
-  RECEPTIONIST,
   SOUTH_Y,
   type OfficeRoom,
   type Pt,
@@ -258,14 +257,6 @@ export function OfficeScene({
           {icon(room)}
         </g>
       ))}
-      <Person x={RECEPTIONIST.x} y={RECEPTIONIST.y} id="reception" frame={frame} walking={false} reduced={reduced} />
-      <rect x={28} y={SOUTH_Y + 22} width="144" height="10" rx="2" fill={FILL} stroke={STROKE} strokeWidth="1" />
-      <rect x={36} y={SOUTH_Y + 32} width="14" height="8" rx="2" fill={FILL} stroke={STROKE} strokeWidth="1" />
-      <rect x={58} y={SOUTH_Y + 32} width="14" height="8" rx="2" fill={FILL} stroke={STROKE} strokeWidth="1" />
-      <g transform={`translate(${160} ${SOUTH_Y + 34})`}>
-        <rect x="-2" y="1" width="4" height="3" rx="0.6" fill="#cbd5e1" />
-        <circle cx="0" cy="-1" r="3" fill="#059669" />
-      </g>
       {path && path.length > 1 ? (
         <polyline
           points={path.map((pt) => `${pt.x},${pt.y}`).join(' ')}

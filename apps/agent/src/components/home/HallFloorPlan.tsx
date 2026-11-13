@@ -16,7 +16,6 @@ import {
   CHATTER,
   OFFICE_H,
   OFFICE_W,
-  RECEPTIONIST,
   hairFor,
   handoffWaypoints,
   officeRooms,
@@ -27,7 +26,7 @@ import {
   type OfficeRoom,
   type Pt,
 } from '../../business/officeLayout'
-import { OfficeScene, PERSON_LABEL_LIFT, roomIconBox, type OfficeActor } from './officeIllustration'
+import { OfficeScene, PERSON_HAIR, PERSON_LABEL_LIFT, roomIconBox, type OfficeActor } from './officeIllustration'
 
 function playableHandoff(events: CompanyActivityEvent[], openedAt: number) {
   const hit = events.find((event) => event.handoff)
@@ -112,18 +111,22 @@ function clampBox(box: CssBox, bounds: CssBox): CssBox {
   }
 }
 
-function clearOf(box: CssBox, blockers: CssBox[], bounds: CssBox): CssBox {
+function findClear(seed: CssBox, blockers: CssBox[], bounds: CssBox): CssBox | null {
   const blocked = (item: CssBox) => blockers.some((other) => hit(item, other))
-  const inside = (item: CssBox) =>
-    item.left >= bounds.left && item.top >= bounds.top && item.left + item.w <= bounds.left + bounds.w && item.top + item.h <= bounds.top + bounds.h
-  if (!blocked(box) && inside(box)) return box
-  for (const dy of [0, 8, -8, 16, -16]) {
-    for (const dx of [0, -14, 14, -28, 28, -42, 42]) {
-      const next = clampBox({ ...box, left: box.left + dx, top: box.top + dy }, bounds)
-      if (!blocked(next)) return next
-    }
+  const fits = (item: CssBox) =>
+    item.left >= bounds.left - 0.5 &&
+    item.top >= bounds.top - 0.5 &&
+    item.left + item.w <= bounds.left + bounds.w + 0.5 &&
+    item.top + item.h <= bounds.top + bounds.h + 0.5
+  const shifts: Array<[number, number]> = [[0, 0]]
+  for (const dy of [0, -14, 14, -28, 28, -42]) {
+    for (const dx of [0, -18, 18, -36, 36, -54, 54, -72]) shifts.push([dx, dy])
   }
-  return clampBox(box, bounds)
+  for (const [dx, dy] of shifts) {
+    const next = { ...seed, left: seed.left + dx, top: seed.top + dy }
+    if (!blocked(next) && fits(next)) return next
+  }
+  return null
 }
 
 function tagBox(centerBottom: { left: number; top: number }, label: string): CssBox {
@@ -148,13 +151,12 @@ function placeBesideHead(
   const above = { left: name.left + name.w / 2 - box.w / 2, top: name.top - box.h - 4, w: box.w, h: box.h }
   const candidates = preferLeft ? [left, right, above] : [right, left, above]
   for (const candidate of candidates) {
-    const cleared = clearOf(candidate, [...blockers, name], bounds)
-    if (!hit(cleared, name) && !blockers.some((item) => hit(cleared, item))) {
+    const cleared = findClear(candidate, [...blockers, name], bounds)
+    if (cleared && !hit(cleared, name)) {
       return { ...cleared, tail: cleared.left + cleared.w / 2 <= name.left + name.w / 2 ? 'right' : 'left' }
     }
   }
-  const fallback = clearOf(above, [...blockers, name], bounds)
-  return { ...fallback, tail: 'right' as const }
+  return null
 }
 
 function placeHandoffBubble(
@@ -328,7 +330,6 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
   }, [playId, arrived])
 
   const ready = fit.w > 8
-  const greet = CHATTER.reception[frame % CHATTER.reception.length] ?? CHATTER.reception[0]
   const nameAnchors = new Map<string, { left: number; top: number; box: CssBox }>()
   const fixedBlocks: CssBox[] = []
   if (ready) {
@@ -355,9 +356,21 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
       const preview = hallDeptExpertPreviews(door).find((item) => item.id === actor.id)
       const label = shortName(actor.id, preview?.name ?? actor.slug)
       const anchor = place({ x: spot.x, y: spot.y - PERSON_LABEL_LIFT }, fit)
-      const box = clearOf(tagBox(anchor, label), taken, bounds)
+      const box = findClear(tagBox(anchor, label), taken, bounds) ?? tagBox(anchor, label)
       taken.push(box)
       nameAnchors.set(actor.id, { left: box.left + box.w / 2, top: box.top + box.h, box })
+    }
+    for (const actor of cast) {
+      const walking = actor.id === walker?.id && !!route
+      const spot = walking && route ? polylinePoint(route, progress) : { x: actor.x, y: actor.y }
+      const topLeft = place({ x: spot.x - 6, y: spot.y - PERSON_HAIR - 1 }, fit)
+      const botRight = place({ x: spot.x + 6, y: spot.y + 1 }, fit)
+      fixedBlocks.push({
+        left: topLeft.left,
+        top: topLeft.top,
+        w: botRight.left - topLeft.left,
+        h: botRight.top - topLeft.top,
+      })
     }
   }
 
@@ -533,23 +546,6 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               )
             })()
           : null}
-        {ready ? (
-          <button
-            type="button"
-            className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border border-slate-200 bg-white px-1 py-px text-[10px] font-medium leading-none text-slate-700 shadow-[var(--shadow-rest)]"
-            style={place({ x: RECEPTIONIST.x, y: RECEPTIONIST.y - PERSON_LABEL_LIFT }, fit)}
-            data-testid="hall-reception-room"
-            onClick={() => document.getElementById('home-reception-line')?.focus()}
-          >
-            小林
-            <span className="pointer-events-none absolute left-full top-0 ml-1 w-max max-w-[9rem] rounded-lg border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] font-medium leading-4 text-slate-800 shadow-[var(--shadow-elevated)]">
-              {play ? '案子正在送去下一间。' : greet}
-            </span>
-            <span className="pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 text-[10px] font-semibold tracking-wide text-slate-400">
-              NT
-            </span>
-          </button>
-        ) : null}
         <div className="sr-only" data-testid="home-eight-depts" data-dept-grid="floor">
           八个部门在同一层办公室里
         </div>
