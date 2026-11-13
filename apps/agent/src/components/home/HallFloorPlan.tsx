@@ -27,7 +27,7 @@ import {
   type OfficeRoom,
   type Pt,
 } from '../../business/officeLayout'
-import { OfficeScene, PERSON_HAIR, PERSON_LABEL_LIFT, type OfficeActor } from './officeIllustration'
+import { OfficeScene, PERSON_LABEL_LIFT, type OfficeActor } from './officeIllustration'
 
 function playableHandoff(events: CompanyActivityEvent[], openedAt: number) {
   const hit = events.find((event) => event.handoff)
@@ -98,56 +98,88 @@ function bubbleBox(lines: string[]) {
   return { w: chars * 12 + 16, h: lines.length * 16 + 10 }
 }
 
-/** 气泡贴在名牌一侧；贴边时换到另一侧，并钳在画面内。 */
+type CssBox = { left: number; top: number; w: number; h: number }
+
+function hit(a: CssBox, b: CssBox) {
+  return a.left < b.left + b.w + 3 && a.left + a.w + 3 > b.left && a.top < b.top + b.h + 2 && a.top + a.h + 2 > b.top
+}
+
+function clampBox(box: CssBox, bounds: CssBox): CssBox {
+  return {
+    ...box,
+    left: Math.max(bounds.left, Math.min(box.left, bounds.left + bounds.w - box.w)),
+    top: Math.max(bounds.top, Math.min(box.top, bounds.top + bounds.h - box.h)),
+  }
+}
+
+function clearOf(box: CssBox, blockers: CssBox[], bounds: CssBox): CssBox {
+  const blocked = (item: CssBox) => blockers.some((other) => hit(item, other))
+  const inside = (item: CssBox) =>
+    item.left >= bounds.left && item.top >= bounds.top && item.left + item.w <= bounds.left + bounds.w && item.top + item.h <= bounds.top + bounds.h
+  if (!blocked(box) && inside(box)) return box
+  for (const dy of [0, 8, -8, 16, -16]) {
+    for (const dx of [0, -14, 14, -28, 28, -42, 42]) {
+      const next = clampBox({ ...box, left: box.left + dx, top: box.top + dy }, bounds)
+      if (!blocked(next)) return next
+    }
+  }
+  return clampBox(box, bounds)
+}
+
+function tagBox(centerBottom: { left: number; top: number }, label: string): CssBox {
+  const w = Math.max(26, label.length * 10 + 8)
+  const h = 14
+  return { left: centerBottom.left - w / 2, top: centerBottom.top - h, w, h }
+}
+
+/** 气泡贴在名牌一侧；贴边时换到另一侧，并躲开名牌和徽章。 */
 function placeBesideHead(
-  anchor: { left: number; top: number },
-  label: string,
+  name: CssBox,
   lines: string[],
   preferLeft: boolean,
   fit: Fit,
-  hairLine: number,
+  blockers: CssBox[],
 ) {
   const box = bubbleBox(lines)
-  const nameW = label.length * 10 + 12
-  const nameH = 18
-  const nameLeft = anchor.left - nameW / 2
-  const nameTop = anchor.top - nameH
-  const gap = 8
-  const margin = 8
-  const sceneLeft = fit.x + margin
-  const sceneRight = fit.x + fit.w - margin
-  const spaceLeft = nameLeft - gap - sceneLeft
-  const spaceRight = sceneRight - (nameLeft + nameW + gap)
-  let side: 'left' | 'right' = preferLeft ? 'left' : 'right'
-  const roomy = (space: number) => space >= box.w
-  if (side === 'left' && !roomy(spaceLeft) && spaceRight > spaceLeft) side = 'right'
-  if (side === 'right' && !roomy(spaceRight) && spaceLeft > spaceRight) side = 'left'
-  const space = side === 'left' ? spaceLeft : spaceRight
-  const w = Math.max(36, Math.min(box.w, space))
-  let left = side === 'left' ? nameLeft - gap - w : nameLeft + nameW + gap
-  left = Math.max(sceneLeft, Math.min(left, sceneRight - w))
-  let top = nameTop
-  if (box.h > nameH) top = nameTop - (box.h - nameH)
-  const maxBottom = hairLine - 4
-  if (top + box.h > maxBottom) top = maxBottom - box.h
-  top = Math.max(fit.y + margin, top)
-  return { left, top, w, h: box.h, tail: side === 'left' ? 'right' : 'left' }
+  const margin = 6
+  const bounds = { left: fit.x + margin, top: fit.y + margin, w: fit.w - margin * 2, h: fit.h - margin * 2 }
+  const above = { left: name.left + name.w / 2 - box.w / 2, top: name.top - box.h - 4, w: box.w, h: box.h }
+  const left = { left: name.left - box.w - 6, top: name.top - 2, w: box.w, h: box.h }
+  const right = { left: name.left + name.w + 6, top: name.top - 2, w: box.w, h: box.h }
+  const candidates = preferLeft ? [above, left, right] : [above, right, left]
+  for (const candidate of candidates) {
+    const cleared = clearOf(candidate, [...blockers, name], bounds)
+    if (!hit(cleared, name) && !blockers.some((item) => hit(cleared, item))) {
+      return { ...cleared, tail: cleared.left + cleared.w / 2 <= name.left + name.w / 2 ? 'right' : 'left' }
+    }
+  }
+  const fallback = clearOf(above, [...blockers, name], bounds)
+  return { ...fallback, tail: 'right' as const }
 }
 
 function placeHandoffBubble(
   head: { left: number; top: number },
   lines: string[],
   fit: Fit,
+  blockers: CssBox[],
 ) {
   const box = bubbleBox(lines)
-  const nameW = 56
-  const gap = 8
-  const margin = 8
-  let left = head.left - nameW / 2 - gap - box.w
-  let top = head.top - box.h
-  left = Math.max(fit.x + margin, Math.min(left, fit.x + fit.w - box.w - margin))
-  top = Math.max(fit.y + margin, Math.min(top, fit.y + fit.h - box.h - margin))
-  return { left, top, w: box.w, h: box.h, tailRight: left + box.w / 2 <= head.left }
+  const gap = 6
+  const margin = 6
+  const candidates = [
+    { left: head.left - box.w - gap, top: head.top - box.h },
+    { left: head.left - box.w / 2, top: head.top - box.h - 16 },
+    { left: head.left + 28, top: head.top - box.h },
+  ]
+  const bounds = { left: fit.x + margin, top: fit.y + margin, w: fit.w - margin * 2, h: fit.h - margin * 2 }
+  for (const candidate of candidates) {
+    const clamped = clampBox({ ...candidate, w: box.w, h: box.h }, bounds)
+    if (!blockers.some((item) => hit(clamped, item))) {
+      return { ...clamped, tailRight: clamped.left + clamped.w / 2 <= head.left }
+    }
+  }
+  const fallback = clampBox({ ...candidates[0]!, w: box.w, h: box.h }, bounds)
+  return { ...fallback, tailRight: fallback.left + fallback.w / 2 <= head.left }
 }
 
 function shortName(id: string, fallback: string): string {
@@ -165,18 +197,26 @@ function actorsFor(room: OfficeRoom): OfficeActor[] {
       : room.slug === 'disclosure'
         ? ['desk', 'board', 'side']
         : ['desk', 'board', 'side']
-  const foot = room.y + 50
+  const foot = room.y
   const spots =
     previews.length === 1
       ? [
           {
-            x: room.slug === 'annuity' ? room.x + 22 : room.doorSide === 'e' ? room.x + 64 : room.x + room.w - 22,
-            y: foot,
+            x: room.slug === 'annuity' ? room.x + 26 : room.slug === 'inspire' ? room.x + room.w - 22 : room.doorSide === 'e' ? room.x + 50 : room.x + room.w - 32,
+            y: foot + 52,
           },
         ]
-      : (room.doorSide === 'e' ? [22, 46, 68] : [room.w - 22, room.w - 46, room.w - 68])
-          .slice(0, previews.length)
-          .map((dx) => ({ x: room.x + dx, y: foot }))
+      : room.doorSide === 'e'
+        ? [
+            { x: room.x + 26, y: foot + 56 },
+            { x: room.x + 54, y: foot + 47 },
+            { x: room.x + 38, y: foot + 51 },
+          ].slice(0, previews.length)
+        : [
+            { x: room.x + room.w - 32, y: foot + 56 },
+            { x: room.x + 32, y: foot + 47 },
+            { x: room.x + 48, y: foot + 51 },
+          ].slice(0, previews.length)
   return previews.map((preview, index) => ({
     id: preview.id,
     slug: room.slug,
@@ -289,6 +329,33 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
 
   const ready = fit.w > 8
   const greet = CHATTER.reception[frame % CHATTER.reception.length] ?? CHATTER.reception[0]
+  const nameAnchors = new Map<string, { left: number; top: number; box: CssBox }>()
+  const fixedBlocks: CssBox[] = []
+  if (ready) {
+    const bounds = { left: fit.x + 4, top: fit.y + 4, w: fit.w - 8, h: fit.h - 8 }
+    for (const room of rooms) {
+      const signAt = place({ x: room.x + room.w / 2, y: room.y + 5 }, fit)
+      const signText = SIGN[room.slug] ?? room.label
+      const signW = signText.length * 13 + 16
+      fixedBlocks.push({ left: signAt.left - signW / 2, top: signAt.top - 11, w: signW, h: 22 })
+      const badgeAt = place({ x: room.x + room.w - 3, y: room.y + 7 }, fit)
+      const status = statusBySlug[room.slug] ?? '待机'
+      const badgeW = status.length * 11 + 14
+      fixedBlocks.push({ left: badgeAt.left - badgeW, top: badgeAt.top, w: badgeW, h: 18 })
+    }
+    const taken = [...fixedBlocks]
+    for (const actor of [...cast].sort((a, b) => b.x - a.x)) {
+      const walking = actor.id === walker?.id && !!route
+      const spot = walking && route ? polylinePoint(route, progress) : { x: actor.x, y: actor.y }
+      const door = HALL_DEPT_DOORS.find((item) => item.slug === actor.slug) as HallDeptDoor
+      const preview = hallDeptExpertPreviews(door).find((item) => item.id === actor.id)
+      const label = shortName(actor.id, preview?.name ?? actor.slug)
+      const anchor = place({ x: spot.x, y: spot.y - PERSON_LABEL_LIFT }, fit)
+      const box = clearOf(tagBox(anchor, label), taken, bounds)
+      taken.push(box)
+      nameAnchors.set(actor.id, { left: box.left + box.w / 2, top: box.top + box.h, box })
+    }
+  }
 
   return (
     <section
@@ -377,14 +444,23 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               const door = HALL_DEPT_DOORS.find((item) => item.slug === actor.slug) as HallDeptDoor
               const walking = actor.id === walker?.id && !!route
               const spot = walking && route ? polylinePoint(route, progress) : { x: actor.x, y: actor.y }
-              const at = place({ x: spot.x, y: spot.y - PERSON_LABEL_LIFT }, fit)
-              const hairLine = place({ x: spot.x, y: spot.y - PERSON_HAIR }, fit).top
+              const placed = nameAnchors.get(actor.id)
+              const at = placed ?? place({ x: spot.x, y: spot.y - PERSON_LABEL_LIFT }, fit)
               const room = rooms.find((item) => item.slug === actor.slug)
               const preview = hallDeptExpertPreviews(door).find((item) => item.id === actor.id)
               const label = shortName(actor.id, preview?.name ?? actor.slug)
               const preferLeft = room?.doorSide === 'e'
               const line = CHATTER[actor.slug]?.[chatterTick % (CHATTER[actor.slug]?.length ?? 1)] ?? ''
-              const idle = actor.lead && !walking && talking.has(actor.slug) && line ? placeBesideHead(at, label, wrapCn(line), preferLeft, fit, hairLine) : null
+              const idle =
+                actor.lead && !walking && talking.has(actor.slug) && line && placed
+                  ? placeBesideHead(
+                      placed.box,
+                      wrapCn(line),
+                      preferLeft,
+                      fit,
+                      [...fixedBlocks, ...[...nameAnchors.values()].map((item) => item.box)],
+                    )
+                  : null
               return (
                 <span key={actor.id}>
                   <Link
@@ -425,9 +501,13 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
         {ready && walker && route && showPhrase && play
           ? (() => {
               const along = polylinePoint(route, progress)
-              const head = place({ x: along.x, y: along.y - PERSON_LABEL_LIFT }, fit)
+              const walkerTag = walker ? nameAnchors.get(walker.id) : undefined
+              const head = walkerTag ?? place({ x: along.x, y: along.y - PERSON_LABEL_LIFT }, fit)
               const lines = wrapCn(play.phrase)
-              const bubble = placeHandoffBubble(head, lines, fit)
+              const bubble = placeHandoffBubble(head, lines, fit, [
+                ...fixedBlocks,
+                ...[...nameAnchors.values()].map((item) => item.box),
+              ])
               return (
                 <div
                   className="pointer-events-none absolute z-[6] rounded-xl border border-[#ead9c2] bg-white px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-[#5c4030] shadow-[0_4px_12px_rgba(90,60,30,0.1)]"

@@ -39,9 +39,9 @@ const PAPER = '#fffaf3'
 const WOOD_DARK = '#c4925a'
 const TEAL = '#7ec8c3'
 
-/** 头发顶在脚点上方这么多单位。名牌底边再往上留一点空隙。 */
-export const PERSON_HAIR = 32
-export const PERSON_LABEL_LIFT = 34
+/** 头发顶在脚点上方这么多单位（人物已按 0.8 缩过）。名牌底边再往上留一点空隙。 */
+export const PERSON_HAIR = 26
+export const PERSON_LABEL_LIFT = 30
 
 const FLOOR: Record<string, string> = {
   intake: '#f6e3c8',
@@ -121,7 +121,7 @@ function Person({
 }) {
   const step = walking && !reduced ? (frame % 2 ? 1.3 : -1.3) : 0
   return (
-    <g transform={`translate(${x} ${y})`}>
+    <g transform={`translate(${x} ${y}) scale(0.8)`}>
       <ellipse cx="0" cy="0.7" rx="6.4" ry="1.15" fill="#e4c9a6" />
       <g className={reduced || walking ? undefined : 'office-idle'}>
         <rect x={-4.1} y={-12 + step} width="3.1" height="12.2" rx="1.4" fill={pants} />
@@ -140,14 +140,22 @@ function Person({
   )
 }
 
+function Chair({ x, y }: { x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x="-6" y="-18" width="12" height="8" rx="2" fill="#8d5a3a" />
+      <rect x="-5" y="-17" width="10" height="5" rx="1.4" fill="#c4925a" />
+    </g>
+  )
+}
+
 function Desk({ x, y, glow }: { x: number; y: number; glow: string }) {
   return (
     <g transform={`translate(${x} ${y})`} filter="url(#office-soft)">
-      <rect x="-9" y="-4" width="18" height="6" rx="1.6" fill={WOOD_DARK} />
-      <rect x="-8.2" y="-3.4" width="16.4" height="1.3" rx="0.6" fill="#e7b578" />
-      <rect x="-3.6" y="-8.2" width="7.2" height="4.2" rx="0.8" fill="#1d3344" />
-      <rect x="-2.8" y="-7.4" width="5.6" height="2.6" rx="0.5" fill={glow} />
-      <rect x="-2.2" y="-0.8" width="4.4" height="1.2" rx="0.4" fill="#3d2c22" />
+      <rect x="-8" y="-12" width="16" height="13" rx="2" fill={WOOD_DARK} />
+      <rect x="-7.2" y="-11.2" width="14.4" height="2" rx="0.6" fill="#e7b578" />
+      <rect x="-3.6" y="-16.4" width="7.2" height="4.4" rx="0.8" fill="#1d3344" />
+      <rect x="-2.8" y="-15.6" width="5.6" height="2.6" rx="0.4" fill={glow} />
     </g>
   )
 }
@@ -155,8 +163,8 @@ function Desk({ x, y, glow }: { x: number; y: number; glow: string }) {
 function WideTable({ x, y }: { x: number; y: number }) {
   return (
     <g transform={`translate(${x} ${y})`} filter="url(#office-soft)">
-      <rect x="-14" y="-5" width="28" height="8" rx="2.4" fill={WOOD_DARK} />
-      <rect x="-12.5" y="-3.6" width="25" height="5" rx="1.4" fill="#e7b578" />
+      <rect x="-11" y="-11" width="22" height="12" rx="2.2" fill={WOOD_DARK} />
+      <rect x="-10" y="-10.2" width="20" height="2" rx="0.7" fill="#e7b578" />
     </g>
   )
 }
@@ -218,8 +226,8 @@ function furnish(room: RoomPaint) {
         <ellipse cx={x + 14} cy={y + 39} rx="2.4" ry="1.2" fill="#8fd0ae" />
         <ellipse cx={x + 32} cy={y + 42} rx="7" ry="4.2" fill="#e07a5f" />
         <ellipse cx={x + 30} cy={y + 41} rx="2.4" ry="1.2" fill="#f4b5a4" />
-        <rect x={x + 46} y={y + 30} width="1.4" height="12" rx="0.6" fill="#c4a574" />
-        <ellipse cx={x + 46.7} cy={y + 29} rx="3.2" ry="1.6" fill="#f2c14e" />
+        <rect x={x + 38} y={y + 32} width="1.4" height="12" rx="0.6" fill="#c4a574" />
+        <ellipse cx={x + 38.7} cy={y + 31} rx="3.2" ry="1.6" fill="#f2c14e" />
       </g>
     )
   }
@@ -231,8 +239,8 @@ function furnish(room: RoomPaint) {
         {['#c4493a', '#2f6f9f', '#e0b04a', '#2f8f4e', '#f4efe4'].map((color, i) => (
           <rect key={color} x={x + 9 + (i % 3) * 3} y={y + 16 + Math.floor(i / 3) * 9} width="2.2" height="7" rx="0.4" fill={color} />
         ))}
-        <rect x={x + 34} y={y + 36} width="8" height="7" rx="1" fill="#d7d2cb" />
-        <rect x={x + 44} y={y + 34} width="8" height="9" rx="1" fill="#c4b8a8" />
+        <rect x={x + 34} y={y + 38} width="8" height="7" rx="1" fill="#d7d2cb" />
+        <rect x={x + 8} y={y + 38} width="8" height="8" rx="1" fill="#c4b8a8" />
       </g>
     )
   }
@@ -246,21 +254,23 @@ function furnish(room: RoomPaint) {
   if (room.slug === 'draft') {
     return (
       <g>
-        <rect x={x + 8} y={y + 12} width="8" height="5" rx="0.6" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.4" />
-        <rect x={x + 18} y={y + 12} width="8" height="5" rx="0.6" fill="#fff" stroke="#eadcc8" strokeWidth="0.4" />
-        <rect x={x + 64} y={y + 12} width="12" height="5" rx="1.1" fill="#d7d2cb" />
-        <rect x={x + 66} y={y + 10.6} width="8" height="2.6" rx="0.5" fill={PAPER} />
-        <circle cx={x + 73} cy={y + 15.2} r="0.7" fill="#3dcea0" />
+        <rect x={x + 6} y={y + 16} width="11" height="14" rx="1" fill="#fff" stroke="#eadcc8" strokeWidth="0.5" />
+        <rect x={x + 9} y={y + 18} width="11" height="14" rx="1" fill={PAPER} stroke="#e7d3b8" strokeWidth="0.5" />
+        <line x1={x + 11} y1={y + 22} x2={x + 18} y2={y + 22} stroke="#e7d3b8" strokeWidth="0.4" />
+        <line x1={x + 11} y1={y + 25} x2={x + 17} y2={y + 25} stroke="#e7d3b8" strokeWidth="0.4" />
+        <rect x={x + 64} y={y + 30} width="14" height="11" rx="1.4" fill="#d7d2cb" />
+        <rect x={x + 66} y={y + 27} width="10" height="4" rx="0.6" fill="#fff" />
+        <circle cx={x + 74} cy={y + 36} r="1.2" fill="#3dcea0" />
       </g>
     )
   }
   if (room.slug === 'oa') {
     return (
       <g>
-        <rect x={x + 8} y={y + 12} width="14" height="5" rx="1" fill={PAPER} stroke="#eadcc8" strokeWidth="0.4" />
-        <rect x={x + 22} y={y + 12} width="12" height="5" rx="1" fill="#fff" stroke="#eadcc8" strokeWidth="0.4" />
-        <circle cx={x + 30} cy={y + 14.5} r="1.3" fill="#e85d4c" />
-        <rect x={x + 40} y={y + 12} width="12" height="5" rx="1" fill="#efe6d4" />
+        <rect x={x + 6} y={y + 20} width="16" height="12" rx="1.2" fill="#efe6d4" />
+        <rect x={x + 8} y={y + 18} width="16" height="11" rx="1" fill="#fff" stroke="#eadcc8" strokeWidth="0.45" />
+        <circle cx={x + 20} cy={y + 23} r="2" fill="#e85d4c" />
+        <rect x={x + 10} y={y + 28} width="10" height="1" rx="0.3" fill="#eadcc8" />
       </g>
     )
   }
@@ -302,7 +312,7 @@ function furnish(room: RoomPaint) {
       ].map(([h, color], i) => (
         <rect key={color as string} x={x + 13 + i * 8} y={y + 30 - Number(h)} width="5" height={Number(h)} rx="1" fill={String(color)} />
       ))}
-      <Plant x={x + 50} y={y + 42} />
+      <Plant x={x + 34} y={y + 42} />
     </g>
   )
 }
@@ -419,6 +429,11 @@ export function OfficeScene({
         />
       ) : null}
       {actors
+        .filter((actor) => actor.id !== walkerId && actor.role === 'desk' && actor.slug !== 'inspire')
+        .map((actor) => (
+          <Chair key={`chair-${actor.id}`} x={actor.x} y={actor.y} />
+        ))}
+      {actors
         .filter((actor) => actor.id !== walkerId)
         .map((actor) => (
           <Person
@@ -456,7 +471,7 @@ export function OfficeScene({
       />
       {walker && along ? (
         <g>
-          <g transform={`translate(${along.x + 9} ${along.y - 16})`} filter="url(#office-soft)">
+          <g transform={`translate(${along.x + 8} ${along.y - 12})`} filter="url(#office-soft)">
             <rect x="-4.2" y="-5" width="8.4" height="7" rx="1" fill="#f2c14e" />
             <rect x="-2.2" y="-6.4" width="3.6" height="2.2" rx="0.5" fill="#e07a5f" />
             <line x1="-2.4" y1="-2.2" x2="2.4" y2="-2.2" stroke="#fff6dc" strokeWidth="0.5" />
