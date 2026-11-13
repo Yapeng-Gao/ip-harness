@@ -5,7 +5,7 @@
 import { HALL_DEPT_DOORS } from './hallDepts'
 import type { RoomLiveStatus } from './roomLiveStatus'
 
-/** 像素网格。屏幕上按整数倍放大，image-rendering: pixelated。 */
+/** 办公室 viewBox。画面按比例放大，汉字走 DOM 贴层。 */
 export const OFFICE_W = 200
 export const OFFICE_H = 280
 
@@ -153,8 +153,9 @@ export function boardCopy(status: RoomLiveStatus): [string, string] {
   return ['今天还空着', '可以进来谈']
 }
 
-const SHIRTS = ['#0f172a', '#007aff', '#059669', '#b45309', '#1e293b', '#0066d6', '#475569', '#0f766e']
-const HAIR = ['#1c1917', '#292524', '#44403c', '#0f172a', '#3f3f46']
+const SHIRTS = ['#243044', '#3d7ea6', '#2f8f6b', '#c47a3a', '#3d4f73', '#4c7fd0', '#6b5344', '#1f8f8a']
+const HAIR = ['#3a2418', '#2a211c', '#5c4034', '#1c1917', '#4a3428']
+const PANTS = ['#3d4a5c', '#6b4a32', '#2f4a40', '#4a3a55', '#3e4a34']
 
 function hashId(id: string): number {
   let h = 0
@@ -168,6 +169,14 @@ export function shirtFor(id: string): string {
 
 export function hairFor(id: string): string {
   return HAIR[hashId(id + ':hair') % HAIR.length]!
+}
+
+export function pantsFor(id: string): string {
+  return PANTS[hashId(id + ':pants') % PANTS.length]!
+}
+
+export function cutFor(id: string): 0 | 1 | 2 {
+  return (hashId(id + ':cut') % 3) as 0 | 1 | 2
 }
 
 export const CHATTER: Record<string, string[]> = {

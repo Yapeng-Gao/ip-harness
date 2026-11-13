@@ -14,32 +14,20 @@ import { prefersReducedMotion } from '../../lib/motionPref'
 import {
   SIGN,
   CHATTER,
-  CORRIDOR_BOT,
   OFFICE_H,
   OFFICE_W,
   RECEPTIONIST,
   hairFor,
   handoffWaypoints,
   officeRooms,
+  pantsFor,
   polylinePoint,
   roomBySlug,
   shirtFor,
   type OfficeRoom,
   type Pt,
 } from '../../business/officeLayout'
-import { drawOffice, type PixelActor } from '../../business/officePixels'
-
-const PANTS = ['#243044', '#4a3428', '#1e3d34', '#3d2a44', '#2c3a28']
-
-function hashId(id: string): number {
-  let h = 0
-  for (const ch of id) h = (h * 33 + ch.charCodeAt(0)) >>> 0
-  return h
-}
-
-function pantsFor(id: string): string {
-  return PANTS[hashId(id + ':pants') % PANTS.length]!
-}
+import { OfficeScene, type OfficeActor } from './officeIllustration'
 
 function playableHandoff(events: CompanyActivityEvent[], openedAt: number) {
   const hit = events.find((event) => event.handoff)
@@ -62,7 +50,7 @@ function walkDurationMs(speed: DemoSpeed, reduced: boolean): number {
 
 type Fit = { x: number; y: number; w: number; h: number }
 
-function useCanvasFit(canvasRef: RefObject<HTMLCanvasElement | null>): Fit {
+function useCanvasFit(canvasRef: RefObject<SVGSVGElement | null>): Fit {
   const [fit, setFit] = useState<Fit>({ x: 0, y: 0, w: 0, h: 0 })
   useEffect(() => {
     const el = canvasRef.current
@@ -142,16 +130,38 @@ function placeBesideHead(
   return { left, top, w, h: box.h, tail: side === 'left' ? 'right' : 'left' }
 }
 
+function placeHandoffBubble(
+  head: { left: number; top: number },
+  lines: string[],
+  fit: Fit,
+) {
+  const box = bubbleBox(lines)
+  const nameW = 56
+  const nameH = 20
+  const gap = 8
+  const margin = 8
+  let left = head.left - nameW / 2 - gap - box.w
+  let top = head.top - nameH / 2 - box.h / 2
+  left = Math.max(fit.x + margin, Math.min(left, fit.x + fit.w - box.w - margin))
+  top = Math.max(fit.y + margin, Math.min(top, fit.y + fit.h - box.h - margin))
+  const nameLeft = head.left - nameW / 2
+  const nameTop = head.top - nameH
+  const hitX = left < nameLeft + nameW && left + box.w > nameLeft
+  const hitY = top < head.top && top + box.h > nameTop
+  if (hitX && hitY) top = Math.max(fit.y + margin, nameTop - box.h - gap)
+  return { left, top, w: box.w, h: box.h, tailRight: left + box.w / 2 <= head.left }
+}
+
 function shortName(id: string, fallback: string): string {
   const name = businessSeatPersonaName(id) ?? fallback
   return name.length > 4 ? name.slice(0, 4) : name
 }
 
-function actorsFor(room: OfficeRoom): PixelActor[] {
+function actorsFor(room: OfficeRoom): OfficeActor[] {
   const door = HALL_DEPT_DOORS.find((item) => item.slug === room.slug)
   if (!door) return []
   const previews = hallDeptExpertPreviews(door).slice(0, room.thin ? 1 : 3)
-  const roles: PixelActor['role'][] =
+  const roles: OfficeActor['role'][] =
     room.slug === 'inspire'
       ? ['board', 'board', 'side']
       : room.slug === 'disclosure'
@@ -174,8 +184,8 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
   const { cases, getProgress, getCaseConfirms, getPendingConfirms } = useBusinessCases()
   const { events } = useCompanyActivity()
   const { speed, aborted } = useDemoPace()
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const fit = useCanvasFit(canvasRef)
+  const sceneRef = useRef<SVGSVGElement>(null)
+  const fit = useCanvasFit(sceneRef)
   const [openedAt] = useState(() => Date.now())
   const play = playableHandoff(events, openedAt)
   const reduced = prefersReducedMotion()
@@ -267,28 +277,12 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
     return () => window.clearTimeout(timer)
   }, [playId, arrived])
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    const ctx = canvas?.getContext('2d')
-    if (!canvas || !ctx) return
-    drawOffice(ctx, {
-      rooms: rooms.map((room) => ({ ...room, status: statusBySlug[room.slug] ?? '待机' })),
-      actors: cast,
-      frame: reduced || aborted ? 0 : frame,
-      path: route,
-      progress,
-      fromSlug: play?.fromSlug,
-      toSlug: play?.toSlug,
-      walkerId: walker?.id,
-    })
-  }, [rooms, statusBySlug, cast, frame, route, progress, play, walker, reduced, aborted])
-
   const ready = fit.w > 8
   const greet = CHATTER.reception[frame % CHATTER.reception.length] ?? CHATTER.reception[0]
 
   return (
     <section
-      className="relative flex h-full min-h-0 flex-col overflow-hidden bg-[#c4a27a]"
+      className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-[#eadcc8] bg-[#f6ead8] shadow-[0_10px_28px_rgba(90,60,30,0.08)]"
       data-testid="hall-floor-plan"
       aria-labelledby="home-eight-depts-title"
     >
@@ -296,14 +290,26 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
         公司楼层
       </h2>
       <div className="relative min-h-0 flex-1">
-        <canvas
-          ref={canvasRef}
-          width={OFFICE_W}
-          height={OFFICE_H}
+        <svg
+          ref={sceneRef}
+          viewBox={`0 0 ${OFFICE_W} ${OFFICE_H}`}
+          preserveAspectRatio="xMidYMid meet"
           className="h-full w-full"
-          style={{ imageRendering: 'pixelated' }}
-          aria-label="专利公司像素办公室"
-        />
+          role="img"
+          aria-label="专利公司办公室"
+        >
+          <OfficeScene
+            rooms={rooms.map((room) => ({ ...room, status: statusBySlug[room.slug] ?? '待机' }))}
+            actors={cast}
+            frame={reduced || aborted ? 0 : frame}
+            path={route}
+            progress={progress}
+            fromSlug={play?.fromSlug}
+            toSlug={play?.toSlug}
+            walkerId={walker?.id}
+            reduced={reduced || aborted}
+          />
+        </svg>
         {ready
           ? rooms.map((room) => {
               const door = HALL_DEPT_DOORS.find((item) => item.slug === room.slug) as HallDeptDoor
@@ -324,13 +330,13 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                     aria-label={`${door.label}，${status}`}
                   />
                   <span
-                    className="pointer-events-none absolute z-[4] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-sm border-2 border-[#5c3b22] bg-[#e7c48a] px-1.5 text-[12px] font-semibold leading-5 text-[#2a2118] shadow-[2px_2px_0_#5c3b22]"
+                    className="pointer-events-none absolute z-[4] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-[#e2c4a0] bg-[#fff7ec] px-2 text-[12px] font-semibold leading-5 text-[#5c4030] shadow-[0_2px_6px_rgba(90,60,30,0.12)]"
                     style={{ left: sign.left, top: sign.top }}
                   >
                     {SIGN[room.slug] ?? room.label}
                   </span>
                   <span
-                    className={`pointer-events-none absolute z-[4] -translate-x-full whitespace-nowrap rounded-sm border border-[#2a2118] px-1 text-[11px] font-semibold leading-4 ${
+                    className={`pointer-events-none absolute z-[4] -translate-x-full whitespace-nowrap rounded-full border border-[#ead9c2] px-1.5 text-[11px] font-semibold leading-4 ${
                       status === '待确认'
                         ? 'bg-[#f2c14e] text-[#2a2118]'
                         : status === '进行中'
@@ -372,7 +378,7 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                 <span key={actor.id}>
                   <Link
                     to={hallDeptHref(caseId, door)}
-                    className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1 text-[10px] font-semibold leading-4 text-[#2a2118]"
+                    className="focus-ring absolute z-[5] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border border-[#ead9c2] bg-[#fffaf3] px-1.5 text-[10px] font-semibold leading-4 text-[#5c4030] shadow-[0_1px_3px_rgba(90,60,30,0.12)]"
                     style={{ left: at.left, top: at.top }}
                     aria-label={`${label}，${door.label}`}
                     title={preview?.name ?? label}
@@ -384,13 +390,13 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
                   </Link>
                   {idle ? (
                     <span
-                      className="pointer-events-none absolute z-[6] rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#2a2118]"
+                      className="pointer-events-none absolute z-[6] rounded-xl border border-[#ead9c2] bg-white px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#5c4030] shadow-[0_4px_12px_rgba(90,60,30,0.1)]"
                       style={{ left: idle.left, top: idle.top, width: idle.w }}
                       data-testid={`hall-idle-bubble-${actor.slug}`}
                       data-side={idle.tail === 'left' ? 'right' : 'left'}
                     >
                       <span
-                        className={`absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-[#2a2118] bg-[#fff8e8] ${
+                        className={`absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-[#ead9c2] bg-white ${
                           idle.tail === 'right' ? '-right-1 border-b border-r' : '-left-1 border-b border-l'
                         }`}
                       />
@@ -410,21 +416,19 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
               const along = polylinePoint(route, progress)
               const head = place({ x: along.x, y: along.y - 18 }, fit)
               const lines = wrapCn(play.phrase)
-              const box = bubbleBox(lines)
-              const corridorRight = place({ x: CORRIDOR_BOT, y: 0 }, fit).left
-              const rightEdge = corridorRight - 6
-              let left = rightEdge - box.w
-              left = Math.max(fit.x + 8, Math.min(left, fit.x + fit.w - box.w - 8))
-              let top = head.top - box.h - 4
-              top = Math.max(fit.y + 8, Math.min(top, fit.y + fit.h - box.h - 8))
+              const bubble = placeHandoffBubble(head, lines, fit)
               return (
                 <div
-                  className="pointer-events-none absolute z-[6] rounded-sm border border-[#2a2118] bg-[#fff8e8] px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-[#2a2118]"
-                  style={{ left, top, width: box.w }}
+                  className="pointer-events-none absolute z-[6] rounded-xl border border-[#ead9c2] bg-white px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-[#5c4030] shadow-[0_4px_12px_rgba(90,60,30,0.1)]"
+                  style={{ left: bubble.left, top: bubble.top, width: bubble.w }}
                   data-testid="hall-handoff-bubble"
                   role="status"
                 >
-                  <span className="absolute top-1/2 -right-1 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-b border-r border-[#2a2118] bg-[#fff8e8]" />
+                  <span
+                    className={`absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-[#ead9c2] bg-white ${
+                      bubble.tailRight ? '-right-1 border-b border-r' : '-left-1 border-b border-l'
+                    }`}
+                  />
                   {lines.map((part) => (
                     <span key={part} className="block">
                       {part}
@@ -437,22 +441,22 @@ export function HallFloorPlan({ caseId }: { caseId?: string }) {
         {ready ? (
           <button
             type="button"
-            className="focus-ring absolute z-[5] -translate-x-1/2 rounded-sm border border-[#2a2118] bg-[#e7fff8] px-1 text-[10px] font-semibold text-[#146e6a]"
+            className="focus-ring absolute z-[5] -translate-x-1/2 rounded-full border border-[#ead9c2] bg-white px-1.5 text-[10px] font-semibold text-[#1f8f8a] shadow-[0_1px_3px_rgba(90,60,30,0.12)]"
             style={place({ x: RECEPTIONIST.x, y: RECEPTIONIST.y - 18 }, fit)}
             data-testid="hall-reception-room"
             onClick={() => document.getElementById('home-reception-line')?.focus()}
           >
             小林
-            <span className="pointer-events-none absolute left-full top-0 ml-1 w-max max-w-[9rem] rounded-sm border border-[#2a2118] bg-white px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#2a2118]">
+            <span className="pointer-events-none absolute left-full top-0 ml-1 w-max max-w-[9rem] rounded-xl border border-[#ead9c2] bg-white px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#5c4030] shadow-[0_4px_12px_rgba(90,60,30,0.1)]">
               {play ? '案子正在送去下一间。' : greet}
             </span>
-            <span className="pointer-events-none absolute bottom-full left-1/2 mb-6 -translate-x-1/2 text-[11px] font-bold tracking-wide text-[#f6ead6]">
+            <span className="pointer-events-none absolute bottom-full left-1/2 mb-5 -translate-x-1/2 rounded-md bg-[#c47a3a] px-1 text-[10px] font-bold tracking-wide text-white">
               NT
             </span>
           </button>
         ) : null}
         <div className="sr-only" data-testid="home-eight-depts" data-dept-grid="floor">
-          八个部门在同一层像素办公室里
+          八个部门在同一层办公室里
         </div>
       </div>
     </section>

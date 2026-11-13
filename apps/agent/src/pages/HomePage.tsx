@@ -64,7 +64,7 @@ export function HomePage() {
   )
   return (
     <div
-      className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-2 lg:overflow-hidden lg:px-4"
+      className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#f7f1e8] px-3 py-2 lg:overflow-hidden lg:px-4"
       data-hall-dense="1"
       data-hall-screen="floor-live-v1"
       data-testid="agent-home-page"
@@ -81,7 +81,7 @@ export function HomePage() {
         data-hall-tagline="thin-v103"
       >
         <p
-          className="text-pretty text-[12px] font-medium text-slate-500"
+          className="text-pretty text-[12px] font-medium text-[#8a6a4a]"
           data-testid="home-hall-tagline-sub"
         >
           专家向你汇报 · 弄清去向
@@ -102,7 +102,7 @@ export function HomePage() {
           <LobbyTaskBar />
           <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[minmax(13rem,16rem)_minmax(0,1.7fr)_minmax(14rem,17rem)] lg:overflow-hidden">
             <div className="min-h-0 space-y-2 lg:overflow-y-auto" data-hall-block="reception" data-testid="home-delegate-zone">
-              <p className="px-0.5 text-[11px] font-semibold text-slate-500">分派</p>
+              <p className="px-0.5 text-[11px] font-semibold text-[#8a6a4a]">分派</p>
               <div id="hall-reception">
                 <HomeReceptionGuide initialAttachId={attachQ} />
               </div>

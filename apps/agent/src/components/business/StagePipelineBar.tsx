@@ -10,6 +10,7 @@ type Props = {
   /** 大厅等没有席位步号时直接指定亮到哪一颗 */
   index?: number
   caption?: string
+  tone?: 'default' | 'warm'
 }
 
 export function StagePipelineBar({
@@ -20,6 +21,7 @@ export function StagePipelineBar({
   streaming = false,
   index,
   caption,
+  tone = 'default',
 }: Props) {
   const pace = useDemoPace()
   const current =
@@ -33,13 +35,18 @@ export function StagePipelineBar({
     })
   const settled = done && !pending
 
+  const warm = tone === 'warm'
   return (
     <div
-      className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[var(--radius-lg)] border border-slate-200 bg-white px-3 py-2 shadow-[var(--shadow-rest)]"
+      className={
+        warm
+          ? 'flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-[#eadcc8] bg-[#fffaf3] px-3 py-2 shadow-[0_8px_24px_rgba(90,60,30,0.08)]'
+          : 'flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[var(--radius-lg)] border border-slate-200 bg-white px-3 py-2 shadow-[var(--shadow-rest)]'
+      }
       data-testid="stage-pipeline-bar"
     >
       {caption ? (
-        <p className="min-w-0 max-w-[16rem] truncate text-[12px] font-semibold text-slate-800">
+        <p className={`min-w-0 max-w-[16rem] truncate text-[12px] font-semibold ${warm ? 'text-[#5c4030]' : 'text-slate-800'}`}>
           {caption}
         </p>
       ) : (
@@ -53,16 +60,22 @@ export function StagePipelineBar({
               <span
                 className={`h-2 w-2 rounded-full ${
                   state === 'current'
-                    ? 'bg-[#007aff]'
+                    ? warm
+                      ? 'bg-[#2f8f8a]'
+                      : 'bg-[#007aff]'
                     : state === 'done'
-                      ? 'bg-emerald-500'
-                      : 'bg-slate-200'
+                      ? warm
+                        ? 'bg-[#3d8f6e]'
+                        : 'bg-emerald-500'
+                      : warm
+                        ? 'bg-[#ead9c2]'
+                        : 'bg-slate-200'
                 }`}
                 aria-hidden
               />
               <span
                 className={`text-[10px] ${
-                  state === 'current' ? 'font-semibold text-slate-900' : 'text-slate-500'
+                  state === 'current' ? (warm ? 'font-semibold text-[#3d2c22]' : 'font-semibold text-slate-900') : warm ? 'text-[#8a6a4a]' : 'text-slate-500'
                 }`}
               >
                 {label}
@@ -85,8 +98,14 @@ export function StagePipelineBar({
               type="button"
               aria-pressed={on}
               data-testid={`demo-pace-${speed}x`}
-              className={`btn-press focus-ring min-h-8 rounded-md px-2 text-[11px] font-semibold tabular-nums ${
-                on ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-600'
+              className={`btn-press focus-ring min-h-8 px-2 text-[11px] font-semibold tabular-nums ${warm ? 'rounded-full' : 'rounded-md'} ${
+                on
+                  ? warm
+                    ? 'bg-[#2f8f8a] text-white'
+                    : 'bg-slate-900 text-white'
+                  : warm
+                    ? 'border border-[#ead9c2] bg-white text-[#6b5436]'
+                    : 'border border-slate-200 bg-white text-slate-600'
               }`}
               onClick={() => pace.setSpeed(speed)}
             >
@@ -98,17 +117,21 @@ export function StagePipelineBar({
           type="button"
           data-testid="demo-pace-abort"
           aria-pressed={pace.aborted}
-          className={`btn-press focus-ring min-h-8 rounded-md px-2 text-[11px] font-semibold ${
+          className={`btn-press focus-ring min-h-8 px-2 text-[11px] font-semibold ${warm ? 'rounded-full' : 'rounded-md'} ${
             pace.aborted
-              ? 'bg-amber-100 text-amber-950'
-              : 'border border-slate-200 bg-white text-slate-700'
+              ? warm
+                ? 'bg-[#f2c14e] text-[#5c4030]'
+                : 'bg-amber-100 text-amber-950'
+              : warm
+                ? 'border border-[#ead9c2] bg-white text-[#6b5436]'
+                : 'border border-slate-200 bg-white text-slate-700'
           }`}
           onClick={() => (pace.aborted ? pace.resume() : pace.abort())}
         >
           中止
         </button>
         <span
-          className="min-w-[3.2rem] text-right text-[12px] font-semibold tabular-nums text-slate-700"
+          className={`min-w-[3.2rem] text-right text-[12px] font-semibold tabular-nums ${warm ? 'text-[#5c4030]' : 'text-slate-700'}`}
           data-testid="demo-pace-elapsed"
         >
           {formatElapsed(pace.displayMs)}
