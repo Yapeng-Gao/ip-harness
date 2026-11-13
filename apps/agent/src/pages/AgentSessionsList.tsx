@@ -4,7 +4,9 @@ import { Plus, Search, Pencil, Archive } from 'lucide-react'
 import { useAgents } from '@shared/context/AgentContext'
 import { useApp } from '@shared/context/AppContext'
 import { getAgent } from '@shared/data/agents'
-import { PageHeader, EmptyState } from '@shared/components/PageHeader'
+import { PageHeader } from '@shared/components/PageHeader'
+import { SoftEmpty } from '../components/soft/SoftEmpty'
+import { SessionDemoHonestBanner } from '../components/business/SessionDemoHonestBanner'
 import {
   sessionBizBadges,
   BIZ_BADGE_CLASS,
@@ -143,18 +145,43 @@ export function AgentSessionsList() {
 
   const listContext =
     urlFilter === 'needs_human'
-      ? '通用单聊 + 项目专家线程 · 筛选：待确认'
+      ? '旁路函件史 · 硬请示在部台右栏 · 筛选：待确认'
       : urlFilter
-        ? `通用单聊 + 项目专家线程 · 筛选：${urlFilter}`
-        : '通用单聊 + 项目专家线程 · 可用来源筛选；项目夹入口仍在「项目」'
+        ? `旁路函件史 · 筛选：${urlFilter}`
+        : '旁路函件史 · 非办理主对话；硬请示与工单在大厅→公司→部台'
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-8">
+    <div
+      className="flex-1 overflow-y-auto px-6 py-8 lg:px-8"
+      data-testid="agent-sessions-page"
+      data-session-demo="1"
+    >
+      <SessionDemoHonestBanner className="mb-3" />
+      <div
+        className="mb-3 flex flex-wrap items-center gap-2"
+        data-testid="sessions-demo-actions"
+      >
+        <button
+          type="button"
+          disabled
+          title="后置 · 无真多端同步"
+          className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-400 disabled:cursor-not-allowed"
+          data-testid="sessions-sync-disabled"
+          data-cta-guard="1"
+          aria-disabled="true"
+        >
+          同步到其他设备（后置）
+        </button>
+      </div>
       <PageHeader
         title={listTitle}
         context={listContext}
         primary={{
-          label: '新建会话',
+          label: '回大厅',
+          to: '/agent',
+        }}
+        secondary={{
+          label: '新建会话（旁路）',
           onClick: newSession,
           icon: <Plus className="h-4 w-4" aria-hidden />,
         }}
@@ -169,7 +196,7 @@ export function AgentSessionsList() {
               type="search"
               value={sessionSearch}
               onChange={(e) => setSessionSearch(e.target.value)}
-              placeholder="搜索标题 / 目标 / 案件 / 项目"
+              placeholder="搜索标题 / 目标 / 案件"
               aria-label="搜索会话"
               data-testid="sessions-main-search"
               className="focus-ring w-full rounded border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-sm text-slate-800 placeholder:text-slate-400"
@@ -222,25 +249,56 @@ export function AgentSessionsList() {
 
       <div className="overflow-hidden border border-slate-200 bg-white">
         {sorted.length === 0 ? (
-          <EmptyState
-            title={urlFilter || sourceFilter !== 'all' ? '无匹配历史' : '暂无会话历史'}
-            description={
-              urlFilter || sourceFilter !== 'all'
-                ? '当前筛选下没有条目。可切换来源 chip，或点左侧「全部」清除状态筛选。项目夹仍可从「项目」进入。'
-                : '这里聚合通用单聊与项目专家线程。新建会话，或从「项目」打开专家线程。'
-            }
-            primary={{
-              label: '新建会话',
-              onClick: newSession,
-              icon: <Plus className="h-4 w-4" aria-hidden />,
-            }}
-            secondary={{
-              label: '打开工作台待办',
-              onClick: () => {
-                window.location.href = workbenchHref('/workbench')
-              },
-            }}
-          />
+          <div
+            className="px-4 py-10"
+            data-testid="sessions-empty-wrap"
+            data-empty-tone="office"
+          >
+            <SoftEmpty
+              kind={
+                urlFilter ||
+                sourceFilter !== 'all' ||
+                sessionSearch.trim().length > 0
+                  ? 'sessions-filter'
+                  : 'sessions-empty'
+              }
+              testId="sessions-empty"
+              className="mx-auto max-w-md border-0 bg-transparent"
+              action={
+                <div className="flex flex-wrap justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.href = '/agent'
+                    }}
+                    className="btn-press focus-ring inline-flex rounded-md bg-slate-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-slate-800"
+                    data-testid="sessions-empty-hall"
+                  >
+                    回大厅委托
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.href = workbenchHref('/workbench')
+                    }}
+                    className="btn-press focus-ring inline-flex rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[13px] font-medium text-slate-700 hover:bg-slate-50"
+                    data-testid="sessions-empty-workbench"
+                  >
+                    打开工作台待办
+                  </button>
+                  <button
+                    type="button"
+                    onClick={newSession}
+                    className="btn-press focus-ring inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[13px] font-medium text-slate-600 hover:bg-slate-50"
+                    data-testid="sessions-empty-new"
+                  >
+                    <Plus className="h-4 w-4" aria-hidden />
+                    新建会话（旁路）
+                  </button>
+                </div>
+              }
+            />
+          </div>
         ) : (
           <table className="w-full text-left text-sm" data-testid="sessions-aggregated-table">
             <thead className="border-b border-slate-100 bg-slate-50/80 text-[11px] font-medium text-slate-400">
@@ -302,6 +360,7 @@ export function AgentSessionsList() {
                         : 'sessions-row-general'
                     }
                     className="focus-row cursor-pointer hover:bg-slate-50/80"
+                    data-session-row-demo="1"
                     onClick={() => openRow(row)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -334,7 +393,7 @@ export function AgentSessionsList() {
                           className="flex min-h-[44px] items-center font-medium text-slate-900"
                           title={
                             row.source === 'project'
-                              ? '打开项目专家线程'
+                              ? '打开旁路线程'
                               : '打开会话'
                           }
                         >

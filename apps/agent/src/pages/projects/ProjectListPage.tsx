@@ -33,27 +33,61 @@ export function ProjectListPage() {
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
       <div className="mx-auto w-full max-w-2xl px-4 py-8">
+        <div
+          className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[12px] text-amber-950"
+          data-testid="projects-demote-banner"
+          role="status"
+        >
+          <p className="font-semibold">遗留项目夹已降权（旁路）</p>
+          <p className="mt-0.5 text-amber-900/90">
+            一期主路径是大厅接待+八部 → 公司案 → 部台。本页为遗留深链，勿当第二套产品进门。
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Link
+              to="/agent"
+              className="rounded-md bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-white"
+              data-testid="projects-to-hall"
+            >
+              回大厅
+            </Link>
+            <Link
+              to="/agent/cases"
+              className="rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium"
+              data-testid="projects-to-cases"
+            >
+              去案盘
+            </Link>
+          </div>
+        </div>
         <h1 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
           <FolderKanban className="h-5 w-5" aria-hidden />
-          项目模式
+          遗留项目夹（旁路）
         </h1>
         <p className="mt-1 text-sm text-slate-600">
-          专利专班项目夹。默认入口是{' '}
+          遗留专班项目夹。请优先用{' '}
           <Link to="/agent" className="underline">
-            /agent 专利 Catalog
+            大厅
           </Link>
-          （可组队建项目）。通用沙盒见{' '}
-          <Link to="/agent/sandbox" className="underline">
-            /agent/sandbox
+          {' '}与{' '}
+          <Link to="/agent/cases" className="underline">
+            案盘
           </Link>
-          。
+          。实验室旁路见{' '}
+          <Link to="/agent/lab" className="underline" data-testid="projects-to-lab">
+            原型展廊
+          </Link>
+          （沙盒 / 多助手仅展廊入口，非主办理）。
         </p>
 
-        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="mb-2 flex items-center gap-1.5 text-sm font-medium text-slate-800">
+        <details
+          className="mt-6 rounded-xl border border-dashed border-amber-200/80 bg-amber-50/40 p-4"
+          data-testid="projects-create-fold"
+        >
+          <summary className="flex cursor-pointer select-none items-center gap-1.5 text-sm font-medium text-amber-950/80">
             <FolderPlus className="h-4 w-4" aria-hidden />
-            新建项目
-          </div>
+            新建遗留项目夹（旁路·收折）
+          </summary>
+          <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -136,10 +170,10 @@ export function ProjectListPage() {
           >
             创建并打开总控
           </button>
+          </div>
+        </details>
 
-        </div>
-
-        <ul className="mt-6 space-y-2">
+        <ul className="mt-6 space-y-2" data-testid="projects-folder-list">
           {folderProjects.map((p) => {
             const badge = projectKindBadge(p)
             return (

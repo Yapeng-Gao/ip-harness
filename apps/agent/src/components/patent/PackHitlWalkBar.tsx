@@ -16,7 +16,7 @@ type Props = {
 }
 
 /**
- * Catalog / workspace · 「打开演示项目 → 按序推进」或一键演示 HITL①–⑥
+ * 席位样机旁路 · 「打开演示项目 → 按序推进」或一键演示主链确认点
  */
 export function PackHitlWalkBar({ compact }: Props) {
   const navigate = useNavigate()
@@ -56,7 +56,7 @@ export function PackHitlWalkBar({ compact }: Props) {
       setThreadHitl(PACK_DEMO_PROJECT_ID, seatId, true, pack.gate)
       appendMessage(PACK_DEMO_PROJECT_ID, seatId, {
         role: 'system',
-        content: `【演示】样机校验通过 → 已到确认点（${label} / ${pack.gate}）· 可确认`,
+        content: `【演示】样机校验通过 → 已到确认点（${label}）· 可确认`,
         meta: { backend: 'mock' },
       })
     }
@@ -70,14 +70,14 @@ export function PackHitlWalkBar({ compact }: Props) {
   const advanceNext = () => {
     ensureDemo()
     if (cursor >= PACK_HITL_WALK_SEATS.length) {
-      setLog((L) => [...L, '①–⑥ 已走完 · 可进⑦⑧后置席或 OA 示意'])
+      setLog((L) => [...L, '主链确认点已走完 · 可进后置年费/转化或审查答复示意'])
       return
     }
     const row = PACK_HITL_WALK_SEATS[cursor]!
     runOne(row.seatId, row.label, row.hitlStepId)
     setLog((L) => [
       ...L,
-      `HITL${['①', '②', '③', '④', '⑤', '⑥'][row.n - 1]} ${row.label} · ${row.seatId}`,
+      `确认点 · ${row.label}`,
     ])
     setCursor((c) => c + 1)
     navigate(`/agent/projects/${PACK_DEMO_PROJECT_ID}/bots/${row.seatId}`)
@@ -87,13 +87,13 @@ export function PackHitlWalkBar({ compact }: Props) {
     if (busy) return
     setBusy(true)
     ensureDemo()
-    setLog(['一键演示 HITL①–⑥ 开始…'])
+    setLog(['一键演示主链确认点 开始…'])
     for (let i = 0; i < PACK_HITL_WALK_SEATS.length; i++) {
       const row = PACK_HITL_WALK_SEATS[i]!
       runOne(row.seatId, row.label, row.hitlStepId)
       setLog((L) => [
         ...L,
-        `HITL${['①', '②', '③', '④', '⑤', '⑥'][row.n - 1]} ${row.label} · Pass→HITL`,
+        `确认点 · ${row.label} · 已到确认点`,
       ])
       setCursor(i + 1)
       await new Promise((r) => setTimeout(r, 180))
@@ -121,7 +121,7 @@ export function PackHitlWalkBar({ compact }: Props) {
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs font-semibold text-emerald-900">
-          主链演示 · HITL①–⑥
+          样机演示 · 主链确认点
         </span>
         <span className="text-[10px] text-slate-500">{MAIN_CHAIN_STORY}</span>
         {readyCount > 0 && (
@@ -148,7 +148,7 @@ export function PackHitlWalkBar({ compact }: Props) {
           <ChevronRight className="h-3 w-3" aria-hidden />
           按序推进
           {cursor < PACK_HITL_WALK_SEATS.length
-            ? ` · 下一闸 ${['①', '②', '③', '④', '⑤', '⑥'][cursor]}`
+            ? ` · 下一确认点 ${PACK_HITL_WALK_SEATS[cursor]?.label ?? ''}`
             : ' · 已完'}
         </button>
         <button
@@ -159,24 +159,24 @@ export function PackHitlWalkBar({ compact }: Props) {
           data-testid="pack-walk-all"
         >
           <Play className="h-3 w-3" aria-hidden />
-          {busy ? '演示中…' : '一键演示①–⑥'}
+          {busy ? '演示中…' : '一键演示主链'}
         </button>
         <Link
           to={`/agent/seats/expert-annuity`}
           className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] text-slate-600"
         >
-          后置⑦年费
+          后置 · 年费
         </Link>
         <Link
           to={`/agent/seats/expert-monetize`}
           className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] text-slate-600"
         >
-          后置⑧转化
+          后置 · 转化
         </Link>
       </div>
       {log.length > 0 && (
         <ul
-          className="mt-2 max-h-20 space-y-0.5 overflow-y-auto font-mono text-[9px] text-slate-600"
+          className="mt-2 max-h-20 space-y-0.5 overflow-y-auto text-[10px] text-slate-600"
           data-testid="pack-walk-log"
         >
           {log.map((line, i) => (

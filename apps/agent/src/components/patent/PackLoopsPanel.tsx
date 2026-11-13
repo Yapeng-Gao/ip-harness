@@ -10,10 +10,10 @@ import {
 } from '../../business/packLoops'
 
 /**
- * 专家工作台 · F5/F6/F9→F3 环边样机面板（Knife1–3）
- * F5：重试 n/3 · 附图退回 · 需人工接手
- * F6：N 通计数 · 策略驳回 · 超范围 0 次自修复
- * F9→F3：布局漏洞回流 → 布局待拍板（≠ FTO）
+ * 席位样机旁路 · 回流/环边示意面板（非一期主办理）
+ * 内循环：重试 · 附图退回 · 需人工接手
+ * 审查答复：多通计数 · 策略驳回 · 超范围不自修
+ * 布局回流：漏洞报告 → 布局待拍板（非正式 FTO）
  */
 export function PackLoopsPanel() {
   const caseIdF5 = BUSINESS_SEED_IDS.B
@@ -35,11 +35,11 @@ export function PackLoopsPanel() {
         <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
           <div>
             <h2 className="text-xs font-semibold text-violet-900">
-              F5 环边样机 · 内循环 + 跨席
+              交底/查新/撰写 · 重试与跨席退回（样机）
             </h2>
             <p className="mt-0.5 text-[11px] text-violet-800/80">
               查新/撰写自修复≤{SELF_HEAL_MAX} · 超限「需人工接手」· 附图→撰写
-              feedback · HITL 驳回带批注（无真沙箱）
+              feedback · 确认驳回带批注（无真沙箱）
             </p>
           </div>
           <Link
@@ -86,11 +86,11 @@ export function PackLoopsPanel() {
         <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
           <div>
             <h2 className="text-xs font-semibold text-orange-950">
-              F6 OA · N 通外循环
+              审查答复 · 多通外循环（样机）
             </h2>
             <p className="mt-0.5 text-[11px] text-orange-900/80">
-              理由分类 · 子任务汇入 · HITL⑥ 策略确认/驳回 · 第 N 通计数 ·
-              超范围 blocker（自修复 {OA_BLOCKER_SELF_HEAL_MAX} 次）· 无真局端
+              理由分类 · 子任务汇入 · 策略确认/驳回（答复） · 第 N 通计数 ·
+              超范围拦截（自修复 {OA_BLOCKER_SELF_HEAL_MAX} 次）· 无真局端
             </p>
             <p
               className="mt-1 text-[11px] font-semibold text-orange-950"
@@ -160,12 +160,11 @@ export function PackLoopsPanel() {
         <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
           <div>
             <h2 className="text-xs font-semibold text-teal-950">
-              F9→F3 飞轮 · 布局漏洞回流
+              布局漏洞回流（样机）
             </h2>
             <p className="mt-0.5 text-[11px] text-teal-900/80">
-              维权/监测 mock → 布局漏洞报告 feedback → 布局策略师（F3）·
-              串联查新不乐观 / 立项低分灰回流 · 无真爬虫 ·{' '}
-              <span className="font-semibold">≠ FTO（expert-fto）</span>
+              监测示意 → 布局漏洞报告 → 回流布局席待拍板 ·
+              可串联查新不乐观 / 立项低分回流 · 无真爬虫 · 非正式 FTO 意见
             </p>
             <p
               className="mt-1 text-[11px] font-semibold text-teal-950"
@@ -174,7 +173,7 @@ export function PackLoopsPanel() {
               样机案子：
               {p9.moreSeatIds.includes('expert-layout')
                 ? '已启用布局 · 业务面可出「请确认布局调整」'
-                : '未启用布局 · 仅专家台故事线'}
+                : '未启用布局 · 仅遗留过程旁路可见故事线'}
             </p>
           </div>
           <Link
@@ -182,7 +181,7 @@ export function PackLoopsPanel() {
             className="rounded-full border border-teal-300 bg-white px-2.5 py-0.5 text-[11px] font-medium text-teal-950"
             data-testid="pack-loops-open-layout-case"
           >
-            打开飞轮案子 · {c9?.title ?? '空白点补局'}
+            打开回流样机案子 · {c9?.title ?? '空白点补局'}
           </Link>
         </div>
         <div className="mb-2 flex flex-wrap gap-1.5">
@@ -200,7 +199,7 @@ export function PackLoopsPanel() {
             className="btn-press focus-ring rounded-full border border-slate-300 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-700"
             data-testid="pack-loops-flywheel-expert-only"
           >
-            未启用布局·仅专家台
+            未启用布局·仅旁路故事线
           </button>
           <button
             type="button"

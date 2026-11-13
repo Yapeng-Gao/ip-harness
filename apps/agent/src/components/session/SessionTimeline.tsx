@@ -35,7 +35,7 @@ function summarizeArgs(args?: Record<string, unknown>): string | null {
   return parts.length ? parts.join('；') : null
 }
 
-/** Tool card success ≠ domain write. Labels: 未写库 · 缓冲 / 已写库 / 预览不写库 */
+/** Tool card success ≠ domain write. Labels: 未存稿 · 缓冲 / 已存稿 / 预览不存稿 */
 function toolWriteTag(
   step: AgentStep,
   later: AgentStep[],
@@ -43,9 +43,9 @@ function toolWriteTag(
 ): string | null {
   if (step.kind !== 'tool_call' && step.kind !== 'tool_result') return null
   if (!step.toolName) return null
-  if (runMode === 'dry-run') return '预览不写库'
+  if (runMode === 'dry-run') return '预览不存稿'
   const mapped = TOOL_TO_COMMAND[step.toolName]
-  if (mapped == null) return '未写库 · 缓冲'
+  if (mapped == null) return '未存稿 · 缓冲'
   const wrote = later.some(
     (s) =>
       s.kind === 'system' &&
@@ -53,7 +53,7 @@ function toolWriteTag(
         s.title.includes('已写入领域') ||
         s.content.includes('已写入领域')),
   )
-  return wrote ? '已写库' : '未写库 · 缓冲'
+  return wrote ? '已存稿' : '未存稿 · 缓冲'
 }
 
 function StepBubble({
@@ -146,9 +146,9 @@ function StepBubble({
           {writeTag && (
             <span
               className={`text-[10px] ${
-                writeTag === '已写库'
+                writeTag === '已存稿'
                   ? 'text-emerald-600/80'
-                  : writeTag === '预览不写库'
+                  : writeTag === '预览不存稿'
                     ? 'text-amber-600/70'
                     : 'text-slate-300'
               }`}

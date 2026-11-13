@@ -1,4 +1,4 @@
-/** 年费管家席深度 · HITL⑦ pay_unlock · 禁真缴费 */
+/** 年费管家席深度 · 年费闸 · 禁真缴费 */
 import type { ExpertStepDef } from '../types'
 
 export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
@@ -7,7 +7,7 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
     label: '到期台账',
     script:
       '【年费】到期清单：CN114882901B 第 3 年 · 截止 2026-11-30 · 官费 ¥2,000（假数据）。',
-    tool: { name: 'list_annuity_due', preview: 'due=1 · window=90d' },
+    tool: { name: 'list_annuity_due', preview: '到期 1 件 · 窗口 90 天' },
     structuredBody: [
       '| 案号（示意） | 年次 | 截止 | 官费 |',
       '|--------------|------|------|------|',
@@ -21,7 +21,7 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'surcharge',
     label: '滞纳金表',
     script: '【年费】滞纳金阶梯 mock：宽限 6 月 · tier2 示意。',
-    tool: { name: 'compute_surcharge', preview: 'grace=6m · surcharge=tier2' },
+    tool: { name: 'compute_surcharge', preview: '宽限 6 月 · 滞纳档 2' },
     structuredBody: [
       '| 阶段 | 时限 | 附加（示意） |',
       '|------|------|--------------|',
@@ -36,7 +36,7 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'grade',
     label: '价值联动',
     script: '【年费】联动价值评估：核心案建议缴；外围可议放弃。',
-    tool: { name: 'compute_surcharge', preview: 'link=valuation_card · core=pay' },
+    tool: { name: 'compute_surcharge', preview: '联动价值评估 · 核心建议缴' },
     structuredBody: [
       '| 案 | 价值分级（来自评估） | 年费建议 |',
       '|----|----------------------|----------|',
@@ -44,14 +44,14 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
       '| 外围观察件 | 外围 | 可议 |',
       '| 低分件 | 放弃候选 | 倾向放弃 |',
       '',
-      '**Validator 示意**：建议档均挂价值分级 · **Pass**',
+      '**样机校验示意**：建议档均挂价值分级 · **通过**',
     ].join('\n'),
   },
   {
     id: 'options',
     label: '缴/放方案',
-    script: '【年费】两案并列：按期缴 vs 宽限内议；放弃须 HITL。',
-    tool: { name: 'propose_pay_or_abandon', preview: 'opts=pay|grace|abandon' },
+    script: '【年费】两案并列：按期缴 vs 宽限内议；放弃须你确认。',
+    tool: { name: 'propose_pay_or_abandon', preview: '按期缴 / 宽限 / 放弃' },
     structuredBody: [
       '| 方案 | 动作 | 成本示意 | 风险 |',
       '|------|------|----------|------|',
@@ -64,10 +64,10 @@ export const ANNUITY_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'decide',
     label: '缴费/放弃闸 · 待确认',
     script:
-      '【年费】14_maintain_annuity 待 Confirm（HITL⑦ · pay_unlock · **禁真缴费**）。',
+      '【年费】缴费建议待你确认（年费闸 · **禁真缴费**）。',
     tool: {
       name: 'propose_pay_or_abandon',
-      preview: 'recommend=pay · hitl=⑦',
+      preview: '建议按期缴 · 待年费确认',
     },
     triggersHitl: true,
     hitlGate: 'pay_unlock',
@@ -92,7 +92,7 @@ export const ANNUITY_DEPTH_SHORTCUTS = [
 
 export const ANNUITY_SAMPLE_ARTIFACT = `# 年费维护建议（样机）
 
-> HITL⑦ · 禁真缴费 · 假数据
+> 年费闸 · 禁真缴费 · 假数据
 
 ## 摘要
 
@@ -107,7 +107,7 @@ export const ANNUITY_SAMPLE_WORKLOG_STEPS = `| 1 | 到期台账 | 授权后 | �
 | 2 | 滞纳金表 | mock | 阶梯 | — |
 | 3 | 价值联动 | 评分卡 | 核心缴 | — |
 | 4 | 缴/放方案 | 三案 | A/B/C | — |
-| 5 | 缴费/放弃闸 | HITL⑦ | 待确认 | HITL |`
+| 5 | 缴费/放弃闸 | 年费确认 | 待确认 | 确认 |`
 
 export const ANNUITY_SAMPLE_WORKLOG_CHOICES = `| 强缴不问价值 | 价值联动 | 联动 | 禁真缴费 |
-| 静默放弃 | 必须HITL | HITL | 纪律 |`
+| 静默放弃 | 必须确认 | 确认 | 纪律 |`

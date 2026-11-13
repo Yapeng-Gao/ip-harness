@@ -28,7 +28,7 @@ type Props = {
 }
 
 /**
- * 样机校验 + self-heal + handoff envelope (no real harness).
+ * 样机校验 + 自愈 + 交接信封（无真 harness）。
  */
 export function SeatValidatorPanel({
   expertId,
@@ -70,7 +70,7 @@ export function SeatValidatorPanel({
       appendMessage(projectId, expertId, {
         role: 'system',
         content:
-          '【需人工接手】超范围 blocker · 自修复 0/0 · 已直接升级（禁静默重跑）',
+          '【需人工接手】超范围拦下 · 自修复 0/0 · 已直接升级（禁静默重跑）',
         meta: { backend: 'mock' },
       })
     }
@@ -154,7 +154,7 @@ export function SeatValidatorPanel({
     if (projectId) {
       appendMessage(projectId, expertId, {
         role: 'system',
-        content: `【Handoff】${env.type} ${env.from} → ${env.to} · ${env.acceptance}`,
+        content: `【交接】${env.type} ${env.from} → ${env.to} · ${env.acceptance}`,
         meta: { backend: 'mock' },
       })
     }
@@ -195,13 +195,12 @@ export function SeatValidatorPanel({
         </span>
         {packHitl && (
           <span className="rounded border border-violet-200 bg-violet-50 px-1 text-[9px] text-violet-800">
-            HITL{['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'][packHitl.n - 1]}{' '}
-            {packHitl.label}
+            确认点 · {packHitl.label}
           </span>
         )}
         {thread?.pendingHitl && (
           <span className="rounded bg-amber-100 px-1 text-[9px] text-amber-900">
-            HITL 已解锁
+            确认点已解锁
           </span>
         )}
       </div>
@@ -246,7 +245,7 @@ export function SeatValidatorPanel({
             data-testid="validator-oa-blocker"
           >
             <AlertTriangle className="h-3 w-3" aria-hidden />
-            超范围 blocker→需人工接手（0次）
+            超范围拦下→需人工接手（0次）
           </button>
         )}
         <button
@@ -256,7 +255,7 @@ export function SeatValidatorPanel({
           data-testid="handoff-write"
         >
           <Send className="h-3 w-3" aria-hidden />
-          写 Handoff 信封
+          写交接信封
         </button>
       </div>
 

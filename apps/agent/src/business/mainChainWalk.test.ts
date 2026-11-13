@@ -2,7 +2,7 @@
  * 主链走通 · 阶段推进表（对照 confirmItem）
  * 跑：node --import tsx --test apps/agent/src/business/mainChainWalk.test.ts
  *
- * 业务主链：立项 → 交底 → 查新 → 撰写 → 再查新 → 附图 → 递交 → 审查答复
+ * 业务主链：交底 → 查新 → 立项 → 撰写 → 再查新 → 附图 → 递交 → 审查答复
  */
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
@@ -23,9 +23,9 @@ const MAIN_CHAIN: {
   kind: BusinessConfirmKind
   next: ProjectExpertId
 }[] = [
-  { seat: 'expert-intake', kind: 'go_nogo', next: 'expert-disclosure' },
   { seat: 'expert-disclosure', kind: 'disclosure_ready', next: 'expert-research' },
-  { seat: 'expert-research', kind: 'research_ready', next: 'expert-draft' },
+  { seat: 'expert-research', kind: 'research_ready', next: 'expert-intake' },
+  { seat: 'expert-intake', kind: 'go_nogo', next: 'expert-draft' },
   { seat: 'expert-draft', kind: 'claims_ready', next: 'expert-research' },
   { seat: 'expert-research', kind: 'research_ready', next: 'expert-figure' },
   { seat: 'expert-figure', kind: 'figures_ready', next: 'expert-filing' },
@@ -44,9 +44,9 @@ describe('mainChainWalk', () => {
 
   it('walks disclosure search, spec search, then figures', () => {
     let prog: MainChainSnapshot = {
-      stageId: 'intake',
+      stageId: 'prepare',
       doneSeatIds: [],
-      completedStages: ['prepare'],
+      completedStages: [],
       filed: false,
       oaRound: 0,
       researchPass: 0,
@@ -88,12 +88,11 @@ describe('mainChainWalk', () => {
     assert.equal(prog.stageId, 'oa')
   })
 
-  it('drafting stage is disclosure → search → draft → figures', () => {
+  it('drafting stage is draft → search → figures', () => {
     const drafting = BUSINESS_STAGES.find((s) => s.id === 'drafting')
     assert.deepEqual(drafting?.seatIds, [
-      'expert-disclosure',
-      'expert-research',
       'expert-draft',
+      'expert-research',
       'expert-figure',
     ])
   })

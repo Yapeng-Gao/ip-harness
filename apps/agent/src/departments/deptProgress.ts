@@ -5,7 +5,7 @@ import {
   type BusinessStageId,
 } from '../business/businessSeats'
 import type { CaseProgress } from '../business/BusinessCaseContext'
-import { ORG_DEPTS, type OrgDept, type OrgDeptId } from './orgDepts'
+import { ORG_DEPTS, deptSlug, type OrgDept, type OrgDeptId } from './orgDepts'
 
 /**
  * 部门进度投影 · 纯函数
@@ -36,10 +36,10 @@ const STAGE_ORDER: BusinessStageId[] = [
 ]
 
 const DEPT_STAGE: Partial<Record<OrgDeptId, BusinessStageId>> = {
-  'dept-layout': 'prepare',
-  'dept-intake': 'intake',
+  'dept-disclosure': 'prepare',
   'dept-research': 'intake',
-  'dept-disclosure': 'drafting',
+  'dept-intake': 'intake',
+  'dept-layout': 'prepare',
   'dept-draft': 'drafting',
   'dept-figure': 'drafting',
   'dept-filing': 'filing',
@@ -86,8 +86,8 @@ export function deptStatus(args: {
     const mine = pending.filter(
       (p) => p.caseId === progress.caseId && p.kind === confirmKind,
     )
-    if (mine.some((p) => p.status === 'pending')) return '待确认'
-    if (mine.some((p) => p.status === 'returned')) return '退回'
+    if (mine[0]?.status === 'pending') return '待确认'
+    if (mine[0]?.status === 'returned') return '退回'
   }
 
   if (progress.doneSeatIds.includes(dept.leadSeatId)) return '已完成'
@@ -101,6 +101,7 @@ export function deptStatus(args: {
     const deptIdx = STAGE_ORDER.indexOf(deptStage)
     if (deptIdx > curIdx) return '未到'
   } else {
+    if (progress.receptionHandoff?.selectedSlug === deptSlug(dept.id)) return '进行中'
     // 前研 / 授权后不占主链阶段：没有证据时只能是「未到」，
     // 不能因为主链在跑就显示「进行中」
     return '未到'
@@ -190,7 +191,7 @@ export function deptExpertRows(
       label: leadName,
       isLead: true,
       navigable: true,
-      note: '主责 · 交卷',
+      note: '负责人 · 交卷闸',
     },
   ]
   for (const p of dept.peers) {
@@ -201,7 +202,7 @@ export function deptExpertRows(
       label: p.label,
       isLead: false,
       navigable,
-      note: navigable ? '可单独开会话' : '流程位 · 暂不可聊',
+      note: navigable ? '可单独对话' : '未请来 · 建议后请示',
     })
   }
   return rows

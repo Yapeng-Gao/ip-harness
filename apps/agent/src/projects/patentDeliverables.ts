@@ -94,6 +94,8 @@ export type PatentDeliverable = {
   /** Shell artifact key (may match HandoffArtifactKey when exists) */
   artifactKey: string
   nn: string
+  /** Office 展示名 · 非文件键 */
+  title: string
   artifactFile: string
   worklogFile: string
   /** Mock 成果 markdown */
@@ -114,12 +116,13 @@ const base = (
   expertId,
   artifactKey,
   nn,
+  title,
   artifactFile: `${nn}_${artifactKey}.md`,
   worklogFile: `${nn}_${artifactKey}_worklog.md`,
   sampleArtifact:
     sampleArtifact ??
     `# ${title}\n\n> 样机成果 · 非真案卷\n\n## 摘要\n边缘调度模组相关产出占位。\n\n## 正文\n（假数据）关键结论与交付结构见本席剧本步骤。\n`,
-  sampleWorklog: `# 工作过程 · ${title} · ${artifactKey}\n\n| 案号 | 版本 | HITL |\n|------|------|------|\n| mock-demo | v0 | 样机 |\n\n## 1. 收到什么\n- 上游：主题/分派摘要（mock）\n\n## 2. 目标与成功标准\n- 交齐成果 + 本 worklog\n\n## 3. 步骤时间线\n${steps}\n\n## 4. 关键取舍\n${choices}\n\n## 5. 证据与材料\n- 样机摘录 · 可核验占位\n\n## 6. 卡点与求助\n- 无（演示）\n\n## 7. 交给下家什么\n- 过程见 \`${nn}_${artifactKey}_worklog.md\`\n`,
+  sampleWorklog: `# 办理摘记 · ${title}\n\n| 案号 | 版本 | 确认 |\n|------|------|------|\n| 示意案 | v0 | 样机 |\n\n## 1. 收到什么\n- 上游：主题/分派摘要（示意）\n\n## 2. 目标与成功标准\n- 交齐成果 + 本办理摘记\n\n## 3. 步骤时间线\n${steps}\n\n## 4. 关键取舍\n${choices}\n\n## 5. 证据与材料\n- 样机摘录 · 可核验占位\n\n## 6. 卡点与求助\n- 无（演示）\n\n## 7. 交给下家什么\n- 过程见办理摘记（示意）\n`,
 })
 
 /** Full roster deliverables · SEAT_ROSTER_FOR_PROTOTYPE */

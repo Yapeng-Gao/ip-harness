@@ -22,6 +22,14 @@ function statusFor(
   return 'pending'
 }
 
+/** 确认闸 id → Office 人话（不上屏英文 gate 名） */
+const GATE_LABEL: Record<string, string> = {
+  approve_strategy: '确认方案',
+  go_nogo: '立不立项',
+  pay_unlock: '费用解锁',
+  confirm_quote: '确认报价',
+}
+
 const STATUS_UI: Record<
   PackHitlStatus,
   { label: string; className: string }
@@ -45,8 +53,8 @@ const STATUS_UI: Record<
 }
 
 /**
- * HITL×8 overview — patent-pack-design §1
- * ⑦⑧ keep Phase badge but are runnable (not gray dead-ends).
+ * 确认点 ×8 总览（席位样机旁路）
+ * 后置闸标「后置」但仍可跑样机（非灰显死胡同）。
  */
 export function PackHitlOverview({
   clearedSeatIds = [],
@@ -68,10 +76,10 @@ export function PackHitlOverview({
     >
       <div className="mb-2 flex flex-wrap items-baseline justify-between gap-1">
         <h2 className="text-xs font-semibold text-violet-900">
-          Pack HITL×8
+          确认点 ×8（样机）
         </h2>
         <span className="text-[10px] text-slate-400">
-          通过校验再确认 · ⑦⑧ 后置也能跑
+          通过校验再确认 · 年费/转化后置也能跑
         </span>
       </div>
       <ol
@@ -97,8 +105,8 @@ export function PackHitlOverview({
                 data-phase={g.phase ? 'true' : 'false'}
               >
                 <div className="flex items-center justify-between gap-1">
-                  <span className="text-[10px] font-bold">
-                    {['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'][g.n - 1]}
+                  <span className="text-[10px] font-medium text-slate-500">
+                    确认点 {g.n}
                   </span>
                   <span className="flex items-center gap-1 text-[9px] uppercase tracking-wide">
                     {g.phase ? (
@@ -113,7 +121,7 @@ export function PackHitlOverview({
                   {g.label}
                 </div>
                 <div className="mt-0.5 truncate text-[9px] opacity-80">
-                  {def.name} · {g.gate}
+                  {def.name} · {GATE_LABEL[g.gate] ?? '待确认'}
                 </div>
               </Link>
             </li>

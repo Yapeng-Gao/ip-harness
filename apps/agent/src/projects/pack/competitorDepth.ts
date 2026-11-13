@@ -6,7 +6,7 @@ export const COMPETITOR_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'list',
     label: '对手名单',
     script: '【竞品】Top 对手 5 家已圈定（示意），对齐全景玩家层。',
-    tool: { name: 'list_competitors', preview: 'n=5 · from=landscape' },
+    tool: { name: 'list_competitors', preview: '竞品 5 · 来自全景' },
     structuredBody: [
       '| # | 对手（示意） | 层 | 关注点 |',
       '|---|--------------|----|--------|',
@@ -23,7 +23,7 @@ export const COMPETITOR_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'scan',
     label: '公开专利扫描',
     script: '【竞品】各对手近 24 月公开示意命中已表列；聚焦调度/模组。',
-    tool: { name: 'grade_threat', preview: 'pubs_scanned=mock · focus=调度' },
+    tool: { name: 'grade_threat', preview: '公开件示意 · 聚焦调度' },
     structuredBody: [
       '| 对手 | 示意公开号 | 主题摘要 |',
       '|------|------------|----------|',
@@ -37,7 +37,7 @@ export const COMPETITOR_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'grade',
     label: '威胁分级',
     script: '【竞品】威胁：2 高 / 2 中 / 1 低。高威胁进挖掘对照。',
-    tool: { name: 'grade_threat', preview: 'high=2 · mid=2 · low=1' },
+    tool: { name: 'grade_threat', preview: '高 2 · 中 2 · 低 1' },
     structuredBody: [
       '| 对手 | 级 | 理由 |',
       '|------|----|------|',
@@ -47,14 +47,14 @@ export const COMPETITOR_DEPTH_STEPS: ExpertStepDef[] = [
       '| 运维 C | 中 | 降级窗口弱相关 |',
       '| 工业 D | 低 | 场景远 |',
       '',
-      '**Validator 示意**：高威胁均挂公开号 · **Pass**',
+      '**样机校验示意**：高威胁均挂公开号 · **通过**',
     ].join('\n'),
   },
   {
     id: 'rhythm',
     label: '监控节奏',
     script: '【竞品】建议周扫高威胁、月扫中威胁；样机仅示意节奏表。',
-    tool: { name: 'list_competitors', preview: 'cadence=W高/M中' },
+    tool: { name: 'list_competitors', preview: '周高 / 月中' },
     structuredBody: [
       '| 级 | 节奏 | 动作 |',
       '|----|------|------|',
@@ -66,10 +66,10 @@ export const COMPETITOR_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'pack',
     label: '报告确认 · 待交',
-    script: '【竞品】03_competitor_watch 待确认。可转挖掘对照高威胁。',
+    script: '【竞品】竞品监测稿待确认。可转挖掘对照高威胁。',
     tool: {
       name: 'draft_competitor_watch',
-      preview: 'file=03_competitor_watch.md',
+      preview: '竞品监测稿',
     },
     triggersHitl: true,
     hitlGate: 'approve_strategy',
@@ -108,7 +108,7 @@ export const COMPETITOR_SAMPLE_WORKLOG_STEPS = `| 1 | 名单 | 全景 | Top5 | �
 | 2 | 公开扫描 | 示意库 | 表 | — |
 | 3 | 威胁分级 | 规则 | 高/中/低 | — |
 | 4 | 监控节奏 | 建议 | W/M | — |
-| 5 | 报告确认 | 摘要 | 待确认 | HITL |`
+| 5 | 报告确认 | 摘要 | 待确认 | 确认 |`
 
 export const COMPETITOR_SAMPLE_WORKLOG_CHOICES = `| 全覆盖 | 聚焦威胁 | 聚焦 | 可转挖 |
 | 只列名 | 挂公开号 | 可核验 | 可确认 |`

@@ -7,7 +7,6 @@ import {
   levelFromXp,
   NETWORK_POS,
   relationsFor,
-  workerIds,
 } from '../../departments/orgData'
 import type { CollabEdge } from '../../departments/orgData'
 import { MAIN_CHAIN_DEPTS, type OrgDeptId } from '../../departments/orgDepts'
@@ -18,10 +17,22 @@ import { MAIN_CHAIN_DEPTS, type OrgDeptId } from '../../departments/orgDepts'
  * 节点摆位固定（NETWORK_POS），选中部门时右侧给出该部的协作关系。
  */
 export function CollabNetwork() {
-  const [selected, setSelected] = useState<OrgDeptId>('dept-research')
-  const selDept = MAIN_CHAIN_DEPTS.find((d) => d.id === selected)!
+  /** 须落在 MAIN_CHAIN_DEPTS；旧默认 dept-research 已不在八部主链 → 整页白屏 */
+  const [selected, setSelected] = useState<OrgDeptId>(
+    () => MAIN_CHAIN_DEPTS[0]?.id ?? 'dept-disclosure',
+  )
+  const selDept =
+    MAIN_CHAIN_DEPTS.find((d) => d.id === selected) ?? MAIN_CHAIN_DEPTS[0]
   const rel = relationsFor(selected)
   const rich = DEPT_RICH[selected]
+
+  if (!selDept) {
+    return (
+      <p className="text-[12px] text-slate-500" data-testid="cn-empty">
+        暂无主链部门可展示
+      </p>
+    )
+  }
 
   const edges = useMemo(
     () =>
@@ -133,7 +144,7 @@ export function CollabNetwork() {
                 </span>
                 {r && (
                   <span className="mt-0.5 block text-[9px] leading-tight text-slate-500">
-                    {r.mainAgent.name} · {r.workerCount} 台
+                    负责人 · {r.experts.length} 专家
                   </span>
                 )}
               </button>
@@ -187,31 +198,26 @@ export function CollabNetwork() {
             </div>
             {rich && (
               <div>
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                  执行集群 · {workerIds(rich.workerPrefix, rich.workerCount).length} 台
+                <p className="mb-1 text-[10px] font-semibold text-slate-500">
+                  部内专家 · {rich.experts.length}
                 </p>
-                <p className="tabular text-[11px] leading-relaxed text-slate-600">
-                  {workerIds(rich.workerPrefix, rich.workerCount).join(' · ')}
+                <p className="text-[11px] leading-relaxed text-slate-600">
+                  {rich.experts.map((e) => e.name).join(' · ') || '—'}
                 </p>
               </div>
             )}
             {rich && (
               <div>
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                  支撑工具
+                <p className="mb-1 text-[10px] font-semibold text-slate-500">
+                  能力挂接
                 </p>
                 <ul className="space-y-1">
                   {rich.tools.map((t) => (
-                    <li key={t.id} className="flex items-baseline gap-1.5 text-[11px]">
-                      <span className="min-w-0 flex-1 truncate text-slate-700">
-                        {t.name}
-                        <span className="tabular ml-1 text-[10px] text-slate-400">
-                          {t.version}
-                        </span>
-                      </span>
-                      <span className="tabular shrink-0 text-[10px] text-slate-500">
-                        周{t.weeklyCalls} · 自动化 {t.automation}%
-                      </span>
+                    <li
+                      key={t.id}
+                      className="truncate text-[11px] text-slate-700"
+                    >
+                      {t.name}
                     </li>
                   ))}
                 </ul>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom'
+import { SoftEmpty } from '../components/soft/SoftEmpty'
 import { Search } from 'lucide-react'
 import { useAgents } from '@shared/context/AgentContext'
 import { useApp } from '@shared/context/AppContext'
@@ -107,19 +108,35 @@ export function AgentCatalogPage() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-8">
+    <div
+      className="flex-1 overflow-y-auto px-6 py-8 lg:px-8"
+      data-testid="agent-catalog-page"
+      data-catalog-bypass="1"
+    >
       <header className="mb-5 max-w-5xl">
-        <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">Agent</h1>
+        <p
+          className="text-[11px] font-medium uppercase tracking-wider text-amber-800/80"
+          data-testid="catalog-bypass-kicker"
+        >
+          旁路 · 助手目录
+        </p>
+        <h1 className="mt-1 text-[22px] font-semibold tracking-tight text-slate-900">
+          助手目录
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
-          选 Agent 开会话 · 案可选，可稍后创建或绑定 ·{' '}
-          <Link to="/agent/harness" className="ui-link-weak">
-            运行说明
+          选助手开会话（旁路）· 主办理请回大厅委托或公司案八部 · 案可选，可稍后绑定 ·{' '}
+          <Link to="/agent/harness" className="ui-link-weak" data-testid="catalog-to-harness-paper">
+            纸面运行说明
           </Link>
         </p>
-        <p className="mt-1.5 text-[11px] leading-snug text-slate-400" role="note">
-          平台分层纪律：Core 主办理闭环 · Assist 辅助薄层 · Beta 非采购闭环 — 勿把 Assist/Beta
-          卖成 Core。
-        </p>
+        <details className="mt-1.5" data-testid="catalog-tier-honesty">
+          <summary className="cursor-pointer select-none text-[11px] text-slate-400 hover:text-slate-600">
+            分层说明（示意）
+          </summary>
+          <p className="mt-1 text-[11px] leading-snug text-slate-500" role="note">
+            主办理闭环 / 辅助薄层 / 试用不进采购闭环 — 勿把辅助或试用卖成主办理。
+          </p>
+        </details>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <select
             value={caseId}
@@ -203,13 +220,16 @@ export function AgentCatalogPage() {
       </header>
 
       {filtered.length === 0 ? (
-        <div className="ui-empty max-w-xl">
-          <p className="ui-empty-title">没有匹配的 Agent</p>
-          <p className="ui-empty-desc">
-            {q.trim() || stageFilter !== 'all' || tierFilter !== 'all'
-              ? '试试清空搜索或换一层 / 阶段。'
-              : '当前目录为空。'}
-          </p>
+        <div className="ui-empty max-w-xl" data-testid="agent-catalog-empty-wrap">
+          <SoftEmpty
+            kind={
+              q.trim() || stageFilter !== 'all' || tierFilter !== 'all'
+                ? 'catalog-filter'
+                : 'catalog-empty'
+            }
+            testId="agent-catalog-empty"
+            className="border-0 bg-transparent px-0 py-0"
+          />
           <div className="mt-1 flex flex-wrap justify-center gap-2">
             <button
               type="button"

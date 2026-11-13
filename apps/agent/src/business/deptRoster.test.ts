@@ -41,7 +41,7 @@ describe('deptRoster', () => {
 
   it('labels departments with 部 suffix', () => {
     assert.equal(deptLabel('dept-research'), '查新部')
-    assert.equal(deptLabel('dept-draft'), '撰写部')
+    assert.equal(deptLabel('dept-draft'), '申请部')
     assert.equal(deptByLeadSeat('expert-oa')?.id, 'dept-oa')
   })
 
@@ -142,7 +142,7 @@ describe('deptRoster', () => {
     ])
   })
 
-  it('team roster uses node names and only splits 撰写', () => {
+  it('team roster uses node names and only splits 申请', () => {
     const rows = teamRosterRows([
       'expert-research',
       'expert-draft',
@@ -153,7 +153,7 @@ describe('deptRoster', () => {
       ['查新', '权要', '说明书', '附图'],
     )
     assert.equal(expertsInNode('expert-research').length, 0)
-    assert.equal(rows.find((r) => r.id === 'expert-draft')?.group, '撰写')
+    assert.equal(rows.find((r) => r.id === 'expert-draft')?.group, '申请')
     assert.equal(rows.find((r) => r.id === 'expert-research')?.group, undefined)
   })
 

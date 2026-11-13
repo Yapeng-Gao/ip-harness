@@ -1,0 +1,74 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "name": "plan confirm CTA",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "plan walk visible",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "still on home (no workbench yet)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "step 1 label",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "final CTA",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "entered workbench",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no dual tab switch",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no 协同工作 tab",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no 文书工作 tab",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "three panes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "plan strip step1 active",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "fresh plan starts at 读取",
+      "pass": true,
+      "detail": "读取研发资料"
+    },
+    {
+      "name": "rail confirm present",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "shots": [
+    "verify-plan-step4.png",
+    "verify-unified-wb.png"
+  ]
+}

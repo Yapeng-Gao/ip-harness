@@ -2,9 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider } from '@shared/context/AppContext'
 import { AgentProvider } from '@shared/context/AgentContext'
 import { ProductProvider } from '@shared/context/ProductContext'
-import { AgentShell } from './components/AgentShell'
 import { AgentHome } from './pages/AgentHome'
-import { HomePage } from './pages/HomePage'
 import { DepartmentsPage } from './pages/DepartmentsPage'
 import { AssetsPage } from './pages/AssetsPage'
 import { AgentL1Shell } from './pages/AgentL1Shell'
@@ -16,6 +14,8 @@ import { AgentHarnessOverview } from './pages/AgentHarnessOverview'
 import { ProjectFolderProvider } from './projects/ProjectFolderContext'
 import { GeneralBotsProvider } from './projects/GeneralBotsContext'
 import { BusinessCaseProvider } from './business/BusinessCaseContext'
+import { CompanyActivityProvider } from './business/CompanyActivityContext'
+import { DemoPaceProvider } from './business/DemoPaceContext'
 import { OrgConfigProvider } from './departments/OrgConfigContext'
 import { AssetLibraryProvider } from './assets/AssetLibraryContext'
 import { GeneralBotNewPage } from './pages/GeneralBotNewPage'
@@ -24,21 +24,32 @@ import { ProjectWorkspacePage } from './pages/projects/ProjectWorkspacePage'
 import { AgentLabGallery } from './pages/AgentLabGallery'
 import { RedirectToAgentLab } from './pages/RedirectToAgentLab'
 import { PatentSeatPage } from './pages/patent/PatentSeatPage'
-import { PatentRoomPage } from './pages/patent/PatentRoomPage'
+import { PatentCatalogPage } from './pages/patent/PatentCatalogPage'
 import { BusinessCasesPage } from './pages/business/BusinessCasesPage'
 import { BusinessCaseNewPage } from './pages/business/BusinessCaseNewPage'
 import { BusinessCasePage } from './pages/business/BusinessCasePage'
-import { BusinessCaseRoomPage } from './pages/business/BusinessCaseRoomPage'
-import {
-  PendingConfirmDetailPage,
-  PendingConfirmInboxPage,
-} from './pages/business/PendingConfirmPage'
+import { BusinessCaseDeptPage } from './pages/business/BusinessCaseDeptPage'
+import { PendingConfirmDetailPage } from './pages/business/PendingConfirmPage'
+import { BossTodoInboxPage } from './pages/business/BossTodoInboxPage'
+import { CaseDocketPage } from './pages/business/CaseDocketPage'
+import { CaseBillingPage } from './pages/business/CaseBillingPage'
+import { CaseMembersPage } from './pages/business/CaseMembersPage'
+import { CaseProfessionalPage } from './pages/business/CaseProfessionalPage'
+import { HomePage } from './pages/HomePage'
+import { WelcomePage } from './pages/WelcomePage'
+import { AgentLoginPage } from './pages/business/AgentLoginPage'
+import { RequireAuth } from './pages/business/RequireAuth'
+import { EntryRoleProvider } from './business/EntryRoleContext'
+import { AuthSessionProvider } from './business/AuthSessionContext'
 
 /**
- * IA（2026-10-21）：
- * /agent              首页（项目列表 + 简报 + 待办 + 对话框）
- * /agent/cases        我的案子（原首页）
- * /agent/departments  部门（HR 式管理，取代 catalog）
+ * IA（2026-10-23）：
+ * /agent/welcome      登录前宣传站（§4.0p；未登录可达；货架+场景）
+ * /agent/login        登录壳（角色二选一 + 样机会话；§4.0）
+ * /agent              薄产品入口（§4.0a；登录后落点；主 CTA 按角色分流）
+ * /agent/cases        多案流水（案表 → 公司首页）
+ * /agent/departments  编制 · 部门管理（公司级岗表；办活走大厅/本案/部台）
+ * /agent/roster       → /agent/departments
  * /agent/assets       资产（全局库 + 文件树）
  */
 export default function App() {
@@ -49,24 +60,38 @@ export default function App() {
           <ProjectFolderProvider>
           <GeneralBotsProvider>
           <BusinessCaseProvider>
+          <CompanyActivityProvider>
+          <DemoPaceProvider>
           <OrgConfigProvider>
           <AssetLibraryProvider>
+          <EntryRoleProvider>
+          <AuthSessionProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Navigate to="/agent" replace />} />
-              <Route path="/agent" element={<AgentShell />}>
+              <Route path="/agent/welcome" element={<WelcomePage />} />
+              <Route path="/agent/login" element={<AgentLoginPage />} />
+              <Route path="/agent" element={<RequireAuth />}>
                 <Route index element={<HomePage />} />
                 <Route path="cases" element={<BusinessCasesPage />} />
                 <Route path="cases/new" element={<BusinessCaseNewPage />} />
                 <Route path="cases/:caseId" element={<BusinessCasePage />} />
-                <Route path="cases/:caseId/room" element={<BusinessCaseRoomPage />} />
-                <Route path="pending" element={<PendingConfirmInboxPage />} />
+                <Route path="cases/:caseId/depts/:deptSlug" element={<BusinessCaseDeptPage />} />
+                <Route path="cases/:caseId/docket" element={<CaseDocketPage />} />
+                <Route path="cases/:caseId/billing" element={<CaseBillingPage />} />
+                <Route path="cases/:caseId/members" element={<CaseMembersPage />} />
+                <Route path="cases/:caseId/professional" element={<CaseProfessionalPage />} />
+                <Route path="cases/:caseId/room" element={<Navigate to=".." relative="path" replace />} />
+                <Route path="pending" element={<BossTodoInboxPage />} />
                 <Route path="pending/:confirmId" element={<PendingConfirmDetailPage />} />
                 <Route path="departments" element={<DepartmentsPage />} />
+                <Route path="roster" element={<Navigate to="/agent/departments" replace />} />
                 <Route path="assets" element={<AssetsPage />} />
                 {/* 2026-10-21：catalog 并入部门页 */}
                 <Route path="catalog" element={<Navigate to="/agent/departments" replace />} />
                 <Route path="experts" element={<Navigate to="/agent/departments" replace />} />
+                {/* 席位样机旁路目录 · 非一期进门；卸组队入口（勿回潮） */}
+                <Route path="seats" element={<PatentCatalogPage />} />
                 <Route path="seats/:seatId" element={<PatentSeatPage />} />
                 <Route path="sandbox" element={<AgentL1Shell />} />
                 <Route path="team" element={<GeneralGrokShell />} />
@@ -82,7 +107,7 @@ export default function App() {
                 <Route path="projects" element={<ProjectListPage />} />
                 <Route path="projects/:projectId" element={<ProjectWorkspacePage />} />
                 <Route path="projects/:projectId/bots/:botId" element={<ProjectWorkspacePage />} />
-                <Route path="projects/:projectId/room" element={<PatentRoomPage />} />
+                <Route path="projects/:projectId/room" element={<Navigate to=".." relative="path" replace />} />
                 <Route path="projects/:projectId/experts/:expertId" element={<ProjectWorkspacePage />} />
                 <Route path="skills" element={<Navigate to="/agent" replace />} />
                 <Route path="tools" element={<Navigate to="/agent" replace />} />
@@ -92,8 +117,12 @@ export default function App() {
               <Route path="/agents/*" element={<Navigate to="/agent" replace />} />
             </Routes>
           </BrowserRouter>
+          </AuthSessionProvider>
+          </EntryRoleProvider>
           </AssetLibraryProvider>
           </OrgConfigProvider>
+          </DemoPaceProvider>
+          </CompanyActivityProvider>
           </BusinessCaseProvider>
           </GeneralBotsProvider>
           </ProjectFolderProvider>

@@ -1,0 +1,376 @@
+[
+  {
+    "label": "d4-author",
+    "viewId": "viewDept",
+    "layoutClass": "workbench",
+    "deptTopH": 44,
+    "mainW": 1058,
+    "sideW": 340,
+    "sideL": 1084,
+    "composerFirst": true,
+    "composerBottom": 889,
+    "singleRail": true,
+    "leadBarCount": 0,
+    "leadTexts": [],
+    "seatCount": 6,
+    "seats": [
+      "交底部负责人 主 进行中 收敛·打包口",
+      "成稿专家 主 进行中 偏结构、少形容词",
+      "润色专家 协 待审 改表述不改技术含义",
+      "检索专家 协 请来 未请来 证据优先",
+      "质检专家 主 进行中 对照图纸+规则检",
+      "代理顾问 协 请来 未请来 成色视角"
+    ],
+    "askIds": [
+      "ask-fact",
+      "ask-excerpt",
+      "ask-hand5",
+      "ask-excerpt"
+    ],
+    "asksInFeed": [
+      "ask-fact",
+      "ask-excerpt",
+      "ask-hand5",
+      "ask-excerpt"
+    ],
+    "hardAskOutside": [],
+    "densityBtnTexts": [],
+    "modeHint": "主笔",
+    "metaText": "电机冷却结构 · 交底案 你上次要求：效果必须标测法（样机测 / 仿真 / 文献）",
+    "hasTaskStrip": true,
+    "hasAiPane": true,
+    "hasDocMain": true,
+    "pageSample": "← 回大厅 ④ 交底部 未过线 / 质检进行中 电机冷却结构 · 交底案 你上次要求：效果必须标测法（样机测 / 仿真 / 文献） 进行中 ④交底部 电机冷却结构 待你确认事实 ⑤申请部 模块化热管理 质检中 ⑥答复部 低功耗膜分离 剩余 18 天 轨迹 主笔 本部门办完的标志 是交底质检 全绿 ；要你拍的是 事实确认 与 可否交⑤ （分钮，不糊）。 知道了"
+  },
+  {
+    "label": "d4-light",
+    "viewId": "viewDept",
+    "layoutClass": "workbench",
+    "deptTopH": 44,
+    "mainW": 1058,
+    "sideW": 340,
+    "sideL": 1084,
+    "composerFirst": true,
+    "composerBottom": 889,
+    "singleRail": true,
+    "leadBarCount": 0,
+    "leadTexts": [],
+    "seatCount": 6,
+    "seats": [
+      " 交底部负责人主 进行中 汇总中 收敛·打包口 ",
+      " 成稿专家主 进行中 成稿中 偏结构、少形容词 ",
+      " 润色专家协 待审 待审 改表述不改技术含义 ",
+      " 检索专家协请来 未请来 未请来 证据优先 ",
+      " 质检专家主 进行中 复检中 对照图纸+规则检 ",
+      " 代理顾问协请来 未请来 未请来 成色视角 "
+    ],
+    "askIds": [
+      "ask-fact",
+      "ask-excerpt",
+      "ask-hand5",
+      "ask-excerpt"
+    ],
+    "asksInFeed": [
+      "ask-fact",
+      "ask-excerpt",
+      "ask-hand5",
+      "ask-excerpt"
+    ],
+    "hardAskOutside": [],
+    "densityBtnTexts": [],
+    "modeHint": "轻量",
+    "metaText": "电机冷却结构 · 交底案 你上次要求：效果必须标测法（样机测 / 仿真 / 文献）",
+    "hasTaskStrip": true,
+    "hasAiPane": true,
+    "hasDocMain": true,
+    "pageSample": "← 回大厅 ④ 交底部 未过线 / 质检进行中 电机冷却结构 · 交底案 你上次要求：效果必须标测法（样机测 / 仿真 / 文献） 进行中 ④交底部 电机冷却结构 待你确认事实 ⑤申请部 模块化热管理 质检中 ⑥答复部 低功耗膜分离 剩余 18 天 轨迹 轻量 主产出 · 交底书 交底书 当前稿 上一确认稿 轻量 · 只读批注为主 要你拍什么 确认交底事实是"
+  },
+  {
+    "label": "d5",
+    "viewId": "viewApply",
+    "layoutClass": "apply-layout",
+    "deptTopH": 44,
+    "mainW": 1066,
+    "sideW": 340,
+    "sideL": 1088,
+    "composerFirst": true,
+    "composerBottom": 889,
+    "singleRail": true,
+    "leadBarCount": 0,
+    "leadTexts": [],
+    "seatCount": 3,
+    "seats": [
+      "申请部负责人 主 进行中 打包口",
+      "权项专家 主 进行中 偏结构",
+      "质检专家 主 进行中 对照交底+规则"
+    ],
+    "askIds": [
+      "ask-understand",
+      "ask-apply-or-not",
+      "ask-submit5"
+    ],
+    "asksInFeed": [
+      "ask-understand",
+      "ask-apply-or-not",
+      "ask-submit5"
+    ],
+    "hardAskOutside": [],
+    "densityBtnTexts": [],
+    "modeHint": "主笔",
+    "metaText": "模块化热管理 · 申请撰写 你上次要求：效果必须标测法（样机测 / 仿真 / 文献）",
+    "hasTaskStrip": true,
+    "hasAiPane": true,
+    "hasDocMain": true,
+    "pageSample": "← 工作台 ⑤ 申请部 未过线 / 进行中 模块化热管理 · 申请撰写 你上次要求：效果必须标测法（样机测 / 仿真 / 文献） 进行中 ④交底部 电机冷却结构 待你确认事实 ⑤申请部 模块化热管理 质检中 ⑥答复部 低功耗膜分离 剩余 18 天 轨迹 主笔 主产出 · 申请文件 权项 | 说明书 | 差分 权项 说明书 差分对照 权利要求书 · 第 1 页"
+  },
+  {
+    "label": "d6",
+    "viewId": "viewReply",
+    "layoutClass": "reply-layout",
+    "deptTopH": 44,
+    "mainW": 1066,
+    "sideW": 340,
+    "sideL": 1088,
+    "composerFirst": true,
+    "composerBottom": 889,
+    "singleRail": true,
+    "leadBarCount": 0,
+    "leadTexts": [],
+    "seatCount": 3,
+    "seats": [
+      "答复部负责人 主 进行中 打包口",
+      "争点专家 主 进行中 中立·不争辩",
+      "策略专家 主 进行中 权衡影响"
+    ],
+    "askIds": [
+      "ask-contention",
+      "ask-limit",
+      "ask-reply-submit"
+    ],
+    "asksInFeed": [
+      "ask-contention",
+      "ask-limit",
+      "ask-reply-submit"
+    ],
+    "hardAskOutside": [],
+    "densityBtnTexts": [],
+    "modeHint": "主笔",
+    "metaText": "低功耗膜分离 · 首通 OA 截止 2026-11-12（剩余约 14 天） 你上次要求：效果必须标测法（样机测 / 仿真 / 文献）",
+    "hasTaskStrip": true,
+    "hasAiPane": true,
+    "hasDocMain": true,
+    "pageSample": "← 工作台 ⑥ 答复部 本轮答复进行中 低功耗膜分离 · 首通 OA 截止 2026-11-12（剩余约 14 天） 你上次要求：效果必须标测法（样机测 / 仿真 / 文献） 进行中 ④交底部 电机冷却结构 待你确认事实 ⑤申请部 模块化热管理 质检中 ⑥答复部 低功耗膜分离 剩余 18 天 轨迹 升级催办 主笔 主产出 · 答复稿 答复 | 通知书 | 差"
+  },
+  {
+    "label": "d1",
+    "viewId": "viewThin",
+    "layoutClass": "thin-panel",
+    "deptTopH": 55,
+    "mainW": 562,
+    "sideW": null,
+    "sideL": null,
+    "composerFirst": true,
+    "composerBottom": 657,
+    "singleRail": false,
+    "leadBarCount": 1,
+    "leadTexts": [
+      "立项部负责人 要不要立这个方向 · 一期薄部，不造细作业台。"
+    ],
+    "seatCount": 0,
+    "seats": [],
+    "askIds": [
+      "thin-line-ask"
+    ],
+    "asksInFeed": [],
+    "hardAskOutside": [
+      "thin-line-ask"
+    ],
+    "densityBtnTexts": [],
+    "modeHint": null,
+    "metaText": null,
+    "hasTaskStrip": false,
+    "hasAiPane": false,
+    "hasDocMain": false,
+    "pageSample": "← 工作台 ① 立项部 薄占位 · 合格线示意 立项部负责人 要不要立这个方向 · 一期薄部，不造细作业台。 本部门合格线 项目已创建 + 方向一句话 + 状态 + 用户确认 agent 状态 编制薄占位 · 进得去 · 可回大厅派别的部 【示意硬请示】P2 合格线确认（薄部示意） 一期不做细台；若本部门有产出，请确认是否达到合格线表述。 确认合格线 禁超卖"
+  },
+  {
+    "label": "d2",
+    "viewId": "viewThin",
+    "layoutClass": "thin-panel",
+    "deptTopH": 55,
+    "mainW": 562,
+    "sideW": null,
+    "sideL": null,
+    "composerFirst": true,
+    "composerBottom": 657,
+    "singleRail": false,
+    "leadBarCount": 1,
+    "leadTexts": [
+      "创新激发部负责人 问题卡点 → 路径 → 方案 · 一期薄部，不造细作业台。"
+    ],
+    "seatCount": 0,
+    "seats": [],
+    "askIds": [
+      "thin-line-ask"
+    ],
+    "asksInFeed": [],
+    "hardAskOutside": [
+      "thin-line-ask"
+    ],
+    "densityBtnTexts": [],
+    "modeHint": null,
+    "metaText": null,
+    "hasTaskStrip": false,
+    "hasAiPane": false,
+    "hasDocMain": false,
+    "pageSample": "← 工作台 ② 创新激发部 薄占位 · 合格线示意 创新激发部负责人 问题卡点 → 路径 → 方案 · 一期薄部，不造细作业台。 本部门合格线 问题→路径→用户选题+收藏（或跳过留痕） agent 状态 编制薄占位 · 进得去 · 可回大厅派别的部 【示意硬请示】P2 合格线确认（薄部示意） 一期不做细台；若本部门有产出，请确认是否达到合格线表述。 确认合格"
+  },
+  {
+    "label": "d3",
+    "viewId": "viewThin",
+    "layoutClass": "thin-panel",
+    "deptTopH": 55,
+    "mainW": 562,
+    "sideW": null,
+    "sideL": null,
+    "composerFirst": true,
+    "composerBottom": 657,
+    "singleRail": false,
+    "leadBarCount": 1,
+    "leadTexts": [
+      "专利挖掘部负责人 研发资料 → 创新点 + 拆案 · 一期薄部，不造细作业台。"
+    ],
+    "seatCount": 0,
+    "seats": [],
+    "askIds": [
+      "thin-line-ask"
+    ],
+    "asksInFeed": [],
+    "hardAskOutside": [
+      "thin-line-ask"
+    ],
+    "densityBtnTexts": [],
+    "modeHint": null,
+    "metaText": null,
+    "hasTaskStrip": false,
+    "hasAiPane": false,
+    "hasDocMain": false,
+    "pageSample": "← 工作台 ③ 专利挖掘部 薄占位 · 合格线示意 专利挖掘部负责人 研发资料 → 创新点 + 拆案 · 一期薄部，不造细作业台。 本部门合格线 报告路径或交④点包路径择一确认 agent 状态 编制薄占位 · 进得去 · 可回大厅派别的部 【示意硬请示】P2 合格线确认（薄部示意） 一期不做细台；若本部门有产出，请确认是否达到合格线表述。 确认合格线 禁超"
+  },
+  {
+    "label": "d7",
+    "viewId": "viewThin",
+    "layoutClass": "thin-panel",
+    "deptTopH": 55,
+    "mainW": 562,
+    "sideW": null,
+    "sideL": null,
+    "composerFirst": true,
+    "composerBottom": 657,
+    "singleRail": false,
+    "leadBarCount": 1,
+    "leadTexts": [
+      "维护部负责人 确权后期限 · 年费 · 台账 · 一期薄部，不造细作业台。"
+    ],
+    "seatCount": 0,
+    "seats": [],
+    "askIds": [
+      "thin-line-ask"
+    ],
+    "asksInFeed": [],
+    "hardAskOutside": [
+      "thin-line-ask"
+    ],
+    "densityBtnTexts": [],
+    "modeHint": null,
+    "metaText": null,
+    "hasTaskStrip": false,
+    "hasAiPane": false,
+    "hasDocMain": false,
+    "pageSample": "← 工作台 ⑦ 维护部 薄占位 · 合格线示意 维护部负责人 确权后期限 · 年费 · 台账 · 一期薄部，不造细作业台。 本部门合格线 台账可核 + 期限提醒 +（有费）缴费经用户确认 agent 状态 编制薄占位 · 进得去 · 可回大厅派别的部 【示意硬请示】P2 合格线确认（薄部示意） 一期不做细台；若本部门有产出，请确认是否达到合格线表述。 确认合"
+  },
+  {
+    "label": "d8",
+    "viewId": "viewThin",
+    "layoutClass": "thin-panel",
+    "deptTopH": 55,
+    "mainW": 562,
+    "sideW": null,
+    "sideL": null,
+    "composerFirst": true,
+    "composerBottom": 657,
+    "singleRail": false,
+    "leadBarCount": 1,
+    "leadTexts": [
+      "复盘部负责人 年末/阶段复盘报告 · 一期薄部，不造细作业台。"
+    ],
+    "seatCount": 0,
+    "seats": [],
+    "askIds": [
+      "thin-line-ask"
+    ],
+    "asksInFeed": [],
+    "hardAskOutside": [
+      "thin-line-ask"
+    ],
+    "densityBtnTexts": [],
+    "modeHint": null,
+    "metaText": null,
+    "hasTaskStrip": false,
+    "hasAiPane": false,
+    "hasDocMain": false,
+    "pageSample": "← 工作台 ⑧ 复盘部 薄占位 · 合格线示意 复盘部负责人 年末/阶段复盘报告 · 一期薄部，不造细作业台。 本部门合格线 复盘报告已交 + 维持/放弃已拍或只读不拍留痕 agent 状态 编制薄占位 · 进得去 · 可回大厅派别的部 【示意硬请示】P2 合格线确认（薄部示意） 一期不做细台；若本部门有产出，请确认是否达到合格线表述。 确认合格线 禁超卖："
+  },
+  {
+    "label": "b2-block",
+    "viewId": "viewBlock",
+    "layoutClass": "block-panel",
+    "deptTopH": 55,
+    "mainW": 624,
+    "sideW": null,
+    "sideL": null,
+    "composerFirst": false,
+    "composerBottom": null,
+    "singleRail": false,
+    "leadBarCount": 0,
+    "leadTexts": [],
+    "seatCount": 0,
+    "seats": [],
+    "askIds": [],
+    "asksInFeed": [],
+    "hardAskOutside": [],
+    "densityBtnTexts": [],
+    "modeHint": null,
+    "metaText": null,
+    "hasTaskStrip": false,
+    "hasAiPane": false,
+    "hasDocMain": false,
+    "pageSample": "← 工作台 ⑤ 申请部 · 进不去 门槛未过 进入门槛未过（B2） 要进申请部，需要合格交底（④全绿）并完成「可交⑤」与工单接单——agent 不会越权开写。 缺什么 尚无交底书成稿 / ④未全绿 未确认「可交⑤」 未开④→⑤工单接单 检 无④全绿交底路径 挡 B2 回退 · 请先走交底部或前台 去交底部补缺口 回前台"
+  },
+  {
+    "label": "h45",
+    "viewId": "viewWO",
+    "layoutClass": "other",
+    "deptTopH": null,
+    "mainW": null,
+    "sideW": null,
+    "sideL": null,
+    "composerFirst": false,
+    "composerBottom": null,
+    "singleRail": false,
+    "leadBarCount": 0,
+    "leadTexts": [],
+    "seatCount": 0,
+    "seats": [],
+    "askIds": [],
+    "asksInFeed": [],
+    "hardAskOutside": [],
+    "densityBtnTexts": [],
+    "modeHint": null,
+    "metaText": null,
+    "hasTaskStrip": false,
+    "hasAiPane": false,
+    "hasDocMain": false,
+    "pageSample": "工单 · 现在做⑤ ④ → ⑤ 交办工单 打包方交产出，接单方开新线程；旁注三线分词。 交底部负责人 打包 · 结束检查表 申请部负责人 接单 · 开 A/B/C 打包方 交底部负责人 接单方 申请部负责人 ④ 合格线 交底已全绿 ⑤ 合格线 申请尚未过线 输入契约 合格交底全绿 + 事实确认 + 材料包 输出契约 申请文件可递交（过线）+ 申不申结论 质量"
+  }
+]

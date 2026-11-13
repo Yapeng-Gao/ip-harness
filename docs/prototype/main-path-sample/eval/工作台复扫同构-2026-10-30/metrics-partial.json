@@ -1,0 +1,197 @@
+[
+  {
+    "label": "d4",
+    "viewId": "viewDept",
+    "deptTop": {
+      "t": 96,
+      "l": 0,
+      "w": 1440,
+      "h": 44,
+      "b": 140
+    },
+    "main": {
+      "t": 157,
+      "l": 16,
+      "w": 1058,
+      "h": 733,
+      "b": 890
+    },
+    "side": {
+      "t": 157,
+      "l": 1084,
+      "w": 340,
+      "h": 733,
+      "b": 890
+    },
+    "composer": {
+      "t": 781,
+      "l": 1085,
+      "w": 338,
+      "h": 108,
+      "b": 889,
+      "firstScreen": true
+    },
+    "singleRail": true,
+    "leadBarVisible": false,
+    "feed": {
+      "t": 681,
+      "l": 1097,
+      "w": 314,
+      "h": 128,
+      "b": 808
+    },
+    "askIds": [
+      "ask-fact",
+      "ask-excerpt",
+      "ask-hand5",
+      "ask-excerpt"
+    ],
+    "asksInFeed": [
+      "ask-fact",
+      "ask-excerpt",
+      "ask-hand5",
+      "ask-excerpt"
+    ],
+    "hardAskOutside": [],
+    "densityBtnTexts": [],
+    "layoutClass": "workbench",
+    "hasWorkbenchLike": true,
+    "metaText": "电机冷却结构 · 交底案\n你上次要求：效果必须标测法（样机测 / 仿真 / 文献）",
+    "modeHint": "主笔",
+    "pageSample": "← 回大厅 ④ 交底部 未过线 / 质检进行中 电机冷却结构 · 交底案 你上次要求：效果必须标测法（样机测 / 仿真 / 文献） 进行中 ④交底部 电机冷却结构 待你确认事实 ⑤申请部 模块化热管理 质检中 ⑥答复部 低功耗膜分离 剩余 18 天 轨迹 主笔 本部门办完的标志 是交底质检 全绿 ；要你拍的是 事实确认 与 可否交⑤ （分钮，不糊）。 知道了 主产出 · 交底书 交底书 ✓ 成稿 草案已落主栏 2 质检循环 复检红黄项 "
+  },
+  {
+    "label": "window-hooks",
+    "hasOpenDept": false,
+    "keys": [
+      "opener",
+      "oncontentvisibilityautostatechange",
+      "onpopstate",
+      "open",
+      "DEMO",
+      "__SAMPLE__"
+    ]
+  },
+  {
+    "label": "prog-items",
+    "progItems": [
+      {
+        "testid": "fly-case",
+        "go": null,
+        "text": "⑤ 申请部 模块化热管理 · 申请撰写 质检中 · 理解已确认 · 独权草案质检循环"
+      },
+      {
+        "testid": "fly-case",
+        "go": null,
+        "text": "⑥ 答复部 低功耗膜分离 · 首通 OA 剩余 18 天 · 争点复述已出 · 待你确认策略"
+      },
+      {
+        "testid": null,
+        "go": null,
+        "text": "递申请"
+      },
+      {
+        "testid": "dept-door-d5",
+        "go": null,
+        "text": "⑤ 申请部 合格交底 → 申请文件 → 递交 主链 可协同"
+      },
+      {
+        "testid": "dept-door-d6",
+        "go": null,
+        "text": "⑥ 答复部 通知书 → 策略 → 答复 主链 可协同"
+      },
+      {
+        "testid": "task-chip",
+        "go": null,
+        "text": " ⑤申请部 模块化热管理 质检中 "
+      },
+      {
+        "testid": "task-chip",
+        "go": null,
+        "text": " ⑥答复部 低功耗膜分离 剩余 18 天 "
+      },
+      {
+        "testid": "ask-excerpt",
+        "go": null,
+        "text": " 依据摘录 · 质检分卡 全绿项齐 · q4 效果依据已处理。过线 ≠ 已交⑤。 "
+      },
+      {
+        "testid": "confirm-hand5",
+        "go": null,
+        "text": "确认可交⑤"
+      }
+    ]
+  },
+  {
+    "label": "clicked-prog",
+    "clicked": "\n            ⑤ 申请部\n            模块化热管理 · 申请撰写质检中 · 理解已确认 · 独权"
+  },
+  {
+    "label": "after-prog-click",
+    "viewId": "viewApply",
+    "deptTop": {
+      "t": 0,
+      "l": 0,
+      "w": 0,
+      "h": 0,
+      "b": 0
+    },
+    "main": {
+      "t": 0,
+      "l": 0,
+      "w": 0,
+      "h": 0,
+      "b": 0
+    },
+    "side": {
+      "t": 0,
+      "l": 0,
+      "w": 0,
+      "h": 0,
+      "b": 0
+    },
+    "composer": {
+      "t": 0,
+      "l": 0,
+      "w": 0,
+      "h": 0,
+      "b": 0,
+      "firstScreen": false
+    },
+    "singleRail": true,
+    "leadBarVisible": false,
+    "feed": {
+      "t": 0,
+      "l": 0,
+      "w": 0,
+      "h": 0,
+      "b": 0
+    },
+    "askIds": [
+      "ask-fact",
+      "ask-excerpt",
+      "ask-hand5",
+      "ask-excerpt",
+      "ask-understand",
+      "ask-apply-or-not",
+      "ask-submit5"
+    ],
+    "asksInFeed": [
+      "ask-fact",
+      "ask-excerpt",
+      "ask-hand5",
+      "ask-excerpt"
+    ],
+    "hardAskOutside": [],
+    "densityBtnTexts": [],
+    "layoutClass": "workbench",
+    "hasWorkbenchLike": true,
+    "metaText": "电机冷却结构 · 交底案你上次要求：效果必须标测法（样机测 / 仿真 / 文献）",
+    "modeHint": "主笔",
+    "pageSample": "← 工作台 ⑤ 申请部 未过线 / 进行中 模块化热管理 · 申请撰写 你上次要求：效果必须标测法（样机测 / 仿真 / 文献） 进行中 ④交底部 电机冷却结构 待你确认事实 ⑤申请部 模块化热管理 质检中 ⑥答复部 低功耗膜分离 剩余 18 天 轨迹 主笔 主产出 · 申请文件 权项 | 说明书 | 差分 权项 说明书 差分对照 权利要求书 · 第 1 页（示意分页） 权利要求书 1 独权 一种电机冷却结构，包括壳体、设于所述壳体内的"
+  },
+  {
+    "label": "app-tail",
+    "last": "entDefault(); sendComposerDemo(); }\n    });\n    $(\"#drawerClose\").addEventListener(\"click\", closeDrawer);\n    $(\"#drawerBackdrop\").addEventListener(\"click\", closeDrawer);\n    $$(\"[data-dtab]\").forEach((b) => b.addEventListener(\"click\", () => { state.drawerTab = b.dataset.dtab; renderDrawer(); }));\n    window.__SAMPLE__ = {\n      state, loadSample, confirmDestination, enterConfirmedDept, makeAllGreen, resolveYellowQc,\n      confirmFact, confirmCanHand5, openWorkOrder, openDept, openDrawer, goLobby, openFront, render, closeDrawer,\n      focusExpert, revealExpertOutput, sendComposerDemo, goLobbyTodo, enterFromGate,\n      switchParallelCase, toggleShellPanel, closeShellPanel, setDensityMode, dismissMentor, insertAtMaterial, inviteExpert, gateGrade\n    };\n  }\n\n  bindGlobal();\n  render();\n})();\n"
+  }
+]

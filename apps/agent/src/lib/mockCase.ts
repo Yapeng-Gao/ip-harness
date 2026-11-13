@@ -16,5 +16,5 @@ export function caseBindStateFromId(caseId: string | undefined): CaseBindState {
 }
 
 export function mockCaseLabel(title: string, caseId: string): string {
-  return `${title || '样机案'}（未进中台库 · ${caseId}）`
+  return `${title || '样机案'}（未进正式案库 · ${caseId}）`
 }

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Novada Team · 主链样机</title>
+  <link rel="stylesheet" href="./styles.css?v=railfix1b" />
+</head>
+<body>
+  <div class="app">
+    <header class="shell-top" id="shellTop">
+      <button type="button" class="brand-mark" id="btnBrand" title="回工作台">
+        <span class="brand-logo">NT</span>
+        <span class="brand-text">
+          <strong>Novada Team</strong>
+          <span>专家向你汇报 · 关键处你来确认</span>
+        </span>
+      </button>
+      <nav class="shell-nav" aria-label="主导航">
+        <button type="button" class="nav-tab on" id="navLobby" data-testid="nav-lobby">大厅</button>
+        <button type="button" class="nav-tab" id="navCases" data-testid="nav-cases" title="打开案卷（壳级唯一入口）">案卷</button>
+      </nav>
+      <button type="button" class="shell-search" id="btnShellSearch" title="搜案卷 / 专家 / 请示" data-testid="shell-search">
+        <span class="sk">⌘K</span>
+        <span>搜案卷 / 专家 / 请示…</span>
+      </button>
+      <div class="shell-spacer"></div>
+      <button type="button" class="icon-btn" id="btnSchedule" data-testid="btn-schedule" title="定时 / 催办">
+        定时<span class="badge-dot soft" id="scheduleDot">4</span>
+      </button>
+      <button type="button" class="icon-btn" id="btnNotify" data-testid="btn-notify" title="要你拍的">
+        要你拍的<span class="badge-dot" id="notifyDot">3</span>
+      </button>
+      <button type="button" class="case-switch-chip" id="btnCaseSwitch" data-testid="btn-case-switch" title="公司正在推进">
+        <span class="cs-k">推进</span>
+        <span id="caseSwitchLabel">公司正在推进</span>
+        <span class="cs-caret">▾</span>
+      </button>
+      <div class="role-toggle" data-testid="role-toggle">
+        <button type="button" class="role on" data-role="ent">企业研发</button>
+        <button type="button" class="role" data-role="agency">代理所</button>
+      </div>
+      <div class="user-chip" title="领导＝当前用户">
+        <span class="uav">你</span>
+        <span>Leslie<span class="urole"> · 领导</span></span>
+      </div>
+      <button type="button" class="case-chip empty" id="caseChip" data-testid="case-chip" title="当前案 · 点开与「案卷」同一抽屉"><span>暂无打开案卷</span></button>
+    </header>
+
+    <div class="shell-fly" id="shellFly" data-testid="shell-fly" hidden>
+      <div class="shell-fly-card" id="shellFlyCard"></div>
+    </div>
+
+
+    <!-- Gate · 登录/选工作台（不采集账户） -->
+    <section class="view on" id="viewGate" data-testid="view-gate">
+      <div class="gate-wrap">
+        <div class="gate-copy">
+          <div class="gate-kicker"><span class="live-dot"></span>进入你的知产工作空间</div>
+          <h1>继续推进工作，而不是重新开始。</h1>
+          <p>案卷、文书、证据、版本与确认记录，都在同一业务底座里延续。专家向你汇报，关键处你来拍板。</p>
+          <p class="tiny muted">身份决定空间 · 企业与代理所各看权限内的活。演示身份不采集账户。</p>
+        </div>
+        <div class="gate-card" data-testid="gate-card">
+          <div class="eyebrow">演示身份</div>
+          <h2>选择你的工作台</h2>
+          <div class="gate-ids" id="gateIds">
+            <button type="button" class="gate-id on" data-role="ent" data-testid="gate-ent">
+              <strong>企业研发</strong>
+              <span>溢彩科技 · Leslie</span>
+            </button>
+            <button type="button" class="gate-id" data-role="agency" data-testid="gate-agency">
+              <strong>代理所</strong>
+              <span>衡知代理 · 演示顾问</span>
+            </button>
+          </div>
+          <div class="gate-mode" data-testid="gate-mode">
+            <button type="button" class="gm on" data-mode="existing">已有工作</button>
+            <button type="button" class="gm" data-mode="first">首次使用</button>
+          </div>
+          <p class="tiny muted" id="gateModeHint">进厅见摘要计数 · 列表在顶栏「要你拍的 / 正在推进」· 不是空目录。</p>
+          <button type="button" class="primary gate-enter" id="btnGateEnter" data-testid="gate-enter">进入企业研发工作区 →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- L1 大厅 -->
+    <section class="view" id="viewLobby" data-testid="view-lobby">
+      <div class="view-body lobby-body">
+        <div class="lobby-greet" data-testid="lobby-greet">
+          <h1 id="lobbyGreetTitle">早上好，Leslie。</h1>
+          <p id="lobbyGreetSub">今天有 <strong id="lobbyTodoCount">3</strong> 件事需要你处理 · 专家在办，关键节点等你拍板。</p>
+        </div>
+
+        <div class="card entrust-card" data-testid="front-desk-card">
+          <div class="entrust-head">
+            <span class="avatar sm"><img src="./avatars/01.jpg" alt="" width="32" height="32" /></span>
+            <div>
+              <div class="eyebrow">统一委托 · 前台</div>
+              <strong>交给前台接待</strong>
+            </div>
+            <span class="tiny muted">接待弄清去向后进部 · 熟客可直达</span>
+          </div>
+          <div class="entrust-box">
+            <textarea id="entrustInput" rows="2" placeholder="跨部门目标，或直接说：把这份技术说明写成交底…" data-testid="entrust-input"></textarea>
+            <div class="entrust-foot">
+              <div class="goal-pills" id="goalPills">
+                <button type="button" class="goal-pill dark" data-goal="d4">写交底</button>
+                <button type="button" class="goal-pill dark" data-goal="d5">递申请</button>
+                <button type="button" class="goal-pill dark" data-goal="d6">答审查意见</button>
+              </div>
+              <div class="entrust-acts">
+                <button type="button" class="ghost" id="btnLobbyD4">直达交底部</button>
+                <button type="button" class="primary" id="btnFront" data-testid="open-front">交给前台</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card dept-home-card" data-testid="dept-home-card">
+          <div class="card-head">
+            <h2>进哪个部门办事</h2>
+            <span class="tiny muted">④⑤⑥ 主链厚 · 其余薄占位</span>
+          </div>
+          <div class="dept-wall dense" id="deptWall" data-testid="dept-wall"></div>
+        </div>
+        <div class="case-bar" data-testid="case-bar">
+          <strong>当前案</strong>
+          <span id="caseBarText" class="muted">尚无案卷</span>
+          <button type="button" class="ghost case-bar-cta" id="btnCaseBarOpen" data-testid="case-bar-open">打开案卷</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 前台 F1–F4 -->
+    <section class="view" id="viewFront" data-testid="view-front">
+      <div class="view-body">
+        <div class="row-actions" style="margin-bottom:8px;margin-top:0">
+          <button type="button" class="ghost" id="btnFrontLobby">← 回大厅</button>
+        </div>
+        <div class="fd-steps" id="fdSteps"></div>
+        <div id="fdPane"></div>
+      </div>
+    </section>
+
+    <!-- D4 交底 -->
+    <section class="view" id="viewDept" data-testid="view-d4">
+      <div class="dept-shell">
+        <div class="dept-top">
+          <button type="button" class="ghost" id="btnDeptLobby">← 回大厅</button>
+          <h1>④ 交底部</h1>
+          <span class="line-status" id="deptLineStatus" hidden>未过线</span>
+          <div id="d4DeptMeta" data-testid="d4-dept-meta"></div>
+          <div class="dept-top-acts">
+            <button type="button" class="ghost tiny" id="btnDeptTrace" data-testid="dept-trace-btn" title="进行中与轨迹">轨迹</button>
+          </div>
+          <div class="task-strip in-top" id="d4TaskStrip" data-testid="task-strip" hidden></div>
+          <span class="mode-hint tiny" id="d4ModeHint" data-testid="d4-mode-hint" hidden></span>
+        </div>
+        <div class="wb-chrome" id="d4Chrome" data-testid="wb-chrome">
+          <div class="mentor-tip" id="mentorTip" data-testid="mentor-wrap"></div>
+        </div>
+        <div class="workbench">
+          <div class="main-pane">
+            <div class="pane-head pane-head-slim">
+              <strong>交底书</strong>
+            </div>
+<div class="pane-body" id="docMain"></div>
+          </div>
+          <div class="side-pane" data-testid="ai-pane">
+            <!-- 身份一行 + 编制头像横排（对标 Kimi/Cursor 对话栏） -->
+            <div class="ai-id-zone" data-testid="ai-id-zone">
+              <div class="ai-id-bar">
+                <button type="button" class="ai-id-row" id="aiIdentity" data-testid="ai-identity" title="助理详情"></button>
+                <button type="button" class="ghost tiny roster-fold-btn" id="btnRosterFold" data-testid="roster-fold">编制</button>
+              </div>
+              <!-- smoke 兼容：leadBar 隐藏占位 -->
+              <div class="lead-bar ai-identity" data-testid="lead-bar" id="leadBar" hidden></div>
+              <div class="who-block ai-roster single-rail av-rail collapsed roster-folded" data-testid="roster-wrap">
+                <div class="who-head" hidden></div>
+                <div class="roster" id="roster" data-testid="roster"></div>
+              </div>
+            </div>
+            <div class="pane-body" id="sideBody">
+              <div id="sideFocus"></div>
+              <div id="sideEvidence"></div>
+              <!-- 对话流吃高：硬请示 sticky + 气泡 -->
+              <div id="feedWrap" class="feed-wrap feed-primary" data-testid="feed-wrap">
+                <div class="feed-h feed-h-slim" hidden><strong>对话</strong><span class="pane-tag" id="sideHeadTag">要你拍</span></div>
+                <div class="feed" id="feed" data-testid="d4-feed"></div>
+              </div>
+              <div id="sideAsks" hidden data-testid="ai-ask-zone"></div>
+            </div>
+            <div class="composer" id="composer" data-testid="d4-composer">
+              <div class="composer-to" id="composerTo">对：交底部负责人 · 团队</div>
+              <div class="at-row" id="atChips" data-testid="at-chips"></div>
+              <div class="composer-row">
+                <textarea id="composerInput" rows="1" placeholder="打一句驾驭 · @材料 指案卷" data-testid="composer-input"></textarea>
+                <button type="button" class="primary" id="btnComposerSend" data-testid="composer-send">发送</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- H45 -->
+    <section class="view" id="viewWO" data-testid="view-h45">
+      <div class="view-body" id="woBody"></div>
+    </section>
+
+    <!-- D5 -->
+    <section class="view" id="viewApply">
+      <div class="apply-shell" id="applyBody"></div>
+    </section>
+
+    <!-- D6 -->
+    <section class="view" id="viewReply">
+      <div class="reply-shell" id="replyBody"></div>
+    </section>
+
+    <!-- Thin -->
+    <section class="view" id="viewThin">
+      <div class="view-body" id="thinBody"></div>
+    </section>
+
+    <!-- B2 block -->
+    <section class="view" id="viewBlock">
+      <div class="view-body" id="blockBody"></div>
+    </section>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer" data-testid="doc-drawer">
+    <div class="drawer-head">
+      <strong>案卷抽屉</strong>
+      <button type="button" id="drawerClose">关闭</button>
+    </div>
+    <div class="drawer-tabs" data-testid="drawer-tabs">
+      <button type="button" data-dtab="materials" class="on" data-testid="dtab-materials">材料</button>
+      <button type="button" data-dtab="checklist" data-testid="dtab-checklist">检查表</button>
+      <button type="button" data-dtab="orders" data-testid="dtab-orders">工单</button>
+      <button type="button" data-dtab="ops" data-testid="dtab-ops">操作记录</button>
+      <button type="button" data-dtab="judgments" data-testid="dtab-judgments">判断档案</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="./demo-data.js?v=railfix1b"></script>
+  <script src="./app.js?v=railfix1b"></script>
+</body>
+</html>

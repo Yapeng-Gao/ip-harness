@@ -1,4 +1,4 @@
-/** 专利布局席深度 · 主从案保护网 layout_plan · HITL① */
+/** 专利布局席深度 · 主从案保护网 layout_plan · 确认点·布局 */
 import type { ExpertStepDef } from '../types'
 
 export const LAYOUT_DEPTH_STEPS: ExpertStepDef[] = [
@@ -6,7 +6,7 @@ export const LAYOUT_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'family',
     label: '主从案',
     script: '【布局】主案 1 + 从案 2：对齐 mining P1/P2/P3。',
-    tool: { name: 'plan_family', preview: 'main=1 · child=2' },
+    tool: { name: 'plan_family', preview: '主案 1 · 从案 2' },
     structuredBody: [
       '| 案 | 对应挖掘 | 保护重点 |',
       '|----|----------|----------|',
@@ -21,7 +21,7 @@ export const LAYOUT_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'geo',
     label: '国别与族',
     script: '【布局】CN 发明先申；PCT/US 观察位；同族预留。',
-    tool: { name: 'map_protection_net', preview: 'CN=first · PCT=watch' },
+    tool: { name: 'map_protection_net', preview: 'CN 先申 · PCT 观察' },
     structuredBody: [
       '| 成员 | 国别路径 | 时序 |',
       '|------|----------|------|',
@@ -35,7 +35,7 @@ export const LAYOUT_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'net',
     label: '保护网矩阵',
     script: '【布局】特征×族成员矩阵已填；独权勿宽于查新可论证点。',
-    tool: { name: 'map_protection_net', preview: 'cells=12' },
+    tool: { name: 'map_protection_net', preview: '矩阵格 12' },
     structuredBody: [
       '| 特征 \\ 案 | M | C1 | C2 |',
       '|-----------|---|----|----|',
@@ -44,14 +44,14 @@ export const LAYOUT_DEPTH_STEPS: ExpertStepDef[] = [
       '| 热插拔联动 | **独** | 接口细 | — |',
       '| 降级窗口 | 从 | — | **独** |',
       '',
-      '**Validator 示意**：独权特征均落矩阵 · **Pass**',
+      '**样机校验示意**：独权特征均落矩阵 · **通过**',
     ].join('\n'),
   },
   {
     id: 'sequence',
     label: '申请时序',
     script: '【布局】建议：先 M 齐交底撰写；C1/C2 跟进或合案。',
-    tool: { name: 'plan_family', preview: 'seq=M→C1/C2 · gap=3m' },
+    tool: { name: 'plan_family', preview: '主→从跟进 · 间隔约 3 月' },
     structuredBody: [
       '1. T0：主案 M 查新→立项→交底→撰写',
       '2. T0+：从案材料并行收集',
@@ -63,8 +63,8 @@ export const LAYOUT_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'plan',
     label: '布局确认 · 待交',
-    script: '【布局】05_layout_plan 待确认。【HITL①】布局拍板。',
-    tool: { name: 'draft_layout_plan', preview: 'file=05_layout_plan.md' },
+    script: '【布局】布局方案待确认。【确认点】布局拍板。',
+    tool: { name: 'draft_layout_plan', preview: '布局方案稿' },
     triggersHitl: true,
     hitlGate: 'approve_strategy',
     structuredBody: [
@@ -74,7 +74,7 @@ export const LAYOUT_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**保护网**：独权压同权+热插拔联动；预测/降级入从权或子案。',
       '',
-      '**交给查新/立项**：layout_plan；写入须你确认。',
+      '**交给查新/立项**：布局方案；写入须你确认。',
     ].join('\n'),
   },
 ]
@@ -87,7 +87,7 @@ export const LAYOUT_DEPTH_SHORTCUTS = [
 
 export const LAYOUT_SAMPLE_ARTIFACT = `# 专利布局计划（样机）
 
-> 样机成果 · HITL① 布局拍板
+> 样机成果 · 确认点 · 布局拍板
 
 ## 摘要
 
@@ -102,7 +102,7 @@ export const LAYOUT_SAMPLE_WORKLOG_STEPS = `| 1 | 主从案 | 挖掘 | 1+2 | —
 | 2 | 国别族 | 路径 | CN先 | — |
 | 3 | 保护网 | 矩阵 | 12格 | — |
 | 4 | 申请时序 | 计划 | M先 | — |
-| 5 | 布局确认 | HITL① | 待确认 | HITL |`
+| 5 | 布局确认 | 布局拍板 | 待确认 | 确认 |`
 
 export const LAYOUT_SAMPLE_WORKLOG_CHOICES = `| 单案 | 主从网 | 主从 | 可查新 |
 | 独权过宽 | 压可论证点 | 缩限 | 纪律 |`

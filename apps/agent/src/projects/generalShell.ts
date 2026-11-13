@@ -30,8 +30,8 @@ export function isGeneralShellId(id: string | undefined | null): boolean {
 export function buildGeneralShellProject(nowIso: string): AgentProject {
   return {
     id: GENERAL_SHELL_ID,
-    title: '通用 Agent · 自由 bot',
-    summary: '自由 bot 工作区 · 可新建 / 一对一 / 转发 · 非项目花名册',
+    title: '通用助手 · 自由助手',
+    summary: '自由助手工作区 · 可新建 / 一对一 / 转发 · 非项目花名册',
     kind: 'general',
     caseBindState: 'none',
     expertIds: [],

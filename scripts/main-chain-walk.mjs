@@ -1,5 +1,5 @@
 /**
- * 业务主链走查：新建「全流程走查样机」→ 4 步向导 → 8 席 advance+confirm
+ * 业务主链走查：新建「全流程走查样机」（§4.1 短表）→ 8 席 advance+confirm
  * 每步确认后验收中台 flowProgressByCase + handoff（经 cross-port snapshot）
  * Base: agent http://127.0.0.1:5175 · mid http://127.0.0.1:5173
  * Run: node scripts/main-chain-walk.mjs  （需本机 Chrome 或已装 PW chromium；勿沙箱）
@@ -211,29 +211,9 @@ async function createCase(page) {
   await page.goto(`${BASE}/agent/cases/new`, { waitUntil: 'domcontentloaded' })
   await page.locator('[data-testid="business-case-new-page"]').waitFor({ timeout: 15000 })
 
+  // §4.1 短表：案名 + 技术一句话 → 创建并进入公司首页
   await page.locator('[data-testid="business-new-title"]').fill(TITLE)
   await page.locator('[data-testid="business-new-summary"]').fill('主链走查样机 · Playwright')
-  await page.locator('[data-testid="business-new-next"]').click()
-
-  await page.locator('[data-testid="business-wizard-step-route"]').waitFor()
-  await page.locator('[data-testid="business-stage-card-intake"]').click()
-
-  await page.locator('[data-testid="business-wizard-step-plan"]').waitFor({ timeout: 8000 })
-  const gen = page.locator('[data-testid="business-intake-generate-plan"]')
-  if (await gen.isVisible().catch(() => false)) {
-    await gen.click()
-  }
-  const plan = page.locator('[data-testid="business-new-case-plan"]')
-  const planText = (await plan.inputValue().catch(() => '')) || ''
-  if (!planText.trim()) {
-    await plan.fill(
-      `案子：${TITLE}\n目标：主链走查\n起点席：expert-research\n阶段：intake\n下一步：去查新开干`,
-    )
-  }
-  note(`wizard plan step ok (len=${(await plan.inputValue()).length})`)
-  await page.locator('[data-testid="business-new-next"]').click()
-
-  await page.locator('[data-testid="business-wizard-step-roster"]').waitFor({ timeout: 8000 })
   await page.locator('[data-testid="business-new-submit"]').click()
 
   await page.locator('[data-testid="business-case-page"]').waitFor({ timeout: 15000 })

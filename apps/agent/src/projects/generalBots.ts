@@ -114,14 +114,14 @@ export const BOT_SEED_SCRIBE = BOT_SEED_SEARCH
 export const BOT_TEMPLATE_OPTIONS: BotTemplateOption[] = [
   {
     kind: 'custom',
-    label: '自定义（只读 · 无写库）',
-    defaultBrief: '通用助手：回答问题、整理要点；不发起 DomainCommand。',
+    label: '自定义（只读 · 无存稿）',
+    defaultBrief: '通用助手：回答问题、整理要点；不发起存稿命令。',
     accent: 'slate',
     catalogAgentId: null,
   },
   {
     kind: 'template:orchestrator',
-    label: '从模板 · 总控编排',
+    label: '从模板 · 总控调度',
     defaultBrief: '总控：拆派与汇总；样机可自发消息给其他 bot。',
     accent: 'indigo',
     catalogAgentId: null,
@@ -130,21 +130,21 @@ export const BOT_TEMPLATE_OPTIONS: BotTemplateOption[] = [
     kind: 'template:expert-search',
     label: '从模板 · 检索能力',
     defaultBrief:
-      '检索向：归纳现有技术要点；写库仍须 HITL→DomainCommand（样机默认只读）。',
+      '检索向：归纳现有技术要点；存稿须确认后示意（样机默认只读）。',
     accent: 'sky',
     catalogAgentId: 'agent-research',
   },
   {
     kind: 'template:expert-draft',
     label: '从模板 · 撰稿能力',
-    defaultBrief: '撰稿向：交底/权利要求草稿建议；写库须 HITL。',
+    defaultBrief: '撰稿向：交底/权利要求草稿建议；存稿须确认。',
     accent: 'violet',
     catalogAgentId: 'agent-disclosure',
   },
   {
     kind: 'template:expert-fto',
     label: '从模板 · FTO 能力',
-    defaultBrief: '自由实施向：特征与风险提示；写库须 HITL。',
+    defaultBrief: '自由实施向：特征与风险提示；存稿须确认。',
     accent: 'amber',
     catalogAgentId: 'agent-research',
   },

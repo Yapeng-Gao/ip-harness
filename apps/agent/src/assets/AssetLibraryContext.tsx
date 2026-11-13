@@ -22,6 +22,7 @@ export type AssetCategory =
   | 'research'
   | 'draft'
   | 'official'
+  | 'intel'
   | 'other'
 
 export type AssetKind = 'pdf' | 'docx' | 'md' | 'xlsx' | 'img'
@@ -54,6 +55,7 @@ export const ASSET_CATEGORIES: AssetCategoryDef[] = [
   { id: 'research', label: '检索报告', folders: ['查新结论', '新颖性意见'] },
   { id: 'draft', label: '撰写稿', folders: ['权利要求', '说明书'] },
   { id: 'official', label: '官方文书', folders: ['受理通知', '审查意见'] },
+  { id: 'intel', label: '情报材料', folders: ['竞对年报', '专报示意'] },
   { id: 'other', label: '其他', folders: ['待归类'] },
 ]
 
@@ -65,7 +67,7 @@ export const ASSET_KIND_LABEL: Record<AssetKind, string> = {
   img: '图片',
 }
 
-const ASSET_LS_KEY = 'ip-harness-agent-assets-v1'
+const ASSET_LS_KEY = 'ip-harness-agent-assets-v3'
 
 function nowIso(): string {
   return new Date().toISOString()
@@ -92,6 +94,7 @@ export function suggestCategory(name: string): AssetCategory {
   if (/权要|权利要求|说明书|claims|draft|spec/.test(n)) return 'draft'
   if (/受理|审查|oa|notice|office/.test(n)) return 'official'
   if (/合同|委托|授权书|账单|发票|case|contract/.test(n)) return 'case'
+  if (/竞对|年报|情报|专报|intel|competitor/.test(n)) return 'intel'
   return 'other'
 }
 
@@ -116,7 +119,7 @@ const SEAT_CATEGORY: Record<string, AssetCategory> = {
   'expert-enforcement': 'official',
 }
 
-/** 种子：复用既有 18 席交付物文件名，避免另造假数据 */
+/** 种子：复用 18 席交付物 title 人话名（§82），避免 NN_*.md 上屏 */
 function seedAssets(): AssetDoc[] {
   const out: AssetDoc[] = []
   const at = new Date()
@@ -125,10 +128,14 @@ function seedAssets(): AssetDoc[] {
     if (seatId === 'orchestrator') continue
     const t = new Date(at.getTime() - i * 36e5).toISOString()
     const category = SEAT_CATEGORY[seatId] ?? 'other'
-    for (const file of [d.artifactFile, d.worklogFile]) {
+    const pairs: Array<{ idSuffix: string; name: string }> = [
+      { idSuffix: 'a', name: `${d.title}.md` },
+      { idSuffix: 'w', name: `${d.title} · 办理摘记.md` },
+    ]
+    for (const pair of pairs) {
       out.push({
-        id: `asset-seed-${d.nn}-${file.includes('worklog') ? 'w' : 'a'}`,
-        name: file,
+        id: `asset-seed-${d.nn}-${pair.idSuffix}`,
+        name: pair.name,
         kind: 'md',
         size: 4096 + i * 512,
         uploadedAt: t,
@@ -150,6 +157,8 @@ function seedAssets(): AssetDoc[] {
     ['附图_结构示意图.dwg', 'disclosure', 1_900_000],
     ['竞品专利族清单.xlsx', 'research', 120_000],
     ['年费缴纳计划_2026.xlsx', 'case', 44_000],
+    ['竞对A_2025年报摘录.pdf', 'intel', 980_000],
+    ['固态电解质赛道专报_示意.md', 'intel', 52_000],
   ]
   uploads.forEach(([name, category, size], idx) => {
     out.unshift({
@@ -160,12 +169,14 @@ function seedAssets(): AssetDoc[] {
       uploadedAt: new Date(at.getTime() - idx * 864e5).toISOString(),
       category,
       source: 'upload',
+      // B8 演示：情报材料挂接示意案
+      caseId: category === 'intel' ? 'case-biz-oa-filed' : undefined,
     })
   })
   return out
 }
 
-type PersistedAssets = { v: 1; docs: AssetDoc[] }
+type PersistedAssets = { v: 3; docs: AssetDoc[] }
 
 function loadPersisted(): AssetDoc[] | null {
   if (typeof localStorage === 'undefined') return null
@@ -173,7 +184,7 @@ function loadPersisted(): AssetDoc[] | null {
   if (!raw) return null
   try {
     const parsed = JSON.parse(raw) as PersistedAssets
-    if (parsed?.v !== 1 || !Array.isArray(parsed.docs)) return null
+    if (parsed?.v !== 3 || !Array.isArray(parsed.docs)) return null
     return parsed.docs
   } catch {
     return null
@@ -183,7 +194,7 @@ function loadPersisted(): AssetDoc[] | null {
 function persist(docs: AssetDoc[]) {
   if (typeof localStorage === 'undefined') return
   try {
-    localStorage.setItem(ASSET_LS_KEY, JSON.stringify({ v: 1, docs }))
+    localStorage.setItem(ASSET_LS_KEY, JSON.stringify({ v: 3, docs }))
   } catch {
     /* quota / private mode：样机可静默 */
   }

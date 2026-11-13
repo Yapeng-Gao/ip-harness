@@ -155,7 +155,7 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
           <span className="text-xs text-slate-500">{expert.specialty}</span>
           {expert.ownerLabel ? (
             <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-px text-[10px] text-slate-500">
-              Owner · {expert.ownerLabel}
+              对接 · {expert.ownerLabel}
             </span>
           ) : null}
           {isPatentL3 && isOrchestratorExpert(expertId) ? (
@@ -166,7 +166,7 @@ export function ProjectChatPane({ projectId, expertId, caseId }: Props) {
                 className="btn-press focus-ring rounded-full border border-violet-300 bg-violet-50 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800 hover:bg-violet-100"
                 onClick={() => runL3Demo(projectId)}
               >
-                演示 L3
+                演示样机
               </button>
               <button
                 type="button"

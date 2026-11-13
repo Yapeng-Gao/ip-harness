@@ -45,28 +45,28 @@ export function AgentL1Shell() {
           className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500"
           data-testid="agent-l1-badge"
         >
-          L1 · 单助手
+          沙盒单助手（旁路）
         </span>
         <div className="ml-auto flex items-center gap-1.5">
           <Link
             to="/agent/team"
             className="btn-press focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2.5 py-1 text-[12px] font-semibold text-slate-800 shadow-sm hover:bg-slate-50"
-            aria-label="进入团队"
+            aria-label="进入多助手旁路壳"
             data-testid="agent-l1-to-team"
-            title="L2 · Grok 多 bot 团队协作"
+            title="多助手旁路（非拉人讨论·非主办理）"
           >
             <Users className="h-3.5 w-3.5" aria-hidden />
-            团队
+            多助手
           </Link>
           <Link
             to="/agent/projects"
             className="btn-press focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-[var(--radius-sm)] border border-slate-200 bg-white px-2.5 py-1 text-[12px] font-semibold text-slate-800 shadow-sm hover:bg-slate-50"
-            aria-label="进入专利项目"
+            aria-label="进入遗留项目夹"
             data-testid="agent-l1-to-projects"
-            title="L3 · 专利项目固定专家"
+            title="遗留项目夹旁路（非一期进门）"
           >
             <FolderKanban className="h-3.5 w-3.5" aria-hidden />
-            专利项目
+            遗留项目夹
           </Link>
           <Link
             to="/agent/lab"
@@ -101,7 +101,7 @@ export function AgentL1Shell() {
             className="text-[11px] leading-snug text-slate-400"
             data-testid="general-honesty-weak"
           >
-            样机 · 无真 LLM · L1 单助手 · 写库须 HITL · 「团队」「专利项目」为并列显式入口
+            样机示意 · 无真模型 · 单助手起步 · 关键库须您确认 · 「多助手」「遗留项目夹」为并列旁路入口（非拉人讨论）
           </p>
           <div data-testid="general-case-bind-slot">
             <CaseBindControls

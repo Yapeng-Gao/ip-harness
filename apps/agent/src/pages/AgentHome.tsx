@@ -91,22 +91,22 @@ export function AgentHome() {
               className="font-medium text-slate-800 underline-offset-2 hover:underline"
               data-testid="compose-back-to-l1"
             >
-              L1 单助手
+              大厅
             </Link>
-            ；需要多 bot 再进{' '}
+            ；多助手旁路仅经{' '}
             <Link
-              to="/agent/team"
+              to="/agent/lab"
               className="font-medium text-slate-800 underline-offset-2 hover:underline"
-              data-testid="compose-back-to-team"
+              data-testid="compose-back-to-lab"
             >
-              团队模式
+              原型展廊
             </Link>
-            。
+            （旁路起草、非主办理）。
           </p>
         </div>
 
         <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold text-slate-800">选自由 bot 开聊</div>
+          <div className="text-xs font-semibold text-slate-800">选自由助手开聊</div>
           <ul className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
             {botLinks.map((b) => (
               <li key={b.id}>
@@ -133,7 +133,7 @@ export function AgentHome() {
             项目模式
           </Link>
           <Link to="/agent/agents" className="hover:text-slate-700 hover:underline">
-            Catalog · 管理
+            助手目录 · 管理
           </Link>
           {lastSession && (
             <Link
@@ -147,7 +147,7 @@ export function AgentHome() {
 
         <details className="group mt-6" data-testid="compose-legacy-fold">
           <summary className="flex cursor-pointer list-none items-center justify-center gap-1.5 rounded-md px-1 py-1.5 text-[12px] text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
-            <span className="font-medium text-slate-600">兼容 · Catalog 单聊</span>
+            <span className="font-medium text-slate-600">兼容 · 旧助手单聊</span>
             <span className="text-slate-400">（非默认）</span>
             <span className="text-slate-400 transition group-open:rotate-180" aria-hidden>
               ▾
@@ -155,7 +155,7 @@ export function AgentHome() {
           </summary>
           <div className="mt-2 space-y-2 rounded-lg border border-dashed border-slate-200 bg-slate-50/50 p-3">
             <p className="text-[11px] text-slate-500">
-              保留旧「Catalog 下拉单 Composer」路径；P0 默认仍进 research，勿默认 OA。
+              保留旧「助手目录下拉单聊」路径（非默认）；进门不进专班样机，勿默认进答复席。
             </p>
             <button
               type="button"

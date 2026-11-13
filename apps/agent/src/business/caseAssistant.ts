@@ -196,7 +196,7 @@ export function patchCasePlan(input: CasePlanPatchInput): string {
     `案子：${name}`,
     `目标：按当前阶段「${input.stageTitle}」推进至可交卷；人确认后解锁下游节点。`,
     `办理起点：当前在「${input.seatLabel}」；这一站干活 → 交卷 → 待我确认。`,
-    `下一步：本节点交卷前核对成果；需要跨节点口径时再组队（团队不产闸）。`,
+    `下一步：本节点交卷前核对成果；需要跨节点口径时到相邻部对照（编制席不产闸）。`,
     `助手备注：脚本改写样机，非真 LLM；客户事实段已尽量保留。`,
   ].join('\n')
   if (!facts) return skeleton

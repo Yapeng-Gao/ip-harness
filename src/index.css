@@ -134,7 +134,7 @@ p {
   filter: brightness(1.05);
 }
 .icon-btn:active:not(:disabled) {
-  transform: scale(0.94);
+  transform: scale(0.96);
 }
 
 
@@ -300,7 +300,8 @@ p {
   .slider-pulse,
   .toast-enter,
   .menu-enter,
-  .animate-pulse {
+  .animate-pulse,
+  .animate-spin {
     animation: none !important;
   }
   .toggle-thumb {
@@ -451,6 +452,13 @@ p {
 .segmented-item:hover:not([aria-selected="true"]):not([aria-current="page"]):not([aria-pressed="true"]):not(:disabled) {
   color: #0f172a;
   background: rgba(255, 255, 255, 0.55);
+}
+.segmented-item:focus {
+  outline: none;
+}
+.segmented-item:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-rest), 0 0 0 2px #fff, 0 0 0 4px rgba(15, 23, 42, 0.35);
 }
 .tabular {
   font-variant-numeric: tabular-nums;

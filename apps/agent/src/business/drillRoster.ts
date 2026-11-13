@@ -1,5 +1,5 @@
 /**
- * 演练全队（二期旁路）· 总控 + 14 owner · 非冷启动默认
+ * 席位演练（二期旁路）· 总控 + 14 owner · 非冷启动默认
  * 侧栏按节点簇展示（主链/前研/其他）
  */
 import type { ProjectExpertId } from '../projects/types'

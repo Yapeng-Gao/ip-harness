@@ -35,7 +35,7 @@ const CHAIN: {
     to: 'expert-intake',
     flow: 'F5 新申请',
     step: '查新 → 立项',
-    acceptance: '查新结论可支撑 Go/No-Go',
+    acceptance: '查新结论可支撑立不立项',
   },
   {
     from: 'expert-intake',
@@ -138,7 +138,7 @@ export function envelopeToWorklogLines(env: HandoffEnvelope): string {
     `| to | ${toName} (\`${env.to}\`) |`,
     `| acceptance | ${env.acceptance} |`,
     env.audit
-      ? `| audit | ${env.audit.timestamp} · ${env.audit.sandbox_id} · validator=${env.audit.validator_results} |`
+      ? `| audit | ${env.audit.timestamp} · ${env.audit.sandbox_id} · 校验=${env.audit.validator_results} |`
       : '',
   ]
     .filter(Boolean)

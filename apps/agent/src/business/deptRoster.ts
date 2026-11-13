@@ -1,6 +1,7 @@
 /**
  * 部门 · 专家花名册（业务壳）· agent-dept-expert-team
- * 默认 7 部门；撰写部含真副席说明书；前研/布局挂更多。
+ * 默认 7 作业席部门（辅链含查新/附图/递交）；申请部含真副席说明书；前研/布局挂更多。
+ * 对外主链八部名以 orgDepts.MAIN_CHAIN / hallDepts 为准。
  */
 import type { ProjectExpertId } from '../projects/types'
 import type { BusinessStageId } from './businessSeats'
@@ -40,7 +41,7 @@ export type DeptDef = {
 
 export const DEFAULT_DEPT_COUNT = 7
 
-/** 撰写部真副席 · 壳扩展（非 Pack 16） */
+/** 申请部真副席 · 壳扩展（非 Pack 16） */
 export const DRAFT_SPEC_SEAT_ID: ProjectExpertId = 'expert-draft-spec'
 
 const PEER = (
@@ -100,7 +101,7 @@ export const BUSINESS_DEFAULT_DEPT_IDS: DeptDef[] = [
   },
   {
     id: 'dept-draft',
-    label: '撰写部',
+    label: '申请部',
     leadSeatId: 'expert-draft',
     peers: [
       PEER('expert-draft', 'features', '特征表'),
@@ -135,7 +136,7 @@ export const BUSINESS_DEFAULT_DEPT_IDS: DeptDef[] = [
   },
   {
     id: 'dept-oa',
-    label: '审查答复部',
+    label: '答复部',
     leadSeatId: 'expert-oa',
     peers: [
       PEER('expert-oa', 'classify', '理由分类'),
@@ -182,7 +183,7 @@ export const PREP_DEPTS: DeptDef[] = [
   },
   {
     id: 'dept-inspire',
-    label: '创新方向部',
+    label: '创新激发部',
     leadSeatId: 'expert-inspire',
     optional: true,
     peers: [
@@ -192,7 +193,7 @@ export const PREP_DEPTS: DeptDef[] = [
   },
   {
     id: 'dept-mining',
-    label: '挖掘部',
+    label: '专利挖掘部',
     leadSeatId: 'expert-mining',
     optional: true,
     peers: [
@@ -306,7 +307,7 @@ const STAGE_LEAD_SEATS: Record<BusinessStageId, ProjectExpertId[]> = {
 }
 
 const STAGE_RECOMMEND_BLURB: Record<BusinessStageId, string> = {
-  prepare: '准备阶段先拉查新对齐方向；组队讨论不产闸。',
+  prepare: '准备阶段先拉查新对齐方向；跨部对照不产闸。',
   intake: '立项要对齐查新结论与立项；上下游各带一人便于口径一致。',
   drafting: '撰写申请需交底、权要、附图同场；上下游各带一人防术语漂移。',
   filing: '递交前对齐递交与相邻撰写、附图口径。',
@@ -316,6 +317,7 @@ const STAGE_RECOMMEND_BLURB: Record<BusinessStageId, string> = {
 /**
  * 按阶段推荐讨论班底：当前阶段席 + 相邻上下游各一（去重）
  */
+/** @deprecated 无 UI · 组队已卸；测库保留 */
 export function recommendTeamForStage(
   stageId: BusinessStageId,
 ): ProjectExpertId[] {
@@ -345,7 +347,7 @@ export type TeamRecommendPlan = {
   missingIds: ProjectExpertId[]
 }
 
-/** 组队规划：推荐名单 + 理由 + 相对当前缺人 */
+/** 库函数 · 无产品 UI（组队已卸）；推荐名单示意，勿接组队面 */
 export function buildTeamRecommendPlan(
   stageId: BusinessStageId,
   currentIds: ProjectExpertId[] = [],

@@ -15,7 +15,7 @@ import { DeptStatusDot } from './DeptStatusDot'
 type View = 'org' | 'board'
 
 /**
- * 部门页 · 组织架构 / 项目看板 两视图
+ * 部门页 · 组织架构 / 各部门进展 两视图
  * 看板是 项目 × 部门 的状态矩阵，全部读既有 context。
  */
 export function DeptViewSwitch() {
@@ -30,7 +30,7 @@ export function DeptViewSwitch() {
       {(
         [
           { id: 'org', label: '组织架构', Icon: LayoutGrid },
-          { id: 'board', label: '项目看板', Icon: Table2 },
+          { id: 'board', label: '各部门进展', Icon: Table2 },
         ] as const
       ).map(({ id, label, Icon }) => (
         <button
@@ -45,7 +45,7 @@ export function DeptViewSwitch() {
           {label}
         </button>
       ))}
-      <span className="sr-only">当前视图：{view === 'org' ? '组织架构' : '项目看板'}</span>
+      <span className="sr-only">当前视图：{view === 'org' ? '组织架构' : '各部门进展'}</span>
     </div>
   )
 }
@@ -70,12 +70,13 @@ export function DeptBoard() {
     return (
       <div className="ui-empty mt-4 max-w-xl" data-testid="dept-board-empty">
         <p className="ui-empty-title">还没有项目</p>
-        <p className="ui-empty-desc">从首页或「项目模式」建一个，这里会出现每个部门的推进状态。</p>
+        <p className="ui-empty-desc">从大厅开案子后，这里会出现每个部门的推进状态。</p>
         <Link
-          to="/agent/projects"
+          to="/agent/cases/new"
           className="focus-ring mt-1 inline-flex min-h-9 items-center rounded-[var(--radius-sm)] bg-slate-900 px-3 text-[12px] font-medium text-white"
+          data-testid="dept-board-to-new-case"
         >
-          去建项目
+          去开案子
         </Link>
       </div>
     )
@@ -83,6 +84,9 @@ export function DeptBoard() {
 
   return (
     <div className="mt-3 overflow-x-auto" data-testid="dept-board">
+      <p className="mb-2 text-[11px] text-slate-500" data-testid="dept-board-honest">
+        进展样机矩阵 · 非运营 KPI；办活请回大厅 / 部台
+      </p>
       <table className="ui-table min-w-[860px]">
         <thead>
           <tr>
@@ -111,7 +115,7 @@ export function DeptBoard() {
                   {project.title}
                 </Link>
                 {!isCase && (
-                  <span className="ml-1.5 text-[10px] text-slate-500">未转案</span>
+                  <span className="ml-1.5 text-[10px] text-amber-700">旁路项目</span>
                 )}
               </th>
               {MAIN_CHAIN_DEPTS.map((d) => {

@@ -13,11 +13,11 @@ import type { OrgDeptId } from './orgDepts'
 export type AgentLevel = 1 | 2 | 3 | 4 | 5
 
 export const LEVEL_LABEL: Record<AgentLevel, string> = {
-  1: 'L1·见习',
-  2: 'L2·熟练',
-  3: 'L3·资深',
-  4: 'L4·首席',
-  5: 'L5·宗师',
+  1: '见习',
+  2: '熟练',
+  3: '资深',
+  4: '首席',
+  5: '宗师',
 }
 
 /** 主理 Agent 的样机基准经验（用户训练量叠在上面，见 OrgConfigContext.xp） */
@@ -143,8 +143,8 @@ export const DEPT_RICH: Record<string, DeptRich> = {
     workerPrefix: 'INTA-W',
     workerCount: 8,
     tools: [
-      { id: 'tl-inta-01', name: '价值评分器', code: 'TL-INTA-01', version: 'v3.0', weeklyCalls: 128, automation: 82 },
-      { id: 'tl-inta-02', name: '报价测算', code: 'TL-INTA-02', version: 'v1.4', weeklyCalls: 41, automation: 55 },
+      { id: 'tl-inta-01', name: '立项价值判断（薄）', code: 'TL-INTA-01', version: 'v3.0', weeklyCalls: 128, automation: 82 },
+      { id: 'tl-inta-02', name: '范围与档位建议', code: 'TL-INTA-02', version: 'v1.4', weeklyCalls: 41, automation: 55 },
     ],
   },
   'dept-disclosure': {
@@ -164,8 +164,9 @@ export const DEPT_RICH: Record<string, DeptRich> = {
     workerPrefix: 'DISC-W',
     workerCount: 9,
     tools: [
-      { id: 'tl-disc-01', name: '交底结构化', code: 'TL-DISC-01', version: 'v2.5', weeklyCalls: 210, automation: 77 },
-      { id: 'tl-disc-02', name: '追问生成', code: 'TL-DISC-02', version: 'v2.0', weeklyCalls: 156, automation: 63 },
+      { id: 'tl-disc-01', name: '交底书撰写', code: 'TL-DISC-01', version: 'v2.5', weeklyCalls: 210, automation: 77 },
+      { id: 'tl-disc-02', name: '腾讯交底书完善', code: 'TL-DISC-02', version: 'v2.0', weeklyCalls: 156, automation: 63 },
+      { id: 'tl-disc-03', name: '评估工作台', code: 'TL-DISC-03', version: 'v1.0', weeklyCalls: 90, automation: 50 },
     ],
   },
   'dept-research': {
@@ -186,8 +187,8 @@ export const DEPT_RICH: Record<string, DeptRich> = {
     workerPrefix: 'RSRC-W',
     workerCount: 12,
     tools: [
-      { id: 'tl-rsrc-01', name: '检索式引擎', code: 'TL-RSRC-01', version: 'v5.2', weeklyCalls: 412, automation: 71 },
-      { id: 'tl-rsrc-02', name: '三性判断', code: 'TL-RSRC-02', version: 'v3.1', weeklyCalls: 288, automation: 66 },
+      { id: 'tl-rsrc-01', name: 'Ai检索 / 鉴新', code: 'TL-RSRC-01', version: 'v5.2', weeklyCalls: 412, automation: 71 },
+      { id: 'tl-rsrc-02', name: '查新报告解读', code: 'TL-RSRC-02', version: 'v3.1', weeklyCalls: 288, automation: 66 },
     ],
   },
   'dept-draft': {
@@ -196,21 +197,21 @@ export const DEPT_RICH: Record<string, DeptRich> = {
       name: '阿撰',
       code: 'AGT-DRFT-00',
       duty: '部门统筹 · 权要布局 · 定稿签发',
-      tags: ['完美主义', '改稿不倦', '手法挑剔'],
+      tags: ['完美主义', '改稿不倦', '口径严'],
     },
     experts: [
-      EXPERT('sub-drft-elec', '电学撰写专家', 'DRFT-E-01', 300, '权要布局 · 电学/通信', '任务中'),
-      EXPERT('sub-drft-mech', '机械撰写专家', 'DRFT-E-02', 270, '结构撰写 · 制图审核', '运行中'),
-      EXPERT('sub-drft-chem', '化学撰写专家', 'DRFT-E-03', 160, '实施例 · 马库什权要', '任务中'),
-      EXPERT('sub-drft-soft', '软件撰写专家', 'DRFT-E-04', 145, '算法保护 · 商业方法', '运行中'),
-      EXPERT('sub-drft-bio', '生物医药撰写专家', 'DRFT-E-05', 110, '序列/化合物 · 实验数据', '待命'),
+      EXPERT('sub-drft-elec', '电学申请专家', 'DRFT-E-01', 300, '权要布局 · 电学/通信', '任务中'),
+      EXPERT('sub-drft-mech', '机械申请专家', 'DRFT-E-02', 270, '结构撰写 · 制图审核', '运行中'),
+      EXPERT('sub-drft-chem', '化学申请专家', 'DRFT-E-03', 160, '实施例 · 马库什权要', '任务中'),
+      EXPERT('sub-drft-soft', '软件申请专家', 'DRFT-E-04', 145, '算法保护 · 商业方法', '运行中'),
+      EXPERT('sub-drft-bio', '生物医药申请专家', 'DRFT-E-05', 110, '序列/化合物 · 实验数据', '待命'),
     ],
     workerPrefix: 'DRFT-W',
     workerCount: 14,
     tools: [
-      { id: 'tl-drft-01', name: '撰写生成引擎', code: 'TL-DRFT-01', version: 'v4.2', weeklyCalls: 312, automation: 71 },
-      { id: 'tl-drft-02', name: '权要优化引擎', code: 'TL-DRFT-02', version: 'v2.8', weeklyCalls: 148, automation: 66 },
-      { id: 'tl-drft-03', name: '说明书装配', code: 'TL-DRFT-03', version: 'v1.9', weeklyCalls: 205, automation: 58 },
+      { id: 'tl-drft-01', name: '申请文件撰写', code: 'TL-DRFT-01', version: 'v4.2', weeklyCalls: 312, automation: 71 },
+      { id: 'tl-drft-02', name: '装配说明书', code: 'TL-DRFT-02', version: 'v2.8', weeklyCalls: 148, automation: 66 },
+      { id: 'tl-drft-03', name: 'A–J 检查表', code: 'TL-DRFT-03', version: 'v1.9', weeklyCalls: 205, automation: 58 },
     ],
   },
   'dept-figure': {
@@ -270,8 +271,8 @@ export const DEPT_RICH: Record<string, DeptRich> = {
     workerPrefix: 'OANS-W',
     workerCount: 10,
     tools: [
-      { id: 'tl-oans-01', name: 'OA 理由分类', code: 'TL-OANS-01', version: 'v2.4', weeklyCalls: 164, automation: 79 },
-      { id: 'tl-oans-02', name: '答复草拟', code: 'TL-OANS-02', version: 'v2.1', weeklyCalls: 118, automation: 61 },
+      { id: 'tl-oans-01', name: 'OA答复', code: 'TL-OANS-01', version: 'v2.4', weeklyCalls: 164, automation: 79 },
+      { id: 'tl-oans-02', name: 'OA答复审核', code: 'TL-OANS-02', version: 'v2.1', weeklyCalls: 118, automation: 61 },
     ],
   },
 }
@@ -287,10 +288,9 @@ export type CollabEdge = {
 
 /** 主链移交（实线）+ 横向协作（虚线）；走向对齐既有交互规格 */
 export const COLLAB_EDGES: CollabEdge[] = [
-  { from: 'dept-layout', to: 'dept-intake', label: '布局方案移交', weekly: 18, kind: 'handoff' },
-  { from: 'dept-intake', to: 'dept-disclosure', label: '立项决议移交', weekly: 22, kind: 'handoff' },
   { from: 'dept-disclosure', to: 'dept-research', label: '交底书移交', weekly: 26, kind: 'handoff' },
-  { from: 'dept-research', to: 'dept-draft', label: '查新意见移交', weekly: 24, kind: 'handoff' },
+  { from: 'dept-research', to: 'dept-intake', label: '查新意见移交', weekly: 24, kind: 'handoff' },
+  { from: 'dept-intake', to: 'dept-draft', label: '立项决议移交', weekly: 22, kind: 'handoff' },
   { from: 'dept-draft', to: 'dept-figure', label: '申请文件包移交', weekly: 20, kind: 'handoff' },
   { from: 'dept-figure', to: 'dept-filing', label: '附图任务单移交', weekly: 17, kind: 'handoff' },
   { from: 'dept-filing', to: 'dept-oa', label: '递交作业单移交', weekly: 14, kind: 'handoff' },
@@ -299,6 +299,7 @@ export const COLLAB_EDGES: CollabEdge[] = [
   { from: 'dept-oa', to: 'dept-draft', label: 'OA 联席答复', weekly: 22, kind: 'cross' },
   { from: 'dept-figure', to: 'dept-draft', label: '图注与权要核对', weekly: 18, kind: 'cross' },
   { from: 'dept-layout', to: 'dept-research', label: '预检索委托', weekly: 15, kind: 'cross' },
+  { from: 'dept-layout', to: 'dept-disclosure', label: '布局方案参考', weekly: 10, kind: 'cross' },
   { from: 'dept-research', to: 'dept-oa', label: '答复补充检索', weekly: 12, kind: 'cross' },
   { from: 'dept-disclosure', to: 'dept-draft', label: '交底缺项追问', weekly: 9, kind: 'cross' },
   { from: 'dept-filing', to: 'dept-oa', label: '文件与答复对齐', weekly: 7, kind: 'cross' },
@@ -306,14 +307,14 @@ export const COLLAB_EDGES: CollabEdge[] = [
 
 /** 协作网络里的固定摆位（0-100 的百分比坐标） */
 export const NETWORK_POS: Record<string, { x: number; y: number }> = {
-  'dept-layout': { x: 17, y: 30 },
-  'dept-intake': { x: 36, y: 14 },
-  'dept-disclosure': { x: 58, y: 22 },
-  'dept-research': { x: 74, y: 34 },
-  'dept-draft': { x: 76, y: 56 },
-  'dept-figure': { x: 55, y: 63 },
-  'dept-filing': { x: 34, y: 62 },
-  'dept-oa': { x: 16, y: 54 },
+  'dept-disclosure': { x: 12, y: 36 },
+  'dept-research': { x: 28, y: 22 },
+  'dept-intake': { x: 46, y: 18 },
+  'dept-draft': { x: 64, y: 28 },
+  'dept-figure': { x: 78, y: 46 },
+  'dept-filing': { x: 62, y: 64 },
+  'dept-oa': { x: 38, y: 68 },
+  'dept-layout': { x: 18, y: 62 },
 }
 
 /** 部门在某案上的负荷：待确认多 = 高负荷 */

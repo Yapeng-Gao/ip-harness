@@ -6,7 +6,7 @@ export const OA_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'notice',
     label: '读审查意见',
     script: '【OA】假一通已解析：权1 创造性；权3 不清楚。非结构化原文→结构化事件。',
-    tool: { name: 'parse_oa_notice', preview: 'type=一通 · issues=2' },
+    tool: { name: 'parse_oa_notice', preview: '一通 · 争点 2' },
     structuredBody: [
       '| 条款 | 指摘 | 涉及权项 |',
       '|------|------|----------|',
@@ -18,20 +18,20 @@ export const OA_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'classify',
     label: '理由分类',
     script: '【OA】理由分类器（样机）：创造性争辩可修；清楚性宜修改。红线未触发。',
-    tool: { name: 'oa_reason_classifier', preview: 'inventive=argue+amend · clarity=amend' },
+    tool: { name: 'oa_reason_classifier', preview: '创造性争辩+修改 · 清楚性修改' },
     structuredBody: [
       '| 理由类 | 路由 | 成功率示意 |',
       '|--------|------|------------|',
       '| 创造性 | 争辩+限缩 | 中 |',
       '| 清楚性 | 修改定义 | 高 |',
-      '| 超范围 blocker | — | **未触发** |',
+      '| 超范围拦下 | — | **未触发** |',
     ].join('\n'),
   },
   {
     id: 'strategy',
     label: '答复策略',
     script: '【OA】三案并列提纲：争辩点 / 修改点 / 证据点。',
-    tool: { name: 'oa_strategy', preview: 'argue+amend+evidence' },
+    tool: { name: 'oa_strategy', preview: '争辩+修改+证据' },
     structuredBody: [
       '**案 A 争辩**：三联组合非对比文件简单拼接；强调热插拔联动效果。',
       '**案 B 修改**：权1 写入「同权约束」限定；权3 补术语定义。',
@@ -41,15 +41,15 @@ export const OA_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'amend',
     label: '修改对照',
-    script: '【OA】修改对照表已出；超范围检查示意 Pass。',
-    tool: { name: 'draft_amendments', preview: 'amends=2 · beyond_scope=Pass' },
+    script: '【OA】修改对照表已出；超范围检查示意通过。',
+    tool: { name: 'draft_amendments', preview: '修改 2 · 超范围过' },
     structuredBody: [
       '| 权项 | 原文要点 | 修改要点 | 超范围 |',
       '|------|----------|----------|--------|',
-      '| 权1 | 联合调度 | +同权约束明示 | Pass |',
-      '| 权3 | 联合代价 | +说明书定义引用 | Pass |',
+      '| 权1 | 联合调度 | +同权约束明示 | 通过 |',
+      '| 权3 | 联合代价 | +说明书定义引用 | 通过 |',
       '',
-      '**Validator**：beyond_original_scope · **Pass**（样机）',
+      '**样机校验**：超范围检查 · **通过**（样机）',
     ].join('\n'),
   },
   {
@@ -67,14 +67,14 @@ export const OA_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'confirm',
     label: '答复确认 · 待交',
-    script: '【OA】策略与草稿待你确认。未 Confirm 不写库；无真递交。',
-    tool: { name: 'submit_oa_for_hitl', preview: 'gate=approve_strategy' },
+    script: '【OA】策略与草稿待你确认。未确认不存稿；无真递交。',
+    tool: { name: 'submit_oa_for_hitl', preview: '待策略确认' },
     triggersHitl: true,
     hitlGate: 'approve_strategy',
     structuredBody: [
       '## OA 答复摘要',
       '',
-      '一通两项 · 策略争辩+修改 · 超范围 Pass。',
+      '一通两项 · 策略争辩+修改 · 超范围通过。',
       '',
       '**须已 file**：本席仅在递交回执后由总控派发（业务锁另见）。',
       '',
@@ -95,7 +95,7 @@ export const OA_SAMPLE_ARTIFACT = `# OA 答复策略与陈述（样机）
 
 ## 摘要
 
-假一通创造性+清楚性；策略争辩与修改；超范围 Pass；待确认。
+假一通创造性+清楚性；策略争辩与修改；超范围通过；待确认。
 
 ## 正文
 
@@ -105,9 +105,9 @@ export const OA_SAMPLE_ARTIFACT = `# OA 答复策略与陈述（样机）
 export const OA_SAMPLE_WORKLOG_STEPS = `| 1 | 读意见 | 一通 | 表 | — |
 | 2 | 分类 | 路由 | 两类 | — |
 | 3 | 策略 | 三案 | 提纲 | — |
-| 4 | 修改 | 对照 | Pass | — |
+| 4 | 修改 | 对照 | 通过 | — |
 | 5 | 草稿 | 陈述 | 骨架 | — |
-| 6 | 确认 | HITL | 待确认 | HITL |`
+| 6 | 确认 | 确认 | 待确认 | 确认 |`
 
 export const OA_SAMPLE_WORKLOG_CHOICES = `| 整篇重写 | 分理由改 | 分理由 | 可确认 |
-| 超范围自修复 | blocker 升级 | blocker | 纪律 |`
+| 超范围自修复 | 升级拦下 | 超范围拦下 | 纪律 |`

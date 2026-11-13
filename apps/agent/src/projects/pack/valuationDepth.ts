@@ -1,4 +1,4 @@
-/** 价值评估席深度 · 服务 HITL⑦ · 提案键 valuation_card */
+/** 价值评估席深度 · 服务年费闸 · 评估卡提案 */
 import type { ExpertStepDef } from '../types'
 
 export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
@@ -7,7 +7,7 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
     label: '抽证据',
     script:
       '【价值】已抽：引用 12 · 同族 3 · 许可线索 1 · 产品映射 2（mock）。',
-    tool: { name: 'score_portfolio', preview: 'cite=12 · family=3' },
+    tool: { name: 'score_portfolio', preview: '引用 12 · 族 3' },
     structuredBody: [
       '| 证据类 | 数量 | 说明 |',
       '|--------|------|------|',
@@ -23,7 +23,7 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'inputs',
     label: '公式输入',
     script: '【价值】评分输入已规范化：商业/可执行/防御三轴权重（公式工具示意）。',
-    tool: { name: 'score_portfolio', preview: 'axes=3 · weights=norm' },
+    tool: { name: 'score_portfolio', preview: '三轴 · 权重已规一' },
     structuredBody: [
       '| 轴 | 输入摘录 | 权重示意 |',
       '|----|----------|----------|',
@@ -36,10 +36,10 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'score',
     label: '评分卡',
     script:
-      '【价值】综合分 78 · 商业 0.72 · 可执行 0.81。提案键 valuation_card。',
+      '【价值】综合分 78 · 商业 0.72 · 可执行 0.81。评估卡待确认。',
     tool: {
       name: 'draft_valuation_card',
-      preview: 'score=78 · proposal=valuation_card',
+      preview: '综合分 78 · 评估卡草案',
     },
     structuredBody: [
       '| 轴 | 分 | 说明 |',
@@ -49,7 +49,7 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
       '| 防御 | 76 | 同族尚可 |',
       '| **综合** | **78** | 偏核心 |',
       '',
-      '**Validator 示意**：评分卡 schema 齐 · **Pass**',
+      '**样机校验示意**：评分卡字段齐 · **通过**',
     ].join('\n'),
   },
   {
@@ -58,7 +58,7 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
     script: '【价值】核心保留 / 外围观察 / 1 件建议放弃 → 交年费管家。',
     tool: {
       name: 'grade_core_periphery',
-      preview: 'core=1 · periphery=2 · abandon=1',
+      preview: '核心 1 · 外围 2 · 建议放弃 1',
     },
     structuredBody: [
       '| 件 | 分级 | 动作建议 |',
@@ -73,10 +73,10 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'card',
     label: '评估卡确认 · 待交',
     script:
-      '【价值】15_valuation_card + worklog 待确认后交年费席。无独立写库 HITL 号；交卷闸示意。',
+      '【价值】评估卡 + 办理摘记待确认后交年费席。无独立存稿闸号；交卷示意。',
     tool: {
       name: 'draft_valuation_card',
-      preview: 'file=15_valuation_card.md · soft_hitl',
+      preview: '评估卡稿 · 软确认',
     },
     triggersHitl: true,
     structuredBody: [
@@ -84,9 +84,9 @@ export const VALUATION_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**综合 78 · 主案核心**；外围 2 · 放弃候选 1。',
       '',
-      '**交给年费**：分级表驱动缴/放建议；提案键勿写 packages。',
+      '**交给年费**：分级表驱动缴/放建议；评估卡不假装已入库。',
       '',
-      '确认后样机交卷；服务 HITL⑦（年费闸）而非本席独立写库。',
+      '确认后样机交卷；服务年费闸而非本席独立存稿。',
     ].join('\n'),
   },
 ]
@@ -100,7 +100,7 @@ export const VALUATION_DEPTH_SHORTCUTS = [
 
 export const VALUATION_SAMPLE_ARTIFACT = `# 价值评估卡（样机）
 
-> 提案键 · 服务 HITL⑦ · 非真估值
+> 提案键 · 服务年费闸 · 非真估值
 
 ## 摘要
 
@@ -115,7 +115,7 @@ export const VALUATION_SAMPLE_WORKLOG_STEPS = `| 1 | 抽证据 | 案卷 | 引用
 | 2 | 公式输入 | 三轴 | 权重 | — |
 | 3 | 评分卡 | 公式 | 78 | — |
 | 4 | 分级建议 | 核心/外围 | 表 | — |
-| 5 | 评估卡确认 | 交卷 | 待确认 | HITL |`
+| 5 | 评估卡确认 | 交卷 | 待确认 | 确认 |`
 
 export const VALUATION_SAMPLE_WORKLOG_CHOICES = `| 拍脑袋 | 公式工具 | 公式 | 提案键 |
 | 直接放弃 | 交年费议 | 联动 | 可确认 |`

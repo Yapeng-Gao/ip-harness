@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -49,6 +50,45 @@ import {
 } from './packLoops'
 import { resolveCasePlanStart } from './casePlanDrive'
 import {
+  confirmKindForPlanSlug,
+  planAdvanceHandoffGate,
+} from './handoffPlanGate'
+import {
+  kitLabelsForDeptSlug,
+  resolveKitChecklist,
+  seedAllKitDone,
+  toggleKitDoneLabel,
+} from './kitChecklistGate'
+import {
+  KIT_STEP_SYNC_HONEST,
+  kitHoldLabelsForDeptSlug,
+  mergeKitDoneWithStep,
+  shrinkKitDoneToStep,
+} from './kitStepSync'
+import {
+  buildDiffAutoInput,
+  mergeKitDoneWithDiff,
+} from './kitDiffAuto'
+import {
+  advancePlanChain,
+  appendChainAdvanceNote,
+  type PlanChainStep,
+} from './delegateChain'
+import {
+  parseReceptionHandoff,
+  type ReceptionHandoff,
+} from './receptionHandoff'
+import { deptSlug, orgDeptByLeadSeat } from '../departments/orgDepts'
+import {
+  buildJudgmentFromConfirm,
+  preferenceCandidateFromJudgment,
+  precipitateJudgmentAsPreference,
+  savePreference,
+  type JudgmentRecord,
+  type PreferenceRecord,
+} from './judgmentArchive'
+import { upsertSavedPreferences } from './preferenceStore'
+import {
   downstreamResumeScript,
   feedbackNeedsMoreSeat,
   feedbackToolName,
@@ -75,7 +115,9 @@ import {
   seatIdForConfirm,
   type MidSyncOutcome,
 } from './midSync'
-import { BUSINESS_SEED_IDS, isBusinessSeedCaseId } from './businessSeeds'
+import { BUSINESS_SEED_IDS } from './businessSeeds'
+import { emitCompanyActivity } from './companyActivity'
+import { handoffRouteForSeat, pickHandoffPhrase } from './handoffCue'
 
 export { BUSINESS_SEED_IDS, isBusinessSeedCaseId } from './businessSeeds'
 
@@ -133,6 +175,17 @@ export type BusinessConfirmItem = {
 }
 
 /** 同源进度 · 时间线 / 待确认 / 侧栏当前步 */
+
+/** 助手委托分发快照 · 进 progress 状态机（LS 同标签可恢复；样机非官报） */
+export type CaseDelegateDispatch = {
+  at: string
+  goalKind: string
+  goalText: string
+  deptSlug: string
+  stepLabel: string
+  /** 多步辅链快照（首站 active + 后续 queued；样机） */
+  chain?: PlanChainStep[]
+}
 export type CaseProgress = {
   caseId: string
   stageId: BusinessStageId
@@ -144,10 +197,19 @@ export type CaseProgress = {
   researchPass?: ResearchPass
   doneSeatIds: ProjectExpertId[]
   moreSeatIds: ProjectExpertId[]
-  /** 本案讨论团队（主责 expert id）；默认空 = 未组队 */
+  /** 遗留字段 · 恒空；组队 UI 已卸 · 勿接产品面；仅持久化兼容 */
   teamMemberIds: ProjectExpertId[]
   /** 建案向导「本案计划」骨架（可空） */
   casePlan?: string
+  /** 最近一次助手委托分发（计划可调→分发）；与 casePlan 同源可恢复 */
+  delegate?: CaseDelegateDispatch
+  /** 前台领进意图（01c J2）；与 delegate 分字段，勿混 */
+  receptionHandoff?: ReceptionHandoff
+  /**
+   * 齐套逐项勾选 · deptSlug → 已勾标签（样机；G1）
+   * 缺 key=未触碰，席内可回落启发式
+   */
+  kitDoneByDept?: Record<string, string[]>
   updatedAt: string
 }
 
@@ -178,6 +240,9 @@ type PersistedBusiness = {
   confirms: BusinessConfirmItem[]
   caseMeta: BusinessCaseMeta[]
   processLogs?: ProcessLogEntry[]
+  /** T10 判断档案 · 可选字段，旧持久化缺省 [] */
+  judgments?: JudgmentRecord[]
+  preferences?: PreferenceRecord[]
 }
 
 function seedCaseMeta(): BusinessCaseMeta[] {
@@ -255,6 +320,8 @@ function buildInitialBusinessState(): {
   confirms: BusinessConfirmItem[]
   caseMeta: BusinessCaseMeta[]
   processLogs: ProcessLogEntry[]
+  judgments: JudgmentRecord[]
+  preferences: PreferenceRecord[]
 } {
   const seedIds: string[] = [
     BUSINESS_SEED_IDS.A,
@@ -274,6 +341,8 @@ function buildInitialBusinessState(): {
       confirms: seedConf,
       caseMeta: seedMeta,
       processLogs: seedLogs,
+      judgments: [],
+      preferences: [],
     }
   }
 
@@ -327,7 +396,20 @@ function buildInitialBusinessState(): {
       ? persisted.processLogs
       : seedLogs
 
-  return { caseIds, progressById, confirms, caseMeta, processLogs }
+  const judgments = Array.isArray(persisted.judgments) ? persisted.judgments : []
+  const preferences = Array.isArray(persisted.preferences)
+    ? persisted.preferences
+    : []
+
+  return {
+    caseIds,
+    progressById,
+    confirms,
+    caseMeta,
+    processLogs,
+    judgments,
+    preferences,
+  }
 }
 
 function projectFromMeta(meta: BusinessCaseMeta): AgentProject {
@@ -363,7 +445,10 @@ type BusinessCaseContextValue = {
     caseId: string,
     kind: BusinessConfirmKind,
   ) => BusinessConfirmItem
-  confirmItem: (confirmId: string) => Promise<MidSyncOutcome>
+  confirmItem: (
+    confirmId: string,
+    opts?: { reason?: string; riskAccepted?: boolean },
+  ) => Promise<MidSyncOutcome>
   /** 退回：解锁席 + 按意见改一版（样机）· 不立刻再挂 pending */
   returnItem: (confirmId: string, note?: string) => Promise<MidSyncOutcome>
   /**
@@ -462,12 +547,78 @@ type BusinessCaseContextValue = {
     ok: boolean,
     note?: string,
   ) => { ok: boolean; reason?: string }
-  /** 本案讨论团队（勾选主责）；空 = 未组队 */
-  setCaseTeam: (caseId: string, memberIds: ProjectExpertId[]) => void
   /** 案子助手改写 / 补全本案计划 */
   updateCasePlan: (caseId: string, casePlan: string) => void
+  /** 助手委托分发写入 progress（casePlan + delegate）；刷新可恢复 */
+  recordDelegateDispatch: (
+    caseId: string,
+    input: {
+      casePlan: string
+      goalKind: string
+      goalText: string
+      deptSlug: string
+      stepLabel: string
+      chain?: PlanChainStep[]
+    },
+  ) => void
+  /** 前台领进意图写入 progress（01c J2） */
+  setReceptionHandoff: (caseId: string, handoff: ReceptionHandoff) => void
+  /** 本案全部确认项（含已通过/已驳回；办完闸用） */
+  getCaseConfirms: (caseId: string) => BusinessConfirmItem[]
+  /**
+   * 本章办完 → 辅链推进下一站（须过交卷闸；确认拍板可自动推进）
+   * @param opts.deptSlug 若给，仅当 active 匹配该部才推进
+   */
+  advancePlanChainStep: (
+    caseId: string,
+    opts?: { deptSlug?: string },
+  ) => { ok: boolean; completedLabel?: string; nextLabel?: string; reason?: string }
+  /**
+   * 样机：为在办章补记「本稿已通过」（不自动翻篇；再点办完或走真拍板）
+   * 非真官报 / 非真递交。
+   */
+  seedPlanHandoffPass: (
+    caseId: string,
+  ) => { ok: boolean; kind?: BusinessConfirmKind; reason?: string }
+  /** 本章齐套逐项（合并持久勾选） */
+  getKitChecklist: (
+    caseId: string,
+    deptSlug: string,
+  ) => { label: string; done: boolean }[]
+  toggleKitCheck: (
+    caseId: string,
+    deptSlug: string,
+    label: string,
+    force?: boolean,
+  ) => void
+  /** 样机：勾齐本章齐套（非一键交卷/非官报） */
+  seedKitComplete: (
+    caseId: string,
+    deptSlug: string,
+  ) => { ok: boolean; labels: string[] }
+  /** 按席当前步进同步齐套（样机；末项 hold 不自动） */
+  syncKitFromSeatStep: (
+    caseId: string,
+    seatId: ProjectExpertId,
+  ) => { ok: boolean; done: string[]; stepIndex: number }
+  /** 按正文 / 差分 / 材料树同步齐套（样机；hold 仅内容 warrant 时勾） */
+  syncKitFromDiff: (
+    caseId: string,
+    deptSlug: string,
+    input: {
+      materialId: string
+      bodyText: string
+      forceEmpty?: boolean
+    },
+  ) => { ok: boolean; done: string[] }
   /** 启用前研等「更多部门」（写入 moreSeatIds） */
-  enableMoreDepartments: (caseId: string) => void
+  /** T10 · 本案判断档案（硬请示写回） */
+  getJudgments: (caseId?: string) => JudgmentRecord[]
+  getPreferences: () => PreferenceRecord[]
+  recordJudgment: (j: JudgmentRecord) => void
+  savePreferenceById: (prefId: string) => void
+  precipitateJudgment: (judgmentId: string) => void
+    enableMoreDepartments: (caseId: string) => void
 }
 
 const BusinessCaseContext = createContext<BusinessCaseContextValue | null>(null)
@@ -499,7 +650,7 @@ function seedConfirms(): BusinessConfirmItem[] {
       title: CONFIRM_KIND_LABEL.go_nogo,
       summary: '查新结论：现有技术可规避；建议立项撰写实用新型。',
       resultPreview:
-        '【成果】立项建议：做 · 范围：边缘调度模组控制方法 · 风险：中低 · 预算档：标准。',
+        '【成果】立项建议：做 · 范围：边缘调度模组控制方法 · 风险：中低 · 预算档：标准。\n【对比】对照最接近公开未覆盖校准采样组合（演示）。\n【来源】检索笔记 RN-1042（示意）· 非官报全文。',
       processPreview:
         '【办理过程】比对公开文献；新颖性可成立；创造性需限缩从属。',
       preparedBy: CONFIRM_META.go_nogo.preparedBy,
@@ -513,8 +664,8 @@ function seedConfirms(): BusinessConfirmItem[] {
       title: CONFIRM_KIND_LABEL.claims_ready,
       summary: '权利要求书草案已就绪，请确认主权利要求范围。',
       resultPreview:
-        '【成果】权利要求 1–8：独立权项 1 覆盖传感采样与校准；从属 2–8 细化。',
-      processPreview: '【办理过程】交底要点已吸入；与附图对齐。',
+        '【成果】权利要求 1–8：独立权项 1 覆盖传感采样与校准；从属 2–8 细化。\n【对比】对照交底主张：未超交底公开范围（演示）。\n【来源】交底全绿包 + 查新结论稿（示意）。',
+      processPreview: '【办理过程】交底要点已吸入；与附图对齐；术语三处归一。',
       preparedBy: CONFIRM_META.claims_ready.preparedBy,
       createdAt: stamp(),
       status: 'pending',
@@ -526,7 +677,7 @@ function seedConfirms(): BusinessConfirmItem[] {
       title: CONFIRM_KIND_LABEL.oa_strategy,
       summary: '第 1 通 · 理由：创造性 · 已汇入补充检索 · 请确认答复策略。',
       resultPreview:
-        '【成果】三策略并列：限缩权项 / 纯陈述争辩 / 补充实验数据（样机）。',
+        '【成果】三策略并列：限缩权项 / 纯陈述争辩 / 补充实验数据（样机）。\n【对比】对照审查意见争点：D1 水道已公开 vs 本案双密封+错位。\n【来源】审查意见书（示意）· 补充检索笔记（示意）。',
       processPreview:
         '【办理过程】理由分类：创造性 · 子任务汇入：补充检索 · 待确认答复策略。',
       preparedBy: CONFIRM_META.oa_strategy.preparedBy,
@@ -559,8 +710,8 @@ function seedProgressMap(): Record<string, CaseProgress> {
       completedStages: ['prepare'],
       filed: false,
       oaRound: 0,
-      researchPass: 0,
-      doneSeatIds: [],
+      researchPass: 1,
+      doneSeatIds: ['expert-disclosure', 'expert-research'],
       moreSeatIds: [],
       teamMemberIds: [],
       updatedAt: nowIso(),
@@ -640,8 +791,18 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     useState<BusinessConfirmItem[]>(initial.confirms)
   const [caseIds, setCaseIds] = useState<string[]>(initial.caseIds)
   const [caseMeta, setCaseMeta] = useState<BusinessCaseMeta[]>(initial.caseMeta)
+  const caseMetaRef = useRef(caseMeta)
+  useEffect(() => {
+    caseMetaRef.current = caseMeta
+  }, [caseMeta])
   const [processLogs, setProcessLogs] = useState<ProcessLogEntry[]>(
     initial.processLogs,
+  )
+  const [judgments, setJudgments] = useState<JudgmentRecord[]>(
+    initial.judgments,
+  )
+  const [preferences, setPreferences] = useState<PreferenceRecord[]>(
+    initial.preferences,
   )
   const [lastReturnHint, setLastReturnHint] = useState<string | null>(null)
 
@@ -668,7 +829,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
             m.expertIds.length > 0 ? m.expertIds : BUSINESS_DEFAULT_TEAM_IDS,
         })
       } else if (existing.caseId !== m.id || existing.caseBindState !== 'bound') {
-        // Catalog / 专家台进同一案：绑案 = projectId，禁平行宇宙
+        // 席位样机 / Catalog 进同一案：绑案 = projectId，禁平行宇宙
         patchProject(m.id, { caseId: m.id, caseBindState: 'bound' })
       }
     }
@@ -683,8 +844,10 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       confirms,
       caseMeta,
       processLogs,
+      judgments,
+      preferences,
     })
-  }, [caseIds, progressById, confirms, caseMeta, processLogs])
+  }, [caseIds, progressById, confirms, caseMeta, processLogs, judgments, preferences])
 
   const cases = useMemo(() => {
     // Keep order of caseIds；folder 尚未回填时用 caseMeta 合成，避免「找不到这个案子」闪断
@@ -710,7 +873,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
 
   const ensureProgress = useCallback(
     (caseId: string): CaseProgress => {
-      const raw = progressById[caseId] ?? emptyProgress(caseId, 'intake')
+      const raw = progressById[caseId] ?? emptyProgress(caseId, 'prepare')
       return {
         ...raw,
         teamMemberIds: Array.isArray(raw.teamMemberIds)
@@ -732,10 +895,13 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       confirms.filter(
         (c) =>
           c.status === 'pending' &&
-          (caseId
-            ? c.caseId === caseId
-            : !isBusinessSeedCaseId(c.caseId)),
+          (caseId ? c.caseId === caseId : true),
       ),
+    [confirms],
+  )
+
+  const getCaseConfirms = useCallback(
+    (caseId: string) => confirms.filter((c) => c.caseId === caseId),
     [confirms],
   )
 
@@ -778,13 +944,11 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       })
       patchProject(p.id, { caseId: p.id, caseBindState: 'bound' })
       // 阶段与计划一致；无计划则回退 skipPrepare
+      // 上手默认落交底（prepare）；计划可指定更后阶段
       const stageId: BusinessStageId = planText
         ? planStart.stageId
-        : input.skipPrepare
-          ? 'intake'
-          : 'prepare'
-      const skipPrep =
-        stageId !== 'prepare' || Boolean(input.skipPrepare && !planText)
+        : 'prepare'
+      const skipPrep = stageId !== 'prepare'
       setProgressById((prev) => ({
         ...prev,
         [p.id]: {
@@ -797,6 +961,15 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           moreSeatIds: more,
           teamMemberIds: [],
           casePlan: planText || undefined,
+          delegate: planText
+            ? {
+                at: nowIso(),
+                goalKind: 'protect_start',
+                goalText: (input.summary ?? input.title ?? '').trim().slice(0, 120),
+                deptSlug: planStart.seatId.replace(/^expert-/, ''),
+                stepLabel: planStart.nextStepLabel,
+              }
+            : undefined,
           updatedAt: nowIso(),
         },
       }))
@@ -836,6 +1009,11 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
   )
 
   const advanceStage = useCallback((caseId: string) => {
+    // §3.1a：无人确认不得靠 advanceStage 溜进下一阶段
+    const hasPending = confirms.some(
+      (c) => c.caseId === caseId && c.status === 'pending',
+    )
+    if (hasPending) return
     setProgressById((prev) => {
       const cur = prev[caseId] ?? emptyProgress(caseId)
       const idx = BUSINESS_STAGES.findIndex((s) => s.id === cur.stageId)
@@ -856,7 +1034,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         },
       }
     })
-  }, [])
+  }, [confirms])
 
   const prepareConfirm = useCallback(
     (caseId: string, kind: BusinessConfirmKind) => {
@@ -878,10 +1056,10 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
             caseId,
             kind,
             title: CONFIRM_KIND_LABEL[kind],
-            summary: '未启用布局 · 仅专家台可见飞轮故事线',
+            summary: '未启用布局 · 仅遗留过程旁路可见回流故事线',
             resultPreview: '【成果】—',
             processPreview:
-              '【办理过程】布局席未启用 · 过程已写入专家台，业务面不出待确认。',
+              '【办理过程】布局席未启用 · 过程仅写入遗留旁路故事线，业务面不出待确认。',
             preparedBy: CONFIRM_META.layout_adjust.preparedBy,
             createdAt: stamp(),
             status: 'pending',
@@ -939,7 +1117,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         kind,
         title: CONFIRM_KIND_LABEL[kind],
         summary: afterRevise
-          ? `已按退回意见改一版 · ${businessSeatLabel(meta.seatId)}再请确认。`
+          ? `这版已按你的意见改过，请看修订稿 · ${businessSeatLabel(meta.seatId)}再请确认。`
           : kind === 'oa_strategy'
             ? `${roundLabel}${businessSeatLabel(meta.seatId)}已准备好，请确认答复策略。`
             : kind === 'layout_adjust'
@@ -986,7 +1164,10 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
   )
 
   const confirmItem = useCallback(
-    async (confirmId: string): Promise<MidSyncOutcome> => {
+    async (
+      confirmId: string,
+      opts?: { reason?: string; riskAccepted?: boolean },
+    ): Promise<MidSyncOutcome> => {
       const target = confirms.find((c) => c.id === confirmId)
       if (!target || target.status !== 'pending') {
         return {
@@ -1015,9 +1196,8 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         rewindToStep(target.caseId, 'expert-research', 0)
       }
 
-      setProgressById((pprev) => ({
-        ...pprev,
-        [target.caseId]: {
+      setProgressById((pprev) => {
+        const base = {
           ...cur,
           doneSeatIds,
           completedStages,
@@ -1026,13 +1206,69 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           oaRound,
           researchPass: next.researchPass,
           updatedAt: nowIso(),
-        },
-      }))
+        }
+        const dept = orgDeptByLeadSeat(meta.seatId)
+        const active = cur.delegate?.chain?.find((s) => s.status === 'active')
+        if (
+          dept &&
+          cur.delegate?.chain?.length &&
+          active &&
+          active.deptSlug === deptSlug(dept.id)
+        ) {
+          const adv = advancePlanChain(cur.delegate.chain)
+          if (!adv.noop && adv.completed) {
+            const newActive = adv.next
+            return {
+              ...pprev,
+              [target.caseId]: {
+                ...base,
+                casePlan: appendChainAdvanceNote(cur.casePlan, adv),
+                delegate: {
+                  ...cur.delegate,
+                  at: nowIso(),
+                  deptSlug: newActive?.deptSlug ?? cur.delegate.deptSlug,
+                  stepLabel:
+                    newActive?.label ?? `${adv.completed.label}（已办完）`,
+                  chain: adv.chain,
+                },
+              },
+            }
+          }
+        }
+        return {
+          ...pprev,
+          [target.caseId]: base,
+        }
+      })
       setConfirms((prev) =>
         prev.map((c) =>
           c.id === confirmId ? { ...c, status: 'confirmed' as const } : c,
         ),
       )
+
+      // T10：确认 → 判断档案（非操作考勤）
+      {
+        const j = buildJudgmentFromConfirm({
+          caseId: target.caseId,
+          confirmId: target.id,
+          kind: target.kind,
+          summary: target.summary,
+          resultPreview: target.resultPreview,
+          processPreview: target.processPreview,
+          decision: 'confirmed',
+          reason: opts?.reason?.trim() || '接受结论',
+          riskAccepted: opts?.riskAccepted,
+        })
+        const confirmedThread = getThread(target.caseId, meta.seatId)
+        const markdown = confirmedThread?.artifactMarkdown?.trim() || target.resultPreview || target.summary
+        j.artifactSnapshot = { markdown, savedAt: nowIso(), version: (confirmedThread?.artifactVersions?.length ?? 0) + 1 }
+        setJudgments((prev) => [j, ...prev].slice(0, 200))
+        setPreferences((prev) => {
+          const cand = preferenceCandidateFromJudgment(j)
+          if (prev.some((p) => p.text === cand.text && !p.saved)) return prev
+          return [cand, ...prev].slice(0, 100)
+        })
+      }
 
       const filedHint =
         target.kind === 'file_authorize'
@@ -1076,9 +1312,18 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         setFlowNodeProgress(target.caseId, row.flowKey, row.stepIndex)
       }
       if (!run.ok) {
-        const fail = `中台交接未写入 · ${run.message}`
+        const fail = `案卷交接未写入 · ${run.message}`
         setLastReturnHint(filedHint ? `${filedHint} · ${fail}` : fail)
       }
+      emitCompanyActivity({
+        category: 'pass',
+        roleId: meta.seatId,
+        roleName: businessSeatLabel(meta.seatId),
+        caseId: target.caseId,
+        caseTitle: caseMetaRef.current.find((m) => m.id === target.caseId)?.title,
+        message: `已通过「${CONFIRM_KIND_LABEL[target.kind]}」。`,
+        artifactPreview: (target.resultPreview || target.summary).slice(0, 80),
+      })
       return {
         businessOk: true,
         midOk: run.ok,
@@ -1113,6 +1358,15 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const meta = CONFIRM_META[target.kind]
       const log = hitlReturnLog(target.caseId, target.kind, noteText)
       appendLogs([log])
+      emitCompanyActivity({
+        category: 'critique',
+        roleId: meta.seatId,
+        roleName: businessSeatLabel(meta.seatId),
+        caseId: target.caseId,
+        caseTitle: caseMetaRef.current.find((m) => m.id === target.caseId)?.title,
+        message: `退回：${noteText.slice(0, 48)}`,
+        artifactPreview: (target.resultPreview || target.summary).slice(0, 80),
+      })
       const baseHint =
         target.kind === 'research_ready'
           ? `请再查一轮 · ${noteText}`
@@ -1122,6 +1376,21 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
               ? `请按意见调整布局 · ${noteText}`
               : `请按意见修改 · ${noteText}`
       setLastReturnHint(baseHint)
+
+      // T10：驳回理由 → 判断档案
+      {
+        const j = buildJudgmentFromConfirm({
+          caseId: target.caseId,
+          confirmId: target.id,
+          kind: target.kind,
+          summary: target.summary,
+          resultPreview: target.resultPreview,
+          processPreview: target.processPreview,
+          decision: 'returned',
+          reason: noteText,
+        })
+        setJudgments((prev) => [j, ...prev].slice(0, 200))
+      }
 
       // 只标记 returned · 取消同 kind 其它 pending · 不立刻再挂闸（否则席被锁无法改稿）
       setConfirms((prev) =>
@@ -1202,7 +1471,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         setFlowNodeProgress(target.caseId, row.flowKey, row.stepIndex)
       }
       if (!run.ok) {
-        setLastReturnHint(`${baseHint} · 中台交接未写入（${run.message}）`)
+        setLastReturnHint(`${baseHint} · 案卷交接未写入（${run.message}）`)
       }
       return {
         businessOk: true,
@@ -1229,11 +1498,9 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const hit = confirms.find(
         (c) =>
           c.caseId === caseId &&
-          c.kind === kind &&
-          c.status === 'returned' &&
-          !!c.returnNote,
+          c.kind === kind,
       )
-      return hit?.returnNote ?? null
+      return hit?.status === 'returned' ? hit.returnNote ?? null : null
     },
     [confirms],
   )
@@ -1427,7 +1694,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
               id: uid('bcf'),
               status: 'pending' as const,
               summary: `策略已驳回 · ${noteText}`,
-              processPreview: `【办理过程】HITL⑥ 策略驳回重做 · ${noteText}`,
+              processPreview: `【办理过程】答复策略驳回重做 · ${noteText}`,
               createdAt: stamp(),
               returnNote: noteText,
             }
@@ -1519,12 +1786,42 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     (caseId: string, seatId: ProjectExpertId) => {
       const def = getProjectExpert(seatId)
       const thread = getThread(caseId, seatId)
+      if (thread?.followUpMode === 'paused' || thread?.followUpMode === 'strategy') return { stepLabel: '等待你恢复办理', delivered: false }
       const cur = thread?.stepIndex ?? 0
       const next = Math.min(cur + 1, Math.max(def.steps.length - 1, 0))
       advanceStep(caseId, seatId)
       const step = def.steps[next] ?? def.steps[cur]
       const stepLabel = step?.label ?? def.name
       const seatName = businessSeatLabel(seatId)
+      // 齐套 ↔ 步进：按进度单调勾选（末项 hold 不自动）
+      const leadDept = orgDeptByLeadSeat(seatId)
+      if (leadDept) {
+        const slug = deptSlug(leadDept.id)
+        const labels = kitLabelsForDeptSlug(slug)
+        const hold = kitHoldLabelsForDeptSlug(slug)
+        const at = nowIso()
+        setProgressById((prev) => {
+          const prog = prev[caseId] ?? emptyProgress(caseId)
+          const merged = mergeKitDoneWithStep({
+            labels,
+            prevDone: prog.kitDoneByDept?.[slug],
+            stepIndex: next,
+            stepCount: Math.max(def.steps.length, 1),
+            holdLabels: hold,
+          })
+          return {
+            ...prev,
+            [caseId]: {
+              ...prog,
+              kitDoneByDept: {
+                ...(prog.kitDoneByDept ?? {}),
+                [slug]: merged,
+              },
+              updatedAt: at,
+            },
+          }
+        })
+      }
       const logId = processLogId('adv')
       const toolBit = step?.tool
         ? `${step.tool.preview}`
@@ -1539,9 +1836,44 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
           message: `${seatName} · 完成本步「${stepLabel}」`,
           detail: step?.triggersHitl
             ? `交卷待确认 · ${toolBit}`
-            : `做了什么：${step?.script ?? stepLabel} · ${toolBit}`,
+            : `做了什么：${step?.script ?? stepLabel} · ${toolBit} · ${KIT_STEP_SYNC_HONEST}`,
         },
       ])
+      const caseTitle = caseMetaRef.current.find((m) => m.id === caseId)?.title
+      const spoken = (step?.script || stepLabel).replace(/^【[^】]+】/, '').trim()
+      emitCompanyActivity({
+        category: step?.triggersHitl ? 'pending' : 'speak',
+        roleId: seatId,
+        roleName: seatName,
+        caseId,
+        caseTitle,
+        deptSlug: leadDept ? deptSlug(leadDept.id) : undefined,
+        message: step?.triggersHitl
+          ? `${seatName}交卷「${stepLabel}」，请你确认。`
+          : `${seatName}：${spoken.slice(0, 42)}`,
+        artifactPreview: step?.tool?.preview,
+      })
+      if (step?.triggersHitl) {
+        const route = handoffRouteForSeat(seatId)
+        if (route) {
+          const phrase = pickHandoffPhrase()
+          emitCompanyActivity({
+            category: 'handoff',
+            roleId: seatId,
+            roleName: seatName,
+            caseId,
+            caseTitle,
+            deptSlug: route.fromSlug,
+            message: phrase,
+            artifactPreview: route.artifact,
+            handoff: {
+              fromSlug: route.fromSlug,
+              toSlug: route.toSlug,
+              phrase,
+            },
+          })
+        }
+      }
       if (!step?.triggersHitl) {
         return { stepLabel, delivered: false, processLogId: logId }
       }
@@ -1575,6 +1907,35 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const r = rewindToStep(caseId, seatId, targetIndex)
       if (!r.ok) {
         return { ok: false as const, reason: r.reason }
+      }
+      const def = getProjectExpert(seatId)
+      const leadDept = orgDeptByLeadSeat(seatId)
+      if (leadDept) {
+        const slug = deptSlug(leadDept.id)
+        const labels = kitLabelsForDeptSlug(slug)
+        const hold = kitHoldLabelsForDeptSlug(slug)
+        const at = nowIso()
+        setProgressById((prev) => {
+          const prog = prev[caseId] ?? emptyProgress(caseId)
+          const shrunk = shrinkKitDoneToStep({
+            labels,
+            prevDone: prog.kitDoneByDept?.[slug],
+            stepIndex: targetIndex,
+            stepCount: Math.max(def.steps.length, 1),
+            holdLabels: hold,
+          })
+          return {
+            ...prev,
+            [caseId]: {
+              ...prog,
+              kitDoneByDept: {
+                ...(prog.kitDoneByDept ?? {}),
+                [slug]: shrunk,
+              },
+              updatedAt: at,
+            },
+          }
+        })
       }
       const kind = confirmKindForSeat(seatId)
       const seatName = businessSeatLabel(seatId)
@@ -1652,6 +2013,14 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       const note = reason.trim() || '请按下游意见调整一版'
       const log = seatFeedbackLog(caseId, fromSeat, toSeat, note)
       appendLogs([log])
+      emitCompanyActivity({
+        category: 'critique',
+        roleId: fromSeat,
+        roleName: fromName,
+        caseId,
+        caseTitle: caseMetaRef.current.find((m) => m.id === caseId)?.title,
+        message: `${fromName}向${toName}挑刺：${note.slice(0, 36)}`,
+      })
 
       // 飞轮 / 回流目标席：挂到更多专家，避免点了切不过去
       if (feedbackNeedsMoreSeat(toSeat)) {
@@ -1946,7 +2315,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
         note?.trim() ||
         (ok
           ? '成果+办理过程齐全 · 可派下家'
-          : '过程或缺关键取舍 · 请补 worklog 后再交')
+          : '过程或缺关键取舍 · 请补办理摘记后再交')
       appendLogs([drillAcceptLog(caseId, seatId, ok, noteText)])
       if (ok) {
         appendMessage(caseId, DRILL_ORCH_ID, {
@@ -1972,23 +2341,7 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     [appendLogs, appendMessage, requestUpstreamFeedback],
   )
 
-  const setCaseTeam = useCallback(
-    (caseId: string, memberIds: ProjectExpertId[]) => {
-      const unique = [...new Set(memberIds)]
-      setProgressById((prev) => {
-        const cur = prev[caseId] ?? emptyProgress(caseId)
-        return {
-          ...prev,
-          [caseId]: {
-            ...cur,
-            teamMemberIds: unique,
-            updatedAt: nowIso(),
-          },
-        }
-      })
-    },
-    [],
-  )
+  /* setCaseTeam 已卸挂：组队 UI 不回潮；teamMemberIds 恒空仅兼容旧 localStorage */
 
   const updateCasePlan = useCallback((caseId: string, casePlan: string) => {
     const text = casePlan.trim()
@@ -2005,7 +2358,404 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  const enableMoreDepartments = useCallback((caseId: string) => {
+  const setReceptionHandoff = useCallback(
+    (caseId: string, handoff: ReceptionHandoff) => {
+      const parsed = parseReceptionHandoff(handoff)
+      if (!parsed) return
+      const at = nowIso()
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            receptionHandoff: { ...parsed, at: parsed.at || at },
+            updatedAt: at,
+          },
+        }
+      })
+    },
+    [],
+  )
+
+  const recordDelegateDispatch = useCallback(
+    (
+      caseId: string,
+      input: {
+        casePlan: string
+        goalKind: string
+        goalText: string
+        deptSlug: string
+        stepLabel: string
+        chain?: PlanChainStep[]
+      },
+    ) => {
+      const text = input.casePlan.trim()
+      const at = nowIso()
+      const chain = input.chain
+      const queuedN = chain?.filter((s) => s.status === 'queued').length ?? 0
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            casePlan: text || cur.casePlan,
+            delegate: {
+              at,
+              goalKind: input.goalKind,
+              goalText: input.goalText.trim().slice(0, 120),
+              deptSlug: input.deptSlug,
+              stepLabel: input.stepLabel,
+              chain: chain && chain.length ? chain : undefined,
+            },
+            updatedAt: at,
+          },
+        }
+      })
+      appendLogs([
+        {
+          id: processLogId('delegate'),
+          caseId,
+          at,
+          kind: 'monitor_event',
+          message: `顾言分发辅链 · ${input.stepLabel}${
+            queuedN ? ` · 后续${queuedN}站` : ''
+          }（样机示意）`,
+          detail: input.goalText.trim().slice(0, 80) || undefined,
+        },
+      ])
+    },
+    [appendLogs],
+  )
+
+  const advancePlanChainStep = useCallback(
+    (
+      caseId: string,
+      opts?: { deptSlug?: string },
+    ): {
+      ok: boolean
+      completedLabel?: string
+      nextLabel?: string
+      reason?: string
+    } => {
+      const cur = progressById[caseId]
+      if (!cur?.delegate?.chain?.length) {
+        return { ok: false, reason: '本案尚无排期辅链' }
+      }
+      const active = cur.delegate.chain.find((s) => s.status === 'active')
+      if (!active) {
+        return { ok: false, reason: '没有在办章节可办完' }
+      }
+      if (opts?.deptSlug && active.deptSlug !== opts.deptSlug) {
+        return {
+          ok: false,
+          reason: `当前在办是「${active.label}」，与本站不符`,
+        }
+      }
+      const labels = kitLabelsForDeptSlug(active.deptSlug)
+      const doneLabels = cur.kitDoneByDept?.[active.deptSlug]
+      const checklist = resolveKitChecklist({
+        labels,
+        doneLabels,
+        kitTouched: doneLabels !== undefined,
+      })
+      const gate = planAdvanceHandoffGate({
+        activeDeptSlug: active.deptSlug,
+        confirms: confirms.filter((c) => c.caseId === caseId),
+        checklist,
+      })
+      if (!gate.allow) {
+        return { ok: false, reason: gate.hint }
+      }
+      const adv = advancePlanChain(cur.delegate.chain)
+      if (adv.noop || !adv.completed) {
+        return { ok: false, reason: '排期无变化' }
+      }
+      const at = nowIso()
+      const newActive = adv.next
+      setProgressById((prev) => {
+        const c = prev[caseId] ?? cur
+        return {
+          ...prev,
+          [caseId]: {
+            ...c,
+            casePlan: appendChainAdvanceNote(c.casePlan, adv),
+            delegate: c.delegate
+              ? {
+                  ...c.delegate,
+                  at,
+                  deptSlug: newActive?.deptSlug ?? c.delegate.deptSlug,
+                  stepLabel:
+                    newActive?.label ?? `${adv.completed!.label}（已办完）`,
+                  chain: adv.chain,
+                }
+              : c.delegate,
+            updatedAt: at,
+          },
+        }
+      })
+      appendLogs([
+        {
+          id: processLogId('chain-adv'),
+          caseId,
+          at,
+          kind: 'monitor_event',
+          message: newActive
+            ? `本章办完 · ${adv.completed.label} → 新开篇 ${newActive.label}（样机示意）`
+            : `本章办完 · ${adv.completed.label} · 排期已结（样机示意）`,
+          detail: cur.delegate.goalText.slice(0, 80) || undefined,
+        },
+      ])
+      return {
+        ok: true,
+        completedLabel: adv.completed.label,
+        nextLabel: newActive?.label,
+      }
+    },
+    [appendLogs, progressById, confirms],
+  )
+
+  const seedPlanHandoffPass = useCallback(
+    (
+      caseId: string,
+    ): { ok: boolean; kind?: BusinessConfirmKind; reason?: string } => {
+      const cur = progressById[caseId]
+      const active = cur?.delegate?.chain?.find((s) => s.status === 'active')
+      if (!active) {
+        return { ok: false, reason: '没有在办章节' }
+      }
+      const kind = confirmKindForPlanSlug(active.deptSlug)
+      if (!kind) {
+        return { ok: false, reason: '本章无交卷闸，无需补记' }
+      }
+      if (
+        confirms.some(
+          (c) =>
+            c.caseId === caseId &&
+            c.kind === kind &&
+            c.status === 'confirmed',
+        )
+      ) {
+        return { ok: true, kind, reason: '本稿已通过，可直接办完' }
+      }
+      const meta = CONFIRM_META[kind]
+      const at = nowIso()
+      setConfirms((prev) => {
+        const rest = prev.filter(
+          (c) =>
+            !(
+              c.caseId === caseId &&
+              c.kind === kind &&
+              c.status === 'pending'
+            ),
+        )
+        return [
+          {
+            id: uid('seed-handoff'),
+            caseId,
+            kind,
+            title: `${CONFIRM_KIND_LABEL[kind]}（样机补记已通过）`,
+            summary: `排期章「${active.label}」· 样机补记本稿已通过 · 非真官报`,
+            resultPreview: `【成果】样机补记 · ${active.label} 本稿已通过（非真递交/非官报）。`,
+            processPreview:
+              '【办理过程】seedPlanHandoffPass · 办完对齐交卷闸示意',
+            preparedBy: meta.preparedBy,
+            createdAt: at,
+            status: 'confirmed' as const,
+          },
+          ...rest,
+        ]
+      })
+      const labels = kitLabelsForDeptSlug(active.deptSlug)
+      setProgressById((prev) => {
+        const c = prev[caseId] ?? cur ?? emptyProgress(caseId)
+        return {
+          ...prev,
+          [caseId]: {
+            ...c,
+            kitDoneByDept: {
+              ...(c.kitDoneByDept ?? {}),
+              [active.deptSlug]: seedAllKitDone(labels),
+            },
+            updatedAt: at,
+          },
+        }
+      })
+      appendLogs([
+        {
+          id: processLogId('seed-handoff'),
+          caseId,
+          at,
+          kind: 'monitor_event',
+          message: `样机补记本稿已通过 · ${active.label}（非真官报）`,
+        },
+      ])
+      return { ok: true, kind }
+    },
+    [appendLogs, confirms, progressById],
+  )
+
+
+  const getKitChecklist = useCallback(
+    (caseId: string, deptSlug: string) => {
+      const cur = progressById[caseId]
+      const labels = kitLabelsForDeptSlug(deptSlug)
+      const doneLabels = cur?.kitDoneByDept?.[deptSlug]
+      return resolveKitChecklist({
+        labels,
+        doneLabels,
+        kitTouched: doneLabels !== undefined,
+      })
+    },
+    [progressById],
+  )
+
+  const toggleKitCheck = useCallback(
+    (caseId: string, deptSlug: string, label: string, force?: boolean) => {
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        const labels = kitLabelsForDeptSlug(deptSlug)
+        const prevDone = cur.kitDoneByDept?.[deptSlug]
+        // 首次触碰：若无记录，从空开始再 toggle（显式逐项）
+        const base = prevDone !== undefined ? prevDone : []
+        const nextDone = toggleKitDoneLabel(base, label, force).filter((l) =>
+          labels.includes(l),
+        )
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            kitDoneByDept: {
+              ...(cur.kitDoneByDept ?? {}),
+              [deptSlug]: nextDone,
+            },
+            updatedAt: nowIso(),
+          },
+        }
+      })
+    },
+    [],
+  )
+
+  const seedKitComplete = useCallback(
+    (caseId: string, deptSlug: string) => {
+      const labels = kitLabelsForDeptSlug(deptSlug)
+      const at = nowIso()
+      setProgressById((prev) => {
+        const cur = prev[caseId] ?? emptyProgress(caseId)
+        return {
+          ...prev,
+          [caseId]: {
+            ...cur,
+            kitDoneByDept: {
+              ...(cur.kitDoneByDept ?? {}),
+              [deptSlug]: seedAllKitDone(labels),
+            },
+            updatedAt: at,
+          },
+        }
+      })
+      appendLogs([
+        {
+          id: processLogId('seed-kit'),
+          caseId,
+          at,
+          kind: 'monitor_event',
+          message: `演示勾齐本稿齐套 · ${deptSlug}（${labels.length}项 · 非真官报）`,
+        },
+      ])
+      return { ok: true, labels }
+    },
+    [appendLogs],
+  )
+
+  
+  const syncKitFromSeatStep = useCallback(
+    (caseId: string, seatId: ProjectExpertId) => {
+      const def = getProjectExpert(seatId)
+      const thread = getThread(caseId, seatId)
+      const stepIndex = thread?.stepIndex ?? 0
+      const leadDept = orgDeptByLeadSeat(seatId)
+      if (!leadDept) {
+        return { ok: false as const, done: [] as string[], stepIndex }
+      }
+      const slug = deptSlug(leadDept.id)
+      const labels = kitLabelsForDeptSlug(slug)
+      const hold = kitHoldLabelsForDeptSlug(slug)
+      const at = nowIso()
+      let merged: string[] = []
+      setProgressById((prev) => {
+        const prog = prev[caseId] ?? emptyProgress(caseId)
+        merged = mergeKitDoneWithStep({
+          labels,
+          prevDone: prog.kitDoneByDept?.[slug],
+          stepIndex,
+          stepCount: Math.max(def.steps.length, 1),
+          holdLabels: hold,
+        })
+        return {
+          ...prev,
+          [caseId]: {
+            ...prog,
+            kitDoneByDept: {
+              ...(prog.kitDoneByDept ?? {}),
+              [slug]: merged,
+            },
+            updatedAt: at,
+          },
+        }
+      })
+      return { ok: true as const, done: merged, stepIndex }
+    },
+    [getThread],
+  )
+
+  const syncKitFromDiff = useCallback(
+    (
+      caseId: string,
+      slug: string,
+      input: {
+        materialId: string
+        bodyText: string
+        forceEmpty?: boolean
+      },
+    ) => {
+      const labels = kitLabelsForDeptSlug(slug)
+      const hold = kitHoldLabelsForDeptSlug(slug)
+      const at = nowIso()
+      let merged: string[] = []
+      setProgressById((prev) => {
+        const prog = prev[caseId] ?? emptyProgress(caseId)
+        merged = mergeKitDoneWithDiff(
+          buildDiffAutoInput({
+            labels,
+            prevDone: prog.kitDoneByDept?.[slug],
+            deptSlug: slug,
+            materialId: input.materialId,
+            bodyText: input.bodyText,
+            holdLabels: hold,
+            forceEmpty: input.forceEmpty,
+          }),
+        )
+        return {
+          ...prev,
+          [caseId]: {
+            ...prog,
+            kitDoneByDept: {
+              ...(prog.kitDoneByDept ?? {}),
+              [slug]: merged,
+            },
+            updatedAt: at,
+          },
+        }
+      })
+      return { ok: true as const, done: merged }
+    },
+    [],
+  )
+
+const enableMoreDepartments = useCallback((caseId: string) => {
     const add = [
       ...BUSINESS_MORE_SEAT_IDS,
       'expert-layout' as ProjectExpertId,
@@ -2073,12 +2823,49 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
     [confirms, ensureProgress],
   )
 
-  const value = useMemo<BusinessCaseContextValue>(
+
+  const getJudgments = useCallback(
+    (caseId?: string) =>
+      caseId ? judgments.filter((j) => j.caseId === caseId) : judgments,
+    [judgments],
+  )
+  const getPreferences = useCallback(() => preferences, [preferences])
+  const recordJudgment = useCallback((j: JudgmentRecord) => {
+    setJudgments((prev) => [j, ...prev].slice(0, 200))
+    setPreferences((prev) => {
+      const cand = preferenceCandidateFromJudgment(j)
+      if (prev.some((p) => p.text === cand.text)) return prev
+      return [cand, ...prev].slice(0, 100)
+    })
+  }, [])
+  const savePreferenceById = useCallback((prefId: string) => {
+    setPreferences((prev) => {
+      const next = savePreference(prev, prefId)
+      upsertSavedPreferences(next.filter((p) => p.saved))
+      return next
+    })
+  }, [])
+  const precipitateJudgment = useCallback(
+    (judgmentId: string) => {
+      const j = judgments.find((x) => x.id === judgmentId)
+      if (!j) return
+      setPreferences((prev) => {
+        const next = precipitateJudgmentAsPreference(prev, j)
+        upsertSavedPreferences(next.filter((p) => p.saved))
+        return next
+      })
+    },
+    [judgments],
+  )
+
+  const value = useMemo
+<BusinessCaseContextValue>(
     () => ({
       cases,
       getCase,
       getProgress,
       getPendingConfirms,
+      getCaseConfirms,
       getConfirm,
       getProcessLogs,
       createCaseFromWizard,
@@ -2102,15 +2889,29 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       recordWordExportHint,
       dispatchDrillSeat,
       acceptDrillDualFile,
-      setCaseTeam,
       updateCasePlan,
+      recordDelegateDispatch,
+      setReceptionHandoff,
+      advancePlanChainStep,
+      seedPlanHandoffPass,
+      getKitChecklist,
+      toggleKitCheck,
+      seedKitComplete,
+      syncKitFromSeatStep,
+      syncKitFromDiff,
       enableMoreDepartments,
+      getJudgments,
+      getPreferences,
+      recordJudgment,
+      savePreferenceById,
+      precipitateJudgment,
     }),
     [
       cases,
       getCase,
       getProgress,
       getPendingConfirms,
+      getCaseConfirms,
       getConfirm,
       getProcessLogs,
       createCaseFromWizard,
@@ -2134,9 +2935,22 @@ export function BusinessCaseProvider({ children }: { children: ReactNode }) {
       recordWordExportHint,
       dispatchDrillSeat,
       acceptDrillDualFile,
-      setCaseTeam,
       updateCasePlan,
+      recordDelegateDispatch,
+      setReceptionHandoff,
+      advancePlanChainStep,
+      seedPlanHandoffPass,
+      getKitChecklist,
+      toggleKitCheck,
+      seedKitComplete,
+      syncKitFromSeatStep,
+      syncKitFromDiff,
       enableMoreDepartments,
+      getJudgments,
+      getPreferences,
+      recordJudgment,
+      savePreferenceById,
+      precipitateJudgment,
     ],
   )
 

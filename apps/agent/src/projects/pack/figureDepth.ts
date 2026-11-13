@@ -6,7 +6,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'context',
     label: '收权要上下文',
     script: '【附图】交底书里的示意图只说明结构。这里按说明书和权要出正式图号。',
-    tool: { name: 'gather_figure_context', preview: 'linked=draft_claims · figs_needed=4' },
+    tool: { name: 'gather_figure_context', preview: '已挂权要 · 需图 4' },
     structuredBody: [
       '**需图类型**',
       '- 系统框图（装置）',
@@ -19,7 +19,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'list',
     label: '图号清单',
     script: '【附图】图1–图4 清单已排；图注术语将校验 ⊆ 权项术语。',
-    tool: { name: 'list_needed_figures', preview: 'figures=4' },
+    tool: { name: 'list_needed_figures', preview: '附图 4' },
     structuredBody: [
       '| 图号 | 类型 | 对应权要 | 状态 |',
       '|------|------|----------|------|',
@@ -33,18 +33,18 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'sketch',
     label: '草图占位',
     script: '【附图】样机 SVG/占位图已挂；非真文生图。',
-    tool: { name: 'mock_sketch', preview: 'assets=fig-mock-01..03' },
+    tool: { name: 'mock_sketch', preview: '示意草图 ×3' },
     structuredBody: [
       '- fig-mock-01 系统框图占位',
-      '- fig-mock-02 流程图占位（步骤①–⑤）',
+      '- fig-mock-02 流程图占位（步骤 1–5）',
       '- fig-mock-03 插拔时序占位',
     ].join('\n'),
   },
   {
     id: 'terms',
     label: '图注术语校验',
-    script: '【附图】图注术语与权项差集检查：差集为空则 Pass。',
-    tool: { name: 'ocr_term_check', preview: 'diff=0 · Pass' },
+    script: '【附图】图注术语与权项差集检查：差集为空则通过。',
+    tool: { name: 'ocr_term_check', preview: '用语差 0 · 过' },
     structuredBody: [
       '| 图注术语 | 是否在权项/说明书 |',
       '|----------|-------------------|',
@@ -52,7 +52,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
       '| 联合代价 | ✓ |',
       '| 插拔事件 | ✓ |',
       '',
-      '**Validator 示意**：图注 ⊆ 权项术语 · **Pass**（差集空）',
+      '**样机校验示意**：图注 ⊆ 权项术语 · **通过**（差集空）',
     ].join('\n'),
   },
   {
@@ -65,7 +65,7 @@ export const FIGURE_DEPTH_STEPS: ExpertStepDef[] = [
     structuredBody: [
       '## 附图交付摘要',
       '',
-      '图1–3 必选已占位 · 图4 可选 · 术语校验 Pass。',
+      '图1–3 必选已占位 · 图4 可选 · 术语校验通过。',
       '',
       '**交给递交**：齐套挂图；确认后事件挂章。',
     ].join('\n'),
@@ -84,7 +84,7 @@ export const FIGURE_SAMPLE_ARTIFACT = `# 附图任务与冻图号（样机）
 
 ## 摘要
 
-按权要生成图1–4 清单，术语校验 Pass，待冻图号确认。
+按权要生成图1–4 清单，术语校验通过，待冻图号确认。
 
 ## 正文
 
@@ -94,8 +94,8 @@ export const FIGURE_SAMPLE_ARTIFACT = `# 附图任务与冻图号（样机）
 export const FIGURE_SAMPLE_WORKLOG_STEPS = `| 1 | 上下文 | 撰写 | 类型 | — |
 | 2 | 清单 | 图号 | 表 | — |
 | 3 | 草图 | mock | 占位 | — |
-| 4 | 术语校验 | 差集 | Pass | — |
-| 5 | 冻图号 | HITL | 待确认 | HITL |`
+| 4 | 术语校验 | 差集 | 通过 | — |
+| 5 | 冻图号 | 确认 | 待确认 | 确认 |`
 
 export const FIGURE_SAMPLE_WORKLOG_CHOICES = `| 先画后号 | 先号后冻 | 先号 | 可递交 |
 | 图注自由 | ⊆权项 | ⊆权项 | 可确认 |`

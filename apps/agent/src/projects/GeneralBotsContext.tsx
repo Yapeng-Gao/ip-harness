@@ -423,7 +423,7 @@ export function GeneralBotsProvider({ children }: { children: ReactNode }) {
 
         appendMessage(orch.id, {
           role: 'assistant',
-          content: `【协作任务 · done】已收齐检索与撰稿回执，任务完成。样机无真 LLM / 无写库。`,
+          content: `【协作任务 · done】已收齐检索与撰稿回执，任务完成。样机无真对话引擎 / 无存稿。`,
           meta: {
             collabKind: 'complete',
             taskId,

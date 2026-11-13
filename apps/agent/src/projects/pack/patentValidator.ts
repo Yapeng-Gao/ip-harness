@@ -137,7 +137,7 @@ export function mockValidate(
   if (d && !d.sampleWorklog.includes('步骤时间线')) {
     issues.push({
       code: 'dual_file.worklog',
-      message: '过程 worklog 缺步骤时间线 · 双文件不合格',
+      message: '办理摘记缺步骤时间线 · 双文件不合格',
       blocker: true,
     })
   }

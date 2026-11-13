@@ -1,6 +1,6 @@
 /**
- * 业务壳确认 → 中台 DomainCommand / flowProgress 投影。
- * 命令名只用 @ip/contracts 已有 DomainCommand；附图无独立键，挂在 draft_claims（L3 辅席）。
+ * 业务壳确认 → 中台写库命令 / flowProgress 投影。
+ * 命令名只用 @ip/contracts 已有类型；附图无独立键，挂在权要稿交接点（辅席）。
  * 一次确认写到「已通过」：提交后接 startReview，再 confirmQuote / approveHandoff。
  * 递交收尾是 authorizeFile。不按工作区分叉。闸门由 CommandMeta.syncPass 在同步路径上绕过。
  */
@@ -285,7 +285,7 @@ export async function runConfirmCommands(
     } catch (err) {
       return {
         ok: false,
-        message: err instanceof Error ? err.message : '中台写入失败',
+        message: err instanceof Error ? err.message : '案卷存稿失败',
         applied,
       }
     }
@@ -314,7 +314,7 @@ export async function runReturnCommands(
       if (cmd.type !== 'requestChanges') continue
       return {
         ok: false,
-        message: err instanceof Error ? err.message : '中台写入失败',
+        message: err instanceof Error ? err.message : '案卷存稿失败',
         applied,
       }
     }

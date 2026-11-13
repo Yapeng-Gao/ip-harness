@@ -303,9 +303,14 @@ export function AgentSessionSidebar() {
           {/* compose / catalog：会话·Agent 收进「更多」，勿与主入口同权 */}
           {!collapseInbox ? (
             <>
-              <NavLink to="/agent/agents" className={navCls}>
+              <NavLink
+                to="/agent/agents"
+                className={navCls}
+                data-testid="sidebar-catalog-bypass"
+                title="旁路 · 助手目录"
+              >
                 <Users className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
-                Agent
+                助手目录
               </NavLink>
               <NavLink to="/agent/sessions" end className={navCls}>
                 <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
@@ -347,7 +352,7 @@ export function AgentSessionSidebar() {
                       className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
                       data-testid="sidebar-catalog-secondary"
                     >
-                      <Users className="h-3.5 w-3.5 text-slate-400" /> Catalog · Agent
+                      <Users className="h-3.5 w-3.5 text-slate-400" /> 助手目录 · 旁路
                     </Link>
                     <div className="border-t border-slate-100" />
                   </>
@@ -371,7 +376,7 @@ export function AgentSessionSidebar() {
                   className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
                   data-testid="sidebar-projects-secondary"
                 >
-                  <FolderKanban className="h-3.5 w-3.5 text-slate-400" /> 项目（次级）
+                  <FolderKanban className="h-3.5 w-3.5 text-slate-400" /> 项目（旁路）
                 </Link>
                 <div className="border-t border-slate-100" />
                 <Link
@@ -379,7 +384,7 @@ export function AgentSessionSidebar() {
                   onClick={() => setOverflowOpen(false)}
                   className="focus-ring flex min-h-10 items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
                 >
-                  <Network className="h-3.5 w-3.5 text-slate-400" /> 运行说明
+                  <Network className="h-3.5 w-3.5 text-slate-400" /> 纸面运行说明
                 </Link>
               </div>
             )}
@@ -408,7 +413,7 @@ export function AgentSessionSidebar() {
             <p className="text-[11px] leading-relaxed text-slate-500">
               {isHome
                 ? '主区输入后点「开始办理」开工。'
-                : '目录 / 运行说明收起列表；办理请打开会话。'}
+                : '目录 / 纸面运行说明收起列表；办理请打开会话。'}
             </p>
             {statusCounts.needs_human > 0 ? (
               <Link
@@ -450,14 +455,14 @@ export function AgentSessionSidebar() {
                 className="block text-center text-[11px] text-slate-400 hover:text-slate-600 hover:underline"
                 data-testid="home-projects-text-link"
               >
-                项目模式（次级）
+                项目模式（旁路）
               </Link>
             </div>
           </div>
         ) : (
         <>
         <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-          <span className="nav-section !m-0 !px-0" title="会话历史 · 通用单聊 + 项目专家线程（列表页聚合）">
+          <span className="nav-section !m-0 !px-0" title="会话历史 · 旁路函件史（列表页聚合）">
             会话历史
           </span>
           <div className="relative" ref={filterMenuRef}>
@@ -497,7 +502,7 @@ export function AgentSessionSidebar() {
                     setFilterMenuOpen(false)
                   }}
                 >
-                  按 Agent…
+                  按助手…
                 </button>
                 <div className="border-t border-slate-100" />
                 <button
@@ -530,7 +535,7 @@ export function AgentSessionSidebar() {
         </div>
 
         <p className="px-3 pb-1 text-[10px] leading-snug text-slate-400">
-          通用单聊 + 项目专家线程 · 项目夹仍从「项目」进
+          旁路函件史 · 主办理在大厅→公司→部台
         </p>
 
         {!isSessionsList ? (
@@ -605,7 +610,7 @@ export function AgentSessionSidebar() {
                   className="btn-press focus-ring flex w-full items-center justify-between text-[11px] text-slate-600"
                   aria-expanded={agentFilterOpen}
                 >
-                  <span>Agent</span>
+                  <span>助手</span>
                   <ChevronDown className={`h-3 w-3 ${agentFilterOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {agentFilterOpen && (
@@ -614,7 +619,7 @@ export function AgentSessionSidebar() {
                     value={agentFilter}
                     onChange={(e) => setAgentFilter(e.target.value)}
                     className="focus-ring mt-1 w-full truncate rounded border border-slate-200 bg-white px-1.5 py-1 text-xs text-slate-700"
-                    aria-label="按 Agent 筛选"
+                    aria-label="按助手筛选"
                   >
                     <option value="all">全部（{sorted.length}）</option>
                     <option value="auto">自动匹配（{agentCounts.get('auto') ?? 0}）</option>

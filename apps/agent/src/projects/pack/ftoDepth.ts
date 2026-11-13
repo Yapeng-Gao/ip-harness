@@ -1,4 +1,4 @@
-/** FTO 席深度 · 自由实施+claim chart · ≠三性查新 · ≠维权 */
+/** FTO 席深度 · 自由实施+claim 对照图 · ≠三性查新 · ≠维权 */
 import type { ExpertStepDef } from '../types'
 
 export const FTO_DEPTH_STEPS: ExpertStepDef[] = [
@@ -6,7 +6,7 @@ export const FTO_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'features',
     label: '产品特征',
     script: '【FTO】产品特征 6 项。聚焦自由实施，非新颖性/三性。',
-    tool: { name: 'extract_fto_features', preview: 'features=6 · ≠novelty' },
+    tool: { name: 'extract_fto_features', preview: '特征 6 · ≠新颖性' },
     structuredBody: [
       '| # | 产品特征（落地） | 备注 |',
       '|---|------------------|------|',
@@ -24,7 +24,7 @@ export const FTO_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'hits',
     label: '障碍专利',
     script: '【FTO】障碍候选 4；高相关 CN114882901A。≠查新三性表。',
-    tool: { name: 'fto_hit_scan', preview: 'obstacle=4 · top=CN114882901A' },
+    tool: { name: 'fto_hit_scan', preview: '障碍 4 · 顶栏示意号' },
     structuredBody: [
       '| 公开号 | 相关特征 | 初判 |',
       '|--------|----------|------|',
@@ -38,7 +38,7 @@ export const FTO_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'chart',
     label: 'Claim chart',
     script: '【FTO】对高相关件已作 claim chart≥2（示意要素对照）。',
-    tool: { name: 'build_risk_matrix', preview: 'charts=2 · elements=mapped' },
+    tool: { name: 'build_risk_matrix', preview: '对照表 2 · 要素已映' },
     structuredBody: [
       '**Chart A · CN114882901A ↔ 产品**',
       '| 权要要素 | 产品对应 | 覆盖？ |',
@@ -49,14 +49,14 @@ export const FTO_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**Chart B · EP4123456A1**：接口要素部分命中特征3；无调度联动。',
       '',
-      '**Validator 示意**：高相关均有 chart · **Pass**',
+      '**样机校验示意**：高相关均有 对照图 · **通过**',
     ].join('\n'),
   },
   {
     id: 'matrix',
     label: '风险矩阵',
     script: '【FTO】2 红 / 1 黄 / 3 绿；红项建议设计规避或许可路径。',
-    tool: { name: 'build_risk_matrix', preview: 'red=2 · yellow=1 · green=3' },
+    tool: { name: 'build_risk_matrix', preview: '红 2 · 黄 1 · 绿 3' },
     structuredBody: [
       '| 特征 | 色 | 建议 |',
       '|------|----|------|',
@@ -69,8 +69,8 @@ export const FTO_DEPTH_STEPS: ExpertStepDef[] = [
   {
     id: 'report',
     label: '备忘确认 · 待交',
-    script: '【FTO】11_fto_memo 待确认；默认不写案；≠维权席。',
-    tool: { name: 'draft_fto_report', preview: 'file=11_fto_memo.md' },
+    script: '【FTO】FTO 备忘待确认；默认不写案；≠维权席。',
+    tool: { name: 'draft_fto_report', preview: 'FTO 备忘稿' },
     triggersHitl: true,
     hitlGate: 'approve_strategy',
     structuredBody: [
@@ -78,7 +78,7 @@ export const FTO_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**结论示意**：红 2 / 黄 1；递交前须业务确认规避或许可路径。',
       '',
-      '**声明**：非法律意见 · ≠三性查新 · ≠ expert-enforcement。',
+      '**声明**：非法律意见 · ≠三性查新 · ≠ 维权席。',
       '',
       '确认后仅样机备忘；默认不写真案卷。',
     ].join('\n'),
@@ -108,7 +108,7 @@ export const FTO_SAMPLE_WORKLOG_STEPS = `| 1 | 产品特征 | 落地 | 6项 | �
 | 2 | 障碍专利 | 扫描 | 4候选 | — |
 | 3 | Claim chart | 对照 | ≥2 | — |
 | 4 | 风险矩阵 | 分级 | 红黄绿 | — |
-| 5 | 备忘确认 | HITL | 待确认 | HITL |`
+| 5 | 备忘确认 | 确认 | 待确认 | 确认 |`
 
 export const FTO_SAMPLE_WORKLOG_CHOICES = `| 放行不问 | 红项须路径 | 分级 | 递交闸 |
 | 当三性查新 | 只做FTO | FTO | 纪律 |`

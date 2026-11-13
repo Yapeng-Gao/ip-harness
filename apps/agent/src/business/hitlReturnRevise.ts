@@ -27,9 +27,9 @@ export function buildHitlReviseScript(
       stepCount <= 1 ? 0 : Math.max(0, stepCount - 2),
     lines: [
       `【审校退回】${noteShort}`,
-      `【${seat}】已收到退回意见，开始按批注改一版（样机）。`,
+      `【${seat}】这版${noteShort || '依据不足'}，我会按你的意见改一版，修改内容请在成果区核对（样机）。`,
       `【${seat}】改稿要点：对照「${noteShort}」补强缺口；成果/过程将随下一步更新。`,
-      `【${seat}】本版改完。请再点「交卷请确认」提请确认（不会自动过闸）。`,
+      `【${seat}】修改意见已记录。完成修改后，请再点「交卷请确认」提请确认（不会自动过闸）。`,
     ],
   }
 }

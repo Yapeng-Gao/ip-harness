@@ -10,7 +10,7 @@ import { getProjectExpert } from '../../projects/experts'
  */
 export function HomeConversationRail() {
   const { threads, getProject } = useProjectFolder()
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
 
   const rows = useMemo(
     () =>

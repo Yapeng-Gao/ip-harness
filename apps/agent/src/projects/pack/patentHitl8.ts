@@ -15,49 +15,49 @@ export type PackHitlGate = {
   note: string
 }
 
-/** Authoritative Pack order: ①布局 … ⑧交易 */
+/** Authoritative Pack order: 布局…交易（确认点 1–8） */
 export const PACK_HITL8: PackHitlGate[] = [
   {
     n: 1,
     label: '布局拍板',
     seatId: 'expert-layout',
     gate: 'approve_strategy',
-    note: 'F3 · layout_plan Confirm',
+    note: '布局方案确认（样机）',
   },
   {
     n: 2,
     label: '立项',
     seatId: 'expert-intake',
     gate: 'go_nogo',
-    note: 'F4 · intake_quote + go_nogo',
+    note: '立项报价 + 立不立项（样机）',
   },
   {
     n: 3,
     label: '交底确认',
     seatId: 'expert-disclosure',
     gate: 'approve_strategy',
-    note: 'F5 · disclosure_pack',
+    note: '交底齐套确认（样机）',
   },
   {
     n: 4,
     label: '查新结论',
     seatId: 'expert-research',
     gate: 'approve_strategy',
-    note: 'F5 · research_report',
+    note: '查新结论确认（样机）',
   },
   {
     n: 5,
     label: '权项确认',
     seatId: 'expert-draft',
     gate: 'approve_strategy',
-    note: 'F5 · draft_claims',
+    note: '权项确认（样机）',
   },
   {
     n: 6,
     label: 'OA 策略',
     seatId: 'expert-oa',
     gate: 'approve_strategy',
-    note: 'F6 · prosecution_response · 仅已 file',
+    note: '审查答复策略 · 仅已递交后（样机）',
   },
   {
     n: 7,
@@ -65,7 +65,7 @@ export const PACK_HITL8: PackHitlGate[] = [
     seatId: 'expert-annuity',
     gate: 'pay_unlock',
     phase: true,
-    note: 'F7 后置可跑 · maintain_annuity 心智',
+    note: '年费/放弃后置可跑（样机）',
   },
   {
     n: 8,
@@ -73,7 +73,7 @@ export const PACK_HITL8: PackHitlGate[] = [
     seatId: 'expert-monetize',
     gate: 'confirm_quote',
     phase: true,
-    note: 'F8 后置可跑 · monetize_terms 心智',
+    note: '交易签约后置可跑（样机）',
   },
 ]
 

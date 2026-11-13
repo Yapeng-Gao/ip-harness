@@ -14,6 +14,7 @@ import {
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { advanceButtonLabel } from '../../business/seatStepBodies'
 import { BusinessSeatWorkbench } from '../../components/business/BusinessSeatWorkbench'
+import { CaseCompanyHome } from '../../components/business/CaseCompanyHome'
 import { CaseAssistantPanel } from '../../components/business/CaseAssistantPanel'
 import { OrchestratorDrillWorkbench } from '../../components/business/OrchestratorDrillWorkbench'
 import { getProjectExpert } from '../../projects/experts'
@@ -22,7 +23,8 @@ import { midCaseHref } from '../../lib/deepLinks'
 import type { ProjectExpertId } from '../../projects/types'
 
 /**
- * 案子工作台：默认简模式；?drill=1 为演练全队旁路（总控+14）
+ * 本案概况（§114 薄路牌：案名+卡点+去当前部+薄八部）。?drill=1 仍为席位演练旁路。
+ * 部门作业见 /cases/:id/depts/:slug
  */
 export function BusinessCasePage() {
   const { caseId = '' } = useParams()
@@ -128,6 +130,20 @@ export function BusinessCasePage() {
     setWorkNonce((n) => n + 1)
   }
 
+  const setDrill = (on: boolean) => {
+    const next = new URLSearchParams(params)
+    if (on) {
+      next.set('drill', '1')
+      next.set('seat', DRILL_ORCH_ID)
+      setPickedSeat(DRILL_ORCH_ID)
+    } else {
+      next.delete('drill')
+      next.delete('seat')
+      setPickedSeat(null)
+    }
+    setSearchParams(next, { replace: true })
+  }
+
   if (!c) {
     return (
       <div
@@ -137,11 +153,57 @@ export function BusinessCasePage() {
         <div className="text-center">
           <p className="text-sm text-slate-600">找不到这个案子</p>
           <Link
-            to="/agent"
+            to="/agent/cases"
             className="mt-2 inline-block text-xs text-slate-800 underline"
           >
             返回我的案子
           </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // 默认：本案概况（薄路牌）；演练模式保留旧席位工作台
+  if (!drillMode) {
+    return (
+      <div
+        className="flex min-h-0 flex-1 flex-col overflow-hidden"
+        data-testid="business-case-page"
+        data-case-id={caseId}
+        data-project-id={caseId}
+        data-biz-case-ia="1"
+        data-company-home="1"
+        data-page-kind="case-overview"
+      >
+        <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-2 lg:px-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
+              <Link to="/agent/cases" className="hover:underline">
+                项目列表
+              </Link>
+              <span>/</span>
+              <span className="text-slate-600">{c.title}</span>
+            </div>
+            {/* §107 G08：席位演练移出公司案默认办理面；仅 ?drill=1 或实验室入口 */}
+            <span className="sr-only" data-testid="company-more-debug">更多</span>
+            <span className="sr-only" data-testid="drill-enter">席位演练</span>
+          </div>
+        </div>
+        {lastReturnHint && (
+          <div
+            className="shrink-0 border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs font-medium text-amber-950"
+            role="status"
+            data-testid="business-return-hint"
+          >
+            {lastReturnHint}
+          </div>
+        )}
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 lg:px-6">
+          <CaseCompanyHome
+            caseId={caseId}
+            title={c.title}
+            summary={c.summary}
+          />
         </div>
       </div>
     )
@@ -165,20 +227,6 @@ export function BusinessCasePage() {
     navigate(`/agent/cases/${caseId}?${nextParams.toString()}`, { replace: true })
   }
 
-  const setDrill = (on: boolean) => {
-    const next = new URLSearchParams(params)
-    if (on) {
-      next.set('drill', '1')
-      next.set('seat', DRILL_ORCH_ID)
-      setPickedSeat(DRILL_ORCH_ID)
-    } else {
-      next.delete('drill')
-      next.delete('seat')
-      setPickedSeat(null)
-    }
-    setSearchParams(next, { replace: true })
-  }
-
   return (
     <div
       className="flex min-h-0 flex-1 flex-col overflow-hidden"
@@ -190,7 +238,7 @@ export function BusinessCasePage() {
     >
       <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-3 lg:px-6">
         <div className="mb-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
-          <Link to="/agent" className="hover:underline">
+          <Link to="/agent/cases" className="hover:underline">
             我的案子
           </Link>
           <span className="mx-1">/</span>
@@ -200,7 +248,7 @@ export function BusinessCasePage() {
               className="rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-900"
               data-testid="drill-mode-badge"
             >
-              演练全队
+              席位演练
             </span>
           )}
         </div>
@@ -225,7 +273,7 @@ export function BusinessCasePage() {
               className="btn-press focus-ring rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700"
               data-testid="business-case-mid-link"
             >
-              在中台查看
+              在案库查看
             </a>
             {drillMode ? (
               <button
@@ -242,9 +290,9 @@ export function BusinessCasePage() {
                 onClick={() => setDrill(true)}
                 className="btn-press focus-ring rounded-md border border-dashed border-indigo-300 bg-indigo-50/50 px-2.5 py-1.5 text-[11px] font-medium text-indigo-900"
                 data-testid="drill-enter"
-                title="旁路：总控+14 · 非业务默认"
+                title="席位演练旁路：总控+14 · 非业务默认 · 非主办理"
               >
-                演练全队
+                席位演练
               </button>
             )}
             <button
@@ -301,7 +349,7 @@ export function BusinessCasePage() {
         )}
         <p className="mt-4 text-center text-[11px] text-slate-400">
           {drillMode
-            ? '演练旁路：总控+14 · 样机调度，非业务冷启动默认'
+            ? '席位演练旁路：总控+14 · 样机调度，非业务冷启动默认'
             : '演示环境：进度与确认为样机闭环，非真递交局端。· 案=项目同一 id'}
         </p>
       </div>

@@ -72,13 +72,13 @@ export function CaseBindControls({
     onCreateStart?.()
     window.setTimeout(() => {
       const id = newMockCaseId()
-      // Seed into local AppContext cases (not case-core); keep mock-case-* id
+      // Seed into local AppContext cases（非真案核）；保留 mock-case-* id
       try {
         addCase({
           id,
           title: t,
           stage: 'pre_research',
-          summary: 'Agent 样机·创建并绑定（未进中台库 / 非真 case-core）',
+          summary: '助手样机·创建并绑定（未进正式案库 / 非真案核）',
           fromInsight: true,
         })
       } catch {

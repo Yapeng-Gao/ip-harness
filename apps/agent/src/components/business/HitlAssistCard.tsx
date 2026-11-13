@@ -69,6 +69,9 @@ export function HitlAssistCard({
         className="mt-3 rounded-lg border border-slate-200/80 bg-white/70 px-2.5 py-1.5 text-[11px] text-slate-600"
         data-testid="hitl-assist-self-check"
       >
+        <span className="mr-1 rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] font-medium text-slate-600">
+          出部质检
+        </span>
         {owner}自检 · {review.ownerSelfCheck}
       </p>
 

@@ -171,7 +171,7 @@ export function GeneralBotChatPane({
               disabled={collabRunBusy}
               className="btn-press focus-ring ml-auto inline-flex min-h-8 items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-[12px] font-semibold text-indigo-800 hover:bg-indigo-100 disabled:opacity-50"
               data-testid="general-bot-collab-loop"
-              title="编排 → 检索 → 撰稿 → 汇总（样机自发，无用户转发）"
+              title="调度 → 检索 → 撰稿 → 汇总（样机自发，无用户转发）"
             >
               <GitBranch className="h-3.5 w-3.5" aria-hidden />
               {collabRunBusy ? '协作中…' : '演示协作任务'}

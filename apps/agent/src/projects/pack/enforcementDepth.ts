@@ -7,7 +7,7 @@ export const ENFORCEMENT_DEPTH_STEPS: ExpertStepDef[] = [
     label: '特征映射',
     script:
       '【维权】权要特征 6 项已映射到被控产品（mock）。≠ FTO 自由实施分析。',
-    tool: { name: 'claim_chart_compare', preview: 'features=6 · ≠fto' },
+    tool: { name: 'claim_chart_compare', preview: '特征 6 · ≠FTO' },
     structuredBody: [
       '| # | 权要特征 | 被控产品对应 |',
       '|---|----------|--------------|',
@@ -25,7 +25,7 @@ export const ENFORCEMENT_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'compare',
     label: '覆盖比对',
     script: '【维权】全面覆盖 4/6 · 缺口在热插拔联动与降级窗口。',
-    tool: { name: 'stability_score', preview: 'cover=4/6 · gaps=2' },
+    tool: { name: 'stability_score', preview: '覆盖 4/6 · 缺口 2' },
     structuredBody: [
       '| 结论项 | 值 |',
       '|--------|-----|',
@@ -40,7 +40,7 @@ export const ENFORCEMENT_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'stability',
     label: '稳定性评分',
     script: '【维权】稳定性 0.64 · 建议补强从权后再评估主张强度。',
-    tool: { name: 'stability_score', preview: 'stability=0.64' },
+    tool: { name: 'stability_score', preview: '稳定性 0.64' },
     structuredBody: [
       '| 维度 | 分 | 备注 |',
       '|------|----|------|',
@@ -49,7 +49,7 @@ export const ENFORCEMENT_DEPTH_STEPS: ExpertStepDef[] = [
       '| 抗无效 | 0.62 | 依赖查新三联 |',
       '| **综合** | **0.64** | 中等偏弱 |',
       '',
-      '**Validator 示意**：比对表与稳定性字段齐 · **Pass**',
+      '**样机校验示意**：比对表与稳定性字段齐 · **通过**',
     ].join('\n'),
   },
   {
@@ -58,7 +58,7 @@ export const ENFORCEMENT_DEPTH_STEPS: ExpertStepDef[] = [
     script: '【维权】漏洞清单已封：回流 F3 布局补从权/子案。',
     tool: {
       name: 'draft_enforcement_brief',
-      preview: 'gaps=2 · envelope→layout',
+      preview: '缺口 2 · 回流布局',
     },
     structuredBody: [
       '| 漏洞 | 建议回流动作 |',
@@ -73,10 +73,10 @@ export const ENFORCEMENT_DEPTH_STEPS: ExpertStepDef[] = [
     id: 'flywheel',
     label: '回流布局 · 待确认',
     script:
-      '【维权】17_enforcement_brief 待确认后回流布局。勿借 watch；≠ expert-fto。',
+      '【维权】维权简报待确认后回流布局。勿借监控台；≠ FTO 席。',
     tool: {
       name: 'draft_enforcement_brief',
-      preview: 'flywheel→expert-layout · ≠watch',
+      preview: '回流布局席 · ≠监控',
     },
     triggersHitl: true,
     structuredBody: [
@@ -86,7 +86,7 @@ export const ENFORCEMENT_DEPTH_STEPS: ExpertStepDef[] = [
       '',
       '**回流 F3**：补强热插拔联动与降级从权。',
       '',
-      '**声明**：≠ FTO · ≠ STAGE watch · 提案键勿写 packages。',
+      '**声明**：≠ FTO · ≠ 监控台 · 维权简报不假装已入库。',
     ].join('\n'),
   },
 ]
@@ -115,7 +115,7 @@ export const ENFORCEMENT_SAMPLE_WORKLOG_STEPS = `| 1 | 特征映射 | 权要 | 6
 | 2 | 覆盖比对 | 产品 | 4/6 | — |
 | 3 | 稳定性 | 评分 | 0.64 | — |
 | 4 | 漏洞信封 | 缺口 | 2条 | — |
-| 5 | 回流布局 | 飞轮 | 待确认 | HITL |`
+| 5 | 回流布局 | 飞轮 | 待确认 | 确认 |`
 
 export const ENFORCEMENT_SAMPLE_WORKLOG_CHOICES = `| 合并FTO | 独立席 | 独立 | ≠fto |
 | 借watch告警 | 只回流布局 | 飞轮 | 纪律 |`

@@ -13,7 +13,7 @@ export const BUSINESS_SEAT_LABEL: Record<string, string> = {
   'expert-research': '查新',
   'expert-intake': '立项',
   'expert-disclosure': '交底',
-  'expert-draft': '撰写',
+  'expert-draft': '申请',
   'expert-draft-spec': '说明书',
   'expert-figure': '附图',
   'expert-filing': '递交',
@@ -24,18 +24,18 @@ export const BUSINESS_SEAT_LABEL: Record<string, string> = {
   'expert-mining': '挖掘',
   'expert-layout': '布局',
   'expert-fto': '自由实施（FTO）',
-  'expert-annuity': '年费',
+  'expert-annuity': '维护',
   'expert-valuation': '价值',
-  'expert-monetize': '转化',
+  'expert-monetize': '复盘',
   'expert-enforcement': '维权',
 }
 
 /** 默认 7 业务专家席（不含案子助手） */
-/** 主链节点顺序：立项 → 交底 → 查新 → 撰写 → 附图 → 递交 → 审查答复。查新在交底后、说明书后再各做一轮。 */
+/** 历史辅链七席（非真源八部）：交底 → 查新 → 立项 → 申请撰写 → 附图 → 递交 → 审查答复。申请后可再开一轮查新再进附图。 */
 export const BUSINESS_DEFAULT_SEAT_IDS: ProjectExpertId[] = [
-  'expert-intake',
   'expert-disclosure',
   'expert-research',
+  'expert-intake',
   'expert-draft',
   'expert-figure',
   'expert-filing',
@@ -99,32 +99,32 @@ export type BusinessStageDef = {
 export const BUSINESS_STAGES: BusinessStageDef[] = [
   {
     id: 'prepare',
-    title: '准备',
-    blurb: '弄清要不要做、方向对不对',
-    seatIds: [],
-    advanceCta: '跳过准备，开始立项',
-    confirmCta: '继续',
+    title: '交底',
+    blurb: '把技术事实说清楚，缺项追问补齐',
+    seatIds: ['expert-disclosure'],
+    advanceCta: '继续交底',
+    confirmCta: '确认交底',
   },
   {
     id: 'intake',
-    title: '立项',
-    blurb: '决定做不做、做到哪',
-    seatIds: ['expert-intake'],
-    advanceCta: '继续立项',
-    confirmCta: '确认立项',
+    title: '查新与立项',
+    blurb: '查新结论 → 决定做不做、做到哪',
+    seatIds: ['expert-research', 'expert-intake'],
+    advanceCta: '继续查新/立项',
+    confirmCta: '确认查新/立项',
+    requires: ['prepare'],
   },
   {
     id: 'drafting',
     title: '撰写申请',
-    blurb: '交底（含示意图）→ 查新 → 撰写 → 再查新 → 正式附图',
+    blurb: '撰写 →（可再查新）→ 正式附图',
     seatIds: [
-      'expert-disclosure',
-      'expert-research',
       'expert-draft',
+      'expert-research',  // 撰写后再查一轮
       'expert-figure',
     ],
     advanceCta: '继续撰写',
-    confirmCta: '确认交底/权利要求',
+    confirmCta: '确认权利要求/附图',
     requires: ['intake'],
   },
   {
@@ -184,14 +184,14 @@ export const CONFIRM_META: Record<
     preparedBy: '立项',
   },
   disclosure_ready: {
-    stageId: 'drafting',
+    stageId: 'prepare',
     seatId: 'expert-disclosure',
     preparedBy: '交底',
   },
   claims_ready: {
     stageId: 'drafting',
     seatId: 'expert-draft',
-    preparedBy: '撰写',
+    preparedBy: '申请',
   },
   figures_ready: {
     stageId: 'drafting',
@@ -219,6 +219,24 @@ export function businessSeatLabel(id: string): string {
   return BUSINESS_SEAT_LABEL[id] ?? id
 }
 
+/** 01c G1 薄 · 主链负责人真人感显示名（职能短名仍用 businessSeatLabel） */
+const SEAT_PERSONA_NAME: Partial<Record<string, string>> = {
+  'expert-disclosure': '林交底',
+  'expert-draft': '顾知远',
+  'expert-oa': '沈答复',
+}
+
+export function businessSeatPersonaName(id: string): string | null {
+  return SEAT_PERSONA_NAME[id] ?? null
+}
+
+/** 右栏/移交：有人设名则「人名 · 岗」，否则岗名 */
+export function businessSeatDisplayName(id: string): string {
+  const persona = businessSeatPersonaName(id)
+  const job = businessSeatLabel(id)
+  return persona ? `${persona} · ${job}` : job
+}
+
 export type NodeExpert = { id: ProjectExpertId; label: string }
 
 /**
@@ -238,11 +256,11 @@ export function expertsInNode(seatId: string): NodeExpert[] {
 export type TeamRosterRow = {
   id: ProjectExpertId
   label: string
-  /** 仅多人节点出现，用来在组队列表里分组 */
+  /** 仅多人节点出现，用来在编制席列表里分组 */
   group?: string
 }
 
-/** 组队名单：单人节点一行用节点名；多人节点按专家勾选。 */
+/** 编制席名单：单人节点一行用节点名；多人节点按专家勾选。 */
 export function teamRosterRows(seatIds: ProjectExpertId[]): TeamRosterRow[] {
   const rows: TeamRosterRow[] = []
   const seen = new Set<string>()
@@ -346,17 +364,17 @@ export type MainChainSnapshot = {
 
 /**
  * 确认后落到哪一节点。researchPass 用确认前的值：
- * 交底 → 查新；查新第 1 轮 → 撰写；撰写 → 再查新；查新第 2 轮 → 附图。
+ * 交底 → 查新；查新第 1 轮 → 立项；立项 → 撰写；撰写 → 再查新；查新第 2 轮 → 附图。
  */
 export function nextSeatAfterConfirm(
   kind: BusinessConfirmKind,
   researchPass: ResearchPass = 0,
 ): ProjectExpertId {
-  if (kind === 'go_nogo') return 'expert-disclosure'
   if (kind === 'disclosure_ready') return 'expert-research'
   if (kind === 'research_ready') {
-    return researchPass < 1 ? 'expert-draft' : 'expert-figure'
+    return researchPass < 1 ? 'expert-intake' : 'expert-figure'
   }
+  if (kind === 'go_nogo') return 'expert-draft'
   if (kind === 'claims_ready') return 'expert-research'
   if (kind === 'figures_ready') return 'expert-filing'
   if (kind === 'file_authorize') return 'expert-oa'
@@ -378,17 +396,18 @@ export function applyMainChainConfirm(
   let oaRound = prog.oaRound
   let researchPass = normalizeResearchPass(prog.researchPass)
 
-  if (kind === 'go_nogo') {
+  if (kind === 'disclosure_ready') {
     if (!completedStages.includes('prepare')) completedStages.push('prepare')
-    if (!completedStages.includes('intake')) completedStages.push('intake')
-    stageId = 'drafting'
-  } else if (kind === 'disclosure_ready') {
-    stageId = 'drafting'
+    stageId = 'intake'
     if (researchPass < 1) {
       doneSeatIds = doneSeatIds.filter((id) => id !== 'expert-research')
     }
   } else if (kind === 'research_ready') {
     researchPass = researchPass < 1 ? 1 : 2
+    stageId = researchPass < 2 ? 'intake' : 'drafting'
+  } else if (kind === 'go_nogo') {
+    if (!completedStages.includes('prepare')) completedStages.push('prepare')
+    if (!completedStages.includes('intake')) completedStages.push('intake')
     stageId = 'drafting'
   } else if (kind === 'claims_ready') {
     doneSeatIds = doneSeatIds.filter((id) => id !== 'expert-research')
@@ -397,6 +416,7 @@ export function applyMainChainConfirm(
   } else if (kind === 'figures_ready') {
     const ready =
       doneSeatIds.includes('expert-disclosure') &&
+      doneSeatIds.includes('expert-intake') &&
       doneSeatIds.includes('expert-draft') &&
       doneSeatIds.includes('expert-figure') &&
       researchPass >= 2

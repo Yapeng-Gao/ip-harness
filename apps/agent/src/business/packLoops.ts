@@ -1,7 +1,7 @@
 /**
- * Knife1 · F5 内循环 + 跨席环边；Knife2 · F6 OA N 通；Knife3 · F9→F3 飞轮（样机 mock）
- * 权威：patent-pack-design §5.3 / §5.5 · agent-pack-loops-roadmap Knife1–3
- * ≠ FTO：维权席 = expert-enforcement，勿用 expert-fto
+ * 席位样机旁路 · 过程回流脚本（样机 mock；非一期主办理）
+ * 内循环 + 跨席退回；审查答复多通；布局漏洞回流待拍板
+ * 非正式 FTO：维权席 ≠ FTO 辅席
  */
 import type { ProjectExpertId } from '../projects/types'
 import { businessSeatLabel, type BusinessConfirmKind } from './businessSeats'
@@ -54,12 +54,12 @@ export type ProcessLogEntry = {
   kind: ProcessLogKind
   /** 人话（业务面可上屏） */
   message: string
-  /** 专家台补充一行（仍禁 validator 英文黑话） */
+  /** 遗留过程旁路补充一行（仍禁 validator 英文黑话） */
   detail?: string
   seatId?: ProjectExpertId
   attempt?: number
   maxAttempts?: number
-  /** 灰显：HITL④ 不乐观回流示意 */
+  /** 灰显：查新不乐观回流示意 */
   muted?: boolean
   /** OA 第 N 通 */
   oaRound?: number
@@ -174,7 +174,7 @@ export function selfHealScript(
   return lines
 }
 
-/** HITL③/⑤ 驳回带批注重跑 */
+/** 交底/申请驳回带批注重跑 */
 export function hitlReturnLog(
   caseId: string,
   kind: BusinessConfirmKind,
@@ -246,7 +246,7 @@ export function seatFeedbackLog(
   }
 }
 
-/** HITL④ 不乐观 → 回流示意（可灰） */
+/** 查新不乐观 → 回流示意（可灰） */
 export function researchPessimisticLog(caseId: string): ProcessLogEntry {
   return {
     id: processLogId('pes'),
@@ -255,12 +255,12 @@ export function researchPessimisticLog(caseId: string): ProcessLogEntry {
     kind: 'research_pessimistic',
     seatId: 'expert-research',
     message: '查新不乐观 · 建议换方向或调布局（示意）',
-    detail: 'HITL④ 不乐观回流 F2/F3 · 灰入口（可与飞轮串联）',
+    detail: '查新不乐观 · 建议调方向或布局（示意灰入口）',
     muted: true,
   }
 }
 
-/** 立项低分回流 F4→F2（灰示意 · 可与 Knife1 灰入口复用） */
+/** 立项低分回流（灰示意 · 可与内循环灰入口串联） */
 export function intakeLowScoreLog(caseId: string): ProcessLogEntry {
   return {
     id: processLogId('low'),
@@ -269,7 +269,7 @@ export function intakeLowScoreLog(caseId: string): ProcessLogEntry {
     kind: 'intake_low_score',
     seatId: 'expert-intake',
     message: '立项评分偏低 · 建议放弃或换方向（示意）',
-    detail: 'F4→F2 低分回流 · 灰入口（评分<50 mock）',
+    detail: '立项评分偏低回流 · 灰入口（样机）',
     muted: true,
   }
 }
@@ -283,7 +283,7 @@ export function monitorEventLog(caseId: string): ProcessLogEntry {
     kind: 'monitor_event',
     seatId: 'expert-enforcement',
     message: '监测事件 · 竞品进入空白点（mock）',
-    detail: '无效维权顾问 · 无真爬虫 · ≠ FTO（expert-fto）',
+    detail: '维权监测示意 · 无真爬虫 · 非正式 FTO 意见',
   }
 }
 
@@ -300,7 +300,7 @@ export function layoutGapReportLog(caseId: string): ProcessLogEntry {
   }
 }
 
-/** F9→F3 回流信封到达布局策略师 */
+/** 布局漏洞回流信封到达布局席 */
 export function layoutFlywheelLog(caseId: string): ProcessLogEntry {
   return {
     id: processLogId('fly'),
@@ -309,11 +309,11 @@ export function layoutFlywheelLog(caseId: string): ProcessLogEntry {
     kind: 'layout_flywheel',
     seatId: 'expert-layout',
     message: '布局漏洞回流 · 信封已达布局策略师',
-    detail: 'F9→F3 飞轮 · expert-enforcement → expert-layout（≠ expert-fto）',
+    detail: '维权监测 → 布局席待拍板（非正式 FTO）',
   }
 }
 
-/** 布局待拍板（HITL①） */
+/** 布局待拍板（确认点） */
 export function layoutPendingLog(caseId: string): ProcessLogEntry {
   return {
     id: processLogId('lay'),
@@ -322,12 +322,12 @@ export function layoutPendingLog(caseId: string): ProcessLogEntry {
     kind: 'layout_pending',
     seatId: 'expert-layout',
     message: '布局待拍板 · 请确认布局调整',
-    detail: 'HITL① 布局方案 v(n+1) · 补局建议已就绪',
+    detail: '布局方案 v(n+1) · 补局建议已就绪',
   }
 }
 
 /**
- * F9→F3 飞轮故事线：监测 → 漏洞报告 → 回流信封 → 布局待拍板
+ * 布局回流故事线：监测 → 漏洞报告 → 回流信封 → 布局待拍板
  * 串联灰入口：查新不乐观 + 立项低分
  */
 export function layoutFlywheelScript(caseId: string): ProcessLogEntry[] {
@@ -467,7 +467,7 @@ export function oaStrategyPrepScript(
       oaRound: round,
       oaReason: reason,
       message: `第 ${round} 通 · 答复策略草案已就绪 · 待确认答复策略`,
-      detail: 'HITL⑥ 策略确认闸',
+      detail: '答复策略确认闸',
     },
   ]
 }

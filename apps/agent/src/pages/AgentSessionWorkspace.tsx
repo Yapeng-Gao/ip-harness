@@ -14,7 +14,7 @@ import {
   firstGuardrailMessage,
   hasVerifiableResearchHitsFromSession,
 } from '@shared/domain/guardrails'
-import { COMMAND_LABELS } from '@shared/domain/commands'
+import { domainCommandOfficeLabel } from '../projects/domainCommandLabels'
 import { setLastAgentSessionId } from '@shared/utils/lastVisited'
 import { agentDisplayLabel } from '@shared/hooks/useAgentDisplayLabel'
 import { SessionConfirmBar } from '../components/session/SessionConfirmBar'
@@ -649,12 +649,12 @@ export function AgentSessionWorkspace() {
                             {
                               actor: 'agent',
                               agentId: resolvedAgentId,
-                              detail: 'file_oa_response → FileResponse',
+                              detail: '递交答复归档示意',
                             },
                           )
                           showToast(
                             r.ok
-                              ? `已写入领域：${COMMAND_LABELS.fileResponse} · ${r.message}`
+                              ? `已写入领域：${domainCommandOfficeLabel('fileResponse')} · ${r.message}`
                               : r.message,
                             r.ok && !!sess.caseId,
                           )
@@ -742,12 +742,12 @@ export function AgentSessionWorkspace() {
                             {
                               actor: 'agent',
                               agentId: resolvedAgentId,
-                              detail: 'file_oa_response → FileResponse',
+                              detail: '递交答复归档示意',
                             },
                           )
                           showToast(
                             r.ok
-                              ? `已写入领域：${COMMAND_LABELS.fileResponse} · ${r.message}`
+                              ? `已写入领域：${domainCommandOfficeLabel('fileResponse')} · ${r.message}`
                               : r.message,
                             r.ok && !!sess.caseId,
                           )

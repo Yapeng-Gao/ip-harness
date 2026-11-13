@@ -41,17 +41,48 @@ export type OrgDept = {
   blurb: string
 }
 
-/** 主链 8 部（布局 → 立项 → 交底 → 查新 → 撰写 → 附图 → 递交 → 审查答复） */
+/** 一期八部真源（①立项→②激发→③挖掘→④交底→⑤申请→⑥答复→⑦维护→⑧复盘）；查新/附图/递交等进「更多」辅链 */
 export const MAIN_CHAIN_DEPT_IDS: OrgDeptId[] = [
-  'dept-layout',
   'dept-intake',
+  'dept-inspire',
+  'dept-mining',
   'dept-disclosure',
-  'dept-research',
   'dept-draft',
-  'dept-figure',
-  'dept-filing',
   'dept-oa',
+  'dept-annuity',
+  'dept-monetize',
 ]
+
+
+/** URL slug（/cases/:id/depts/:slug）↔ OrgDeptId */
+export const DEPT_SLUG_BY_ID: Record<OrgDeptId, string> = {
+  'dept-landscape': 'landscape',
+  'dept-competitor': 'competitor',
+  'dept-inspire': 'inspire',
+  'dept-mining': 'mining',
+  'dept-layout': 'layout',
+  'dept-intake': 'intake',
+  'dept-disclosure': 'disclosure',
+  'dept-research': 'research',
+  'dept-draft': 'draft',
+  'dept-figure': 'figure',
+  'dept-filing': 'filing',
+  'dept-oa': 'oa',
+  'dept-annuity': 'annuity',
+  'dept-monetize': 'monetize',
+  'dept-enforcement': 'enforcement',
+}
+
+export function deptIdFromSlug(slug: string): OrgDeptId | undefined {
+  const hit = (Object.entries(DEPT_SLUG_BY_ID) as [OrgDeptId, string][]).find(
+    ([, s]) => s === slug,
+  )
+  return hit?.[0]
+}
+
+export function deptSlug(id: OrgDeptId): string {
+  return DEPT_SLUG_BY_ID[id]
+}
 
 export const ORG_GROUP_LABEL: Record<OrgDeptGroup, string> = {
   main: '主作业链',
@@ -66,21 +97,30 @@ const PRE_LABEL: Record<string, string> = {
   'dept-mining': '专利挖掘部',
 }
 
+/** 对外名：对齐一期八部真源（大厅 / 产品逻辑）；辅链保留旧职名微调 */
+const MAIN_LABEL: Record<string, string> = {
+  'dept-draft': '申请部',
+  'dept-oa': '答复部',
+  'dept-filing': '递交与程序部',
+  'dept-research': '查新部',
+  'dept-figure': '附图部',
+}
+
 const BLURB: Record<string, string> = {
   'dept-landscape': '定赛道、玩家分层、找空白点',
   'dept-competitor': '竞对雷达与到期预警',
-  'dept-inspire': '方向池与可专利过滤',
-  'dept-mining': '挖掘七问、可专利点',
+  'dept-inspire': '问题→路径→方案选题',
+  'dept-mining': '创新点 + 拆案排案',
   'dept-layout': '引用链、公开时点、覆盖检查',
-  'dept-intake': '区别特征、三轴评分、范围报价',
+  'dept-intake': '创建项目 · 方向一句话 · 状态确认',
   'dept-disclosure': '六段采集、缺项追问、实施例',
   'dept-research': '检索式、覆盖度复核、三性意见',
-  'dept-draft': '特征表、权要、说明书、四类质检',
+  'dept-draft': '理解→申不申→权项说明书→递交过线',
   'dept-figure': '图号清单、草图、图注校对',
-  'dept-filing': '齐套检查、形式审查、期限台账',
-  'dept-oa': '理由分类、创造性子席、答复起草',
-  'dept-annuity': '逐年缴费提醒与缴费建议',
-  'dept-monetize': '转化路径与许可要点',
+  'dept-filing': '申请包齐套、递交确认、回执登记',
+  'dept-oa': '争点→策略→答复起草与本轮递交',
+  'dept-annuity': '确权后期限 · 年费 · 明白账',
+  'dept-monetize': '年末/阶段复盘报告 · 维持或放弃',
   'dept-enforcement': '无效与维权策略',
 }
 
@@ -88,7 +128,7 @@ const BLURB: Record<string, string> = {
 const POST_DEPTS: OrgDept[] = [
   {
     id: 'dept-annuity',
-    label: '年费部',
+    label: '维护部',
     group: 'post',
     leadSeatId: 'expert-annuity',
     // Pack 16 的「价值评估」与「年费」合成一个交卷单位（agent-case-ia-v2 §1）
@@ -105,10 +145,23 @@ const POST_DEPTS: OrgDept[] = [
   },
   {
     id: 'dept-monetize',
-    label: '成果转化部',
+    label: '复盘部',
     group: 'post',
     leadSeatId: 'expert-monetize',
-    peers: [],
+    peers: [
+      {
+        id: 'peer:expert-monetize:report',
+        label: '复盘报告',
+        kind: 'placeholder',
+        leadSeatId: 'expert-monetize',
+      },
+      {
+        id: 'peer:expert-monetize:hold',
+        label: '维持放弃',
+        kind: 'placeholder',
+        leadSeatId: 'expert-monetize',
+      },
+    ],
     blurb: BLURB['dept-monetize'],
   },
   {
@@ -124,7 +177,7 @@ const POST_DEPTS: OrgDept[] = [
 function fromRoster(d: DeptDef, group: OrgDeptGroup): OrgDept {
   return {
     id: d.id as OrgDeptId,
-    label: PRE_LABEL[d.id] ?? d.label,
+    label: PRE_LABEL[d.id] ?? MAIN_LABEL[d.id] ?? d.label,
     group,
     leadSeatId: d.leadSeatId,
     peers: d.peers,
@@ -135,7 +188,7 @@ function fromRoster(d: DeptDef, group: OrgDeptGroup): OrgDept {
 /** 15 个有席位的部门（FTO 为辅席、案子助手不计部门） */
 export const ORG_DEPTS: OrgDept[] = [
   ...BUSINESS_DEFAULT_DEPT_IDS.map((d) => fromRoster(d, 'main')),
-  fromRoster(LAYOUT_DEPT, 'main'),
+  fromRoster(LAYOUT_DEPT, 'pre'),
   ...PREP_DEPTS.map((d) => fromRoster(d, 'pre')),
   ...POST_DEPTS,
 ]
@@ -158,19 +211,23 @@ export const POST_DEPTS_LIST: OrgDept[] = ORG_DEPTS.filter(
   (d) => d.group === 'post',
 )
 
+/** 席位能力挂接项（样机）。name＝目录级能力名；prompt 仅样机备忘，非产品真源。 */
 export type ExpertSkill = {
   id: string
   name: string
   level: 'core' | 'optional'
   enabled: boolean
-  /** 提示词：真正影响该 skill 执行口径的那段话 */
+  /** 样机备忘；产品真源在各产品开发能力目录 */
   prompt: string
-  /** 能力档 1–5，用于养成面板 */
+  /** 养成样机用；编制 UI 不主推 */
   capability: 1 | 2 | 3 | 4 | 5
 }
 
+/** 编制席位 id：花名册 ProjectExpertId，或本机加人/请来的 org 席 */
+export type OrgSeatId = ProjectExpertId | string
+
 export type ExpertConfig = {
-  seatId: ProjectExpertId
+  seatId: OrgSeatId
   /** 覆盖性 role 文案；空则回落到 expert.description */
   role: string
   skills: ExpertSkill[]
@@ -178,6 +235,25 @@ export type ExpertConfig = {
   notes: string
   /** 养成：累计经验，决定 level */
   xp: number
+  /** 自建/请来专家显示名（花名册席可空） */
+  displayName?: string
+}
+
+/** 部门内本机加的专家（含「请来」示意岗） */
+export type OrgExtraExpert = {
+  id: string
+  name: string
+  /** 来自 peers 的请来，稳定 id */
+  fromPeerId?: string
+}
+
+/** 公司能力库条目 · 编制挂接真源（样机本机） */
+export type OrgCapability = {
+  id: string
+  name: string
+  /** 空＝全公司通用；有值＝主要挂该部 */
+  deptId?: OrgDeptId
+  note?: string
 }
 
 export type OrgDeptConfig = {
@@ -185,6 +261,8 @@ export type OrgDeptConfig = {
   /** 覆盖 label；空则用 canonical */
   label: string
   enabled: boolean
+  /** 本机加人 / 请来的专家 */
+  extraExperts: OrgExtraExpert[]
 }
 
 function skill(
@@ -204,7 +282,7 @@ const DEFAULT_SKILLS: ExpertSkill[] = [
   skill('sk-style', '行文风格对齐', 'optional', '沿用本案已有稿件的术语与句式；同一技术特征全篇只用一个叫法。', 2),
 ]
 
-export function defaultSkillsFor(seatId: ProjectExpertId): ExpertSkill[] {
+export function defaultSkillsFor(seatId: OrgSeatId): ExpertSkill[] {
   if (seatId === 'expert-research') {
     return [
       skill('sk-country', '国家库利用', 'core', '优先覆盖中、美、欧、日、韩五局；小语种同族用机翻后标原文出处。', 4),

@@ -7,11 +7,11 @@ import type {
   PatentCase,
 } from '@shared/types'
 import {
-  COMMAND_LABELS,
   auditSchemaVersionLabel,
   isLegacyAudit,
   type AuditEntry,
 } from '@shared/domain/commands'
+import { domainCommandOfficeLabel } from '../../projects/domainCommandLabels'
 import { HANDOFF_LABELS } from '@shared/data/handoff'
 import { DOCKET_STATUS_LABEL, toolCatalogLabel } from '@shared/data/sessions'
 import { workbenchHref } from './sessionGates'
@@ -334,7 +334,7 @@ export function SessionContextPanel({
                   </span>
                   {' · '}
                   <span className="text-slate-700">
-                    {COMMAND_LABELS[a.command]}
+                    {domainCommandOfficeLabel(a.command)}
                   </span>
                   {' · '}
                   <span
