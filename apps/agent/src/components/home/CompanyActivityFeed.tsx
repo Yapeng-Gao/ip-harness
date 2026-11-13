@@ -20,7 +20,9 @@ const FILTERS: Array<ActivityCategory | 'all'> = [
 function ageLabel(at: string, now: number): string {
   const t = Date.parse(at)
   if (Number.isNaN(t)) return ''
-  return formatElapsed(Math.max(0, now - t))
+  const ms = Math.max(0, now - t)
+  if (ms > 24 * 60 * 60 * 1000) return '更早'
+  return formatElapsed(ms)
 }
 
 export function CompanyActivityFeed({
