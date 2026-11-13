@@ -11,6 +11,8 @@ import { navigablePeerSeatIds, type DeptPeer } from '../../business/deptRoster'
 import { useBusinessCases } from '../../business/BusinessCaseContext'
 import { isBusinessSeedCaseId } from '../../business/businessSeeds'
 import { BusinessSeatWorkbench } from '../../components/business/BusinessSeatWorkbench'
+import { StagePipelineBar } from '../../components/business/StagePipelineBar'
+import { useDemoPace } from '../../business/DemoPaceContext'
 import { CaseAssistantPanel } from '../../components/business/CaseAssistantPanel'
 import {
   DeptMaterialsTree,
@@ -231,6 +233,7 @@ function DepartmentWorkbenchPage() {
   } = useBusinessCases()
   const { getThread, patchThread } = useProjectFolder()
   const { deptLabel } = useOrgConfig()
+  const pace = useDemoPace()
 
   useEffect(() => {
     if (!lastReturnHint) return
@@ -1340,6 +1343,16 @@ function DepartmentWorkbenchPage() {
             </p>
           </div>
         ) : null}
+        <div className="mt-2">
+          <StagePipelineBar
+            stepIndex={stepIndex}
+            stepCount={Math.max(leadExpertDef?.steps.length ?? stepList.length, 1)}
+            pending={awaitingThis}
+            done={Boolean(stationClosed || lookbackMode)}
+            streaming={pace.isStreaming(`${caseId}:${dept.leadSeatId}`)}
+            caption={c.title}
+          />
+        </div>
       </div>
       <div className="sr-only" aria-hidden>
         <p
@@ -2678,6 +2691,7 @@ function DepartmentWorkbenchPage() {
                     deptId={dept.id}
                     deptSlug={slug || undefined}
                     busy={askBusy}
+                    confirmLocked={!pace.hitlReady(`${caseId}:${dept.leadSeatId}`)}
                     onConfirm={onAskConfirm}
                     onReturn={onAskReturn}
                     onOpenInMid={openAiProductInMid}

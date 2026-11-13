@@ -31,6 +31,8 @@ import { useProjectFolder } from '../../projects/ProjectFolderContext'
 import { getProjectExpert } from '../../projects/experts'
 import { DEPT_HANDOFF } from '../../departments/deptPageNarrative'
 import { isBusinessSeedCaseId } from '../../business/businessSeeds'
+import { pendingCardFacts } from '../../business/companyActivity'
+import { CompanyActivityFeed } from '../../components/home/CompanyActivityFeed'
 import { useOrgConfig } from '../../departments/OrgConfigContext'
 
 type TodoSeg = BossTodoKind | 'AB'
@@ -250,7 +252,8 @@ export function BossTodoInboxPage() {
       data-cockpit-view={view}
       data-todo-segs="abc"
     >
-      <div className="mx-auto w-full max-w-3xl" data-testid="boss-cockpit">
+      <div className="mx-auto grid w-full max-w-6xl gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]" data-testid="boss-cockpit">
+        <div className="min-w-0">
         <nav
           className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-slate-500"
           aria-label="待办次要入口"
@@ -479,6 +482,25 @@ export function BossTodoInboxPage() {
                                       </details>
                                     </div>
                                   ) : null}
+                                  {(() => {
+                                    const facts = pendingCardFacts({
+                                      kind: confirm?.kind ?? (item.kind === 'B' ? 'oa_strategy' : undefined),
+                                      createdAt: confirm?.createdAt,
+                                      resultPreview: confirm?.resultPreview || item.reason,
+                                    })
+                                    const factId = item.kind === 'A' ? confirmId : item.id
+                                    return (
+                                      <div className="mt-2 space-y-0.5 text-[11px] text-slate-600" data-testid={`pending-live-${factId}`}>
+                                        <p data-testid={`pending-stage-${factId}`}>阶段 · {facts.stage}</p>
+                                        <p className="tabular-nums" data-testid={`pending-elapsed-${factId}`}>
+                                          已进行 {facts.elapsed}
+                                        </p>
+                                        <p className="line-clamp-2 text-slate-500" data-testid={`pending-artifact-${factId}`}>
+                                          {facts.artifactPreview}
+                                        </p>
+                                      </div>
+                                    )
+                                  })()}
                                   <p className="mt-1 text-[11px] tabular-nums text-slate-400">
                                     {[
                                       dName,
@@ -611,6 +633,10 @@ export function BossTodoInboxPage() {
           <p className="mt-0.5 text-[10px] text-slate-400">
             试点数据尚未接入
           </p>
+        </div>
+        </div>
+        <div className="min-h-[24rem] lg:sticky lg:top-0 lg:min-h-0 lg:self-start">
+          <CompanyActivityFeed />
         </div>
       </div>
     </div>
